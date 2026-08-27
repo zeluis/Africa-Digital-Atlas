@@ -52,8 +52,8 @@ export const CHOROPLETH_METRICS = [
   { id: 'IEP.GPI.SCORE', label: 'Global Peace Index', unit: 'Score (1-5)', color: 'rose' }
 ];
 
-const DEFAULT_MAP_ZOOM = 1.08;
-const DEFAULT_PAN_OFFSET = { x: 0, y: -10 };
+const DEFAULT_MAP_ZOOM = 1.0;
+const DEFAULT_PAN_OFFSET = { x: 0, y: 0 };
 
 // Focus coordinates & zoom transforms for African subregions
 const REGIONAL_ZOOM_PRESETS: Record<AfricanRegion, { zoom: number; x: number; y: number }> = {
@@ -608,12 +608,12 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
         <svg
           ref={svgRef}
-          viewBox="0 0 1000 1100"
+          viewBox="45 50 900 1000"
           width="100%"
           height="100%"
           preserveAspectRatio="xMidYMid meet"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full object-contain cursor-grab active:cursor-grabbing select-none"
+          className="w-full h-full cursor-grab active:cursor-grabbing select-none"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -627,14 +627,14 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           </defs>
 
           {/* Continental Ocean Backdrop */}
-          <rect width="1000" height="1100" fill="url(#oceanGlow)" rx="16" />
+          <rect x="0" y="0" width="1000" height="1100" fill="url(#oceanGlow)" rx="16" />
 
           {/* Interactive Zoomable / Pannable Map Layer */}
           <g
             id="africa-map-viewport"
             transform={`translate(${panOffset.x}, ${panOffset.y}) scale(${zoomLevel})`}
             style={{
-              transformOrigin: '500px 550px',
+              transformOrigin: '495px 550px',
               transition: isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)'
             }}
           >

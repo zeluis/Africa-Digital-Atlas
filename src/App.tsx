@@ -84,15 +84,17 @@ function AppContent() {
     };
   }, []);
 
-  // Synchronize theme with <html> class and localStorage
+  // Synchronize theme with <html> class, data-theme attribute, and localStorage
   useEffect(() => {
     const root = document.documentElement;
     if (theme === 'dark') {
       root.classList.add('dark');
       root.classList.remove('light');
+      root.setAttribute('data-theme', 'dark');
     } else {
       root.classList.add('light');
       root.classList.remove('dark');
+      root.setAttribute('data-theme', 'light');
     }
     localStorage.setItem('atlas_theme', theme);
   }, [theme]);

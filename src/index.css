@@ -4,21 +4,150 @@
 
 @layer base {
   :root {
-    --bg-primary: #09090b;
-    --text-primary: #f4f4f5;
+    color-scheme: light;
+
+    /* 1. Surface & Canvas Architecture (Soft Low-Glare Light) */
+    --bg-primary: #F8F9FA;
+    --surface-canvas: #F8F9FA;
+    --surface-card: #FFFFFF;
+    --surface-card-elevated: #F3F4F6;
+    --surface-subtle: #E5E7EB;
+    --surface-sunken: #EDEDF0;
+
+    /* 2. Typography & Content */
+    --text-primary: #111827;       /* Charcoal Black - WCAG AAA */
+    --text-secondary: #4B5563;     /* Midtone Gray - WCAG AA */
+    --text-tertiary: #6B7280;      /* Muted Neutral */
+    --text-inverse: #F9FAFB;
+
+    /* 3. Interface Borders & Structural Dividers */
+    --border-subtle: #E5E7EB;
+    --border-strong: #D1D5DB;
+    --border-focus: #111827;
+
+    /* 4. Data-Agnostic Chart Utility Tokens */
+    --chart-gridline: rgba(17, 24, 39, 0.07);
+    --chart-axis-line: #9CA3AF;
+    --chart-axis-label: #4B5563;
+    --chart-crosshair: #374151;
+    --chart-brush-bg: rgba(17, 24, 39, 0.04);
+    --chart-brush-handle: #9CA3AF;
+
+    /* Universal Tooltip System */
+    --tooltip-bg: #FFFFFF;
+    --tooltip-text-title: #111827;
+    --tooltip-text-body: #374151;
+    --tooltip-border: #E5E7EB;
+    --tooltip-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+
+    /* 5. Exact UN Geoscheme Regional Brand Hexes */
+    --region-eastern-raw: #FFA500;
+    --region-middle-raw: #FF00FE;
+    --region-northern-raw: #1802FF;
+    --region-southern-raw: #FF0A0A;
+    --region-western-raw: #00FF00;
+
+    /* Chart Fill Tints */
+    --region-eastern-fill: rgba(255, 165, 0, 0.18);
+    --region-middle-fill: rgba(255, 0, 254, 0.16);
+    --region-northern-fill: rgba(24, 2, 255, 0.14);
+    --region-southern-fill: rgba(255, 10, 10, 0.16);
+    --region-western-fill: rgba(0, 255, 0, 0.20);
+
+    /* Vector Stroke Accents */
+    --region-eastern-stroke: #D97706;
+    --region-middle-stroke: #C026D3;
+    --region-northern-stroke: #1D4ED8;
+    --region-southern-stroke: #DC2626;
+    --region-western-stroke: #059669;
+
+    /* Text Contrast Tokens Over Solid Region Fills */
+    --region-eastern-on-solid: #111827;
+    --region-middle-on-solid: #FFFFFF;
+    --region-northern-on-solid: #FFFFFF;
+    --region-southern-on-solid: #FFFFFF;
+    --region-western-on-solid: #111827;
+
     --ease-japandi: cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
-  html.light {
-    --bg-primary: #f8fafc;
-    --text-primary: #0f172a;
+  html.light,
+  [data-theme="light"] {
+    --bg-primary: #F8F9FA;
+    --text-primary: #111827;
+    --surface-canvas: #F8F9FA;
+    --surface-card: #FFFFFF;
+    --surface-card-elevated: #F3F4F6;
+    --surface-subtle: #E5E7EB;
+    --surface-sunken: #EDEDF0;
     color-scheme: light;
   }
 
-  html.dark {
-    --bg-primary: #09090b;
-    --text-primary: #f4f4f5;
+  html.dark,
+  [data-theme="dark"] {
     color-scheme: dark;
+
+    /* 1. Surface & Canvas Architecture (Tinted Midnight / Elevated Charcoal) */
+    --bg-primary: #0B0F19;
+    --surface-canvas: #0B0F19;
+    --surface-card: #121826;
+    --surface-card-elevated: #1F2937;
+    --surface-subtle: #1E2638;
+    --surface-sunken: #070A10;
+
+    /* 2. Typography & Content */
+    --text-primary: #F9FAFB;       /* Pure Off-White - WCAG AAA */
+    --text-secondary: #9CA3AF;     /* Muted Cool Gray */
+    --text-tertiary: #6B7280;      /* Dimmed Metadata */
+    --text-inverse: #111827;
+
+    /* 3. Interface Borders & Structural Dividers */
+    --border-subtle: #1F2937;
+    --border-strong: #374151;
+    --border-focus: #60A5FA;
+
+    /* 4. Data-Agnostic Chart Utility Tokens */
+    --chart-gridline: rgba(249, 250, 251, 0.08);
+    --chart-axis-line: #4B5563;
+    --chart-axis-label: #9CA3AF;
+    --chart-crosshair: #E5E7EB;
+    --chart-brush-bg: rgba(255, 255, 255, 0.05);
+    --chart-brush-handle: #6B7280;
+
+    /* Universal Tooltip System */
+    --tooltip-bg: #121826;
+    --tooltip-text-title: #F9FAFB;
+    --tooltip-text-body: #D1D5DB;
+    --tooltip-border: #374151;
+    --tooltip-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.6), 0 8px 16px -6px rgba(0, 0, 0, 0.4);
+
+    /* 5. Exact UN Geoscheme Regional Brand Hexes (Glow & Fill Adjustments) */
+    --region-eastern-raw: #FFA500;
+    --region-middle-raw: #FF00FE;
+    --region-northern-raw: #1802FF;
+    --region-southern-raw: #FF0A0A;
+    --region-western-raw: #00FF00;
+
+    /* Chart Fill Tints */
+    --region-eastern-fill: rgba(255, 165, 0, 0.22);
+    --region-middle-fill: rgba(255, 0, 254, 0.20);
+    --region-northern-fill: rgba(77, 124, 255, 0.24);
+    --region-southern-fill: rgba(255, 10, 10, 0.22);
+    --region-western-fill: rgba(0, 255, 0, 0.20);
+
+    /* Vector Stroke Accents */
+    --region-eastern-stroke: #FBBF24;
+    --region-middle-stroke: #F472B6;
+    --region-northern-stroke: #60A5FA;
+    --region-southern-stroke: #F87171;
+    --region-western-stroke: #34D399;
+
+    /* Text Contrast Tokens Over Solid Region Fills */
+    --region-eastern-on-solid: #111827;
+    --region-middle-on-solid: #FFFFFF;
+    --region-northern-on-solid: #FFFFFF;
+    --region-southern-on-solid: #FFFFFF;
+    --region-western-on-solid: #111827;
   }
 
   body {
@@ -39,7 +168,9 @@
   }
 }
 
-/* Density Mode Definitions */
+/* --------------------------------------------------------------------------
+   Density Mode Definitions
+   -------------------------------------------------------------------------- */
 .density-analytical {
   --density-card-padding: 0.875rem;
   --density-gap: 0.75rem;
@@ -58,7 +189,87 @@
   --density-font-scale: 1.05;
 }
 
-/* Japandi Motion Vocabulary */
+/* --------------------------------------------------------------------------
+   Theme-Aware Regional Badge & Pill Tokens
+   -------------------------------------------------------------------------- */
+.badge-eastern {
+  background: var(--region-eastern-fill);
+  border: 1px solid var(--region-eastern-stroke);
+  color: var(--text-primary);
+}
+.badge-eastern[data-active="true"] {
+  background: var(--region-eastern-raw);
+  color: var(--region-eastern-on-solid);
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(255, 165, 0, 0.35);
+}
+
+.badge-middle {
+  background: var(--region-middle-fill);
+  border: 1px solid var(--region-middle-stroke);
+  color: var(--text-primary);
+}
+.badge-middle[data-active="true"] {
+  background: var(--region-middle-raw);
+  color: var(--region-middle-on-solid);
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(255, 0, 254, 0.35);
+}
+
+.badge-northern {
+  background: var(--region-northern-fill);
+  border: 1px solid var(--region-northern-stroke);
+  color: var(--text-primary);
+}
+.badge-northern[data-active="true"] {
+  background: var(--region-northern-raw);
+  color: var(--region-northern-on-solid);
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(24, 2, 255, 0.35);
+}
+
+.badge-southern {
+  background: var(--region-southern-fill);
+  border: 1px solid var(--region-southern-stroke);
+  color: var(--text-primary);
+}
+.badge-southern[data-active="true"] {
+  background: var(--region-southern-raw);
+  color: var(--region-southern-on-solid);
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(255, 10, 10, 0.35);
+}
+
+.badge-western {
+  background: var(--region-western-fill);
+  border: 1px solid var(--region-western-stroke);
+  color: var(--text-primary);
+}
+.badge-western[data-active="true"] {
+  background: var(--region-western-raw);
+  color: var(--region-western-on-solid);
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0, 255, 0, 0.30);
+}
+
+/* Universal Dashboard Card Container */
+.dashboard-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: var(--density-card-padding, 1.25rem);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06);
+}
+
+/* --------------------------------------------------------------------------
+   Motion & Animation Vocabulary
+   -------------------------------------------------------------------------- */
 .animate-enter-japandi {
   animation: enterJapandi 0.4s var(--ease-japandi) forwards;
 }
@@ -118,101 +329,3 @@
   position: relative;
   overflow: hidden;
 }
-
-.animate-shimmer::after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  transform: translateX(-100%);
-  background-image: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0,
-    rgba(255, 255, 255, 0.15) 20%,
-    rgba(255, 255, 255, 0.35) 60%,
-    rgba(255, 255, 255, 0)
-  );
-  animation: shimmer 1.5s infinite;
-  content: '';
-}
-
-.dark .animate-shimmer::after {
-  background-image: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0,
-    rgba(255, 255, 255, 0.03) 20%,
-    rgba(255, 255, 255, 0.08) 60%,
-    rgba(255, 255, 255, 0)
-  );
-}
-
-/* Indeterminate progress bar animation */
-@keyframes indeterminate-bar {
-  0% {
-    left: -35%;
-    right: 100%;
-  }
-  60% {
-    left: 100%;
-    right: -90%;
-  }
-  100% {
-    left: 100%;
-    right: -90%;
-  }
-}
-
-@keyframes indeterminate-bar-short {
-  0% {
-    left: -200%;
-    right: 100%;
-  }
-  60% {
-    left: 107%;
-    right: -8%;
-  }
-  100% {
-    left: 107%;
-    right: -8%;
-  }
-}
-
-.animate-indeterminate {
-  animation: indeterminate-bar 1.6s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
-}
-
-.animate-indeterminate-short {
-  animation: indeterminate-bar-short 1.6s cubic-bezier(0.165, 0.84, 0.44, 1) 0.8s infinite;
-}
-
-/* Reduced Motion Compliance (WCAG 2.2 AA) */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-
-  .animate-shimmer::after {
-    display: none !important;
-  }
-
-  .animate-indeterminate,
-  .animate-indeterminate-short,
-  .animate-ping,
-  .animate-spin {
-    animation: none !important;
-  }
-
-  .cascade-item,
-  .animate-enter-japandi {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-  }
-}
-

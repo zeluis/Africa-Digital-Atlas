@@ -1,16 +1,15 @@
 /**
  * UN Geoscheme Color Palette & Warm Dynamic Tonal Variations for Africa
  * 
- * Official UN Geoscheme Africa Base Colors:
- * - Eastern Africa: #FFA500 (Vibrant Sunburst Orange)
- * - Middle Africa (Central Africa): #FF00FE (Electric Orchid Magenta)
- * - Northern Africa: #1802FF (Deep Mediterranean Royal Blue)
- * - Southern Africa: #FF0A0A (Kalahari Crimson Red)
- * - Western Africa: #00FF00 (Electric Guinean Green)
+ * Strict Brand Color Assignments:
+ * - Eastern Africa: #FFA500 (Orange)
+ * - Middle Africa: #FF00FE (Magenta/Fuchsia)
+ * - Northern Africa: #1802FF (Pure Blue)
+ * - Southern Africa: #FF0A0A (Pure Red)
+ * - Western Africa: #00FF00 (Neon Green)
  * 
- * Includes warm and dynamic tonal variations engineered for high legibility,
- * optimistic aesthetics representing Africa's dynamic growth and future,
- * and seamless light/dark mode contrast (WCAG AA/AAA).
+ * Includes mathematical luminance calculations (WCAG AA/AAA) and programmatic
+ * contrast text resolution (#111827 vs #FFFFFF) for light and dark modes.
  */
 
 import { AfricanRegion } from './types';
@@ -22,17 +21,21 @@ export interface UnGeoschemeTonalPalette {
   unBaseColor: string;          // Exact UN Geoscheme official hex
   displayName: string;
   shortName: string;
+  cssVarKey: string;            // CSS variable suffix (eastern, middle, northern, southern, western)
+  
+  // High contrast on-solid text color (#111827 for high luminance, #FFFFFF for medium/dark)
+  onSolidText: '#111827' | '#FFFFFF';
   
   // Warm & dynamic tonal variations
   warmAccent: string;           // Optimistic warm focal hex
-  lightTint: string;            // Light mode soft tint / gradient stop
-  deepTone: string;             // Rich dark tone for contrast & light mode typography
-  glowRgba: string;             // Soft atmospheric glow
+  lightTint: string;            // Light mode soft tint
+  deepTone: string;             // Rich dark tone for contrast
+  glowRgba: string;             // Atmospheric glow
   
   // SVG Silhouette & Map Vector properties
-  svgStroke: string;            // Crisp vector path stroke
+  svgStroke: string;            // Vector stroke
   svgFillOpacity: number;       // Default fill opacity (0.2)
-  svgFillOpacityActive: number; // Active/hover fill opacity (0.4)
+  svgFillOpacityActive: number; // Active/hover fill opacity (0.45)
   svgFillRgba: string;          // Translucent fill
   svgFillActiveRgba: string;    // Rich translucent fill
   
@@ -67,9 +70,11 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
   'Eastern Africa': {
     id: 'Eastern Africa',
     m49Code: '014',
-    unBaseColor: '#FFA500',
+    unBaseColor: '#FFA500', // Sunburst Orange
     displayName: 'Eastern Africa',
     shortName: 'East',
+    cssVarKey: 'eastern',
+    onSolidText: '#111827', // High luminance (0.4817) -> Dark charcoal text
     warmAccent: '#F59E0B',
     lightTint: '#FDE68A',
     deepTone: '#B45309',
@@ -83,13 +88,13 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
       bg: 'bg-amber-500/10 dark:bg-amber-500/15',
       border: 'border-amber-500/30 dark:border-amber-500/40',
       text: 'text-amber-700 dark:text-amber-300',
-      dot: 'bg-amber-500'
+      dot: 'bg-[#FFA500]'
     },
     pill: {
       bg: 'bg-amber-50 dark:bg-amber-950/40',
       border: 'border-amber-200 dark:border-amber-800/60',
       text: 'text-amber-800 dark:text-amber-300',
-      activeBg: 'bg-amber-500 text-zinc-950',
+      activeBg: 'bg-[#FFA500] text-zinc-950',
       activeText: 'text-zinc-950 font-bold'
     },
     card: {
@@ -99,18 +104,20 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
       accentText: 'text-amber-600 dark:text-amber-400'
     },
     button: {
-      primary: 'bg-amber-500 hover:bg-amber-400 text-zinc-950 shadow-amber-500/20',
+      primary: 'bg-[#FFA500] hover:bg-amber-400 text-zinc-950 shadow-amber-500/20',
       outline: 'border-amber-500/40 text-amber-700 dark:text-amber-300 hover:bg-amber-500/10'
     },
-    gradient: 'from-amber-500 via-orange-500 to-amber-600'
+    gradient: 'from-[#FFA500] via-orange-500 to-amber-600'
   },
 
   'Central Africa': {
     id: 'Central Africa',
     m49Code: '017',
-    unBaseColor: '#FF00FE', // Middle Africa
+    unBaseColor: '#FF00FE', // Middle Africa Magenta / Fuchsia
     displayName: 'Central Africa (Middle Africa)',
     shortName: 'Central',
+    cssVarKey: 'middle',
+    onSolidText: '#FFFFFF', // Medium luminance (0.2848) -> Light white text
     warmAccent: '#E040FB',
     lightTint: '#F5D0FE',
     deepTone: '#A21CAF',
@@ -124,14 +131,14 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
       bg: 'bg-fuchsia-500/10 dark:bg-fuchsia-500/15',
       border: 'border-fuchsia-500/30 dark:border-fuchsia-500/40',
       text: 'text-fuchsia-700 dark:text-fuchsia-300',
-      dot: 'bg-fuchsia-500'
+      dot: 'bg-[#FF00FE]'
     },
     pill: {
       bg: 'bg-fuchsia-50 dark:bg-fuchsia-950/40',
       border: 'border-fuchsia-200 dark:border-fuchsia-800/60',
       text: 'text-fuchsia-800 dark:text-fuchsia-300',
-      activeBg: 'bg-fuchsia-500 text-zinc-950',
-      activeText: 'text-zinc-950 font-bold'
+      activeBg: 'bg-[#FF00FE] text-white',
+      activeText: 'text-white font-bold'
     },
     card: {
       borderHover: 'hover:border-fuchsia-500/50',
@@ -140,18 +147,20 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
       accentText: 'text-fuchsia-600 dark:text-fuchsia-400'
     },
     button: {
-      primary: 'bg-fuchsia-500 hover:bg-fuchsia-400 text-zinc-950 shadow-fuchsia-500/20',
+      primary: 'bg-[#FF00FE] hover:bg-fuchsia-400 text-white shadow-fuchsia-500/20',
       outline: 'border-fuchsia-500/40 text-fuchsia-700 dark:text-fuchsia-300 hover:bg-fuchsia-500/10'
     },
-    gradient: 'from-fuchsia-500 via-pink-500 to-purple-600'
+    gradient: 'from-[#FF00FE] via-pink-500 to-purple-600'
   },
 
   'Northern Africa': {
     id: 'Northern Africa',
     m49Code: '015',
-    unBaseColor: '#1802FF',
+    unBaseColor: '#1802FF', // Pure Blue
     displayName: 'Northern Africa',
     shortName: 'North',
+    cssVarKey: 'northern',
+    onSolidText: '#FFFFFF', // Deep luminance (0.0762) -> Light white text
     warmAccent: '#3B82F6',
     lightTint: '#BFDBFE',
     deepTone: '#1D4ED8',
@@ -165,13 +174,13 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
       bg: 'bg-blue-500/10 dark:bg-blue-500/15',
       border: 'border-blue-500/30 dark:border-blue-500/40',
       text: 'text-blue-700 dark:text-blue-300',
-      dot: 'bg-blue-500'
+      dot: 'bg-[#1802FF]'
     },
     pill: {
       bg: 'bg-blue-50 dark:bg-blue-950/40',
       border: 'border-blue-200 dark:border-blue-800/60',
       text: 'text-blue-800 dark:text-blue-300',
-      activeBg: 'bg-blue-500 text-white',
+      activeBg: 'bg-[#1802FF] text-white',
       activeText: 'text-white font-bold'
     },
     card: {
@@ -181,18 +190,20 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
       accentText: 'text-blue-600 dark:text-blue-400'
     },
     button: {
-      primary: 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-500/20',
+      primary: 'bg-[#1802FF] hover:bg-blue-600 text-white shadow-blue-500/20',
       outline: 'border-blue-500/40 text-blue-700 dark:text-blue-300 hover:bg-blue-500/10'
     },
-    gradient: 'from-blue-600 via-indigo-500 to-cyan-500'
+    gradient: 'from-[#1802FF] via-indigo-500 to-cyan-500'
   },
 
   'Southern Africa': {
     id: 'Southern Africa',
     m49Code: '018',
-    unBaseColor: '#FF0A0A',
+    unBaseColor: '#FF0A0A', // Pure Red
     displayName: 'Southern Africa',
     shortName: 'South',
+    cssVarKey: 'southern',
+    onSolidText: '#FFFFFF', // Medium-low luminance (0.2224) -> Light white text
     warmAccent: '#F43F5E',
     lightTint: '#FECDD3',
     deepTone: '#BE123C',
@@ -206,13 +217,13 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
       bg: 'bg-rose-500/10 dark:bg-rose-500/15',
       border: 'border-rose-500/30 dark:border-rose-500/40',
       text: 'text-rose-700 dark:text-rose-300',
-      dot: 'bg-rose-500'
+      dot: 'bg-[#FF0A0A]'
     },
     pill: {
       bg: 'bg-rose-50 dark:bg-rose-950/40',
       border: 'border-rose-200 dark:border-rose-800/60',
       text: 'text-rose-800 dark:text-rose-300',
-      activeBg: 'bg-rose-500 text-white',
+      activeBg: 'bg-[#FF0A0A] text-white',
       activeText: 'text-white font-bold'
     },
     card: {
@@ -222,18 +233,20 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
       accentText: 'text-rose-600 dark:text-rose-400'
     },
     button: {
-      primary: 'bg-rose-500 hover:bg-rose-400 text-white shadow-rose-500/20',
+      primary: 'bg-[#FF0A0A] hover:bg-red-600 text-white shadow-rose-500/20',
       outline: 'border-rose-500/40 text-rose-700 dark:text-rose-300 hover:bg-rose-500/10'
     },
-    gradient: 'from-rose-500 via-red-500 to-orange-500'
+    gradient: 'from-[#FF0A0A] via-red-500 to-orange-500'
   },
 
   'Western Africa': {
     id: 'Western Africa',
     m49Code: '011',
-    unBaseColor: '#00FF00',
+    unBaseColor: '#00FF00', // Neon Green
     displayName: 'Western Africa',
     shortName: 'West',
+    cssVarKey: 'western',
+    onSolidText: '#111827', // Very high luminance (0.7152) -> Dark charcoal text
     warmAccent: '#10B981',
     lightTint: '#A7F3D0',
     deepTone: '#047857',
@@ -247,13 +260,13 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
       bg: 'bg-emerald-500/10 dark:bg-emerald-500/15',
       border: 'border-emerald-500/30 dark:border-emerald-500/40',
       text: 'text-emerald-700 dark:text-emerald-300',
-      dot: 'bg-emerald-500'
+      dot: 'bg-[#00FF00]'
     },
     pill: {
       bg: 'bg-emerald-50 dark:bg-emerald-950/40',
       border: 'border-emerald-200 dark:border-emerald-800/60',
       text: 'text-emerald-800 dark:text-emerald-300',
-      activeBg: 'bg-emerald-500 text-zinc-950',
+      activeBg: 'bg-[#00FF00] text-zinc-950',
       activeText: 'text-zinc-950 font-bold'
     },
     card: {
@@ -263,10 +276,10 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
       accentText: 'text-emerald-600 dark:text-emerald-400'
     },
     button: {
-      primary: 'bg-emerald-500 hover:bg-emerald-400 text-zinc-950 shadow-emerald-500/20',
+      primary: 'bg-[#00FF00] hover:bg-emerald-400 text-zinc-950 shadow-emerald-500/20',
       outline: 'border-emerald-500/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/10'
     },
-    gradient: 'from-emerald-500 via-teal-500 to-green-600'
+    gradient: 'from-[#00FF00] via-teal-500 to-green-600'
   }
 };
 
@@ -300,8 +313,26 @@ export function getCountryRegionTonalPalette(countryIdOrIso: string): UnGeoschem
   if (entity?.region) {
     return getRegionTonalPalette(entity.region);
   }
-  // Default fallback
   return UN_GEOSCHEME_TONAL_PALETTES['Western Africa'];
+}
+
+/**
+ * Determines optimal foreground text color (WCAG 2.1 AA/AAA compliant)
+ * for labels placed directly on top of regional color surfaces.
+ */
+export function getRegionContrastColor(regionHex: string): '#111827' | '#FFFFFF' {
+  const hex = regionHex.replace('#', '');
+  if (hex.length < 6) return '#FFFFFF';
+  
+  const r = parseInt(hex.substring(0, 2), 16) / 255;
+  const g = parseInt(hex.substring(2, 4), 16) / 255;
+  const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+  const toLinear = (c: number) => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+  const luminance = 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+
+  // Luminance > 0.35 requires dark charcoal text for high contrast
+  return luminance > 0.35 ? '#111827' : '#FFFFFF';
 }
 
 /**
@@ -316,6 +347,7 @@ export function getCountrySilhouettePalette(countryId: string) {
     fillRgba: palette.svgFillRgba,
     fillActiveRgba: palette.svgFillActiveRgba,
     fillOpacity: palette.svgFillOpacity,
+    onSolidText: palette.onSolidText,
     badge: palette.badge,
     card: palette.card,
     button: palette.button,
