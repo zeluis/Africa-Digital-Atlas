@@ -1,0 +1,7 @@
+{
+  "name": "Africa Data Atlas & Dashboard",
+  "description": "Authoritative Pan-African data platform featuring 54 sovereign nations, 8 thematic pillars with Wikipedia narrative integration, 21 regional economic blocs & comparative engine, live weather & climatology, multi-source indicators (COMTRADE, FAO, DHS, OSM, CCKP, GFS), and 12-language translation engine.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

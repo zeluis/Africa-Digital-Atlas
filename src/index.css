@@ -1,0 +1,218 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --bg-primary: #09090b;
+    --text-primary: #f4f4f5;
+    --ease-japandi: cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  html.light {
+    --bg-primary: #f8fafc;
+    --text-primary: #0f172a;
+    color-scheme: light;
+  }
+
+  html.dark {
+    --bg-primary: #09090b;
+    --text-primary: #f4f4f5;
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.2s var(--ease-japandi), color 0.2s var(--ease-japandi);
+  }
+
+  [dir="rtl"] {
+    font-family: "Noto Sans Arabic", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  [lang="am"] {
+    font-family: "Noto Sans Ethiopic", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+}
+
+/* Density Mode Definitions */
+.density-analytical {
+  --density-card-padding: 0.875rem;
+  --density-gap: 0.75rem;
+  --density-font-scale: 0.95;
+}
+
+.density-standard {
+  --density-card-padding: 1.25rem;
+  --density-gap: 1rem;
+  --density-font-scale: 1;
+}
+
+.density-editorial {
+  --density-card-padding: 1.75rem;
+  --density-gap: 1.5rem;
+  --density-font-scale: 1.05;
+}
+
+/* Japandi Motion Vocabulary */
+.animate-enter-japandi {
+  animation: enterJapandi 0.4s var(--ease-japandi) forwards;
+}
+
+@keyframes enterJapandi {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered Cascade Animations (~60ms increments up to ~600ms) */
+.cascade-item {
+  animation: enterJapandi 0.45s var(--ease-japandi) both;
+}
+
+.cascade-1 { animation-delay: 60ms; }
+.cascade-2 { animation-delay: 120ms; }
+.cascade-3 { animation-delay: 180ms; }
+.cascade-4 { animation-delay: 240ms; }
+.cascade-5 { animation-delay: 300ms; }
+.cascade-6 { animation-delay: 360ms; }
+.cascade-7 { animation-delay: 420ms; }
+.cascade-8 { animation-delay: 480ms; }
+.cascade-9 { animation-delay: 540ms; }
+.cascade-10 { animation-delay: 600ms; }
+
+/* Hide scrollbar for tabs navigation */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Subtle glow effects */
+.glow-emerald {
+  box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.2);
+}
+
+/* Shimmer animation for skeleton loading */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-shimmer::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.15) 20%,
+    rgba(255, 255, 255, 0.35) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 1.5s infinite;
+  content: '';
+}
+
+.dark .animate-shimmer::after {
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.03) 20%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0)
+  );
+}
+
+/* Indeterminate progress bar animation */
+@keyframes indeterminate-bar {
+  0% {
+    left: -35%;
+    right: 100%;
+  }
+  60% {
+    left: 100%;
+    right: -90%;
+  }
+  100% {
+    left: 100%;
+    right: -90%;
+  }
+}
+
+@keyframes indeterminate-bar-short {
+  0% {
+    left: -200%;
+    right: 100%;
+  }
+  60% {
+    left: 107%;
+    right: -8%;
+  }
+  100% {
+    left: 107%;
+    right: -8%;
+  }
+}
+
+.animate-indeterminate {
+  animation: indeterminate-bar 1.6s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+}
+
+.animate-indeterminate-short {
+  animation: indeterminate-bar-short 1.6s cubic-bezier(0.165, 0.84, 0.44, 1) 0.8s infinite;
+}
+
+/* Reduced Motion Compliance (WCAG 2.2 AA) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-shimmer::after {
+    display: none !important;
+  }
+
+  .animate-indeterminate,
+  .animate-indeterminate-short,
+  .animate-ping,
+  .animate-spin {
+    animation: none !important;
+  }
+
+  .cascade-item,
+  .animate-enter-japandi {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
