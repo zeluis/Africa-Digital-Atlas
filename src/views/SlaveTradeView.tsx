@@ -28,6 +28,8 @@ import { EpistemicStatusBadge } from '../components/slaveVoyages/EpistemicStatus
 import { AtlanticFlowMap } from '../components/slaveVoyages/AtlanticFlowMap';
 import { VoyageDossierModal } from '../components/slaveVoyages/VoyageDossierModal';
 import { QueryBuilderPanel } from '../components/slaveVoyages/QueryBuilderPanel';
+import { MolecularLegaciesView } from '../components/slaveVoyages/MolecularLegaciesView';
+import { AfricanDevelopmentMasterReportView } from './AfricanDevelopmentMasterReportView';
 import { 
   Anchor, 
   Compass, 
@@ -49,7 +51,11 @@ import {
   Building2,
   Skull,
   Award,
-  Globe
+  Globe,
+  Dna,
+  ArrowRight,
+  Sparkles,
+  Scale
 } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 
@@ -61,7 +67,9 @@ export type SlaveTradeSubTab =
   | 'enslavers'
   | 'analytics'
   | 'query'
-  | 'methodology';
+  | 'methodology'
+  | 'molecular'
+  | 'foundations';
 
 export const SlaveTradeView: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState<SlaveTradeSubTab>('overview');
@@ -289,7 +297,9 @@ export const SlaveTradeView: React.FC = () => {
           { id: 'enslavers', label: '05 — Enslavers & Networks', icon: Building2 },
           { id: 'analytics', label: '06 — Comparative Analytics', icon: BarChart3 },
           { id: 'query', label: '07 — Query Builder & Citations', icon: SlidersHorizontal },
-          { id: 'methodology', label: '08 — Provenance & Methodology', icon: BookOpen }
+          { id: 'methodology', label: '08 — Provenance & Methodology', icon: BookOpen },
+          { id: 'molecular', label: '09 — Molecular & Material Legacies', icon: Dna },
+          { id: 'foundations', label: '10 — Foundations of African Development (Master Report)', icon: Scale }
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeSubTab === tab.id;
@@ -417,6 +427,62 @@ export const SlaveTradeView: React.FC = () => {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Featured Interdisciplinary Deep-Dive Banner */}
+          <div className="p-6 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-zinc-950 border border-indigo-800/60 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-white">
+            <div className="space-y-1.5 max-w-2xl">
+              <div className="flex items-center gap-2">
+                <span className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                  <Dna className="w-4 h-4" />
+                </span>
+                <span className="text-xs font-mono font-bold text-indigo-300 uppercase tracking-wider">
+                  Featured Sub-Section (09)
+                </span>
+              </div>
+              <h3 className="text-lg font-extrabold text-zinc-100">
+                The Molecular and Material Legacies of Slavery
+              </h3>
+              <p className="text-xs text-zinc-300 leading-relaxed">
+                Explore an interdisciplinary synthesis uniting <strong>50,000+ population genomes</strong> (IBD haplotype deconvolution), <strong>ancient DNA (Zoutsteeg c. 1660s)</strong>, <strong>98% Maroon retention</strong>, <strong>sex-biased gene flow ledgers</strong>, and <strong>bioarchaeology from the New York African Burial Ground</strong>.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setActiveSubTab('molecular')}
+              className="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-indigo-600/30 shrink-0 cursor-pointer"
+            >
+              <span>Explore Molecular Atlas</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Master Report Deep-Dive Banner */}
+          <div className="p-6 rounded-3xl bg-gradient-to-br from-amber-950/80 via-slate-900 to-zinc-950 border border-amber-800/60 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-white">
+            <div className="space-y-1.5 max-w-2xl">
+              <div className="flex items-center gap-2">
+                <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                  <Scale className="w-4 h-4" />
+                </span>
+                <span className="text-xs font-mono font-bold text-amber-300 uppercase tracking-wider">
+                  Master Report (Sub-Section 10)
+                </span>
+              </div>
+              <h3 className="text-lg font-extrabold text-amber-100">
+                The Structural and Evolutionary Foundations of African Development
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Comprehensive synthesis uniting <strong>Macro-Geonomics (Recent African Origin & Ashraf-Galor curve)</strong>, <strong>Nathan Nunn's 18M+ slave trade mistrust scar</strong>, <strong>Henn-Robinson pre-colonial governance (98% decentralized)</strong>, <strong>Tadei's colonial monopsony price-gap model</strong>, and the <strong>landmark March 25, 2026 UN General Assembly Slavery Resolution (123-3)</strong>.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setActiveSubTab('foundations')}
+              className="px-5 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-amber-500/30 shrink-0 cursor-pointer"
+            >
+              <span>Open Master Report</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
       )}
@@ -956,6 +1022,16 @@ export const SlaveTradeView: React.FC = () => {
             </p>
           </div>
         </div>
+      )}
+
+      {/* TAB 9: MOLECULAR AND MATERIAL LEGACIES */}
+      {activeSubTab === 'molecular' && (
+        <MolecularLegaciesView />
+      )}
+
+      {/* TAB 10: FOUNDATIONS OF AFRICAN DEVELOPMENT (MASTER REPORT) */}
+      {activeSubTab === 'foundations' && (
+        <AfricanDevelopmentMasterReportView />
       )}
 
       {/* Voyage Dossier Modal */}

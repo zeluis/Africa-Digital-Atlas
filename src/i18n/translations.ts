@@ -35,6 +35,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     'nav.overview': 'Overview',
     'nav.explore': 'Explore',
     'nav.slave_trade': 'Atlantic Slave Trade',
+    'nav.african_development_foundations': 'Foundations of African Development',
     'nav.pillars': '8 Thematic Pillars',
     'nav.blocs': '21 Regional Blocs',
     'nav.regions': 'Regions',

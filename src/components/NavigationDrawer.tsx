@@ -13,6 +13,7 @@ import {
   Database,
   GitCompare,
   Anchor,
+  Scale,
   X
 } from 'lucide-react';
 import { UN_REGIONAL_SILHOUETTES } from '../data/svgGeographySystem';
@@ -23,6 +24,7 @@ export type MainNavId =
   | 'overview'
   | 'explore'
   | 'slave-trade'
+  | 'african-development-foundations'
   | 'pillars'
   | 'blocs'
   | 'regions'
@@ -158,6 +160,19 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
       defaultLabel: 'Atlantic Slave Trade',
       renderIcon: (isActive) => (
         <Anchor 
+          className="w-6 h-6 shrink-0 transition-all" 
+          strokeWidth={isActive ? 2.4 : 1.75}
+          fill={isActive ? 'currentColor' : 'none'}
+          fillOpacity={isActive ? 0.2 : 0}
+        />
+      )
+    },
+    {
+      id: 'african-development-foundations',
+      labelKey: 'nav.african_development_foundations',
+      defaultLabel: 'Foundations of African Development',
+      renderIcon: (isActive) => (
+        <Scale 
           className="w-6 h-6 shrink-0 transition-all" 
           strokeWidth={isActive ? 2.4 : 1.75}
           fill={isActive ? 'currentColor' : 'none'}
