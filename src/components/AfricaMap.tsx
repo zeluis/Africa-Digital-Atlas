@@ -638,27 +638,90 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               transition: isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)'
             }}
           >
-            {/* Graticule Latitude / Longitude lines */}
-            <g opacity="0.18" stroke="#10b981" strokeWidth="0.8" strokeDasharray="6 6">
-              <line x1="0" y1="240" x2="1000" y2="240" /> {/* Tropic of Cancer ~23.5° N */}
-              <text x="20" y="235" fill="#10b981" fontSize="10" fontFamily="monospace">Tropic of Cancer 23.5°N</text>
-              <line x1="0" y1="550" x2="1000" y2="550" /> {/* Equator 0° */}
-              <text x="20" y="545" fill="#10b981" fontSize="10" fontFamily="monospace">Equator 0°</text>
-              <line x1="0" y1="880" x2="1000" y2="880" /> {/* Tropic of Capricorn ~23.5° S */}
-              <text x="20" y="875" fill="#10b981" fontSize="10" fontFamily="monospace">Tropic of Capricorn 23.5°S</text>
-              <line x1="300" y1="0" x2="300" y2="1100" />
-              <line x1="600" y1="0" x2="600" y2="1100" />
+            {/* Graticule Latitude / Longitude lines & Major Astronomical Indicators */}
+            <g id="graticule-grid-layer" className="pointer-events-none">
+              {/* Longitude Meridians */}
+              {/* 20°W */}
+              <line x1="80" y1="20" x2="80" y2="1080" stroke="#38bdf8" strokeWidth="0.8" strokeDasharray="4 4" opacity="0.35" />
+              <text x="80" y="32" textAnchor="middle" fill="#38bdf8" fontSize="8" fontFamily="monospace" fontWeight="bold" opacity="0.8">20°W</text>
+              
+              {/* 0° Prime Meridian */}
+              <line x1="280" y1="20" x2="280" y2="1080" stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="6 3" opacity="0.65" />
+              <g transform="translate(280, 26)">
+                <rect x="-38" y="-9" width="76" height="15" rx="3" fill="#020617" stroke="#38bdf8" strokeWidth="0.9" opacity="0.9" />
+                <text x="0" y="2" textAnchor="middle" fill="#38bdf8" fontSize="7.5" fontFamily="monospace" fontWeight="bold">0° PRIME</text>
+              </g>
+
+              {/* 20°E */}
+              <line x1="510" y1="20" x2="510" y2="1080" stroke="#64748b" strokeWidth="0.8" strokeDasharray="4 4" opacity="0.35" />
+              <text x="510" y="32" textAnchor="middle" fill="#94a3b8" fontSize="8" fontFamily="monospace" fontWeight="bold" opacity="0.8">20°E</text>
+
+              {/* 40°E */}
+              <line x1="740" y1="20" x2="740" y2="1080" stroke="#64748b" strokeWidth="0.8" strokeDasharray="4 4" opacity="0.35" />
+              <text x="740" y="32" textAnchor="middle" fill="#94a3b8" fontSize="8" fontFamily="monospace" fontWeight="bold" opacity="0.8">40°E</text>
+
+              {/* 30°N Parallel */}
+              <line x1="20" y1="160" x2="980" y2="160" stroke="#64748b" strokeWidth="0.8" strokeDasharray="4 4" opacity="0.35" />
+              <text x="35" y="156" fill="#94a3b8" fontSize="8" fontFamily="monospace" fontWeight="bold" opacity="0.8">30°N</text>
+
+              {/* Tropic of Cancer 23.4° N */}
+              <line x1="20" y1="240" x2="980" y2="240" stroke="#f59e0b" strokeWidth="1.4" strokeDasharray="6 4" opacity="0.8" />
+              <g transform="translate(45, 232)">
+                <rect x="0" y="-8" width="165" height="16" rx="3" fill="#451a03" stroke="#f59e0b" strokeWidth="0.85" opacity="0.9" />
+                <text x="82.5" y="3" textAnchor="middle" fill="#fef3c7" fontSize="7.5" fontFamily="monospace" fontWeight="bold">☀️ TROPIC OF CANCER 23.4°N</text>
+              </g>
+
+              {/* 10°N Parallel */}
+              <line x1="20" y1="420" x2="980" y2="420" stroke="#64748b" strokeWidth="0.8" strokeDasharray="4 4" opacity="0.35" />
+              <text x="35" y="416" fill="#94a3b8" fontSize="8" fontFamily="monospace" fontWeight="bold" opacity="0.8">10°N</text>
+
+              {/* Equator 0° */}
+              <line x1="20" y1="550" x2="980" y2="550" stroke="#10b981" strokeWidth="2" opacity="0.9" />
+              <g transform="translate(45, 542)">
+                <rect x="0" y="-8" width="135" height="16" rx="3" fill="#064e3b" stroke="#10b981" strokeWidth="1" opacity="0.95" />
+                <text x="67.5" y="3.5" textAnchor="middle" fill="#ecfdf5" fontSize="8" fontFamily="monospace" fontWeight="900">☀️ EQUATOR 0° • EQUINOX</text>
+              </g>
+
+              {/* 10°S Parallel */}
+              <line x1="20" y1="710" x2="980" y2="710" stroke="#64748b" strokeWidth="0.8" strokeDasharray="4 4" opacity="0.35" />
+              <text x="35" y="706" fill="#94a3b8" fontSize="8" fontFamily="monospace" fontWeight="bold" opacity="0.8">10°S</text>
+
+              {/* Tropic of Capricorn 23.4° S */}
+              <line x1="20" y1="880" x2="980" y2="880" stroke="#f59e0b" strokeWidth="1.4" strokeDasharray="6 4" opacity="0.8" />
+              <g transform="translate(45, 872)">
+                <rect x="0" y="-8" width="180" height="16" rx="3" fill="#451a03" stroke="#f59e0b" strokeWidth="0.85" opacity="0.9" />
+                <text x="90" y="3" textAnchor="middle" fill="#fef3c7" fontSize="7.5" fontFamily="monospace" fontWeight="bold">☀️ TROPIC OF CAPRICORN 23.4°S</text>
+              </g>
+
+              {/* 30°S Parallel */}
+              <line x1="20" y1="980" x2="980" y2="980" stroke="#64748b" strokeWidth="0.8" strokeDasharray="4 4" opacity="0.35" />
+              <text x="35" y="976" fill="#94a3b8" fontSize="8" fontFamily="monospace" fontWeight="bold" opacity="0.8">30°S</text>
             </g>
 
-            {/* Surrounding Geographic Context (Europe & Middle East in gray) */}
-            <g id="surrounding-countries-layer" className="opacity-35 dark:opacity-20 pointer-events-none">
+            {/* Astronomical Compass Rose & Polaris in South Atlantic Basin */}
+            <g transform="translate(140, 860)" className="pointer-events-none">
+              <circle cx="0" cy="0" r="32" fill="#020617" fillOpacity="0.8" stroke="#38bdf8" strokeWidth="1" strokeDasharray="2 3" />
+              <circle cx="0" cy="0" r="26" fill="none" stroke="#f59e0b" strokeWidth="0.75" />
+              <polygon points="0,-26 4,-6 0,0 -4,-6" fill="#10b981" />
+              <polygon points="0,26 4,6 0,0 -4,6" fill="#065f46" />
+              <polygon points="26,0 6,4 0,0 6,-4" fill="#0284c7" />
+              <polygon points="-26,0 -6,4 0,0 -6,-4" fill="#075985" />
+              <circle cx="0" cy="0" r="3.5" fill="#ffffff" />
+              <text x="0" y="-32" textAnchor="middle" fill="#10b981" fontSize="9" fontFamily="serif" fontWeight="900">N</text>
+              <text x="0" y="38" textAnchor="middle" fill="#94a3b8" fontSize="7.5" fontFamily="serif" fontWeight="bold">S</text>
+              <text x="34" y="3" textAnchor="middle" fill="#94a3b8" fontSize="7.5" fontFamily="serif" fontWeight="bold">E</text>
+              <text x="-34" y="3" textAnchor="middle" fill="#94a3b8" fontSize="7.5" fontFamily="serif" fontWeight="bold">W</text>
+            </g>
+
+            {/* Surrounding Geographic Context (Europe & Middle East in crisp contrast) */}
+            <g id="surrounding-countries-layer" className="opacity-60 dark:opacity-40 pointer-events-none">
               {BACKGROUND_SURROUNDING_PATHS.map((p, idx) => (
                 <path
                   key={`surround-bg-${idx}`}
                   d={p.d}
-                  fill="#A1A1AA"
-                  stroke="#71717A"
-                  strokeWidth={0.6}
+                  fill="#71717A"
+                  stroke="#52525B"
+                  strokeWidth={0.8}
                   strokeLinejoin="round"
                 />
               ))}
@@ -668,7 +731,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   cx={c.cx}
                   cy={c.cy}
                   r={c.r}
-                  fill="#A1A1AA"
+                  fill="#71717A"
                 />
               ))}
             </g>

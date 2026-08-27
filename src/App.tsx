@@ -21,6 +21,7 @@ const ProvenanceQualityView = lazy(() => import('./views/ProvenanceQualityView')
 const MapView = lazy(() => import('./views/MapView').then(m => ({ default: m.MapView })));
 const LanguagesView = lazy(() => import('./views/LanguagesView').then(m => ({ default: m.LanguagesView })));
 const ExploreView = lazy(() => import('./views/ExploreView').then(m => ({ default: m.ExploreView })));
+const SlaveTradeView = lazy(() => import('./views/SlaveTradeView').then(m => ({ default: m.SlaveTradeView })));
 const ThematicPillarsView = lazy(() => import('./views/ThematicPillarsView').then(m => ({ default: m.ThematicPillarsView })));
 const EntityBlocsBrowser = lazy(() => import('./components/EntityBlocsBrowser').then(m => ({ default: m.EntityBlocsBrowser })));
 
@@ -201,6 +202,12 @@ function AppContent() {
                 <ExploreView
                   onSelectCountry={handleSelectCountry}
                 />
+              )}
+
+              {currentTab === 'slave-trade' && (
+                <Suspense fallback={<MainContentSkeleton />}>
+                  <SlaveTradeView />
+                </Suspense>
               )}
 
               {isRegionalTab && (

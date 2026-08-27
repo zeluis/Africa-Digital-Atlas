@@ -12,6 +12,7 @@ import {
   Landmark,
   Database,
   GitCompare,
+  Anchor,
   X
 } from 'lucide-react';
 import { UN_REGIONAL_SILHOUETTES } from '../data/svgGeographySystem';
@@ -21,6 +22,7 @@ import { getRegionTonalPalette } from '../data/unGeoschemeColors';
 export type MainNavId = 
   | 'overview'
   | 'explore'
+  | 'slave-trade'
   | 'pillars'
   | 'blocs'
   | 'regions'
@@ -143,6 +145,19 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
       defaultLabel: 'Explore',
       renderIcon: (isActive) => (
         <Compass 
+          className="w-6 h-6 shrink-0 transition-all" 
+          strokeWidth={isActive ? 2.4 : 1.75}
+          fill={isActive ? 'currentColor' : 'none'}
+          fillOpacity={isActive ? 0.2 : 0}
+        />
+      )
+    },
+    {
+      id: 'slave-trade',
+      labelKey: 'nav.slave_trade',
+      defaultLabel: 'Atlantic Slave Trade',
+      renderIcon: (isActive) => (
+        <Anchor 
           className="w-6 h-6 shrink-0 transition-all" 
           strokeWidth={isActive ? 2.4 : 1.75}
           fill={isActive ? 'currentColor' : 'none'}

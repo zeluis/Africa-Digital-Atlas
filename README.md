@@ -2,8 +2,8 @@
 
 An authoritative, real-time socioeconomic data platform, interactive vector cartography suite, and comparative analytics engine covering all 54 African sovereign nations and territories.
 
-[![Deploy to GitHub Pages](https://github.com/zeluisfp/africa-data-atlas/actions/workflows/deploy.yml/badge.svg)](https://github.com/zeluisfp/africa-data-atlas/actions/workflows/deploy.yml)
-[![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-064e3b?style=flat&logo=github)](https://zeluisfp.github.io/africa-data-atlas/)
+[![Deploy to GitHub Pages](https://github.com/zeluis/Africa-Digital-Atlas/actions/workflows/deploy.yml/badge.svg)](https://github.com/zeluis/Africa-Digital-Atlas/actions/workflows/deploy.yml)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-064e3b?style=flat&logo=github)](https://zeluis.github.io/Africa-Digital-Atlas/)
 
 ![Africa Data Atlas & Analytics Dashboard](public/hero-preview.jpg)
 
@@ -12,8 +12,7 @@ An authoritative, real-time socioeconomic data platform, interactive vector cart
 ## Live Application
 
 The production application is deployed on GitHub Pages:
-**[Launch Africa Data Atlas Live](https://zeluisfp.github.io/africa-data-atlas/)**
-*(Replace `zeluisfp` or repository name if your GitHub repository uses a different slug).*
+**[Launch Africa Digital Atlas Live](https://zeluis.github.io/Africa-Digital-Atlas/)**
 
 ## Overview
 
@@ -137,10 +136,10 @@ The application communicates with external endpoints through secure client proxi
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/africa-data-atlas.git
+git clone https://github.com/zeluis/Africa-Digital-Atlas.git
 
 # Navigate to project directory
-cd africa-data-atlas
+cd Africa-Digital-Atlas
 
 # Install dependencies
 npm install
