@@ -97,13 +97,13 @@ export const UN_GEOSCHEME_REGIONS: Record<AfricanRegion, UnGeoschemeRegionData> 
     shortName: 'North',
     memberCountries: ['DZA', 'EGY', 'LBY', 'MAR', 'SDN', 'TUN', 'ESH'],
     palette: {
-      primary: '#2563eb', // Blue
-      light: '#60a5fa',
-      dark: '#1d4ed8',
-      glow: 'rgba(37, 99, 235, 0.45)',
-      bgBadge: 'bg-blue-950/60',
-      borderBadge: 'border-blue-700/50',
-      textAccent: 'text-blue-400'
+      primary: '#D97706', // Ochre / Sunbaked Sand
+      light: '#FBBF24',
+      dark: '#B45309',
+      glow: 'rgba(217, 119, 6, 0.30)',
+      bgBadge: 'bg-amber-500/10 dark:bg-amber-950/40',
+      borderBadge: 'border-amber-500/25 dark:border-amber-700/40',
+      textAccent: 'text-amber-700 dark:text-amber-400'
     },
     economicBlocs: ['AMU', 'COMESA', 'AfCFTA'],
     headquarters: 'Rabat / Cairo',
@@ -116,13 +116,13 @@ export const UN_GEOSCHEME_REGIONS: Record<AfricanRegion, UnGeoschemeRegionData> 
     shortName: 'West',
     memberCountries: ['BEN', 'BFA', 'CPV', 'CIV', 'GMB', 'GHA', 'GIN', 'GNB', 'LBR', 'MLI', 'MRT', 'NER', 'NGA', 'SEN', 'SLE', 'TGO'],
     palette: {
-      primary: '#16a34a', // Green
-      light: '#4ade80',
-      dark: '#15803d',
-      glow: 'rgba(22, 163, 74, 0.45)',
-      bgBadge: 'bg-emerald-950/60',
-      borderBadge: 'border-emerald-700/50',
-      textAccent: 'text-emerald-400'
+      primary: '#059669', // Emerald / Sage
+      light: '#34D399',
+      dark: '#047857',
+      glow: 'rgba(5, 150, 105, 0.30)',
+      bgBadge: 'bg-emerald-500/10 dark:bg-emerald-950/40',
+      borderBadge: 'border-emerald-500/25 dark:border-emerald-700/40',
+      textAccent: 'text-emerald-700 dark:text-emerald-400'
     },
     economicBlocs: ['ECOWAS', 'WAEMU', 'AfCFTA'],
     headquarters: 'Abuja, Nigeria',
@@ -135,13 +135,13 @@ export const UN_GEOSCHEME_REGIONS: Record<AfricanRegion, UnGeoschemeRegionData> 
     shortName: 'Central',
     memberCountries: ['AGO', 'CMR', 'CAF', 'TCD', 'COG', 'COD', 'GNQ', 'GAB', 'STP'],
     palette: {
-      primary: '#c026d3', // Magenta
-      light: '#e879f9',
-      dark: '#9333ea',
-      glow: 'rgba(192, 38, 211, 0.45)',
-      bgBadge: 'bg-fuchsia-950/60',
-      borderBadge: 'border-fuchsia-700/50',
-      textAccent: 'text-fuchsia-400'
+      primary: '#6366F1', // Lapis / Indigo
+      light: '#818CF8',
+      dark: '#4338CA',
+      glow: 'rgba(99, 102, 241, 0.30)',
+      bgBadge: 'bg-indigo-500/10 dark:bg-indigo-950/40',
+      borderBadge: 'border-indigo-500/25 dark:border-indigo-700/40',
+      textAccent: 'text-indigo-700 dark:text-indigo-400'
     },
     economicBlocs: ['ECCAS', 'CEMAC', 'AfCFTA'],
     headquarters: 'Libreville, Gabon',
@@ -154,13 +154,13 @@ export const UN_GEOSCHEME_REGIONS: Record<AfricanRegion, UnGeoschemeRegionData> 
     shortName: 'East',
     memberCountries: ['BDI', 'COM', 'DJI', 'ERI', 'ETH', 'KEN', 'MDG', 'MWI', 'MUS', 'MOZ', 'RWA', 'SYC', 'SOM', 'SSD', 'TZA', 'UGA', 'ZMB', 'ZWE'],
     palette: {
-      primary: '#eab308', // Gold/Yellow
-      light: '#fde047',
-      dark: '#ca8a04',
-      glow: 'rgba(234, 179, 8, 0.45)',
-      bgBadge: 'bg-yellow-950/60',
-      borderBadge: 'border-yellow-700/50',
-      textAccent: 'text-yellow-400'
+      primary: '#EA580C', // Terracotta / Warm Orange
+      light: '#FB923C',
+      dark: '#C2410C',
+      glow: 'rgba(234, 88, 12, 0.30)',
+      bgBadge: 'bg-orange-500/10 dark:bg-orange-950/40',
+      borderBadge: 'border-orange-500/25 dark:border-orange-700/40',
+      textAccent: 'text-orange-700 dark:text-orange-400'
     },
     economicBlocs: ['EAC', 'COMESA', 'IGAD', 'AfCFTA'],
     headquarters: 'Arusha / Nairobi / Addis Ababa',
@@ -173,13 +173,13 @@ export const UN_GEOSCHEME_REGIONS: Record<AfricanRegion, UnGeoschemeRegionData> 
     shortName: 'South',
     memberCountries: ['BWA', 'SWZ', 'LSO', 'NAM', 'ZAF'],
     palette: {
-      primary: '#dc2626', // Red
-      light: '#f87171',
-      dark: '#b91c1c',
-      glow: 'rgba(220, 38, 38, 0.45)',
-      bgBadge: 'bg-red-950/60',
-      borderBadge: 'border-red-700/50',
-      textAccent: 'text-red-400'
+      primary: '#E11D48', // Rosewood / Coral
+      light: '#FB7185',
+      dark: '#BE123C',
+      glow: 'rgba(225, 29, 72, 0.30)',
+      bgBadge: 'bg-rose-500/10 dark:bg-rose-950/40',
+      borderBadge: 'border-rose-500/25 dark:border-rose-700/40',
+      textAccent: 'text-rose-700 dark:text-rose-400'
     },
     economicBlocs: ['SADC', 'SACU', 'AfCFTA'],
     headquarters: 'Gaborone / Pretoria',

@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useTranslation } from '../i18n/LanguageContext';
 import { 
   LayoutDashboard, 
@@ -14,6 +15,11 @@ import {
   GitCompare,
   Anchor,
   Scale,
+  Dna,
+  ChevronDown,
+  ChevronRight,
+  Sparkles,
+  FileText,
   X
 } from 'lucide-react';
 import { UN_REGIONAL_SILHOUETTES } from '../data/svgGeographySystem';
@@ -24,6 +30,7 @@ export type MainNavId =
   | 'overview'
   | 'explore'
   | 'slave-trade'
+  | 'molecular-legacies'
   | 'african-development-foundations'
   | 'pillars'
   | 'blocs'
@@ -62,6 +69,46 @@ interface NavItemDef {
   renderIcon: (isActive: boolean) => React.ReactNode;
 }
 
+const SLAVE_TRADE_SUBMENU_STORAGE_KEY = 'african_geography_slave_trade_submenu_expanded';
+
+const MD3_STANDARD_EASE: [number, number, number, number] = [0.2, 0, 0, 1];
+
+const submenuContainerVariants = {
+  hidden: { 
+    opacity: 0, 
+    height: 0,
+    transition: {
+      duration: 0.2,
+      ease: MD3_STANDARD_EASE
+    }
+  },
+  visible: { 
+    opacity: 1, 
+    height: 'auto',
+    transition: {
+      duration: 0.25,
+      ease: MD3_STANDARD_EASE,
+      staggerChildren: 0.05,
+      delayChildren: 0.02
+    }
+  }
+};
+
+const submenuItemVariants = {
+  hidden: { 
+    opacity: 0, 
+    y: -6 
+  },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.25,
+      ease: MD3_STANDARD_EASE
+    }
+  }
+};
+
 const REGION_ID_TO_NAME: Record<RegionNavId, AfricanRegion> = {
   'region-northern': 'Northern Africa',
   'region-western': 'Western Africa',
@@ -78,6 +125,35 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onCloseMobile
 }) => {
   const { t } = useTranslation();
+
+  const isSlaveTradeGroupActive = currentTab === 'slave-trade' || currentTab === 'molecular-legacies' || currentTab === 'african-development-foundations';
+
+  const [isSlaveTradeExpanded, setIsSlaveTradeExpanded] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem(SLAVE_TRADE_SUBMENU_STORAGE_KEY);
+      if (stored !== null) {
+        return JSON.parse(stored);
+      }
+    } catch {
+      // Fallback in case of storage restrictions
+    }
+    return isSlaveTradeGroupActive;
+  });
+
+  const updateSlaveTradeExpanded = (expanded: boolean) => {
+    setIsSlaveTradeExpanded(expanded);
+    try {
+      localStorage.setItem(SLAVE_TRADE_SUBMENU_STORAGE_KEY, JSON.stringify(expanded));
+    } catch {
+      // Gracefully ignore storage write failures
+    }
+  };
+
+  useEffect(() => {
+    if (isSlaveTradeGroupActive) {
+      updateSlaveTradeExpanded(true);
+    }
+  }, [isSlaveTradeGroupActive]);
 
   // Helper to render Region SVG Silhouettes with UN Geoscheme warm tonal colors, prominent icon chip & vivid styling
   const renderRegionSilhouetteIcon = (regionId: RegionNavId, isActive: boolean) => {
@@ -160,19 +236,6 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
       defaultLabel: 'Atlantic Slave Trade',
       renderIcon: (isActive) => (
         <Anchor 
-          className="w-6 h-6 shrink-0 transition-all" 
-          strokeWidth={isActive ? 2.4 : 1.75}
-          fill={isActive ? 'currentColor' : 'none'}
-          fillOpacity={isActive ? 0.2 : 0}
-        />
-      )
-    },
-    {
-      id: 'african-development-foundations',
-      labelKey: 'nav.african_development_foundations',
-      defaultLabel: 'Foundations of African Development',
-      renderIcon: (isActive) => (
-        <Scale 
           className="w-6 h-6 shrink-0 transition-all" 
           strokeWidth={isActive ? 2.4 : 1.75}
           fill={isActive ? 'currentColor' : 'none'}
@@ -319,6 +382,11 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   }, [isMobileOpen]);
 
   const renderNavLink = (item: NavItemDef, isMobile: boolean = false) => {
+    // If this is the slave-trade item, render the parent with submenu
+    if (item.id === 'slave-trade') {
+      return renderSlaveTradeGroup(isMobile);
+    }
+
     // When viewing a country dossier, consider 'explore' as parent active if not explicitly on another tab
     const isActive = currentTab === item.id || (item.id === 'explore' && currentTab === 'countries');
     const isRegionTab = item.id.startsWith('region-');
@@ -329,6 +397,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
       <button
         key={item.id}
         onClick={() => {
+          // Collapse slave trade submenu when clicking any other navigation link and persist
+          updateSlaveTradeExpanded(false);
           onSelectTab(item.id);
           if (isMobile) {
             onCloseMobile();
@@ -345,7 +415,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             ? regionTonal
               ? `${regionTonal.badge.bg} border ${regionTonal.badge.border} ${regionTonal.badge.text} font-bold shadow-xs`
               : 'bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 dark:border-emerald-500/35 text-emerald-900 dark:text-emerald-200 font-bold shadow-xs'
-            : 'border border-transparent text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium'
+            : 'border border-transparent text-zinc-700 dark:text-zinc-300 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-100 font-medium'
         }`}
       >
         <div className="flex items-center gap-3 min-w-0 pr-2">
@@ -395,6 +465,162 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     );
   };
 
+  const renderSlaveTradeGroup = (isMobile: boolean = false) => {
+    const isParentActive = isSlaveTradeGroupActive;
+
+    const subItems = [
+      {
+        id: 'slave-trade' as CanonicalNavTab,
+        label: 'Database & Voyage Atlas',
+        badge: 'Atlas & Flow Map',
+        icon: Anchor,
+        colorClass: 'emerald'
+      },
+      {
+        id: 'molecular-legacies' as CanonicalNavTab,
+        label: 'Molecular & Material Legacies',
+        badge: 'Research Article',
+        icon: Dna,
+        colorClass: 'indigo'
+      },
+      {
+        id: 'african-development-foundations' as CanonicalNavTab,
+        label: 'Foundations of African Development',
+        badge: 'Master Report',
+        icon: Scale,
+        colorClass: 'amber'
+      }
+    ];
+
+    const handleParentClick = () => {
+      // Toggle submenu open/close and persist to localStorage
+      const nextExpanded = !isSlaveTradeExpanded;
+      updateSlaveTradeExpanded(nextExpanded);
+
+      // If opening or switching to the section, navigate to slave-trade atlas
+      if (!isParentActive) {
+        onSelectTab('slave-trade');
+        if (isMobile) onCloseMobile();
+      }
+    };
+
+    return (
+      <div className="space-y-1" key="slave-trade-group">
+        {/* Parent Header Row: Clicking the entire Parent link toggles open/close */}
+        <div className="relative flex items-center">
+          <button
+            onClick={handleParentClick}
+            aria-expanded={isSlaveTradeExpanded}
+            aria-label={`${t('nav.slave_trade', 'Atlantic Slave Trade')} (${isSlaveTradeExpanded ? 'collapse submenu' : 'expand submenu'})`}
+            className={`relative w-full flex items-center justify-between text-left rounded-2xl transition-all cursor-pointer select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+              isMobile ? 'h-14 px-4 text-base' : 'h-[52px] px-4 text-[15px]'
+            } ${
+              isParentActive
+                ? 'bg-zinc-900/90 dark:bg-zinc-900/90 border border-zinc-700/80 text-zinc-100 font-bold shadow-xs'
+                : 'border border-transparent text-zinc-700 dark:text-zinc-300 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-100 font-medium'
+            }`}
+          >
+            <div className="flex items-center gap-3 min-w-0 pr-2">
+              <div className={`transition-colors shrink-0 ${isParentActive ? 'text-amber-400' : 'text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200'}`}>
+                <Anchor className="w-6 h-6 shrink-0" strokeWidth={isParentActive ? 2.4 : 1.75} />
+              </div>
+              <div className="flex items-center gap-2 min-w-0 truncate">
+                <span className="truncate tracking-tight font-sans font-medium">
+                  {t('nav.slave_trade', 'Atlantic Slave Trade')}
+                </span>
+                <span className="hidden sm:inline-block text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md shrink-0 bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                  3 Pages
+                </span>
+              </div>
+            </div>
+
+            {/* Chevron Icon indicating open/close state */}
+            <div className="flex items-center gap-1.5 shrink-0 pl-1">
+              <div 
+                className={`p-1.5 rounded-lg transition-transform duration-200 ${
+                  isSlaveTradeExpanded 
+                    ? 'text-amber-400 bg-amber-400/10' 
+                    : 'text-zinc-400 group-hover:text-zinc-200'
+                }`}
+                title={isSlaveTradeExpanded ? 'Click to collapse' : 'Click to expand'}
+              >
+                {isSlaveTradeExpanded ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+              </div>
+            </div>
+
+            {isParentActive && (
+              <span className="absolute right-0 top-1.5 bottom-1.5 w-[3.5px] rounded-r-2xl bg-amber-500 shadow-xs" aria-hidden="true" />
+            )}
+          </button>
+        </div>
+
+        {/* Submenu links with staggered 250ms fade-in and slide-down transition using MD3 standard easing */}
+        <AnimatePresence initial={false}>
+          {isSlaveTradeExpanded && (
+            <motion.div 
+              variants={submenuContainerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              className="overflow-hidden ml-5 pl-3 border-l-2 border-zinc-200 dark:border-zinc-800/80 space-y-1 my-1.5"
+            >
+              {subItems.map(sub => {
+                const SubIcon = sub.icon;
+                const isSubActive = currentTab === sub.id;
+
+                let activeBadgeStyle = 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300';
+                let activeIconColor = 'text-emerald-400';
+                if (sub.colorClass === 'indigo') {
+                  activeBadgeStyle = 'bg-indigo-500/15 border-indigo-500/30 text-indigo-300';
+                  activeIconColor = 'text-indigo-400';
+                } else if (sub.colorClass === 'amber') {
+                  activeBadgeStyle = 'bg-amber-500/15 border-amber-500/30 text-amber-300';
+                  activeIconColor = 'text-amber-400';
+                }
+
+                return (
+                  <motion.div key={sub.id} variants={submenuItemVariants}>
+                    <button
+                      onClick={() => {
+                        onSelectTab(sub.id);
+                        if (isMobile) onCloseMobile();
+                      }}
+                      className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer select-none group px-3 py-2 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                        isSubActive
+                          ? `${activeBadgeStyle} border font-bold shadow-xs`
+                          : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] font-medium'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0 pr-1">
+                        <SubIcon className={`w-4 h-4 shrink-0 transition-colors ${isSubActive ? activeIconColor : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                        <div className="flex flex-col min-w-0">
+                          <span className="truncate tracking-tight font-sans">
+                            {sub.label}
+                          </span>
+                          <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">
+                            {sub.badge}
+                          </span>
+                        </div>
+                      </div>
+
+                      {isSubActive && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                      )}
+                    </button>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
   const navContent = (isMobile: boolean = false) => (
     <div className="flex flex-col h-full justify-between pb-6">
       <div className="space-y-7">
@@ -427,6 +653,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
       <div className="pt-5 border-t border-zinc-200 dark:border-zinc-800/80 space-y-1 px-1">
         <button
           onClick={() => {
+            updateSlaveTradeExpanded(false);
             onSelectTab('compare');
             if (isMobile) onCloseMobile();
           }}
@@ -434,7 +661,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer py-2 px-3 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
             currentTab === 'compare'
               ? 'bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 text-emerald-800 dark:text-emerald-300 font-bold'
-              : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-800 dark:hover:text-zinc-200'
+              : 'text-zinc-500 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-800 dark:hover:text-zinc-200'
           }`}
         >
           <div className="flex items-center gap-2.5">
@@ -453,6 +680,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
         <button
           onClick={() => {
+            updateSlaveTradeExpanded(false);
             onSelectTab('provenance');
             if (isMobile) onCloseMobile();
           }}
@@ -460,7 +688,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer py-2 px-3 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
             currentTab === 'provenance'
               ? 'bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 text-emerald-800 dark:text-emerald-300 font-bold'
-              : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-800 dark:hover:text-zinc-200'
+              : 'text-zinc-500 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-800 dark:hover:text-zinc-200'
           }`}
         >
           <div className="flex items-center gap-2.5">

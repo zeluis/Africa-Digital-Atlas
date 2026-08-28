@@ -52,7 +52,15 @@ import {
   Scatter
 } from 'recharts';
 
-export const AfricanDevelopmentMasterReportView: React.FC = () => {
+interface AfricanDevelopmentMasterReportViewProps {
+  onNavigateToAtlas?: () => void;
+  onNavigateToMolecular?: () => void;
+}
+
+export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMasterReportViewProps> = ({
+  onNavigateToAtlas,
+  onNavigateToMolecular
+}) => {
   const [activeSectionId, setActiveSectionId] = useState<string>('executive_summary');
   const [activeCommodityIndex, setActiveCommodityIndex] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -81,13 +89,20 @@ export const AfricanDevelopmentMasterReportView: React.FC = () => {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
-              <Compass className="w-5 h-5" />
+              <Scale className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2 text-xs font-mono text-amber-400 font-semibold tracking-wider uppercase">
-                <span>Master Dossier & Synthesis</span>
+                <button 
+                  onClick={onNavigateToAtlas}
+                  className="hover:underline text-slate-400 hover:text-emerald-400 transition-colors cursor-pointer"
+                >
+                  Atlantic Slave Trade
+                </button>
+                <span>/</span>
+                <span>Editorial Master Report</span>
                 <span>•</span>
-                <span className="text-slate-400">August 25, 2026</span>
+                <span className="text-slate-400">August 2026</span>
               </div>
               <h1 className="text-lg font-bold text-slate-100 tracking-tight flex items-center gap-2">
                 The Structural & Evolutionary Foundations of African Development
@@ -1131,6 +1146,25 @@ export const AfricanDevelopmentMasterReportView: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* FOOTER COMPANION NAV STRIP */}
+        <footer className="mt-12 pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <button
+            onClick={onNavigateToAtlas}
+            className="px-5 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer"
+          >
+            <Compass className="w-4 h-4 text-emerald-400" />
+            <span>Return to Atlantic Slave Trade Atlas</span>
+          </button>
+
+          <button
+            onClick={onNavigateToMolecular}
+            className="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer shadow-lg shadow-indigo-600/20"
+          >
+            <span>Read Companion: Molecular & Material Legacies</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </footer>
       </div>
     </div>
   );

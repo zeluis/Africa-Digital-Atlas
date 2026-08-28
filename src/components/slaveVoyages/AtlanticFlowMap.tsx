@@ -101,17 +101,17 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
   }, [isPlaying, onYearChange]);
 
   const getMortalityStroke = (mortality: number) => {
-    if (!showMortalityColors) return '#10b981'; // Emerald default
-    if (mortality < 12.0) return '#10b981'; // Low mortality (<12%)
-    if (mortality < 15.0) return '#f59e0b'; // Medium mortality (12-15%)
-    return '#f43f5e'; // High mortality (>15%)
+    if (!showMortalityColors) return '#059669'; // Emerald default
+    if (mortality < 12.0) return '#059669'; // Low mortality (<12%)
+    if (mortality < 15.0) return '#D97706'; // Medium mortality (12-15%)
+    return '#E11D48'; // High mortality (>15%)
   };
 
   const getMortalityGlow = (mortality: number) => {
-    if (!showMortalityColors) return 'rgba(16, 185, 129, 0.4)';
-    if (mortality < 12.0) return 'rgba(16, 185, 129, 0.5)';
-    if (mortality < 15.0) return 'rgba(245, 158, 11, 0.5)';
-    return 'rgba(244, 63, 94, 0.6)';
+    if (!showMortalityColors) return 'rgba(5, 150, 105, 0.4)';
+    if (mortality < 12.0) return 'rgba(5, 150, 105, 0.5)';
+    if (mortality < 15.0) return 'rgba(217, 119, 6, 0.5)';
+    return 'rgba(225, 29, 72, 0.6)';
   };
 
   // Filter routes based on selected corridor preset

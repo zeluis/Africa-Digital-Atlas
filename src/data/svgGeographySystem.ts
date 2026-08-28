@@ -89,11 +89,11 @@ export const UN_REGIONAL_SILHOUETTES: Record<AfricanRegion, RegionalSilhouetteDa
       "y": 280.8
     },
     "palette": {
-      "primary": "#1802FF",
-      "light": "#60A5FA",
-      "dark": "#1E40AF",
-      "border": "#1802FF",
-      "glow": "#1802FF40"
+      "primary": "#2563EB",
+      "light": "#93C5FD",
+      "dark": "#1D4ED8",
+      "border": "#2563EB",
+      "glow": "rgba(37, 99, 235, 0.25)"
     },
     "keyCapitals": [
       {
@@ -153,11 +153,11 @@ export const UN_REGIONAL_SILHOUETTES: Record<AfricanRegion, RegionalSilhouetteDa
       "y": 316
     },
     "palette": {
-      "primary": "#00FF00",
-      "light": "#86EFAC",
+      "primary": "#059669",
+      "light": "#6EE7B7",
       "dark": "#047857",
-      "border": "#00FF00",
-      "glow": "#00FF0040"
+      "border": "#059669",
+      "glow": "rgba(5, 150, 105, 0.25)"
     },
     "keyCapitals": [
       {
@@ -210,11 +210,11 @@ export const UN_REGIONAL_SILHOUETTES: Record<AfricanRegion, RegionalSilhouetteDa
       "y": 328.1
     },
     "palette": {
-      "primary": "#FF00FE",
-      "light": "#F5D0FE",
-      "dark": "#A21CAF",
-      "border": "#FF00FE",
-      "glow": "#FF00FE40"
+      "primary": "#7C3AED",
+      "light": "#C4B5FD",
+      "dark": "#6D28D9",
+      "border": "#7C3AED",
+      "glow": "rgba(124, 58, 237, 0.25)"
     },
     "keyCapitals": [
       {
@@ -276,11 +276,11 @@ export const UN_REGIONAL_SILHOUETTES: Record<AfricanRegion, RegionalSilhouetteDa
       "y": 302.5
     },
     "palette": {
-      "primary": "#FFA500",
-      "light": "#FDE68A",
+      "primary": "#D97706",
+      "light": "#FCD34D",
       "dark": "#B45309",
-      "border": "#FFA500",
-      "glow": "#FFA50040"
+      "border": "#D97706",
+      "glow": "rgba(217, 119, 6, 0.25)"
     },
     "keyCapitals": [
       {
@@ -329,11 +329,11 @@ export const UN_REGIONAL_SILHOUETTES: Record<AfricanRegion, RegionalSilhouetteDa
       "y": 171.1
     },
     "palette": {
-      "primary": "#FF0A0A",
-      "light": "#FECDD3",
+      "primary": "#E11D48",
+      "light": "#FDA4AF",
       "dark": "#BE123C",
-      "border": "#FF0A0A",
-      "glow": "#FF0A0A40"
+      "border": "#E11D48",
+      "glow": "rgba(225, 29, 72, 0.25)"
     },
     "keyCapitals": [
       {

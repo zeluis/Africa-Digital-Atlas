@@ -22,6 +22,7 @@ const MapView = lazy(() => import('./views/MapView').then(m => ({ default: m.Map
 const LanguagesView = lazy(() => import('./views/LanguagesView').then(m => ({ default: m.LanguagesView })));
 const ExploreView = lazy(() => import('./views/ExploreView').then(m => ({ default: m.ExploreView })));
 const SlaveTradeView = lazy(() => import('./views/SlaveTradeView').then(m => ({ default: m.SlaveTradeView })));
+const MolecularLegaciesArticleView = lazy(() => import('./views/MolecularLegaciesArticleView').then(m => ({ default: m.MolecularLegaciesArticleView })));
 const AfricanDevelopmentMasterReportView = lazy(() => import('./views/AfricanDevelopmentMasterReportView').then(m => ({ default: m.AfricanDevelopmentMasterReportView })));
 const ThematicPillarsView = lazy(() => import('./views/ThematicPillarsView').then(m => ({ default: m.ThematicPillarsView })));
 const EntityBlocsBrowser = lazy(() => import('./components/EntityBlocsBrowser').then(m => ({ default: m.EntityBlocsBrowser })));
@@ -207,13 +208,28 @@ function AppContent() {
 
               {currentTab === 'slave-trade' && (
                 <Suspense fallback={<MainContentSkeleton />}>
-                  <SlaveTradeView />
+                  <SlaveTradeView 
+                    onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
+                    onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
+                  />
+                </Suspense>
+              )}
+
+              {currentTab === 'molecular-legacies' && (
+                <Suspense fallback={<MainContentSkeleton />}>
+                  <MolecularLegaciesArticleView 
+                    onNavigateToAtlas={() => handleSelectTab('slave-trade')}
+                    onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
+                  />
                 </Suspense>
               )}
 
               {currentTab === 'african-development-foundations' && (
                 <Suspense fallback={<MainContentSkeleton />}>
-                  <AfricanDevelopmentMasterReportView />
+                  <AfricanDevelopmentMasterReportView 
+                    onNavigateToAtlas={() => handleSelectTab('slave-trade')}
+                    onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
+                  />
                 </Suspense>
               )}
 

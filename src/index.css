@@ -6,59 +6,59 @@
   :root {
     color-scheme: light;
 
-    /* 1. Surface & Canvas Architecture (Soft Low-Glare Light) */
-    --bg-primary: #F8F9FA;
-    --surface-canvas: #F8F9FA;
+    /* 1. Surface & Canvas Architecture (Alpine Serenity - Oyster Silk & Crisp Slate) */
+    --bg-primary: #FBFBF9;
+    --surface-canvas: #FBFBF9;
     --surface-card: #FFFFFF;
-    --surface-card-elevated: #F3F4F6;
-    --surface-subtle: #E5E7EB;
-    --surface-sunken: #EDEDF0;
+    --surface-card-elevated: #F6F6F2;
+    --surface-subtle: #ECECE7;
+    --surface-sunken: #F2F2ED;
 
-    /* 2. Typography & Content */
+    /* 2. Typography & Content (High-contrast Swiss legibility) */
     --text-primary: #111827;       /* Charcoal Black - WCAG AAA */
-    --text-secondary: #4B5563;     /* Midtone Gray - WCAG AA */
+    --text-secondary: #4B5563;     /* Refined Midtone - WCAG AA */
     --text-tertiary: #6B7280;      /* Muted Neutral */
     --text-inverse: #F9FAFB;
 
-    /* 3. Interface Borders & Structural Dividers */
-    --border-subtle: #E5E7EB;
-    --border-strong: #D1D5DB;
-    --border-focus: #111827;
+    /* 3. Interface Borders & Structural Dividers (Low-glare architectural 1px lines) */
+    --border-subtle: #E8E8E2;
+    --border-strong: #D5D5CE;
+    --border-focus: #0F172A;
 
     /* 4. Data-Agnostic Chart Utility Tokens */
-    --chart-gridline: rgba(17, 24, 39, 0.07);
+    --chart-gridline: rgba(17, 24, 39, 0.06);
     --chart-axis-line: #9CA3AF;
     --chart-axis-label: #4B5563;
     --chart-crosshair: #374151;
-    --chart-brush-bg: rgba(17, 24, 39, 0.04);
+    --chart-brush-bg: rgba(17, 24, 39, 0.03);
     --chart-brush-handle: #9CA3AF;
 
     /* Universal Tooltip System */
     --tooltip-bg: #FFFFFF;
     --tooltip-text-title: #111827;
     --tooltip-text-body: #374151;
-    --tooltip-border: #E5E7EB;
-    --tooltip-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    --tooltip-border: #E8E8E2;
+    --tooltip-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
 
-    /* 5. Exact UN Geoscheme Regional Brand Hexes */
+    /* 5. Authoritative UN Geoscheme Regional Brand Hexes */
     --region-eastern-raw: #FFA500;
     --region-middle-raw: #FF00FE;
     --region-northern-raw: #1802FF;
     --region-southern-raw: #FF0A0A;
     --region-western-raw: #00FF00;
 
-    /* Chart Fill Tints */
-    --region-eastern-fill: rgba(255, 165, 0, 0.18);
-    --region-middle-fill: rgba(255, 0, 254, 0.16);
-    --region-northern-fill: rgba(24, 2, 255, 0.14);
-    --region-southern-fill: rgba(255, 10, 10, 0.16);
-    --region-western-fill: rgba(0, 255, 0, 0.20);
+    /* Alpine Serenity & Luminous Terracotta Harmonized Fills (8% Bloom) */
+    --region-eastern-fill: rgba(234, 88, 12, 0.08);
+    --region-middle-fill: rgba(99, 102, 241, 0.08);
+    --region-northern-fill: rgba(217, 119, 6, 0.08);
+    --region-southern-fill: rgba(225, 29, 72, 0.08);
+    --region-western-fill: rgba(5, 150, 105, 0.08);
 
-    /* Vector Stroke Accents */
-    --region-eastern-stroke: #D97706;
-    --region-middle-stroke: #C026D3;
-    --region-northern-stroke: #1D4ED8;
-    --region-southern-stroke: #DC2626;
+    /* Precise Vector Stroke Accents */
+    --region-eastern-stroke: #EA580C;
+    --region-middle-stroke: #6366F1;
+    --region-northern-stroke: #D97706;
+    --region-southern-stroke: #E11D48;
     --region-western-stroke: #059669;
 
     /* Text Contrast Tokens Over Solid Region Fills */
@@ -68,18 +68,18 @@
     --region-southern-on-solid: #FFFFFF;
     --region-western-on-solid: #111827;
 
-    --ease-japandi: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ease-japandi: cubic-bezier(0.2, 0, 0, 1);
   }
 
   html.light,
   [data-theme="light"] {
-    --bg-primary: #F8F9FA;
+    --bg-primary: #FBFBF9;
     --text-primary: #111827;
-    --surface-canvas: #F8F9FA;
+    --surface-canvas: #FBFBF9;
     --surface-card: #FFFFFF;
-    --surface-card-elevated: #F3F4F6;
-    --surface-subtle: #E5E7EB;
-    --surface-sunken: #EDEDF0;
+    --surface-card-elevated: #F6F6F2;
+    --surface-subtle: #ECECE7;
+    --surface-sunken: #F2F2ED;
     color-scheme: light;
   }
 
@@ -87,38 +87,38 @@
   [data-theme="dark"] {
     color-scheme: dark;
 
-    /* 1. Surface & Canvas Architecture (Tinted Midnight / Elevated Charcoal) */
-    --bg-primary: #0B0F19;
-    --surface-canvas: #0B0F19;
-    --surface-card: #121826;
-    --surface-card-elevated: #1F2937;
-    --surface-subtle: #1E2638;
-    --surface-sunken: #070A10;
+    /* 1. Surface & Canvas Architecture (Deep Slate Charcoal & Obsidian Elevation) */
+    --bg-primary: #0C0E12;
+    --surface-canvas: #0C0E12;
+    --surface-card: #15181E;
+    --surface-card-elevated: #1D212A;
+    --surface-subtle: #232834;
+    --surface-sunken: #08090C;
 
     /* 2. Typography & Content */
     --text-primary: #F9FAFB;       /* Pure Off-White - WCAG AAA */
     --text-secondary: #9CA3AF;     /* Muted Cool Gray */
-    --text-tertiary: #6B7280;      /* Dimmed Metadata */
+    --text-tertiary: #64748B;      /* Dimmed Metadata */
     --text-inverse: #111827;
 
     /* 3. Interface Borders & Structural Dividers */
-    --border-subtle: #1F2937;
-    --border-strong: #374151;
-    --border-focus: #60A5FA;
+    --border-subtle: #1E232E;
+    --border-strong: #2E3545;
+    --border-focus: #38BDF8;
 
     /* 4. Data-Agnostic Chart Utility Tokens */
-    --chart-gridline: rgba(249, 250, 251, 0.08);
+    --chart-gridline: rgba(249, 250, 251, 0.06);
     --chart-axis-line: #4B5563;
     --chart-axis-label: #9CA3AF;
-    --chart-crosshair: #E5E7EB;
-    --chart-brush-bg: rgba(255, 255, 255, 0.05);
-    --chart-brush-handle: #6B7280;
+    --chart-crosshair: #E2E8F0;
+    --chart-brush-bg: rgba(255, 255, 255, 0.04);
+    --chart-brush-handle: #64748B;
 
     /* Universal Tooltip System */
-    --tooltip-bg: #121826;
+    --tooltip-bg: #15181E;
     --tooltip-text-title: #F9FAFB;
-    --tooltip-text-body: #D1D5DB;
-    --tooltip-border: #374151;
+    --tooltip-text-body: #CBD5E1;
+    --tooltip-border: #2E3545;
     --tooltip-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.6), 0 8px 16px -6px rgba(0, 0, 0, 0.4);
 
     /* 5. Exact UN Geoscheme Regional Brand Hexes (Glow & Fill Adjustments) */
@@ -128,18 +128,18 @@
     --region-southern-raw: #FF0A0A;
     --region-western-raw: #00FF00;
 
-    /* Chart Fill Tints */
-    --region-eastern-fill: rgba(255, 165, 0, 0.22);
-    --region-middle-fill: rgba(255, 0, 254, 0.20);
-    --region-northern-fill: rgba(77, 124, 255, 0.24);
-    --region-southern-fill: rgba(255, 10, 10, 0.22);
-    --region-western-fill: rgba(0, 255, 0, 0.20);
+    /* Chart Fill Tints (Dark Mode 12% Bloom) */
+    --region-eastern-fill: rgba(234, 88, 12, 0.12);
+    --region-middle-fill: rgba(99, 102, 241, 0.12);
+    --region-northern-fill: rgba(217, 119, 6, 0.12);
+    --region-southern-fill: rgba(225, 29, 72, 0.12);
+    --region-western-fill: rgba(5, 150, 105, 0.12);
 
     /* Vector Stroke Accents */
-    --region-eastern-stroke: #FBBF24;
-    --region-middle-stroke: #F472B6;
-    --region-northern-stroke: #60A5FA;
-    --region-southern-stroke: #F87171;
+    --region-eastern-stroke: #FB923C;
+    --region-middle-stroke: #818CF8;
+    --region-northern-stroke: #FBBF24;
+    --region-southern-stroke: #FB7185;
     --region-western-stroke: #34D399;
 
     /* Text Contrast Tokens Over Solid Region Fills */
@@ -190,81 +190,81 @@
 }
 
 /* --------------------------------------------------------------------------
-   Theme-Aware Regional Badge & Pill Tokens
+   Theme-Aware Regional Badge & Pill Tokens (Alpine Serenity & Terracotta Bloom)
    -------------------------------------------------------------------------- */
 .badge-eastern {
   background: var(--region-eastern-fill);
-  border: 1px solid var(--region-eastern-stroke);
+  border: 1px solid rgba(234, 88, 12, 0.25);
   color: var(--text-primary);
 }
 .badge-eastern[data-active="true"] {
-  background: var(--region-eastern-raw);
-  color: var(--region-eastern-on-solid);
+  background: #EA580C;
+  color: #FFFFFF;
   font-weight: 700;
-  box-shadow: 0 4px 14px rgba(255, 165, 0, 0.35);
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.25);
 }
 
 .badge-middle {
   background: var(--region-middle-fill);
-  border: 1px solid var(--region-middle-stroke);
+  border: 1px solid rgba(99, 102, 241, 0.25);
   color: var(--text-primary);
 }
 .badge-middle[data-active="true"] {
-  background: var(--region-middle-raw);
-  color: var(--region-middle-on-solid);
+  background: #6366F1;
+  color: #FFFFFF;
   font-weight: 700;
-  box-shadow: 0 4px 14px rgba(255, 0, 254, 0.35);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
 }
 
 .badge-northern {
   background: var(--region-northern-fill);
-  border: 1px solid var(--region-northern-stroke);
+  border: 1px solid rgba(217, 119, 6, 0.25);
   color: var(--text-primary);
 }
 .badge-northern[data-active="true"] {
-  background: var(--region-northern-raw);
-  color: var(--region-northern-on-solid);
+  background: #D97706;
+  color: #FFFFFF;
   font-weight: 700;
-  box-shadow: 0 4px 14px rgba(24, 2, 255, 0.35);
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.25);
 }
 
 .badge-southern {
   background: var(--region-southern-fill);
-  border: 1px solid var(--region-southern-stroke);
+  border: 1px solid rgba(225, 29, 72, 0.25);
   color: var(--text-primary);
 }
 .badge-southern[data-active="true"] {
-  background: var(--region-southern-raw);
-  color: var(--region-southern-on-solid);
+  background: #E11D48;
+  color: #FFFFFF;
   font-weight: 700;
-  box-shadow: 0 4px 14px rgba(255, 10, 10, 0.35);
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.25);
 }
 
 .badge-western {
   background: var(--region-western-fill);
-  border: 1px solid var(--region-western-stroke);
+  border: 1px solid rgba(5, 150, 105, 0.25);
   color: var(--text-primary);
 }
 .badge-western[data-active="true"] {
-  background: var(--region-western-raw);
-  color: var(--region-western-on-solid);
+  background: #059669;
+  color: #FFFFFF;
   font-weight: 700;
-  box-shadow: 0 4px 14px rgba(0, 255, 0, 0.30);
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.25);
 }
 
-/* Universal Dashboard Card Container */
+/* Universal Dashboard Card Container (Swiss Architectural Elevation) */
 .dashboard-card {
   background: var(--surface-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: var(--density-card-padding, 1.25rem);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .dashboard-card:hover {
   border-color: var(--border-strong);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
 }
 
 /* --------------------------------------------------------------------------
