@@ -442,3 +442,107 @@ export const MASTER_REPORT_SECTIONS: MasterReportSection[] = [
     ]
   }
 ];
+
+// 7. Compounding Structural Epochs Trajectory Dataset (Fig. 01)
+export interface CompoundingStructuralEpoch {
+  id: string;
+  epochLabel: string;
+  timeRange: string;
+  title: string;
+  gainsFromTradePct: number;
+  socialTrustScore: number;
+  sovereignAgencyPct: number;
+  extractivePressurePct: number;
+  economicIndex: number;
+  primaryMechanism: string;
+  keyScholarsOrAccord: string;
+  accentColor: string;
+}
+
+export const COMPOUNDING_STRUCTURAL_EPOCHS: CompoundingStructuralEpoch[] = [
+  {
+    id: 'rao-deep-time',
+    epochLabel: '150k–60k BP',
+    timeRange: '150,000 – 60,000 BP',
+    title: 'Recent African Origin (RAO) Diversity Baseline',
+    gainsFromTradePct: 100,
+    socialTrustScore: 88,
+    sovereignAgencyPct: 100,
+    extractivePressurePct: 0,
+    economicIndex: 90,
+    primaryMechanism: 'Cradle of modern Homo sapiens; highest global genetic diversity (He ~0.77) provides deep baseline for cognitive heterogeneity prior to out-of-Africa serial founder migrations.',
+    keyScholarsOrAccord: 'Ashraf & Galor (2013), Bustamante et al. (2013)',
+    accentColor: '#9E6A2E'
+  },
+  {
+    id: 'pre-colonial-polities',
+    epochLabel: '1000–1500 CE',
+    timeRange: '1000 – 1500 CE',
+    title: 'Pre-Colonial Consultative Decentralization',
+    gainsFromTradePct: 94,
+    socialTrustScore: 84,
+    sovereignAgencyPct: 96,
+    extractivePressurePct: 5,
+    economicIndex: 86,
+    primaryMechanism: 'Over 98.2% of 45,000 polities operate via decentralized kinship councils, village assemblies, and age-set checks preventing despotic autocracy and preserving peasant trade surplus.',
+    keyScholarsOrAccord: 'Henn & Robinson (2024)',
+    accentColor: '#B87333'
+  },
+  {
+    id: 'slave-trades',
+    epochLabel: '1400–1900 CE',
+    timeRange: '1400 – 1900 CE',
+    title: 'The Quadruple Slave Trades & Mistrust Scar',
+    gainsFromTradePct: 42,
+    socialTrustScore: 34,
+    sovereignAgencyPct: 40,
+    extractivePressurePct: 75,
+    economicIndex: 45,
+    primaryMechanism: '18M+ individuals exported across Atlantic, Saharan, Red Sea, and Indian Ocean routes. Pervasive village kidnappings collapse baseline interpersonal trust and shatter state structures.',
+    keyScholarsOrAccord: 'Nunn (QJE 2008), Nunn & Wantchekon (AER 2011)',
+    accentColor: '#A64E3E'
+  },
+  {
+    id: 'berlin-monopsony',
+    epochLabel: '1884–1960 CE',
+    timeRange: '1884 – 1960 CE',
+    title: 'Berlin Partition & Colonial Monopsony Cartels',
+    gainsFromTradePct: 15,
+    socialTrustScore: 28,
+    sovereignAgencyPct: 6,
+    extractivePressurePct: 88,
+    economicIndex: 32,
+    primaryMechanism: 'Imposition of autocratic Indirect Rule ("warrant chiefs") and concessionaire trading syndicates (CFAO, SCOA, UAC) extracting >60–85% of African peasant Gains from Trade.',
+    keyScholarsOrAccord: 'Tadei (EREH 2020), Acemoglu et al. (AER 2001)',
+    accentColor: '#3B5B75'
+  },
+  {
+    id: 'post-colonial-path',
+    epochLabel: '1960–2020 CE',
+    timeRange: '1960 – 2020 CE',
+    title: 'Post-Colonial Marketing Boards & Urban Bias',
+    gainsFromTradePct: 48,
+    socialTrustScore: 46,
+    sovereignAgencyPct: 64,
+    extractivePressurePct: 56,
+    economicIndex: 52,
+    primaryMechanism: 'State monopolies inherit colonial crop monopsonies, suppressing rural prices to fund urban bureaucracies, compounded by partitioned ethnic border frictions.',
+    keyScholarsOrAccord: 'Bates (1981), Michalopoulos & Papaioannou (2016)',
+    accentColor: '#854972'
+  },
+  {
+    id: 'contemporary-ascent',
+    epochLabel: '2025–2026+ CE',
+    timeRange: '2025 – 2026+ CE',
+    title: 'Multilateral Sovereign Ascent & Rule-Making Power',
+    gainsFromTradePct: 82,
+    socialTrustScore: 70,
+    sovereignAgencyPct: 90,
+    extractivePressurePct: 22,
+    economicIndex: 78,
+    primaryMechanism: 'Transition from aid-seeking to rule-making: UN General Assembly Resolution (123-3), AU-CARICOM 19-Point Accra Plan, Bridgetown 3.0, and G20 sovereign reassertion.',
+    keyScholarsOrAccord: 'UN GA Res. (Mar 2026), Mottley (2026), AU-CARICOM',
+    accentColor: '#3F6955'
+  }
+];
+
