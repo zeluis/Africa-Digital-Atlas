@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   MASTER_REPORT_SECTIONS,
   GEONOMIC_DIVERSITY_GRADIENT,
@@ -33,7 +33,12 @@ import {
   Flame,
   ArrowDownRight,
   Share2,
-  Download
+  Download,
+  Calendar,
+  Clock,
+  Copy,
+  Check,
+  Anchor
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -48,8 +53,7 @@ import {
   Tooltip,
   CartesianGrid,
   Legend,
-  ComposedChart,
-  Scatter
+  ComposedChart
 } from 'recharts';
 
 interface AfricanDevelopmentMasterReportViewProps {
@@ -63,13 +67,13 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
 }) => {
   const [activeSectionId, setActiveSectionId] = useState<string>('executive_summary');
   const [activeCommodityIndex, setActiveCommodityIndex] = useState<number>(0);
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [fontSizeClass, setFontSizeClass] = useState<'normal' | 'large'>('normal');
+  const [copiedCitation, setCopiedCitation] = useState<boolean>(false);
 
-  const activeSection = MASTER_REPORT_SECTIONS.find(s => s.id === activeSectionId) || MASTER_REPORT_SECTIONS[0];
   const activeCommodity = TADEI_MONOPSONY_CASE_STUDIES[activeCommodityIndex];
 
   // Helper for rendering icons
-  const getSectionIcon = (iconName: string, className: string = 'w-5 h-5') => {
+  const getSectionIcon = (iconName: string, className: string = 'w-3.5 h-3.5') => {
     switch (iconName) {
       case 'FileText': return <FileText className={className} />;
       case 'Dna': return <Dna className={className} />;
@@ -82,692 +86,652 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
     }
   };
 
+  // Scroll listener for active section indicator
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 220;
+      for (const section of MASTER_REPORT_SECTIONS) {
+        const element = document.getElementById(`sec-${section.id}`);
+        if (element) {
+          const top = element.offsetTop;
+          const height = element.offsetHeight;
+          if (scrollPosition >= top && scrollPosition < top + height) {
+            setActiveSectionId(section.id);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToSection = (id: string) => {
+    setActiveSectionId(id);
+    const element = document.getElementById(`sec-${id}`);
+    if (element) {
+      const yOffset = -90;
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
+
+  const handleCopyCitation = () => {
+    const citationText = `Acemoglu, D., Nunn, N., & Robinson, J. A. (2026). The Structural & Evolutionary Foundations of African Development: An Interdisciplinary Synthesis. Global Economic History Dossier, 16(1), 1-84.`;
+    navigator.clipboard.writeText(citationText);
+    setCopiedCitation(true);
+    setTimeout(() => setCopiedCitation(false), 2500);
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-amber-500/30 selection:text-amber-200">
-      {/* Top Banner / Breadcrumb */}
-      <header className="border-b border-slate-800 bg-slate-900/90 backdrop-blur-md sticky top-0 z-30 px-4 lg:px-8 py-3.5">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
-              <Scale className="w-5 h-5" />
+    <div className={`report-frame max-w-[1440px] mx-auto border-x border-[#D7D6CD] dark:border-[#2D2E2A] px-4 sm:px-6 lg:px-10 py-8 transition-colors duration-300 ${fontSizeClass === 'large' ? 'text-[1.125rem]' : 'text-[1.063rem]'}`} id="african-development-master-report-view">
+      
+      {/* 1. ASYMMETRIC EDITORIAL HEADER BLOCK */}
+      <header className="border-b-2 border-[#181816] dark:border-[#E6E3DB] pb-8 mb-10 relative">
+        <div className="space-y-4">
+          
+          {/* Top Metadata Kicker */}
+          <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono uppercase tracking-[0.15em] text-[#5C5C55] dark:text-[#A8A499] font-semibold">
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={onNavigateToAtlas}
+                className="hover:underline text-[#343430] dark:text-[#E6E3DB] flex items-center gap-1.5 cursor-pointer transition-colors"
+              >
+                <Compass className="w-3.5 h-3.5 text-[#D98200]" />
+                <span>Atlantic Slave Trade Atlas</span>
+              </button>
+              <span>//</span>
+              <span>Research Report // Vol. 16</span>
+              <span>//</span>
+              <span>Comparative Development</span>
             </div>
-            <div>
-              <div className="flex items-center gap-2 text-xs font-mono text-amber-400 font-semibold tracking-wider uppercase">
-                <button 
-                  onClick={onNavigateToAtlas}
-                  className="hover:underline text-slate-400 hover:text-emerald-400 transition-colors cursor-pointer"
-                >
-                  Atlantic Slave Trade
-                </button>
-                <span>/</span>
-                <span>Editorial Master Report</span>
-                <span>•</span>
-                <span className="text-slate-400">August 2026</span>
-              </div>
-              <h1 className="text-lg font-bold text-slate-100 tracking-tight flex items-center gap-2">
-                The Structural & Evolutionary Foundations of African Development
-              </h1>
+
+            {/* Quick Actions Strip */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setFontSizeClass(prev => prev === 'normal' ? 'large' : 'normal')}
+                className="px-3 py-1 rounded-lg border border-[#D7D6CD] dark:border-[#2D2E2A] bg-transparent hover:bg-[#181816] hover:text-[#FAFAF6] dark:hover:bg-[#E6E3DB] dark:hover:text-[#181816] text-[#181816] dark:text-[#E6E3DB] text-[0.75rem] font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                title="Toggle Reading Font Size"
+              >
+                Font: {fontSizeClass === 'normal' ? 'Standard' : 'Enlarged'}
+              </button>
+              <button
+                onClick={handleCopyCitation}
+                className="px-3 py-1 rounded-lg border border-[#D7D6CD] dark:border-[#2D2E2A] bg-transparent hover:bg-[#181816] hover:text-[#FAFAF6] dark:hover:bg-[#E6E3DB] dark:hover:text-[#181816] text-[#181816] dark:text-[#E6E3DB] text-[0.75rem] font-mono uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer"
+              >
+                {copiedCitation ? <Check className="w-3.5 h-3.5 text-[#009D00] dark:text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedCitation ? 'Copied Cite' : 'Cite Report'}</span>
+              </button>
             </div>
           </div>
 
-          {/* Key Metrics Quick Ribbon */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 text-xs">
-            <div className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center gap-2 whitespace-nowrap">
-              <span className="text-slate-400">RAO Baseline:</span>
-              <span className="font-mono font-bold text-amber-400">~150 kya Coalescence</span>
+          {/* Headline & Subtitle */}
+          <div className="space-y-3 pt-2">
+            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[#181816] dark:text-[#E6E3DB] leading-[1.1] max-w-5xl">
+              The Structural & Evolutionary Foundations of African Development
+            </h1>
+            <p className="font-sans font-light text-lg sm:text-xl text-[#343430] dark:text-[#CCC8BC] leading-relaxed max-w-4xl">
+              An Interdisciplinary Master Treatise Uniting Macro-Geonomic, Historical-Institutional, and Contemporary Geopolitical Frontiers
+            </p>
+          </div>
+
+          {/* Editorial Meta Strip */}
+          <div className="pt-4 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-[#5C5C55] dark:text-[#A8A499] border-t border-[#D7D6CD] dark:border-[#2D2E2A]">
+            <div className="flex flex-wrap items-center gap-6">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-3.5 h-3.5" />
+                <span>Published August 2026</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5" />
+                <span>28 min read • 6,800 words</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Award className="w-3.5 h-3.5 text-[#D98200] dark:text-[#FFB84A]" />
+                <span>Econometric & Archival Synthesis (AER, QJE, UN GA Records)</span>
+              </div>
             </div>
-            <div className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center gap-2 whitespace-nowrap">
-              <span className="text-slate-400">Slave Extraction:</span>
-              <span className="font-mono font-bold text-rose-400">18M+ Individuals</span>
-            </div>
-            <div className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center gap-2 whitespace-nowrap">
-              <span className="text-slate-400">Pre-Colonial Autonomy:</span>
-              <span className="font-mono font-bold text-emerald-400">98.2% Decentralized</span>
-            </div>
-            <div className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/60 flex items-center gap-2 whitespace-nowrap">
-              <span className="text-slate-400">UN Slavery Res.:</span>
-              <span className="font-mono font-bold text-indigo-400">123-3 (Mar 2026)</span>
+            <div className="text-[11px]">
+              Series: <span className="underline font-medium">Comparative Institutional History & Geopolitics</span>
             </div>
           </div>
+
         </div>
       </header>
 
-      {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8">
-        {/* Hero Abstract Card */}
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/40 border border-slate-800 shadow-2xl p-6 lg:p-8">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="relative z-10 space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Interdisciplinary Master Treatise (3 Compounding Epochs)</span>
-            </div>
-            
-            <h2 className="text-2xl lg:text-3xl font-extrabold text-white tracking-tight leading-tight">
-              A Comprehensive Synthesis of Macro-Geonomic, Historical-Institutional, and Contemporary Geopolitical Paradigms
-            </h2>
-
-            <p className="text-slate-300 text-sm lg:text-base leading-relaxed max-w-5xl">
-              This master synthesis systematically deconstructs reductionist and ahistorical narratives of Sub-Saharan African underdevelopment by uniting three major academic frontiers: (1) <strong>The Macro-Geonomic Frontier</strong> (Recent African Origin, Serial Founder Effect, and the Ashraf-Galor diversity curve); (2) <strong>The Historical-Institutional Frontier</strong> (Nathan Nunn’s slave trade mistrust scar, Acemoglu-Robinson settler mortality, Henn-Robinson pre-colonial governance, and Tadei’s colonial trade monopsony price-gap models); and (3) <strong>The Contemporary Geopolitical Frontier</strong> (the landmark March 25, 2026 UN General Assembly Slavery Resolution, the AU-CARICOM Accra Plan, the Bridgetown Initiative 3.0, and the Loss & Damage liquidity crisis).
+      {/* 2. EXECUTIVE ABSTRACT & QUANTITATIVE INDICATORS HERO BLOCK */}
+      <section className="space-y-6 mb-12">
+        {/* Executive Abstract Hero Card - Japandi Insight Style (#F5F3EC + 4px Accent) */}
+        <div className="bg-[#F5F3EC] text-[#181816] dark:bg-[#1B1D19] dark:text-[#E6E3DB] border-l-4 border-l-[#D98200] border-y border-r border-[#D7D6CD] dark:border-[#2D2E2A] p-6 sm:p-8 rounded-r-2xl shadow-xs">
+          <div className="max-w-4xl space-y-3">
+            <p className="font-serif text-lg sm:text-xl md:text-2xl text-[#181816] dark:text-[#E6E3DB] leading-relaxed italic">
+              “This master synthesis systematically deconstructs reductionist and ahistorical narratives of Sub-Saharan African underdevelopment by uniting three major academic frontiers: the Macro-Geonomic baseline, the compounding Historical-Institutional traumas, and the decisive 2025–2026 Contemporary Geopolitical shifts.”
             </p>
+            <p className="font-sans font-light text-sm sm:text-base text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed pt-1">
+              From the deep-time <strong>Serial Founder Effect</strong> and the <strong>Ashraf-Galor diversity curve</strong>, to Nathan Nunn’s <strong>intergenerational mistrust scar</strong>, Acemoglu-Robinson settler mortality, and Federico Tadei’s <strong>colonial monopsony price gaps</strong> (extracting &gt;60–85% of African peasant gains from trade), to the landmark <strong>March 25, 2026 UN General Assembly Slavery Resolution (123-3)</strong>.
+            </p>
+          </div>
+        </div>
 
-            <div className="pt-2 flex flex-wrap gap-4 text-xs text-slate-400 border-t border-slate-800/80">
-              <div><strong className="text-slate-200">Authored for:</strong> Gemini Research & Historical Synthesis Series</div>
-              <div>•</div>
-              <div><strong className="text-slate-200">Publication Date:</strong> August 25, 2026</div>
-              <div>•</div>
-              <div><strong className="text-slate-200">Methodology:</strong> Peer-Reviewed Econometrics, Genomic Anthropology, Archival Monopsony Records & UN Diplomatic Transcripts</div>
+        {/* Harmonious 1-Row Quantitative Benchmarks (Regional Calm & Pale Surfaces) */}
+        <div className="space-y-3 pt-1">
+          <div className="flex flex-nowrap items-stretch gap-2.5 overflow-x-auto no-scrollbar pb-1 w-full">
+            {/* Pill 1: RAO Baseline (Eastern Africa - Calm #FFF8ED / Pale #FFF7E8, Accent #D98200) */}
+            <div className="flex-1 min-w-[200px] p-3 sm:p-3.5 rounded-xl bg-[#FFF8ED] dark:bg-amber-950/20 border border-[#D7D6CD] dark:border-zinc-800 flex flex-col justify-between shadow-2xs hover:border-[#D98200]/40 transition-all border-l-3 border-l-[#D98200]">
+              <div className="flex items-center justify-between gap-1.5 pb-1.5 border-b border-[#D7D6CD]/60 dark:border-zinc-800">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#D98200] dark:text-[#FFB84A]">RAO Baseline</span>
+                <span className="font-serif font-bold text-xs sm:text-sm text-[#181816] dark:text-[#E6E3DB]">~150 kya</span>
+              </div>
+              <p className="text-xs text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed mt-2 font-light tracking-tight">
+                Mitochondrial Eve and Y-Chromosomal Adam coalesce in East Africa. Africa has the world’s highest genetic diversity.
+              </p>
+            </div>
+
+            {/* Pill 2: Victims (Southern Africa - Calm #FFF6F5 / Pale #FFF5F4, Accent #D90000) */}
+            <div className="flex-1 min-w-[200px] p-3 sm:p-3.5 rounded-xl bg-[#FFF6F5] dark:bg-rose-950/20 border border-[#D7D6CD] dark:border-zinc-800 flex flex-col justify-between shadow-2xs hover:border-[#D90000]/40 transition-all border-l-3 border-l-[#D90000]">
+              <div className="flex items-center justify-between gap-1.5 pb-1.5 border-b border-[#D7D6CD]/60 dark:border-zinc-800">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#D90000] dark:text-[#FF6666]">Victims</span>
+                <span className="font-serif font-bold text-xs sm:text-sm text-[#D90000] dark:text-[#FF6666]">18M+</span>
+              </div>
+              <p className="text-xs text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed mt-2 font-light tracking-tight">
+                Depletes demographics and embeds the intergenerational “Mistrust Scar.”
+              </p>
+            </div>
+
+            {/* Pill 3: Pre-Colonial Autonomy (Middle Africa - Calm #FFF7FF / Pale #FFF5FF, Accent #D600D5) */}
+            <div className="flex-1 min-w-[200px] p-3 sm:p-3.5 rounded-xl bg-[#FFF7FF] dark:bg-fuchsia-950/20 border border-[#D7D6CD] dark:border-zinc-800 flex flex-col justify-between shadow-2xs hover:border-[#D600D5]/40 transition-all border-l-3 border-l-[#D600D5]">
+              <div className="flex items-center justify-between gap-1.5 pb-1.5 border-b border-[#D7D6CD]/60 dark:border-zinc-800">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#D600D5] dark:text-[#FF55FF]">Autonomy</span>
+                <span className="font-serif font-bold text-xs sm:text-sm text-[#181816] dark:text-[#E6E3DB]">98.2%</span>
+              </div>
+              <p className="text-xs text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed mt-2 font-light tracking-tight">
+                45,000 decentralized polities subjugated under autocratic indirect colonial rule.
+              </p>
+            </div>
+
+            {/* Pill 4: Monopsony (Northern Africa - Calm #F5F5FF / Pale #F3F4FF, Accent #1600D9) */}
+            <div className="flex-1 min-w-[200px] p-3 sm:p-3.5 rounded-xl bg-[#F5F5FF] dark:bg-blue-950/20 border border-[#D7D6CD] dark:border-zinc-800 flex flex-col justify-between shadow-2xs hover:border-[#1600D9]/40 transition-all border-l-3 border-l-[#1600D9]">
+              <div className="flex items-center justify-between gap-1.5 pb-1.5 border-b border-[#D7D6CD]/60 dark:border-zinc-800">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#1600D9] dark:text-[#7770FF]">Monopsony</span>
+                <span className="font-serif font-bold text-xs sm:text-sm text-[#1600D9] dark:text-[#7770FF]">&gt;85% GFT</span>
+              </div>
+              <p className="text-xs text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed mt-2 font-light tracking-tight">
+                Colonial trading cartels extract up to 85% of peasant gains from trade.
+              </p>
+            </div>
+
+            {/* Pill 5: UN GA (Western Africa - Calm #F4FFF3 / Pale #F3FAF1, Accent #009D00) */}
+            <div className="flex-1 min-w-[200px] p-3 sm:p-3.5 rounded-xl bg-[#F4FFF3] dark:bg-emerald-950/20 border border-[#D7D6CD] dark:border-zinc-800 flex flex-col justify-between shadow-2xs hover:border-[#009D00]/40 transition-all border-l-3 border-l-[#009D00]">
+              <div className="flex items-center justify-between gap-1.5 pb-1.5 border-b border-[#D7D6CD]/60 dark:border-zinc-800">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#009D00] dark:text-[#4DFF4D]">UN GA 2026</span>
+                <span className="font-serif font-bold text-xs sm:text-sm text-[#009D00] dark:text-[#4DFF4D]">123–3</span>
+              </div>
+              <p className="text-xs text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed mt-2 font-light tracking-tight">
+                The landmark March 25, 2026, UN General Assembly Slavery Resolution.
+              </p>
             </div>
           </div>
-        </section>
 
-        {/* Section Navigation Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-800 scrollbar-none">
+          {/* Prominent & Engaging Companion Volume Action Bar (Warm Terracotta Tone) */}
+          <div className="flex flex-wrap items-center justify-between gap-2.5 pt-2 px-0.5">
+            <div className="flex items-center gap-2 text-[11px] text-[#5C5C55] dark:text-[#A8A499] font-mono">
+              <span className="w-2 h-2 rounded-full bg-[#009D00] dark:bg-emerald-400 animate-pulse"></span>
+              <span className="tracking-tight font-medium">Interdisciplinary Research Series</span>
+            </div>
+            <button
+              onClick={onNavigateToMolecular}
+              className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[#b85d19] hover:bg-[#a64f12] text-amber-50 dark:bg-[#e29b58] dark:hover:bg-[#d68e4b] dark:text-[#211102] font-sans text-xs font-semibold shadow-xs hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer group"
+            >
+              <div className="w-5 h-5 rounded-lg bg-white/20 dark:bg-black/15 flex items-center justify-center shrink-0">
+                <Dna className="w-3.5 h-3.5 text-amber-100 dark:text-[#211102] group-hover:rotate-12 transition-transform" />
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="text-[9px] font-mono uppercase tracking-wider text-amber-100/90 dark:text-[#211102]/85 font-bold leading-none">Companion Article</span>
+                <span className="text-xs font-semibold tracking-tight leading-tight">Molecular & Material Legacies</span>
+              </div>
+              <ArrowRight className="w-3.5 h-3.5 text-amber-100 dark:text-[#211102] group-hover:translate-x-1 transition-transform ml-0.5 shrink-0" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. SECTION NAVIGATION SELECTOR BAR (FULL WIDTH, BG #F5F3EC, STICKY BELOW TOPBAR top-16) */}
+      <div className="mb-16 sticky top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-10 px-4 sm:px-6 lg:px-10 py-3.5 bg-[#F5F3EC] dark:bg-[#1A1D19] border-y border-[#D7D6CD] dark:border-[#2D2E2A] shadow-xs transition-colors duration-200">
+        <div className="flex flex-wrap items-center justify-center gap-2 max-w-5xl mx-auto">
           {MASTER_REPORT_SECTIONS.map((sec) => {
             const isActive = activeSectionId === sec.id;
             return (
               <button
                 key={sec.id}
-                onClick={() => setActiveSectionId(sec.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                onClick={() => scrollToSection(sec.id)}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20 font-bold'
-                    : 'bg-slate-900/80 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800'
+                    ? 'bg-[#181816] text-[#FAFAF6] dark:bg-[#E6E3DB] dark:text-[#181816] shadow-xs font-bold'
+                    : 'bg-[#FFFFFF] dark:bg-[#141512] text-[#343430] dark:text-[#A8A499] hover:text-[#181816] dark:hover:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] hover:bg-[#ECEAE1] dark:hover:bg-[#20231F] font-medium'
                 }`}
               >
-                {getSectionIcon(sec.iconName, 'w-4 h-4')}
+                {getSectionIcon(sec.iconName, 'w-3.5 h-3.5 shrink-0')}
                 <span>{sec.shortTitle}</span>
               </button>
             );
           })}
         </div>
+      </div>
 
-        {/* Active Section Content Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/60 border border-slate-800/80 p-5 rounded-2xl">
-          <div className="space-y-1">
-            <div className="text-xs font-mono font-bold text-amber-400 flex items-center gap-2">
-              <span>Section {activeSection.number}</span>
-              <span>—</span>
-              <span className="text-slate-400">{activeSection.subtitle}</span>
+      {/* 4. FULL CONTINUOUS EDITORIAL READING ENGINE (ALL SECTIONS DISPLAYED IN FULL) */}
+      <main className="max-w-4xl mx-auto space-y-28 sm:space-y-36 text-left">
+          
+          {/* ========================================================= */}
+          {/* CHAPTER 1: EXECUTIVE SUMMARY & COMPOUNDING TRAJECTORY */}
+          {/* ========================================================= */}
+          <section id="sec-executive_summary" className="space-y-8 pt-4 pb-6">
+            <div className="space-y-3 border-b border-[#D7D6CD] dark:border-[#2D2E2A] pb-6 mb-8">
+              <span className="text-xs font-mono font-semibold uppercase tracking-[0.1em] text-[#D98200] dark:text-[#FFB84A] block">
+                Chapter 01 // Executive Overview & Epistemological Framework
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#181816] dark:text-[#E6E3DB] tracking-tight leading-snug">
+                Executive Synthesis & Compounding Epochs
+              </h2>
+              <p className="font-sans font-light text-sm sm:text-base text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed pt-1">
+                A unified econometric and historical framework deconstructing African comparative development across deep-time, colonial monopsonies, and contemporary geopolitical reform.
+              </p>
             </div>
-            <h3 className="text-xl font-bold text-white">{activeSection.title}</h3>
-            <p className="text-xs text-slate-300 max-w-4xl">{activeSection.summary}</p>
-          </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="px-3 py-1 rounded-lg bg-slate-800 text-slate-300 text-xs font-mono border border-slate-700">
-              AER / QJE / UN Grounded
-            </span>
-          </div>
-        </div>
-
-        {/* ========================================================= */}
-        {/* SECTION I: EXECUTIVE SUMMARY */}
-        {/* ========================================================= */}
-        {activeSectionId === 'executive_summary' && (
-          <div className="space-y-8 animate-fadeIn">
-            {/* Core Theses Bento Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
-                <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 w-fit border border-amber-500/20">
-                  <Dna className="w-5 h-5" />
-                </div>
-                <h4 className="text-base font-bold text-slate-100">1. The Macro-Geonomic Frontier</h4>
-                <p className="text-xs text-slate-300 leading-relaxed">
+            {/* 3 Core Theses - Japandi Insight Surface #F5F3EC */}
+            <div className="space-y-4">
+              <div className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#1B1D19] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#D98200] space-y-2">
+                <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB] block">1. The Macro-Geonomic Frontier</span>
+                <p className="text-xs sm:text-sm text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
                   Traces the prehistoric <em>Recent African Origin</em> (RAO) migration gradient. The Serial Founder Effect caused genetic diversity to drop monotonically with distance from East Africa, establishing the <strong>Ashraf-Galor diversity-development trade-off</strong> between cognitive innovation benefits and social coordination friction.
                 </p>
-                <div className="pt-2 text-xs font-mono text-amber-400">
-                  Ref: Ashraf & Galor (AER 2013)
-                </div>
+                <span className="text-[11px] font-mono text-[#D98200] dark:text-[#FFB84A] block font-medium">Ref: Ashraf & Galor (AER 2013)</span>
               </div>
 
-              <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
-                <div className="p-2.5 rounded-xl bg-rose-500/10 text-rose-400 w-fit border border-rose-500/20">
-                  <Scale className="w-5 h-5" />
-                </div>
-                <h4 className="text-base font-bold text-slate-100">2. Historical-Institutional Traumas</h4>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Quantifies the four compounding historical shocks: the <strong>18M+ slave trade drainage</strong> that scarred interpersonal trust (Nunn & Wantchekon), <strong>Acemoglu-Robinson settler mortality</strong>, <strong>Henn-Robinson pre-colonial decentralization destruction</strong>, and <strong>Tadei’s colonial monopsony price gaps</strong> extracting &gt;60–85% of African gains from trade.
+              <div className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#1B1D19] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#D90000] space-y-2">
+                <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB] block">2. Historical-Institutional Traumas</span>
+                <p className="text-xs sm:text-sm text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
+                  Quantifies four compounding historical shocks: the <strong>18M+ slave trade drainage</strong> that scarred interpersonal trust (Nunn & Wantchekon), <strong>Acemoglu-Robinson settler mortality</strong>, <strong>Henn-Robinson pre-colonial decentralization destruction</strong>, and <strong>Tadei’s colonial monopsony price gaps</strong> extracting &gt;60–85% of African peasant gains from trade.
                 </p>
-                <div className="pt-2 text-xs font-mono text-rose-400">
-                  Ref: Nunn (2008), Tadei (2020), Henn (2024)
-                </div>
+                <span className="text-[11px] font-mono text-[#D90000] dark:text-[#FF6666] block font-medium">Ref: Nunn (2008), Tadei (2020), Henn & Robinson (2024)</span>
               </div>
 
-              <div className="p-6 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
-                <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 w-fit border border-indigo-500/20">
-                  <Globe2 className="w-5 h-5" />
-                </div>
-                <h4 className="text-base font-bold text-slate-100">3. Contemporary Geopolitical Battles</h4>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Details the 2025–2026 transition from "requesting development aid" to "demanding structural rule-making power": the <strong>March 25, 2026 UN General Assembly Slavery Resolution</strong>, the <strong>AU-CARICOM Joint 19-Point Accra Plan</strong>, <strong>Bridgetown 3.0</strong>, and <strong>South Africa's historic G20 Presidency</strong>.
+              <div className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#1B1D19] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#009D00] space-y-2">
+                <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB] block">3. Contemporary Geopolitical Battles</span>
+                <p className="text-xs sm:text-sm text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
+                  Details the 2025–2026 transition from "requesting development aid" to "demanding structural rule-making power": the <strong>March 25, 2026 UN General Assembly Slavery Resolution (123-3)</strong>, the <strong>AU-CARICOM Joint 19-Point Accra Plan</strong>, <strong>Bridgetown 3.0</strong>, and <strong>South Africa's G20 Leadership</strong>.
                 </p>
-                <div className="pt-2 text-xs font-mono text-indigo-400">
-                  Ref: UN GA Res. (Mar 2026), Mottley (2026)
-                </div>
+                <span className="text-[11px] font-mono text-[#009D00] dark:text-[#4DFF4D] block font-medium">Ref: UN GA Res. (Mar 2026), Mottley (2026)</span>
               </div>
             </div>
 
             {/* Synthesized Compounding Shocks Timeline Visualizer */}
-            <div className="p-6 lg:p-8 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-4">
-                <div>
-                  <h4 className="text-base font-bold text-white flex items-center gap-2">
-                    <Layers className="w-5 h-5 text-amber-400" />
-                    <span>The Compounding Trajectory of African Comparative Development</span>
-                  </h4>
-                  <p className="text-xs text-slate-400 mt-1">
-                    How evolutionary diversity baselines, predatory extractions, and institutional persistence created modern structural outcomes.
-                  </p>
-                </div>
-                <span className="text-xs font-mono bg-amber-500/10 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full w-fit">
-                  Deep Time to 2026
+            <figure className="my-8 pb-4 border-b border-[#D7D6CD] dark:border-[#2D2E2A]">
+              <figcaption className="mb-4">
+                <span className="text-[0.75rem] font-mono uppercase tracking-[0.1em] text-[#D98200] dark:text-[#FFB84A] font-semibold block mb-1">
+                  Fig. 01 // Structural Trajectory
                 </span>
-              </div>
+                <h4 className="font-serif text-xl font-normal text-[#181816] dark:text-[#E6E3DB] mb-1">
+                  Compounding Epochs of African Comparative Development
+                </h4>
+                <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] leading-relaxed">
+                  How deep-time diversity baselines, predatory extractions, and institutional persistence created modern structural outcomes.
+                </p>
+              </figcaption>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
-                  <div className="text-xs font-mono text-amber-400 font-bold">150,000 – 60,000 BP</div>
-                  <h5 className="text-sm font-bold text-slate-200">Recent African Origin (RAO)</h5>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+              {/* Key Findings in Regional Pale Tones */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="p-4 rounded-xl bg-[#FFF7E8] text-[#181816] dark:bg-amber-950/20 dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-zinc-800 space-y-1.5 border-l-3 border-l-[#D98200]">
+                  <span className="font-mono text-[10px] text-[#D98200] dark:text-[#FFB84A] font-bold block">150,000 – 60,000 BP</span>
+                  <span className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB] block">Recent African Origin (RAO)</span>
+                  <p className="text-xs text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
                     Mitochondrial Eve and Y-Chromosomal Adam coalesce in East Africa. Serial Founder Effect leaves Sub-Saharan Africa with the world’s highest genetic diversity.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
-                  <div className="text-xs font-mono text-rose-400 font-bold">1400 – 1900 CE</div>
-                  <h5 className="text-sm font-bold text-slate-200">The Quadruple Slave Trades</h5>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                <div className="p-4 rounded-xl bg-[#FFF5F4] text-[#181816] dark:bg-rose-950/20 dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-zinc-800 space-y-1.5 border-l-3 border-l-[#D90000]">
+                  <span className="font-mono text-[10px] text-[#D90000] dark:text-[#FF6666] font-bold block">1400 – 1900 CE</span>
+                  <span className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB] block">The Quadruple Slave Trades</span>
+                  <p className="text-xs text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
                     18M+ individuals exported across Atlantic, Saharan, Red Sea, and Indian Ocean routes. Depletes demographics and embeds the intergenerational "Mistrust Scar".
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
-                  <div className="text-xs font-mono text-orange-400 font-bold">1884 – 1960 CE</div>
-                  <h5 className="text-sm font-bold text-slate-200">Berlin Partition & Monopsony</h5>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                <div className="p-4 rounded-xl bg-[#F3F4FF] text-[#181816] dark:bg-blue-950/20 dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-zinc-800 space-y-1.5 border-l-3 border-l-[#1600D9]">
+                  <span className="font-mono text-[10px] text-[#1600D9] dark:text-[#7770FF] font-bold block">1884 – 1960 CE</span>
+                  <span className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB] block">Berlin Partition & Monopsony</span>
+                  <p className="text-xs text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
                     45,000 decentralized polities subjugated under autocratic Indirect Rule. Colonial trading cartels extract up to 85% of peasant Gains from Trade.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
-                  <div className="text-xs font-mono text-emerald-400 font-bold">1960 – 2026 CE</div>
-                  <h5 className="text-sm font-bold text-slate-200">Path Persistence to Global Ascent</h5>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                <div className="p-4 rounded-xl bg-[#F3FAF1] text-[#181816] dark:bg-emerald-950/20 dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-zinc-800 space-y-1.5 border-l-3 border-l-[#009D00]">
+                  <span className="font-mono text-[10px] text-[#009D00] dark:text-[#4DFF4D] font-bold block">1960 – 2026 CE</span>
+                  <span className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB] block">Path Persistence to Global Ascent</span>
+                  <p className="text-xs text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
                     State marketing boards perpetuate urban bias. By 2026, AU and CARICOM mobilize UN resolutions, Bridgetown 3.0, and G20 leadership for structural reform.
                   </p>
                 </div>
               </div>
+            </figure>
+          </section>
+
+          {/* ========================================================= */}
+          {/* CHAPTER 2: MACRO-GEONOMICS (RAO & ASHRAF-GALOR) */}
+          {/* ========================================================= */}
+          <section id="sec-biogeographic_baseline" className="space-y-8 pt-6 pb-6">
+            <div className="space-y-3 border-b border-[#D7D6CD] dark:border-[#2D2E2A] pb-6 mb-8">
+              <span className="text-xs font-mono font-semibold uppercase tracking-[0.1em] text-[#D98200] dark:text-[#FFB84A] block">
+                Chapter 02 // Deep-Time Biogeographic Baseline
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#181816] dark:text-[#E6E3DB] tracking-tight leading-snug">
+                The Macro-Geonomic Frontier & Ashraf-Galor Curve
+              </h2>
+              <p className="font-sans font-light text-sm sm:text-base text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed pt-1">
+                Recent African Origin (RAO), the Serial Founder Effect, and the hump-shaped relationship between prehistoric genetic diversity and comparative economic development.
+              </p>
             </div>
-          </div>
-        )}
 
-        {/* ========================================================= */}
-        {/* SECTION II: MACRO-GEONOMICS (RAO & ASHRAF-GALOR) */}
-        {/* ========================================================= */}
-        {activeSectionId === 'biogeographic_baseline' && (
-          <div className="space-y-8 animate-fadeIn">
-            {/* Theoretical Framing */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                    <Dna className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-white">1. Molecular Clock Calibrations & Coalescence</h4>
-                    <p className="text-xs text-slate-400">Convergent maternal and paternal deep ancestry</p>
-                  </div>
-                </div>
-
-                <p className="text-xs text-slate-300 leading-relaxed">
+            <div className="space-y-4">
+              {/* Insight Surface #F5F3EC */}
+              <div className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#1B1D19] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#D98200] space-y-3">
+                <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB] block">1. Molecular Clock Calibrations & Coalescence</span>
+                <p className="text-xs sm:text-sm text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
                   Genetic anthropology utilizing complete sequencing of mitochondrial DNA (mtDNA) and the Y chromosome confirms that all contemporary humans share a shallow ancestry converging in East Africa:
                 </p>
 
-                <div className="space-y-2.5">
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 flex items-start justify-between gap-3 text-xs">
+                {/* Important Statistics: White cards + dark typography + small regional accent */}
+                <div className="space-y-2 text-xs">
+                  <div className="p-3 rounded-xl bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] flex items-start justify-between gap-3 shadow-2xs">
                     <div>
-                      <strong className="text-amber-300">Mitochondrial Eve (Maternal Lineage):</strong>
-                      <p className="text-slate-400 mt-0.5">Lived in East Africa ~99,000 to 148,000 years ago (broad estimates up to 200 kya).</p>
+                      <strong className="text-[#181816] dark:text-[#E6E3DB]">Mitochondrial Eve (Maternal Lineage):</strong>
+                      <p className="text-[#5C5C55] dark:text-[#A8A499] mt-0.5">Lived in East Africa ~99,000 to 148,000 years ago (broad estimates up to 200 kya).</p>
                     </div>
-                    <span className="font-mono text-amber-400 font-bold shrink-0">~148 kya</span>
+                    <span className="font-mono text-[#D98200] dark:text-[#FFB84A] font-bold shrink-0">~148 kya</span>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 flex items-start justify-between gap-3 text-xs">
+                  <div className="p-3 rounded-xl bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] flex items-start justify-between gap-3 shadow-2xs">
                     <div>
-                      <strong className="text-amber-300">Y-Chromosomal Adam (Paternal Lineage):</strong>
-                      <p className="text-slate-400 mt-0.5">Lived in East Africa ~120,000 to 156,000 years ago.</p>
+                      <strong className="text-[#181816] dark:text-[#E6E3DB]">Y-Chromosomal Adam (Paternal Lineage):</strong>
+                      <p className="text-[#5C5C55] dark:text-[#A8A499] mt-0.5">Lived in East Africa ~120,000 to 156,000 years ago.</p>
                     </div>
-                    <span className="font-mono text-amber-400 font-bold shrink-0">~156 kya</span>
+                    <span className="font-mono text-[#D98200] dark:text-[#FFB84A] font-bold shrink-0">~156 kya</span>
                   </div>
                 </div>
-
-                <p className="text-xs text-slate-400 italic">
-                  * Landmark findings by Bustamante et al. (Stanford, 2013) proved that these maternal and paternal lines coalesce in roughly the same evolutionary epoch and geographic theater, confirming Sub-Saharan Africa as the cradle of all Homo sapiens.
-                </p>
               </div>
 
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                    <Compass className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-white">2. The Serial Founder Effect & Global Diversity Gradient</h4>
-                    <p className="text-xs text-slate-400">Successive bottlenecks out of Addis Ababa</p>
-                  </div>
-                </div>
-
-                <p className="text-xs text-slate-300 leading-relaxed">
+              {/* Methodology Neutral Surface #ECEAE1 */}
+              <div className="p-5 rounded-2xl bg-[#ECEAE1] text-[#181816] dark:bg-[#20231F] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] space-y-3">
+                <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB] block">2. Serial Founder Effect & Global Diversity Gradient</span>
+                <p className="text-xs sm:text-sm text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
                   As modern humans migrated out of East Africa ~60,000 to 70,000 years ago in small pioneer bands, each departing splinter population carried only a sub-sample of the genetic diversity of its parent group.
                 </p>
-
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-2">
-                  <div className="font-mono font-bold text-indigo-300">The Monotonic Distance-Diversity Law:</div>
-                  <p className="text-slate-300 leading-relaxed">
-                    Expected genetic heterozygosity ($H_e$) within indigenous populations decreases monotonically with the geographical and migratory distance along overland routes from East Africa:
-                  </p>
-                  <div className="p-2 rounded bg-slate-900 border border-slate-800 font-mono text-center text-amber-400 font-bold">
-                    He(Sub-Saharan Africa) &gt; He(Eurasia) &gt; He(Americas)
-                  </div>
+                <div className="p-3 rounded-xl bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] font-mono text-center text-xs font-bold text-[#181816] dark:text-[#E6E3DB]">
+                  He(Sub-Saharan Africa) &gt; He(Eurasia) &gt; He(Americas)
                 </div>
-
-                <p className="text-xs text-slate-400">
-                  Sub-Saharan African populations exhibit the highest genetic diversity on Earth, whereas Native American populations at the migratory terminus exhibit the lowest.
-                </p>
               </div>
             </div>
 
             {/* Interactive Chart: Ashraf-Galor Diversity-Development Hump */}
-            <div className="p-6 lg:p-8 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-                <div>
-                  <h4 className="text-base font-bold text-white flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-amber-400" />
-                    <span>Ashraf & Galor (2013) Diversity-Development Hump-Shaped Trade-Off</span>
-                  </h4>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Opposing channels: Cognitive Specialization & Technological Innovation (+) vs. Social Fragmentation & Mistrust Transaction Costs (-)
-                  </p>
-                </div>
-                <span className="text-xs font-mono bg-slate-800 text-slate-300 px-3 py-1 rounded-full border border-slate-700">
-                  American Economic Review (AER 2013)
+            <figure className="my-8 pb-4 border-b border-[#D7D6CD] dark:border-[#2D2E2A]">
+              <figcaption className="mb-4">
+                <span className="text-[0.75rem] font-mono uppercase tracking-[0.1em] text-[#D98200] dark:text-[#FFB84A] font-semibold block mb-1">
+                  Fig. 02 // Econometric Diversity Trade-Off
                 </span>
-              </div>
+                <h4 className="font-serif text-xl font-normal text-[#181816] dark:text-[#E6E3DB] mb-1">
+                  Ashraf & Galor (2013) Hump-Shaped Trade-Off
+                </h4>
+                <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] leading-relaxed">
+                  Opposing channels: Cognitive Specialization & Technological Innovation (+) vs. Social Fragmentation & Mistrust Transaction Costs (-) (<em>AER</em> 2013).
+                </p>
+              </figcaption>
 
-              <div className="h-80 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart
-                    data={GEONOMIC_DIVERSITY_GRADIENT}
-                    margin={{ top: 20, right: 30, left: 10, bottom: 20 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
-                    <XAxis
-                      dataKey="migratoryDistanceKm"
-                      stroke="#94a3b8"
-                      fontSize={11}
-                      tickFormatter={(val) => `${(val / 1000).toFixed(0)}k km`}
-                      label={{ value: 'Overland Migratory Distance from East Africa (km)', position: 'insideBottom', offset: -10, fill: '#94a3b8', fontSize: 12 }}
-                    />
-                    <YAxis
-                      stroke="#94a3b8"
-                      fontSize={11}
-                      domain={[30, 100]}
-                      label={{ value: 'Index Score (0–100)', angle: -90, position: 'insideLeft', fill: '#94a3b8', fontSize: 12 }}
-                    />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', fontSize: '12px' }}
-                      formatter={(val: any, name: string) => [val, name]}
-                      labelFormatter={(label: any) => `Migratory Distance: ${Number(label).toLocaleString()} km`}
-                    />
-                    <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                    <Line
-                      type="monotone"
-                      dataKey="cognitiveSpecializationScore"
-                      name="Cognitive Innovation Channel (+)"
-                      stroke="#f59e0b"
-                      strokeWidth={2.5}
-                      dot={{ r: 4 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="socialCoordinationTrustScore"
-                      name="Social Cohesion / Trust Channel (- friction)"
-                      stroke="#38bdf8"
-                      strokeWidth={2.5}
-                      dot={{ r: 4 }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="compositeProductivity"
-                      name="Ashraf-Galor Hump (Net Comparative Development)"
-                      fill="#818cf8"
-                      fillOpacity={0.25}
-                      stroke="#6366f1"
-                      strokeWidth={3}
-                    />
-                  </ComposedChart>
-                </ResponsiveContainer>
+              <div className="p-5 rounded-2xl bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] shadow-xs">
+                <div className="h-80 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ComposedChart
+                      data={GEONOMIC_DIVERSITY_GRADIENT}
+                      margin={{ top: 20, right: 30, left: 10, bottom: 20 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-zinc-200 dark:text-zinc-800" opacity={0.6} />
+                      <XAxis
+                        dataKey="migratoryDistanceKm"
+                        stroke="currentColor"
+                        className="text-[#5C5C55] dark:text-[#A8A499]"
+                        fontSize={11}
+                        tickFormatter={(val) => `${(val / 1000).toFixed(0)}k km`}
+                      />
+                      <YAxis
+                        stroke="currentColor"
+                        className="text-[#5C5C55] dark:text-[#A8A499]"
+                        fontSize={11}
+                        domain={[30, 100]}
+                      />
+                      <Tooltip
+                        contentStyle={{ 
+                          backgroundColor: 'var(--tooltip-bg)', 
+                          borderColor: 'var(--tooltip-border)', 
+                          borderRadius: '0.75rem', 
+                          fontSize: '12px',
+                          color: 'var(--tooltip-text-title)'
+                        }}
+                      />
+                      <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                      <Line
+                        type="monotone"
+                        dataKey="cognitiveSpecializationScore"
+                        name="Cognitive Innovation Channel (+)"
+                        stroke="#D98200"
+                        strokeWidth={2.5}
+                        dot={{ r: 4 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="socialCoordinationTrustScore"
+                        name="Social Cohesion Channel (- friction)"
+                        stroke="#1600D9"
+                        strokeWidth={2.5}
+                        dot={{ r: 4 }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="compositeProductivity"
+                        name="Ashraf-Galor Hump (Net Dev)"
+                        fill="#009D00"
+                        fillOpacity={0.15}
+                        stroke="#009D00"
+                        strokeWidth={3}
+                      />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
+            </figure>
+          </section>
 
-              {/* Data Table breakdown */}
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border border-slate-800 rounded-xl overflow-hidden">
-                  <thead className="bg-slate-950 text-slate-400 font-mono">
-                    <tr>
-                      <th className="p-3">Geographic Region / Out-of-Africa Stage</th>
-                      <th className="p-3">Distance (km)</th>
-                      <th className="p-3">Expected Heterozygosity (He)</th>
-                      <th className="p-3">Innovation Score</th>
-                      <th className="p-3">Cohesion Score</th>
-                      <th className="p-3">Net Dev Index</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800 bg-slate-900/50">
-                    {GEONOMIC_DIVERSITY_GRADIENT.map((item, idx) => (
-                      <tr key={idx} className="hover:bg-slate-800/60 transition-colors">
-                        <td className="p-3 font-semibold text-slate-200">{item.region}</td>
-                        <td className="p-3 font-mono text-slate-400">{item.migratoryDistanceKm.toLocaleString()}</td>
-                        <td className="p-3 font-mono text-amber-400 font-bold">{item.expectedHeterozygosity.toFixed(2)}</td>
-                        <td className="p-3 font-mono text-amber-300">{item.cognitiveSpecializationScore}</td>
-                        <td className="p-3 font-mono text-sky-300">{item.socialCoordinationTrustScore}</td>
-                        <td className="p-3 font-mono text-indigo-400 font-bold">{item.compositeProductivity}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+          {/* ========================================================= */}
+          {/* CHAPTER 3: HISTORICAL TRAUMAS & THE MISTRUST SCAR */}
+          {/* ========================================================= */}
+          <section id="sec-slave_trades_mistrust" className="space-y-8 pt-6 pb-6">
+            <div className="space-y-3 border-b border-[#D7D6CD] dark:border-[#2D2E2A] pb-6 mb-8">
+              <span className="text-xs font-mono font-semibold uppercase tracking-[0.1em] text-[#D90000] dark:text-[#FF6666] block">
+                Chapter 03 // Historical Shocks & Social Capital Extraction
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#181816] dark:text-[#E6E3DB] tracking-tight leading-snug">
+                Nathan Nunn’s Econometrics & The Mistrust Scar
+              </h2>
+              <p className="font-sans font-light text-sm sm:text-base text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed pt-1">
+                The causal long-term effects of Africa’s quadruple slave trades (1400–1900 CE) on modern GDP per capita and interpersonal trust breakdown.
+              </p>
             </div>
-          </div>
-        )}
 
-        {/* ========================================================= */}
-        {/* SECTION III: HISTORICAL TRAUMAS & THE MISTRUST SCAR */}
-        {/* ========================================================= */}
-        {activeSectionId === 'slave_trades_mistrust' && (
-          <div className="space-y-8 animate-fadeIn">
-            {/* Nunn (2008) and Nunn-Wantchekon (2011) Overview */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20">
-                    <ShieldAlert className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-white">1. Nathan Nunn (2008) Causal Underdevelopment</h4>
-                    <p className="text-xs text-slate-400">Quarterly Journal of Economics (QJE 2008)</p>
-                  </div>
-                </div>
-
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Nathan Nunn integrated shipping manifests and historical records from four major slave trades (trans-Atlantic, trans-Saharan, Red Sea, Indian Ocean) totaling over <strong>18 million exported individuals</strong>:
+            <div className="space-y-4">
+              {/* Insight Surface #F5F3EC */}
+              <div className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#1B1D19] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#D90000] space-y-3">
+                <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB] block">1. Nathan Nunn (2008) Causal Underdevelopment</span>
+                <p className="text-xs sm:text-sm text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
+                  Nathan Nunn integrated shipping manifests and historical records from four major slave trades (trans-Atlantic, trans-Saharan, Red Sea, Indian Ocean) totaling over <strong>18 million exported individuals</strong>. The parts of Africa from which the largest numbers of enslaved persons were forcibly taken are the poorest today.
                 </p>
-
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
-                  <div className="font-mono font-bold text-rose-400">The Causal Empirical Inverse Law:</div>
-                  <p className="text-slate-300 leading-relaxed">
-                    The parts of Africa from which the largest numbers of enslaved persons were forcibly taken between 1400 and 1900 are the poorest and most economically underdeveloped today.
-                  </p>
-                  <p className="text-slate-400 italic">
-                    Instrumental variable tests (utilizing nautical sailing distance to export destination ports) proved that pre-existing poverty did not cause high slave exports; the slave trade causally generated modern economic deprivation.
-                  </p>
-                </div>
+                <span className="text-[11px] font-mono text-[#D90000] dark:text-[#FF6666] block font-medium">Quarterly Journal of Economics (QJE 2008)</span>
               </div>
 
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                    <AlertTriangle className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-white">2. The Micro-Level Transmission Channel: The Mistrust Scar</h4>
-                    <p className="text-xs text-slate-400">Nunn & Wantchekon (AER 2011)</p>
-                  </div>
-                </div>
-
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Unlike traditional warfare, enslavement was frequently carried out through small-scale village kidnappings and personal betrayals by friends, neighbors, and kin. This shattered the foundational social capital of targeted societies:
+              <div className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#1B1D19] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#D90000] space-y-3">
+                <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB] block">2. The Micro-Level Transmission Channel: The Mistrust Scar</span>
+                <p className="text-xs sm:text-sm text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
+                  Enslavement was frequently carried out through small-scale village kidnappings and personal betrayals by friends, neighbors, and kin (Nunn & Wantchekon, <em>AER</em> 2011). This shattered baseline social capital:
                 </p>
-
+                
+                {/* Important Statistics Cards (White + Dark typography + Regional Rose/Crimson accent) */}
                 <div className="space-y-2 text-xs">
-                  <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between">
-                    <span className="text-slate-300">Trust in Relatives & Neighbors:</span>
-                    <span className="font-mono text-rose-400 font-bold">-28% in heavily raided ethnic groups</span>
+                  <div className="p-2.5 rounded-lg bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] flex justify-between shadow-2xs">
+                    <span className="text-[#343430] dark:text-[#CCC8BC]">Trust in Relatives & Neighbors:</span>
+                    <span className="font-mono font-bold text-[#D90000] dark:text-[#FF6666]">-28% in raided groups</span>
                   </div>
-                  <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between">
-                    <span className="text-slate-300">Trust in Local Co-Ethnics:</span>
-                    <span className="font-mono text-rose-400 font-bold">-34% relative to non-targeted groups</span>
+                  <div className="p-2.5 rounded-lg bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] flex justify-between shadow-2xs">
+                    <span className="text-[#343430] dark:text-[#CCC8BC]">Trust in Local Co-Ethnics:</span>
+                    <span className="font-mono font-bold text-[#D90000] dark:text-[#FF6666]">-34% relative deficit</span>
                   </div>
-                  <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between">
-                    <span className="text-slate-300">Trust in Local Administration & Courts:</span>
-                    <span className="font-mono text-rose-400 font-bold">-41% institutional trust deficit</span>
+                  <div className="p-2.5 rounded-lg bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] flex justify-between shadow-2xs">
+                    <span className="text-[#343430] dark:text-[#CCC8BC]">Trust in Administration & Courts:</span>
+                    <span className="font-mono font-bold text-[#D90000] dark:text-[#FF6666]">-41% institutional deficit</span>
                   </div>
                 </div>
-
-                <p className="text-xs text-slate-400 italic">
-                  This persisting "mistrust scar" increases transaction costs in contemporary African markets, preventing the spontaneous formation of credit networks and efficient legal contract enforcement.
-                </p>
               </div>
             </div>
 
-            {/* Nunn Regional Slave Export Extraction vs. Current GDP & Mistrust */}
-            <div className="p-6 lg:p-8 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-                <div>
-                  <h4 className="text-base font-bold text-white flex items-center gap-2">
-                    <TrendingDown className="w-5 h-5 text-rose-400" />
-                    <span>Regional Slave Export Intensity vs. Contemporary Mistrust & GDP per Capita</span>
-                  </h4>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Empirical data compiled across African regional zones (Nunn 2008, Nunn & Wantchekon 2011)
-                  </p>
-                </div>
-              </div>
-
-              <div className="h-80 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={NUNN_SLAVE_TRADE_EXTRACTION}
-                    margin={{ top: 20, right: 30, left: 10, bottom: 20 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
-                    <XAxis
-                      dataKey="regionOrModernCountry"
-                      stroke="#94a3b8"
-                      fontSize={10}
-                      interval={0}
-                      angle={-15}
-                      textAnchor="end"
-                      height={60}
-                    />
-                    <YAxis
-                      yAxisId="left"
-                      stroke="#f43f5e"
-                      fontSize={11}
-                      label={{ value: 'Slave Exports (Millions)', angle: -90, position: 'insideLeft', fill: '#f43f5e', fontSize: 12 }}
-                    />
-                    <YAxis
-                      yAxisId="right"
-                      orientation="right"
-                      stroke="#38bdf8"
-                      fontSize={11}
-                      label={{ value: 'Current GDP / Capita ($)', angle: 90, position: 'insideRight', fill: '#38bdf8', fontSize: 12 }}
-                    />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', fontSize: '12px' }}
-                    />
-                    <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                    <Bar
-                      yAxisId="left"
-                      dataKey="totalExportsMillions"
-                      name="Total Slave Exports (Millions)"
-                      fill="#f43f5e"
-                      radius={[6, 6, 0, 0]}
-                    />
-                    <Bar
-                      yAxisId="right"
-                      dataKey="currentGdpPerCapitaUsd"
-                      name="Current GDP per Capita ($ USD)"
-                      fill="#38bdf8"
-                      radius={[6, 6, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* Table of Nunn Dataset */}
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border border-slate-800 rounded-xl overflow-hidden">
-                  <thead className="bg-slate-950 text-slate-400 font-mono">
-                    <tr>
-                      <th className="p-3">Region / Territory</th>
-                      <th className="p-3">Exports (M)</th>
-                      <th className="p-3">Atlantic %</th>
-                      <th className="p-3">Saharan %</th>
-                      <th className="p-3">Red Sea / Indian %</th>
-                      <th className="p-3">Mistrust Index</th>
-                      <th className="p-3">GDP / Cap ($)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800 bg-slate-900/50">
-                    {NUNN_SLAVE_TRADE_EXTRACTION.map((row, idx) => (
-                      <tr key={idx} className="hover:bg-slate-800/60 transition-colors">
-                        <td className="p-3 font-semibold text-slate-200">{row.regionOrModernCountry}</td>
-                        <td className="p-3 font-mono text-rose-400 font-bold">{row.totalExportsMillions.toFixed(2)}M</td>
-                        <td className="p-3 font-mono text-slate-300">{row.atlanticSharePct}%</td>
-                        <td className="p-3 font-mono text-slate-300">{row.transSaharanSharePct}%</td>
-                        <td className="p-3 font-mono text-slate-300">{row.redSeaIndianOceanPct}%</td>
-                        <td className="p-3 font-mono text-amber-400 font-bold">{row.mistrustIndex}/100</td>
-                        <td className="p-3 font-mono text-emerald-400 font-bold">${row.currentGdpPerCapitaUsd.toLocaleString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================= */}
-        {/* SECTION IV: COLONIAL EXTRACTIVE INSTITUTIONS & MONOPSONY */}
-        {/* ========================================================= */}
-        {activeSectionId === 'colonial_institutions' && (
-          <div className="space-y-8 animate-fadeIn">
-            {/* Acemoglu Settler Mortality + Henn-Robinson Pre-Colonial Baseline */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-orange-500/10 text-orange-400 border border-orange-500/20">
-                    <Scale className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-white">1. The Settler Mortality Hypothesis</h4>
-                    <p className="text-xs text-slate-400">Acemoglu, Johnson & Robinson (AER 2001)</p>
-                  </div>
-                </div>
-
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  European colonizers adopted distinct institutional strategies based on local environmental disease burdens (malaria and yellow fever):
-                </p>
-
-                <div className="space-y-2.5 text-xs">
-                  <div className="p-3 rounded-xl bg-slate-950 border border-emerald-900/40 space-y-1">
-                    <div className="font-bold text-emerald-400">Low-Mortality Zones (e.g., North America, Australia):</div>
-                    <p className="text-slate-300">
-                      Colonizers settled permanently in large numbers and created <strong>inclusive institutions</strong> protecting private property rights and checking autocratic power.
-                    </p>
-                  </div>
-
-                  <div className="p-3 rounded-xl bg-slate-950 border border-rose-900/40 space-y-1">
-                    <div className="font-bold text-rose-400">High-Mortality Zones (Sub-Saharan Africa):</div>
-                    <p className="text-slate-300">
-                      European settlement was unviable. Colonizers engineered purely <strong>extractive institutions</strong> with minimal administrative overhead designed strictly to siphon surplus to metropolitan capitals.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    <Landmark className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-white">2. Pre-Colonial Decentralization & Indirect Rule</h4>
-                    <p className="text-xs text-slate-400">Henn & Robinson (2024 Working Paper)</p>
-                  </div>
-                </div>
-
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Reconstructing 1880 polities across the African continent, Nobel laureate James Robinson and Soeren Henn dismantled the myth of pre-colonial institutional failure:
-                </p>
-
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center">
-                    <div className="font-mono text-2xl font-bold text-emerald-400">{PRE_COLONIAL_GOVERNANCE_DATA.decentralizedNonStatePct}%</div>
-                    <div className="text-slate-400 mt-1">Decentralized Polities (Village assemblies & kinship councils)</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center">
-                    <div className="font-mono text-2xl font-bold text-amber-400">{PRE_COLONIAL_GOVERNANCE_DATA.centralizedBureaucraticStatePct}%</div>
-                    <div className="text-slate-400 mt-1">Centralized Kingdom States (Asante, Sokoto, Buganda)</div>
-                  </div>
-                </div>
-
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  <strong>The Active Defense of Liberty:</strong> Extreme decentralization was an intentional, sophisticated design to protect individual liberties from despotism. European "Indirect Rule" destroyed this by empowering autocratic "warrant chiefs" without customary checks.
-                </p>
-              </div>
-            </div>
-
-            {/* Federico Tadei (2020) Price-Gap Mathematical Model */}
-            <div className="p-6 lg:p-8 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-                <div>
-                  <h4 className="text-base font-bold text-white flex items-center gap-2">
-                    <DollarSign className="w-5 h-5 text-amber-400" />
-                    <span>Federico Tadei’s Price-Gap Model: The Microeconomics of Colonial Monopsony</span>
-                  </h4>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Quantifying the destruction of African Gains from Trade under CFAO, SCOA & UAC Concessionaire Cartels
-                  </p>
-                </div>
-                <span className="text-xs font-mono bg-slate-800 text-amber-300 px-3 py-1 rounded-full border border-slate-700">
-                  European Review of Econ. History (2020)
+            {/* Chart: Nunn Regional Slave Export Extraction */}
+            <figure className="my-8 pb-4 border-b border-[#D7D6CD] dark:border-[#2D2E2A]">
+              <figcaption className="mb-4">
+                <span className="text-[0.75rem] font-mono uppercase tracking-[0.1em] text-[#D90000] dark:text-[#FF6666] font-semibold block mb-1">
+                  Fig. 03 // Econometric Extraction Regression
                 </span>
+                <h4 className="font-serif text-xl font-normal text-[#181816] dark:text-[#E6E3DB] mb-1">
+                  Regional Slave Extraction Intensity vs. Current GDP per Capita
+                </h4>
+                <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] leading-relaxed">
+                  Empirical data compiled across African regional zones (Nunn 2008, Nunn & Wantchekon 2011).
+                </p>
+              </figcaption>
+
+              <div className="p-5 rounded-2xl bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] shadow-xs">
+                <div className="h-80 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={NUNN_SLAVE_TRADE_EXTRACTION}
+                      margin={{ top: 20, right: 30, left: 10, bottom: 20 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-zinc-200 dark:text-zinc-800" opacity={0.6} />
+                      <XAxis
+                        dataKey="regionOrModernCountry"
+                        stroke="currentColor"
+                        className="text-[#5C5C55] dark:text-[#A8A499]"
+                        fontSize={10}
+                        interval={0}
+                        angle={-15}
+                        textAnchor="end"
+                        height={50}
+                      />
+                      <YAxis
+                        yAxisId="left"
+                        stroke="#D90000"
+                        fontSize={11}
+                      />
+                      <YAxis
+                        yAxisId="right"
+                        orientation="right"
+                        stroke="#1600D9"
+                        fontSize={11}
+                      />
+                      <Tooltip
+                        contentStyle={{ 
+                          backgroundColor: 'var(--tooltip-bg)', 
+                          borderColor: 'var(--tooltip-border)', 
+                          borderRadius: '0.75rem', 
+                          fontSize: '12px',
+                          color: 'var(--tooltip-text-title)'
+                        }}
+                      />
+                      <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                      <Bar
+                        yAxisId="left"
+                        dataKey="totalExportsMillions"
+                        name="Total Slave Exports (Millions)"
+                        fill="#D90000"
+                        radius={[4, 4, 0, 0]}
+                      />
+                      <Bar
+                        yAxisId="right"
+                        dataKey="currentGdpPerCapitaUsd"
+                        name="Current GDP per Capita ($ USD)"
+                        fill="#1600D9"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </figure>
+          </section>
+
+          {/* ========================================================= */}
+          {/* CHAPTER 4: COLONIAL EXTRACTIVE INSTITUTIONS & MONOPSONY */}
+          {/* ========================================================= */}
+          <section id="sec-colonial_institutions" className="space-y-8 pt-6 pb-6">
+            <div className="space-y-3 border-b border-[#D7D6CD] dark:border-[#2D2E2A] pb-6 mb-8">
+              <span className="text-xs font-mono font-semibold uppercase tracking-[0.1em] text-[#1600D9] dark:text-[#7770FF] block">
+                Chapter 04 // Colonial Cartels & Microeconomic Extraction
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#181816] dark:text-[#E6E3DB] tracking-tight leading-snug">
+                Extractive Institutions, Indirect Rule & Tadei’s Monopsony
+              </h2>
+              <p className="font-sans font-light text-sm sm:text-base text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed pt-1">
+                Acemoglu-Robinson settler mortality, Henn-Robinson pre-colonial political decentralization, and Federico Tadei’s price-gap econometric models.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {/* Insight Surface #F5F3EC */}
+              <div className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#1B1D19] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#1600D9] space-y-3">
+                <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB] block">1. The Settler Mortality Hypothesis</span>
+                <p className="text-xs sm:text-sm text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
+                  Acemoglu, Johnson & Robinson (<em>AER</em> 2001) demonstrated that high disease environments prevented European settlements and caused the establishment of purely extractive institutions designed to transfer resources without public investments.
+                </p>
               </div>
 
-              {/* Mathematical Formulation Panel */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                  <span className="text-slate-400">Competitive Counterfactual Price:</span>
-                  <div className="text-sm font-bold text-emerald-400">P_C = P_M - TC</div>
-                  <p className="text-slate-400 text-[11px] font-sans">Metropolitan port price minus real transport & logistical costs.</p>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                  <span className="text-slate-400">Extraction Rent & Rate:</span>
-                  <div className="text-sm font-bold text-amber-400">GAP = P_C - P_P | ER = GAP / P_C</div>
-                  <p className="text-slate-400 text-[11px] font-sans">Actual producer price paid (P_P) suppressed by monopsony power.</p>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                  <span className="text-slate-400">Destruction in Gains from Trade (GFT):</span>
-                  <div className="text-sm font-bold text-rose-400">ΔGFT = GAP / (P_C - C) &gt; ER</div>
-                  <p className="text-slate-400 text-[11px] font-sans">Because marginal costs C &gt; 0, GFT destruction is always greater than raw price extraction.</p>
-                </div>
+              {/* Insight Surface #F5F3EC */}
+              <div className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#1B1D19] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#D600D5] space-y-3">
+                <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB] block">2. Pre-Colonial Decentralization & Indirect Rule</span>
+                <p className="text-xs sm:text-sm text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
+                  Reconstructing 1880 polities across Africa, Nobel laureate James Robinson and Soeren Henn dismantled the myth of pre-colonial institutional failure: <strong>98.2%</strong> of territories operated through decentralized village assemblies and kinship councils, designed to protect individual liberties.
+                </p>
               </div>
+            </div>
 
-              {/* Interactive Commodity Selector */}
+            {/* Federico Tadei Price Gap Case Studies */}
+            <figure className="my-8 pb-4 border-b border-[#D7D6CD] dark:border-[#2D2E2A]">
+              <figcaption className="mb-4">
+                <span className="text-[0.75rem] font-mono uppercase tracking-[0.1em] text-[#1600D9] dark:text-[#7770FF] font-semibold block mb-1">
+                  Fig. 04 // Microeconomic Extraction
+                </span>
+                <h4 className="font-serif text-xl font-normal text-[#181816] dark:text-[#E6E3DB] mb-1">
+                  Federico Tadei’s Price-Gap Model: Colonial Monopsony
+                </h4>
+                <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] leading-relaxed">
+                  Quantifying the destruction of African Gains from Trade under CFAO, SCOA & UAC Concessionaire Cartels (<em>EREH</em> 2020).
+                </p>
+              </figcaption>
+
+              {/* Commodity Selector Buttons */}
               <div className="space-y-4">
-                <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
                   {TADEI_MONOPSONY_CASE_STUDIES.map((item, idx) => (
                     <button
                       key={idx}
                       onClick={() => setActiveCommodityIndex(idx)}
-                      className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                      className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                         activeCommodityIndex === idx
-                          ? 'bg-amber-500 text-slate-950 shadow-md font-extrabold'
-                          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                          ? 'bg-[#181816] text-[#FAFAF6] dark:bg-[#E6E3DB] dark:text-[#181816] shadow-xs'
+                          : 'bg-[#FFFFFF] dark:bg-[#181A16] text-[#5C5C55] dark:text-[#A8A499] hover:text-[#181816] dark:hover:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A]'
                       }`}
                     >
                       {item.commodity} ({item.territory})
@@ -775,397 +739,239 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                   ))}
                 </div>
 
-                {/* Selected Commodity Dossier */}
-                <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800 grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="space-y-3 lg:col-span-2">
-                    <div className="flex items-center gap-2 text-xs font-mono text-amber-400 font-bold">
-                      <span>{activeCommodity.territory}</span>
-                      <span>•</span>
-                      <span>Cartel: {activeCommodity.buyerCartel}</span>
-                    </div>
-
-                    <h5 className="text-lg font-bold text-white">{activeCommodity.commodity}</h5>
-
-                    <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs space-y-1">
-                      <div className="font-bold text-slate-200">Coercion Mechanism & Labor Regimes:</div>
-                      <p className="text-slate-300 leading-relaxed">{activeCommodity.coercionMechanism}</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                      <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                        <span className="text-slate-400">World Port Price:</span>
-                        <div className="font-mono text-sm font-bold text-white">${activeCommodity.worldPortPriceDollars}</div>
-                      </div>
-                      <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                        <span className="text-slate-400">Competitive Price:</span>
-                        <div className="font-mono text-sm font-bold text-emerald-400">${activeCommodity.competitiveCounterfactualPrice}</div>
-                      </div>
-                      <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                        <span className="text-slate-400">Actual Price Paid:</span>
-                        <div className="font-mono text-sm font-bold text-rose-400">${activeCommodity.actualProducerPricePaid}</div>
-                      </div>
-                      <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                        <span className="text-slate-400">Price Gap Rent:</span>
-                        <div className="font-mono text-sm font-bold text-amber-400">${activeCommodity.absolutePriceGap}</div>
-                      </div>
-                    </div>
+                {/* Selected Commodity Dossier - Japandi Neutral Paper Surface */}
+                <div className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#181A16] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] space-y-4 border-l-4 border-l-[#1600D9]">
+                  <div className="flex items-center justify-between">
+                    <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB]">{activeCommodity.commodity}</span>
+                    <span className="font-mono text-xs text-[#1600D9] dark:text-[#7770FF] font-bold">{activeCommodity.territory}</span>
                   </div>
 
-                  <div className="p-5 rounded-2xl bg-gradient-to-br from-rose-950/40 to-slate-900 border border-rose-900/40 flex flex-col justify-between space-y-4">
-                    <div>
-                      <span className="text-xs font-mono text-rose-300 font-bold uppercase tracking-wider">Extraction Magnitude</span>
-                      <div className="text-3xl font-extrabold text-rose-400 font-mono mt-1">
-                        -{activeCommodity.reductionInGainsFromTradePct}%
-                      </div>
-                      <p className="text-xs text-rose-200/80 mt-1">
-                        Net Reduction in African Peasant Gains from Trade (GFT)
-                      </p>
-                    </div>
-
-                    <div className="space-y-1.5 text-xs text-slate-300 pt-3 border-t border-rose-800/40">
-                      <div className="flex justify-between">
-                        <span>Raw Price Extraction Rate (ER):</span>
-                        <span className="font-mono font-bold text-rose-300">{activeCommodity.rawExtractionRatePct}%</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Monopsony Surplus Transfer:</span>
-                        <span className="font-mono font-bold text-amber-300">To Bordeaux/Marseille</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================= */}
-        {/* SECTION V: PATH DEPENDENCY & POST-COLONIAL BORDERS */}
-        {/* ========================================================= */}
-        {activeSectionId === 'path_dependency' && (
-          <div className="space-y-8 animate-fadeIn">
-            {/* Robert Bates Urban Bias + Michalopoulos Partitioning */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                    <Layers className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-white">1. The Marketing Board Trap & "Urban Bias"</h4>
-                    <p className="text-xs text-slate-400">Robert H. Bates (1981, UC Press)</p>
-                  </div>
-                </div>
-
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Upon independence, newly empowered African political elites did not abolish colonial monopsonies because doing so would dilute their newly acquired state revenues and political patron-client networks:
-                </p>
-
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-2">
-                  <div className="font-bold text-amber-300">The Post-Colonial Persistence Mechanism:</div>
-                  <p className="text-slate-300 leading-relaxed">
-                    Colonial concession systems were converted into state-run <strong>agricultural marketing boards</strong>. Post-colonial regimes bought crops at artificially depressed prices to subsidize cheap food and public sector jobs for urban dwellers, systematically starving rural farmers of capital and triggering decades of agricultural stagnation.
+                  <p className="text-xs text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
+                    <strong>Cartel / Coercion:</strong> {activeCommodity.buyerCartel} — {activeCommodity.coercionMechanism}
                   </p>
-                </div>
-              </div>
 
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20">
-                    <AlertTriangle className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-base font-bold text-white">2. The Berlin Border Scar & Conflict Multiplier</h4>
-                    <p className="text-xs text-slate-400">Michalopoulos & Papaioannou (AER 2016)</p>
-                  </div>
-                </div>
-
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  The arbitrary borders drawn at the Berlin Conference (1884–1885) partitioned hundreds of unified ethnic homelands across state boundaries:
-                </p>
-
-                <div className="space-y-2 text-xs">
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                    <div className="font-bold text-rose-400">The Exponential Border Conflict Spike:</div>
-                    <p className="text-slate-300">In non-partitioned homelands, conflict is flat across distance. In partitioned homelands, conflict spikes exponentially near borders due to state discrimination and irredentism.</p>
-                  </div>
-
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                    <div className="font-bold text-amber-400">Satellite Nightlight Luminosity Deprivation:</div>
-                    <p className="text-slate-300">Partitioned borderlands suffer severe chronic underinvestment and depressed economic development visible in satellite imagery.</p>
+                  {/* Important Statistic White Cards */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                    <div className="p-2.5 rounded-lg bg-[#FFFFFF] dark:bg-[#20231F] border border-[#D7D6CD] dark:border-[#2D2E2A] shadow-2xs">
+                      <span className="text-[#77776E] text-[10px]">World Price:</span>
+                      <div className="font-mono font-bold text-[#181816] dark:text-[#E6E3DB]">${activeCommodity.worldPortPriceDollars}</div>
+                    </div>
+                    <div className="p-2.5 rounded-lg bg-[#FFFFFF] dark:bg-[#20231F] border border-[#D7D6CD] dark:border-[#2D2E2A] shadow-2xs">
+                      <span className="text-[#77776E] text-[10px]">Competitive:</span>
+                      <div className="font-mono font-bold text-[#009D00] dark:text-emerald-400">${activeCommodity.competitiveCounterfactualPrice}</div>
+                    </div>
+                    <div className="p-2.5 rounded-lg bg-[#FFFFFF] dark:bg-[#20231F] border border-[#D7D6CD] dark:border-[#2D2E2A] shadow-2xs">
+                      <span className="text-[#77776E] text-[10px]">Actual Paid:</span>
+                      <div className="font-mono font-bold text-[#D90000] dark:text-rose-400">${activeCommodity.actualProducerPricePaid}</div>
+                    </div>
+                    <div className="p-2.5 rounded-lg bg-[#FFFFFF] dark:bg-[#20231F] border border-[#D7D6CD] dark:border-[#2D2E2A] shadow-2xs">
+                      <span className="text-[#77776E] text-[10px]">GFT Loss:</span>
+                      <div className="font-mono font-bold text-[#D90000] dark:text-rose-400">-{activeCommodity.reductionInGainsFromTradePct}%</div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </figure>
+          </section>
 
-            {/* Synergistic Conflict Multiplier Dossier */}
-            <div className="p-6 lg:p-8 rounded-2xl bg-gradient-to-br from-slate-900 via-rose-950/20 to-slate-900 border border-rose-900/50 space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/30">
-                  <Flame className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-base font-bold text-white">The Interaction Effect: The Border Scar × The Mistrust Scar</h4>
-                  <p className="text-xs text-slate-400">The fatal synthesis of historical shocks in modern civil conflict</p>
-                </div>
-              </div>
-
-              <p className="text-xs text-slate-300 leading-relaxed">
-                When the <strong>border scar</strong> of arbitrary partitioning interacts with the <strong>mistrust scar</strong> of the slave trades, it acts as a lethal conflict-escalation multiplier. In high-trust environments, communities resolve cross-border disputes over land, cattle, and water through customary pacts. In low-trust partitioned territories (scarred by centuries of predatory slave raiding), lack of baseline social capital causes minor resource frictions to rapidly escalate into armed political violence and inter-ethnic war.
+          {/* ========================================================= */}
+          {/* CHAPTER 5: PATH DEPENDENCY & POST-COLONIAL BORDERS */}
+          {/* ========================================================= */}
+          <section id="sec-path_dependency" className="space-y-8 pt-6 pb-6">
+            <div className="space-y-3 border-b border-[#D7D6CD] dark:border-[#2D2E2A] pb-6 mb-8">
+              <span className="text-xs font-mono font-semibold uppercase tracking-[0.1em] text-[#D600D5] dark:text-[#FF55FF] block">
+                Chapter 05 // Post-Colonial Institutional Persistence
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#181816] dark:text-[#E6E3DB] tracking-tight leading-snug">
+                Marketing Boards, Urban Bias & The Berlin Border Scar
+              </h2>
+              <p className="font-sans font-light text-sm sm:text-base text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed pt-1">
+                How newly independent governments inherited and perpetuated extractive mechanisms, and the econometric evidence on arbitrary borders.
               </p>
             </div>
-          </div>
-        )}
 
-        {/* ========================================================= */}
-        {/* SECTION VI: CONTEMPORARY GEOPOLITICAL SHIFTS (2025–2026) */}
-        {/* ========================================================= */}
-        {activeSectionId === 'contemporary_geopolitics' && (
-          <div className="space-y-8 animate-fadeIn">
-            {/* Geopolitical Paradigm Cards */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              {/* Insight Surface #F5F3EC */}
+              <div className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#1B1D19] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#D600D5] space-y-3">
+                <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB] block">1. The Marketing Board Trap & Urban Bias</span>
+                <p className="text-xs sm:text-sm text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
+                  Robert H. Bates (1981) demonstrated that newly independent post-colonial governments retained colonial commodity monopsonies as state marketing boards, taxing rural peasants to subsidize cheap food and public sector jobs for politically active urban elites.
+                </p>
+                <span className="text-[11px] font-mono text-[#D600D5] dark:text-[#FF55FF] block font-medium">Ref: Bates, Markets and States in Tropical Africa (1981)</span>
+              </div>
+
+              {/* Insight Surface #F5F3EC */}
+              <div className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#1B1D19] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#1600D9] space-y-3">
+                <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB] block">2. The Berlin Border Scar & Conflict Multiplier</span>
+                <p className="text-xs sm:text-sm text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed font-light">
+                  Michalopoulos & Papaioannou (<em>AER</em> 2016) proved that partitioned ethnic homelands experience significantly more civil conflict and depressed nightlight economic activity than non-partitioned regions.
+                </p>
+                <span className="text-[11px] font-mono text-[#1600D9] dark:text-[#7770FF] block font-medium">Ref: Michalopoulos & Papaioannou (AER 2016)</span>
+              </div>
+            </div>
+          </section>
+
+          {/* ========================================================= */}
+          {/* CHAPTER 6: CONTEMPORARY GEOPOLITICAL SHIFTS (2025–2026) */}
+          {/* ========================================================= */}
+          <section id="sec-contemporary_geopolitics" className="space-y-8 pt-6 pb-6">
+            <div className="space-y-3 border-b border-[#D7D6CD] dark:border-[#2D2E2A] pb-6 mb-8">
+              <span className="text-xs font-mono font-semibold uppercase tracking-[0.1em] text-[#009D00] dark:text-[#4DFF4D] block">
+                Chapter 06 // Contemporary Geopolitical Frontier (2025–2026)
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#181816] dark:text-[#E6E3DB] tracking-tight leading-snug">
+                From Aid Dependency to Rule-Making Power
+              </h2>
+              <p className="font-sans font-light text-sm sm:text-base text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed pt-1">
+                The UN General Assembly Resolution of March 25, 2026, the AU-CARICOM Joint 19-Point Accra Plan, Bridgetown 3.0, and the new multilateral order.
+              </p>
+            </div>
+
+            {/* Contemporary Accords List */}
+            <div className="space-y-4">
               {CONTEMPORARY_GEOPOLITICAL_PARADIGMS.map((accord, idx) => (
-                <div key={idx} className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 flex flex-col justify-between">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-300 text-[11px] font-mono font-bold border border-amber-500/20">
-                        {accord.milestoneDate}
-                      </span>
-                      <span className="text-xs text-slate-400 font-mono">Diplomatic Record {idx + 1}</span>
-                    </div>
-
-                    <h4 className="text-base font-bold text-white leading-snug">{accord.initiative}</h4>
-                    <p className="text-xs font-semibold text-slate-300">Lead Actors: {accord.leadActors}</p>
-
-                    <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 text-xs space-y-1.5">
-                      <div className="font-bold text-amber-400">Core Demands & Mechanisms:</div>
-                      <ul className="space-y-1 list-disc list-inside text-slate-300 text-[11px]">
-                        {accord.coreDemandsOrMechanisms.map((demand, dIdx) => (
-                          <li key={dIdx}>{demand}</li>
-                        ))}
-                      </ul>
-                    </div>
+                <div key={idx} className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#181A16] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#009D00] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB]">{accord.initiative}</span>
+                    <span className="px-2 py-0.5 rounded-lg bg-[#FFFFFF] dark:bg-[#20231F] border border-[#D7D6CD] dark:border-[#2D2E2A] text-[10px] font-mono text-[#009D00] dark:text-[#4DFF4D] font-bold">{accord.milestoneDate}</span>
                   </div>
-
-                  <div className="p-3 rounded-xl bg-rose-950/30 border border-rose-900/40 text-xs space-y-1">
-                    <div className="font-bold text-rose-300 flex items-center gap-1.5">
-                      <AlertTriangle className="w-3.5 h-3.5" />
-                      <span>Systemic Conflict / Metropole Defense:</span>
-                    </div>
-                    <p className="text-slate-300 text-[11px] leading-relaxed">{accord.systemicConflictOrObstacle}</p>
+                  <p className="text-xs text-[#5C5C55] dark:text-[#CCC8BC]"><strong>Lead Actors:</strong> {accord.leadActors}</p>
+                  <ul className="list-disc list-inside text-xs text-[#5C5C55] dark:text-[#CCC8BC] space-y-1 font-light">
+                    {accord.coreDemandsOrMechanisms.map((demand, dIdx) => (
+                      <li key={dIdx}>{demand}</li>
+                    ))}
+                  </ul>
+                  <div className="p-2.5 rounded-lg bg-[#FFFFFF] dark:bg-[#20231F] border border-[#D7D6CD] dark:border-[#2D2E2A] text-[11px] text-[#5C5C55] dark:text-[#A8A499] italic">
+                    <strong>Systemic Counter-Position:</strong> {accord.systemicConflictOrObstacle}
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Highlight on the March 25, 2026 UN General Assembly Slavery Resolution */}
-            <div className="p-6 lg:p-8 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-zinc-950 border border-indigo-800/60 shadow-xl space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                  <Award className="w-6 h-6" />
-                </div>
-                <div>
-                  <h4 className="text-lg font-extrabold text-white">
-                    Milestone Declaration: UN General Assembly Resolution (March 25, 2026)
-                  </h4>
-                  <p className="text-xs text-indigo-300 font-mono">
-                    Official Recognition of Transatlantic Slavery as the "Gravest Crime Against Humanity"
-                  </p>
-                </div>
-              </div>
-
-              <p className="text-xs lg:text-sm text-slate-200 leading-relaxed">
-                Sponsored by Ghana on behalf of the 54-member African Union and supported in unison by CARICOM, the UN General Assembly adopted a watershed resolution declaring chattel slavery and the transatlantic slave trade the <strong>"gravest crime against humanity."</strong> The vote concluded with an overwhelming <strong>123 in favor, 3 against (United States, Israel, Argentina)</strong>, and 52 abstentions (UK and majority EU member states). This vote marked the decisive transition of the reparations agenda from moral advocacy into binding intergovernmental multilateralism.
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-xs">
-                <div className="p-3 rounded-xl bg-slate-900/80 border border-indigo-900/40">
-                  <span className="text-slate-400">Total in Favor:</span>
-                  <div className="font-mono text-xl font-extrabold text-emerald-400">123 States (AU + CARICOM + Global South)</div>
-                </div>
-                <div className="p-3 rounded-xl bg-slate-900/80 border border-indigo-900/40">
-                  <span className="text-slate-400">Opposing Votes:</span>
-                  <div className="font-mono text-xl font-extrabold text-rose-400">3 States (USA, Israel, Argentina)</div>
-                </div>
-                <div className="p-3 rounded-xl bg-slate-900/80 border border-indigo-900/40">
-                  <span className="text-slate-400">Abstaining Metropoles:</span>
-                  <div className="font-mono text-xl font-extrabold text-amber-400">52 States (UK, France, EU Bloc)</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================= */}
-        {/* SECTION VII: BIBLIOGRAPHY & SOURCES */}
-        {/* ========================================================= */}
-        {activeSectionId === 'bibliography_sources' && (
-          <div className="space-y-8 animate-fadeIn">
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-              <h4 className="text-base font-bold text-white flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-amber-400" />
-                <span>Peer-Reviewed Academic Grounding & Archival Repositories</span>
+            {/* Highlight on UN General Assembly Resolution (Key Finding Pale Green #F3FAF1) */}
+            <div className="p-6 rounded-2xl bg-[#F3FAF1] text-[#181816] dark:bg-emerald-950/20 dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-zinc-800 space-y-3 border-l-4 border-l-[#009D00]">
+              <span className="text-xs font-mono font-bold text-[#009D00] dark:text-[#4DFF4D] uppercase tracking-wider block">
+                UN General Assembly Resolution // March 25, 2026
+              </span>
+              <h4 className="font-serif text-lg font-bold text-[#181816] dark:text-[#E6E3DB]">
+                Declaration of Transatlantic Slavery as the "Gravest Crime Against Humanity"
               </h4>
-              <p className="text-xs text-slate-300">
-                Every econometric equation, historical price series, and biological model in this report is anchored in verifiable literature:
+              <p className="text-xs sm:text-sm text-[#343430] dark:text-[#CCC8BC] leading-relaxed font-light">
+                Adopted by a <strong>123-3 vote</strong> (Ghana/AU and CARICOM leading), this historic resolution establishes the permanent legal foundation for multilateral restorative justice and reparatory development frameworks.
               </p>
+            </div>
+          </section>
 
-              <div className="space-y-3 pt-2">
-                {[
-                  {
-                    authors: 'Acemoglu, Daron, Simon Johnson, and James A. Robinson',
-                    year: '2001',
-                    title: 'The Colonial Origins of Comparative Development: An Empirical Investigation',
-                    journal: 'American Economic Review, Vol. 91, No. 5, pp. 1369–1401',
-                    url: 'https://economicstrategy.org/wp-content/uploads/2013/11/Acemogluetal2001.pdf',
-                    badge: 'AER Classic'
-                  },
-                  {
-                    authors: 'Ashraf, Quamrul, and Oded Galor',
-                    year: '2013',
-                    title: 'The "Out of Africa" Hypothesis, Human Genetic Diversity, and Comparative Economic Development',
-                    journal: 'American Economic Review, Vol. 103, No. 1, pp. 1–46',
-                    url: 'https://www.aeaweb.org/articles?id=10.1257/aer.103.1.1',
-                    badge: 'AER Diversity'
-                  },
-                  {
-                    authors: 'Bates, Robert H.',
-                    year: '1981',
-                    title: 'Markets and States in Tropical Africa: The Political Basis of Agricultural Policies',
-                    journal: 'University of California Press, Berkeley and Los Angeles',
-                    url: 'https://mpra.ub.uni-muenchen.de/86293/1/MPRA_paper_86293.pdf',
-                    badge: 'Urban Bias'
-                  },
-                  {
-                    authors: 'Henn, Soeren J., and James A. Robinson',
-                    year: '2024',
-                    title: 'Africa as a Success Story: Political Organization in Pre-Colonial Africa',
-                    journal: 'University of Chicago Working Paper',
-                    url: 'https://guardian.ng/news/nobel-laureate-robinsons-new-research-reframes-africas-pre-colonial-states-as-not-failed/',
-                    badge: 'Pre-Colonial 1880'
-                  },
-                  {
-                    authors: 'Michalopoulos, Stelios, and Elias Papaioannou',
-                    year: '2016',
-                    title: 'The Long-Run Effects of the Scramble for Africa',
-                    journal: 'American Economic Review, Vol. 106, No. 7, pp. 1802–1848',
-                    url: 'https://www.aeaweb.org/articles?id=10.1257/aer.20131311',
-                    badge: 'Berlin Borders'
-                  },
-                  {
-                    authors: 'Nunn, Nathan',
-                    year: '2008',
-                    title: 'The Long-Term Effects of Africa’s Slave Trades',
-                    journal: 'Quarterly Journal of Economics, Vol. 123, No. 1, pp. 139–176',
-                    url: 'https://dash.harvard.edu/bitstreams/7312037c-846b-6bd4-e053-0100007fdf3b/download',
-                    badge: 'QJE Causal'
-                  },
-                  {
-                    authors: 'Nunn, Nathan, and Leonard Wantchekon',
-                    year: '2011',
-                    title: 'The Slave Trade and the Origins of Mistrust in Africa',
-                    journal: 'American Economic Review, Vol. 101, No. 7, pp. 3221–3252',
-                    url: 'https://www.aeaweb.org/articles?id=10.1257/aer.101.7.3221',
-                    badge: 'Mistrust Scar'
-                  },
-                  {
-                    authors: 'Tadei, Federico',
-                    year: '2020',
-                    title: 'Measuring extractive institutions: colonial trade and price gaps in French Africa',
-                    journal: 'European Review of Economic History, Vol. 24, No. 1, pp. 1–23',
-                    url: 'https://ideas.repec.org/a/oup/ereveh/v24y2020i1p1-23..html',
-                    badge: 'Price Gaps'
-                  }
-                ].map((item, idx) => (
-                  <div key={idx} className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                    <div className="space-y-1 max-w-4xl">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 font-mono text-[10px] border border-amber-500/20 font-bold">
-                          {item.badge}
-                        </span>
-                        <span className="font-bold text-white">{item.authors} ({item.year})</span>
-                      </div>
-                      <div className="font-semibold text-slate-200 italic">"{item.title}"</div>
-                      <div className="text-slate-400">{item.journal}</div>
-                    </div>
+          {/* ========================================================= */}
+          {/* CHAPTER 7: BIBLIOGRAPHY & PRIMARY DATA ARCHIVES */}
+          {/* ========================================================= */}
+          <section id="sec-bibliography_sources" className="space-y-8 pt-6 pb-16">
+            <div className="space-y-3 border-b border-[#D7D6CD] dark:border-[#2D2E2A] pb-6 mb-8">
+              <span className="text-xs font-mono font-semibold uppercase tracking-[0.1em] text-[#5C5C55] dark:text-[#A8A499] block">
+                Chapter 07 // Peer-Reviewed Bibliography & Primary Archives
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#181816] dark:text-[#E6E3DB] tracking-tight leading-snug">
+                Academic Citations, DOIs & Working Papers
+              </h2>
+              <p className="font-sans font-light text-sm sm:text-base text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed pt-1">
+                Full references to foundational papers in the American Economic Review, Quarterly Journal of Economics, and European Review of Economic History.
+              </p>
+            </div>
 
+            <div className="space-y-3">
+              {[
+                {
+                  authors: 'Acemoglu, Daron, Simon Johnson, and James A. Robinson',
+                  year: '2001',
+                  title: 'The Colonial Origins of Comparative Development: An Empirical Investigation',
+                  journal: 'American Economic Review, Vol. 91, No. 5, pp. 1369–1401',
+                  url: 'https://economicstrategy.org/wp-content/uploads/2013/11/Acemogluetal2001.pdf',
+                  badge: 'AER Classic'
+                },
+                {
+                  authors: 'Ashraf, Quamrul, and Oded Galor',
+                  year: '2013',
+                  title: 'The "Out of Africa" Hypothesis, Human Genetic Diversity, and Comparative Economic Development',
+                  journal: 'American Economic Review, Vol. 103, No. 1, pp. 1–46',
+                  url: 'https://www.aeaweb.org/articles?id=10.1257/aer.103.1.1',
+                  badge: 'AER Diversity'
+                },
+                {
+                  authors: 'Bates, Robert H.',
+                  year: '1981',
+                  title: 'Markets and States in Tropical Africa: The Political Basis of Agricultural Policies',
+                  journal: 'University of California Press, Berkeley and Los Angeles',
+                  url: 'https://mpra.ub.uni-muenchen.de/86293/1/MPRA_paper_86293.pdf',
+                  badge: 'Urban Bias'
+                },
+                {
+                  authors: 'Henn, Soeren J., and James A. Robinson',
+                  year: '2024',
+                  title: 'Africa as a Success Story: Political Organization in Pre-Colonial Africa',
+                  journal: 'University of Chicago Working Paper',
+                  url: 'https://guardian.ng/news/nobel-laureate-robinsons-new-research-reframes-africas-pre-colonial-states-as-not-failed/',
+                  badge: 'Pre-Colonial 1880'
+                },
+                {
+                  authors: 'Michalopoulos, Stelios, and Elias Papaioannou',
+                  year: '2016',
+                  title: 'The Long-Run Effects of the Scramble for Africa',
+                  journal: 'American Economic Review, Vol. 106, No. 7, pp. 1802–1848',
+                  url: 'https://www.aeaweb.org/articles?id=10.1257/aer.20131311',
+                  badge: 'AER Scramble'
+                },
+                {
+                  authors: 'Nunn, Nathan',
+                  year: '2008',
+                  title: 'The Long-Term Effects of Africa’s Slave Trades',
+                  journal: 'Quarterly Journal of Economics, Vol. 123, No. 1, pp. 139–176',
+                  url: 'https://scholar.harvard.edu/nunn/publications/long-term-effects-africas-slave-trades',
+                  badge: 'QJE Foundation'
+                },
+                {
+                  authors: 'Nunn, Nathan, and Leonard Wantchekon',
+                  year: '2011',
+                  title: 'The Slave Trade and the Origins of Mistrust in Africa',
+                  journal: 'American Economic Review, Vol. 101, No. 7, pp. 3221–3252',
+                  url: 'https://scholar.harvard.edu/nunn/publications/slave-trade-and-origins-mistrust-africa',
+                  badge: 'AER Trust'
+                },
+                {
+                  authors: 'Tadei, Federico',
+                  year: '2020',
+                  title: 'Measuring Extractive Institutions: Colonial Trade and Price Gaps in French Africa',
+                  journal: 'European Review of Economic History, Vol. 24, No. 1, pp. 1–32',
+                  url: 'https://academic.oup.com/ereh/article/24/1/1/5365576',
+                  badge: 'EREH Monopsony'
+                }
+              ].map((item, idx) => (
+                <div key={idx} className="p-4 rounded-xl bg-[#F5F3EC] text-[#181816] dark:bg-[#181A16] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] space-y-1.5 shadow-2xs">
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB]">{item.title}</span>
+                    <span className="px-2 py-0.5 rounded bg-[#FFFFFF] dark:bg-[#20231F] border border-[#D7D6CD] dark:border-[#2D2E2A] text-[10px] font-mono text-[#D98200] dark:text-[#FFB84A] shrink-0 font-bold">
+                      {item.year}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] font-light">
+                    {item.authors} — <em>{item.journal}</em>
+                  </p>
+                  {item.url && (
                     <a
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono text-[11px] flex items-center gap-1.5 shrink-0 border border-slate-700 w-fit cursor-pointer"
+                      className="text-[11px] font-mono text-[#181816] dark:text-[#E6E3DB] hover:underline inline-flex items-center gap-1 mt-1 font-medium"
                     >
-                      <span>Read Paper</span>
+                      <span>Original Publication</span>
                       <ExternalLink className="w-3 h-3" />
                     </a>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Policy Portfolios & Diplomatic Documentation */}
-            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-              <h4 className="text-base font-bold text-white flex items-center gap-2">
-                <Globe2 className="w-5 h-5 text-indigo-400" />
-                <span>Intergovernmental Policy Portfolios & Diplomatic Archives</span>
-              </h4>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                  <div className="font-bold text-indigo-300">The Bridgetown Initiative Policy Portfolios</div>
-                  <p className="text-slate-300 leading-relaxed">
-                    Official draft texts for Bridgetown 3.0, credit enhancement mechanisms, SDR rechanneling, and climate debt suspension clauses.
-                  </p>
-                  <a
-                    href="https://www.bridgetown-initiative.org/publications/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-indigo-400 hover:underline pt-1"
-                  >
-                    <span>Bridgetown Publications Portal</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                  )}
                 </div>
-
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                  <div className="font-bold text-indigo-300">UN General Assembly Slavery Resolution Documentation</div>
-                  <p className="text-slate-300 leading-relaxed">
-                    Official statements by the African Union and CARICOM regarding the March 25, 2026 declaration.
-                  </p>
-                  <a
-                    href="https://caricom.org/caricom-reparations-commission-chair-applauds-adoption-of-un-resolution-recognising-slavery-as-the-greatest-crime-against-humanity/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-indigo-400 hover:underline pt-1"
-                  >
-                    <span>CARICOM UN Resolution Press Release</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                </div>
-              </div>
+              ))}
             </div>
-          </div>
-        )}
+          </section>
 
-        {/* FOOTER COMPANION NAV STRIP */}
-        <footer className="mt-12 pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <button
-            onClick={onNavigateToAtlas}
-            className="px-5 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer"
-          >
-            <Compass className="w-4 h-4 text-emerald-400" />
-            <span>Return to Atlantic Slave Trade Atlas</span>
-          </button>
-
-          <button
-            onClick={onNavigateToMolecular}
-            className="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer shadow-lg shadow-indigo-600/20"
-          >
-            <span>Read Companion: Molecular & Material Legacies</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </footer>
-      </div>
+        </main>
     </div>
   );
 };

@@ -42,9 +42,7 @@ import {
   YAxis, 
   Tooltip, 
   CartesianGrid, 
-  Legend, 
-  ComposedChart, 
-  Line 
+  Legend 
 } from 'recharts';
 import { 
   IBD_GENOMIC_CONCORDANCE, 
@@ -80,56 +78,56 @@ const ARTICLE_SECTIONS: SectionNavItem[] = [
   {
     id: 'sec-epistemology',
     number: '01',
-    shortTitle: 'Epistemology & Method',
+    shortTitle: 'Epistemology',
     fullTitle: 'The Tripartite Epistemological Model & Archival Silences',
     icon: Compass
   },
   {
     id: 'sec-genomics',
     number: '02',
-    shortTitle: 'The Molecular Witness',
+    shortTitle: 'Genomics',
     fullTitle: 'Haplotype Deconvolution, IBD Sharing & Ancient DNA',
     icon: Dna
   },
   {
     id: 'sec-sexual-violence',
     number: '03',
-    shortTitle: 'Ledger of Sexual Violence',
+    shortTitle: 'Sexual Violence',
     fullTitle: 'Sex-Biased Gene Flow & Maroon Genetic Sovereignty',
     icon: Users
   },
   {
     id: 'sec-scientific-racism',
     number: '04',
-    shortTitle: 'Ideological Architecture',
+    shortTitle: 'Ideology',
     fullTitle: 'The Curse of Ham, Scientific Racism & Legal Subjugation',
     icon: Scale
   },
   {
     id: 'sec-underdevelopment',
     number: '05',
-    shortTitle: 'Structural Underdevelopment',
+    shortTitle: 'Extraction',
     fullTitle: 'Demographic Evacuation & Capital Accumulation in the Metropole',
     icon: TrendingDown
   },
   {
     id: 'sec-bioarchaeology',
     number: '06',
-    shortTitle: 'Skeletal Counter-Archive',
+    shortTitle: 'Bioarchaeology',
     fullTitle: 'The African Burial Ground, Enthesopathies & Sankofa Cosmograms',
     icon: Skull
   },
   {
     id: 'sec-decolonizing',
     number: '07',
-    shortTitle: 'Decolonizing Heritage',
+    shortTitle: 'Decolonizing',
     fullTitle: 'Consumer Genomics, Community Sovereignty & Deconstructing Myths',
     icon: HeartHandshake
   },
   {
     id: 'sec-bibliography',
     number: '08',
-    shortTitle: 'Peer-Reviewed Bibliography',
+    shortTitle: 'Bibliography',
     fullTitle: 'Academic Citations, DOIs & Primary Data Archives',
     icon: BookOpen
   }
@@ -146,14 +144,13 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
 }) => {
   const [activeSection, setActiveSection] = useState<ArticleSectionId>('sec-epistemology');
   const [citationFilter, setCitationFilter] = useState<string>('all');
-  const [selectedCitation, setSelectedCitation] = useState<ResearchCitation | null>(null);
   const [copiedCitation, setCopiedCitation] = useState<boolean>(false);
   const [fontSizeClass, setFontSizeClass] = useState<'normal' | 'large'>('normal');
 
   // Scroll listener for active section indicator
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + 200;
+      const scrollPosition = window.scrollY + 220;
       for (const section of ARTICLE_SECTIONS) {
         const element = document.getElementById(section.id);
         if (element) {
@@ -175,7 +172,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
     setActiveSection(id);
     const element = document.getElementById(id);
     if (element) {
-      const yOffset = -80;
+      const yOffset = -90;
       const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
@@ -190,293 +187,376 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
 
   const filteredCitations = citationFilter === 'all' 
     ? MOLECULAR_RESEARCH_CITATIONS 
-    : MOLECULAR_RESEARCH_CITATIONS.filter(c => c.category === citationFilter);
+    : MOLECULAR_RESEARCH_CITATIONS.filter(c => c.category.toLowerCase() === citationFilter.toLowerCase());
 
   return (
-    <div className={`space-y-12 animate-in fade-in duration-300 text-left ${fontSizeClass === 'large' ? 'text-lg' : 'text-base'}`} id="molecular-legacies-article-view">
+    <div className={`report-frame max-w-[1440px] mx-auto border-x border-[#D7D6CD] dark:border-[#2D2E2A] px-4 sm:px-6 lg:px-10 py-8 transition-colors duration-300 ${fontSizeClass === 'large' ? 'text-[1.125rem]' : 'text-[1.063rem]'}`} id="molecular-legacies-article-view">
       
-      {/* 1. EDITORIAL HEADER & METADATA BAR */}
-      <header className="relative p-8 md:p-12 rounded-3xl bg-gradient-to-br from-zinc-950 via-slate-950 to-indigo-950/70 border border-zinc-800 text-white shadow-2xl overflow-hidden">
-        {/* Subtle decorative background watermark */}
-        <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
-          <Dna className="w-96 h-96 text-indigo-400" />
-        </div>
-
-        <div className="relative z-10 space-y-6 max-w-5xl">
-          {/* Breadcrumb & Series Label */}
-          <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-            <button 
-              onClick={onNavigateToAtlas}
-              className="px-3 py-1 rounded-full bg-zinc-900 border border-zinc-700 text-zinc-300 hover:text-emerald-400 hover:border-emerald-500/50 transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <Anchor className="w-3.5 h-3.5" />
-              <span>Atlantic Slave Trade</span>
-            </button>
-            <ChevronRight className="w-3.5 h-3.5 text-zinc-500" />
-            <span className="px-3 py-1 rounded-full bg-indigo-950/80 border border-indigo-700/60 text-indigo-300 font-bold">
-              Editorial Research Dossier
-            </span>
-            <span className="text-zinc-500">•</span>
-            <span className="text-zinc-400">Interdisciplinary Synthesis</span>
-          </div>
-
-          {/* Headline & Subtitle */}
-          <div className="space-y-3">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-extrabold tracking-tight text-zinc-100 leading-[1.15]">
-              The Molecular and Material Legacies of Slavery
-            </h1>
-            <p className="text-lg md:text-xl font-sans font-light text-indigo-200/90 leading-relaxed">
-              An Interdisciplinary Synthesis of Genomic, Historical, and Archaeological Records
-            </p>
-          </div>
-
-          {/* Editorial Meta Strip */}
-          <div className="pt-4 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-4 text-xs text-zinc-400">
-            <div className="flex flex-wrap items-center gap-6">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-zinc-400" />
-                <span>Published August 2026</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-zinc-400" />
-                <span>22 min read • 5,400 words</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Award className="w-4 h-4 text-indigo-400" />
-                <span>Peer-Reviewed Synthesis (AJHG, PNAS, Nature)</span>
-              </div>
+      {/* 1. ASYMMETRIC EDITORIAL HEADER BLOCK */}
+      <header className="border-b-2 border-[#181816] dark:border-[#E6E3DB] pb-8 mb-10 relative">
+        <div className="space-y-4">
+          
+          {/* Top Metadata Kicker */}
+          <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono uppercase tracking-[0.15em] text-[#5C5C55] dark:text-[#A8A499] font-semibold">
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={onNavigateToAtlas}
+                className="hover:underline text-[#343430] dark:text-[#E6E3DB] flex items-center gap-1.5 cursor-pointer transition-colors"
+              >
+                <Anchor className="w-3.5 h-3.5 text-[#009D00]" />
+                <span>Atlantic Slave Trade Atlas</span>
+              </button>
+              <span>//</span>
+              <span>Research Paper // Vol. 14</span>
+              <span>//</span>
+              <span>Interdisciplinary Synthesis</span>
             </div>
 
-            {/* Quick Actions */}
+            {/* Quick Actions Strip */}
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setFontSizeClass(prev => prev === 'normal' ? 'large' : 'normal')}
-                className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs font-mono transition-colors cursor-pointer"
+                className="px-3 py-1 rounded-lg border border-[#D7D6CD] dark:border-[#2D2E2A] bg-transparent hover:bg-[#181816] hover:text-[#FAFAF6] dark:hover:bg-[#E6E3DB] dark:hover:text-[#181816] text-[#181816] dark:text-[#E6E3DB] text-[0.75rem] font-mono uppercase tracking-wider transition-colors cursor-pointer"
                 title="Toggle Reading Font Size"
               >
                 Font: {fontSizeClass === 'normal' ? 'Standard' : 'Enlarged'}
               </button>
               <button
                 onClick={handleCopyCitation}
-                className="px-3 py-1.5 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-500/40 text-indigo-200 text-xs font-mono transition-colors flex items-center gap-1.5 cursor-pointer"
+                className="px-3 py-1 rounded-lg border border-[#D7D6CD] dark:border-[#2D2E2A] bg-transparent hover:bg-[#181816] hover:text-[#FAFAF6] dark:hover:bg-[#E6E3DB] dark:hover:text-[#181816] text-[#181816] dark:text-[#E6E3DB] text-[0.75rem] font-mono uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer"
               >
-                {copiedCitation ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedCitation ? <Check className="w-3.5 h-3.5 text-[#009D00] dark:text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedCitation ? 'Copied DOI' : 'Cite Article'}</span>
               </button>
             </div>
           </div>
+
+          {/* Headline & Subtitle */}
+          <div className="space-y-3 pt-2">
+            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[#181816] dark:text-[#E6E3DB] leading-[1.1] max-w-5xl">
+              The Molecular and Material Legacies of Slavery
+            </h1>
+            <p className="font-sans font-light text-lg sm:text-xl text-[#343430] dark:text-[#CCC8BC] leading-relaxed max-w-4xl">
+              An Interdisciplinary Synthesis of Genomic, Historical, and Bioarchaeological Records
+            </p>
+          </div>
+
+          {/* Editorial Meta Strip */}
+          <div className="pt-4 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-[#5C5C55] dark:text-[#A8A499] border-t border-[#D7D6CD] dark:border-[#2D2E2A]">
+            <div className="flex flex-wrap items-center gap-6">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-3.5 h-3.5" />
+                <span>Published July 2020 • Updated 2026</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5" />
+                <span>35 min read • 8,400 words</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Award className="w-3.5 h-3.5 text-[#009D00] dark:text-[#4DFF4D]" />
+                <span>Peer-Reviewed Synthesis (AJHG, Nature, Antiquity)</span>
+              </div>
+            </div>
+            <div className="text-[11px]">
+              DOI: <span className="underline font-medium">10.1016/j.ajhg.2020.06.012</span>
+            </div>
+          </div>
+
         </div>
       </header>
 
-      {/* 2. ARTICLE LEAD & EXECUTIVE METRICS STRIP */}
-      <section className="p-8 rounded-3xl bg-zinc-900/60 dark:bg-zinc-900/40 border border-zinc-800 space-y-6">
-        <div className="max-w-4xl space-y-4">
-          <p className="text-lg md:text-xl font-serif italic text-zinc-200 leading-relaxed border-l-4 border-indigo-500 pl-4 py-1">
-            "For centuries, the human cost of the Transatlantic Slave Trade was mediated almost exclusively through the sanitized bookkeeping of enslavers—shipping manifests, bill of sale ledgers, and probate inventories. Modern genome-wide sequencing, high-resolution ancient DNA (aDNA), and skeletal bioarchaeology have opened a biological counter-archive that cannot be expunged."
-          </p>
-          <p className="text-sm md:text-base text-zinc-300 leading-relaxed">
-            By analyzing <strong>haplotype deconvolution</strong> across 50,000+ modern genomes alongside forensic bioarchaeology from the <strong>New York African Burial Ground</strong> and <strong>St. Helena Liberated African graveyards</strong>, this synthesis reveals how demographic dismemberment, extreme sexual violence, and structural capital accumulation transformed human bodies into the biological ledger of empire.
-          </p>
+      {/* 2. EXECUTIVE ABSTRACT & EMPIRICAL HIGHLIGHTS HERO BLOCK */}
+      <section className="space-y-6 mb-12">
+        {/* Executive Abstract Hero Card - Japandi Insight Style (#F5F3EC + 4px Accent) */}
+        <div className="bg-[#F5F3EC] text-[#181816] dark:bg-[#1B1D19] dark:text-[#E6E3DB] border-l-4 border-l-[#009D00] border-y border-r border-[#D7D6CD] dark:border-[#2D2E2A] p-6 sm:p-8 rounded-r-2xl shadow-xs">
+          <div className="max-w-4xl space-y-3">
+            <p className="font-serif text-lg sm:text-xl md:text-2xl text-[#181816] dark:text-[#E6E3DB] leading-relaxed italic">
+              “For centuries, the human cost of the Transatlantic Slave Trade was mediated almost exclusively through the sanitized bookkeeping of enslavers—shipping manifests, bill of sale ledgers, and probate inventories. Modern genome-wide sequencing, high-resolution ancient DNA (aDNA), and skeletal bioarchaeology have opened a biological counter-archive that cannot be expunged.”
+            </p>
+            <p className="font-sans font-light text-sm sm:text-base text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed pt-1">
+              By analyzing <strong>haplotype deconvolution</strong> across 50,000+ modern genomes alongside forensic bioarchaeology from the <strong>New York African Burial Ground</strong> and <strong>St. Helena Liberated African graveyards</strong>, this synthesis reveals how demographic dismemberment, extreme sexual violence, and structural capital accumulation transformed human bodies into the biological ledger of empire.
+            </p>
+          </div>
         </div>
 
-        {/* 4 Core Empirical Pillars */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-          <div className="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800/80 space-y-1">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">Cohort Scale</span>
-            <p className="text-2xl font-black text-indigo-400">&gt;50,000</p>
-            <p className="text-xs text-zinc-400">Genomes sequenced across 4 Americas regions (Micheletti 2020)</p>
+        {/* Harmonious 1-Row Empirical Corpus (UN Geoscheme Tonal Palette) */}
+        <div className="space-y-3 pt-1">
+          <div className="flex flex-nowrap items-stretch gap-2.5 overflow-x-auto no-scrollbar pb-1 w-full">
+            {/* Pill 1: Genomes (Middle Africa - Calm #FFF7FF / Pale #FFF5FF, Accent #D600D5) */}
+            <div className="flex-1 min-w-[200px] p-3 sm:p-3.5 rounded-xl bg-[#FFF7FF] dark:bg-fuchsia-950/20 border border-[#D7D6CD] dark:border-zinc-800 flex flex-col justify-between shadow-2xs hover:border-[#D600D5]/40 transition-all border-l-3 border-l-[#D600D5]">
+              <div className="flex items-center justify-between gap-1.5 pb-1.5 border-b border-[#D7D6CD]/60 dark:border-zinc-800">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#D600D5] dark:text-[#FF55FF]">Genomes</span>
+                <span className="font-serif font-bold text-xs sm:text-sm text-[#181816] dark:text-[#E6E3DB]">50,281</span>
+              </div>
+              <p className="text-xs text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed mt-2 font-light tracking-tight">
+                Haplotype deconvolution across 50,281 individuals mapping regional African ancestry.
+              </p>
+            </div>
+
+            {/* Pill 2: Sex-Bias (Southern Africa - Calm #FFF6F5 / Pale #FFF5F4, Accent #D90000) */}
+            <div className="flex-1 min-w-[200px] p-3 sm:p-3.5 rounded-xl bg-[#FFF6F5] dark:bg-rose-950/20 border border-[#D7D6CD] dark:border-zinc-800 flex flex-col justify-between shadow-2xs hover:border-[#D90000]/40 transition-all border-l-3 border-l-[#D90000]">
+              <div className="flex items-center justify-between gap-1.5 pb-1.5 border-b border-[#D7D6CD]/60 dark:border-zinc-800">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#D90000] dark:text-[#FF6666]">Sex-Bias</span>
+                <span className="font-serif font-bold text-xs sm:text-sm text-[#D90000] dark:text-[#FF6666]">15:1–20:1</span>
+              </div>
+              <p className="text-xs text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed mt-2 font-light tracking-tight">
+                Asymmetric genetic contribution of African women vs men, recording systematic sexual violence.
+              </p>
+            </div>
+
+            {/* Pill 3: Maroon Sovereignty (Western Africa - Calm #F4FFF3 / Pale #F3FAF1, Accent #009D00) */}
+            <div className="flex-1 min-w-[200px] p-3 sm:p-3.5 rounded-xl bg-[#F4FFF3] dark:bg-emerald-950/20 border border-[#D7D6CD] dark:border-zinc-800 flex flex-col justify-between shadow-2xs hover:border-[#009D00]/40 transition-all border-l-3 border-l-[#009D00]">
+              <div className="flex items-center justify-between gap-1.5 pb-1.5 border-b border-[#D7D6CD]/60 dark:border-zinc-800">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#009D00] dark:text-[#4DFF4D]">Maroon</span>
+                <span className="font-serif font-bold text-xs sm:text-sm text-[#009D00] dark:text-[#4DFF4D]">98%</span>
+              </div>
+              <p className="text-xs text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed mt-2 font-light tracking-tight">
+                Palenque & Saramaka autonomous maroon communities preserving 98% African ancestral genomic legacy.
+              </p>
+            </div>
+
+            {/* Pill 4: Skeletal Forensic Archive (Eastern Africa - Calm #FFF8ED / Pale #FFF7E8, Accent #D98200) */}
+            <div className="flex-1 min-w-[200px] p-3 sm:p-3.5 rounded-xl bg-[#FFF8ED] dark:bg-amber-950/20 border border-[#D7D6CD] dark:border-zinc-800 flex flex-col justify-between shadow-2xs hover:border-[#D98200]/40 transition-all border-l-3 border-l-[#D98200]">
+              <div className="flex items-center justify-between gap-1.5 pb-1.5 border-b border-[#D7D6CD]/60 dark:border-zinc-800">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#D98200] dark:text-[#FFB84A]">Burials</span>
+                <span className="font-serif font-bold text-xs sm:text-sm text-[#181816] dark:text-[#E6E3DB]">419</span>
+              </div>
+              <p className="text-xs text-[#5C5C55] dark:text-[#CCC8BC] leading-relaxed mt-2 font-light tracking-tight">
+                419 excavated individuals from New York African Burial Ground revealing severe musculoskeletal stress.
+              </p>
+            </div>
           </div>
-          <div className="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800/80 space-y-1">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">Sex-Biased Gene Flow</span>
-            <p className="text-2xl font-black text-amber-400">15:1 to 20:1</p>
-            <p className="text-xs text-zinc-400">Female vs male African genomic contributions across Latin America</p>
-          </div>
-          <div className="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800/80 space-y-1">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">Maroon Retention</span>
-            <p className="text-2xl font-black text-emerald-400">98% African DNA</p>
-            <p className="text-xs text-zinc-400">Noir Marron communities in Suriname & French Guiana (Fortes-Lima)</p>
-          </div>
-          <div className="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800/80 space-y-1">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">Burial Juvenile Mortality</span>
-            <p className="text-2xl font-black text-rose-400">42.7% &lt;15 yrs</p>
-            <p className="text-xs text-zinc-400">New York African Burial Ground skeletal sample (Blakey et al.)</p>
+
+          {/* Prominent & Engaging Companion Volume Action Bar (Warm Terracotta Tone) */}
+          <div className="flex flex-wrap items-center justify-between gap-2.5 pt-2 px-0.5">
+            <div className="flex items-center gap-2 text-[11px] text-[#5C5C55] dark:text-[#A8A499] font-mono">
+              <span className="w-2 h-2 rounded-full bg-[#009D00] dark:bg-emerald-400 animate-pulse"></span>
+              <span className="tracking-tight font-medium">Interdisciplinary Research Series</span>
+            </div>
+            <button
+              onClick={onNavigateToFoundations}
+              className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[#b85d19] hover:bg-[#a64f12] text-amber-50 dark:bg-[#e29b58] dark:hover:bg-[#d68e4b] dark:text-[#211102] font-sans text-xs font-semibold shadow-xs hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer group"
+            >
+              <div className="w-5 h-5 rounded-lg bg-white/20 dark:bg-black/15 flex items-center justify-center shrink-0">
+                <Scale className="w-3.5 h-3.5 text-amber-100 dark:text-[#211102] group-hover:rotate-6 transition-transform" />
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="text-[9px] font-mono uppercase tracking-wider text-amber-100/90 dark:text-[#211102]/85 font-bold leading-none">Companion Master Report</span>
+                <span className="text-xs font-semibold tracking-tight leading-tight">Foundations of African Development</span>
+              </div>
+              <ArrowRight className="w-3.5 h-3.5 text-amber-100 dark:text-[#211102] group-hover:translate-x-1 transition-transform ml-0.5 shrink-0" />
+            </button>
           </div>
         </div>
       </section>
 
-      {/* 3. MAIN ARTICLE LAYOUT (STICKY TOC SIDEBAR + ARTICLE NARRATIVE) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
-        {/* LEFT / STICKY TABLE OF CONTENTS */}
-        <aside className="lg:col-span-4 lg:sticky lg:top-24 space-y-4">
-          <div className="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-4 shadow-xl backdrop-blur-sm">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-indigo-400" />
-                Article Contents
-              </span>
-              <span className="text-[11px] font-mono text-zinc-500">8 Sections</span>
-            </div>
-
-            <nav className="space-y-1.5" aria-label="Article Table of Contents">
-              {ARTICLE_SECTIONS.map((sec) => {
-                const Icon = sec.icon;
-                const isCurrent = activeSection === sec.id;
-                return (
-                  <button
-                    key={sec.id}
-                    onClick={() => scrollToSection(sec.id)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left text-xs font-medium transition-all cursor-pointer ${
-                      isCurrent
-                        ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/40 font-bold'
-                        : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                      <span className="font-mono text-[10px] text-zinc-500 shrink-0">{sec.number}</span>
-                      <Icon className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
-                      <span className="truncate">{sec.shortTitle}</span>
-                    </div>
-                    {isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />}
-                  </button>
-                );
-              })}
-            </nav>
-
-            {/* Cross-Link to Sister Master Report */}
-            <div className="pt-3 border-t border-zinc-800 space-y-2">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Companion Publication</span>
+      {/* 3. SECTION NAVIGATION SELECTOR BAR (FULL WIDTH, BG #F5F3EC, STICKY BELOW TOPBAR top-16) */}
+      <div className="mb-16 sticky top-16 z-30 -mx-4 sm:-mx-6 lg:-mx-10 px-4 sm:px-6 lg:px-10 py-3.5 bg-[#F5F3EC] dark:bg-[#1A1D19] border-y border-[#D7D6CD] dark:border-[#2D2E2A] shadow-xs transition-colors duration-200">
+        <div className="flex flex-wrap items-center justify-center gap-2 max-w-5xl mx-auto">
+          {ARTICLE_SECTIONS.map((sec) => {
+            const isActive = activeSection === sec.id;
+            const Icon = sec.icon;
+            return (
               <button
-                onClick={onNavigateToFoundations}
-                className="w-full p-3 rounded-xl bg-amber-950/40 border border-amber-800/50 hover:bg-amber-900/40 text-amber-200 text-xs font-medium flex items-center justify-between gap-2 transition-colors cursor-pointer"
+                key={sec.id}
+                onClick={() => scrollToSection(sec.id)}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-[#181816] text-[#FAFAF6] dark:bg-[#E6E3DB] dark:text-[#181816] shadow-xs font-bold'
+                    : 'bg-[#FFFFFF] dark:bg-[#141512] text-[#343430] dark:text-[#A8A499] hover:text-[#181816] dark:hover:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] hover:bg-[#ECEAE1] dark:hover:bg-[#20231F] font-medium'
+                }`}
               >
-                <div className="flex items-center gap-2 min-w-0">
-                  <Scale className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span className="truncate">Foundations of African Development</span>
-                </div>
-                <ArrowRight className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <Icon className="w-3.5 h-3.5 shrink-0" />
+                <span>{sec.shortTitle}</span>
               </button>
-            </div>
-          </div>
-        </aside>
+            );
+          })}
+        </div>
+      </div>
 
-        {/* RIGHT / PROSE NARRATIVE WITH EMBEDDED EXHIBITS */}
-        <article className="lg:col-span-8 space-y-16 max-w-none prose prose-invert prose-indigo">
+      {/* 4. FULL CONTINUOUS EDITORIAL READING ENGINE (ALL 8 SECTIONS DISPLAYED IN FULL) */}
+      <main className="max-w-4xl mx-auto space-y-28 sm:space-y-36 text-left">
           
           {/* SECTION 1: EPISTEMOLOGY */}
-          <section id="sec-epistemology" className="space-y-6 pt-4">
-            <div className="space-y-2 border-b border-zinc-800 pb-4">
-              <span className="text-xs font-mono font-bold text-indigo-400 uppercase tracking-wider">Section 01</span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-zinc-100">
+          <section id="sec-epistemology" className="space-y-8 pt-4 pb-4">
+            <div className="space-y-3 border-b border-[#D7D6CD] dark:border-[#2D2E2A] pb-6 mb-8">
+              <span className="text-xs font-mono font-semibold uppercase tracking-[0.1em] text-[#009D00] dark:text-[#4DFF4D] block">
+                01 // Epistemology & Historical Method
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#181816] dark:text-[#E6E3DB] tracking-tight leading-snug">
                 The Tripartite Epistemological Model & Archival Silences
               </h2>
             </div>
 
-            <div className="space-y-4 text-zinc-300 leading-relaxed font-sans">
+            <div className="space-y-5 text-[#343430] dark:text-[#CCC8BC] leading-[1.75] font-sans font-light">
               <p>
                 In <em>Silencing the Past: Power and the Production of History</em> (1995), Michel-Rolph Trouillot established that historical narratives are systematically conditioned by four distinct moments of erasure: <strong>the moment of fact creation</strong> (the making of sources), <strong>the moment of fact assembly</strong> (the making of archives), <strong>the moment of fact retrieval</strong> (the making of narratives), and <strong>the moment of retrospective significance</strong> (the making of history in the final instance).
               </p>
               <p>
-                The primary written archives of the Transatlantic Slave Trade—such as the 36,000+ voyage records preserved in the <em>Trans-Atlantic Slave Trade Database</em> (Voyages)—were authored almost exclusively by ship captains, colonial customs officers, and trading conglomerates like the <em>Royal African Company</em> and the <em>Dutch West India Company</em>. In these ledgers, human beings were quantified strictly as commercial liabilities, physical cargo (*pièces d'Inde*), and mortality losses to be claimed against marine insurance underwriters.
+                The primary written archives of the Transatlantic Slave Trade—such as the 36,000+ voyage records preserved in the <em>Trans-Atlantic Slave Trade Database</em> (Voyages)—were authored almost exclusively by ship captains, colonial customs officers, and trading conglomerates like the <em>Royal African Company</em> and the <em>Dutch West India Company</em>. In these ledgers, human beings were quantified strictly as commercial liabilities, physical cargo (<em>pièces d'Inde</em>), and mortality losses to be claimed against marine insurance underwriters.
               </p>
             </div>
 
-            {/* Tripartite Model Architecture Box */}
-            <div className="p-6 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-4">
-              <h4 className="text-sm font-mono font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-2">
+            {/* Tripartite Framework Model Callout (Japandi Insight Surface #F5F3EC) */}
+            <div className="p-6 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#1B1D19] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#009D00] space-y-4 shadow-xs">
+              <h4 className="text-xs font-mono font-bold text-[#009D00] dark:text-[#4DFF4D] uppercase tracking-wider flex items-center gap-2">
                 <Compass className="w-4 h-4" />
-                The Tripartite Epistemological Framework
+                <span>The Tripartite Epistemological Model</span>
               </h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800/80 space-y-2">
-                  <span className="font-bold text-indigo-400">1. Archival Records</span>
-                  <p className="text-zinc-400">Quantifies macroeconomic throughput, embarkation ports, voyage coordinates, and commodities.</p>
-                  <span className="text-[10px] font-mono text-zinc-500">Subject to colonial bias & omissions</span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] space-y-2 shadow-2xs">
+                  <span className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB] block">1. Archival & Historical</span>
+                  <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] leading-relaxed font-light">
+                    Voyage databases, plantation accounts, and shipping logs. Captures macro-economic shipping volumes but systematically silences subjective human agency and experiences.
+                  </p>
                 </div>
-                <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800/80 space-y-2">
-                  <span className="font-bold text-emerald-400">2. Population Genomics</span>
-                  <p className="text-zinc-400">Measures Identity-by-Descent (IBD), sex-biased admixture, and regional African ancestral contributions.</p>
-                  <span className="text-[10px] font-mono text-zinc-500">Objective biological record</span>
+                <div className="p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] space-y-2 shadow-2xs">
+                  <span className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB] block">2. Molecular & Genomic</span>
+                  <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] leading-relaxed font-light">
+                    Haplotype deconvolution, IBD sharing, and ancient DNA. Reconstructs unbroken biological descent and reveals unrecorded demographic events and extreme sexual exploitation.
+                  </p>
                 </div>
-                <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800/80 space-y-2">
-                  <span className="font-bold text-amber-400">3. Skeletal Bioarchaeology</span>
-                  <p className="text-zinc-400">Documents physical biomechanical strain, enthesopathies, childhood malnutrition, and cosmograms.</p>
-                  <span className="text-[10px] font-mono text-zinc-500">Direct material counter-archive</span>
+                <div className="p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] space-y-2 shadow-2xs">
+                  <span className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB] block">3. Forensic Bioarchaeology</span>
+                  <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] leading-relaxed font-light">
+                    Osteological pathology, strontium isotopes, and mortuary cosmograms. Documents the direct biomechanical trauma of labor and cultural resistance encoded in burials.
+                  </p>
                 </div>
               </div>
             </div>
           </section>
 
           {/* SECTION 2: GENOMICS & IBD */}
-          <section id="sec-genomics" className="space-y-6">
-            <div className="space-y-2 border-b border-zinc-800 pb-4">
-              <span className="text-xs font-mono font-bold text-indigo-400 uppercase tracking-wider">Section 02</span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-zinc-100">
-                The Molecular Witness: Haplotype Deconvolution & IBD Sharing
+          <section id="sec-genomics" className="space-y-8 pt-6 pb-6">
+            <div className="space-y-3 border-b border-[#D7D6CD] dark:border-[#2D2E2A] pb-6 mb-8">
+              <span className="text-xs font-mono font-semibold uppercase tracking-[0.1em] text-[#D600D5] dark:text-[#FF55FF] block">
+                02 // The Molecular Witness
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#181816] dark:text-[#E6E3DB] tracking-tight leading-snug">
+                Haplotype Deconvolution, Identity-by-Descent & Ancient DNA
               </h2>
             </div>
 
-            <div className="space-y-4 text-zinc-300 leading-relaxed font-sans">
+            {/* In-line Highlight Stats Bar */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#1B1D19] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] shadow-xs">
+              <div className="space-y-1">
+                <span className="text-[10px] font-mono uppercase text-[#77776E] dark:text-[#A8A499]">Cohort Size</span>
+                <div className="font-serif text-xl sm:text-2xl font-bold text-[#181816] dark:text-[#E6E3DB]">50,281</div>
+                <span className="text-[10px] text-[#77776E] block">Sequenced Genomes</span>
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] font-mono uppercase text-[#77776E] dark:text-[#A8A499]">Voyage Database</span>
+                <div className="font-serif text-xl sm:text-2xl font-bold text-[#009D00] dark:text-[#4DFF4D]">36,000+</div>
+                <span className="text-[10px] text-[#77776E] block">Transatlantic Routes</span>
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] font-mono uppercase text-[#77776E] dark:text-[#A8A499]">US Nigerian Bias</span>
+                <div className="font-serif text-xl sm:text-2xl font-bold text-[#D98200] dark:text-[#FFB84A]">41% vs 24%</div>
+                <span className="text-[10px] text-[#77776E] block">Genomic Over-Rep.</span>
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] font-mono uppercase text-[#77776E] dark:text-[#A8A499]">Maroon Retention</span>
+                <div className="font-serif text-xl sm:text-2xl font-bold text-[#009D00] dark:text-[#4DFF4D]">98%</div>
+                <span className="text-[10px] text-[#77776E] block">Pure African DNA</span>
+              </div>
+            </div>
+
+            <div className="space-y-5 text-[#343430] dark:text-[#CCC8BC] leading-[1.75] font-sans font-light">
               <p>
-                Recent advances in statistical genetics, particularly <strong>Identity-by-Descent (IBD) segment sharing</strong> and chromosome painting, enable researchers to deconstruct complex multi-generational admixture. In a landmark study of over 50,000 individuals across the Americas, Micheletti et al. (2020) demonstrated both striking concordances and revealing divergences between voyage records and modern genetic ancestry.
+                In 2020, Steven J. Micheletti and a large consortium of population geneticists published a landmark study in <em>The American Journal of Human Genetics</em> analyzing <strong>50,281 research participants of African descent</strong> across the United States, the Caribbean, and Central/South America. By utilizing Identity-by-Descent (IBD) segment sharing and local ancestry deconvolution, they compared the genetic contributions of six distinct African coastal regions against the documented disembarkation records from the Trans-Atlantic Slave Trade Database.
+              </p>
+              <p>
+                The molecular record revealed profound concordances—and equally startling divergences—from historical manifests:
               </p>
             </div>
 
-            {/* Interactive Exhibit 1: IBD Concordance Chart */}
-            <div className="p-6 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <h4 className="text-sm font-bold text-zinc-100">Figure 1: Voyage Embarkation Share vs. Modern Genomic Ancestry</h4>
-                  <p className="text-xs text-zinc-400">Comparing historical embarkations from Voyages Database with modern IBD genetic retention</p>
-                </div>
-                <span className="px-2.5 py-1 rounded-md bg-indigo-950 border border-indigo-800 text-[11px] font-mono text-indigo-300">
-                  Micheletti et al. (2020)
+            {/* Interactive Chart: IBD Concordance vs Historical Manifests */}
+            <figure className="my-8 pb-4 border-b border-[#D7D6CD] dark:border-[#2D2E2A]">
+              <figcaption className="mb-4">
+                <span className="text-[0.75rem] font-mono uppercase tracking-[0.1em] text-[#D600D5] dark:text-[#FF55FF] font-semibold block mb-1">
+                  Fig. 01 // Empirical Genomic Alignment
                 </span>
-              </div>
-
-              <div className="h-72 w-full pt-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={IBD_GENOMIC_CONCORDANCE} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                    <XAxis dataKey="region" stroke="#71717a" tick={{ fontSize: 11 }} />
-                    <YAxis stroke="#71717a" tick={{ fontSize: 11 }} />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '0.75rem', fontSize: '12px' }}
-                    />
-                    <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
-                    <Bar dataKey="voyageShare" name="Voyage Manifests (%)" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="geneticRetention" name="Modern Genomic Share (%)" fill="#10b981" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800/80 text-xs text-zinc-300 space-y-1.5">
-                <span className="font-bold text-amber-400">Key Discrepancy Analysis:</span>
-                <p>
-                  <strong>Nigeria/Bight of Benin</strong> exhibits substantial <em>over-representation</em> in the modern gene pool due to intra-American domestic transfers, while <strong>Senegambia</strong> exhibits severe <em>under-representation</em> in Latin America due to extremely high mortality on early rice/sugar plantations and asymmetric infant mortality.
+                <h4 className="font-serif text-xl font-normal text-[#181816] dark:text-[#E6E3DB] mb-1">
+                  Historical Voyage Manifests vs Modern Genomic Haplotype Contributions
+                </h4>
+                <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] leading-relaxed">
+                  Data adapted from Micheletti et al. (<em>AJHG</em> 2020) across 50,281 individuals in 5 major Americas regions.
                 </p>
-              </div>
-            </div>
+              </figcaption>
 
-            {/* Ancient DNA Case Box */}
-            <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-4">
-              <h4 className="text-sm font-mono font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-2">
-                <Dna className="w-4 h-4" />
-                Ancient DNA (aDNA) Milestones in the African Diaspora
+              <div className="p-5 rounded-2xl bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] shadow-xs">
+                <div className="h-80 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={IBD_GENOMIC_CONCORDANCE}
+                      margin={{ top: 20, right: 30, left: 10, bottom: 20 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-zinc-200 dark:text-zinc-800" opacity={0.6} />
+                      <XAxis 
+                        dataKey="region" 
+                        stroke="currentColor" 
+                        className="text-[#5C5C55] dark:text-[#A8A499]"
+                        fontSize={10}
+                        interval={0}
+                        angle={-15}
+                        textAnchor="end"
+                        height={50}
+                      />
+                      <YAxis 
+                        stroke="currentColor" 
+                        className="text-[#5C5C55] dark:text-[#A8A499]"
+                        fontSize={11}
+                        unit="%"
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'var(--tooltip-bg)', 
+                          borderColor: 'var(--tooltip-border)', 
+                          borderRadius: '0.75rem', 
+                          fontSize: '12px',
+                          color: 'var(--tooltip-text-title)'
+                        }}
+                      />
+                      <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                      <Bar 
+                        dataKey="historicalManifestPct" 
+                        name="Historical Voyage Manifests (%)" 
+                        fill="#77776E" 
+                        radius={[4, 4, 0, 0]}
+                      />
+                      <Bar 
+                        dataKey="presentDayGenomicPct" 
+                        name="Modern Genomic Contribution (%)" 
+                        fill="#009D00" 
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </figure>
+
+            {/* Ancient DNA Case Studies */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-mono font-bold text-[#D600D5] dark:text-[#FF55FF] uppercase tracking-wider">
+                Ancient DNA (aDNA) Case Studies
               </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                {ANCIENT_DNA_STUDIES.map(study => (
-                  <div key={study.id} className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
+              <div className="space-y-3">
+                {ANCIENT_DNA_STUDIES.map((study) => (
+                  <div key={study.id} className="p-4 rounded-xl bg-[#F5F3EC] text-[#181816] dark:bg-[#181A16] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] space-y-2 shadow-2xs border-l-4 border-l-[#D600D5]">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-zinc-200">{study.title}</span>
-                      <span className="text-[10px] font-mono text-zinc-400">{study.dating}</span>
+                      <span className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB]">{study.title}</span>
+                      <span className="font-mono text-xs text-[#D600D5] dark:text-[#FF55FF] font-bold">{study.dating}</span>
                     </div>
-                    <p className="text-zinc-300 leading-relaxed font-sans">{study.genomicFindings}</p>
-                    <p className="text-zinc-400 text-[11px] leading-relaxed italic">{study.historicalSignificance}</p>
-                    <div className="pt-2 border-t border-zinc-900 flex items-center justify-between text-[10px] text-zinc-400">
-                      <span>{study.leadAuthor}</span>
-                      <span className="font-mono text-indigo-400">{study.individuals}</span>
-                    </div>
+                    <p className="text-xs text-[#5C5C55] dark:text-[#A8A499]">
+                      <strong>Location & Lead Author:</strong> {study.location} — {study.leadAuthor}
+                    </p>
+                    <p className="text-xs text-[#343430] dark:text-[#CCC8BC] leading-relaxed font-light">
+                      <strong>Findings:</strong> {study.genomicFindings}
+                    </p>
+                    <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] italic">
+                      <strong>Significance:</strong> {study.historicalSignificance}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -484,305 +564,315 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
           </section>
 
           {/* SECTION 3: SEXUAL VIOLENCE & MAROON GENOMICS */}
-          <section id="sec-sexual-violence" className="space-y-6">
-            <div className="space-y-2 border-b border-zinc-800 pb-4">
-              <span className="text-xs font-mono font-bold text-indigo-400 uppercase tracking-wider">Section 03</span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-zinc-100">
-                The Biological Ledger of Sexual Violence & Maroon Resistance
+          <section id="sec-sexual-violence" className="space-y-8 pt-6 pb-6">
+            <div className="space-y-3 border-b border-[#D7D6CD] dark:border-[#2D2E2A] pb-6 mb-8">
+              <span className="text-xs font-mono font-semibold uppercase tracking-[0.1em] text-[#D90000] dark:text-[#FF6666] block">
+                03 // The Ledger of Sexual Violence
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#181816] dark:text-[#E6E3DB] tracking-tight leading-snug">
+                Sex-Biased Gene Flow & Maroon Genetic Sovereignty
               </h2>
             </div>
 
-            <div className="space-y-4 text-zinc-300 leading-relaxed font-sans">
+            <div className="space-y-5 text-[#343430] dark:text-[#CCC8BC] leading-[1.75] font-sans font-light">
               <p>
-                One of the most profound revelations of diaspora population genetics is the quantitative measurement of <strong>sex-biased gene flow</strong>. By comparing uniparental markers—the strictly matrilineal <strong>mitochondrial DNA (mtDNA)</strong> against the strictly patrilineal <strong>Y-chromosome DNA (Y-DNA)</strong>—geneticists can reconstruct the demographic gender dynamics of enslavement.
+                One of the most harrowing and consistent revelations of population genomics is the stark asymmetry between maternal (mitochondrial DNA / X-chromosome) and paternal (Y-chromosome / autosomal) contributions across the Americas.
+              </p>
+              <p>
+                Despite historical manifests proving that <strong>over 65% of enslaved individuals embarked on slave vessels were adult men</strong>, modern African-descendant populations in Latin America and the Caribbean show a genetic pool overwhelmingly sustained by African women, while paternal lineages were heavily displaced by European men through systemic sexual coercion and rape.
               </p>
             </div>
 
-            {/* Exhibit 2: Sex-Biased Gene Flow Chart */}
-            <div className="p-6 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <h4 className="text-sm font-bold text-zinc-100">Figure 2: Matrilineal vs Patrilineal African Genetic Admixture</h4>
-                  <p className="text-xs text-zinc-400">Disparity between African mtDNA (maternal) and African Y-DNA (paternal)</p>
-                </div>
-                <span className="px-2.5 py-1 rounded-md bg-rose-950 border border-rose-800 text-[11px] font-mono text-rose-300">
-                  Sex-Biased Admixture
-                </span>
-              </div>
+            {/* Sex Bias Comparison Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {SEX_BIASED_GENE_FLOW.map((item, idx) => (
+                <div 
+                  key={idx} 
+                  className="p-4 sm:p-5 rounded-xl bg-[var(--report-paper-warm)] text-[var(--report-ink)] shadow-2xs space-y-2.5 transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-serif font-semibold text-base tracking-tight leading-snug text-[var(--report-ink)]">
+                      {item.population}
+                    </span>
+                  </div>
 
-              <div className="h-72 w-full pt-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={SEX_BIASED_GENE_FLOW} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                    <XAxis dataKey="population" stroke="#71717a" tick={{ fontSize: 10 }} />
-                    <YAxis stroke="#71717a" tick={{ fontSize: 11 }} unit="%" />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', borderRadius: '0.75rem', fontSize: '12px' }}
-                    />
-                    <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
-                    <Bar dataKey="africanMaternalMt" name="African mtDNA (Maternal %)" fill="#ec4899" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="africanPaternalY" name="African Y-DNA (Paternal %)" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="europeanPaternalY" name="European Y-DNA (Paternal %)" fill="#eab308" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+                  {/* Internal tonal accent container for metrics without rigid borders */}
+                  <div className="bg-[var(--report-paper-deep)] rounded-lg p-2.5 space-y-1.5 text-xs text-[var(--report-graphite)]">
+                    <div className="flex justify-between items-center tracking-tight">
+                      <span>Maternal African mtDNA:</span>
+                      <strong className="font-mono text-xs font-semibold text-[var(--report-ink)]">{item.africanMaternalMt}%</strong>
+                    </div>
+                    <div className="flex justify-between items-center tracking-tight">
+                      <span>Paternal African Y-DNA:</span>
+                      <strong className="font-mono text-xs font-semibold text-[#D90000] dark:text-[#FF6666]">{item.africanPaternalY}%</strong>
+                    </div>
+                    <div className="flex justify-between items-center tracking-tight">
+                      <span>Paternal European Y-DNA:</span>
+                      <strong className="font-mono text-xs font-semibold text-[#1600D9] dark:text-[#7770FF]">{item.europeanPaternalY}%</strong>
+                    </div>
+                  </div>
 
-              <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800/80 text-xs text-zinc-300 space-y-2">
-                <p>
-                  Across the Americas, <strong>80–95%</strong> of maternal lineages in Afro-descendant populations trace directly to Africa. Conversely, <strong>30–55%</strong> of paternal lineages trace to European males. This asymmetric imbalance reflects institutionalized sexual exploitation, where enslavers systematically fathered children with enslaved women while legally disenfranchising African male reproduction.
-                </p>
-                <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-800/50 text-emerald-200">
-                  <strong>The Maroon Counter-Evidence:</strong> In isolated Maroon communities like the <em>Noir Marron</em> of French Guiana and Suriname (Fortes-Lima et al., 2017), African Y-DNA retention exceeds <strong>94%</strong>, providing a biological baseline proving that high European paternal introgression in urban areas was a direct function of chattel domination, not consensual integration.
+                  {/* Context block with internal tonal accent styling and optimized Noto Serif line-height */}
+                  <div className="p-3 rounded-lg bg-[var(--report-paper-deep)]">
+                    <p className="text-xs font-serif font-light text-[var(--report-ink-soft)] leading-relaxed tracking-tight">
+                      {item.historicalContext}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              ))}
+            </div>
+
+            {/* Maroon Genomic Sovereignty Callout (Pale Western Green #F3FAF1) */}
+            <div className="p-6 rounded-2xl bg-[#F3FAF1] text-[#181816] dark:bg-emerald-950/20 dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-zinc-800 border-l-4 border-l-[#009D00] space-y-3">
+              <span className="text-xs font-mono font-bold text-[#009D00] dark:text-[#4DFF4D] uppercase tracking-wider block">
+                Maroon Genetic Sovereignty: The Noir Marron of the Guianas
+              </span>
+              <p className="text-xs sm:text-sm text-[#343430] dark:text-[#CCC8BC] leading-relaxed font-light">
+                In striking contrast to plantation societies subjected to state-sponsored <em>branqueamento</em> (whitening policies), Fortes-Lima et al. (<em>Nature Communications</em> 2017) demonstrated that the Maroon populations of Suriname and French Guiana (Aluku, Ndjuka, Saramaka, Paramaka) retained <strong>&gt;98% unadmixed African ancestry</strong> with predominantly Western and Central African haplotypes, providing living proof of autonomous self-liberation and military sovereignty.
+              </p>
             </div>
           </section>
 
-          {/* SECTION 4: SCIENTIFIC RACISM */}
-          <section id="sec-scientific-racism" className="space-y-6">
-            <div className="space-y-2 border-b border-zinc-800 pb-4">
-              <span className="text-xs font-mono font-bold text-indigo-400 uppercase tracking-wider">Section 04</span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-zinc-100">
-                The Ideological Architecture: From Theological Justification to Biological Determinism
+          {/* SECTION 4: SCIENTIFIC RACISM & LEGAL SUBJUGATION */}
+          <section id="sec-scientific-racism" className="space-y-8 pt-6 pb-6">
+            <div className="space-y-3 border-b border-[#D7D6CD] dark:border-[#2D2E2A] pb-6 mb-8">
+              <span className="text-xs font-mono font-semibold uppercase tracking-[0.1em] text-[#1600D9] dark:text-[#7770FF] block">
+                04 // Ideological Architecture
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#181816] dark:text-[#E6E3DB] tracking-tight leading-snug">
+                The Curse of Ham, Polygenism & Legal Subjugation
               </h2>
             </div>
 
-            <div className="space-y-4 text-zinc-300 leading-relaxed font-sans">
+            <div className="space-y-5 text-[#343430] dark:text-[#CCC8BC] leading-[1.75] font-sans font-light">
               <p>
-                The commodification of human beings required a continuous ideological apparatus to reconcile Christian ethics and Enlightenment philosophies with the brutality of chattel slavery. This evolved from early theological rationalizations into 18th- and 19th-century <strong>scientific racism</strong>.
+                The Transatlantic Slave Trade required a continuous, evolving intellectual and legal superstructure to reconcile human bondage with Christian theology, Enlightenment rationalism, and liberal constitutionalism.
               </p>
             </div>
 
-            {/* Chronological Timeline */}
-            <div className="space-y-3">
-              {SCIENTIFIC_RACISM_CHRONOLOGY.map((item, idx) => (
-                <div key={idx} className="p-4 rounded-2xl bg-zinc-900/70 border border-zinc-800 hover:border-zinc-700 transition-colors space-y-2">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="font-serif font-bold text-sm text-zinc-100">{item.scholarOrEvent}</span>
-                    <div className="flex items-center gap-2 text-xs font-mono">
-                      <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">{item.era}</span>
-                      <span className="text-indigo-400">{item.paradigm}</span>
-                    </div>
+            {/* Timeline of Racial Ideology */}
+            <div className="space-y-4">
+              {SCIENTIFIC_RACISM_CHRONOLOGY.map((step, idx) => (
+                <div key={idx} className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#181A16] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#1600D9] space-y-2 shadow-2xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs font-bold text-[#1600D9] dark:text-[#7770FF]">{step.era}</span>
+                    <span className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB]">{step.scholarOrEvent}</span>
                   </div>
-                  <p className="text-xs text-zinc-300 leading-relaxed">{item.keyVarietiesAndRanking}</p>
-                  <div className="p-2.5 rounded-lg bg-zinc-950 text-[11px] text-zinc-400 flex items-start gap-2">
-                    <span className="text-amber-400 font-bold shrink-0">Economic & Legal Function:</span>
-                    <span>{item.economicAndLegalFunction}</span>
-                  </div>
+                  <p className="text-xs text-[#5C5C55] dark:text-[#A8A499]">
+                    <strong>Paradigm:</strong> {step.paradigm}
+                  </p>
+                  <p className="text-xs sm:text-sm text-[#343430] dark:text-[#CCC8BC] leading-relaxed font-light">
+                    {step.keyVarietiesAndRanking}
+                  </p>
+                  <p className="text-xs text-[#1600D9] dark:text-[#7770FF] pt-1 font-medium">
+                    <strong>Economic & Legal Function:</strong> {step.economicAndLegalFunction}
+                  </p>
                 </div>
               ))}
             </div>
           </section>
 
-          {/* SECTION 5: STRUCTURAL UNDERDEVELOPMENT */}
-          <section id="sec-underdevelopment" className="space-y-6">
-            <div className="space-y-2 border-b border-zinc-800 pb-4">
-              <span className="text-xs font-mono font-bold text-indigo-400 uppercase tracking-wider">Section 05</span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-zinc-100">
-                Structural Underdevelopment: Demographic Evacuation & Capital Accumulation
+          {/* SECTION 5: STRUCTURAL UNDERDEVELOPMENT & CAPITAL */}
+          <section id="sec-underdevelopment" className="space-y-8 pt-6 pb-6">
+            <div className="space-y-3 border-b border-[#D7D6CD] dark:border-[#2D2E2A] pb-6 mb-8">
+              <span className="text-xs font-mono font-semibold uppercase tracking-[0.1em] text-[#D98200] dark:text-[#FFB84A] block">
+                05 // Structural Underdevelopment & Capital Accumulation
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#181816] dark:text-[#E6E3DB] tracking-tight leading-snug">
+                The Williams Thesis & the Econometrics of Underdevelopment
               </h2>
             </div>
 
-            <div className="space-y-4 text-zinc-300 leading-relaxed font-sans">
+            <div className="space-y-5 text-[#343430] dark:text-[#CCC8BC] leading-[1.75] font-sans font-light">
               <p>
-                As Walter Rodney detailed in <em>How Europe Underdeveloped Africa</em> (1972) and Eric Williams in <em>Capitalism and Slavery</em> (1944), the Transatlantic Slave Trade was not merely a trade in labor; it was a structural transfer of reproductive and productive capital from Africa to Europe and the Americas.
+                In 1944, Eric Williams published <em>Capitalism and Slavery</em>, proposing what is now recognized as the seminal macroeconomic thesis of Atlantic history: triangular slave trade profits provided the primary capital accumulation necessary to finance Britain’s Industrial Revolution.
+              </p>
+              <p>
+                Modern econometric studies by Nathan Nunn (2008) and Acemoglu, Johnson & Robinson (2001) provide rigorous quantitative backing for Williams’ thesis, proving that the African regions with the highest slave extraction rates exhibit the lowest GDP per capita, lowest school enrollment, and highest institutional fragility in the 21st century.
               </p>
             </div>
 
-            {/* Economic Structural Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-3">
-                <h4 className="text-sm font-bold text-rose-400">African Demographic Drain</h4>
-                <div className="space-y-2 text-xs text-zinc-300">
-                  <p><strong>Extracted:</strong> {STRUCTURAL_UNDERDEVELOPMENT_DATA.africanDemographicDrain.totalExtracted}</p>
-                  <p><strong>Demographics:</strong> {STRUCTURAL_UNDERDEVELOPMENT_DATA.africanDemographicDrain.ageDemographics}</p>
-                  <p className="text-zinc-400">{STRUCTURAL_UNDERDEVELOPMENT_DATA.africanDemographicDrain.economicImpact}</p>
+            {/* Economic Data Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#181A16] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#D90000] space-y-2 shadow-2xs">
+                <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB]">Demographic Drain</span>
+                <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] leading-relaxed font-light">
+                  {STRUCTURAL_UNDERDEVELOPMENT_DATA.africanDemographicDrain.totalExtracted}
+                </p>
+                <div className="text-[11px] font-mono text-[#D90000] dark:text-[#FF6666] font-bold">
+                  {STRUCTURAL_UNDERDEVELOPMENT_DATA.africanDemographicDrain.ageDemographics}
                 </div>
               </div>
 
-              <div className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-3">
-                <h4 className="text-sm font-bold text-amber-400">Plantation Demographic Sink</h4>
-                <div className="space-y-2 text-xs text-zinc-300">
-                  <p><strong>Primary Crops:</strong> {STRUCTURAL_UNDERDEVELOPMENT_DATA.plantationDemographicSink.commodityCrops.join(', ')}</p>
-                  <p className="text-zinc-400">{STRUCTURAL_UNDERDEVELOPMENT_DATA.plantationDemographicSink.mortalityAttrition}</p>
-                  <p className="text-zinc-400">{STRUCTURAL_UNDERDEVELOPMENT_DATA.plantationDemographicSink.regimeComparison}</p>
+              <div className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#181A16] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#D98200] space-y-2 shadow-2xs">
+                <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB]">Plantation Demographics</span>
+                <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] leading-relaxed font-light">
+                  {STRUCTURAL_UNDERDEVELOPMENT_DATA.plantationDemographicSink.mortalityAttrition}
+                </p>
+                <div className="text-[11px] font-mono text-[#D98200] dark:text-[#FFB84A] font-bold">
+                  {STRUCTURAL_UNDERDEVELOPMENT_DATA.plantationDemographicSink.regimeComparison}
                 </div>
               </div>
 
-              <div className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-3">
-                <h4 className="text-sm font-bold text-indigo-400">Global Capital Accumulation</h4>
-                <div className="space-y-2 text-xs text-zinc-300">
-                  <p><strong>Finance & Banking:</strong> {STRUCTURAL_UNDERDEVELOPMENT_DATA.globalCapitalAccumulation.financialInstitutions}</p>
-                  <p className="text-zinc-400">{STRUCTURAL_UNDERDEVELOPMENT_DATA.globalCapitalAccumulation.industrialRevolution}</p>
+              <div className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#181A16] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#1600D9] space-y-2 shadow-2xs">
+                <span className="font-serif font-bold text-base text-[#181816] dark:text-[#E6E3DB]">Capital Accumulation</span>
+                <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] leading-relaxed font-light">
+                  {STRUCTURAL_UNDERDEVELOPMENT_DATA.globalCapitalAccumulation.financialInstitutions}
+                </p>
+                <div className="text-[11px] font-mono text-[#1600D9] dark:text-[#7770FF] font-bold">
+                  {STRUCTURAL_UNDERDEVELOPMENT_DATA.globalCapitalAccumulation.industrialRevolution}
                 </div>
               </div>
             </div>
           </section>
 
-          {/* SECTION 6: SKELETAL COUNTER-ARCHIVE */}
-          <section id="sec-bioarchaeology" className="space-y-6">
-            <div className="space-y-2 border-b border-zinc-800 pb-4">
-              <span className="text-xs font-mono font-bold text-indigo-400 uppercase tracking-wider">Section 06</span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-zinc-100">
-                The Skeletal Counter-Archive: New York African Burial Ground & Forensic Pathologies
+          {/* SECTION 6: BIOARCHAEOLOGY & AFRICAN BURIAL GROUND */}
+          <section id="sec-bioarchaeology" className="space-y-8 pt-6 pb-6">
+            <div className="space-y-3 border-b border-[#D7D6CD] dark:border-[#2D2E2A] pb-6 mb-8">
+              <span className="text-xs font-mono font-semibold uppercase tracking-[0.1em] text-[#D98200] dark:text-[#FFB84A] block">
+                06 // The Skeletal Counter-Archive
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#181816] dark:text-[#E6E3DB] tracking-tight leading-snug">
+                Forensic Bioarchaeology of the New York African Burial Ground
               </h2>
             </div>
 
-            <div className="space-y-4 text-zinc-300 leading-relaxed font-sans">
+            <div className="space-y-5 text-[#343430] dark:text-[#CCC8BC] leading-[1.75] font-sans font-light">
               <p>
-                In 1991, during excavation for a federal office tower in Lower Manhattan, workers unearthed the <strong>New York African Burial Ground</strong>, a 6.6-acre cemetery containing an estimated 15,000 to 20,000 enslaved and free Africans interred between the 1690s and 1790s. Under the scientific leadership of <strong>Dr. Michael Blakey</strong> (Howard University), the forensic analysis of 419 individuals transformed the skeletal remains into a profound material counter-archive.
+                Excavated in lower Manhattan between 1991 and 1992 under the scientific direction of Dr. Michael L. Blakey (Howard University), the <strong>{NY_AFRICAN_BURIAL_GROUND.siteName}</strong> represents the most significant bioarchaeological discovery of the African diaspora in North America.
+              </p>
+              <p>
+                Containing over {NY_AFRICAN_BURIAL_GROUND.individualsAnalyzed} analyzed burials, the skeletal remains provided forensic proof of brutal biomechanical strain, extreme juvenile mortality, and deeply preserved West African cosmological rituals.
               </p>
             </div>
 
-            {/* Skeletal Evidence Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-2">
-                <span className="font-bold text-sm text-zinc-100">Physical Trauma & Heavy Labor</span>
-                <p className="text-xs text-zinc-400 leading-relaxed">{NY_AFRICAN_BURIAL_GROUND.skeletalEvidence.traumaAndLabor}</p>
-              </div>
-              <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-2">
-                <span className="font-bold text-sm text-zinc-100">Nutritional Stress & Hypoplasia</span>
-                <p className="text-xs text-zinc-400 leading-relaxed">{NY_AFRICAN_BURIAL_GROUND.skeletalEvidence.nutritionalStress}</p>
-              </div>
-              <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-2">
-                <span className="font-bold text-sm text-zinc-100">Infant & Child Mortality</span>
-                <p className="text-xs text-zinc-400 leading-relaxed">{NY_AFRICAN_BURIAL_GROUND.skeletalEvidence.childhoodMortality}</p>
-              </div>
-            </div>
+            {/* Pathology Table */}
+            <div className="p-6 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#1B1D19] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#D98200] space-y-4 shadow-xs">
+              <span className="text-xs font-mono font-bold text-[#D98200] dark:text-[#FFB84A] uppercase tracking-wider block">
+                Skeletal Evidence & Cultural Persistence (NYABG)
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] space-y-1.5 shadow-2xs">
+                  <span className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB] block">Trauma & Physical Labor</span>
+                  <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] leading-relaxed font-light">
+                    {NY_AFRICAN_BURIAL_GROUND.skeletalEvidence.traumaAndLabor}
+                  </p>
+                </div>
 
-            {/* Cosmogram & Cultural Resistance Box */}
-            <div className="p-6 rounded-2xl bg-gradient-to-br from-zinc-950 via-zinc-900 to-indigo-950/40 border border-indigo-900/40 space-y-3">
-              <h4 className="text-sm font-bold text-indigo-300 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-400" />
-                Cultural Persistence & The Sankofa Cosmogram
-              </h4>
-              <p className="text-xs text-zinc-300 leading-relaxed">
-                {NY_AFRICAN_BURIAL_GROUND.culturalPersistence.graveGoodsAndBeads}
-              </p>
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                <strong>Dental Filing & Aesthetic Traditions:</strong> {NY_AFRICAN_BURIAL_GROUND.culturalPersistence.ritualDentalModifications}
-              </p>
+                <div className="p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] space-y-1.5 shadow-2xs">
+                  <span className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB] block">Childhood & Nutritional Stress</span>
+                  <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] leading-relaxed font-light">
+                    {NY_AFRICAN_BURIAL_GROUND.skeletalEvidence.nutritionalStress} — {NY_AFRICAN_BURIAL_GROUND.skeletalEvidence.childhoodMortality}
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] space-y-1.5 shadow-2xs">
+                  <span className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB] block">Ritual Dental Modifications</span>
+                  <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] leading-relaxed font-light">
+                    {NY_AFRICAN_BURIAL_GROUND.culturalPersistence.ritualDentalModifications}
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#181A16] border border-[#D7D6CD] dark:border-[#2D2E2A] space-y-1.5 shadow-2xs">
+                  <span className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB] block">Grave Goods & Sankofa Cosmograms</span>
+                  <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] leading-relaxed font-light">
+                    {NY_AFRICAN_BURIAL_GROUND.culturalPersistence.graveGoodsAndBeads}
+                  </p>
+                </div>
+              </div>
             </div>
           </section>
 
-          {/* SECTION 7: DECOLONIZING HERITAGE */}
-          <section id="sec-decolonizing" className="space-y-6">
-            <div className="space-y-2 border-b border-zinc-800 pb-4">
-              <span className="text-xs font-mono font-bold text-indigo-400 uppercase tracking-wider">Section 07</span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-zinc-100">
-                Decolonizing Heritage, Community Sovereignty & Deconstructing False Narratives
+          {/* SECTION 7: DECOLONIZING HERITAGE & MYTHS */}
+          <section id="sec-decolonizing" className="space-y-8 pt-6 pb-6">
+            <div className="space-y-3 border-b border-[#D7D6CD] dark:border-[#2D2E2A] pb-6 mb-8">
+              <span className="text-xs font-mono font-semibold uppercase tracking-[0.1em] text-[#009D00] dark:text-[#4DFF4D] block">
+                07 // Decolonizing Heritage & Public Archaeology
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#181816] dark:text-[#E6E3DB] tracking-tight leading-snug">
+                Direct-to-Consumer Genomics, Community Sovereignty & Dismantling Myths
               </h2>
             </div>
 
-            <div className="space-y-4 text-zinc-300 leading-relaxed font-sans">
+            <div className="space-y-5 text-[#343430] dark:text-[#CCC8BC] leading-[1.75] font-sans font-light">
               <p>
-                The intersection of population genomics and African diaspora identity has created both extraordinary opportunities for historical reconnection and critical ethical challenges. Modern scholars emphasize the vital necessity of <strong>descendant community sovereignty</strong> over genomic data.
+                As consumer genetic ancestry testing ({PUBLIC_ARCHAEOLOGY_AND_MYTHS.consumerGenomicsLandscape.platforms.join(', ')}) proliferates across millions of descendants of enslaved Africans, population geneticists and bioethicists emphasize the necessity of scientific nuance: genetic percentages do not equate to ethnic or cultural identity.
               </p>
             </div>
 
-            {/* Public Archaeology Issues Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-3">
-                <span className="text-sm font-bold text-zinc-100">Consumer Genomics Landscape</span>
-                <p className="text-xs text-zinc-300 leading-relaxed">{PUBLIC_ARCHAEOLOGY_AND_MYTHS.consumerGenomicsLandscape.empowermentAndCatharsis}</p>
-                <div className="pt-2 border-t border-zinc-800/80 text-[11px] text-amber-400">
-                  {PUBLIC_ARCHAEOLOGY_AND_MYTHS.consumerGenomicsLandscape.limitationsAndRisks}
+            {/* Public Myths Deconstruction */}
+            <div className="p-5 rounded-2xl bg-[#F5F3EC] text-[#181816] dark:bg-[#181A16] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] border-l-4 border-l-[#D98200] space-y-3 shadow-2xs">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-[#D98200] dark:text-[#FFB84A] shrink-0 mt-0.5" />
+                <div>
+                  <strong className="text-xs font-mono uppercase text-[#77776E] dark:text-[#A8A499]">Popular Misconception Analysis:</strong>
+                  <h4 className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB] mt-0.5">{PUBLIC_ARCHAEOLOGY_AND_MYTHS.theNativeAmericanMythAnalysis.phenomenon}</h4>
                 </div>
               </div>
-
-              <div className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-3">
-                <span className="text-sm font-bold text-zinc-100">Deconstructing Family Oral Traditions</span>
-                <p className="text-xs text-zinc-300 leading-relaxed">{PUBLIC_ARCHAEOLOGY_AND_MYTHS.theNativeAmericanMythAnalysis.phenomenon}</p>
-                <div className="pt-2 border-t border-zinc-800/80 text-[11px] text-zinc-400 leading-relaxed">
-                  {PUBLIC_ARCHAEOLOGY_AND_MYTHS.theNativeAmericanMythAnalysis.historicalPsychologicalFunction}
-                </div>
+              <div className="pl-6 space-y-2 text-xs text-[#343430] dark:text-[#CCC8BC] font-light leading-relaxed">
+                <p>{PUBLIC_ARCHAEOLOGY_AND_MYTHS.theNativeAmericanMythAnalysis.historicalPsychologicalFunction}</p>
               </div>
             </div>
           </section>
 
           {/* SECTION 8: BIBLIOGRAPHY */}
-          <section id="sec-bibliography" className="space-y-6">
-            <div className="space-y-2 border-b border-zinc-800 pb-4">
-              <span className="text-xs font-mono font-bold text-indigo-400 uppercase tracking-wider">Section 08</span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-zinc-100">
-                Peer-Reviewed Bibliography & Primary Data Archives
+          <section id="sec-bibliography" className="space-y-8 pt-6 pb-16">
+            <div className="space-y-3 border-b border-[#D7D6CD] dark:border-[#2D2E2A] pb-6 mb-8">
+              <span className="text-xs font-mono font-semibold uppercase tracking-[0.1em] text-[#5C5C55] dark:text-[#A8A499] block">
+                08 // Peer-Reviewed Bibliography
+              </span>
+              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#181816] dark:text-[#E6E3DB] tracking-tight leading-snug">
+                Academic Citations, DOIs & Primary Data Archives
               </h2>
             </div>
 
-            {/* Filter Buttons */}
-            <div className="flex flex-wrap items-center gap-2">
-              {[
-                { id: 'all', label: 'All Citations' },
-                { id: 'Genomics', label: 'Genomics' },
-                { id: 'Bioarchaeology', label: 'Bioarchaeology' },
-                { id: 'Historiography', label: 'Historiography' },
-                { id: 'Public Archaeology', label: 'Public Archaeology' }
-              ].map(f => (
+            {/* Citation Filter Pills */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
+              {['all', 'Genomics', 'Bioarchaeology', 'Historiography', 'Public Archaeology'].map((filter) => (
                 <button
-                  key={f.id}
-                  onClick={() => setCitationFilter(f.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors cursor-pointer ${
-                    citationFilter === f.id
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800'
+                  key={filter}
+                  onClick={() => setCitationFilter(filter)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap ${
+                    citationFilter.toLowerCase() === filter.toLowerCase()
+                      ? 'bg-[#181816] text-[#FAFAF6] dark:bg-[#E6E3DB] dark:text-[#181816] shadow-xs'
+                      : 'bg-[#FFFFFF] dark:bg-[#1B1D19] text-[#5C5C55] dark:text-[#A8A499] hover:text-[#181816] dark:hover:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A]'
                   }`}
                 >
-                  {f.label}
+                  {filter}
                 </button>
               ))}
             </div>
 
-            {/* Citation List */}
+            {/* Citations List */}
             <div className="space-y-3">
-              {filteredCitations.map(cit => (
-                <div key={cit.id} className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-2">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="font-bold text-xs text-zinc-200">{cit.title}</span>
-                    <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-zinc-400">{cit.year}</span>
+              {filteredCitations.map((cite) => (
+                <div key={cite.id} className="p-4 rounded-xl bg-[#F5F3EC] text-[#181816] dark:bg-[#181A16] dark:text-[#E6E3DB] border border-[#D7D6CD] dark:border-[#2D2E2A] space-y-1.5 shadow-2xs">
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="font-serif font-bold text-sm text-[#181816] dark:text-[#E6E3DB]">{cite.title}</span>
+                    <span className="px-2 py-0.5 rounded bg-[#FFFFFF] dark:bg-[#1B1D19] border border-[#D7D6CD] dark:border-[#2D2E2A] text-[10px] font-mono text-[#009D00] dark:text-[#4DFF4D] shrink-0 font-bold">
+                      {cite.year}
+                    </span>
                   </div>
-                  <p className="text-xs text-zinc-400">{cit.authors} • <em>{cit.journal}</em></p>
-                  <p className="text-xs text-zinc-300 italic">{cit.keyFinding}</p>
-                  <div className="pt-2 border-t border-zinc-900 flex items-center justify-between text-[11px]">
-                    <span className="font-mono text-indigo-400">{cit.doiOrUrl}</span>
-                    {cit.doiOrUrl && (
-                      <a 
-                        href={cit.doiOrUrl.startsWith('http') ? cit.doiOrUrl : `https://${cit.doiOrUrl}`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
-                      >
-                        <span>Open Paper</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    )}
-                  </div>
+                  <p className="text-xs text-[#5C5C55] dark:text-[#A8A499] font-light">
+                    {cite.authors} — <em>{cite.journal}</em>
+                  </p>
+                  {cite.doiOrUrl && (
+                    <a
+                      href={cite.doiOrUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] font-mono text-[#181816] dark:text-[#E6E3DB] hover:underline inline-flex items-center gap-1 mt-1 font-medium"
+                    >
+                      <span>DOI / Reference URL</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
                 </div>
               ))}
             </div>
           </section>
 
-          {/* ARTICLE FOOTER / RETURN LINKS */}
-          <footer className="pt-8 border-t border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <button
-              onClick={onNavigateToAtlas}
-              className="px-5 py-3 rounded-2xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer"
-            >
-              <Anchor className="w-4 h-4 text-emerald-400" />
-              <span>Return to Slave Voyages Database & Atlas</span>
-            </button>
-
-            <button
-              onClick={onNavigateToFoundations}
-              className="px-5 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer shadow-lg shadow-amber-500/20"
-            >
-              <span>Read Companion: Foundations of African Development</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </footer>
-
-        </article>
-      </div>
-
+        </main>
     </div>
   );
 };

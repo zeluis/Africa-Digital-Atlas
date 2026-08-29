@@ -406,16 +406,23 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           // On desktop, the drawer stays open!
         }}
         aria-current={isActive ? 'page' : undefined}
-        className={`relative w-full flex items-center justify-between text-left rounded-2xl transition-all cursor-pointer select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+        style={
+          isActive && isRegionTab && regionTonal
+            ? {
+                backgroundColor: `var(--region-${regionTonal.cssVarKey}-fill, ${regionTonal.warmAccent}22)`,
+              }
+            : undefined
+        }
+        className={`relative w-full flex items-center justify-between text-left rounded-2xl transition-all cursor-pointer select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 border border-transparent ${
           isMobile 
             ? 'h-14 px-4 text-base' 
             : 'h-[52px] px-4 text-[15px]'
         } ${
           isActive
-            ? regionTonal
-              ? `${regionTonal.badge.bg} border ${regionTonal.badge.border} ${regionTonal.badge.text} font-bold shadow-xs`
-              : 'bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 dark:border-emerald-500/35 text-emerald-900 dark:text-emerald-200 font-bold shadow-xs'
-            : 'border border-transparent text-zinc-700 dark:text-zinc-300 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-100 font-medium'
+            ? isRegionTab && regionTonal
+              ? `${regionTonal.badge.bg} ${regionTonal.badge.text} font-bold shadow-xs`
+              : 'bg-emerald-500/10 dark:bg-emerald-500/15 border-emerald-500/25 dark:border-emerald-500/35 text-emerald-900 dark:text-emerald-200 font-bold shadow-xs'
+            : 'text-zinc-700 dark:text-zinc-300 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-100 font-medium'
         }`}
       >
         <div className="flex items-center gap-3 min-w-0 pr-2">

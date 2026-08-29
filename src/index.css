@@ -6,39 +6,39 @@
   :root {
     color-scheme: light;
 
-    /* 1. Surface & Canvas Architecture (Alpine Serenity - Oyster Silk & Crisp Slate) */
-    --bg-primary: #FBFBF9;
-    --surface-canvas: #FBFBF9;
+    /* 1. Surface & Canvas Architecture (Kyoto/Swiss Washi & Sandstone Palette) */
+    --bg-primary: #F6F4EE;
+    --surface-canvas: #F6F4EE;
     --surface-card: #FFFFFF;
-    --surface-card-elevated: #F6F6F2;
-    --surface-subtle: #ECECE7;
-    --surface-sunken: #F2F2ED;
+    --surface-card-elevated: #EFECE3;
+    --surface-subtle: #EFECE3;
+    --surface-sunken: #E7E3D8;
 
-    /* 2. Typography & Content (High-contrast Swiss legibility) */
-    --text-primary: #111827;       /* Charcoal Black - WCAG AAA */
-    --text-secondary: #4B5563;     /* Refined Midtone - WCAG AA */
-    --text-tertiary: #6B7280;      /* Muted Neutral */
-    --text-inverse: #F9FAFB;
+    /* 2. Typography & Content (Sumi Ink & Sandstone) */
+    --text-primary: #191816;       /* Sumi Ink - WCAG AAA */
+    --text-secondary: #4E5E51;     /* Kyoto Pine / Lichen */
+    --text-tertiary: #8C7C70;      /* Sandstone */
+    --text-inverse: #F6F4EE;
 
-    /* 3. Interface Borders & Structural Dividers (Low-glare architectural 1px lines) */
-    --border-subtle: #E8E8E2;
-    --border-strong: #D5D5CE;
-    --border-focus: #0F172A;
+    /* 3. Interface Borders & Structural Dividers */
+    --border-subtle: #E3DFD5;
+    --border-strong: #C8C2B3;
+    --border-focus: #4E5E51;
 
     /* 4. Data-Agnostic Chart Utility Tokens */
-    --chart-gridline: rgba(17, 24, 39, 0.06);
-    --chart-axis-line: #9CA3AF;
-    --chart-axis-label: #4B5563;
-    --chart-crosshair: #374151;
-    --chart-brush-bg: rgba(17, 24, 39, 0.03);
-    --chart-brush-handle: #9CA3AF;
+    --chart-gridline: rgba(25, 24, 22, 0.08);
+    --chart-axis-line: #8C7C70;
+    --chart-axis-label: #4E5E51;
+    --chart-crosshair: #191816;
+    --chart-brush-bg: rgba(25, 24, 22, 0.04);
+    --chart-brush-handle: #8C7C70;
 
     /* Universal Tooltip System */
     --tooltip-bg: #FFFFFF;
-    --tooltip-text-title: #111827;
-    --tooltip-text-body: #374151;
-    --tooltip-border: #E8E8E2;
-    --tooltip-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+    --tooltip-text-title: #191816;
+    --tooltip-text-body: #4E5E51;
+    --tooltip-border: #E3DFD5;
+    --tooltip-shadow: 0 10px 25px -5px rgba(25, 24, 22, 0.08), 0 8px 10px -6px rgba(25, 24, 22, 0.04);
 
     /* 5. Authoritative UN Geoscheme Regional Brand Hexes */
     --region-eastern-raw: #FFA500;
@@ -69,6 +69,62 @@
     --region-western-on-solid: #111827;
 
     --ease-japandi: cubic-bezier(0.2, 0, 0, 1);
+
+    /* ==========================================
+       REPORT — SURFACES (Japandi Washi Architecture)
+       ========================================== */
+    --report-paper:       #FAFAF6;
+    --report-paper-warm:  #F5F3EC;
+    --report-paper-deep:  #ECEAE1;
+    --report-white:       #FFFFFF;
+
+    /* ==========================================
+       REPORT — INK (High-Contrast Sumi Hierarchy)
+       ========================================== */
+    --report-ink:         #181816;
+    --report-ink-soft:    #343430;
+    --report-graphite:    #5C5C55;
+    --report-muted:       #77776E;
+
+    /* ==========================================
+       REPORT — STRUCTURE & DIVIDERS
+       ========================================== */
+    --report-rule:        #D7D6CD;
+    --report-border:      #C8C5BA;
+    --report-sand:        #E7E2D6;
+
+    /* ==========================================
+       REGIONAL IDENTITY & CALM SURFACES
+       ========================================== */
+    --region-eastern-id:     #FFA500;
+    --region-eastern-calm:   #FFF8ED;
+    --region-eastern-accent: #FFB84A;
+    --region-eastern-strong: #D98200;
+    --region-eastern-pale:   #FFF7E8;
+
+    --region-middle-id:      #FF00FE;
+    --region-middle-calm:    #FFF7FF;
+    --region-middle-accent:  #FF55FF;
+    --region-middle-strong:  #D600D5;
+    --region-middle-pale:    #FFF5FF;
+
+    --region-northern-id:     #1802FF;
+    --region-northern-calm:   #F5F5FF;
+    --region-northern-accent: #7770FF;
+    --region-northern-strong: #1600D9;
+    --region-northern-pale:   #F3F4FF;
+
+    --region-southern-id:     #FF0A0A;
+    --region-southern-calm:   #FFF6F5;
+    --region-southern-accent: #FF6666;
+    --region-southern-strong: #D90000;
+    --region-southern-pale:   #FFF5F4;
+
+    --region-western-id:     #00FF00;
+    --region-western-calm:   #F4FFF3;
+    --region-western-accent: #4DFF4D;
+    --region-western-strong: #009D00;
+    --region-western-pale:   #F3FAF1;
   }
 
   html.light,
@@ -87,38 +143,38 @@
   [data-theme="dark"] {
     color-scheme: dark;
 
-    /* 1. Surface & Canvas Architecture (Deep Slate Charcoal & Obsidian Elevation) */
-    --bg-primary: #0C0E12;
-    --surface-canvas: #0C0E12;
-    --surface-card: #15181E;
-    --surface-card-elevated: #1D212A;
-    --surface-subtle: #232834;
-    --surface-sunken: #08090C;
+    /* 1. Surface & Canvas Architecture (Tatami Charcoal & Slate Elevation) */
+    --bg-primary: #141512;
+    --surface-canvas: #141512;
+    --surface-card: #181A16;
+    --surface-card-elevated: #1B1D19;
+    --surface-subtle: #1B1D19;
+    --surface-sunken: #0E0F0C;
 
-    /* 2. Typography & Content */
-    --text-primary: #F9FAFB;       /* Pure Off-White - WCAG AAA */
-    --text-secondary: #9CA3AF;     /* Muted Cool Gray */
-    --text-tertiary: #64748B;      /* Dimmed Metadata */
-    --text-inverse: #111827;
+    /* 2. Typography & Content (Bleached Silk & Luminous Pale Lichen) */
+    --text-primary: #E6E3DB;       /* Soft Bleached Silk - WCAG AAA */
+    --text-secondary: #AEC6B1;     /* Luminous Pale Lichen */
+    --text-tertiary: #B5A79C;      /* Muted Silver Sandstone */
+    --text-inverse: #191816;
 
     /* 3. Interface Borders & Structural Dividers */
-    --border-subtle: #1E232E;
-    --border-strong: #2E3545;
-    --border-focus: #38BDF8;
+    --border-subtle: #2D2E2A;
+    --border-strong: #3F413B;
+    --border-focus: #AEC6B1;
 
     /* 4. Data-Agnostic Chart Utility Tokens */
-    --chart-gridline: rgba(249, 250, 251, 0.06);
-    --chart-axis-line: #4B5563;
-    --chart-axis-label: #9CA3AF;
-    --chart-crosshair: #E2E8F0;
-    --chart-brush-bg: rgba(255, 255, 255, 0.04);
-    --chart-brush-handle: #64748B;
+    --chart-gridline: rgba(230, 227, 219, 0.08);
+    --chart-axis-line: #B5A79C;
+    --chart-axis-label: #AEC6B1;
+    --chart-crosshair: #E6E3DB;
+    --chart-brush-bg: rgba(230, 227, 219, 0.04);
+    --chart-brush-handle: #B5A79C;
 
     /* Universal Tooltip System */
-    --tooltip-bg: #15181E;
-    --tooltip-text-title: #F9FAFB;
-    --tooltip-text-body: #CBD5E1;
-    --tooltip-border: #2E3545;
+    --tooltip-bg: #1B1D19;
+    --tooltip-text-title: #E6E3DB;
+    --tooltip-text-body: #AEC6B1;
+    --tooltip-border: #2D2E2A;
     --tooltip-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.6), 0 8px 16px -6px rgba(0, 0, 0, 0.4);
 
     /* 5. Exact UN Geoscheme Regional Brand Hexes (Glow & Fill Adjustments) */
@@ -148,6 +204,27 @@
     --region-northern-on-solid: #FFFFFF;
     --region-southern-on-solid: #FFFFFF;
     --region-western-on-solid: #111827;
+
+    /* Report tokens in dark mode */
+    --report-paper:       #141512;
+    --report-paper-warm:  #1B1D19;
+    --report-paper-deep:  #20231F;
+    --report-white:       #181A16;
+
+    --report-ink:         #E6E3DB;
+    --report-ink-soft:    #CCC8BC;
+    --report-graphite:    #A8A499;
+    --report-muted:       #807C74;
+
+    --report-rule:        #2D2E2A;
+    --report-border:      #3B3D37;
+    --report-sand:        #262823;
+
+    --region-eastern-pale:   rgba(255, 165, 0, 0.12);
+    --region-middle-pale:    rgba(255, 0, 254, 0.12);
+    --region-northern-pale:  rgba(24, 2, 255, 0.12);
+    --region-southern-pale:  rgba(255, 10, 10, 0.12);
+    --region-western-pale:   rgba(0, 255, 0, 0.12);
   }
 
   body {
@@ -313,6 +390,33 @@
 /* Subtle glow effects */
 .glow-emerald {
   box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.2);
+}
+
+/* --------------------------------------------------------------------------
+   Kyoto & Swiss Editorial Typography & Spatial System
+   -------------------------------------------------------------------------- */
+.font-serif {
+  font-family: "Noto Serif Display", Georgia, Cambria, "Times New Roman", serif;
+}
+
+.font-sans {
+  font-family: "Noto Sans", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.editorial-reading-lane {
+  max-width: 720px;
+  line-height: 1.75;
+}
+
+.editorial-abstract-box {
+  background-color: var(--surface-card-elevated);
+  border-left: 4px solid var(--region-western-stroke);
+}
+
+.editorial-node-header {
+  font-family: "Noto Serif Display", serif;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
 }
 
 /* Shimmer animation for skeleton loading */
