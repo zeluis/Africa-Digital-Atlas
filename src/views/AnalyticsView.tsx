@@ -715,7 +715,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                     name="African Nations" 
                     data={correlationData} 
                     fill="#10b981" 
-                    onClick={(node) => onSelectCountry(node.entityId)}
+                    onClick={(node: any) => node?.entityId && onSelectCountry(node.entityId)}
                     cursor="pointer"
                   />
                 </ScatterChart>

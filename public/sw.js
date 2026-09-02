@@ -1,7 +1,7 @@
 // Africa Data Atlas - Progressive Web App Service Worker
-// Multi-Tier Caching Strategies for complete Offline Availability
+// Multi-Tier Caching Strategies with full Chrome-Extension & Offline Safety
 
-const VERSION = 'v1.1';
+const VERSION = 'v1.2';
 const CACHE_STATIC = `africa-atlas-static-${VERSION}`;
 const CACHE_IMMUTABLE = `africa-atlas-immutable-${VERSION}`;
 const CACHE_FONTS = `africa-atlas-fonts-${VERSION}`;
@@ -28,7 +28,9 @@ const PRECACHE_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_STATIC).then((cache) => {
-      return cache.addAll(PRECACHE_ASSETS);
+      return cache.addAll(PRECACHE_ASSETS).catch((err) => {
+        console.warn('[SW] Non-fatal precache asset skip:', err);
+      });
     }).then(() => {
       // Force the waiting service worker to become active immediately
       return self.skipWaiting();
@@ -43,7 +45,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         keys.map((key) => {
           if (!CURRENT_CACHES.includes(key)) {
-            console.log('[SW] Deleting deprecated cache:', key);
+            console.log('[SW] Purging deprecated cache:', key);
             return caches.delete(key);
           }
         })
@@ -52,6 +54,13 @@ self.addEventListener('activate', (event) => {
       return self.clients.claim();
     })
   );
+});
+
+// Listen for explicit SKIP_WAITING message from client
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // Helper: Determine if request is for Google Fonts
@@ -73,6 +82,30 @@ function isHashedAsset(url) {
   );
 }
 
+// Helper: Safe Cache Put operation that handles scheme restrictions (e.g. chrome-extension:)
+async function safeCachePut(cacheName, request, networkResponse) {
+  if (!request || !networkResponse) return;
+  const reqUrl = typeof request === 'string' ? request : request.url;
+  
+  // Cache API only accepts http/https requests
+  if (!reqUrl || (!reqUrl.startsWith('http://') && !reqUrl.startsWith('https://'))) {
+    return;
+  }
+
+  // Only cache successful 200 OK responses or opaque cross-origin resources
+  if (networkResponse.status !== 200 && networkResponse.type !== 'opaque') {
+    return;
+  }
+
+  try {
+    const cache = await caches.open(cacheName);
+    await cache.put(request, networkResponse.clone());
+  } catch (err) {
+    // Non-fatal, suppress cache write error (e.g. quota, scheme or opaque restrictions)
+    console.debug('[SW] Cache put suppressed:', reqUrl);
+  }
+}
+
 // Strategy 1: Cache-First (with background population) for Immutable Assets, Maps & Fonts
 async function cacheFirstStrategy(request, cacheName) {
   const cachedResponse = await caches.match(request);
@@ -83,13 +116,11 @@ async function cacheFirstStrategy(request, cacheName) {
   try {
     const networkResponse = await fetch(request);
     if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
-      const cache = await caches.open(cacheName);
-      cache.put(request, networkResponse.clone());
+      await safeCachePut(cacheName, request, networkResponse);
     }
     return networkResponse;
   } catch (error) {
-    console.warn('[SW] Cache-First fetch failed for:', request.url, error);
-    // If completely offline and missing, return null so caller can handle fallback if needed
+    console.warn('[SW] Cache-First fetch failed for:', request.url);
     return cachedResponse || null;
   }
 }
@@ -101,9 +132,9 @@ async function staleWhileRevalidateStrategy(request, cacheName) {
 
   // Background fetch to update cache for next load
   const fetchPromise = fetch(request)
-    .then((networkResponse) => {
+    .then(async (networkResponse) => {
       if (networkResponse && networkResponse.status === 200) {
-        cache.put(request, networkResponse.clone());
+        await safeCachePut(cacheName, request, networkResponse);
       }
       return networkResponse;
     })
@@ -118,15 +149,14 @@ async function staleWhileRevalidateStrategy(request, cacheName) {
 
 // Strategy 3: Network-First with Cache Fallback for dynamic/live API requests
 async function networkFirstStrategy(request, cacheName) {
-  const cache = await caches.open(cacheName);
   try {
     const networkResponse = await fetch(request);
     if (networkResponse && networkResponse.status === 200) {
-      cache.put(request, networkResponse.clone());
+      await safeCachePut(cacheName, request, networkResponse);
     }
     return networkResponse;
   } catch (error) {
-    const cachedResponse = await cache.match(request);
+    const cachedResponse = await caches.match(request);
     if (cachedResponse) {
       return cachedResponse;
     }
@@ -141,7 +171,18 @@ self.addEventListener('fetch', (event) => {
   // Only intercept GET requests
   if (request.method !== 'GET') return;
 
-  const url = new URL(request.url);
+  const urlStr = request.url;
+  // Strictly skip browser extension requests (chrome-extension://, moz-extension://), data:, blob:
+  if (!urlStr.startsWith('http://') && !urlStr.startsWith('https://')) {
+    return;
+  }
+
+  let url;
+  try {
+    url = new URL(urlStr);
+  } catch (e) {
+    return;
+  }
 
   // 1. Google Fonts (Cache-First)
   if (isFontRequest(url)) {

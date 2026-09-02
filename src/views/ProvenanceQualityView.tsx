@@ -244,7 +244,7 @@ export const ProvenanceQualityView: React.FC = () => {
             <Database className="w-4 h-4 text-emerald-500" />
           </div>
           <div className="text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-mono">
-            {auditResult.entityCount}
+            {auditResult.totalEntitiesChecked}
           </div>
           <p className="text-[11px] text-zinc-500">54 sovereign nations + territories</p>
         </div>
@@ -255,7 +255,7 @@ export const ProvenanceQualityView: React.FC = () => {
             <Layers className="w-4 h-4 text-cyan-500" />
           </div>
           <div className="text-2xl font-extrabold text-cyan-600 dark:text-cyan-400 font-mono">
-            {(auditResult?.observationCount ?? 0).toLocaleString()}
+            {(auditResult?.totalObservationsChecked ?? 0).toLocaleString()}
           </div>
           <p className="text-[11px] text-zinc-500">Canonical data points ingested</p>
         </div>
@@ -277,7 +277,7 @@ export const ProvenanceQualityView: React.FC = () => {
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
           </div>
           <div className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
-            {auditResult.completenessScore}%
+            {auditResult.coveragePercentage}%
           </div>
           <p className="text-[11px] text-zinc-500">Zero orphaned observations</p>
         </div>

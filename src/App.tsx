@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Navbar } from './components/Navbar';
 import { NavigationDrawer, CanonicalNavTab } from './components/NavigationDrawer';
 import { SearchModal } from './components/SearchModal';
@@ -12,21 +12,22 @@ import { CountryView } from './views/CountryView';
 import { RegionalView } from './views/RegionalView';
 import { AfricanRegion } from './data/types';
 import { atlas } from './data/atlas-store';
+import { lazyWithRetry, ViewErrorBoundary } from './utils/lazyWithRetry';
 import { Globe, Database } from 'lucide-react';
 
-// Lazy-load heavier views to optimize initial bundle
-const AnalyticsView = lazy(() => import('./views/AnalyticsView').then(m => ({ default: m.AnalyticsView })));
-const HeritageView = lazy(() => import('./views/HeritageView').then(m => ({ default: m.HeritageView })));
-const CompareView = lazy(() => import('./views/CompareView').then(m => ({ default: m.CompareView })));
-const ProvenanceQualityView = lazy(() => import('./views/ProvenanceQualityView').then(m => ({ default: m.ProvenanceQualityView })));
-const MapView = lazy(() => import('./views/MapView').then(m => ({ default: m.MapView })));
-const LanguagesView = lazy(() => import('./views/LanguagesView').then(m => ({ default: m.LanguagesView })));
-const ExploreView = lazy(() => import('./views/ExploreView').then(m => ({ default: m.ExploreView })));
-const SlaveTradeView = lazy(() => import('./views/SlaveTradeView').then(m => ({ default: m.SlaveTradeView })));
-const MolecularLegaciesArticleView = lazy(() => import('./views/MolecularLegaciesArticleView').then(m => ({ default: m.MolecularLegaciesArticleView })));
-const AfricanDevelopmentMasterReportView = lazy(() => import('./views/AfricanDevelopmentMasterReportView').then(m => ({ default: m.AfricanDevelopmentMasterReportView })));
-const ThematicPillarsView = lazy(() => import('./views/ThematicPillarsView').then(m => ({ default: m.ThematicPillarsView })));
-const EntityBlocsBrowser = lazy(() => import('./components/EntityBlocsBrowser').then(m => ({ default: m.EntityBlocsBrowser })));
+// Lazy-load heavier views with automatic chunk recovery and cache resilience for GitHub Pages
+const AnalyticsView = lazyWithRetry(() => import('./views/AnalyticsView').then(m => ({ default: m.AnalyticsView })), 'AnalyticsView');
+const HeritageView = lazyWithRetry(() => import('./views/HeritageView').then(m => ({ default: m.HeritageView })), 'HeritageView');
+const CompareView = lazyWithRetry(() => import('./views/CompareView').then(m => ({ default: m.CompareView })), 'CompareView');
+const ProvenanceQualityView = lazyWithRetry(() => import('./views/ProvenanceQualityView').then(m => ({ default: m.ProvenanceQualityView })), 'ProvenanceQualityView');
+const MapView = lazyWithRetry(() => import('./views/MapView').then(m => ({ default: m.MapView })), 'MapView');
+const LanguagesView = lazyWithRetry(() => import('./views/LanguagesView').then(m => ({ default: m.LanguagesView })), 'LanguagesView');
+const ExploreView = lazyWithRetry(() => import('./views/ExploreView').then(m => ({ default: m.ExploreView })), 'ExploreView');
+const SlaveTradeView = lazyWithRetry(() => import('./views/SlaveTradeView').then(m => ({ default: m.SlaveTradeView })), 'SlaveTradeView');
+const MolecularLegaciesArticleView = lazyWithRetry(() => import('./views/MolecularLegaciesArticleView').then(m => ({ default: m.MolecularLegaciesArticleView })), 'MolecularLegaciesArticleView');
+const AfricanDevelopmentMasterReportView = lazyWithRetry(() => import('./views/AfricanDevelopmentMasterReportView').then(m => ({ default: m.AfricanDevelopmentMasterReportView })), 'AfricanDevelopmentMasterReportView');
+const ThematicPillarsView = lazyWithRetry(() => import('./views/ThematicPillarsView').then(m => ({ default: m.ThematicPillarsView })), 'ThematicPillarsView');
+const EntityBlocsBrowser = lazyWithRetry(() => import('./components/EntityBlocsBrowser').then(m => ({ default: m.EntityBlocsBrowser })), 'EntityBlocsBrowser');
 
 const REGION_ID_TO_NAME: Record<string, AfricanRegion> = {
   'region-northern': 'Northern Africa',
@@ -197,7 +198,7 @@ function AppContent() {
           {isTransitioning ? (
             <MainContentSkeleton viewType={currentTab} />
           ) : (
-            <>
+            <ViewErrorBoundary fallbackTitle="Module Unavailable">
               {currentTab === 'overview' && (
                 <OverviewView
                   onSelectCountry={handleSelectCountry}
@@ -304,7 +305,7 @@ function AppContent() {
                   <ProvenanceQualityView />
                 )}
               </Suspense>
-            </>
+            </ViewErrorBoundary>
           )}
         </main>
       </div>

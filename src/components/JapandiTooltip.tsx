@@ -4,7 +4,7 @@ interface JapandiTooltipProps {
   content: React.ReactNode;
   title?: string;
   regionalAccent?: string;
-  children: React.ReactElement;
+  children: React.ReactElement<any>;
   position?: 'top' | 'bottom' | 'left' | 'right';
   className?: string;
 }
