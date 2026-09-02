@@ -13,7 +13,8 @@ import {
   CheckCircle2, 
   Sun, 
   Moon,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Database
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -26,6 +27,7 @@ interface NavbarProps {
   isDrawerOpen: boolean;
   theme?: 'dark' | 'light';
   onToggleTheme?: () => void;
+  onOpenApiHub?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -37,7 +39,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleMenu,
   isDrawerOpen,
   theme = 'dark',
-  onToggleTheme
+  onToggleTheme,
+  onOpenApiHub
 }) => {
   const { t } = useTranslation();
   const { density, cycleDensity } = useDensity();
@@ -88,19 +91,21 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Real-time Live Data Status Indicator with Japandi Tooltip */}
             <JapandiTooltip
-              title="Live Statistical Feeds"
-              content="Real-time synchronized data feeds: World Bank, IMF, UN DESA, Open-Meteo & UNESCO."
+              title="Multilateral Data APIs (16 Active)"
+              content="Click to explore and live-test 16 international APIs: FH_FIW, WGI, UNESCO, GHO, PIP, IDS, UN Comtrade, IMF WEO, WB CPIA, and WB Climate."
               regionalAccent="#10b981"
             >
-              <div 
-                className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-emerald-300/80 dark:border-emerald-800/80 bg-emerald-50/90 dark:bg-emerald-950/60 text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-300 shadow-xs cursor-default select-none"
+              <button 
+                onClick={onOpenApiHub}
+                className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-emerald-300/80 dark:border-emerald-800/80 bg-emerald-50/90 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-300 shadow-xs cursor-pointer select-none transition-colors"
+                title="Open Multilateral Data APIs & Ingestion Hub"
               >
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
-                <span className="tracking-wide">{t('badge.live_data', 'LIVE DATA')}</span>
-              </div>
+                <span className="tracking-wide">16 DATA APIs</span>
+              </button>
             </JapandiTooltip>
 
             {/* Density Mode Switcher Button */}

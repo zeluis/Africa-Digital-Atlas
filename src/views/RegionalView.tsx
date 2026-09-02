@@ -5,6 +5,7 @@ import { AfricanRegion, RegionalBloc, UNRegionName } from '../data/types';
 import { CountryFlag } from '../components/CountryFlag';
 import { AfricaVectorMap } from '../components/AfricaVectorMap';
 import { RegionalSilhouette } from '../components/RegionalSilhouette';
+import { OrganizationLogo } from '../components/OrganizationLogo';
 import { UN_M49_REGIONS, UN_M49_NUMERIC_CODES } from '../data/svgGeographySystem';
 import { getRegionTonalPalette, UN_GEOSCHEME_TONAL_PALETTES } from '../data/unGeoschemeColors';
 import { formatPopulation, formatGDP, formatHDI } from '../data/atlas-formatters';
@@ -423,14 +424,17 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
           {/* Bloc Dossier */}
           <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-6 md:p-8 space-y-6 shadow-xl">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-5">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">{currentBlocSummary.bloc}</h2>
-                  <span className="font-mono text-xs bg-emerald-50 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full">
-                    {currentBlocSummary.countriesCount} Member States
-                  </span>
+              <div className="flex items-center gap-4">
+                <OrganizationLogo org={currentBlocSummary.bloc} size={48} />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">{currentBlocSummary.bloc}</h2>
+                    <span className="font-mono text-xs bg-emerald-50 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full">
+                      {currentBlocSummary.countriesCount} Member States
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{currentBlocSummary.name}</p>
                 </div>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{currentBlocSummary.name}</p>
               </div>
               <div className="flex items-center gap-3 font-mono text-xs">
                 <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 rounded-xl">

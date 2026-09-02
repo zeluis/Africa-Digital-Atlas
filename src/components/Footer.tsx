@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { CanonicalNavTab } from './NavigationDrawer';
 import { atlas } from '../data/atlas-store';
+import { OrganizationLogo } from './OrganizationLogo';
 
 interface FooterProps {
   onNavigateTab: (tab: CanonicalNavTab) => void;
@@ -142,29 +143,29 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
               DATA SOURCES
             </h4>
             <ul className="space-y-2 text-xs">
-              <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <li className="flex items-center gap-2">
+                <OrganizationLogo org="WB" size={16} />
                 <span>World Bank Data API</span>
               </li>
-              <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
+              <li className="flex items-center gap-2">
+                <OrganizationLogo org="IMF" size={16} />
                 <span>IMF World Economic Outlook</span>
               </li>
-              <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+              <li className="flex items-center gap-2">
+                <OrganizationLogo org="UN" size={16} />
                 <span>UN DESA Population Division</span>
               </li>
-              <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+              <li className="flex items-center gap-2">
+                <OrganizationLogo org="UNESCO" size={16} />
                 <span>UNESCO World Heritage</span>
               </li>
-              <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                <span>UN Geoscheme M49 Standard</span>
+              <li className="flex items-center gap-2">
+                <OrganizationLogo org="UN_COMTRADE" size={16} />
+                <span>UN Comtrade & M49 Standard</span>
               </li>
-              <li className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
-                <span>Open-Meteo & Climate Feeds</span>
+              <li className="flex items-center gap-2">
+                <OrganizationLogo org="AU" size={16} />
+                <span>African Union & AfCFTA</span>
               </li>
             </ul>
           </div>

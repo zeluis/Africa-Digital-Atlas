@@ -671,8 +671,21 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
               const isHovered = hoveredRoute?.id === route.id;
               const isSelected = selectedRouteId === route.id;
 
+              // Temporal Epoch Activity Multiplier based on playbackYear
+              let epochMultiplier = 1.0;
+              if (playbackYear < 1600) {
+                epochMultiplier = (route.targetRegion.includes('Brazil') || route.targetRegion.includes('Spanish')) ? 0.95 : 0.25;
+              } else if (playbackYear < 1700) {
+                epochMultiplier = (route.targetRegion.includes('Brazil') || route.targetRegion.includes('Caribbean')) ? 0.9 : 0.45;
+              } else if (playbackYear <= 1808) {
+                epochMultiplier = 1.0;
+              } else {
+                epochMultiplier = (route.targetRegion.includes('Brazil') || route.targetRegion.includes('Spanish')) ? 0.95 : 0.15;
+              }
+
               // Volume scaling (2.5px to 16px bandwidth)
-              const volumeWidth = Math.max(2.5, Math.min(16, (route.embarkedCount / 5694200) * 16));
+              const baseWidth = Math.max(2.5, Math.min(16, (route.embarkedCount / 5694200) * 16));
+              const volumeWidth = baseWidth * epochMultiplier;
               const strokeColor = getMortalityStroke(route.avgMortalityRate);
               const glowColor = getMortalityGlow(route.avgMortalityRate);
 
@@ -702,7 +715,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                     fill="none"
                     stroke={strokeColor}
                     strokeWidth={isHovered ? volumeWidth + 3 : volumeWidth}
-                    strokeOpacity={isHovered || isSelected ? 0.95 : 0.72}
+                    strokeOpacity={isHovered || isSelected ? 0.95 : Math.max(0.2, 0.75 * epochMultiplier)}
                     strokeLinecap="round"
                     className="transition-all duration-200"
                   />
@@ -714,12 +727,12 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                     stroke="#ffffff"
                     strokeWidth={Math.max(1.8, volumeWidth * 0.45)}
                     strokeDasharray="5 18"
-                    strokeOpacity={isHovered ? 1 : 0.8}
+                    strokeOpacity={isHovered ? 1 : 0.8 * epochMultiplier}
                     className="animate-pulse"
                   />
 
                   {/* Flow Volume Marker at Midpoint */}
-                  {(isHovered || isSelected || route.embarkedCount > 1500000) && (
+                  {(isHovered || isSelected || (route.embarkedCount > 1500000 && epochMultiplier > 0.5)) && (
                     <g transform={`translate(${midX}, ${midY})`} className="pointer-events-none">
                       <rect x="-30" y="-9" width="60" height="18" rx="4" fill="#020617" stroke={strokeColor} strokeWidth="1.2" opacity="0.92" />
                       <text x="0" y="3.5" textAnchor="middle" fill="#ffffff" fontSize="8" fontFamily="monospace" fontWeight="900">

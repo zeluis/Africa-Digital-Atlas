@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { Navbar } from './components/Navbar';
 import { NavigationDrawer, CanonicalNavTab } from './components/NavigationDrawer';
 import { SearchModal } from './components/SearchModal';
+import { MultiSourceApiHubModal } from './components/MultiSourceApiHubModal';
 import { MainContentSkeleton } from './components/MainContentSkeleton';
 import { Footer } from './components/Footer';
 import { DensityProvider } from './contexts/DensityContext';
@@ -56,6 +57,9 @@ function AppContent() {
   
   // Search modal state
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
+  
+  // Multilateral Data APIs & Ingestion Hub modal state
+  const [isApiHubOpen, setIsApiHubOpen] = useState<boolean>(false);
   
   // Analytics selected indicator
   const [selectedIndicatorForAnalytics, setSelectedIndicatorForAnalytics] = useState<string>('NY.GDP.MKTP.CD');
@@ -174,6 +178,7 @@ function AppContent() {
         isDrawerOpen={isDesktopDrawerOpen}
         theme={theme}
         onToggleTheme={toggleTheme}
+        onOpenApiHub={() => setIsApiHubOpen(true)}
       />
 
       {/* Main Workspace Layout with Desktop Navigation Drawer & Content */}
@@ -309,6 +314,13 @@ function AppContent() {
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
         onSelectCountry={handleSelectCountry}
+        onSelectIndicator={handleSelectIndicator}
+      />
+
+      {/* Multilateral Data APIs & Ingestion Hub Modal */}
+      <MultiSourceApiHubModal
+        isOpen={isApiHubOpen}
+        onClose={() => setIsApiHubOpen(false)}
         onSelectIndicator={handleSelectIndicator}
       />
 

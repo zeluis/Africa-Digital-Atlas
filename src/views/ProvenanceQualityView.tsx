@@ -5,6 +5,14 @@ import { INITIAL_PIPELINE_STEPS, PipelineStep } from '../data/atlas-pipeline';
 import { refreshLocalCache, getCacheStatus } from '../data/atlas-cache';
 import { getSvgGeographySystemStats, UN_M49_REGIONS, UN_M49_NUMERIC_CODES } from '../data/svgGeographySystem';
 import { 
+  exportCountriesToCsv, 
+  exportCountriesToJson, 
+  exportSlaveVoyagesToCsv, 
+  exportAcademicBibtex 
+} from '../utils/exportUtils';
+import { ExternalApiConnector, LiveApiTestResult } from '../data/externalApisIngestion';
+import { OrganizationLogo } from '../components/OrganizationLogo';
+import { 
   Database, 
   ShieldCheck, 
   AlertCircle, 
@@ -19,7 +27,11 @@ import {
   MapPin,
   Crosshair,
   Sparkles,
-  Cpu
+  Cpu,
+  BookOpen,
+  FileSpreadsheet,
+  Globe2,
+  Terminal
 } from 'lucide-react';
 
 export const ProvenanceQualityView: React.FC = () => {
@@ -27,11 +39,26 @@ export const ProvenanceQualityView: React.FC = () => {
   const [isRunningPipeline, setIsRunningPipeline] = useState(false);
   const [auditResult, setAuditResult] = useState<IntegrityAuditResult>(() => runAtlasIntegrityAudit());
   const [cacheInfo, setCacheInfo] = useState(getCacheStatus());
+  const [testingApiId, setTestingApiId] = useState<string | null>(null);
+  const [apiTestResults, setApiTestResults] = useState<Record<string, LiveApiTestResult>>({});
 
   const manifest = atlas.getManifest();
   const sources = atlas.getAllSources();
+  const apiConnectors = atlas.getApiConnectors();
   const qualityFlags = atlas.getQualityFlags();
   const geoStats = getSvgGeographySystemStats();
+
+  const handleTestApiConnector = async (connectorId: string) => {
+    setTestingApiId(connectorId);
+    try {
+      const result = await atlas.testLiveApi(connectorId, 'GHA');
+      setApiTestResults(prev => ({ ...prev, [connectorId]: result }));
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setTestingApiId(null);
+    }
+  };
 
   const handleRunAudit = () => {
     const result = runAtlasIntegrityAudit();
@@ -282,6 +309,181 @@ export const ProvenanceQualityView: React.FC = () => {
               <p className="text-xs text-zinc-500 dark:text-zinc-400 pl-8">{step.outputDescription}</p>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Multilateral APIs & Ingestion Feeds (16 Connected Sources) */}
+      <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 space-y-6 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-5">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700/60 text-xs font-mono font-semibold text-amber-700 dark:text-amber-300 mb-2">
+              <Globe2 className="w-3.5 h-3.5" /> 16 Multilateral & Specialized Data Feeds
+            </div>
+            <h2 className="text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+              International Statistical API Connectors
+            </h2>
+            <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+              Live ingest feeds from FH_FIW, WGI, UNESCO, GHO, PIP, IDS, UN Comtrade, IMF WEO, WB CPIA, and WB Climate.
+            </p>
+          </div>
+          <span className="px-3 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800/60 text-xs font-mono font-bold">
+            100% Harmonized
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {apiConnectors.map((connector) => {
+            const testResult = apiTestResults[connector.id];
+            const isTesting = testingApiId === connector.id;
+
+            return (
+              <div
+                key={connector.id}
+                className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/50 flex flex-col justify-between space-y-3 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all shadow-xs"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <OrganizationLogo org={connector.acronym} size={24} />
+                      <span className="px-2 py-0.5 rounded text-[11px] font-bold font-mono bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800/60">
+                        {connector.acronym}
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono text-zinc-400">
+                      {connector.format}
+                    </span>
+                  </div>
+                  <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">{connector.name}</h4>
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">{connector.organization} • {connector.category}</p>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-300 line-clamp-2 leading-relaxed">
+                    {connector.coverageSummary}
+                  </p>
+                </div>
+
+                <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800/60 flex items-center justify-between gap-2">
+                  <a
+                    href={connector.docUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-1"
+                  >
+                    <ExternalLink className="w-3 h-3" /> Docs
+                  </a>
+
+                  <button
+                    onClick={() => handleTestApiConnector(connector.id)}
+                    disabled={isTesting}
+                    className="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <Play className={`w-3 h-3 text-amber-500 ${isTesting ? 'animate-spin' : ''}`} />
+                    {isTesting ? 'Testing...' : testResult ? 'Test Again' : 'Test Handshake'}
+                  </button>
+                </div>
+
+                {testResult && (
+                  <div className="text-[10px] font-mono p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800/40 truncate">
+                    ✓ Handshake ok ({testResult.latencyMs}ms) • {testResult.payloadSize}B
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Academic Research Data Export Workbench */}
+      <div className="rounded-3xl border border-[#DCD9CE] dark:border-[#2C2E2A] bg-[#FAF8F5] dark:bg-[#1E201B] p-6 md:p-8 space-y-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2DAD0] dark:border-[#2C2E2A] pb-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#3F6955]/10 text-[#3F6955] dark:text-[#6EA88F] text-[11px] font-mono font-semibold mb-1">
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              <span>RESEARCH DATA WORKBENCH</span>
+            </div>
+            <h3 className="font-serif text-xl font-bold text-[#1E1E1C] dark:text-[#FAF8F5]">
+              Empirical Data & Citation Export Engine
+            </h3>
+            <p className="text-xs text-[#66665E] dark:text-[#A8A499] mt-0.5">
+              Directly download normalized macro indicators, historical voyage matrices, and BibTeX citations for academic peer-review
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Card 1: 54 Countries Master CSV */}
+          <div className="rounded-2xl border border-[#E2DAD0] dark:border-[#2C2E2A] bg-[#FFFFFF] dark:bg-[#151613] p-5 flex flex-col justify-between space-y-4">
+            <div className="space-y-2">
+              <div className="w-9 h-9 rounded-xl bg-[#3F6955]/10 flex items-center justify-center text-[#3F6955] dark:text-[#6EA88F]">
+                <FileSpreadsheet className="w-5 h-5" />
+              </div>
+              <h4 className="font-semibold text-sm text-[#1E1E1C] dark:text-[#FAF8F5]">54 Nations Master Matrix</h4>
+              <p className="text-xs text-[#66665E] dark:text-[#A8A499] leading-relaxed">
+                Full tabular dataset with ISO codes, capitals, populations, and all 50+ normalized socio-economic indicators.
+              </p>
+            </div>
+            <button
+              onClick={() => exportCountriesToCsv()}
+              className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#2D2926] dark:bg-[#FAF8F5] text-[#FAF8F5] dark:text-[#181816] text-xs font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" /> Download CSV (.csv)
+            </button>
+          </div>
+
+          {/* Card 2: Structured JSON Catalog */}
+          <div className="rounded-2xl border border-[#E2DAD0] dark:border-[#2C2E2A] bg-[#FFFFFF] dark:bg-[#151613] p-5 flex flex-col justify-between space-y-4">
+            <div className="space-y-2">
+              <div className="w-9 h-9 rounded-xl bg-[#3B5B75]/10 flex items-center justify-center text-[#3B5B75] dark:text-[#8BB4D9]">
+                <FileCode className="w-5 h-5" />
+              </div>
+              <h4 className="font-semibold text-sm text-[#1E1E1C] dark:text-[#FAF8F5]">Complete JSON Catalog</h4>
+              <p className="text-xs text-[#66665E] dark:text-[#A8A499] leading-relaxed">
+                Machine-readable schema containing nested country profiles, coordinates, time series, and source metadata.
+              </p>
+            </div>
+            <button
+              onClick={() => exportCountriesToJson()}
+              className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#2D2926] dark:bg-[#FAF8F5] text-[#FAF8F5] dark:text-[#181816] text-xs font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" /> Download JSON (.json)
+            </button>
+          </div>
+
+          {/* Card 3: SlaveVoyages Regional Flows */}
+          <div className="rounded-2xl border border-[#E2DAD0] dark:border-[#2C2E2A] bg-[#FFFFFF] dark:bg-[#151613] p-5 flex flex-col justify-between space-y-4">
+            <div className="space-y-2">
+              <div className="w-9 h-9 rounded-xl bg-[#A64E3E]/10 flex items-center justify-center text-[#A64E3E] dark:text-[#E27A68]">
+                <Layers className="w-5 h-5" />
+              </div>
+              <h4 className="font-semibold text-sm text-[#1E1E1C] dark:text-[#FAF8F5]">SlaveVoyages Matrix</h4>
+              <p className="text-xs text-[#66665E] dark:text-[#A8A499] leading-relaxed">
+                Trans-Atlantic regional route flows, captive volumes, mortality rates, and primary carrier distributions.
+              </p>
+            </div>
+            <button
+              onClick={() => exportSlaveVoyagesToCsv()}
+              className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#2D2926] dark:bg-[#FAF8F5] text-[#FAF8F5] dark:text-[#181816] text-xs font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" /> Download CSV (.csv)
+            </button>
+          </div>
+
+          {/* Card 4: Academic BibTeX Citations */}
+          <div className="rounded-2xl border border-[#E2DAD0] dark:border-[#2C2E2A] bg-[#FFFFFF] dark:bg-[#151613] p-5 flex flex-col justify-between space-y-4">
+            <div className="space-y-2">
+              <div className="w-9 h-9 rounded-xl bg-[#9E6A2E]/10 flex items-center justify-center text-[#9E6A2E] dark:text-[#E0A865]">
+                <BookOpen className="w-5 h-5" />
+              </div>
+              <h4 className="font-semibold text-sm text-[#1E1E1C] dark:text-[#FAF8F5]">BibTeX Citations</h4>
+              <p className="text-xs text-[#66665E] dark:text-[#A8A499] leading-relaxed">
+                Formatted citations for Nunn (2008), Micheletti (2020), Fortes-Lima (2017), Whatley (2014), and WDI.
+              </p>
+            </div>
+            <button
+              onClick={() => exportAcademicBibtex()}
+              className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#2D2926] dark:bg-[#FAF8F5] text-[#FAF8F5] dark:text-[#181816] text-xs font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" /> Download BibTeX (.bib)
+            </button>
+          </div>
         </div>
       </div>
 
