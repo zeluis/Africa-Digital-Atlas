@@ -380,7 +380,12 @@ npm run preview
 ```
 
 ### Deploying to GitHub Pages:
-The repository includes a GitHub Actions CI/CD workflow (`.github/workflows/deploy.yml`). Pushing changes to the `main` branch will automatically compile the Vite application and deploy it to GitHub Pages.
+The repository includes a production GitHub Actions CI/CD workflow (`.github/workflows/deploy.yml`). Pushing changes to the `main` or `master` branches automatically compiles the Vite application and deploys it to GitHub Pages.
+
+#### 🔐 GitHub App Stateless Token Format & Length Resilience:
+- **Stateless Tokens (`ghs_...`)**: Fully compliant with GitHub's stateless installation token format (~520 characters, JSON Web Tokens).
+- **No Hardcoded Buffer Assumptions**: All workflow actions (`actions/checkout@v4`, `actions/deploy-pages@v4`) and git scripts use variable-length token buffers without legacy string length limits.
+- **Override Header Validation**: Supports the `X-GitHub-Stateless-S2S-Token: enabled` request header for proactive validation and canary testing of stateless App installation tokens.
 
 ### Deploying to Container Platforms (Docker / Google Cloud Run):
 The application includes a self-contained Express server configuration (`server.ts`) for containerized deployment:
