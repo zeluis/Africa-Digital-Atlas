@@ -1,6 +1,6 @@
 $schema: https://api.gitbook.com/gitbook-docs.yaml
 site:
-  title: FPizeluis Docs
+  title: Africa Digital Atlas Docs
   structure:
     - type: section
       key: section-1
@@ -18,9 +18,9 @@ site:
             directory: ./home/home
     - type: section
       key: section-2
-      title: Documentation
+      title: User Guide
       path: documentation
-      icon: book-blank
+      icon: book-open
       children:
         - type: space
           key: space-2
@@ -31,9 +31,9 @@ site:
             directory: ./documentation/documentation
     - type: section
       key: section-3
-      title: API Reference
+      title: Data & Methodology
       path: api-reference
-      icon: terminal
+      icon: database
       children:
         - type: space
           key: space-3
@@ -44,9 +44,9 @@ site:
             directory: ./api-reference/api-reference
     - type: section
       key: section-4
-      title: Changelog
+      title: Developer Guide
       path: changelog
-      icon: clock-rotate-left
+      icon: code
       children:
         - type: space
           key: space-4
@@ -57,9 +57,9 @@ site:
             directory: ./changelog/changelog
     - type: section
       key: section-5
-      title: Help Center
+      title: FAQ
       path: help-center
-      icon: life-ring
+      icon: circle-question
       children:
         - type: space
           key: space-5
