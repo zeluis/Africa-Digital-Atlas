@@ -1,5 +1,6 @@
 ---
-icon: life-ring
+description: Answers to common questions about the Africa Digital Atlas
+icon: circle-question
 layout:
   width: wide
   title:
@@ -20,110 +21,32 @@ layout:
     visible: true
 ---
 
-# Help Center
+# Frequently Asked Questions
 
-{% columns %}
-{% column width="16.666666666666664%" %}
+### Does the Atlas work offline?
 
-{% endcolumn %}
+Yes. Africa Digital Atlas is a Progressive Web App (PWA). Once you've loaded it once, the app shell, the vector map geometry, and previously viewed indicator data are cached by a service worker, so you can keep browsing without a network connection. You can also install it to your device like a native app.
 
-{% column width="66.66666666666667%" %}
-{% hint style="success" %}
-**All systems operational** — No known issues. [View status page](https://status.gitbook.com)
-{% endhint %}
-{% endcolumn %}
+### How often is the data updated?
 
-{% column width="16.666666666666657%" %}
+It depends on the source. Most institutional connectors (World Bank, IMF, WHO, UNESCO, and similar) publish updates annually; a few (trade and health-surveillance data) update quarterly. Each country dossier and indicator shows data-quality flags where a figure is modeled, imputed, or based on a lagged census.
 
-{% endcolumn %}
-{% endcolumns %}
+### Can I trust the numbers for academic work?
 
-<h2 align="center">What can we help you find?</h2>
+The Atlas is a visualization and aggregation layer over primary data from 16 multilateral institutions — it doesn't invent its own statistics. Use the built-in **Provenance & Data Quality** console to check a given figure's source, and the citation generator to produce a properly formatted reference (APA, Harvard, Chicago, or BibTeX). See [Data & Methodology](https://fpizeluis.gitbook.io/fpizeluis-docs/api-reference/) for the full source catalog.
 
-<p align="center">Browse the topics below or use the GitBook Assistant to ask anything you need help with.</p>
+### What's the Transatlantic Slave Voyages globe based on?
 
-<p align="center"><button type="button" class="button primary" data-action="ask" data-icon="gitbook-assistant">How can we help?</button><a href="https://gitbook.com/" class="button secondary" data-icon="paper-plane">Contact support</a></p>
+It's derived from the Slave Voyages research consortium's database of over 36,000 documented voyages (1501–1867). See [Citations & Licensing](https://fpizeluis.gitbook.io/fpizeluis-docs/api-reference/citations-licensing) for the attribution required if you use this data in research.
 
-&#x20;
+### What languages is the Atlas available in?
 
-<table data-view="cards"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><h3><i class="fa-leaf" style="color:$primary;">:leaf:</i></h3></td><td><h4><strong>Getting started</strong></h4></td><td>Get help with the basics</td><td><a href="https://app.gitbook.com/s/CBVy3lrN57oYbWAAlGWO/getting-started">Getting started</a></td></tr><tr><td><h3><i class="fa-money-bill-wave" style="color:$primary;">:money-bill-wave:</i></h3></td><td><h4><strong>Plans and billing</strong></h4></td><td>Get help with your billing</td><td><a href="https://app.gitbook.com/s/CBVy3lrN57oYbWAAlGWO/plans-billing">Plans and billing</a></td></tr><tr><td><h3><i class="fa-computer-mouse" style="color:$primary;">:computer-mouse:</i></h3></td><td><h4><strong>Admin</strong></h4></td><td>Manage your account</td><td><a href="https://app.gitbook.com/s/CBVy3lrN57oYbWAAlGWO/admin">Admin</a></td></tr><tr><td><h3><i class="fa-plug" style="color:$primary;">:plug:</i></h3></td><td><h4><strong>Integrations</strong></h4></td><td>Extend your workflow</td><td><a href="https://app.gitbook.com/s/CBVy3lrN57oYbWAAlGWO/integrations">Integrations</a></td></tr><tr><td><h3><i class="fa-bullhorn" style="color:$primary;">:bullhorn:</i></h3></td><td><h4><strong>Product updates</strong></h4></td><td>See what’s new</td><td><a href="https://app.gitbook.com/o/DaDQkGCM7r2TghFSBFLQ/s/euz6U9T9Ui1Un0dUKuuZ/">Changelog</a></td></tr><tr><td><h3><i class="fa-heart" style="color:$danger;">:heart:</i></h3></td><td><h4><strong>Community</strong></h4></td><td>Join our community</td><td><a href="https://app.gitbook.com/s/CBVy3lrN57oYbWAAlGWO/community">Community</a></td></tr></tbody></table>
+English, French, Arabic (with right-to-left layout), Portuguese, Swahili, Spanish, and German. See [Languages](https://fpizeluis.gitbook.io/fpizeluis-docs/documentation/languages) in the User Guide for details.
 
-&#x20;
+### How do I report a bug or request a feature?
 
-&#x20;
+Open an issue on the [GitHub repository](https://github.com/zeluis/Africa-Digital-Atlas). See the [Contributing](https://fpizeluis.gitbook.io/fpizeluis-docs/changelog/contributing) page in the Developer Guide if you'd like to submit a fix yourself.
 
-{% columns %}
-{% column %}
-### Featured
+### Is the project open source?
 
-{% hint style="info" icon="right-to-bracket" %}
-Log in to see articles recommended based on your plan and recent activity.
-
-<a href="https://gitbook.com" class="button primary">Sign up</a><a href="https://gitbook.com" class="button secondary">Log in</a>
-{% endhint %}
-
-{% content-ref url="getting-started/getting-started-checklist.md" %}
-[getting-started-checklist.md](getting-started/getting-started-checklist.md)
-{% endcontent-ref %}
-
-{% content-ref url="getting-started/whats-the-difference-between-a-workspace-and-a-project.md" %}
-[whats-the-difference-between-a-workspace-and-a-project.md](getting-started/whats-the-difference-between-a-workspace-and-a-project.md)
-{% endcontent-ref %}
-
-{% content-ref url="admin/managing-api-keys.md" %}
-[managing-api-keys.md](admin/managing-api-keys.md)
-{% endcontent-ref %}
-{% endcolumn %}
-
-{% column %}
-### Popular articles
-
-{% content-ref url="admin/inviting-team-members-to-your-workspace.md" %}
-[inviting-team-members-to-your-workspace.md](admin/inviting-team-members-to-your-workspace.md)
-{% endcontent-ref %}
-
-{% content-ref url="integrations/why-isnt-my-integration-syncing.md" %}
-[why-isnt-my-integration-syncing.md](integrations/why-isnt-my-integration-syncing.md)
-{% endcontent-ref %}
-
-{% content-ref url="plans-billing/how-do-i-change-my-plan.md" %}
-[how-do-i-change-my-plan.md](plans-billing/how-do-i-change-my-plan.md)
-{% endcontent-ref %}
-
-{% content-ref url="getting-started/whats-the-difference-between-a-workspace-and-a-project.md" %}
-[whats-the-difference-between-a-workspace-and-a-project.md](getting-started/whats-the-difference-between-a-workspace-and-a-project.md)
-{% endcontent-ref %}
-
-{% content-ref url="getting-started/setting-up-a-custom-domain.md" %}
-[setting-up-a-custom-domain.md](getting-started/setting-up-a-custom-domain.md)
-{% endcontent-ref %}
-{% endcolumn %}
-
-{% column %}
-### Recently updated
-
-{% content-ref url="integrations/connecting-a-third-party-app.md" %}
-[connecting-a-third-party-app.md](integrations/connecting-a-third-party-app.md)
-{% endcontent-ref %}
-
-{% content-ref url="integrations/api-rate-limits-and-quotas.md" %}
-[api-rate-limits-and-quotas.md](integrations/api-rate-limits-and-quotas.md)
-{% endcontent-ref %}
-
-{% content-ref url="admin/sso-configuration-guide.md" %}
-[sso-configuration-guide.md](admin/sso-configuration-guide.md)
-{% endcontent-ref %}
-
-{% content-ref url="plans-billing/billing-faq.md" %}
-[billing-faq.md](plans-billing/billing-faq.md)
-{% endcontent-ref %}
-
-{% content-ref url="admin/sso-configuration-guide.md" %}
-[sso-configuration-guide.md](admin/sso-configuration-guide.md)
-{% endcontent-ref %}
-{% endcolumn %}
-{% endcolumns %}
-
-
-
-&#x20;
+Yes, the code is MIT licensed. The underlying statistical and geospatial data remain subject to the licenses of their originating institutions.
