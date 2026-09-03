@@ -1,13 +1,8 @@
 # Table of contents
 
-* [Changelog](README.md)
-
-## 2026
-
-* [Product update](2026/product-update.md)
-* [Product update](2026/product-update-1.md)
-
-## 2025
-
-* [Product update](2025/product-update.md)
-* [Product update](2025/product-update-1.md)
+* [Developer Guide](README.md)
+* [Architecture & Tech Stack](architecture-and-tech-stack.md)
+* [Installation & Local Development](installation-and-local-development.md)
+* [Deployment](deployment.md)
+* [Offline PWA & Caching Strategy](offline-pwa-and-caching-strategy.md)
+* [Contributing](contributing.md)

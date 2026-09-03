@@ -1,6 +1,8 @@
 ---
-description: New updates and improvements
-icon: clock-rotate-left
+description: >-
+  Architecture, local setup, and deployment for the Africa Digital Atlas
+  codebase
+icon: code
 layout:
   width: wide
   title:
@@ -21,128 +23,16 @@ layout:
     visible: true
 ---
 
-# Changelog
+# Developer Guide
 
+This section is for anyone building on, contributing to, or self-hosting the Africa Digital Atlas codebase.
 
+**Repository:** [github.com/zeluis/Africa-Digital-Atlas](https://github.com/zeluis/Africa-Digital-Atlas)
 
-{% updates format="full" %}
-{% update date="2025-12-03" tags="feature,improvement,fix" %}
-## Product update
+## Contents
 
-See what’s new and improved in our latest update.
-
-<div align="left"><figure><img src="https://gitbookio.github.io/onboarding-template-images/placeholder.png" alt=""><figcaption></figcaption></figure></div>
-
-### Product feature
-
-* Feature description
-* Feature description
-
-### Product feature
-
-* Feature description
-* Feature description
-
-<a href="2026/product-update.md" class="button primary">Read full update</a><a href="https://gitbook.com/" class="button secondary">Documentation</a>
-
-<details>
-
-<summary>Improved</summary>
-
-* Product improvement
-* Product improvement
-* Product improvement
-* Product improvement
-* Product improvement
-
-</details>
-
-<details>
-
-<summary>Fixed</summary>
-
-* Product fix
-* Product fix
-* Product fix
-* Product fix
-* Product fix
-
-</details>
-{% endupdate %}
-
-{% update date="2026-05-08" tags="feature,fix" %}
-## Product update
-
-See what’s new and improved in our latest update.
-
-<div align="left"><figure><img src="https://gitbookio.github.io/onboarding-template-images/placeholder.png" alt=""><figcaption></figcaption></figure></div>
-
-### Product feature
-
-* Feature description
-* Feature description
-
-<a href="2026/product-update-1.md" class="button primary">Read full update</a><a href="https://gitbook.com/" class="button secondary">Documentation</a>
-
-<details>
-
-<summary>Fixed</summary>
-
-* Product fix
-* Product fix
-* Product fix
-* Product fix
-* Product fix
-
-</details>
-{% endupdate %}
-
-{% update date="2025-11-18" tags="improvement,fix" %}
-## Product update
-
-See what’s new and improved in our latest update.
-
-<a href="2025/product-update.md" class="button primary">Read full update</a><a href="https://gitbook.com/" class="button secondary">Documentation</a>
-
-<details>
-
-<summary>Improved</summary>
-
-* Product improvement
-* Product improvement
-* Product improvement
-* Product improvement
-* Product improvement
-
-</details>
-
-<details>
-
-<summary>Fixed</summary>
-
-* Product fix
-* Product fix
-* Product fix
-* Product fix
-* Product fix
-
-</details>
-{% endupdate %}
-
-{% update date="2025-06-09" tags="feature" %}
-## Product update
-
-See what’s new and improved in our latest update.
-
-
-
-<div align="left"><figure><img src="https://gitbookio.github.io/onboarding-template-images/placeholder.png" alt=""><figcaption></figcaption></figure></div>
-
-### Product feature
-
-* Feature description
-* Feature description
-
-<a href="2025/product-update-1.md" class="button primary">Read full update</a><a href="https://gitbook.com/" class="button secondary">Documentation</a>
-{% endupdate %}
-{% endupdates %}
+* [Architecture & Tech Stack](architecture-and-tech-stack.md) — how the app is put together
+* [Installation & Local Development](installation-and-local-development.md) — get a dev environment running
+* [Deployment](deployment.md) — shipping to GitHub Pages, Docker, or the cloud
+* [Offline PWA & Caching Strategy](offline-pwa-and-caching-strategy.md) — how the app works without a network
+* [Contributing](contributing.md) — how to propose changes
