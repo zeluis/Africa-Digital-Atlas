@@ -134,6 +134,17 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
                   Methodology & Audit
                 </button>
               </li>
+              <li>
+                <a
+                  href="./docs/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                >
+                  <span>Docs & Guides</span>
+                  <ExternalLink className="w-3 h-3 opacity-60" />
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -188,6 +199,16 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
             </div>
 
             <div className="flex items-center gap-3">
+              <a
+                href="./docs/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors inline-flex items-center gap-1"
+              >
+                <span>Docs</span>
+                <ExternalLink className="w-3 h-3 opacity-60" />
+              </a>
+              <span>•</span>
               <button
                 onClick={() => onNavigateTab('provenance')}
                 className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer"

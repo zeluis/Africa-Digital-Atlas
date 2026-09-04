@@ -20,6 +20,7 @@ import {
   ChevronRight,
   Sparkles,
   FileText,
+  ExternalLink,
   X
 } from 'lucide-react';
 import { UN_REGIONAL_SILHOUETTES } from '../data/svgGeographySystem';
@@ -711,6 +712,23 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             <span className="absolute right-0 top-1 bottom-1 w-[3px] bg-emerald-500 rounded-r-md" />
           )}
         </button>
+
+        {/* Documentation External Link */}
+        <a
+          href="./docs/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer py-2 px-3 text-xs text-zinc-500 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-800 dark:hover:text-zinc-200 mt-1"
+        >
+          <div className="flex items-center gap-2.5">
+            <BookOpen 
+              className="w-4 h-4 text-amber-600 dark:text-amber-500 shrink-0" 
+              strokeWidth={1.75} 
+            />
+            <span>{t('nav.docs', 'Documentation & Guides')}</span>
+          </div>
+          <ExternalLink className="w-3.5 h-3.5 text-zinc-400 opacity-60" />
+        </a>
 
         {/* 47. Drawer Credits - Understated Acknowledgement & Author Area */}
         <div className="pt-4 mt-2 border-t border-zinc-100 dark:border-zinc-800/50 px-2 select-none">

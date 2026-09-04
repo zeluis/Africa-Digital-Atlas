@@ -27,7 +27,7 @@ docs/
 
 ## Deployment
 
-Two options, both covered in more detail on the [Deployment page](docs/developer/deployment.md) once running:
+Two options, both covered in more detail on the [Deployment page](/developer/deployment) once running:
 
 - **Same Pages site as the app** (default config): built with `base: '/Africa-Digital-Atlas/docs/'`, so `npm run docs:build` output is meant to land at `<pages-root>/docs/`. You'll need to fold this into whatever build/deploy workflow publishes the main app.
 - **Separate site** (simpler): change `base` to `/` in `config.mts` and deploy `docs/.vitepress/dist` to its own Netlify/Vercel/Pages project — gets you a clean separate URL with zero coordination with the app's own deploy.

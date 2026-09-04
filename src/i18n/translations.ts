@@ -52,6 +52,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     'nav.countries': 'Country Profiles',
     'nav.compare': 'Compare Tool',
     'nav.provenance': 'Quality & Pipeline',
+    'nav.docs': 'Documentation & Guides',
 
     // Country Dossier Tabs
     'tab.overview': 'Overview & Facts',
