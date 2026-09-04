@@ -31,12 +31,17 @@ import {
   X
 } from 'lucide-react';
 
-interface AfricaMapProps {
+export interface AfricaMapProps {
   onSelectCountry?: (entityId: string) => void;
   onSelectEntity?: (entityId: string) => void;
   selectedEntityId?: string;
   selectedRegionFilter?: AfricanRegion | 'All';
   regionFilter?: AfricanRegion | 'All';
+  isFullBleed?: boolean;
+  mapMode?: MapDisplayMode;
+  onMapModeChange?: (mode: MapDisplayMode) => void;
+  activeMetric?: string;
+  onActiveMetricChange?: (metric: string) => void;
 }
 
 export type MapDisplayMode = 'un_geoscheme' | 'choropleth';
@@ -69,7 +74,12 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   onSelectEntity,
   selectedEntityId,
   selectedRegionFilter,
-  regionFilter
+  regionFilter,
+  isFullBleed = false,
+  mapMode: externalMapMode,
+  onMapModeChange,
+  activeMetric: externalMetric,
+  onActiveMetricChange
 }) => {
   const handleSelectCountry = onSelectCountry || onSelectEntity || (() => {});
   const activeRegionFilter = selectedRegionFilter || regionFilter || 'All';
@@ -77,8 +87,15 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [mapMode, setMapMode] = useState<MapDisplayMode>('un_geoscheme');
-  const [activeMetric, setActiveMetric] = useState<string>('NY.GDP.MKTP.CD');
+  const [internalMapMode, setInternalMapMode] = useState<MapDisplayMode>('un_geoscheme');
+  const mapMode = externalMapMode !== undefined ? externalMapMode : internalMapMode;
+  const setMapMode = onMapModeChange || setInternalMapMode;
+
+  const [internalMetric, setInternalMetric] = useState<string>('NY.GDP.MKTP.CD');
+  const activeMetric = externalMetric !== undefined ? externalMetric : internalMetric;
+  const setActiveMetric = onActiveMetricChange || setInternalMetric;
+
+  const [isLegendExpanded, setIsLegendExpanded] = useState<boolean>(true);
   const [hoveredEntityId, setHoveredEntityId] = useState<string | null>(null);
   const [activeRegionHover, setActiveRegionHover] = useState<AfricanRegion | null>(null);
   const [cursorPos, setCursorPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -458,133 +475,143 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   };
 
   return (
-    <div className="relative w-full rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 p-4 md:p-6 shadow-2xl overflow-hidden backdrop-blur-md space-y-4">
-      {/* Top Map Controls Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-zinc-200 dark:border-zinc-800">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 shadow-inner">
-            <Globe className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="font-bold text-base md:text-lg text-zinc-900 dark:text-zinc-100 tracking-tight">
-                African Continental Geospatial Map
-              </h3>
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700/50 text-emerald-700 dark:text-emerald-400">
-                UN M49 GEOSCHEME
-              </span>
+    <div
+      className={
+        isFullBleed
+          ? "relative w-full h-full flex flex-col overflow-hidden select-none bg-transparent"
+          : "relative w-full rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 p-4 md:p-6 shadow-2xl overflow-hidden backdrop-blur-md space-y-4"
+      }
+    >
+      {/* Top Map Controls Header - Only rendered in standalone / card mode */}
+      {!isFullBleed && (
+        <>
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-zinc-200 dark:border-zinc-800">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 shadow-inner">
+                <Globe className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-base md:text-lg text-zinc-900 dark:text-zinc-100 tracking-tight">
+                    African Continental Geospatial Map
+                  </h3>
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700/50 text-emerald-700 dark:text-emerald-400">
+                    UN M49 GEOSCHEME
+                  </span>
+                </div>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                  Accurate 54-nation boundary vectors, interactive subregion isolation, and live indicators
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-              Accurate 54-nation boundary vectors, interactive subregion isolation, and live indicators
-            </p>
-          </div>
-        </div>
 
-        {/* View Mode Toggle, Metrics & PNG Export Action */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* UN Geoscheme vs Choropleth Toggle */}
-          <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1 rounded-xl">
-            <button
-              onClick={() => setMapMode('un_geoscheme')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
-                mapMode === 'un_geoscheme'
-                  ? 'bg-emerald-500 text-zinc-950 shadow-md font-bold'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
-            >
-              <Compass className="w-3.5 h-3.5" /> UN Geoscheme
-            </button>
-            <button
-              onClick={() => setMapMode('choropleth')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
-                mapMode === 'choropleth'
-                  ? 'bg-cyan-500 text-zinc-950 shadow-md font-bold'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5" /> Choropleth
-            </button>
-          </div>
-
-          {/* Choropleth Metric Selector */}
-          {mapMode === 'choropleth' && (
-            <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1 rounded-xl overflow-x-auto max-w-full">
-              {CHOROPLETH_METRICS.slice(0, 4).map(m => (
+            {/* View Mode Toggle, Metrics & PNG Export Action */}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* UN Geoscheme vs Choropleth Toggle */}
+              <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1 rounded-xl">
                 <button
-                  key={m.id}
-                  onClick={() => setActiveMetric(m.id)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all cursor-pointer whitespace-nowrap ${
-                    activeMetric === m.id
-                      ? 'bg-cyan-500 text-zinc-950 font-bold'
+                  onClick={() => setMapMode('un_geoscheme')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    mapMode === 'un_geoscheme'
+                      ? 'bg-emerald-500 text-zinc-950 shadow-md font-bold'
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                   }`}
                 >
-                  {m.label}
+                  <Compass className="w-3.5 h-3.5" /> UN Geoscheme
+                </button>
+                <button
+                  onClick={() => setMapMode('choropleth')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    mapMode === 'choropleth'
+                      ? 'bg-cyan-500 text-zinc-950 shadow-md font-bold'
+                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                  }`}
+                >
+                  <Layers className="w-3.5 h-3.5" /> Choropleth
+                </button>
+              </div>
+
+              {/* Choropleth Metric Selector */}
+              {mapMode === 'choropleth' && (
+                <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1 rounded-xl overflow-x-auto max-w-full">
+                  {CHOROPLETH_METRICS.slice(0, 4).map(m => (
+                    <button
+                      key={m.id}
+                      onClick={() => setActiveMetric(m.id)}
+                      className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all cursor-pointer whitespace-nowrap ${
+                        activeMetric === m.id
+                          ? 'bg-cyan-500 text-zinc-950 font-bold'
+                          : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                      }`}
+                    >
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Export High-Res PNG Button */}
+              <button
+                onClick={handleDownloadPng}
+                disabled={isExporting}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs font-semibold transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                title="Download Map as High-Resolution PNG Image (2000x2200px)"
+              >
+                {isExporting ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-500" />
+                ) : exportSuccess ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                ) : (
+                  <Download className="w-3.5 h-3.5 text-emerald-500" />
+                )}
+                <span className="hidden sm:inline">
+                  {isExporting ? 'Exporting...' : exportSuccess ? 'Saved PNG!' : 'Download Map Image'}
+                </span>
+                <span className="sm:hidden">PNG</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Interactive Legend with Visibility Toggles */}
+          <InteractiveMapLegend
+            visibleRegions={visibleRegions}
+            onToggleRegion={handleToggleRegion}
+            onShowAll={handleShowAllRegions}
+            onHideAll={handleHideAllRegions}
+            onIsolateRegion={handleIsolateRegion}
+            activeHoverRegion={activeRegionHover}
+            onHoverRegion={setActiveRegionHover}
+          />
+
+          {/* Regional Quick-Focus Bar */}
+          <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+              <span className="font-mono text-[11px] text-zinc-500 dark:text-zinc-400 font-semibold flex items-center gap-1 pr-1">
+                <Compass className="w-3 h-3 text-emerald-500" /> Zoom Focus:
+              </span>
+              {(Object.keys(REGIONAL_ZOOM_PRESETS) as AfricanRegion[]).map(r => (
+                <button
+                  key={r}
+                  onClick={() => handleFocusRegion(r)}
+                  className="px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 text-[11px] font-medium transition-all cursor-pointer whitespace-nowrap"
+                >
+                  {r.replace(' Africa', '')}
                 </button>
               ))}
+              <button
+                onClick={handleResetZoom}
+                className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-400 text-[11px] font-bold transition-all cursor-pointer"
+              >
+                Full Continent
+              </button>
             </div>
-          )}
 
-          {/* Export High-Res PNG Button */}
-          <button
-            onClick={handleDownloadPng}
-            disabled={isExporting}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs font-semibold transition-all shadow-xs cursor-pointer disabled:opacity-50"
-            title="Download Map as High-Resolution PNG Image (2000x2200px)"
-          >
-            {isExporting ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-500" />
-            ) : exportSuccess ? (
-              <Check className="w-3.5 h-3.5 text-emerald-500" />
-            ) : (
-              <Download className="w-3.5 h-3.5 text-emerald-500" />
-            )}
-            <span className="hidden sm:inline">
-              {isExporting ? 'Exporting...' : exportSuccess ? 'Saved PNG!' : 'Download Map Image'}
-            </span>
-            <span className="sm:hidden">PNG</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Interactive Legend with Visibility Toggles */}
-      <InteractiveMapLegend
-        visibleRegions={visibleRegions}
-        onToggleRegion={handleToggleRegion}
-        onShowAll={handleShowAllRegions}
-        onHideAll={handleHideAllRegions}
-        onIsolateRegion={handleIsolateRegion}
-        activeHoverRegion={activeRegionHover}
-        onHoverRegion={setActiveRegionHover}
-      />
-
-      {/* Regional Quick-Focus Bar */}
-      <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-          <span className="font-mono text-[11px] text-zinc-500 dark:text-zinc-400 font-semibold flex items-center gap-1 pr-1">
-            <Compass className="w-3 h-3 text-emerald-500" /> Zoom Focus:
-          </span>
-          {(Object.keys(REGIONAL_ZOOM_PRESETS) as AfricanRegion[]).map(r => (
-            <button
-              key={r}
-              onClick={() => handleFocusRegion(r)}
-              className="px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 text-[11px] font-medium transition-all cursor-pointer whitespace-nowrap"
-            >
-              {r.replace(' Africa', '')}
-            </button>
-          ))}
-          <button
-            onClick={handleResetZoom}
-            className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-400 text-[11px] font-bold transition-all cursor-pointer"
-          >
-            Full Continent
-          </button>
-        </div>
-
-        <div className="text-[11px] font-mono text-zinc-400">
-          Zoom: <span className="text-emerald-500 font-bold">{Math.round(zoomLevel * 100)}%</span>
-        </div>
-      </div>
+            <div className="text-[11px] font-mono text-zinc-400">
+              Zoom: <span className="text-emerald-500 font-bold">{Math.round(zoomLevel * 100)}%</span>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* SVG Canvas Map Container */}
       <div
@@ -595,8 +622,48 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             setCursorPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
           }
         }}
-        className="relative w-full h-[580px] md:h-[720px] lg:h-[780px] flex items-center justify-center bg-gradient-to-b from-zinc-100 via-zinc-50 to-zinc-100 dark:from-zinc-950 dark:via-zinc-900/60 dark:to-zinc-950 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800/80 shadow-inner"
+        className={
+          isFullBleed
+            ? "relative w-full h-full flex-1 flex items-center justify-center bg-gradient-to-b from-zinc-100 via-zinc-50 to-zinc-100 dark:from-zinc-950 dark:via-zinc-900/60 dark:to-zinc-950 overflow-hidden"
+            : "relative w-full h-[580px] md:h-[720px] lg:h-[780px] flex items-center justify-center bg-gradient-to-b from-zinc-100 via-zinc-50 to-zinc-100 dark:from-zinc-950 dark:via-zinc-900/60 dark:to-zinc-950 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800/80 shadow-inner"
+        }
       >
+        {/* Floating Collapsible Subregion Legend Panel for Full-Bleed mode */}
+        {isFullBleed && (
+          <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 max-w-[calc(100vw-32px)]">
+            <button
+              id="btn-toggle-un-subregions"
+              type="button"
+              onClick={() => setIsLegendExpanded(prev => !prev)}
+              className="self-start px-3.5 py-2 rounded-xl bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/90 dark:border-zinc-800 text-xs font-semibold text-zinc-800 dark:text-zinc-200 shadow-xl backdrop-blur-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all flex items-center gap-2 cursor-pointer"
+              title="Toggle UN Subregions Panel"
+            >
+              <Layers className="w-4 h-4 text-emerald-500 shrink-0" />
+              <span className="font-bold">UN Subregions</span>
+              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
+                {visibleRegions.size}/5
+              </span>
+            </button>
+
+            {isLegendExpanded && (
+              <div 
+                id="floating-un-subregions-panel"
+                className="w-auto min-w-[300px] sm:min-w-[460px] max-w-[calc(100vw-32px)] sm:max-w-2xl lg:max-w-3xl p-3.5 sm:p-4 rounded-2xl bg-white/95 dark:bg-zinc-950/95 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
+              >
+                <InteractiveMapLegend
+                  embedded={true}
+                  visibleRegions={visibleRegions}
+                  onToggleRegion={handleToggleRegion}
+                  onShowAll={handleShowAllRegions}
+                  onHideAll={handleHideAllRegions}
+                  onIsolateRegion={handleIsolateRegion}
+                  activeHoverRegion={activeRegionHover}
+                  onHoverRegion={setActiveRegionHover}
+                />
+              </div>
+            )}
+          </div>
+        )}
         {/* Subtle Map Radar Grid Background */}
         <div className="absolute inset-0 pointer-events-none opacity-15 dark:opacity-20 flex items-center justify-center">
           <div className="w-full h-full border border-dashed border-emerald-500/40" />
@@ -675,8 +742,8 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <line x1="20" y1="420" x2="980" y2="420" stroke="#64748b" strokeWidth="0.8" strokeDasharray="4 4" opacity="0.35" />
               <text x="35" y="416" fill="#94a3b8" fontSize="8" fontFamily="monospace" fontWeight="bold" opacity="0.8">10°N</text>
 
-              {/* Equator 0° */}
-              <line x1="20" y1="550" x2="980" y2="550" stroke="#10b981" strokeWidth="2" opacity="0.9" />
+              {/* Equator 0° (Dashed cartographic baseline) */}
+              <line x1="20" y1="550" x2="980" y2="550" stroke="#10b981" strokeWidth="2" strokeDasharray="8 5" opacity="0.95" />
               <g transform="translate(45, 542)">
                 <rect x="0" y="-8" width="135" height="16" rx="3" fill="#064e3b" stroke="#10b981" strokeWidth="1" opacity="0.95" />
                 <text x="67.5" y="3.5" textAnchor="middle" fill="#ecfdf5" fontSize="8" fontFamily="monospace" fontWeight="900">☀️ EQUATOR 0° • EQUINOX</text>
@@ -686,7 +753,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <line x1="20" y1="710" x2="980" y2="710" stroke="#64748b" strokeWidth="0.8" strokeDasharray="4 4" opacity="0.35" />
               <text x="35" y="706" fill="#94a3b8" fontSize="8" fontFamily="monospace" fontWeight="bold" opacity="0.8">10°S</text>
 
-              {/* Tropic of Capricorn 23.4° S */}
+              {/* Tropic of Capricorn 23.4° S (Southern Tropic) */}
               <line x1="20" y1="880" x2="980" y2="880" stroke="#f59e0b" strokeWidth="1.4" strokeDasharray="6 4" opacity="0.8" />
               <g transform="translate(45, 872)">
                 <rect x="0" y="-8" width="180" height="16" rx="3" fill="#451a03" stroke="#f59e0b" strokeWidth="0.85" opacity="0.9" />
@@ -698,19 +765,74 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <text x="35" y="976" fill="#94a3b8" fontSize="8" fontFamily="monospace" fontWeight="bold" opacity="0.8">30°S</text>
             </g>
 
-            {/* Astronomical Compass Rose & Polaris in South Atlantic Basin */}
-            <g transform="translate(140, 860)" className="pointer-events-none">
-              <circle cx="0" cy="0" r="32" fill="#020617" fillOpacity="0.8" stroke="#38bdf8" strokeWidth="1" strokeDasharray="2 3" />
-              <circle cx="0" cy="0" r="26" fill="none" stroke="#f59e0b" strokeWidth="0.75" />
-              <polygon points="0,-26 4,-6 0,0 -4,-6" fill="#10b981" />
-              <polygon points="0,26 4,6 0,0 -4,6" fill="#065f46" />
-              <polygon points="26,0 6,4 0,0 6,-4" fill="#0284c7" />
-              <polygon points="-26,0 -6,4 0,0 -6,-4" fill="#075985" />
-              <circle cx="0" cy="0" r="3.5" fill="#ffffff" />
-              <text x="0" y="-32" textAnchor="middle" fill="#10b981" fontSize="9" fontFamily="serif" fontWeight="900">N</text>
-              <text x="0" y="38" textAnchor="middle" fill="#94a3b8" fontSize="7.5" fontFamily="serif" fontWeight="bold">S</text>
-              <text x="34" y="3" textAnchor="middle" fill="#94a3b8" fontSize="7.5" fontFamily="serif" fontWeight="bold">E</text>
-              <text x="-34" y="3" textAnchor="middle" fill="#94a3b8" fontSize="7.5" fontFamily="serif" fontWeight="bold">W</text>
+            {/* Astronomical Nautical Compass Rose & Cardinal Star in South Atlantic Basin */}
+            {/* Comfortably nestled between the dashed Equator line (y=550) and southern Tropic of Capricorn line (y=880) */}
+            <g transform="translate(190, 715)" className="pointer-events-none select-none">
+              {/* Oceanic medallion backing disc to shield from graticule lines */}
+              <circle cx="0" cy="0" r="48" fill="#09090b" fillOpacity="0.92" stroke="#10b981" strokeWidth="1" strokeOpacity="0.4" />
+              
+              {/* Azimuth degree tracks */}
+              <circle cx="0" cy="0" r="42" fill="none" stroke="#64748b" strokeWidth="0.8" strokeDasharray="1.5 3" opacity="0.7" />
+              <circle cx="0" cy="0" r="36" fill="none" stroke="#334155" strokeWidth="1" />
+              <circle cx="0" cy="0" r="28" fill="none" stroke="#f59e0b" strokeWidth="0.75" opacity="0.6" />
+
+              {/* 16-point azimuth compass degree ticks */}
+              {[0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180, 202.5, 225, 247.5, 270, 292.5, 315, 337.5].map((deg) => (
+                <line
+                  key={deg}
+                  x1="0"
+                  y1="-36"
+                  x2="0"
+                  y2={deg % 90 === 0 ? "-42" : deg % 45 === 0 ? "-40" : "-38"}
+                  stroke={deg % 90 === 0 ? "#10b981" : deg % 45 === 0 ? "#f59e0b" : "#64748b"}
+                  strokeWidth={deg % 90 === 0 ? "1.5" : "0.75"}
+                  transform={`rotate(${deg})`}
+                />
+              ))}
+
+              {/* Secondary Cardinal Points (NW, NE, SE, SW) with cyan/sky facets */}
+              <g transform="rotate(45)">
+                <polygon points="0,-24 3.5,-5 0,0" fill="#0284c7" />
+                <polygon points="0,-24 -3.5,-5 0,0" fill="#0369a1" />
+                <polygon points="0,24 3.5,5 0,0" fill="#0284c7" />
+                <polygon points="0,24 -3.5,5 0,0" fill="#0369a1" />
+                <polygon points="24,0 5,3.5 0,0" fill="#0284c7" />
+                <polygon points="24,0 5,-3.5 0,0" fill="#0369a1" />
+                <polygon points="-24,0 -5,3.5 0,0" fill="#0284c7" />
+                <polygon points="-24,0 -5,-3.5 0,0" fill="#0369a1" />
+              </g>
+
+              {/* Primary 4 Cardinal Star Points (N, S, E, W) with 3D faceted shading */}
+              {/* North Needle: Radiant Emerald & Deep Forest Teal */}
+              <polygon points="0,-36 6,-8 0,0" fill="#10b981" />
+              <polygon points="0,-36 -6,-8 0,0" fill="#065f46" />
+              
+              {/* South Needle: Slate & Charcoal */}
+              <polygon points="0,36 6,8 0,0" fill="#94a3b8" />
+              <polygon points="0,36 -6,8 0,0" fill="#475569" />
+              
+              {/* East Needle: Sky Blue & Deep Azure */}
+              <polygon points="36,0 8,6 0,0" fill="#38bdf8" />
+              <polygon points="36,0 8,-6 0,0" fill="#0284c7" />
+              
+              {/* West Needle: Sky Blue & Deep Azure */}
+              <polygon points="-36,0 -8,6 0,0" fill="#38bdf8" />
+              <polygon points="-36,0 -8,-6 0,0" fill="#0284c7" />
+
+              {/* Concentric Pivot & Core Jewel */}
+              <circle cx="0" cy="0" r="7" fill="#09090b" stroke="#f59e0b" strokeWidth="1.5" />
+              <circle cx="0" cy="0" r="3.5" fill="#10b981" />
+              <circle cx="0" cy="0" r="1.2" fill="#ffffff" />
+
+              {/* Cardinal Point Letter Badges with SVG Halo */}
+              <circle cx="0" cy="-44" r="1.5" fill="#10b981" />
+              <text x="0" y="-48" textAnchor="middle" dominantBaseline="central" fill="#10b981" fontSize="11" fontFamily="serif" fontWeight="900" paintOrder="stroke fill" stroke="#09090b" strokeWidth="2.5px">N</text>
+              <text x="0" y="52" textAnchor="middle" dominantBaseline="central" fill="#cbd5e1" fontSize="9" fontFamily="serif" fontWeight="bold" paintOrder="stroke fill" stroke="#09090b" strokeWidth="2px">S</text>
+              <text x="49" y="0" textAnchor="middle" dominantBaseline="central" fill="#cbd5e1" fontSize="9" fontFamily="serif" fontWeight="bold" paintOrder="stroke fill" stroke="#09090b" strokeWidth="2px">E</text>
+              <text x="-49" y="0" textAnchor="middle" dominantBaseline="central" fill="#cbd5e1" fontSize="9" fontFamily="serif" fontWeight="bold" paintOrder="stroke fill" stroke="#09090b" strokeWidth="2px">W</text>
+
+              {/* Nautical Cartographic Basin Inscription */}
+              <text x="0" y="66" textAnchor="middle" fill="#64748b" fontSize="7" fontFamily="monospace" fontWeight="bold" letterSpacing="0.1em">SOUTH ATLANTIC</text>
             </g>
 
             {/* Surrounding Geographic Context (Europe & Middle East in crisp contrast) */}
@@ -864,34 +986,76 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
                 if (isDimmed) return null;
 
+                // Determine bounding box area to format text proportionally
+                const bbox = country.boundingBox;
+                const boxWidth = bbox ? (bbox.maxX - bbox.minX) : 0;
+                const boxHeight = bbox ? (bbox.maxY - bbox.minY) : 0;
+                const isLarge = boxWidth > 65 && boxHeight > 55;
+                const isMedium = boxWidth > 32 && boxHeight > 28;
+
+                // Cartographic label formatting: display clear names for larger countries, ISO2 for compact areas
+                let displayName = country.iso2;
+                if (isLarge) {
+                  const nameOverrides: Record<string, string> = {
+                    'COD': 'D.R. CONGO',
+                    'COG': 'CONGO',
+                    'CAF': 'C.A.R.',
+                    'TZA': 'TANZANIA',
+                    'CIV': "CÔTE D'IVOIRE",
+                    'GNQ': 'EQ. GUINEA',
+                    'SWZ': 'ESWATINI',
+                    'ZAF': 'SOUTH AFRICA',
+                    'SSD': 'S. SUDAN',
+                    'MDG': 'MADAGASCAR',
+                    'MOZ': 'MOZAMBIQUE',
+                    'MRT': 'MAURITANIA'
+                  };
+                  displayName = nameOverrides[country.id] || country.name.toUpperCase();
+                } else if (isMedium && country.name.length <= 8) {
+                  displayName = country.name.toUpperCase();
+                }
+
                 return (
-                  <g key={`marker-${country.id}`}>
-                    {/* Country ISO2 Centroid Code for major land areas */}
+                  <g key={`marker-${country.id}`} className="pointer-events-none select-none">
+                    {/* Country Centroid Label with high-contrast SVG Halo for guaranteed readability */}
                     {country.id !== 'CPV' && (
                       <text
-                        x={country.centroid.x}
-                        y={country.centroid.y}
+                        x={country.labelPos?.x ?? country.centroid.x}
+                        y={country.labelPos?.y ?? country.centroid.y}
                         textAnchor="middle"
-                        dominantBaseline="middle"
-                        className="text-[11px] font-mono font-black fill-zinc-950/80 pointer-events-none select-none tracking-wider drop-shadow-[0_1px_2px_rgba(255,255,255,0.4)]"
+                        dominantBaseline="central"
+                        paintOrder="stroke fill"
+                        stroke="#09090b"
+                        strokeWidth={isLarge ? "3.6px" : isMedium ? "3.0px" : "2.6px"}
+                        strokeLinejoin="round"
+                        strokeLinecap="round"
+                        fill="#ffffff"
+                        fontSize={isLarge ? "11.5" : isMedium ? "10" : "8.5"}
+                        fontWeight="800"
+                        letterSpacing={isLarge ? "0.08em" : "0.04em"}
+                        className="font-sans drop-shadow-sm select-none"
                       >
-                        {country.iso2}
+                        {displayName}
                       </text>
                     )}
 
                     {/* Capital Pin Point Beacon */}
                     {(isSelected || isHovered) && (
                       <g transform={`translate(${country.capital.x}, ${country.capital.y})`} className="pointer-events-none">
-                        <circle r="12" fill="#10b981" opacity="0.4" className="animate-ping" />
-                        <circle r="4.5" fill="#ffffff" stroke="#000000" strokeWidth="1.5" />
+                        <circle r="13" fill="#10b981" opacity="0.35" className="animate-ping" />
+                        <circle r="5" fill="#10b981" stroke="#ffffff" strokeWidth="1.8" />
                         <text
-                          x="8"
-                          y="3"
+                          x="9"
+                          y="3.5"
                           fill="#ffffff"
-                          fontSize="10"
-                          fontFamily="monospace"
-                          fontWeight="bold"
-                          className="drop-shadow-[0_2px_4px_rgba(0,0,0,1)]"
+                          fontSize="11"
+                          fontFamily="sans-serif"
+                          fontWeight="800"
+                          paintOrder="stroke fill"
+                          stroke="#09090b"
+                          strokeWidth="3.2px"
+                          strokeLinejoin="round"
+                          strokeLinecap="round"
                         >
                           ★ {country.capital.name}
                         </text>
@@ -927,6 +1091,16 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           >
             <RotateCcw className="w-4 h-4" />
           </button>
+          {isFullBleed && (
+            <button
+              onClick={handleDownloadPng}
+              disabled={isExporting}
+              className="p-2 rounded-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 transition-colors cursor-pointer border-t border-zinc-200 dark:border-zinc-800 pt-2"
+              title="Download Map Image (2000x2200 PNG)"
+            >
+              {isExporting ? <Loader2 className="w-4 h-4 animate-spin text-emerald-500" /> : <Download className="w-4 h-4" />}
+            </button>
+          )}
         </div>
 
         {/* Dynamic Hover Tooltip Card */}

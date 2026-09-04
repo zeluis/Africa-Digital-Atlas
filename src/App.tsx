@@ -194,7 +194,14 @@ function AppContent() {
         />
 
         {/* Main Content Area */}
-        <main className="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-6 md:py-8 max-w-7xl mx-auto w-full" id="main-content-workspace">
+        <main
+          className={`flex-1 min-w-0 w-full ${
+            currentTab === 'map'
+              ? 'p-0 max-w-none flex flex-col'
+              : 'px-4 sm:px-6 lg:px-8 py-6 md:py-8 max-w-7xl mx-auto'
+          }`}
+          id="main-content-workspace"
+        >
           {isTransitioning ? (
             <MainContentSkeleton viewType={currentTab} />
           ) : (
@@ -325,8 +332,8 @@ function AppContent() {
         onSelectIndicator={handleSelectIndicator}
       />
 
-      {/* Structured Credibility Footer */}
-      <Footer onNavigateTab={handleSelectTab} />
+      {/* Structured Credibility Footer (Hidden on map view for edge-to-edge cartographic full-screen) */}
+      {currentTab !== 'map' && <Footer onNavigateTab={handleSelectTab} />}
     </div>
   );
 }
