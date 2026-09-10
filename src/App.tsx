@@ -28,6 +28,9 @@ const MolecularLegaciesArticleView = lazyWithRetry(() => import('./views/Molecul
 const AfricanDevelopmentMasterReportView = lazyWithRetry(() => import('./views/AfricanDevelopmentMasterReportView').then(m => ({ default: m.AfricanDevelopmentMasterReportView })), 'AfricanDevelopmentMasterReportView');
 const ThematicPillarsView = lazyWithRetry(() => import('./views/ThematicPillarsView').then(m => ({ default: m.ThematicPillarsView })), 'ThematicPillarsView');
 const EntityBlocsBrowser = lazyWithRetry(() => import('./components/EntityBlocsBrowser').then(m => ({ default: m.EntityBlocsBrowser })), 'EntityBlocsBrowser');
+const EthnicTreeOfLifeView = lazyWithRetry(() => import('./views/EthnicTreeOfLifeView').then(m => ({ default: m.EthnicTreeOfLifeView })), 'EthnicTreeOfLifeView');
+const ResearchReportsDirectoryView = lazyWithRetry(() => import('./views/ResearchReportsDirectoryView').then(m => ({ default: m.ResearchReportsDirectoryView })), 'ResearchReportsDirectoryView');
+const ResearchReportArticleView = lazyWithRetry(() => import('./views/ResearchReportArticleView').then(m => ({ default: m.ResearchReportArticleView })), 'ResearchReportArticleView');
 
 const REGION_ID_TO_NAME: Record<string, AfricanRegion> = {
   'region-northern': 'Northern Africa',
@@ -310,6 +313,33 @@ function AppContent() {
 
                 {currentTab === 'provenance' && (
                   <ProvenanceQualityView />
+                )}
+
+                {currentTab === 'ethnic-tree' && (
+                  <EthnicTreeOfLifeView
+                    onSelectReport={(reportId) => handleSelectTab(reportId as CanonicalNavTab)}
+                    onNavigateToSlaveTrade={() => handleSelectTab('slave-trade')}
+                  />
+                )}
+
+                {currentTab === 'research-directory' && (
+                  <ResearchReportsDirectoryView
+                    onSelectReport={(reportId) => handleSelectTab(reportId as CanonicalNavTab)}
+                    onNavigateToEthnicTree={() => handleSelectTab('ethnic-tree')}
+                    onNavigateToSlaveTrade={() => handleSelectTab('slave-trade')}
+                    onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
+                    onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
+                  />
+                )}
+
+                {typeof currentTab === 'string' && currentTab.startsWith('report-') && (
+                  <ResearchReportArticleView
+                    reportId={currentTab}
+                    onBackToDirectory={() => handleSelectTab('research-directory')}
+                    onNavigateToEthnicTree={() => handleSelectTab('ethnic-tree')}
+                    onNavigateToSlaveTrade={() => handleSelectTab('slave-trade')}
+                    onSelectOtherReport={(otherId) => handleSelectTab(otherId as CanonicalNavTab)}
+                  />
                 )}
               </Suspense>
             </ViewErrorBoundary>

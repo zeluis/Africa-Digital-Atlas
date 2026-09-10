@@ -1,27 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { useTranslation } from '../i18n/LanguageContext';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
-  LayoutDashboard, 
   Compass, 
-  BookOpen,
-  Boxes,
-  Layers, 
-  TrendingUp, 
   Map as MapIcon, 
+  BarChart3, 
+  Layers, 
+  BookOpen, 
+  Anchor, 
+  GitCompare, 
+  Database, 
+  Globe2, 
   Languages as LanguagesIcon, 
-  Landmark,
-  Database,
-  GitCompare,
-  Anchor,
-  Scale,
+  Landmark, 
+  Grid3X3, 
+  Boxes,
   Dna,
+  Scale,
+  TrendingDown,
   ChevronDown,
   ChevronRight,
   Sparkles,
   FileText,
   ExternalLink,
-  X
+  X,
+  TrendingUp,
+  Cpu
 } from 'lucide-react';
 import { UN_REGIONAL_SILHOUETTES } from '../data/svgGeographySystem';
 import { AfricanRegion } from '../data/types';
@@ -39,7 +43,19 @@ export type MainNavId =
   | 'analytics'
   | 'map'
   | 'languages'
-  | 'heritage';
+  | 'heritage'
+  | 'ethnic-tree'
+  | 'research-directory'
+  | 'report-genetic-linguistic-blueprints'
+  | 'report-genetic-social-structure-cape-verde'
+  | 'report-creole-admixture-cabo-verde'
+  | 'report-latest-developments-genetic-legacy'
+  | 'report-slavery-international-law-reparatory'
+  | 'report-sovereign-responsibility-reparations'
+  | 'report-reparations-debt-anthropocene'
+  | 'report-ancestry-ideology-underdevelopment'
+  | 'report-rao-model-socioeconomic'
+  | 'report-sociological-origins-racism';
 
 export type RegionNavId = 
   | 'region-northern'
@@ -70,7 +86,11 @@ interface NavItemDef {
   renderIcon: (isActive: boolean) => React.ReactNode;
 }
 
-const SLAVE_TRADE_SUBMENU_STORAGE_KEY = 'african_geography_slave_trade_submenu_expanded';
+const EXPLORE_SUBMENU_STORAGE_KEY = 'african_geography_explore_submenu_expanded';
+const HISTORICAL_LEGACIES_SUBMENU_STORAGE_KEY = 'african_geography_historical_legacies_submenu_expanded';
+const REPORTS_SUBMENU_STORAGE_KEY = 'african_geography_reports_submenu_expanded';
+const REGIONS_SUBMENU_STORAGE_KEY = 'african_geography_regions_submenu_expanded';
+const ANALYTICS_SUBMENU_STORAGE_KEY = 'african_geography_analytics_submenu_expanded';
 
 const MD3_STANDARD_EASE: [number, number, number, number] = [0.2, 0, 0, 1];
 
@@ -89,7 +109,7 @@ const submenuContainerVariants = {
     transition: {
       duration: 0.25,
       ease: MD3_STANDARD_EASE,
-      staggerChildren: 0.05,
+      staggerChildren: 0.04,
       delayChildren: 0.02
     }
   }
@@ -98,13 +118,13 @@ const submenuContainerVariants = {
 const submenuItemVariants = {
   hidden: { 
     opacity: 0, 
-    y: -6 
+    y: -5 
   },
   visible: { 
     opacity: 1, 
     y: 0,
     transition: {
-      duration: 0.25,
+      duration: 0.2,
       ease: MD3_STANDARD_EASE
     }
   }
@@ -127,36 +147,122 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const isSlaveTradeGroupActive = currentTab === 'slave-trade' || currentTab === 'molecular-legacies' || currentTab === 'african-development-foundations';
+  // Active group detections
+  const isExploreGroupActive = currentTab === 'explore' || currentTab === 'pillars' || currentTab === 'blocs' || currentTab === 'heritage';
+  const isHistoricalLegaciesGroupActive = 
+    currentTab === 'slave-trade' || 
+    currentTab === 'molecular-legacies' || 
+    currentTab === 'african-development-foundations' || 
+    currentTab === 'ethnic-tree';
+  const isReportsGroupActive = 
+    currentTab === 'research-directory' || 
+    (typeof currentTab === 'string' && currentTab.startsWith('report-'));
+  const isRegionsGroupActive = currentTab === 'regions' || currentTab === 'languages';
+  const isAnalyticsGroupActive = currentTab === 'analytics' || currentTab === 'map';
 
-  const [isSlaveTradeExpanded, setIsSlaveTradeExpanded] = useState<boolean>(() => {
+  // Submenu expansion states
+  const [isExploreExpanded, setIsExploreExpanded] = useState<boolean>(() => {
     try {
-      const stored = localStorage.getItem(SLAVE_TRADE_SUBMENU_STORAGE_KEY);
-      if (stored !== null) {
-        return JSON.parse(stored);
-      }
-    } catch {
-      // Fallback in case of storage restrictions
-    }
-    return isSlaveTradeGroupActive;
+      const stored = localStorage.getItem(EXPLORE_SUBMENU_STORAGE_KEY);
+      if (stored !== null) return JSON.parse(stored);
+    } catch {}
+    return isExploreGroupActive;
   });
 
-  const updateSlaveTradeExpanded = (expanded: boolean) => {
-    setIsSlaveTradeExpanded(expanded);
+  const [isHistoricalLegaciesExpanded, setIsHistoricalLegaciesExpanded] = useState<boolean>(() => {
     try {
-      localStorage.setItem(SLAVE_TRADE_SUBMENU_STORAGE_KEY, JSON.stringify(expanded));
-    } catch {
-      // Gracefully ignore storage write failures
-    }
-  };
+      const stored = localStorage.getItem(HISTORICAL_LEGACIES_SUBMENU_STORAGE_KEY);
+      if (stored !== null) return JSON.parse(stored);
+    } catch {}
+    return isHistoricalLegaciesGroupActive || true; // Prominently expanded by default
+  });
+
+  const [isReportsExpanded, setIsReportsExpanded] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem(REPORTS_SUBMENU_STORAGE_KEY);
+      if (stored !== null) return JSON.parse(stored);
+    } catch {}
+    return isReportsGroupActive || true; // Default expanded so research is discoverable
+  });
+
+  const [isRegionsExpanded, setIsRegionsExpanded] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem(REGIONS_SUBMENU_STORAGE_KEY);
+      if (stored !== null) return JSON.parse(stored);
+    } catch {}
+    return isRegionsGroupActive;
+  });
+
+  const [isAnalyticsExpanded, setIsAnalyticsExpanded] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem(ANALYTICS_SUBMENU_STORAGE_KEY);
+      if (stored !== null) return JSON.parse(stored);
+    } catch {}
+    return isAnalyticsGroupActive || true;
+  });
+
+  // Auto-expand parent accordion if child is selected
+  useEffect(() => {
+    if (isExploreGroupActive) setIsExploreExpanded(true);
+  }, [isExploreGroupActive]);
 
   useEffect(() => {
-    if (isSlaveTradeGroupActive) {
-      updateSlaveTradeExpanded(true);
-    }
-  }, [isSlaveTradeGroupActive]);
+    if (isHistoricalLegaciesGroupActive) setIsHistoricalLegaciesExpanded(true);
+  }, [isHistoricalLegaciesGroupActive]);
 
-  // Helper to render Region SVG Silhouettes with UN Geoscheme warm tonal colors, prominent icon chip & vivid styling
+  useEffect(() => {
+    if (isReportsGroupActive) setIsReportsExpanded(true);
+  }, [isReportsGroupActive]);
+
+  useEffect(() => {
+    if (isRegionsGroupActive) setIsRegionsExpanded(true);
+  }, [isRegionsGroupActive]);
+
+  useEffect(() => {
+    if (isAnalyticsGroupActive) setIsAnalyticsExpanded(true);
+  }, [isAnalyticsGroupActive]);
+
+  const toggleExploreExpanded = () => {
+    setIsExploreExpanded(prev => {
+      const next = !prev;
+      try { localStorage.setItem(EXPLORE_SUBMENU_STORAGE_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+
+  const toggleHistoricalLegaciesExpanded = () => {
+    setIsHistoricalLegaciesExpanded(prev => {
+      const next = !prev;
+      try { localStorage.setItem(HISTORICAL_LEGACIES_SUBMENU_STORAGE_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+
+  const toggleReportsExpanded = () => {
+    setIsReportsExpanded(prev => {
+      const next = !prev;
+      try { localStorage.setItem(REPORTS_SUBMENU_STORAGE_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+
+  const toggleRegionsExpanded = () => {
+    setIsRegionsExpanded(prev => {
+      const next = !prev;
+      try { localStorage.setItem(REGIONS_SUBMENU_STORAGE_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+
+  const toggleAnalyticsExpanded = () => {
+    setIsAnalyticsExpanded(prev => {
+      const next = !prev;
+      try { localStorage.setItem(ANALYTICS_SUBMENU_STORAGE_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+
+  // Helper to render Region SVG Silhouettes with UN Geoscheme warm tonal colors
   const renderRegionSilhouetteIcon = (regionId: RegionNavId, isActive: boolean) => {
     const regionName = REGION_ID_TO_NAME[regionId];
     const sil = UN_REGIONAL_SILHOUETTES[regionName];
@@ -165,7 +271,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
     return (
       <div
-        className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 ${
+        className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 ${
           isActive
             ? 'shadow-md scale-105'
             : 'group-hover:scale-105 group-hover:shadow-xs'
@@ -180,14 +286,12 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
       >
         <svg
           viewBox={sil.viewBox}
-          className={`w-5 h-5 shrink-0 transition-all duration-300 ease-out select-none ${
+          className={`w-4.5 h-4.5 shrink-0 transition-all duration-300 ease-out select-none ${
             isActive 
               ? 'scale-110 drop-shadow-sm' 
               : 'group-hover:scale-110'
           }`}
-          style={{
-            color: tonal.warmAccent
-          }}
+          style={{ color: tonal.warmAccent }}
           fill={tonal.warmAccent}
           fillOpacity={isActive ? 0.8 : 0.45}
           stroke={tonal.warmAccent}
@@ -203,137 +307,66 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     );
   };
 
-  // Section 1: Africa / Home
-  const mainNavItems: NavItemDef[] = [
+  // Submenu items for Explore
+  const exploreSubItems = [
+    { id: 'explore', label: 'Directory Overview', icon: Compass, badge: '54 Nations' },
+    { id: 'pillars', label: '8 Thematic Pillars', icon: Grid3X3, badge: 'Framework' },
+    { id: 'blocs', label: '21 Regional Blocs', icon: Boxes, badge: 'AU, ECOWAS, EAC' },
+    { id: 'heritage', label: 'World Heritage', icon: Landmark, badge: 'UNESCO' }
+  ];
+
+  // Submenu items for Historical Legacies (TAST) - Dedicated Main Menu
+  const historicalLegaciesSubItems = [
+    { id: 'slave-trade', label: 'Slave Trade Database & Atlas', icon: Anchor, badge: 'Voyages Flow' },
+    { id: 'molecular-legacies', label: 'The Molecular & Material Legacies', icon: Dna, badge: 'Monograph' },
+    { id: 'african-development-foundations', label: 'Foundations of African Development', icon: TrendingDown, badge: 'Treatise' },
+    { id: 'ethnic-tree', label: 'Ethnic Tree of Life (SVG)', icon: Layers, badge: 'Transatlantic' }
+  ];
+
+  // Submenu items for Regions
+  const regionsSubItems = [
+    { id: 'regions', label: 'Regional Matrix & Indicators', icon: Globe2, badge: 'Comparative' },
+    { id: 'languages', label: 'African Languages & Ethnolinguistics', icon: LanguagesIcon, badge: '2,000+ Phyla' }
+  ];
+
+  // Submenu items for Analytics (Placed last among main links)
+  const analyticsSubItems = [
+    { id: 'analytics', label: 'Comparative Benchmarks & Trends', icon: BarChart3, badge: 'Time-series' },
+    { id: 'map', label: 'Interactive Continental Map', icon: MapIcon, badge: 'Spatial GIS' }
+  ];
+
+  // Submenu categorized items for Research & Reports
+  const reportsSubGroups = [
     {
-      id: 'overview',
-      labelKey: 'nav.overview',
-      defaultLabel: 'Overview',
-      renderIcon: (isActive) => (
-        <LayoutDashboard 
-          className="w-6 h-6 shrink-0 transition-all" 
-          strokeWidth={isActive ? 2.4 : 1.75}
-          fill={isActive ? 'currentColor' : 'none'}
-          fillOpacity={isActive ? 0.2 : 0}
-        />
-      )
+      title: 'Repository Overview',
+      items: [
+        { id: 'research-directory', label: 'All Research & Reports', icon: BookOpen, badge: 'Directory' }
+      ]
     },
     {
-      id: 'explore',
-      labelKey: 'nav.explore',
-      defaultLabel: 'Explore',
-      renderIcon: (isActive) => (
-        <Compass 
-          className="w-6 h-6 shrink-0 transition-all" 
-          strokeWidth={isActive ? 2.4 : 1.75}
-          fill={isActive ? 'currentColor' : 'none'}
-          fillOpacity={isActive ? 0.2 : 0}
-        />
-      )
+      title: 'Genetics & Admixture',
+      items: [
+        { id: 'report-genetic-linguistic-blueprints', label: 'Genetic & Linguistic Blueprints', icon: Dna, badge: 'Creole DNA' },
+        { id: 'report-genetic-social-structure-cape-verde', label: 'Genetic & Social Structure: Cabo Verde', icon: Dna, badge: 'Genealogies' },
+        { id: 'report-creole-admixture-cabo-verde', label: 'Creole Admixture: Cabo Verde & São Tomé', icon: Dna, badge: 'Crucibles' },
+        { id: 'report-latest-developments-genetic-legacy', label: 'Latest Developments: Genetic Legacy', icon: Dna, badge: 'Ancient DNA' }
+      ]
     },
     {
-      id: 'slave-trade',
-      labelKey: 'nav.slave_trade',
-      defaultLabel: 'Atlantic Slave Trade',
-      renderIcon: (isActive) => (
-        <Anchor 
-          className="w-6 h-6 shrink-0 transition-all" 
-          strokeWidth={isActive ? 2.4 : 1.75}
-          fill={isActive ? 'currentColor' : 'none'}
-          fillOpacity={isActive ? 0.2 : 0}
-        />
-      )
+      title: 'International Law & Reparations',
+      items: [
+        { id: 'report-slavery-international-law-reparatory', label: 'Slavery, Law & Reparatory Justice', icon: Scale, badge: 'CARICOM / ICJ' },
+        { id: 'report-sovereign-responsibility-reparations', label: 'Sovereign Responsibility & Reparations', icon: Scale, badge: 'Balance Sheets' },
+        { id: 'report-reparations-debt-anthropocene', label: 'Reparations, Debt & Anthropocene', icon: Scale, badge: 'Climate Debt' }
+      ]
     },
     {
-      id: 'pillars',
-      labelKey: 'nav.pillars',
-      defaultLabel: '8 Thematic Pillars',
-      renderIcon: (isActive) => (
-        <BookOpen 
-          className="w-6 h-6 shrink-0 transition-all" 
-          strokeWidth={isActive ? 2.4 : 1.75}
-          fill={isActive ? 'currentColor' : 'none'}
-          fillOpacity={isActive ? 0.2 : 0}
-        />
-      )
-    },
-    {
-      id: 'blocs',
-      labelKey: 'nav.blocs',
-      defaultLabel: '21 Regional Blocs',
-      renderIcon: (isActive) => (
-        <Boxes 
-          className="w-6 h-6 shrink-0 transition-all" 
-          strokeWidth={isActive ? 2.4 : 1.75}
-          fill={isActive ? 'currentColor' : 'none'}
-          fillOpacity={isActive ? 0.2 : 0}
-        />
-      )
-    },
-    {
-      id: 'regions',
-      labelKey: 'nav.regions',
-      defaultLabel: 'Regions',
-      renderIcon: (isActive) => (
-        <Layers 
-          className="w-6 h-6 shrink-0 transition-all" 
-          strokeWidth={isActive ? 2.4 : 1.75}
-          fill={isActive ? 'currentColor' : 'none'}
-          fillOpacity={isActive ? 0.2 : 0}
-        />
-      )
-    },
-    {
-      id: 'analytics',
-      labelKey: 'nav.analytics',
-      defaultLabel: 'Analytics',
-      renderIcon: (isActive) => (
-        <TrendingUp 
-          className="w-6 h-6 shrink-0 transition-all" 
-          strokeWidth={isActive ? 2.4 : 1.75}
-          fill={isActive ? 'currentColor' : 'none'}
-          fillOpacity={isActive ? 0.2 : 0}
-        />
-      )
-    },
-    {
-      id: 'map',
-      labelKey: 'nav.map',
-      defaultLabel: 'Map',
-      renderIcon: (isActive) => (
-        <MapIcon 
-          className="w-6 h-6 shrink-0 transition-all" 
-          strokeWidth={isActive ? 2.4 : 1.75}
-          fill={isActive ? 'currentColor' : 'none'}
-          fillOpacity={isActive ? 0.2 : 0}
-        />
-      )
-    },
-    {
-      id: 'languages',
-      labelKey: 'nav.languages',
-      defaultLabel: 'Languages',
-      renderIcon: (isActive) => (
-        <LanguagesIcon 
-          className="w-6 h-6 shrink-0 transition-all" 
-          strokeWidth={isActive ? 2.4 : 1.75}
-          fill={isActive ? 'currentColor' : 'none'}
-          fillOpacity={isActive ? 0.2 : 0}
-        />
-      )
-    },
-    {
-      id: 'heritage',
-      labelKey: 'nav.heritage',
-      defaultLabel: 'World Heritage',
-      renderIcon: (isActive) => (
-        <Landmark 
-          className="w-6 h-6 shrink-0 transition-all" 
-          strokeWidth={isActive ? 2.4 : 1.75}
-          fill={isActive ? 'currentColor' : 'none'}
-          fillOpacity={isActive ? 0.2 : 0}
-        />
-      )
+      title: 'Development & Macroeconomics',
+      items: [
+        { id: 'report-ancestry-ideology-underdevelopment', label: 'Ancestry, Ideology & Underdevelopment', icon: TrendingUp, badge: 'Econometric' },
+        { id: 'report-rao-model-socioeconomic', label: 'RAO Model & Socioeconomic Legacies', icon: Cpu, badge: 'Capital Policy' },
+        { id: 'report-sociological-origins-racism', label: 'Sociological Origins of Racism', icon: FileText, badge: 'Historical' }
+      ]
     }
   ];
 
@@ -382,277 +415,424 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     }
   }, [isMobileOpen]);
 
-  const renderNavLink = (item: NavItemDef, isMobile: boolean = false) => {
-    // If this is the slave-trade item, render the parent with submenu
-    if (item.id === 'slave-trade') {
-      return renderSlaveTradeGroup(isMobile);
-    }
-
-    // When viewing a country dossier, consider 'explore' as parent active if not explicitly on another tab
-    const isActive = currentTab === item.id || (item.id === 'explore' && currentTab === 'countries');
-    const isRegionTab = item.id.startsWith('region-');
-    const regionName = isRegionTab ? REGION_ID_TO_NAME[item.id as RegionNavId] : undefined;
-    const regionTonal = regionName ? getRegionTonalPalette(regionName) : undefined;
-    
-    return (
-      <button
-        key={item.id}
-        onClick={() => {
-          // Collapse slave trade submenu when clicking any other navigation link and persist
-          updateSlaveTradeExpanded(false);
-          onSelectTab(item.id);
-          if (isMobile) {
-            onCloseMobile();
-          }
-          // On desktop, the drawer stays open!
-        }}
-        aria-current={isActive ? 'page' : undefined}
-        style={
-          isActive && isRegionTab && regionTonal
-            ? {
-                backgroundColor: `var(--region-${regionTonal.cssVarKey}-fill, ${regionTonal.warmAccent}22)`,
-              }
-            : undefined
-        }
-        className={`relative w-full flex items-center justify-between text-left rounded-2xl transition-all cursor-pointer select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 border border-transparent ${
-          isMobile 
-            ? 'h-14 px-4 text-base' 
-            : 'h-[52px] px-4 text-[15px]'
-        } ${
-          isActive
-            ? isRegionTab && regionTonal
-              ? `${regionTonal.badge.bg} ${regionTonal.badge.text} font-bold shadow-xs`
-              : 'bg-emerald-500/10 dark:bg-emerald-500/15 border-emerald-500/25 dark:border-emerald-500/35 text-emerald-900 dark:text-emerald-200 font-bold shadow-xs'
-            : 'text-zinc-700 dark:text-zinc-300 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-100 font-medium'
-        }`}
-      >
-        <div className="flex items-center gap-3 min-w-0 pr-2">
-          <div
-            className={`transition-colors shrink-0 ${
-              isActive
-                ? regionTonal
-                  ? regionTonal.badge.text
-                  : 'text-emerald-600 dark:text-emerald-400'
-                : isRegionTab
-                  ? ''
-                  : 'text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200'
-            }`}
-          >
-            {item.renderIcon(isActive)}
-          </div>
-          <div className="flex items-center gap-2 min-w-0 truncate">
-            <span className="truncate tracking-tight font-sans font-medium">
-              {t(item.labelKey, item.defaultLabel)}
-            </span>
-            {isRegionTab && regionTonal && (
-              <span 
-                className="hidden sm:inline-block text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md shrink-0 opacity-80"
-                style={{
-                  backgroundColor: `${regionTonal.warmAccent}20`,
-                  color: regionTonal.warmAccent,
-                  border: `1px solid ${regionTonal.warmAccent}40`
-                }}
-              >
-                {regionTonal.shortName}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* 3-4px Vertical Accent Strip on the RIGHT side for Active State */}
-        {isActive && (
-          <span 
-            className="absolute right-0 top-1.5 bottom-1.5 w-[3.5px] rounded-r-2xl shadow-xs"
-            style={{
-              backgroundColor: regionTonal ? regionTonal.warmAccent : undefined
-            }}
-            aria-hidden="true"
-          />
-        )}
-      </button>
-    );
-  };
-
-  const renderSlaveTradeGroup = (isMobile: boolean = false) => {
-    const isParentActive = isSlaveTradeGroupActive;
-
-    const subItems = [
-      {
-        id: 'slave-trade' as CanonicalNavTab,
-        label: 'Database & Voyage Atlas',
-        badge: 'Atlas & Flow Map',
-        icon: Anchor,
-        colorClass: 'emerald'
-      },
-      {
-        id: 'molecular-legacies' as CanonicalNavTab,
-        label: 'Molecular & Material Legacies',
-        badge: 'Research Article',
-        icon: Dna,
-        colorClass: 'indigo'
-      },
-      {
-        id: 'african-development-foundations' as CanonicalNavTab,
-        label: 'Foundations of African Development',
-        badge: 'Master Report',
-        icon: Scale,
-        colorClass: 'amber'
-      }
-    ];
-
-    const handleParentClick = () => {
-      // Toggle submenu open/close and persist to localStorage
-      const nextExpanded = !isSlaveTradeExpanded;
-      updateSlaveTradeExpanded(nextExpanded);
-
-      // If opening or switching to the section, navigate to slave-trade atlas
-      if (!isParentActive) {
-        onSelectTab('slave-trade');
-        if (isMobile) onCloseMobile();
-      }
-    };
-
-    return (
-      <div className="space-y-1" key="slave-trade-group">
-        {/* Parent Header Row: Clicking the entire Parent link toggles open/close */}
-        <div className="relative flex items-center">
-          <button
-            onClick={handleParentClick}
-            aria-expanded={isSlaveTradeExpanded}
-            aria-label={`${t('nav.slave_trade', 'Atlantic Slave Trade')} (${isSlaveTradeExpanded ? 'collapse submenu' : 'expand submenu'})`}
-            className={`relative w-full flex items-center justify-between text-left rounded-2xl transition-all cursor-pointer select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-              isMobile ? 'h-14 px-4 text-base' : 'h-[52px] px-4 text-[15px]'
-            } ${
-              isParentActive
-                ? 'bg-zinc-900/90 dark:bg-zinc-900/90 border border-zinc-700/80 text-zinc-100 font-bold shadow-xs'
-                : 'border border-transparent text-zinc-700 dark:text-zinc-300 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-100 font-medium'
-            }`}
-          >
-            <div className="flex items-center gap-3 min-w-0 pr-2">
-              <div className={`transition-colors shrink-0 ${isParentActive ? 'text-amber-400' : 'text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200'}`}>
-                <Anchor className="w-6 h-6 shrink-0" strokeWidth={isParentActive ? 2.4 : 1.75} />
-              </div>
-              <div className="flex items-center gap-2 min-w-0 truncate">
-                <span className="truncate tracking-tight font-sans font-medium">
-                  {t('nav.slave_trade', 'Atlantic Slave Trade')}
-                </span>
-                <span className="hidden sm:inline-block text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md shrink-0 bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                  3 Pages
-                </span>
-              </div>
-            </div>
-
-            {/* Chevron Icon indicating open/close state */}
-            <div className="flex items-center gap-1.5 shrink-0 pl-1">
-              <div 
-                className={`p-1.5 rounded-lg transition-transform duration-200 ${
-                  isSlaveTradeExpanded 
-                    ? 'text-amber-400 bg-amber-400/10' 
-                    : 'text-zinc-400 group-hover:text-zinc-200'
-                }`}
-                title={isSlaveTradeExpanded ? 'Click to collapse' : 'Click to expand'}
-              >
-                {isSlaveTradeExpanded ? (
-                  <ChevronDown className="w-4 h-4" />
-                ) : (
-                  <ChevronRight className="w-4 h-4" />
-                )}
-              </div>
-            </div>
-
-            {isParentActive && (
-              <span className="absolute right-0 top-1.5 bottom-1.5 w-[3.5px] rounded-r-2xl bg-amber-500 shadow-xs" aria-hidden="true" />
-            )}
-          </button>
-        </div>
-
-        {/* Submenu links with staggered 250ms fade-in and slide-down transition using MD3 standard easing */}
-        <AnimatePresence initial={false}>
-          {isSlaveTradeExpanded && (
-            <motion.div 
-              variants={submenuContainerVariants}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              className="overflow-hidden ml-5 pl-3 border-l-2 border-zinc-200 dark:border-zinc-800/80 space-y-1 my-1.5"
-            >
-              {subItems.map(sub => {
-                const SubIcon = sub.icon;
-                const isSubActive = currentTab === sub.id;
-
-                let activeBadgeStyle = 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300';
-                let activeIconColor = 'text-emerald-400';
-                if (sub.colorClass === 'indigo') {
-                  activeBadgeStyle = 'bg-indigo-500/15 border-indigo-500/30 text-indigo-300';
-                  activeIconColor = 'text-indigo-400';
-                } else if (sub.colorClass === 'amber') {
-                  activeBadgeStyle = 'bg-amber-500/15 border-amber-500/30 text-amber-300';
-                  activeIconColor = 'text-amber-400';
-                }
-
-                return (
-                  <motion.div key={sub.id} variants={submenuItemVariants}>
-                    <button
-                      onClick={() => {
-                        onSelectTab(sub.id);
-                        if (isMobile) onCloseMobile();
-                      }}
-                      className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer select-none group px-3 py-2 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                        isSubActive
-                          ? `${activeBadgeStyle} border font-bold shadow-xs`
-                          : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] font-medium'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0 pr-1">
-                        <SubIcon className={`w-4 h-4 shrink-0 transition-colors ${isSubActive ? activeIconColor : 'text-zinc-500 group-hover:text-zinc-300'}`} />
-                        <div className="flex flex-col min-w-0">
-                          <span className="truncate tracking-tight font-sans">
-                            {sub.label}
-                          </span>
-                          <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">
-                            {sub.badge}
-                          </span>
-                        </div>
-                      </div>
-
-                      {isSubActive && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
-                      )}
-                    </button>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    );
-  };
-
   const navContent = (isMobile: boolean = false) => (
     <div className="flex flex-col h-full justify-between pb-6">
-      <div className="space-y-7">
+      <div className="space-y-6">
         {/* Section 1: AFRICA */}
         <div>
-          <div className="px-4 mb-2.5">
+          <div className="px-4 mb-2">
             <h3 className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               {t('nav.africa', 'AFRICA')}
             </h3>
           </div>
+
           <div className="space-y-1">
-            {mainNavItems.map(item => renderNavLink(item, isMobile))}
+            {/* 1. Overview (Single Link, untouched) */}
+            <button
+              onClick={() => {
+                onSelectTab('overview');
+                if (isMobile) onCloseMobile();
+              }}
+              className={`relative w-full flex items-center justify-between text-left rounded-2xl transition-all cursor-pointer py-2.5 px-3.5 text-sm group ${
+                currentTab === 'overview'
+                  ? 'bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-500/25 shadow-xs'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Globe2 className={`w-5 h-5 ${currentTab === 'overview' ? 'text-emerald-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                <span>Overview</span>
+              </div>
+              {currentTab === 'overview' && (
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              )}
+            </button>
+
+            {/* 2. Explore (Collapsible Accordion: Directory Overview, 8 Pillars, 21 Blocs) */}
+            <div className="pt-0.5">
+              <button
+                onClick={() => {
+                  toggleExploreExpanded();
+                }}
+                className={`relative w-full flex items-center justify-between text-left rounded-2xl transition-all cursor-pointer py-2.5 px-3.5 text-sm group ${
+                  isExploreGroupActive
+                    ? 'bg-blue-500/10 dark:bg-blue-500/15 text-blue-800 dark:text-blue-300 font-bold border border-blue-500/25'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Compass className={`w-5 h-5 ${isExploreGroupActive ? 'text-blue-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                  <span>Explore</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-mono text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md">
+                    {exploreSubItems.length}
+                  </span>
+                  {isExploreExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
+                </div>
+              </button>
+
+              <AnimatePresence initial={false}>
+                {isExploreExpanded && (
+                  <motion.div
+                    variants={submenuContainerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    className="overflow-hidden ml-4 pl-3 border-l-2 border-zinc-200 dark:border-zinc-800/80 space-y-1 my-1.5"
+                  >
+                    {exploreSubItems.map(sub => {
+                      const SubIcon = sub.icon;
+                      const isSubActive = currentTab === sub.id;
+                      return (
+                        <motion.div key={sub.id} variants={submenuItemVariants}>
+                          <button
+                            onClick={() => {
+                              onSelectTab(sub.id as CanonicalNavTab);
+                              if (isMobile) onCloseMobile();
+                            }}
+                            className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer px-3 py-2 text-xs group ${
+                              isSubActive
+                                ? 'bg-blue-500/15 border border-blue-500/30 text-blue-400 font-bold'
+                                : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0 pr-1">
+                              <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-blue-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                              <div className="flex flex-col min-w-0">
+                                <span className="truncate">{sub.label}</span>
+                                <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
+                              </div>
+                            </div>
+                            {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />}
+                          </button>
+                        </motion.div>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* 3. Historical Legacies (TAST) (Dedicated Main Menu Accordion with Submenu) */}
+            <div className="pt-0.5">
+              <button
+                onClick={() => {
+                  toggleHistoricalLegaciesExpanded();
+                }}
+                className={`relative w-full flex items-center justify-between text-left rounded-2xl transition-all cursor-pointer py-2.5 px-3.5 text-sm group ${
+                  isHistoricalLegaciesGroupActive
+                    ? 'bg-amber-500/10 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 font-bold border border-amber-500/25'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Anchor className={`w-5 h-5 ${isHistoricalLegaciesGroupActive ? 'text-amber-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                  <span className="truncate">Historical Legacies (TAST)</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-mono font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded-md border border-amber-500/20">
+                    {historicalLegaciesSubItems.length}
+                  </span>
+                  {isHistoricalLegaciesExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
+                </div>
+              </button>
+
+              <AnimatePresence initial={false}>
+                {isHistoricalLegaciesExpanded && (
+                  <motion.div
+                    variants={submenuContainerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    className="overflow-hidden ml-4 pl-3 border-l-2 border-amber-300/40 dark:border-amber-500/30 space-y-1 my-1.5"
+                  >
+                    {historicalLegaciesSubItems.map(sub => {
+                      const SubIcon = sub.icon;
+                      const isSubActive = currentTab === sub.id;
+                      return (
+                        <motion.div key={sub.id} variants={submenuItemVariants}>
+                          <button
+                            onClick={() => {
+                              onSelectTab(sub.id as CanonicalNavTab);
+                              if (isMobile) onCloseMobile();
+                            }}
+                            className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer px-3 py-2 text-xs group ${
+                              isSubActive
+                                ? 'bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold'
+                                : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0 pr-1">
+                              <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-amber-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                              <div className="flex flex-col min-w-0">
+                                <span className="truncate">{sub.label}</span>
+                                <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
+                              </div>
+                            </div>
+                            {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />}
+                          </button>
+                        </motion.div>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* 4. Research & Reports (Collapsible Accordion with Topics: Genetics, International Law, Development) */}
+            <div className="pt-0.5">
+              <button
+                onClick={() => {
+                  toggleReportsExpanded();
+                }}
+                className={`relative w-full flex items-center justify-between text-left rounded-2xl transition-all cursor-pointer py-2.5 px-3.5 text-sm group ${
+                  isReportsGroupActive
+                    ? 'bg-indigo-500/10 dark:bg-indigo-500/15 text-indigo-800 dark:text-indigo-300 font-bold border border-indigo-500/25'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <BookOpen className={`w-5 h-5 ${isReportsGroupActive ? 'text-indigo-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                  <span>Research & Reports</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-mono font-bold text-indigo-500 bg-indigo-500/10 px-1.5 py-0.5 rounded-md border border-indigo-500/20">
+                    11
+                  </span>
+                  {isReportsExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
+                </div>
+              </button>
+
+              <AnimatePresence initial={false}>
+                {isReportsExpanded && (
+                  <motion.div
+                    variants={submenuContainerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    className="overflow-hidden ml-4 pl-3 border-l-2 border-indigo-200 dark:border-indigo-800/80 space-y-3 my-1.5"
+                  >
+                    {reportsSubGroups.map(group => (
+                      <div key={group.title} className="space-y-1">
+                        <div className="text-[10px] uppercase font-mono tracking-wider text-zinc-500 dark:text-zinc-400 px-2 pt-1 font-semibold">
+                          {group.title}
+                        </div>
+                        {group.items.map(sub => {
+                          const SubIcon = sub.icon;
+                          const isSubActive = currentTab === sub.id;
+                          return (
+                            <motion.div key={sub.id} variants={submenuItemVariants}>
+                              <button
+                                onClick={() => {
+                                  onSelectTab(sub.id as CanonicalNavTab);
+                                  if (isMobile) onCloseMobile();
+                                }}
+                                className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer px-3 py-1.5 text-xs group ${
+                                  isSubActive
+                                    ? 'bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold'
+                                    : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2 min-w-0 pr-1">
+                                  <SubIcon className={`w-3.5 h-3.5 shrink-0 ${isSubActive ? 'text-amber-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                                  <div className="flex flex-col min-w-0">
+                                    <span className="truncate leading-tight">{sub.label}</span>
+                                    <span className="text-[9px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
+                                  </div>
+                                </div>
+                                {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />}
+                              </button>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* 4. Regions (Collapsible Accordion: Regional Matrix, Languages) */}
+            <div className="pt-0.5">
+              <button
+                onClick={() => {
+                  toggleRegionsExpanded();
+                }}
+                className={`relative w-full flex items-center justify-between text-left rounded-2xl transition-all cursor-pointer py-2.5 px-3.5 text-sm group ${
+                  isRegionsGroupActive
+                    ? 'bg-purple-500/10 dark:bg-purple-500/15 text-purple-800 dark:text-purple-300 font-bold border border-purple-500/25'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Globe2 className={`w-5 h-5 ${isRegionsGroupActive ? 'text-purple-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                  <span>Regions</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-mono text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md">
+                    {regionsSubItems.length}
+                  </span>
+                  {isRegionsExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
+                </div>
+              </button>
+
+              <AnimatePresence initial={false}>
+                {isRegionsExpanded && (
+                  <motion.div
+                    variants={submenuContainerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    className="overflow-hidden ml-4 pl-3 border-l-2 border-zinc-200 dark:border-zinc-800/80 space-y-1 my-1.5"
+                  >
+                    {regionsSubItems.map(sub => {
+                      const SubIcon = sub.icon;
+                      const isSubActive = currentTab === sub.id;
+                      return (
+                        <motion.div key={sub.id} variants={submenuItemVariants}>
+                          <button
+                            onClick={() => {
+                              onSelectTab(sub.id as CanonicalNavTab);
+                              if (isMobile) onCloseMobile();
+                            }}
+                            className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer px-3 py-2 text-xs group ${
+                              isSubActive
+                                ? 'bg-purple-500/15 border border-purple-500/30 text-purple-400 font-bold'
+                                : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0 pr-1">
+                              <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-purple-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                              <div className="flex flex-col min-w-0">
+                                <span className="truncate">{sub.label}</span>
+                                <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
+                              </div>
+                            </div>
+                            {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0" />}
+                          </button>
+                        </motion.div>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* 5. Analytics (Collapsible Accordion: Benchmarks, Continental Map, Ethnic Tree) - AT THE BOTTOM OF MAIN LINKS */}
+            <div className="pt-0.5">
+              <button
+                onClick={() => {
+                  toggleAnalyticsExpanded();
+                }}
+                className={`relative w-full flex items-center justify-between text-left rounded-2xl transition-all cursor-pointer py-2.5 px-3.5 text-sm group ${
+                  isAnalyticsGroupActive
+                    ? 'bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-500/25'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <BarChart3 className={`w-5 h-5 ${isAnalyticsGroupActive ? 'text-emerald-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                  <span>Analytics & Instruments</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-mono text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md">
+                    {analyticsSubItems.length}
+                  </span>
+                  {isAnalyticsExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
+                </div>
+              </button>
+
+              <AnimatePresence initial={false}>
+                {isAnalyticsExpanded && (
+                  <motion.div
+                    variants={submenuContainerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    className="overflow-hidden ml-4 pl-3 border-l-2 border-zinc-200 dark:border-zinc-800/80 space-y-1 my-1.5"
+                  >
+                    {analyticsSubItems.map(sub => {
+                      const SubIcon = sub.icon;
+                      const isSubActive = currentTab === sub.id;
+                      return (
+                        <motion.div key={sub.id} variants={submenuItemVariants}>
+                          <button
+                            onClick={() => {
+                              onSelectTab(sub.id as CanonicalNavTab);
+                              if (isMobile) onCloseMobile();
+                            }}
+                            className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer px-3 py-2 text-xs group ${
+                              isSubActive
+                                ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold'
+                                : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0 pr-1">
+                              <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-emerald-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                              <div className="flex flex-col min-w-0">
+                                <span className="truncate">{sub.label}</span>
+                                <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
+                              </div>
+                            </div>
+                            {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />}
+                          </button>
+                        </motion.div>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
-        {/* Section 2: Regions */}
+        {/* Section 2: REGIONS (UN Geoscheme) - Untouched */}
         <div>
-          <div className="px-4 mb-2.5">
+          <div className="px-4 mb-2">
             <h3 className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-              {t('nav.regions_section', 'Regions')}
+              {t('nav.regions_section', 'REGIONS (UN GEOSCHEME)')}
             </h3>
           </div>
           <div className="space-y-1">
-            {regionNavItems.map(item => renderNavLink(item, isMobile))}
+            {regionNavItems.map(item => {
+              const isRegionTab = item.id.startsWith('region-');
+              const regionName = isRegionTab ? REGION_ID_TO_NAME[item.id as RegionNavId] : undefined;
+              const regionTonal = regionName ? getRegionTonalPalette(regionName) : undefined;
+              const isActive = currentTab === item.id;
+
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    onSelectTab(item.id);
+                    if (isMobile) onCloseMobile();
+                  }}
+                  className={`relative w-full flex items-center justify-between text-left rounded-2xl transition-all cursor-pointer py-2 px-3 text-sm group ${
+                    isActive
+                      ? 'font-bold shadow-xs'
+                      : 'text-zinc-600 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200'
+                  }`}
+                  style={{
+                    backgroundColor: isActive ? `${regionTonal?.warmAccent}18` : undefined,
+                    color: isActive ? regionTonal?.warmAccent : undefined,
+                    borderColor: isActive ? `${regionTonal?.warmAccent}30` : undefined,
+                    borderWidth: isActive ? 1 : 0
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    {item.renderIcon(isActive)}
+                    <span className="truncate">{item.defaultLabel}</span>
+                  </div>
+                  {isActive && (
+                    <span 
+                      className="w-1.5 h-1.5 rounded-full" 
+                      style={{ backgroundColor: regionTonal?.warmAccent }} 
+                    />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -661,55 +841,41 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
       <div className="pt-5 border-t border-zinc-200 dark:border-zinc-800/80 space-y-1 px-1">
         <button
           onClick={() => {
-            updateSlaveTradeExpanded(false);
             onSelectTab('compare');
             if (isMobile) onCloseMobile();
           }}
-          aria-current={currentTab === 'compare' ? 'page' : undefined}
-          className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer py-2 px-3 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+          className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer py-2 px-3 text-xs ${
             currentTab === 'compare'
               ? 'bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 text-emerald-800 dark:text-emerald-300 font-bold'
               : 'text-zinc-500 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-800 dark:hover:text-zinc-200'
           }`}
         >
           <div className="flex items-center gap-2.5">
-            <GitCompare 
-              className="w-4 h-4 text-emerald-500 shrink-0 transition-all" 
-              strokeWidth={currentTab === 'compare' ? 2.5 : 1.75}
-              fill={currentTab === 'compare' ? 'currentColor' : 'none'}
-              fillOpacity={currentTab === 'compare' ? 0.2 : 0}
-            />
+            <GitCompare className="w-4 h-4 text-emerald-500 shrink-0" />
             <span>{t('nav.compare', 'Compare Tool')}</span>
           </div>
           {currentTab === 'compare' && (
-            <span className="absolute right-0 top-1 bottom-1 w-[3px] bg-emerald-500 rounded-r-md" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
           )}
         </button>
 
         <button
           onClick={() => {
-            updateSlaveTradeExpanded(false);
             onSelectTab('provenance');
             if (isMobile) onCloseMobile();
           }}
-          aria-current={currentTab === 'provenance' ? 'page' : undefined}
-          className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer py-2 px-3 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+          className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer py-2 px-3 text-xs ${
             currentTab === 'provenance'
               ? 'bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 text-emerald-800 dark:text-emerald-300 font-bold'
               : 'text-zinc-500 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-800 dark:hover:text-zinc-200'
           }`}
         >
           <div className="flex items-center gap-2.5">
-            <Database 
-              className="w-4 h-4 text-emerald-500 shrink-0 transition-all" 
-              strokeWidth={currentTab === 'provenance' ? 2.5 : 1.75}
-              fill={currentTab === 'provenance' ? 'currentColor' : 'none'}
-              fillOpacity={currentTab === 'provenance' ? 0.2 : 0}
-            />
+            <Database className="w-4 h-4 text-emerald-500 shrink-0" />
             <span>{t('nav.provenance', 'Quality & Pipeline')}</span>
           </div>
           {currentTab === 'provenance' && (
-            <span className="absolute right-0 top-1 bottom-1 w-[3px] bg-emerald-500 rounded-r-md" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
           )}
         </button>
 
@@ -721,22 +887,18 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           className="w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer py-2 px-3 text-xs text-zinc-500 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-800 dark:hover:text-zinc-200 mt-1"
         >
           <div className="flex items-center gap-2.5">
-            <BookOpen 
-              className="w-4 h-4 text-amber-600 dark:text-amber-500 shrink-0" 
-              strokeWidth={1.75} 
-            />
+            <BookOpen className="w-4 h-4 text-amber-600 dark:text-amber-500 shrink-0" />
             <span>{t('nav.docs', 'Documentation & Guides')}</span>
           </div>
           <ExternalLink className="w-3.5 h-3.5 text-zinc-400 opacity-60" />
         </a>
 
-        {/* 47. Drawer Credits - Understated Acknowledgement & Author Area */}
         <div className="pt-4 mt-2 border-t border-zinc-100 dark:border-zinc-800/50 px-2 select-none">
-          <div className="text-[10px] leading-relaxed text-zinc-400 dark:text-zinc-500 font-sans">
+          <div className="text-[10px] leading-relaxed text-zinc-400 dark:text-zinc-500">
             <span className="font-semibold text-zinc-600 dark:text-zinc-400 block mb-0.5">
               Africa Data Atlas • CC-BY 4.0
             </span>
-            <span>Independent Open Cartography • Verified Datasets</span>
+            <span>Open Cartography & Research Archive</span>
           </div>
         </div>
       </div>
@@ -745,64 +907,50 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
   return (
     <>
-      {/* 1. DESKTOP DRAWER (Starts open, width: 272px, fixed/sticky, remains open on nav clicks) */}
+      {/* 1. DESKTOP DRAWER */}
       <aside
         id="desktop-navigation-drawer"
-        aria-label="Main Navigation Drawer"
-        className={`hidden md:block shrink-0 transition-all duration-300 ease-in-out select-none ${
-          isDesktopOpen
-            ? 'w-[272px] opacity-100 translate-x-0'
-            : 'w-0 opacity-0 -translate-x-full overflow-hidden pointer-events-none'
+        className={`hidden lg:flex flex-col shrink-0 sticky top-16 h-[calc(100vh-4rem)] border-r border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl z-20 transition-all duration-300 ease-out overflow-y-auto ${
+          isDesktopOpen ? 'w-72 p-4' : 'w-0 p-0 border-r-0 overflow-hidden'
         }`}
       >
-        <div className="sticky top-20 w-[272px] h-[calc(100vh-5.5rem)] overflow-y-auto no-scrollbar py-4 px-3 border-r border-zinc-200 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-950/70 backdrop-blur-md">
-          {navContent(false)}
-        </div>
+        {isDesktopOpen && navContent(false)}
       </aside>
 
-      {/* 2. MOBILE BOTTOM NAVIGATION SHEET */}
-      {isMobileOpen && (
-        <div 
-          className="fixed inset-0 z-50 md:hidden flex flex-col justify-end"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Mobile Navigation Menu"
-        >
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 bg-zinc-950/60 backdrop-blur-sm transition-opacity"
-            onClick={onCloseMobile}
-            aria-hidden="true"
-          />
-
-          {/* Bottom Sheet Container */}
-          <div className="relative z-10 w-full bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800 rounded-t-[28px] shadow-2xl max-h-[85vh] overflow-y-auto flex flex-col px-4 pt-2 pb-[max(1.5rem,env(safe-area-inset-bottom))] animate-in slide-in-from-bottom duration-300">
-            {/* Drag Handle Zone (24–32px height) */}
-            <div className="w-full h-8 flex items-center justify-center cursor-grab shrink-0">
-              <div className="w-12 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-            </div>
-
-            {/* Header with Close Button */}
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-800 mb-4 px-2 shrink-0">
-              <span className="font-extrabold text-sm tracking-tight text-zinc-900 dark:text-zinc-100">
-                {t('app.title', 'AFRICA DATA ATLAS')}
-              </span>
-              <button
-                onClick={onCloseMobile}
-                className="p-1.5 rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 bg-zinc-100 dark:bg-zinc-900"
-                aria-label="Close navigation sheet"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Sheet Content */}
-            <div className="flex-1 overflow-y-auto px-1">
+      {/* 2. MOBILE DRAWER MODAL / SHEET */}
+      <AnimatePresence>
+        {isMobileOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={onCloseMobile}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 lg:hidden"
+            />
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ duration: 0.25, ease: MD3_STANDARD_EASE }}
+              className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 z-50 p-5 overflow-y-auto lg:hidden flex flex-col justify-between shadow-2xl"
+            >
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-zinc-100 dark:border-zinc-800">
+                <span className="text-sm font-bold text-zinc-900 dark:text-white font-serif tracking-wide">
+                  Navigation Menu
+                </span>
+                <button
+                  onClick={onCloseMobile}
+                  className="p-1.5 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
               {navContent(true)}
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 };
