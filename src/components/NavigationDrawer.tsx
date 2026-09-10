@@ -910,7 +910,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
       {/* 1. DESKTOP DRAWER */}
       <aside
         id="desktop-navigation-drawer"
-        className={`hidden lg:flex flex-col shrink-0 sticky top-16 h-[calc(100vh-4rem)] border-r border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl z-20 transition-all duration-300 ease-out overflow-y-auto ${
+        className={`hidden lg:flex flex-col shrink-0 sticky top-16 h-[calc(100vh-4rem)] border-r border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl z-20 transition-all duration-300 ease-out overflow-y-auto drawer-cozy-scrollbar ${
           isDesktopOpen ? 'w-72 p-4' : 'w-0 p-0 border-r-0 overflow-hidden'
         }`}
       >
@@ -933,7 +933,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ duration: 0.25, ease: MD3_STANDARD_EASE }}
-              className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 z-50 p-5 overflow-y-auto lg:hidden flex flex-col justify-between shadow-2xl"
+              className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 z-50 p-5 overflow-y-auto drawer-cozy-scrollbar lg:hidden flex flex-col justify-between shadow-2xl"
             >
               <div className="flex items-center justify-between pb-4 mb-4 border-b border-zinc-100 dark:border-zinc-800">
                 <span className="text-sm font-bold text-zinc-900 dark:text-white font-serif tracking-wide">

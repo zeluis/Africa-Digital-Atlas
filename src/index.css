@@ -433,3 +433,34 @@
   position: relative;
   overflow: hidden;
 }
+
+/* Cozy Tonal Slim Scrollbar for Scholarly Drawer */
+.drawer-cozy-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(196, 122, 68, 0.45) transparent;
+}
+.drawer-cozy-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.drawer-cozy-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 6px 0;
+}
+.drawer-cozy-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(196, 122, 68, 0.4);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+.drawer-cozy-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(196, 122, 68, 0.75);
+}
+.dark .drawer-cozy-scrollbar {
+  scrollbar-color: rgba(224, 150, 96, 0.4) transparent;
+}
+.dark .drawer-cozy-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(224, 150, 96, 0.35);
+}
+.dark .drawer-cozy-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(224, 150, 96, 0.7);
+}
