@@ -1,0 +1,1260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4427.0043 4427.0043" width="4427.0043" height="4427.0043" id="africalia-master-sovereign-svg">
+<defs>
+  <style>
+    .cls-bg { fill: #f4f1ea; }
+    .dark .cls-bg { fill: #121510; }
+    .cls-center { fill: #486834; }
+    .cls-center-text { fill: #ffffff; font-family: 'Times New Roman', serif; font-size: 14px; font-weight: bold; text-anchor: middle; }
+    .cls-tast-ring { fill: none; stroke-dasharray: 10 10; opacity: 0.85; }
+    .cls-tast-label { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 16px; font-weight: 700; }
+    .cls-country-label { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 18px; font-weight: 800; text-anchor: middle; letter-spacing: 0.05em; }
+    .cls-ethnic-label { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: 600; fill: #2c3e2d; }
+    .dark .cls-ethnic-label { fill: #d8e2d4; }
+    .cls-central-label { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 10px; font-weight: 700; fill: #ffffff; text-anchor: middle; dominant-baseline: middle; }
+    .cls-trunk { fill: none; opacity: 0.85; stroke-linecap: round; }
+    .cls-feeder { fill: none; stroke: #999999; stroke-width: 1.2; stroke-dasharray: 4 4; opacity: 0.6; }
+    .cls-cabo-box { fill: #ffffff; stroke: #a4723a; stroke-width: 2.5; rx: 12px; }
+    .dark .cls-cabo-box { fill: #1c221a; stroke: #c4925a; }
+    .cls-cabo-title { font-family: 'Times New Roman', serif; font-size: 16px; font-weight: 800; fill: #a4723a; text-anchor: middle; }
+  </style>
+  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur stdDeviation="6" result="blur" />
+    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+  </filter>
+</defs>
+
+<!-- Background Canvas Layer -->
+<rect width="4427.0043" height="4427.0043" class="cls-bg" id="africalia-canvas-bg" />
+
+<!-- TAST Quantitative Ring Overlays -->
+<g id="QUANT" class="tast-quant-layer">
+  <!-- First Cohort Ring -->
+  <circle cx="2214.2903" cy="2227.8188" r="418.57" class="cls-tast-ring" stroke="#049b4d" stroke-width="3" id="quant--first--circle--totals--5691458" />
+  <text x="2214.2903" y="1802.8188" fill="#049b4d" class="cls-tast-label" text-anchor="middle" id="quant--first--value--totals--5691458">5,694,581</text>
+  
+  <!-- Second Cohort Ring -->
+  <circle cx="2214.2903" cy="2227.8188" r="627.85" class="cls-tast-ring" stroke="#e06ba1" stroke-width="3.5" id="quant--second--circle--totals--4804369" />
+  <text x="2214.2903" y="1592.8188" fill="#e06ba1" class="cls-tast-label" text-anchor="middle" id="quant--second--value--totals--4804369">4,802,952</text>
+  
+  <!-- Third Cohort Ring -->
+  <circle cx="2214.2903" cy="2227.8188" r="837.14" class="cls-tast-ring" stroke="#a4723a" stroke-width="3.5" id="quant--third--circle--totals--2025527" />
+  <text x="2214.2903" y="1382.8188" fill="#a4723a" class="cls-tast-label" text-anchor="middle" id="quant--third--value--totals--2025527">2,023,821</text>
+</g>
+
+<!-- Central Origin Center -->
+<g id="ORIGIN">
+  <circle cx="2214.2903" cy="2227.8188" r="32" class="cls-center" id="node--origin-africa" />
+  <circle cx="2214.2903" cy="2227.8188" r="40" fill="none" stroke="#486834" stroke-width="2" stroke-dasharray="6 6" />
+  <text x="2214.2903" y="2232.8188" class="cls-center-text" id="label--origin--africa">AFRICA</text>
+</g>
+
+<!-- Sovereign Country Trunk Conduits & Feeder Branches -->
+<g id="CONDUITS">
+  <g id="branch--country--nigeria" class="country-conduit-group" data-country="Nigeria" data-region="Western Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2150,1580 2100,1200 2085,960" stroke="#049B4D" stroke-width="9.68" class="cls-trunk" id="trunk--nigeria" />
+    <circle cx="2085" cy="960" r="8" fill="#049B4D" id="node--country--nigeria" />
+    <text x="2085" y="930" fill="#049B4D" class="cls-country-label" id="label--country--nigeria">NIGERIA</text>
+    <!-- Feeder to Yoruba -->
+    <line x1="2085" y1="960" x2="2120" y2="870" class="cls-feeder" />
+    <circle cx="2120" cy="870" r="12" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--yoruba" class="ethnic-terminal-node" />
+    <text x="2103" y="874" class="cls-ethnic-label" text-anchor="end">Yoruba</text>
+    <!-- Feeder to Igbo -->
+    <line x1="2085" y1="960" x2="2160" y2="890" class="cls-feeder" />
+    <circle cx="2160" cy="890" r="12" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--igbo" class="ethnic-terminal-node" />
+    <text x="2143" y="894" class="cls-ethnic-label" text-anchor="end">Igbo</text>
+    <!-- Feeder to Hausa -->
+    <line x1="2085" y1="960" x2="2040" y2="880" class="cls-feeder" />
+    <circle cx="2040" cy="880" r="10" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--hausa" class="ethnic-terminal-node" />
+    <text x="2025" y="884" class="cls-ethnic-label" text-anchor="end">Hausa</text>
+    <!-- Feeder to Edo / Bini -->
+    <line x1="2085" y1="960" x2="2190" y2="915" class="cls-feeder" />
+    <circle cx="2190" cy="915" r="9" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--edo---bini" class="ethnic-terminal-node" />
+    <text x="2176" y="919" class="cls-ethnic-label" text-anchor="end">Edo / Bini</text>
+    <!-- Feeder to Ibibio / Efik -->
+    <line x1="2085" y1="960" x2="2210" y2="950" class="cls-feeder" />
+    <circle cx="2210" cy="950" r="9" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--ibibio---efik" class="ethnic-terminal-node" />
+    <text x="2196" y="954" class="cls-ethnic-label" text-anchor="end">Ibibio / Efik</text>
+    <!-- Feeder to Tiv -->
+    <line x1="2085" y1="960" x2="2010" y2="900" class="cls-feeder" />
+    <circle cx="2010" cy="900" r="8" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--tiv" class="ethnic-terminal-node" />
+    <text x="1997" y="904" class="cls-ethnic-label" text-anchor="end">Tiv</text>
+    <!-- Feeder to Fulani -->
+    <line x1="2085" y1="960" x2="1980" y2="920" class="cls-feeder" />
+    <circle cx="1980" cy="920" r="9" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--fulani" class="ethnic-terminal-node" />
+    <text x="1966" y="924" class="cls-ethnic-label" text-anchor="end">Fulani</text>
+    <!-- Feeder to Kanuri -->
+    <line x1="2085" y1="960" x2="1950" y2="940" class="cls-feeder" />
+    <circle cx="1950" cy="940" r="8" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--kanuri" class="ethnic-terminal-node" />
+    <text x="1937" y="944" class="cls-ethnic-label" text-anchor="end">Kanuri</text>
+    <!-- Feeder to Urhobo -->
+    <line x1="2085" y1="960" x2="2230" y2="980" class="cls-feeder" />
+    <circle cx="2230" cy="980" r="7" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--urhobo" class="ethnic-terminal-node" />
+    <text x="2242" y="984" class="cls-ethnic-label" text-anchor="start">Urhobo</text>
+    <!-- Feeder to Nupe -->
+    <line x1="2085" y1="960" x2="2060" y2="850" class="cls-feeder" />
+    <circle cx="2060" cy="850" r="8" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--nupe" class="ethnic-terminal-node" />
+    <text x="2047" y="854" class="cls-ethnic-label" text-anchor="end">Nupe</text>
+    <!-- Feeder to Ijaw -->
+    <line x1="2085" y1="960" x2="2240" y2="1020" class="cls-feeder" />
+    <circle cx="2240" cy="1020" r="8" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--ijaw" class="ethnic-terminal-node" />
+    <text x="2253" y="1024" class="cls-ethnic-label" text-anchor="start">Ijaw</text>
+    <!-- Feeder to Ejagham -->
+    <line x1="2085" y1="960" x2="2250" y2="1050" class="cls-feeder" />
+    <circle cx="2250" cy="1050" r="7" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--ejagham" class="ethnic-terminal-node" />
+    <text x="2262" y="1054" class="cls-ethnic-label" text-anchor="start">Ejagham</text>
+    <!-- Feeder to Efut Od -->
+    <line x1="2085" y1="960" x2="2270" y2="1080" class="cls-feeder" />
+    <circle cx="2270" cy="1080" r="6" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--efut-od" class="ethnic-terminal-node" />
+    <text x="2281" y="1084" class="cls-ethnic-label" text-anchor="start">Efut Od</text>
+    <!-- Feeder to Ibani -->
+    <line x1="2085" y1="960" x2="2280" y2="1110" class="cls-feeder" />
+    <circle cx="2280" cy="1110" r="6" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--ibani" class="ethnic-terminal-node" />
+    <text x="2291" y="1114" class="cls-ethnic-label" text-anchor="start">Ibani</text>
+    <!-- Feeder to Itam -->
+    <line x1="2085" y1="960" x2="2290" y2="1140" class="cls-feeder" />
+    <circle cx="2290" cy="1140" r="5" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--itam" class="ethnic-terminal-node" />
+    <text x="2300" y="1144" class="cls-ethnic-label" text-anchor="start">Itam</text>
+    <!-- Feeder to Ikono -->
+    <line x1="2085" y1="960" x2="2295" y2="1170" class="cls-feeder" />
+    <circle cx="2295" cy="1170" r="5" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--ikono" class="ethnic-terminal-node" />
+    <text x="2305" y="1174" class="cls-ethnic-label" text-anchor="start">Ikono</text>
+    <!-- Feeder to Ediene -->
+    <line x1="2085" y1="960" x2="2300" y2="1200" class="cls-feeder" />
+    <circle cx="2300" cy="1200" r="5" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--ediene" class="ethnic-terminal-node" />
+    <text x="2310" y="1204" class="cls-ethnic-label" text-anchor="start">Ediene</text>
+    <!-- Feeder to Calabar -->
+    <line x1="2085" y1="960" x2="2305" y2="1230" class="cls-feeder" />
+    <circle cx="2305" cy="1230" r="6" fill="#049B4D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nigeria--calabar" class="ethnic-terminal-node" />
+    <text x="2316" y="1234" class="cls-ethnic-label" text-anchor="start">Calabar</text>
+  </g>
+
+  <g id="branch--country--benin" class="country-conduit-group" data-country="Benin" data-region="Western Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2020,1600 1910,1240 1840,1000" stroke="#47AF48" stroke-width="5.920000000000001" class="cls-trunk" id="trunk--benin" />
+    <circle cx="1840" cy="1000" r="8" fill="#47AF48" id="node--country--benin" />
+    <text x="1840" y="970" fill="#47AF48" class="cls-country-label" id="label--country--benin">BENIN</text>
+    <!-- Feeder to Fon / Dahomey -->
+    <line x1="1840" y1="1000" x2="1810" y2="920" class="cls-feeder" />
+    <circle cx="1810" cy="920" r="11" fill="#47AF48" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--benin--fon---dahomey" class="ethnic-terminal-node" />
+    <text x="1794" y="924" class="cls-ethnic-label" text-anchor="end">Fon / Dahomey</text>
+    <!-- Feeder to Aja -->
+    <line x1="1840" y1="1000" x2="1770" y2="940" class="cls-feeder" />
+    <circle cx="1770" cy="940" r="9" fill="#47AF48" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--benin--aja" class="ethnic-terminal-node" />
+    <text x="1756" y="944" class="cls-ethnic-label" text-anchor="end">Aja</text>
+    <!-- Feeder to Yoruba-Benin -->
+    <line x1="1840" y1="1000" x2="1850" y2="900" class="cls-feeder" />
+    <circle cx="1850" cy="900" r="9" fill="#47AF48" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--benin--yoruba-benin" class="ethnic-terminal-node" />
+    <text x="1836" y="904" class="cls-ethnic-label" text-anchor="end">Yoruba-Benin</text>
+    <!-- Feeder to Bariba / Borgu -->
+    <line x1="1840" y1="1000" x2="1740" y2="960" class="cls-feeder" />
+    <circle cx="1740" cy="960" r="8" fill="#47AF48" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--benin--bariba---borgu" class="ethnic-terminal-node" />
+    <text x="1727" y="964" class="cls-ethnic-label" text-anchor="end">Bariba / Borgu</text>
+    <!-- Feeder to Dendi -->
+    <line x1="1840" y1="1000" x2="1710" y2="990" class="cls-feeder" />
+    <circle cx="1710" cy="990" r="7" fill="#47AF48" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--benin--dendi" class="ethnic-terminal-node" />
+    <text x="1698" y="994" class="cls-ethnic-label" text-anchor="end">Dendi</text>
+    <!-- Feeder to Mina -->
+    <line x1="1840" y1="1000" x2="1790" y2="880" class="cls-feeder" />
+    <circle cx="1790" cy="880" r="8" fill="#47AF48" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--benin--mina" class="ethnic-terminal-node" />
+    <text x="1777" y="884" class="cls-ethnic-label" text-anchor="end">Mina</text>
+    <!-- Feeder to Gun -->
+    <line x1="1840" y1="1000" x2="1830" y2="860" class="cls-feeder" />
+    <circle cx="1830" cy="860" r="7" fill="#47AF48" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--benin--gun" class="ethnic-terminal-node" />
+    <text x="1818" y="864" class="cls-ethnic-label" text-anchor="end">Gun</text>
+  </g>
+
+  <g id="branch--country--ghana" class="country-conduit-group" data-country="Ghana" data-region="Western Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C1900,1620 1780,1280 1693,1055" stroke="#84A33A" stroke-width="4.84" class="cls-trunk" id="trunk--ghana" />
+    <circle cx="1693" cy="1055" r="8" fill="#84A33A" id="node--country--ghana" />
+    <text x="1693" y="1025" fill="#84A33A" class="cls-country-label" id="label--country--ghana">GHANA</text>
+    <!-- Feeder to Ashanti / Akan -->
+    <line x1="1693" y1="1055" x2="1650" y2="970" class="cls-feeder" />
+    <circle cx="1650" cy="970" r="12" fill="#84A33A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ghana--ashanti---akan" class="ethnic-terminal-node" />
+    <text x="1633" y="974" class="cls-ethnic-label" text-anchor="end">Ashanti / Akan</text>
+    <!-- Feeder to Fante -->
+    <line x1="1693" y1="1055" x2="1690" y2="950" class="cls-feeder" />
+    <circle cx="1690" cy="950" r="10" fill="#84A33A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ghana--fante" class="ethnic-terminal-node" />
+    <text x="1675" y="954" class="cls-ethnic-label" text-anchor="end">Fante</text>
+    <!-- Feeder to Ewe -->
+    <line x1="1693" y1="1055" x2="1610" y2="990" class="cls-feeder" />
+    <circle cx="1610" cy="990" r="9" fill="#84A33A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ghana--ewe" class="ethnic-terminal-node" />
+    <text x="1596" y="994" class="cls-ethnic-label" text-anchor="end">Ewe</text>
+    <!-- Feeder to Ga-Adangbe -->
+    <line x1="1693" y1="1055" x2="1730" y2="940" class="cls-feeder" />
+    <circle cx="1730" cy="940" r="9" fill="#84A33A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ghana--ga-adangbe" class="ethnic-terminal-node" />
+    <text x="1716" y="944" class="cls-ethnic-label" text-anchor="end">Ga-Adangbe</text>
+    <!-- Feeder to Dagomba / Mole-Dagbani -->
+    <line x1="1693" y1="1055" x2="1580" y2="1020" class="cls-feeder" />
+    <circle cx="1580" cy="1020" r="8" fill="#84A33A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ghana--dagomba---mole-dagbani" class="ethnic-terminal-node" />
+    <text x="1567" y="1024" class="cls-ethnic-label" text-anchor="end">Dagomba / Mole-Dagbani</text>
+    <!-- Feeder to Akan KE -->
+    <line x1="1693" y1="1055" x2="1630" y2="920" class="cls-feeder" />
+    <circle cx="1630" cy="920" r="7" fill="#84A33A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ghana--akan-ke" class="ethnic-terminal-node" />
+    <text x="1618" y="924" class="cls-ethnic-label" text-anchor="end">Akan KE</text>
+    <!-- Feeder to Akan AS -->
+    <line x1="1693" y1="1055" x2="1670" y2="910" class="cls-feeder" />
+    <circle cx="1670" cy="910" r="7" fill="#84A33A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ghana--akan-as" class="ethnic-terminal-node" />
+    <text x="1658" y="914" class="cls-ethnic-label" text-anchor="end">Akan AS</text>
+    <!-- Feeder to Gonja -->
+    <line x1="1693" y1="1055" x2="1550" y2="1050" class="cls-feeder" />
+    <circle cx="1550" cy="1050" r="7" fill="#84A33A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ghana--gonja" class="ethnic-terminal-node" />
+    <text x="1538" y="1054" class="cls-ethnic-label" text-anchor="end">Gonja</text>
+  </g>
+
+  <g id="branch--country--ivory-coast" class="country-conduit-group" data-country="Ivory Coast" data-region="Western Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C1800,1650 1640,1340 1530,1140" stroke="#C5D143" stroke-width="3" class="cls-trunk" id="trunk--ivory-coast" />
+    <circle cx="1530" cy="1140" r="8" fill="#C5D143" id="node--country--ivory-coast" />
+    <text x="1530" y="1110" fill="#C5D143" class="cls-country-label" id="label--country--ivory-coast">IVORY COAST</text>
+    <!-- Feeder to Baoule -->
+    <line x1="1530" y1="1140" x2="1480" y2="1060" class="cls-feeder" />
+    <circle cx="1480" cy="1060" r="9" fill="#C5D143" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ivory-coast--baoule" class="ethnic-terminal-node" />
+    <text x="1466" y="1064" class="cls-ethnic-label" text-anchor="end">Baoule</text>
+    <!-- Feeder to Bete -->
+    <line x1="1530" y1="1140" x2="1440" y2="1090" class="cls-feeder" />
+    <circle cx="1440" cy="1090" r="8" fill="#C5D143" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ivory-coast--bete" class="ethnic-terminal-node" />
+    <text x="1427" y="1094" class="cls-ethnic-label" text-anchor="end">Bete</text>
+    <!-- Feeder to Senoufo -->
+    <line x1="1530" y1="1140" x2="1510" y2="1030" class="cls-feeder" />
+    <circle cx="1510" cy="1030" r="9" fill="#C5D143" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ivory-coast--senoufo" class="ethnic-terminal-node" />
+    <text x="1496" y="1034" class="cls-ethnic-label" text-anchor="end">Senoufo</text>
+    <!-- Feeder to Dan / Yacouba -->
+    <line x1="1530" y1="1140" x2="1410" y2="1120" class="cls-feeder" />
+    <circle cx="1410" cy="1120" r="7" fill="#C5D143" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ivory-coast--dan---yacouba" class="ethnic-terminal-node" />
+    <text x="1398" y="1124" class="cls-ethnic-label" text-anchor="end">Dan / Yacouba</text>
+    <!-- Feeder to Anyi -->
+    <line x1="1530" y1="1140" x2="1540" y2="1010" class="cls-feeder" />
+    <circle cx="1540" cy="1010" r="8" fill="#C5D143" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ivory-coast--anyi" class="ethnic-terminal-node" />
+    <text x="1527" y="1014" class="cls-ethnic-label" text-anchor="end">Anyi</text>
+    <!-- Feeder to Guere / Wobe -->
+    <line x1="1530" y1="1140" x2="1380" y2="1150" class="cls-feeder" />
+    <circle cx="1380" cy="1150" r="7" fill="#C5D143" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ivory-coast--guere---wobe" class="ethnic-terminal-node" />
+    <text x="1368" y="1154" class="cls-ethnic-label" text-anchor="end">Guere / Wobe</text>
+  </g>
+
+  <g id="branch--country--burkina-faso" class="country-conduit-group" data-country="Burkina Faso" data-region="Western Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C1720,1690 1530,1410 1390,1250" stroke="#D4E157" stroke-width="3" class="cls-trunk" id="trunk--burkina-faso" />
+    <circle cx="1390" cy="1250" r="8" fill="#D4E157" id="node--country--burkina-faso" />
+    <text x="1390" y="1220" fill="#D4E157" class="cls-country-label" id="label--country--burkina-faso">BURKINA FASO</text>
+    <!-- Feeder to Mossi -->
+    <line x1="1390" y1="1250" x2="1330" y2="1180" class="cls-feeder" />
+    <circle cx="1330" cy="1180" r="9" fill="#D4E157" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--burkina-faso--mossi" class="ethnic-terminal-node" />
+    <text x="1316" y="1184" class="cls-ethnic-label" text-anchor="end">Mossi</text>
+    <!-- Feeder to Bobo -->
+    <line x1="1390" y1="1250" x2="1300" y2="1220" class="cls-feeder" />
+    <circle cx="1300" cy="1220" r="8" fill="#D4E157" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--burkina-faso--bobo" class="ethnic-terminal-node" />
+    <text x="1287" y="1224" class="cls-ethnic-label" text-anchor="end">Bobo</text>
+    <!-- Feeder to Gurunsi -->
+    <line x1="1390" y1="1250" x2="1360" y2="1150" class="cls-feeder" />
+    <circle cx="1360" cy="1150" r="7" fill="#D4E157" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--burkina-faso--gurunsi" class="ethnic-terminal-node" />
+    <text x="1348" y="1154" class="cls-ethnic-label" text-anchor="end">Gurunsi</text>
+    <!-- Feeder to Lobi -->
+    <line x1="1390" y1="1250" x2="1280" y2="1260" class="cls-feeder" />
+    <circle cx="1280" cy="1260" r="7" fill="#D4E157" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--burkina-faso--lobi" class="ethnic-terminal-node" />
+    <text x="1268" y="1264" class="cls-ethnic-label" text-anchor="end">Lobi</text>
+    <!-- Feeder to Bwaba -->
+    <line x1="1390" y1="1250" x2="1260" y2="1300" class="cls-feeder" />
+    <circle cx="1260" cy="1300" r="6" fill="#D4E157" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--burkina-faso--bwaba" class="ethnic-terminal-node" />
+    <text x="1249" y="1304" class="cls-ethnic-label" text-anchor="end">Bwaba</text>
+  </g>
+
+  <g id="branch--country--sierra-leone" class="country-conduit-group" data-country="Sierra Leone" data-region="Western Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C1650,1750 1430,1510 1270,1390" stroke="#E6EE9C" stroke-width="3" class="cls-trunk" id="trunk--sierra-leone" />
+    <circle cx="1270" cy="1390" r="8" fill="#E6EE9C" id="node--country--sierra-leone" />
+    <text x="1270" y="1360" fill="#E6EE9C" class="cls-country-label" id="label--country--sierra-leone">SIERRA LEONE</text>
+    <!-- Feeder to Mende -->
+    <line x1="1270" y1="1390" x2="1200" y2="1320" class="cls-feeder" />
+    <circle cx="1200" cy="1320" r="10" fill="#E6EE9C" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--sierra-leone--mende" class="ethnic-terminal-node" />
+    <text x="1185" y="1324" class="cls-ethnic-label" text-anchor="end">Mende</text>
+    <!-- Feeder to Temne -->
+    <line x1="1270" y1="1390" x2="1230" y2="1290" class="cls-feeder" />
+    <circle cx="1230" cy="1290" r="10" fill="#E6EE9C" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--sierra-leone--temne" class="ethnic-terminal-node" />
+    <text x="1215" y="1294" class="cls-ethnic-label" text-anchor="end">Temne</text>
+    <!-- Feeder to Limba -->
+    <line x1="1270" y1="1390" x2="1170" y2="1360" class="cls-feeder" />
+    <circle cx="1170" cy="1360" r="8" fill="#E6EE9C" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--sierra-leone--limba" class="ethnic-terminal-node" />
+    <text x="1157" y="1364" class="cls-ethnic-label" text-anchor="end">Limba</text>
+    <!-- Feeder to Kono -->
+    <line x1="1270" y1="1390" x2="1150" y2="1400" class="cls-feeder" />
+    <circle cx="1150" cy="1400" r="7" fill="#E6EE9C" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--sierra-leone--kono" class="ethnic-terminal-node" />
+    <text x="1138" y="1404" class="cls-ethnic-label" text-anchor="end">Kono</text>
+    <!-- Feeder to Sherbro / Bullom -->
+    <line x1="1270" y1="1390" x2="1140" y2="1440" class="cls-feeder" />
+    <circle cx="1140" cy="1440" r="7" fill="#E6EE9C" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--sierra-leone--sherbro---bullom" class="ethnic-terminal-node" />
+    <text x="1128" y="1444" class="cls-ethnic-label" text-anchor="end">Sherbro / Bullom</text>
+    <!-- Feeder to Loko -->
+    <line x1="1270" y1="1390" x2="1130" y2="1480" class="cls-feeder" />
+    <circle cx="1130" cy="1480" r="6" fill="#E6EE9C" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--sierra-leone--loko" class="ethnic-terminal-node" />
+    <text x="1119" y="1484" class="cls-ethnic-label" text-anchor="end">Loko</text>
+  </g>
+
+  <g id="branch--country--guinea-conakry" class="country-conduit-group" data-country="Guinea Conacry" data-region="Western Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C1600,1830 1360,1640 1170,1560" stroke="#AEEA00" stroke-width="3" class="cls-trunk" id="trunk--guinea-conakry" />
+    <circle cx="1170" cy="1560" r="8" fill="#AEEA00" id="node--country--guinea-conakry" />
+    <text x="1170" y="1530" fill="#AEEA00" class="cls-country-label" id="label--country--guinea-conakry">GUINEA CONACRY</text>
+    <!-- Feeder to Fula / Peul -->
+    <line x1="1170" y1="1560" x2="1100" y2="1500" class="cls-feeder" />
+    <circle cx="1100" cy="1500" r="10" fill="#AEEA00" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--guinea-conakry--fula---peul" class="ethnic-terminal-node" />
+    <text x="1085" y="1504" class="cls-ethnic-label" text-anchor="end">Fula / Peul</text>
+    <!-- Feeder to Mandinka-Guinea -->
+    <line x1="1170" y1="1560" x2="1080" y2="1540" class="cls-feeder" />
+    <circle cx="1080" cy="1540" r="9" fill="#AEEA00" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--guinea-conakry--mandinka-guinea" class="ethnic-terminal-node" />
+    <text x="1066" y="1544" class="cls-ethnic-label" text-anchor="end">Mandinka-Guinea</text>
+    <!-- Feeder to Susu -->
+    <line x1="1170" y1="1560" x2="1120" y2="1470" class="cls-feeder" />
+    <circle cx="1120" cy="1470" r="9" fill="#AEEA00" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--guinea-conakry--susu" class="ethnic-terminal-node" />
+    <text x="1106" y="1474" class="cls-ethnic-label" text-anchor="end">Susu</text>
+    <!-- Feeder to Kissi -->
+    <line x1="1170" y1="1560" x2="1060" y2="1580" class="cls-feeder" />
+    <circle cx="1060" cy="1580" r="7" fill="#AEEA00" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--guinea-conakry--kissi" class="ethnic-terminal-node" />
+    <text x="1048" y="1584" class="cls-ethnic-label" text-anchor="end">Kissi</text>
+    <!-- Feeder to Kpelle / Guerze -->
+    <line x1="1170" y1="1560" x2="1050" y2="1620" class="cls-feeder" />
+    <circle cx="1050" cy="1620" r="7" fill="#AEEA00" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--guinea-conakry--kpelle---guerze" class="ethnic-terminal-node" />
+    <text x="1038" y="1624" class="cls-ethnic-label" text-anchor="end">Kpelle / Guerze</text>
+    <!-- Feeder to Baga -->
+    <line x1="1170" y1="1560" x2="1040" y2="1660" class="cls-feeder" />
+    <circle cx="1040" cy="1660" r="7" fill="#AEEA00" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--guinea-conakry--baga" class="ethnic-terminal-node" />
+    <text x="1028" y="1664" class="cls-ethnic-label" text-anchor="end">Baga</text>
+  </g>
+
+  <g id="branch--country--guinea-bissau" class="country-conduit-group" data-country="Guinea Bissau" data-region="Western Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C1560,1910 1300,1780 1100,1750" stroke="#00C853" stroke-width="3" class="cls-trunk" id="trunk--guinea-bissau" />
+    <circle cx="1100" cy="1750" r="8" fill="#00C853" id="node--country--guinea-bissau" />
+    <text x="1100" y="1720" fill="#00C853" class="cls-country-label" id="label--country--guinea-bissau">GUINEA BISSAU</text>
+    <!-- Feeder to Balanta -->
+    <line x1="1100" y1="1750" x2="1030" y2="1700" class="cls-feeder" />
+    <circle cx="1030" cy="1700" r="9" fill="#00C853" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--guinea-bissau--balanta" class="ethnic-terminal-node" />
+    <text x="1016" y="1704" class="cls-ethnic-label" text-anchor="end">Balanta</text>
+    <!-- Feeder to Papel -->
+    <line x1="1100" y1="1750" x2="1010" y2="1740" class="cls-feeder" />
+    <circle cx="1010" cy="1740" r="8" fill="#00C853" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--guinea-bissau--papel" class="ethnic-terminal-node" />
+    <text x="997" y="1744" class="cls-ethnic-label" text-anchor="end">Papel</text>
+    <!-- Feeder to Bijagos -->
+    <line x1="1100" y1="1750" x2="990" y2="1780" class="cls-feeder" />
+    <circle cx="990" cy="1780" r="8" fill="#00C853" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--guinea-bissau--bijagos" class="ethnic-terminal-node" />
+    <text x="977" y="1784" class="cls-ethnic-label" text-anchor="end">Bijagos</text>
+    <!-- Feeder to Manjaco -->
+    <line x1="1100" y1="1750" x2="1020" y2="1670" class="cls-feeder" />
+    <circle cx="1020" cy="1670" r="8" fill="#00C853" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--guinea-bissau--manjaco" class="ethnic-terminal-node" />
+    <text x="1007" y="1674" class="cls-ethnic-label" text-anchor="end">Manjaco</text>
+    <!-- Feeder to Mancanha -->
+    <line x1="1100" y1="1750" x2="980" y2="1820" class="cls-feeder" />
+    <circle cx="980" cy="1820" r="6" fill="#00C853" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--guinea-bissau--mancanha" class="ethnic-terminal-node" />
+    <text x="969" y="1824" class="cls-ethnic-label" text-anchor="end">Mancanha</text>
+    <!-- Feeder to Biafada -->
+    <line x1="1100" y1="1750" x2="975" y2="1860" class="cls-feeder" />
+    <circle cx="975" cy="1860" r="6" fill="#00C853" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--guinea-bissau--biafada" class="ethnic-terminal-node" />
+    <text x="964" y="1864" class="cls-ethnic-label" text-anchor="end">Biafada</text>
+  </g>
+
+  <g id="branch--country--senegal" class="country-conduit-group" data-country="Senegal" data-region="Western Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C1540,2010 1260,1950 1060,1960" stroke="#1F8D3E" stroke-width="3" class="cls-trunk" id="trunk--senegal" />
+    <circle cx="1060" cy="1960" r="8" fill="#1F8D3E" id="node--country--senegal" />
+    <text x="1060" y="1930" fill="#1F8D3E" class="cls-country-label" id="label--country--senegal">SENEGAL</text>
+    <!-- Feeder to Wolof -->
+    <line x1="1060" y1="1960" x2="990" y2="1920" class="cls-feeder" />
+    <circle cx="990" cy="1920" r="11" fill="#1F8D3E" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--senegal--wolof" class="ethnic-terminal-node" />
+    <text x="974" y="1924" class="cls-ethnic-label" text-anchor="end">Wolof</text>
+    <!-- Feeder to Sereer -->
+    <line x1="1060" y1="1960" x2="970" y2="1960" class="cls-feeder" />
+    <circle cx="970" cy="1960" r="9" fill="#1F8D3E" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--senegal--sereer" class="ethnic-terminal-node" />
+    <text x="956" y="1964" class="cls-ethnic-label" text-anchor="end">Sereer</text>
+    <!-- Feeder to Diola / Jola -->
+    <line x1="1060" y1="1960" x2="960" y2="2000" class="cls-feeder" />
+    <circle cx="960" cy="2000" r="8" fill="#1F8D3E" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--senegal--diola---jola" class="ethnic-terminal-node" />
+    <text x="947" y="2004" class="cls-ethnic-label" text-anchor="end">Diola / Jola</text>
+    <!-- Feeder to Mandinka-Senegal -->
+    <line x1="1060" y1="1960" x2="980" y2="1880" class="cls-feeder" />
+    <circle cx="980" cy="1880" r="9" fill="#1F8D3E" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--senegal--mandinka-senegal" class="ethnic-terminal-node" />
+    <text x="966" y="1884" class="cls-ethnic-label" text-anchor="end">Mandinka-Senegal</text>
+    <!-- Feeder to Pulaar / Toucouleur -->
+    <line x1="1060" y1="1960" x2="1010" y2="1850" class="cls-feeder" />
+    <circle cx="1010" cy="1850" r="9" fill="#1F8D3E" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--senegal--pulaar---toucouleur" class="ethnic-terminal-node" />
+    <text x="996" y="1854" class="cls-ethnic-label" text-anchor="end">Pulaar / Toucouleur</text>
+    <!-- Feeder to Soninke -->
+    <line x1="1060" y1="1960" x2="950" y2="2040" class="cls-feeder" />
+    <circle cx="950" cy="2040" r="8" fill="#1F8D3E" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--senegal--soninke" class="ethnic-terminal-node" />
+    <text x="937" y="2044" class="cls-ethnic-label" text-anchor="end">Soninke</text>
+    <!-- Feeder to Lebou -->
+    <line x1="1060" y1="1960" x2="945" y2="2080" class="cls-feeder" />
+    <circle cx="945" cy="2080" r="7" fill="#1F8D3E" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--senegal--lebou" class="ethnic-terminal-node" />
+    <text x="933" y="2084" class="cls-ethnic-label" text-anchor="end">Lebou</text>
+  </g>
+
+  <g id="branch--country--cape-verde" class="country-conduit-group" data-country="Cape Verde Island" data-region="Western Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C1800,2050 1550,1920 1380,1860" stroke="#A4723A" stroke-width="3.4000000000000004" class="cls-trunk" id="trunk--cape-verde" />
+    <circle cx="1380" cy="1860" r="8" fill="#A4723A" id="node--country--cape-verde" />
+    <text x="1380" y="1910" fill="#A4723A" class="cls-country-label" id="label--country--cape-verde">CAPE VERDE ISLAND</text>
+    <!-- Feeder to Crioulo Caboverdiano -->
+    <line x1="1380" y1="1860" x2="1380" y2="1860" class="cls-feeder" />
+    <circle cx="1380" cy="1860" r="28" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--crioulo-caboverdiano" class="ethnic-terminal-node" />
+    <text x="1347" y="1864" class="cls-ethnic-label" text-anchor="end">Crioulo Caboverdiano</text>
+    <!-- Feeder to Bagas -->
+    <line x1="1380" y1="1860" x2="1310" y2="1790" class="cls-feeder" />
+    <circle cx="1310" cy="1790" r="6" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--bagas" class="ethnic-terminal-node" />
+    <text x="1299" y="1794" class="cls-ethnic-label" text-anchor="end">Bagas</text>
+    <!-- Feeder to Balanta (CV) -->
+    <line x1="1380" y1="1860" x2="1340" y2="1770" class="cls-feeder" />
+    <circle cx="1340" cy="1770" r="6" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--balanta--cv-" class="ethnic-terminal-node" />
+    <text x="1329" y="1774" class="cls-ethnic-label" text-anchor="end">Balanta (CV)</text>
+    <!-- Feeder to Biafada (CV) -->
+    <line x1="1380" y1="1860" x2="1370" y2="1750" class="cls-feeder" />
+    <circle cx="1370" cy="1750" r="6" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--biafada--cv-" class="ethnic-terminal-node" />
+    <text x="1359" y="1754" class="cls-ethnic-label" text-anchor="end">Biafada (CV)</text>
+    <!-- Feeder to Bijagos (CV) -->
+    <line x1="1380" y1="1860" x2="1400" y2="1745" class="cls-feeder" />
+    <circle cx="1400" cy="1745" r="6" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--bijagos--cv-" class="ethnic-terminal-node" />
+    <text x="1389" y="1749" class="cls-ethnic-label" text-anchor="end">Bijagos (CV)</text>
+    <!-- Feeder to Bambara (CV) -->
+    <line x1="1380" y1="1860" x2="1430" y2="1755" class="cls-feeder" />
+    <circle cx="1430" cy="1755" r="6" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--bambara--cv-" class="ethnic-terminal-node" />
+    <text x="1419" y="1759" class="cls-ethnic-label" text-anchor="end">Bambara (CV)</text>
+    <!-- Feeder to Basari Tenda -->
+    <line x1="1380" y1="1860" x2="1460" y2="1775" class="cls-feeder" />
+    <circle cx="1460" cy="1775" r="5" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--basari-tenda" class="ethnic-terminal-node" />
+    <text x="1450" y="1779" class="cls-ethnic-label" text-anchor="end">Basari Tenda</text>
+    <!-- Feeder to Banhun / Bainouk -->
+    <line x1="1380" y1="1860" x2="1480" y2="1805" class="cls-feeder" />
+    <circle cx="1480" cy="1805" r="5" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--banhun---bainouk" class="ethnic-terminal-node" />
+    <text x="1470" y="1809" class="cls-ethnic-label" text-anchor="end">Banhun / Bainouk</text>
+    <!-- Feeder to Cassanga -->
+    <line x1="1380" y1="1860" x2="1490" y2="1840" class="cls-feeder" />
+    <circle cx="1490" cy="1840" r="5" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--cassanga" class="ethnic-terminal-node" />
+    <text x="1480" y="1844" class="cls-ethnic-label" text-anchor="end">Cassanga</text>
+    <!-- Feeder to Cocoli -->
+    <line x1="1380" y1="1860" x2="1485" y2="1875" class="cls-feeder" />
+    <circle cx="1485" cy="1875" r="5" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--cocoli" class="ethnic-terminal-node" />
+    <text x="1475" y="1879" class="cls-ethnic-label" text-anchor="end">Cocoli</text>
+    <!-- Feeder to Diola (CV) -->
+    <line x1="1380" y1="1860" x2="1470" y2="1910" class="cls-feeder" />
+    <circle cx="1470" cy="1910" r="6" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--diola--cv-" class="ethnic-terminal-node" />
+    <text x="1459" y="1914" class="cls-ethnic-label" text-anchor="end">Diola (CV)</text>
+    <!-- Feeder to Fula (CV) -->
+    <line x1="1380" y1="1860" x2="1445" y2="1940" class="cls-feeder" />
+    <circle cx="1445" cy="1940" r="6" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--fula--cv-" class="ethnic-terminal-node" />
+    <text x="1434" y="1944" class="cls-ethnic-label" text-anchor="end">Fula (CV)</text>
+    <!-- Feeder to Jallonke -->
+    <line x1="1380" y1="1860" x2="1415" y2="1960" class="cls-feeder" />
+    <circle cx="1415" cy="1960" r="5" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--jallonke" class="ethnic-terminal-node" />
+    <text x="1405" y="1964" class="cls-ethnic-label" text-anchor="end">Jallonke</text>
+    <!-- Feeder to Mande (CV) -->
+    <line x1="1380" y1="1860" x2="1380" y2="1970" class="cls-feeder" />
+    <circle cx="1380" cy="1970" r="6" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--mande--cv-" class="ethnic-terminal-node" />
+    <text x="1369" y="1974" class="cls-ethnic-label" text-anchor="end">Mande (CV)</text>
+    <!-- Feeder to Mandinka (CV) -->
+    <line x1="1380" y1="1860" x2="1345" y2="1965" class="cls-feeder" />
+    <circle cx="1345" cy="1965" r="6" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--mandinka--cv-" class="ethnic-terminal-node" />
+    <text x="1334" y="1969" class="cls-ethnic-label" text-anchor="end">Mandinka (CV)</text>
+    <!-- Feeder to Nalu -->
+    <line x1="1380" y1="1860" x2="1315" y2="1950" class="cls-feeder" />
+    <circle cx="1315" cy="1950" r="5" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--nalu" class="ethnic-terminal-node" />
+    <text x="1305" y="1954" class="cls-ethnic-label" text-anchor="end">Nalu</text>
+    <!-- Feeder to Papel (CV) -->
+    <line x1="1380" y1="1860" x2="1290" y2="1920" class="cls-feeder" />
+    <circle cx="1290" cy="1920" r="6" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--papel--cv-" class="ethnic-terminal-node" />
+    <text x="1279" y="1924" class="cls-ethnic-label" text-anchor="end">Papel (CV)</text>
+    <!-- Feeder to Sape -->
+    <line x1="1380" y1="1860" x2="1275" y2="1885" class="cls-feeder" />
+    <circle cx="1275" cy="1885" r="5" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--sape" class="ethnic-terminal-node" />
+    <text x="1265" y="1889" class="cls-ethnic-label" text-anchor="end">Sape</text>
+    <!-- Feeder to Sereer (CV) -->
+    <line x1="1380" y1="1860" x2="1270" y2="1850" class="cls-feeder" />
+    <circle cx="1270" cy="1850" r="6" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--sereer--cv-" class="ethnic-terminal-node" />
+    <text x="1259" y="1854" class="cls-ethnic-label" text-anchor="end">Sereer (CV)</text>
+    <!-- Feeder to Susu (CV) -->
+    <line x1="1380" y1="1860" x2="1280" y2="1815" class="cls-feeder" />
+    <circle cx="1280" cy="1815" r="6" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--susu--cv-" class="ethnic-terminal-node" />
+    <text x="1269" y="1819" class="cls-ethnic-label" text-anchor="end">Susu (CV)</text>
+    <!-- Feeder to Wolof (CV) -->
+    <line x1="1380" y1="1860" x2="1295" y2="1785" class="cls-feeder" />
+    <circle cx="1295" cy="1785" r="7" fill="#A4723A" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cape-verde--wolof--cv-" class="ethnic-terminal-node" />
+    <text x="1283" y="1789" class="cls-ethnic-label" text-anchor="end">Wolof (CV)</text>
+  </g>
+
+  <g id="branch--country--angola" class="country-conduit-group" data-country="Angola" data-region="Central Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C1750,2420 1420,2550 1220,2630" stroke="#D66B17" stroke-width="10" class="cls-trunk" id="trunk--angola" />
+    <circle cx="1220" cy="2630" r="8" fill="#D66B17" id="node--country--angola" />
+    <text x="1220" y="2600" fill="#D66B17" class="cls-country-label" id="label--country--angola">ANGOLA</text>
+    <!-- Feeder to Bakongo / Kongo -->
+    <line x1="1220" y1="2630" x2="1140" y2="2600" class="cls-feeder" />
+    <circle cx="1140" cy="2600" r="14" fill="#D66B17" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--angola--bakongo---kongo" class="ethnic-terminal-node" />
+    <text x="1121" y="2604" class="cls-ethnic-label" text-anchor="end">Bakongo / Kongo</text>
+    <!-- Feeder to Mbundu / Kimbundu -->
+    <line x1="1220" y1="2630" x2="1170" y2="2650" class="cls-feeder" />
+    <circle cx="1170" cy="2650" r="13" fill="#D66B17" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--angola--mbundu---kimbundu" class="ethnic-terminal-node" />
+    <text x="1152" y="2654" class="cls-ethnic-label" text-anchor="end">Mbundu / Kimbundu</text>
+    <!-- Feeder to Ovimbundu -->
+    <line x1="1220" y1="2630" x2="1130" y2="2690" class="cls-feeder" />
+    <circle cx="1130" cy="2690" r="12" fill="#D66B17" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--angola--ovimbundu" class="ethnic-terminal-node" />
+    <text x="1113" y="2694" class="cls-ethnic-label" text-anchor="end">Ovimbundu</text>
+    <!-- Feeder to Chokwe -->
+    <line x1="1220" y1="2630" x2="1090" y2="2640" class="cls-feeder" />
+    <circle cx="1090" cy="2640" r="9" fill="#D66B17" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--angola--chokwe" class="ethnic-terminal-node" />
+    <text x="1076" y="2644" class="cls-ethnic-label" text-anchor="end">Chokwe</text>
+    <!-- Feeder to Lunda -->
+    <line x1="1220" y1="2630" x2="1080" y2="2690" class="cls-feeder" />
+    <circle cx="1080" cy="2690" r="9" fill="#D66B17" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--angola--lunda" class="ethnic-terminal-node" />
+    <text x="1066" y="2694" class="cls-ethnic-label" text-anchor="end">Lunda</text>
+    <!-- Feeder to Ganguela -->
+    <line x1="1220" y1="2630" x2="1070" y2="2740" class="cls-feeder" />
+    <circle cx="1070" cy="2740" r="7" fill="#D66B17" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--angola--ganguela" class="ethnic-terminal-node" />
+    <text x="1058" y="2744" class="cls-ethnic-label" text-anchor="end">Ganguela</text>
+    <!-- Feeder to Nyaneka -->
+    <line x1="1220" y1="2630" x2="1110" y2="2770" class="cls-feeder" />
+    <circle cx="1110" cy="2770" r="7" fill="#D66B17" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--angola--nyaneka" class="ethnic-terminal-node" />
+    <text x="1098" y="2774" class="cls-ethnic-label" text-anchor="end">Nyaneka</text>
+  </g>
+
+  <g id="branch--country--drc" class="country-conduit-group" data-country="DRC" data-region="Central Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C1850,2550 1580,2750 1420,2880" stroke="#E65100" stroke-width="6.56" class="cls-trunk" id="trunk--drc" />
+    <circle cx="1420" cy="2880" r="8" fill="#E65100" id="node--country--drc" />
+    <text x="1420" y="2850" fill="#E65100" class="cls-country-label" id="label--country--drc">DRC</text>
+    <!-- Feeder to Luba -->
+    <line x1="1420" y1="2880" x2="1350" y2="2860" class="cls-feeder" />
+    <circle cx="1350" cy="2860" r="11" fill="#E65100" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--drc--luba" class="ethnic-terminal-node" />
+    <text x="1334" y="2864" class="cls-ethnic-label" text-anchor="end">Luba</text>
+    <!-- Feeder to Mongo -->
+    <line x1="1420" y1="2880" x2="1390" y2="2900" class="cls-feeder" />
+    <circle cx="1390" cy="2900" r="10" fill="#E65100" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--drc--mongo" class="ethnic-terminal-node" />
+    <text x="1375" y="2904" class="cls-ethnic-label" text-anchor="end">Mongo</text>
+    <!-- Feeder to Kongo-DRC -->
+    <line x1="1420" y1="2880" x2="1330" y2="2920" class="cls-feeder" />
+    <circle cx="1330" cy="2920" r="11" fill="#E65100" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--drc--kongo-drc" class="ethnic-terminal-node" />
+    <text x="1314" y="2924" class="cls-ethnic-label" text-anchor="end">Kongo-DRC</text>
+    <!-- Feeder to Lingala / Bangala -->
+    <line x1="1420" y1="2880" x2="1370" y2="2960" class="cls-feeder" />
+    <circle cx="1370" cy="2960" r="9" fill="#E65100" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--drc--lingala---bangala" class="ethnic-terminal-node" />
+    <text x="1356" y="2964" class="cls-ethnic-label" text-anchor="end">Lingala / Bangala</text>
+    <!-- Feeder to Zande -->
+    <line x1="1420" y1="2880" x2="1310" y2="2980" class="cls-feeder" />
+    <circle cx="1310" cy="2980" r="8" fill="#E65100" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--drc--zande" class="ethnic-terminal-node" />
+    <text x="1297" y="2984" class="cls-ethnic-label" text-anchor="end">Zande</text>
+    <!-- Feeder to Mangbetu -->
+    <line x1="1420" y1="2880" x2="1340" y2="3020" class="cls-feeder" />
+    <circle cx="1340" cy="3020" r="7" fill="#E65100" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--drc--mangbetu" class="ethnic-terminal-node" />
+    <text x="1328" y="3024" class="cls-ethnic-label" text-anchor="end">Mangbetu</text>
+    <!-- Feeder to Kuba -->
+    <line x1="1420" y1="2880" x2="1280" y2="2940" class="cls-feeder" />
+    <circle cx="1280" cy="2940" r="8" fill="#E65100" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--drc--kuba" class="ethnic-terminal-node" />
+    <text x="1267" y="2944" class="cls-ethnic-label" text-anchor="end">Kuba</text>
+  </g>
+
+  <g id="branch--country--gabon" class="country-conduit-group" data-country="Gabon" data-region="Central Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C1980,2650 1780,2920 1680,3080" stroke="#DEA715" stroke-width="3" class="cls-trunk" id="trunk--gabon" />
+    <circle cx="1680" cy="3080" r="8" fill="#DEA715" id="node--country--gabon" />
+    <text x="1680" y="3050" fill="#DEA715" class="cls-country-label" id="label--country--gabon">GABON</text>
+    <!-- Feeder to Fang -->
+    <line x1="1680" y1="3080" x2="1620" y2="3090" class="cls-feeder" />
+    <circle cx="1620" cy="3090" r="9" fill="#DEA715" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--gabon--fang" class="ethnic-terminal-node" />
+    <text x="1606" y="3094" class="cls-ethnic-label" text-anchor="end">Fang</text>
+    <!-- Feeder to Myene -->
+    <line x1="1680" y1="3080" x2="1660" y2="3130" class="cls-feeder" />
+    <circle cx="1660" cy="3130" r="8" fill="#DEA715" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--gabon--myene" class="ethnic-terminal-node" />
+    <text x="1647" y="3134" class="cls-ethnic-label" text-anchor="end">Myene</text>
+    <!-- Feeder to Kota -->
+    <line x1="1680" y1="3080" x2="1600" y2="3150" class="cls-feeder" />
+    <circle cx="1600" cy="3150" r="7" fill="#DEA715" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--gabon--kota" class="ethnic-terminal-node" />
+    <text x="1588" y="3154" class="cls-ethnic-label" text-anchor="end">Kota</text>
+    <!-- Feeder to Punu / Eshira -->
+    <line x1="1680" y1="3080" x2="1640" y2="3190" class="cls-feeder" />
+    <circle cx="1640" cy="3190" r="8" fill="#DEA715" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--gabon--punu---eshira" class="ethnic-terminal-node" />
+    <text x="1627" y="3194" class="cls-ethnic-label" text-anchor="end">Punu / Eshira</text>
+    <!-- Feeder to Babinga / Pygmy -->
+    <line x1="1680" y1="3080" x2="1570" y2="3170" class="cls-feeder" />
+    <circle cx="1570" cy="3170" r="7" fill="#DEA715" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--gabon--babinga---pygmy" class="ethnic-terminal-node" />
+    <text x="1558" y="3174" class="cls-ethnic-label" text-anchor="end">Babinga / Pygmy</text>
+  </g>
+
+  <g id="branch--country--rc" class="country-conduit-group" data-country="RC" data-region="Central Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2100,2720 1990,3020 1950,3210" stroke="#DCE775" stroke-width="3" class="cls-trunk" id="trunk--rc" />
+    <circle cx="1950" cy="3210" r="8" fill="#DCE775" id="node--country--rc" />
+    <text x="1950" y="3180" fill="#DCE775" class="cls-country-label" id="label--country--rc">RC</text>
+    <!-- Feeder to Teke / Bateke -->
+    <line x1="1950" y1="3210" x2="1900" y2="3230" class="cls-feeder" />
+    <circle cx="1900" cy="3230" r="9" fill="#DCE775" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--rc--teke---bateke" class="ethnic-terminal-node" />
+    <text x="1886" y="3234" class="cls-ethnic-label" text-anchor="end">Teke / Bateke</text>
+    <!-- Feeder to Vili / Loango -->
+    <line x1="1950" y1="3210" x2="1950" y2="3270" class="cls-feeder" />
+    <circle cx="1950" cy="3270" r="10" fill="#DCE775" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--rc--vili---loango" class="ethnic-terminal-node" />
+    <text x="1935" y="3274" class="cls-ethnic-label" text-anchor="end">Vili / Loango</text>
+    <!-- Feeder to Kongo-RC -->
+    <line x1="1950" y1="3210" x2="1880" y2="3290" class="cls-feeder" />
+    <circle cx="1880" cy="3290" r="9" fill="#DCE775" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--rc--kongo-rc" class="ethnic-terminal-node" />
+    <text x="1866" y="3294" class="cls-ethnic-label" text-anchor="end">Kongo-RC</text>
+    <!-- Feeder to Mbochi -->
+    <line x1="1950" y1="3210" x2="1930" y2="3330" class="cls-feeder" />
+    <circle cx="1930" cy="3330" r="7" fill="#DCE775" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--rc--mbochi" class="ethnic-terminal-node" />
+    <text x="1918" y="3334" class="cls-ethnic-label" text-anchor="end">Mbochi</text>
+  </g>
+
+  <g id="branch--country--cameroon" class="country-conduit-group" data-country="Cameroon" data-region="Central Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2220,2750 2230,3050 2240,3260" stroke="#AD7D29" stroke-width="3" class="cls-trunk" id="trunk--cameroon" />
+    <circle cx="2240" cy="3260" r="8" fill="#AD7D29" id="node--country--cameroon" />
+    <text x="2240" y="3230" fill="#AD7D29" class="cls-country-label" id="label--country--cameroon">CAMEROON</text>
+    <!-- Feeder to Duala / Sawa -->
+    <line x1="2240" y1="3260" x2="2200" y2="3290" class="cls-feeder" />
+    <circle cx="2200" cy="3290" r="9" fill="#AD7D29" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cameroon--duala---sawa" class="ethnic-terminal-node" />
+    <text x="2186" y="3294" class="cls-ethnic-label" text-anchor="end">Duala / Sawa</text>
+    <!-- Feeder to Bamileke -->
+    <line x1="2240" y1="3260" x2="2250" y2="3330" class="cls-feeder" />
+    <circle cx="2250" cy="3330" r="10" fill="#AD7D29" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cameroon--bamileke" class="ethnic-terminal-node" />
+    <text x="2265" y="3334" class="cls-ethnic-label" text-anchor="start">Bamileke</text>
+    <!-- Feeder to Bassa-Cameroon -->
+    <line x1="2240" y1="3260" x2="2180" y2="3350" class="cls-feeder" />
+    <circle cx="2180" cy="3350" r="8" fill="#AD7D29" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cameroon--bassa-cameroon" class="ethnic-terminal-node" />
+    <text x="2167" y="3354" class="cls-ethnic-label" text-anchor="end">Bassa-Cameroon</text>
+    <!-- Feeder to Beti / Fang-CMR -->
+    <line x1="2240" y1="3260" x2="2230" y2="3390" class="cls-feeder" />
+    <circle cx="2230" cy="3390" r="9" fill="#AD7D29" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cameroon--beti---fang-cmr" class="ethnic-terminal-node" />
+    <text x="2244" y="3394" class="cls-ethnic-label" text-anchor="start">Beti / Fang-CMR</text>
+    <!-- Feeder to Tikari -->
+    <line x1="2240" y1="3260" x2="2270" y2="3410" class="cls-feeder" />
+    <circle cx="2270" cy="3410" r="7" fill="#AD7D29" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cameroon--tikari" class="ethnic-terminal-node" />
+    <text x="2282" y="3414" class="cls-ethnic-label" text-anchor="start">Tikari</text>
+    <!-- Feeder to Bakola / Pygmy -->
+    <line x1="2240" y1="3260" x2="2150" y2="3370" class="cls-feeder" />
+    <circle cx="2150" cy="3370" r="7" fill="#AD7D29" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--cameroon--bakola---pygmy" class="ethnic-terminal-node" />
+    <text x="2138" y="3374" class="cls-ethnic-label" text-anchor="end">Bakola / Pygmy</text>
+  </g>
+
+  <g id="branch--country--car" class="country-conduit-group" data-country="CAR" data-region="Central Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2350,2720 2480,3020 2540,3210" stroke="#8D6E63" stroke-width="3" class="cls-trunk" id="trunk--car" />
+    <circle cx="2540" cy="3210" r="8" fill="#8D6E63" id="node--country--car" />
+    <text x="2540" y="3180" fill="#8D6E63" class="cls-country-label" id="label--country--car">CAR</text>
+    <!-- Feeder to Gbaya -->
+    <line x1="2540" y1="3210" x2="2510" y2="3250" class="cls-feeder" />
+    <circle cx="2510" cy="3250" r="8" fill="#8D6E63" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--car--gbaya" class="ethnic-terminal-node" />
+    <text x="2523" y="3254" class="cls-ethnic-label" text-anchor="start">Gbaya</text>
+    <!-- Feeder to Banda -->
+    <line x1="2540" y1="3210" x2="2560" y2="3280" class="cls-feeder" />
+    <circle cx="2560" cy="3280" r="8" fill="#8D6E63" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--car--banda" class="ethnic-terminal-node" />
+    <text x="2573" y="3284" class="cls-ethnic-label" text-anchor="start">Banda</text>
+    <!-- Feeder to Sara -->
+    <line x1="2540" y1="3210" x2="2500" y2="3310" class="cls-feeder" />
+    <circle cx="2500" cy="3310" r="7" fill="#8D6E63" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--car--sara" class="ethnic-terminal-node" />
+    <text x="2512" y="3314" class="cls-ethnic-label" text-anchor="start">Sara</text>
+    <!-- Feeder to Baka -->
+    <line x1="2540" y1="3210" x2="2580" y2="3330" class="cls-feeder" />
+    <circle cx="2580" cy="3330" r="7" fill="#8D6E63" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--car--baka" class="ethnic-terminal-node" />
+    <text x="2592" y="3334" class="cls-ethnic-label" text-anchor="start">Baka</text>
+  </g>
+
+  <g id="branch--country--chad" class="country-conduit-group" data-country="Chad" data-region="Central Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2470,2650 2700,2920 2820,3080" stroke="#BC9F75" stroke-width="3" class="cls-trunk" id="trunk--chad" />
+    <circle cx="2820" cy="3080" r="8" fill="#BC9F75" id="node--country--chad" />
+    <text x="2820" y="3050" fill="#BC9F75" class="cls-country-label" id="label--country--chad">CHAD</text>
+    <!-- Feeder to Toubou / Daza -->
+    <line x1="2820" y1="3080" x2="2820" y2="3130" class="cls-feeder" />
+    <circle cx="2820" cy="3130" r="8" fill="#BC9F75" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--chad--toubou---daza" class="ethnic-terminal-node" />
+    <text x="2833" y="3134" class="cls-ethnic-label" text-anchor="start">Toubou / Daza</text>
+    <!-- Feeder to Kanembu -->
+    <line x1="2820" y1="3080" x2="2870" y2="3110" class="cls-feeder" />
+    <circle cx="2870" cy="3110" r="8" fill="#BC9F75" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--chad--kanembu" class="ethnic-terminal-node" />
+    <text x="2883" y="3114" class="cls-ethnic-label" text-anchor="start">Kanembu</text>
+    <!-- Feeder to Sara-Chad -->
+    <line x1="2820" y1="3080" x2="2780" y2="3160" class="cls-feeder" />
+    <circle cx="2780" cy="3160" r="8" fill="#BC9F75" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--chad--sara-chad" class="ethnic-terminal-node" />
+    <text x="2793" y="3164" class="cls-ethnic-label" text-anchor="start">Sara-Chad</text>
+    <!-- Feeder to Bagirmi -->
+    <line x1="2820" y1="3080" x2="2840" y2="3200" class="cls-feeder" />
+    <circle cx="2840" cy="3200" r="7" fill="#BC9F75" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--chad--bagirmi" class="ethnic-terminal-node" />
+    <text x="2852" y="3204" class="cls-ethnic-label" text-anchor="start">Bagirmi</text>
+  </g>
+
+  <g id="branch--country--south-africa" class="country-conduit-group" data-country="South Africa" data-region="Southern Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2120,2500 2060,2720 2023,2870" stroke="#FFC107" stroke-width="3" class="cls-trunk" id="trunk--south-africa" />
+    <circle cx="2023" cy="2870" r="8" fill="#FFC107" id="node--country--south-africa" />
+    <text x="2023" y="2854" fill="#FFC107" class="cls-country-label" id="label--country--south-africa">SOUTH AFRICA</text>
+    <!-- Feeder to Zulu -->
+    <line x1="2023" y1="2870" x2="1980" y2="2910" class="cls-feeder" />
+    <circle cx="1980" cy="2910" r="10" fill="#FFC107" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--south-africa--zulu" class="ethnic-terminal-node" />
+    <text x="1965" y="2914" class="cls-ethnic-label" text-anchor="end">Zulu</text>
+    <!-- Feeder to Xhosa -->
+    <line x1="2023" y1="2870" x2="2030" y2="2940" class="cls-feeder" />
+    <circle cx="2030" cy="2940" r="10" fill="#FFC107" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--south-africa--xhosa" class="ethnic-terminal-node" />
+    <text x="2015" y="2944" class="cls-ethnic-label" text-anchor="end">Xhosa</text>
+    <!-- Feeder to Sotho -->
+    <line x1="2023" y1="2870" x2="1960" y2="2960" class="cls-feeder" />
+    <circle cx="1960" cy="2960" r="8" fill="#FFC107" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--south-africa--sotho" class="ethnic-terminal-node" />
+    <text x="1947" y="2964" class="cls-ethnic-label" text-anchor="end">Sotho</text>
+    <!-- Feeder to Tswana -->
+    <line x1="2023" y1="2870" x2="2010" y2="2990" class="cls-feeder" />
+    <circle cx="2010" cy="2990" r="8" fill="#FFC107" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--south-africa--tswana" class="ethnic-terminal-node" />
+    <text x="1997" y="2994" class="cls-ethnic-label" text-anchor="end">Tswana</text>
+    <!-- Feeder to Khoisan / San -->
+    <line x1="2023" y1="2870" x2="1940" y2="3010" class="cls-feeder" />
+    <circle cx="1940" cy="3010" r="8" fill="#FFC107" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--south-africa--khoisan---san" class="ethnic-terminal-node" />
+    <text x="1927" y="3014" class="cls-ethnic-label" text-anchor="end">Khoisan / San</text>
+    <!-- Feeder to Venda -->
+    <line x1="2023" y1="2870" x2="2050" y2="3020" class="cls-feeder" />
+    <circle cx="2050" cy="3020" r="7" fill="#FFC107" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--south-africa--venda" class="ethnic-terminal-node" />
+    <text x="2038" y="3024" class="cls-ethnic-label" text-anchor="end">Venda</text>
+  </g>
+
+  <g id="branch--country--mozambique" class="country-conduit-group" data-country="Mozambique" data-region="Southern Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2560,2550 2880,2750 3050,2870" stroke="#A0522D" stroke-width="3" class="cls-trunk" id="trunk--mozambique" />
+    <circle cx="3050" cy="2870" r="8" fill="#A0522D" id="node--country--mozambique" />
+    <text x="3050" y="2840" fill="#A0522D" class="cls-country-label" id="label--country--mozambique">MOZAMBIQUE</text>
+    <!-- Feeder to Makua / Makhuwa -->
+    <line x1="3050" y1="2870" x2="3080" y2="2910" class="cls-feeder" />
+    <circle cx="3080" cy="2910" r="10" fill="#A0522D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--mozambique--makua---makhuwa" class="ethnic-terminal-node" />
+    <text x="3095" y="2914" class="cls-ethnic-label" text-anchor="start">Makua / Makhuwa</text>
+    <!-- Feeder to Tsonga / Shangaan -->
+    <line x1="3050" y1="2870" x2="3130" y2="2890" class="cls-feeder" />
+    <circle cx="3130" cy="2890" r="9" fill="#A0522D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--mozambique--tsonga---shangaan" class="ethnic-terminal-node" />
+    <text x="3144" y="2894" class="cls-ethnic-label" text-anchor="start">Tsonga / Shangaan</text>
+    <!-- Feeder to Sena -->
+    <line x1="3050" y1="2870" x2="3060" y2="2960" class="cls-feeder" />
+    <circle cx="3060" cy="2960" r="8" fill="#A0522D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--mozambique--sena" class="ethnic-terminal-node" />
+    <text x="3073" y="2964" class="cls-ethnic-label" text-anchor="start">Sena</text>
+    <!-- Feeder to Chopi -->
+    <line x1="3050" y1="2870" x2="3110" y2="2980" class="cls-feeder" />
+    <circle cx="3110" cy="2980" r="7" fill="#A0522D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--mozambique--chopi" class="ethnic-terminal-node" />
+    <text x="3122" y="2984" class="cls-ethnic-label" text-anchor="start">Chopi</text>
+    <!-- Feeder to Yao -->
+    <line x1="3050" y1="2870" x2="3040" y2="3010" class="cls-feeder" />
+    <circle cx="3040" cy="3010" r="8" fill="#A0522D" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--mozambique--yao" class="ethnic-terminal-node" />
+    <text x="3053" y="3014" class="cls-ethnic-label" text-anchor="start">Yao</text>
+  </g>
+
+  <g id="branch--country--tanzania" class="country-conduit-group" data-country="Tanzania" data-region="Eastern Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2650,2450 3020,2530 3240,2600" stroke="#E95F69" stroke-width="3" class="cls-trunk" id="trunk--tanzania" />
+    <circle cx="3240" cy="2600" r="8" fill="#E95F69" id="node--country--tanzania" />
+    <text x="3240" y="2580" fill="#E95F69" class="cls-country-label" id="label--country--tanzania">TANZANIA</text>
+    <!-- Feeder to Sukuma -->
+    <line x1="3240" y1="2600" x2="3300" y2="2620" class="cls-feeder" />
+    <circle cx="3300" cy="2620" r="10" fill="#E95F69" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--tanzania--sukuma" class="ethnic-terminal-node" />
+    <text x="3315" y="2624" class="cls-ethnic-label" text-anchor="start">Sukuma</text>
+    <!-- Feeder to Swahili Coast -->
+    <line x1="3240" y1="2600" x2="3340" y2="2580" class="cls-feeder" />
+    <circle cx="3340" cy="2580" r="10" fill="#E95F69" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--tanzania--swahili-coast" class="ethnic-terminal-node" />
+    <text x="3355" y="2584" class="cls-ethnic-label" text-anchor="start">Swahili Coast</text>
+    <!-- Feeder to Nyamwezi -->
+    <line x1="3240" y1="2600" x2="3280" y2="2670" class="cls-feeder" />
+    <circle cx="3280" cy="2670" r="9" fill="#E95F69" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--tanzania--nyamwezi" class="ethnic-terminal-node" />
+    <text x="3294" y="2674" class="cls-ethnic-label" text-anchor="start">Nyamwezi</text>
+    <!-- Feeder to Chagga -->
+    <line x1="3240" y1="2600" x2="3330" y2="2690" class="cls-feeder" />
+    <circle cx="3330" cy="2690" r="8" fill="#E95F69" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--tanzania--chagga" class="ethnic-terminal-node" />
+    <text x="3343" y="2694" class="cls-ethnic-label" text-anchor="start">Chagga</text>
+    <!-- Feeder to Makonde -->
+    <line x1="3240" y1="2600" x2="3260" y2="2720" class="cls-feeder" />
+    <circle cx="3260" cy="2720" r="8" fill="#E95F69" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--tanzania--makonde" class="ethnic-terminal-node" />
+    <text x="3273" y="2724" class="cls-ethnic-label" text-anchor="start">Makonde</text>
+    <!-- Feeder to Hadza / Sandawe -->
+    <line x1="3240" y1="2600" x2="3310" y2="2740" class="cls-feeder" />
+    <circle cx="3310" cy="2740" r="7" fill="#E95F69" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--tanzania--hadza---sandawe" class="ethnic-terminal-node" />
+    <text x="3322" y="2744" class="cls-ethnic-label" text-anchor="start">Hadza / Sandawe</text>
+  </g>
+
+  <g id="branch--country--kenya" class="country-conduit-group" data-country="Kenya" data-region="Eastern Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2720,2350 3120,2330 3360,2330" stroke="#2E7D32" stroke-width="3" class="cls-trunk" id="trunk--kenya" />
+    <circle cx="3360" cy="2330" r="8" fill="#2E7D32" id="node--country--kenya" />
+    <text x="3360" y="2320" fill="#2E7D32" class="cls-country-label" id="label--country--kenya">KENYA</text>
+    <!-- Feeder to Kikuyu / Kamba -->
+    <line x1="3360" y1="2330" x2="3420" y2="2340" class="cls-feeder" />
+    <circle cx="3420" cy="2340" r="10" fill="#2E7D32" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--kenya--kikuyu---kamba" class="ethnic-terminal-node" />
+    <text x="3435" y="2344" class="cls-ethnic-label" text-anchor="start">Kikuyu / Kamba</text>
+    <!-- Feeder to Luo -->
+    <line x1="3360" y1="2330" x2="3450" y2="2300" class="cls-feeder" />
+    <circle cx="3450" cy="2300" r="10" fill="#2E7D32" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--kenya--luo" class="ethnic-terminal-node" />
+    <text x="3465" y="2304" class="cls-ethnic-label" text-anchor="start">Luo</text>
+    <!-- Feeder to Luhya -->
+    <line x1="3360" y1="2330" x2="3410" y2="2390" class="cls-feeder" />
+    <circle cx="3410" cy="2390" r="9" fill="#2E7D32" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--kenya--luhya" class="ethnic-terminal-node" />
+    <text x="3424" y="2394" class="cls-ethnic-label" text-anchor="start">Luhya</text>
+    <!-- Feeder to Maasai -->
+    <line x1="3360" y1="2330" x2="3460" y2="2370" class="cls-feeder" />
+    <circle cx="3460" cy="2370" r="9" fill="#2E7D32" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--kenya--maasai" class="ethnic-terminal-node" />
+    <text x="3474" y="2374" class="cls-ethnic-label" text-anchor="start">Maasai</text>
+    <!-- Feeder to Mijikenda -->
+    <line x1="3360" y1="2330" x2="3400" y2="2430" class="cls-feeder" />
+    <circle cx="3400" cy="2430" r="8" fill="#2E7D32" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--kenya--mijikenda" class="ethnic-terminal-node" />
+    <text x="3413" y="2434" class="cls-ethnic-label" text-anchor="start">Mijikenda</text>
+  </g>
+
+  <g id="branch--country--uganda" class="country-conduit-group" data-country="Uganda" data-region="Eastern Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2750,2240 3150,2120 3420,2070" stroke="#81C784" stroke-width="3" class="cls-trunk" id="trunk--uganda" />
+    <circle cx="3420" cy="2070" r="8" fill="#81C784" id="node--country--uganda" />
+    <text x="3420" y="2060" fill="#81C784" class="cls-country-label" id="label--country--uganda">UGANDA</text>
+    <!-- Feeder to Baganda -->
+    <line x1="3420" y1="2070" x2="3480" y2="2070" class="cls-feeder" />
+    <circle cx="3480" cy="2070" r="9" fill="#81C784" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--uganda--baganda" class="ethnic-terminal-node" />
+    <text x="3494" y="2074" class="cls-ethnic-label" text-anchor="start">Baganda</text>
+    <!-- Feeder to Banyankole / Bakiga -->
+    <line x1="3420" y1="2070" x2="3510" y2="2030" class="cls-feeder" />
+    <circle cx="3510" cy="2030" r="8" fill="#81C784" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--uganda--banyankole---bakiga" class="ethnic-terminal-node" />
+    <text x="3523" y="2034" class="cls-ethnic-label" text-anchor="start">Banyankole / Bakiga</text>
+    <!-- Feeder to Acholi / Lango -->
+    <line x1="3420" y1="2070" x2="3470" y2="2120" class="cls-feeder" />
+    <circle cx="3470" cy="2120" r="8" fill="#81C784" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--uganda--acholi---lango" class="ethnic-terminal-node" />
+    <text x="3483" y="2124" class="cls-ethnic-label" text-anchor="start">Acholi / Lango</text>
+  </g>
+
+  <g id="branch--country--rwanda" class="country-conduit-group" data-country="Rwanda" data-region="Eastern Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2720,2130 3140,1920 3430,1830" stroke="#A5D6A7" stroke-width="3" class="cls-trunk" id="trunk--rwanda" />
+    <circle cx="3430" cy="1830" r="8" fill="#A5D6A7" id="node--country--rwanda" />
+    <text x="3430" y="1820" fill="#A5D6A7" class="cls-country-label" id="label--country--rwanda">RWANDA</text>
+    <!-- Feeder to Hutu -->
+    <line x1="3430" y1="1830" x2="3480" y2="1820" class="cls-feeder" />
+    <circle cx="3480" cy="1820" r="9" fill="#A5D6A7" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--rwanda--hutu" class="ethnic-terminal-node" />
+    <text x="3494" y="1824" class="cls-ethnic-label" text-anchor="start">Hutu</text>
+    <!-- Feeder to Tutsi -->
+    <line x1="3430" y1="1830" x2="3510" y2="1780" class="cls-feeder" />
+    <circle cx="3510" cy="1780" r="8" fill="#A5D6A7" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--rwanda--tutsi" class="ethnic-terminal-node" />
+    <text x="3523" y="1784" class="cls-ethnic-label" text-anchor="start">Tutsi</text>
+    <!-- Feeder to Twa -->
+    <line x1="3430" y1="1830" x2="3470" y2="1870" class="cls-feeder" />
+    <circle cx="3470" cy="1870" r="6" fill="#A5D6A7" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--rwanda--twa" class="ethnic-terminal-node" />
+    <text x="3481" y="1874" class="cls-ethnic-label" text-anchor="start">Twa</text>
+  </g>
+
+  <g id="branch--country--nubia-south-sudan" class="country-conduit-group" data-country="Nubia-South Sudan" data-region="Eastern Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2680,2020 3080,1730 3370,1590" stroke="#9F4327" stroke-width="3" class="cls-trunk" id="trunk--nubia-south-sudan" />
+    <circle cx="3370" cy="1590" r="8" fill="#9F4327" id="node--country--nubia-south-sudan" />
+    <text x="3370" y="1580" fill="#9F4327" class="cls-country-label" id="label--country--nubia-south-sudan">NUBIA-SOUTH SUDAN</text>
+    <!-- Feeder to Dinka -->
+    <line x1="3370" y1="1590" x2="3430" y2="1570" class="cls-feeder" />
+    <circle cx="3430" cy="1570" r="10" fill="#9F4327" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nubia-south-sudan--dinka" class="ethnic-terminal-node" />
+    <text x="3445" y="1574" class="cls-ethnic-label" text-anchor="start">Dinka</text>
+    <!-- Feeder to Nuer -->
+    <line x1="3370" y1="1590" x2="3460" y2="1530" class="cls-feeder" />
+    <circle cx="3460" cy="1530" r="9" fill="#9F4327" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nubia-south-sudan--nuer" class="ethnic-terminal-node" />
+    <text x="3474" y="1534" class="cls-ethnic-label" text-anchor="start">Nuer</text>
+    <!-- Feeder to Shilluk -->
+    <line x1="3370" y1="1590" x2="3410" y2="1620" class="cls-feeder" />
+    <circle cx="3410" cy="1620" r="8" fill="#9F4327" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nubia-south-sudan--shilluk" class="ethnic-terminal-node" />
+    <text x="3423" y="1624" class="cls-ethnic-label" text-anchor="start">Shilluk</text>
+    <!-- Feeder to Bari -->
+    <line x1="3370" y1="1590" x2="3450" y2="1650" class="cls-feeder" />
+    <circle cx="3450" cy="1650" r="7" fill="#9F4327" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--nubia-south-sudan--bari" class="ethnic-terminal-node" />
+    <text x="3462" y="1654" class="cls-ethnic-label" text-anchor="start">Bari</text>
+  </g>
+
+  <g id="branch--country--sudan" class="country-conduit-group" data-country="Sudan" data-region="Northern Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2600,1920 2980,1560 3240,1370" stroke="#9D8356" stroke-width="3" class="cls-trunk" id="trunk--sudan" />
+    <circle cx="3240" cy="1370" r="8" fill="#9D8356" id="node--country--sudan" />
+    <text x="3240" y="1360" fill="#9D8356" class="cls-country-label" id="label--country--sudan">SUDAN</text>
+    <!-- Feeder to Nubian -->
+    <line x1="3240" y1="1370" x2="3300" y2="1340" class="cls-feeder" />
+    <circle cx="3300" cy="1340" r="10" fill="#9D8356" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--sudan--nubian" class="ethnic-terminal-node" />
+    <text x="3315" y="1344" class="cls-ethnic-label" text-anchor="start">Nubian</text>
+    <!-- Feeder to Beja -->
+    <line x1="3240" y1="1370" x2="3330" y2="1300" class="cls-feeder" />
+    <circle cx="3330" cy="1300" r="9" fill="#9D8356" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--sudan--beja" class="ethnic-terminal-node" />
+    <text x="3344" y="1304" class="cls-ethnic-label" text-anchor="start">Beja</text>
+    <!-- Feeder to Fur -->
+    <line x1="3240" y1="1370" x2="3270" y2="1390" class="cls-feeder" />
+    <circle cx="3270" cy="1390" r="8" fill="#9D8356" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--sudan--fur" class="ethnic-terminal-node" />
+    <text x="3283" y="1394" class="cls-ethnic-label" text-anchor="start">Fur</text>
+    <!-- Feeder to Baggara Arab -->
+    <line x1="3240" y1="1370" x2="3310" y2="1420" class="cls-feeder" />
+    <circle cx="3310" cy="1420" r="8" fill="#9D8356" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--sudan--baggara-arab" class="ethnic-terminal-node" />
+    <text x="3323" y="1424" class="cls-ethnic-label" text-anchor="start">Baggara Arab</text>
+    <!-- Feeder to Nuba -->
+    <line x1="3240" y1="1370" x2="3250" y2="1440" class="cls-feeder" />
+    <circle cx="3250" cy="1440" r="8" fill="#9D8356" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--sudan--nuba" class="ethnic-terminal-node" />
+    <text x="3263" y="1444" class="cls-ethnic-label" text-anchor="start">Nuba</text>
+  </g>
+
+  <g id="branch--country--ethiopia" class="country-conduit-group" data-country="Ethiopia" data-region="Eastern Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2520,1840 2840,1420 3060,1190" stroke="#E46B28" stroke-width="3" class="cls-trunk" id="trunk--ethiopia" />
+    <circle cx="3060" cy="1190" r="8" fill="#E46B28" id="node--country--ethiopia" />
+    <text x="3060" y="1180" fill="#E46B28" class="cls-country-label" id="label--country--ethiopia">ETHIOPIA</text>
+    <!-- Feeder to Oromo -->
+    <line x1="3060" y1="1190" x2="3120" y2="1160" class="cls-feeder" />
+    <circle cx="3120" cy="1160" r="11" fill="#E46B28" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ethiopia--oromo" class="ethnic-terminal-node" />
+    <text x="3136" y="1164" class="cls-ethnic-label" text-anchor="start">Oromo</text>
+    <!-- Feeder to Amhara -->
+    <line x1="3060" y1="1190" x2="3150" y2="1120" class="cls-feeder" />
+    <circle cx="3150" cy="1120" r="10" fill="#E46B28" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ethiopia--amhara" class="ethnic-terminal-node" />
+    <text x="3165" y="1124" class="cls-ethnic-label" text-anchor="start">Amhara</text>
+    <!-- Feeder to Tigrai -->
+    <line x1="3060" y1="1190" x2="3090" y2="1210" class="cls-feeder" />
+    <circle cx="3090" cy="1210" r="9" fill="#E46B28" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ethiopia--tigrai" class="ethnic-terminal-node" />
+    <text x="3104" y="1214" class="cls-ethnic-label" text-anchor="start">Tigrai</text>
+    <!-- Feeder to Wolayta -->
+    <line x1="3060" y1="1190" x2="3140" y2="1230" class="cls-feeder" />
+    <circle cx="3140" cy="1230" r="8" fill="#E46B28" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ethiopia--wolayta" class="ethnic-terminal-node" />
+    <text x="3153" y="1234" class="cls-ethnic-label" text-anchor="start">Wolayta</text>
+    <!-- Feeder to Afar -->
+    <line x1="3060" y1="1190" x2="3070" y2="1260" class="cls-feeder" />
+    <circle cx="3070" cy="1260" r="8" fill="#E46B28" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ethiopia--afar" class="ethnic-terminal-node" />
+    <text x="3083" y="1264" class="cls-ethnic-label" text-anchor="start">Afar</text>
+    <!-- Feeder to Sidama -->
+    <line x1="3060" y1="1190" x2="3110" y2="1280" class="cls-feeder" />
+    <circle cx="3110" cy="1280" r="7" fill="#E46B28" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--ethiopia--sidama" class="ethnic-terminal-node" />
+    <text x="3122" y="1284" class="cls-ethnic-label" text-anchor="start">Sidama</text>
+  </g>
+
+  <g id="branch--country--somalia" class="country-conduit-group" data-country="Somalia" data-region="Eastern Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2440,1760 2680,1320 2840,1060" stroke="#F06292" stroke-width="3" class="cls-trunk" id="trunk--somalia" />
+    <circle cx="2840" cy="1060" r="8" fill="#F06292" id="node--country--somalia" />
+    <text x="2840" y="1040" fill="#F06292" class="cls-country-label" id="label--country--somalia">SOMALIA</text>
+    <!-- Feeder to Somali -->
+    <line x1="2840" y1="1060" x2="2900" y2="1020" class="cls-feeder" />
+    <circle cx="2900" cy="1020" r="10" fill="#F06292" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--somalia--somali" class="ethnic-terminal-node" />
+    <text x="2915" y="1024" class="cls-ethnic-label" text-anchor="start">Somali</text>
+    <!-- Feeder to Bantu-Somalia -->
+    <line x1="2840" y1="1060" x2="2930" y2="980" class="cls-feeder" />
+    <circle cx="2930" cy="980" r="8" fill="#F06292" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--somalia--bantu-somalia" class="ethnic-terminal-node" />
+    <text x="2943" y="984" class="cls-ethnic-label" text-anchor="start">Bantu-Somalia</text>
+    <!-- Feeder to Bajuni -->
+    <line x1="2840" y1="1060" x2="2870" y2="1070" class="cls-feeder" />
+    <circle cx="2870" cy="1070" r="7" fill="#F06292" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--somalia--bajuni" class="ethnic-terminal-node" />
+    <text x="2882" y="1074" class="cls-ethnic-label" text-anchor="start">Bajuni</text>
+  </g>
+
+  <g id="branch--country--eritrea" class="country-conduit-group" data-country="Eritrea" data-region="Eastern Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2360,1700 2500,1240 2600,970" stroke="#BA68C8" stroke-width="3" class="cls-trunk" id="trunk--eritrea" />
+    <circle cx="2600" cy="970" r="8" fill="#BA68C8" id="node--country--eritrea" />
+    <text x="2600" y="950" fill="#BA68C8" class="cls-country-label" id="label--country--eritrea">ERITREA</text>
+    <!-- Feeder to Tigrinya -->
+    <line x1="2600" y1="970" x2="2640" y2="920" class="cls-feeder" />
+    <circle cx="2640" cy="920" r="8" fill="#BA68C8" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--eritrea--tigrinya" class="ethnic-terminal-node" />
+    <text x="2653" y="924" class="cls-ethnic-label" text-anchor="start">Tigrinya</text>
+    <!-- Feeder to Tigre -->
+    <line x1="2600" y1="970" x2="2670" y2="890" class="cls-feeder" />
+    <circle cx="2670" cy="890" r="8" fill="#BA68C8" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--eritrea--tigre" class="ethnic-terminal-node" />
+    <text x="2683" y="894" class="cls-ethnic-label" text-anchor="start">Tigre</text>
+    <!-- Feeder to Saho -->
+    <line x1="2600" y1="970" x2="2610" y2="980" class="cls-feeder" />
+    <circle cx="2610" cy="980" r="7" fill="#BA68C8" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--eritrea--saho" class="ethnic-terminal-node" />
+    <text x="2622" y="984" class="cls-ethnic-label" text-anchor="start">Saho</text>
+  </g>
+
+  <g id="branch--country--egypt" class="country-conduit-group" data-country="Egypt" data-region="Northern Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2280,1650 2320,1200 2360,930" stroke="#AB47BC" stroke-width="3" class="cls-trunk" id="trunk--egypt" />
+    <circle cx="2360" cy="930" r="8" fill="#AB47BC" id="node--country--egypt" />
+    <text x="2360" y="910" fill="#AB47BC" class="cls-country-label" id="label--country--egypt">EGYPT</text>
+    <!-- Feeder to Copts / Egyptian -->
+    <line x1="2360" y1="930" x2="2400" y2="870" class="cls-feeder" />
+    <circle cx="2400" cy="870" r="9" fill="#AB47BC" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--egypt--copts---egyptian" class="ethnic-terminal-node" />
+    <text x="2414" y="874" class="cls-ethnic-label" text-anchor="start">Copts / Egyptian</text>
+    <!-- Feeder to Nubian-Egypt -->
+    <line x1="2360" y1="930" x2="2430" y2="840" class="cls-feeder" />
+    <circle cx="2430" cy="840" r="8" fill="#AB47BC" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--egypt--nubian-egypt" class="ethnic-terminal-node" />
+    <text x="2443" y="844" class="cls-ethnic-label" text-anchor="start">Nubian-Egypt</text>
+    <!-- Feeder to Bedouin-Sinai -->
+    <line x1="2360" y1="930" x2="2370" y2="930" class="cls-feeder" />
+    <circle cx="2370" cy="930" r="7" fill="#AB47BC" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--egypt--bedouin-sinai" class="ethnic-terminal-node" />
+    <text x="2382" y="934" class="cls-ethnic-label" text-anchor="start">Bedouin-Sinai</text>
+  </g>
+
+  <g id="branch--country--libya" class="country-conduit-group" data-country="Libya" data-region="Northern Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2180,1630 2150,1200 2130,940" stroke="#7E57C2" stroke-width="3" class="cls-trunk" id="trunk--libya" />
+    <circle cx="2130" cy="940" r="8" fill="#7E57C2" id="node--country--libya" />
+    <text x="2130" y="915" fill="#7E57C2" class="cls-country-label" id="label--country--libya">LIBYA</text>
+    <!-- Feeder to Tuareg-Libya -->
+    <line x1="2130" y1="940" x2="2160" y2="860" class="cls-feeder" />
+    <circle cx="2160" cy="860" r="8" fill="#7E57C2" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--libya--tuareg-libya" class="ethnic-terminal-node" />
+    <text x="2147" y="864" class="cls-ethnic-label" text-anchor="end">Tuareg-Libya</text>
+    <!-- Feeder to Berber / Amazigh -->
+    <line x1="2130" y1="940" x2="2190" y2="830" class="cls-feeder" />
+    <circle cx="2190" cy="830" r="8" fill="#7E57C2" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--libya--berber---amazigh" class="ethnic-terminal-node" />
+    <text x="2177" y="834" class="cls-ethnic-label" text-anchor="end">Berber / Amazigh</text>
+    <!-- Feeder to Fezzan-Black -->
+    <line x1="2130" y1="940" x2="2130" y2="920" class="cls-feeder" />
+    <circle cx="2130" cy="920" r="7" fill="#7E57C2" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--libya--fezzan-black" class="ethnic-terminal-node" />
+    <text x="2118" y="924" class="cls-ethnic-label" text-anchor="end">Fezzan-Black</text>
+  </g>
+
+  <g id="branch--country--morocco" class="country-conduit-group" data-country="Morocco" data-region="Northern Africa">
+    <!-- Main Trunk -->
+    <path d="M2214.2903,2227.8188 C2060,1620 1970,1220 1910,970" stroke="#5C6BC0" stroke-width="3" class="cls-trunk" id="trunk--morocco" />
+    <circle cx="1910" cy="970" r="8" fill="#5C6BC0" id="node--country--morocco" />
+    <text x="1910" y="950" fill="#5C6BC0" class="cls-country-label" id="label--country--morocco">MOROCCO</text>
+    <!-- Feeder to Haratin / Gnawa -->
+    <line x1="1910" y1="970" x2="1940" y2="890" class="cls-feeder" />
+    <circle cx="1940" cy="890" r="9" fill="#5C6BC0" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--morocco--haratin---gnawa" class="ethnic-terminal-node" />
+    <text x="1926" y="894" class="cls-ethnic-label" text-anchor="end">Haratin / Gnawa</text>
+    <!-- Feeder to Shilha / Chleuh -->
+    <line x1="1910" y1="970" x2="1970" y2="860" class="cls-feeder" />
+    <circle cx="1970" cy="860" r="8" fill="#5C6BC0" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--morocco--shilha---chleuh" class="ethnic-terminal-node" />
+    <text x="1957" y="864" class="cls-ethnic-label" text-anchor="end">Shilha / Chleuh</text>
+    <!-- Feeder to Riffian -->
+    <line x1="1910" y1="970" x2="1910" y2="940" class="cls-feeder" />
+    <circle cx="1910" cy="940" r="7" fill="#5C6BC0" stroke="#ffffff" stroke-width="1.5" id="node--ethnic--morocco--riffian" class="ethnic-terminal-node" />
+    <text x="1898" y="944" class="cls-ethnic-label" text-anchor="end">Riffian</text>
+  </g>
+
+</g>
+
+<!-- Central Lobe Embarkation Nodes (Brown Circles) -->
+<g id="CENTRAL_LOBES">
+  <g id="node--central--c-yoruba" class="central-lobe-group" data-cluster="second" data-subregion="Bight of Benin">
+    <circle cx="2080" cy="2180" r="18" fill="#59453d" stroke="#ffffff" stroke-width="1.2" id="c-yoruba" />
+    <text x="2080" y="2180" class="cls-central-label">Yoruba</text>
+  </g>
+  <g id="node--central--c-mandinka" class="central-lobe-group" data-cluster="third" data-subregion="Senegambia">
+    <circle cx="1970" cy="2240" r="17" fill="#81522e" stroke="#ffffff" stroke-width="1.2" id="c-mandinka" />
+    <text x="1970" y="2240" class="cls-central-label">Mandinka</text>
+  </g>
+  <g id="node--central--c-ibibio" class="central-lobe-group" data-cluster="second" data-subregion="Bight of Biafra">
+    <circle cx="2130" cy="2260" r="16" fill="#a4723a" stroke="#ffffff" stroke-width="1.2" id="c-ibibio" />
+    <text x="2130" y="2260" class="cls-central-label">Ibibio Im</text>
+  </g>
+  <g id="node--central--c-akan" class="central-lobe-group" data-cluster="second" data-subregion="Gold Coast">
+    <circle cx="2020" cy="2140" r="16" fill="#795d38" stroke="#ffffff" stroke-width="1.2" id="c-akan" />
+    <text x="2020" y="2140" class="cls-central-label">Akan KE</text>
+  </g>
+  <g id="node--central--c-ejagham" class="central-lobe-group" data-cluster="second" data-subregion="Cross River">
+    <circle cx="2180" cy="2310" r="14" fill="#51382a" stroke="#ffffff" stroke-width="1.2" id="c-ejagham" />
+    <text x="2180" y="2310" class="cls-central-label">Ejagham</text>
+  </g>
+  <g id="node--central--c-hausa" class="central-lobe-group" data-cluster="second" data-subregion="Northern Nigeria">
+    <circle cx="2090" cy="2090" r="15" fill="#977860" stroke="#ffffff" stroke-width="1.2" id="c-hausa" />
+    <text x="2090" y="2090" class="cls-central-label">Hausa</text>
+  </g>
+  <g id="node--central--c-fulani" class="central-lobe-group" data-cluster="third" data-subregion="Fouta / Sahel">
+    <circle cx="1950" cy="2170" r="15" fill="#a5916e" stroke="#ffffff" stroke-width="1.2" id="c-fulani" />
+    <text x="1950" y="2170" class="cls-central-label">Fulani</text>
+  </g>
+  <g id="node--central--c-wolof" class="central-lobe-group" data-cluster="third" data-subregion="Senegambia">
+    <circle cx="1910" cy="2280" r="15" fill="#795d38" stroke="#ffffff" stroke-width="1.2" id="c-wolof" />
+    <text x="1910" y="2280" class="cls-central-label">Wolof</text>
+  </g>
+  <g id="node--central--c-fon" class="central-lobe-group" data-cluster="second" data-subregion="Dahomey">
+    <circle cx="2050" cy="2230" r="14" fill="#81522e" stroke="#ffffff" stroke-width="1.2" id="c-fon" />
+    <text x="2050" y="2230" class="cls-central-label">Fon</text>
+  </g>
+  <g id="node--central--c-bariba" class="central-lobe-group" data-cluster="second" data-subregion="Borgu">
+    <circle cx="2000" cy="2100" r="13" fill="#59453d" stroke="#ffffff" stroke-width="1.2" id="c-bariba" />
+    <text x="2000" y="2100" class="cls-central-label">Bariba</text>
+  </g>
+  <g id="node--central--c-mende" class="central-lobe-group" data-cluster="third" data-subregion="Sierra Leone">
+    <circle cx="1920" cy="2220" r="13" fill="#a4723a" stroke="#ffffff" stroke-width="1.2" id="c-mende" />
+    <text x="1920" y="2220" class="cls-central-label">Mende</text>
+  </g>
+  <g id="node--central--c-temne" class="central-lobe-group" data-cluster="third" data-subregion="Sierra Leone">
+    <circle cx="1940" cy="2260" r="13" fill="#795d38" stroke="#ffffff" stroke-width="1.2" id="c-temne" />
+    <text x="1940" y="2260" class="cls-central-label">Temne</text>
+  </g>
+  <g id="node--central--c-balanta" class="central-lobe-group" data-cluster="third" data-subregion="Guinea Bissau">
+    <circle cx="1880" cy="2250" r="13" fill="#51382a" stroke="#ffffff" stroke-width="1.2" id="c-balanta" />
+    <text x="1880" y="2250" class="cls-central-label">Balanta</text>
+  </g>
+  <g id="node--central--c-diola" class="central-lobe-group" data-cluster="third" data-subregion="Casamance">
+    <circle cx="1890" cy="2300" r="12" fill="#81522e" stroke="#ffffff" stroke-width="1.2" id="c-diola" />
+  </g>
+  <g id="node--central--c-papel" class="central-lobe-group" data-cluster="third" data-subregion="Bissau">
+    <circle cx="1860" cy="2270" r="12" fill="#a4723a" stroke="#ffffff" stroke-width="1.2" id="c-papel" />
+  </g>
+  <g id="node--central--c-songhai" class="central-lobe-group" data-cluster="third" data-subregion="Middle Niger">
+    <circle cx="1960" cy="2070" r="13" fill="#977860" stroke="#ffffff" stroke-width="1.2" id="c-songhai" />
+    <text x="1960" y="2070" class="cls-central-label">Songhai</text>
+  </g>
+  <g id="node--central--c-bambara" class="central-lobe-group" data-cluster="third" data-subregion="Segou / Mali">
+    <circle cx="1910" cy="2130" r="14" fill="#795d38" stroke="#ffffff" stroke-width="1.2" id="c-bambara" />
+    <text x="1910" y="2130" class="cls-central-label">Bambara</text>
+  </g>
+  <g id="node--central--c-sereer" class="central-lobe-group" data-cluster="third" data-subregion="Sine-Saloum">
+    <circle cx="1870" cy="2210" r="12" fill="#59453d" stroke="#ffffff" stroke-width="1.2" id="c-sereer" />
+  </g>
+  <g id="node--central--c-edo" class="central-lobe-group" data-cluster="second" data-subregion="Benin Kingdom">
+    <circle cx="2140" cy="2210" r="14" fill="#81522e" stroke="#ffffff" stroke-width="1.2" id="c-edo" />
+    <text x="2140" y="2210" class="cls-central-label">Edo</text>
+  </g>
+  <g id="node--central--c-tiv" class="central-lobe-group" data-cluster="second" data-subregion="Benue">
+    <circle cx="2170" cy="2170" r="12" fill="#a4723a" stroke="#ffffff" stroke-width="1.2" id="c-tiv" />
+  </g>
+  <g id="node--central--c-nupe" class="central-lobe-group" data-cluster="second" data-subregion="Niger">
+    <circle cx="2070" cy="2130" r="12" fill="#795d38" stroke="#ffffff" stroke-width="1.2" id="c-nupe" />
+  </g>
+  <g id="node--central--c-bassa" class="central-lobe-group" data-cluster="third" data-subregion="Windward Coast">
+    <circle cx="1990" cy="2290" r="12" fill="#51382a" stroke="#ffffff" stroke-width="1.2" id="c-bassa" />
+  </g>
+  <g id="node--central--c-efik" class="central-lobe-group" data-cluster="second" data-subregion="Old Calabar">
+    <circle cx="2190" cy="2270" r="13" fill="#81522e" stroke="#ffffff" stroke-width="1.2" id="c-efik" />
+    <text x="2190" y="2270" class="cls-central-label">Efik Uk</text>
+  </g>
+  <g id="node--central--c-bantu" class="central-lobe-group" data-cluster="first" data-subregion="West Central Core">
+    <circle cx="2360" cy="2220" r="20" fill="#59453d" stroke="#ffffff" stroke-width="1.2" id="c-bantu" />
+    <text x="2360" y="2220" class="cls-central-label">Bantu</text>
+  </g>
+  <g id="node--central--c-bakola" class="central-lobe-group" data-cluster="first" data-subregion="Equatorial Forest">
+    <circle cx="2280" cy="2290" r="15" fill="#81522e" stroke="#ffffff" stroke-width="1.2" id="c-bakola" />
+    <text x="2280" y="2290" class="cls-central-label">Bakola</text>
+  </g>
+  <g id="node--central--c-mbuti" class="central-lobe-group" data-cluster="first" data-subregion="Ituri Forest">
+    <circle cx="2320" cy="2340" r="14" fill="#a4723a" stroke="#ffffff" stroke-width="1.2" id="c-mbuti" />
+    <text x="2320" y="2340" class="cls-central-label">Mbuti</text>
+  </g>
+  <g id="node--central--c-luo" class="central-lobe-group" data-cluster="first" data-subregion="Lake Victoria">
+    <circle cx="2420" cy="2160" r="16" fill="#795d38" stroke="#ffffff" stroke-width="1.2" id="c-luo" />
+    <text x="2420" y="2160" class="cls-central-label">Luo</text>
+  </g>
+  <g id="node--central--c-maasai" class="central-lobe-group" data-cluster="first" data-subregion="Rift Valley">
+    <circle cx="2460" cy="2210" r="15" fill="#977860" stroke="#ffffff" stroke-width="1.2" id="c-maasai" />
+    <text x="2460" y="2210" class="cls-central-label">Maasai</text>
+  </g>
+  <g id="node--central--c-kikuyu" class="central-lobe-group" data-cluster="first" data-subregion="Kenya Highlands">
+    <circle cx="2400" cy="2270" r="16" fill="#51382a" stroke="#ffffff" stroke-width="1.2" id="c-kikuyu" />
+    <text x="2400" y="2270" class="cls-central-label">Kikuyu/Kamba</text>
+  </g>
+  <g id="node--central--c-luhya" class="central-lobe-group" data-cluster="first" data-subregion="Western Kenya">
+    <circle cx="2440" cy="2250" r="14" fill="#81522e" stroke="#ffffff" stroke-width="1.2" id="c-luhya" />
+    <text x="2440" y="2250" class="cls-central-label">Luhya</text>
+  </g>
+  <g id="node--central--c-nilotes" class="central-lobe-group" data-cluster="first" data-subregion="Nile-Lake Basin">
+    <circle cx="2470" cy="2130" r="15" fill="#a4723a" stroke="#ffffff" stroke-width="1.2" id="c-nilotes" />
+    <text x="2470" y="2130" class="cls-central-label">Nilotes</text>
+  </g>
+  <g id="node--central--c-ugandans" class="central-lobe-group" data-cluster="first" data-subregion="Buganda">
+    <circle cx="2380" cy="2170" r="14" fill="#795d38" stroke="#ffffff" stroke-width="1.2" id="c-ugandans" />
+    <text x="2380" y="2170" class="cls-central-label">Ugandans</text>
+  </g>
+  <g id="node--central--c-hutu" class="central-lobe-group" data-cluster="first" data-subregion="Rwanda/Burundi">
+    <circle cx="2350" cy="2310" r="14" fill="#59453d" stroke="#ffffff" stroke-width="1.2" id="c-hutu" />
+    <text x="2350" y="2310" class="cls-central-label">Hutu</text>
+  </g>
+  <g id="node--central--c-iraqw" class="central-lobe-group" data-cluster="first" data-subregion="Great Rift">
+    <circle cx="2480" cy="2280" r="12" fill="#81522e" stroke="#ffffff" stroke-width="1.2" id="c-iraqw" />
+  </g>
+  <g id="node--central--c-hadza" class="central-lobe-group" data-cluster="first" data-subregion="Lake Eyasi">
+    <circle cx="2500" cy="2320" r="12" fill="#a4723a" stroke="#ffffff" stroke-width="1.2" id="c-hadza" />
+  </g>
+  <g id="node--central--c-sandawe" class="central-lobe-group" data-cluster="first" data-subregion="Dodoma">
+    <circle cx="2470" cy="2350" r="12" fill="#795d38" stroke="#ffffff" stroke-width="1.2" id="c-sandawe" />
+  </g>
+  <g id="node--central--c-turu" class="central-lobe-group" data-cluster="first" data-subregion="Central Tanzania">
+    <circle cx="2440" cy="2380" r="11" fill="#51382a" stroke="#ffffff" stroke-width="1.2" id="c-turu" />
+  </g>
+  <g id="node--central--c-burunge" class="central-lobe-group" data-cluster="first" data-subregion="Kondoa">
+    <circle cx="2410" cy="2400" r="11" fill="#977860" stroke="#ffffff" stroke-width="1.2" id="c-burunge" />
+  </g>
+  <g id="node--central--c-sukuma" class="central-lobe-group" data-cluster="first" data-subregion="Mwanza">
+    <circle cx="2450" cy="2310" r="15" fill="#81522e" stroke="#ffffff" stroke-width="1.2" id="c-sukuma" />
+    <text x="2450" y="2310" class="cls-central-label">Sukuma</text>
+  </g>
+  <g id="node--central--c-datog" class="central-lobe-group" data-cluster="first" data-subregion="Singida">
+    <circle cx="2490" cy="2240" r="12" fill="#59453d" stroke="#ffffff" stroke-width="1.2" id="c-datog" />
+  </g>
+  <g id="node--central--c-nubian" class="central-lobe-group" data-cluster="third" data-subregion="Nile Cataracts">
+    <circle cx="2330" cy="2060" r="14" fill="#81522e" stroke="#ffffff" stroke-width="1.2" id="c-nubian" />
+    <text x="2330" y="2060" class="cls-central-label">Nubian</text>
+  </g>
+  <g id="node--central--c-dinka" class="central-lobe-group" data-cluster="third" data-subregion="Bahr el Ghazal">
+    <circle cx="2370" cy="2110" r="15" fill="#a4723a" stroke="#ffffff" stroke-width="1.2" id="c-dinka" />
+    <text x="2370" y="2110" class="cls-central-label">Dinka</text>
+  </g>
+  <g id="node--central--c-shilluk" class="central-lobe-group" data-cluster="third" data-subregion="Fashoda">
+    <circle cx="2340" cy="2130" r="13" fill="#795d38" stroke="#ffffff" stroke-width="1.2" id="c-shilluk" />
+    <text x="2340" y="2130" class="cls-central-label">Shilluk</text>
+  </g>
+  <g id="node--central--c-nuer" class="central-lobe-group" data-cluster="third" data-subregion="White Nile">
+    <circle cx="2390" cy="2090" r="13" fill="#51382a" stroke="#ffffff" stroke-width="1.2" id="c-nuer" />
+    <text x="2390" y="2090" class="cls-central-label">Nuer</text>
+  </g>
+  <g id="node--central--c-borgu" class="central-lobe-group" data-cluster="second" data-subregion="Sahel Nexus">
+    <circle cx="2260" cy="2110" r="12" fill="#977860" stroke="#ffffff" stroke-width="1.2" id="c-borgu" />
+  </g>
+  <g id="node--central--c-nuba" class="central-lobe-group" data-cluster="third" data-subregion="Kordofan">
+    <circle cx="2310" cy="2110" r="13" fill="#81522e" stroke="#ffffff" stroke-width="1.2" id="c-nuba" />
+    <text x="2310" y="2110" class="cls-central-label">Nuba</text>
+  </g>
+  <g id="node--central--c-masalit" class="central-lobe-group" data-cluster="third" data-subregion="Darfur">
+    <circle cx="2280" cy="2070" r="12" fill="#a4723a" stroke="#ffffff" stroke-width="1.2" id="c-masalit" />
+  </g>
+  <g id="node--central--c-fur" class="central-lobe-group" data-cluster="third" data-subregion="Jebel Marra">
+    <circle cx="2290" cy="2030" r="13" fill="#795d38" stroke="#ffffff" stroke-width="1.2" id="c-fur" />
+    <text x="2290" y="2030" class="cls-central-label">Fur</text>
+  </g>
+  <g id="node--central--c-copts" class="central-lobe-group" data-cluster="third" data-subregion="Upper Egypt">
+    <circle cx="2310" cy="1980" r="12" fill="#59453d" stroke="#ffffff" stroke-width="1.2" id="c-copts" />
+  </g>
+  <g id="node--central--c-beja" class="central-lobe-group" data-cluster="third" data-subregion="Red Sea Hills">
+    <circle cx="2360" cy="2010" r="13" fill="#81522e" stroke="#ffffff" stroke-width="1.2" id="c-beja" />
+    <text x="2360" y="2010" class="cls-central-label">Beja</text>
+  </g>
+  <g id="node--central--c-gaalien" class="central-lobe-group" data-cluster="third" data-subregion="River Nile">
+    <circle cx="2350" cy="1950" r="11" fill="#a4723a" stroke="#ffffff" stroke-width="1.2" id="c-gaalien" />
+  </g>
+  <g id="node--central--c-meseria" class="central-lobe-group" data-cluster="third" data-subregion="Baggara Belt">
+    <circle cx="2270" cy="2150" r="11" fill="#795d38" stroke="#ffffff" stroke-width="1.2" id="c-meseria" />
+  </g>
+  <g id="node--central--c-arakieu" class="central-lobe-group" data-cluster="third" data-subregion="Gezira">
+    <circle cx="2320" cy="2160" r="10" fill="#51382a" stroke="#ffffff" stroke-width="1.2" id="c-arakieu" />
+  </g>
+  <g id="node--central--c-sudanese" class="central-lobe-group" data-cluster="third" data-subregion="Central Sudan">
+    <circle cx="2300" cy="2000" r="13" fill="#977860" stroke="#ffffff" stroke-width="1.2" id="c-sudanese" />
+    <text x="2300" y="2000" class="cls-central-label">Sudanese</text>
+  </g>
+  <g id="node--central--c-amhara" class="central-lobe-group" data-cluster="third" data-subregion="Highlands">
+    <circle cx="2420" cy="2020" r="14" fill="#81522e" stroke="#ffffff" stroke-width="1.2" id="c-amhara" />
+    <text x="2420" y="2020" class="cls-central-label">Amhara</text>
+  </g>
+  <g id="node--central--c-tigrai" class="central-lobe-group" data-cluster="third" data-subregion="Axum">
+    <circle cx="2410" cy="1970" r="13" fill="#59453d" stroke="#ffffff" stroke-width="1.2" id="c-tigrai" />
+    <text x="2410" y="1970" class="cls-central-label">Tigrai</text>
+  </g>
+  <g id="node--central--c-oromo" class="central-lobe-group" data-cluster="third" data-subregion="Oromia">
+    <circle cx="2450" cy="2060" r="15" fill="#a4723a" stroke="#ffffff" stroke-width="1.2" id="c-oromo" />
+    <text x="2450" y="2060" class="cls-central-label">Oromo</text>
+  </g>
+  <g id="node--central--c-anuak" class="central-lobe-group" data-cluster="third" data-subregion="Gambela">
+    <circle cx="2400" cy="2150" r="11" fill="#795d38" stroke="#ffffff" stroke-width="1.2" id="c-anuak" />
+  </g>
+  <g id="node--central--c-wolayta" class="central-lobe-group" data-cluster="third" data-subregion="Omotic">
+    <circle cx="2440" cy="2100" r="12" fill="#51382a" stroke="#ffffff" stroke-width="1.2" id="c-wolayta" />
+  </g>
+  <g id="node--central--c-ethiopian" class="central-lobe-group" data-cluster="third" data-subregion="Abyssinia">
+    <circle cx="2460" cy="2010" r="13" fill="#977860" stroke="#ffffff" stroke-width="1.2" id="c-ethiopian" />
+    <text x="2460" y="2010" class="cls-central-label">Ethiopian</text>
+  </g>
+  <g id="node--central--c-daasanach" class="central-lobe-group" data-cluster="third" data-subregion="Lake Turkana">
+    <circle cx="2480" cy="2160" r="11" fill="#81522e" stroke="#ffffff" stroke-width="1.2" id="c-daasanach" />
+  </g>
+  <g id="node--central--c-afar" class="central-lobe-group" data-cluster="third" data-subregion="Danakil">
+    <circle cx="2460" cy="1960" r="12" fill="#59453d" stroke="#ffffff" stroke-width="1.2" id="c-afar" />
+  </g>
+  <g id="node--central--c-addis" class="central-lobe-group" data-cluster="third" data-subregion="Shewa">
+    <circle cx="2380" cy="2040" r="12" fill="#a4723a" stroke="#ffffff" stroke-width="1.2" id="c-addis" />
+  </g>
+  <g id="node--central--c-arsi" class="central-lobe-group" data-cluster="third" data-subregion="Bale">
+    <circle cx="2430" cy="2070" r="11" fill="#795d38" stroke="#ffffff" stroke-width="1.2" id="c-arsi" />
+  </g>
+  <g id="node--central--c-shewa" class="central-lobe-group" data-cluster="third" data-subregion="Central Plateau">
+    <circle cx="2390" cy="1990" r="12" fill="#51382a" stroke="#ffffff" stroke-width="1.2" id="c-shewa" />
+  </g>
+</g>
+
+<!-- Cabo Verde Oceanic Crucible Callout -->
+<g id="GEO_CABO_VERDE">
+  <line x1="2214.2903" y1="2227.8188" x2="1380" y2="1860" stroke="#a4723a" stroke-width="3" stroke-dasharray="6 6" id="assoc--cabo-verde--transatlantic-hub" />
+  <circle cx="1380" cy="1860" r="32" fill="#a4723a" stroke="#ffffff" stroke-width="3" id="node--geo--cabo-verde" />
+  <text x="1380" y="1865" class="cls-center-text">CABO VERDE</text>
+  <text x="1380" y="1905" class="cls-cabo-title">Oceanic Crucible &amp; Hub</text>
+</g>
+
+</svg>

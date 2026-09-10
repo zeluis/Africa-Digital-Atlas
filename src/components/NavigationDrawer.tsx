@@ -307,44 +307,44 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     );
   };
 
-  // Submenu items for Explore
+  // Submenu items for Explore (Concise style with African Nations)
   const exploreSubItems = [
-    { id: 'explore', label: 'Directory Overview', icon: Compass, badge: '54 Nations' },
-    { id: 'pillars', label: '8 Thematic Pillars', icon: Grid3X3, badge: 'Framework' },
-    { id: 'blocs', label: '21 Regional Blocs', icon: Boxes, badge: 'AU, ECOWAS, EAC' },
-    { id: 'heritage', label: 'World Heritage', icon: Landmark, badge: 'UNESCO' }
+    { id: 'explore', label: 'African Nations', icon: Compass, badge: '54 Nations' },
+    { id: 'pillars', label: 'Thematic Pillars', icon: Grid3X3, badge: 'Framework' },
+    { id: 'blocs', label: 'Regional Blocs', icon: Boxes, badge: 'AU, ECOWAS, EAC' },
+    { id: 'heritage', label: 'Heritage Sites', icon: Landmark, badge: 'UNESCO' }
   ];
 
-  // Submenu items for Historical Legacies (TAST) - Dedicated Main Menu
+  // Submenu items for History (Ultra-Minimal style)
   const historicalLegaciesSubItems = [
-    { id: 'slave-trade', label: 'Slave Trade Database & Atlas', icon: Anchor, badge: 'Voyages Flow' },
-    { id: 'molecular-legacies', label: 'The Molecular & Material Legacies', icon: Dna, badge: 'Monograph' },
-    { id: 'african-development-foundations', label: 'Foundations of African Development', icon: TrendingDown, badge: 'Treatise' },
-    { id: 'ethnic-tree', label: 'Ethnic Tree of Life (SVG)', icon: Layers, badge: 'Transatlantic' }
+    { id: 'slave-trade', label: 'Voyages', icon: Anchor, badge: 'Voyages Flow' },
+    { id: 'molecular-legacies', label: 'Genetics', icon: Dna, badge: 'Monograph' },
+    { id: 'african-development-foundations', label: 'Foundations', icon: TrendingDown, badge: 'Treatise' },
+    { id: 'ethnic-tree', label: 'Ethnic Tree', icon: Layers, badge: 'Transatlantic' }
   ];
 
-  // Submenu items for Regions
+  // Submenu items for Regions (Ultra-Minimal style)
   const regionsSubItems = [
-    { id: 'regions', label: 'Regional Matrix & Indicators', icon: Globe2, badge: 'Comparative' },
-    { id: 'languages', label: 'African Languages & Ethnolinguistics', icon: LanguagesIcon, badge: '2,000+ Phyla' }
+    { id: 'regions', label: 'Matrix', icon: Globe2, badge: 'Comparative' },
+    { id: 'languages', label: 'Languages', icon: LanguagesIcon, badge: '2,000+ Phyla' }
   ];
 
-  // Submenu items for Analytics (Placed last among main links)
+  // Submenu items for Analytics (Ultra-Minimal style)
   const analyticsSubItems = [
-    { id: 'analytics', label: 'Comparative Benchmarks & Trends', icon: BarChart3, badge: 'Time-series' },
-    { id: 'map', label: 'Interactive Continental Map', icon: MapIcon, badge: 'Spatial GIS' }
+    { id: 'analytics', label: 'Benchmarks', icon: BarChart3, badge: 'Time-series' },
+    { id: 'map', label: 'Map', icon: MapIcon, badge: 'Spatial GIS' }
   ];
 
-  // Submenu categorized items for Research & Reports
+  // Submenu categorized items for Reports (Ultra-Minimal style)
   const reportsSubGroups = [
     {
-      title: 'Repository Overview',
+      title: 'Overview',
       items: [
-        { id: 'research-directory', label: 'All Research & Reports', icon: BookOpen, badge: 'Directory' }
+        { id: 'research-directory', label: 'Directory', icon: BookOpen, badge: 'Directory' }
       ]
     },
     {
-      title: 'Genetics & Admixture',
+      title: 'Genetics',
       items: [
         { id: 'report-genetic-linguistic-blueprints', label: 'Genetic & Linguistic Blueprints', icon: Dna, badge: 'Creole DNA' },
         { id: 'report-genetic-social-structure-cape-verde', label: 'Genetic & Social Structure: Cabo Verde', icon: Dna, badge: 'Genealogies' },
@@ -353,7 +353,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
       ]
     },
     {
-      title: 'International Law & Reparations',
+      title: 'Law & Reparations',
       items: [
         { id: 'report-slavery-international-law-reparatory', label: 'Slavery, Law & Reparatory Justice', icon: Scale, badge: 'CARICOM / ICJ' },
         { id: 'report-sovereign-responsibility-reparations', label: 'Sovereign Responsibility & Reparations', icon: Scale, badge: 'Balance Sheets' },
@@ -361,7 +361,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
       ]
     },
     {
-      title: 'Development & Macroeconomics',
+      title: 'Development',
       items: [
         { id: 'report-ancestry-ideology-underdevelopment', label: 'Ancestry, Ideology & Underdevelopment', icon: TrendingUp, badge: 'Econometric' },
         { id: 'report-rao-model-socioeconomic', label: 'RAO Model & Socioeconomic Legacies', icon: Cpu, badge: 'Capital Policy' },
@@ -528,7 +528,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               >
                 <div className="flex items-center gap-3">
                   <Anchor className={`w-5 h-5 ${isHistoricalLegaciesGroupActive ? 'text-amber-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
-                  <span className="truncate">Historical Legacies (TAST)</span>
+                  <span className="truncate">History</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10px] font-mono font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded-md border border-amber-500/20">
@@ -594,7 +594,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               >
                 <div className="flex items-center gap-3">
                   <BookOpen className={`w-5 h-5 ${isReportsGroupActive ? 'text-indigo-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
-                  <span>Research & Reports</span>
+                  <span>Reports</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10px] font-mono font-bold text-indigo-500 bg-indigo-500/10 px-1.5 py-0.5 rounded-md border border-indigo-500/20">
@@ -733,7 +733,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               >
                 <div className="flex items-center gap-3">
                   <BarChart3 className={`w-5 h-5 ${isAnalyticsGroupActive ? 'text-emerald-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
-                  <span>Analytics & Instruments</span>
+                  <span>Analytics</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10px] font-mono text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md">
@@ -852,7 +852,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
         >
           <div className="flex items-center gap-2.5">
             <GitCompare className="w-4 h-4 text-emerald-500 shrink-0" />
-            <span>{t('nav.compare', 'Compare Tool')}</span>
+            <span>{t('nav.compare', 'Compare')}</span>
           </div>
           {currentTab === 'compare' && (
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -872,7 +872,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
         >
           <div className="flex items-center gap-2.5">
             <Database className="w-4 h-4 text-emerald-500 shrink-0" />
-            <span>{t('nav.provenance', 'Quality & Pipeline')}</span>
+            <span>{t('nav.provenance', 'Pipeline')}</span>
           </div>
           {currentTab === 'provenance' && (
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -888,7 +888,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
         >
           <div className="flex items-center gap-2.5">
             <BookOpen className="w-4 h-4 text-amber-600 dark:text-amber-500 shrink-0" />
-            <span>{t('nav.docs', 'Documentation & Guides')}</span>
+            <span>{t('nav.docs', 'Docs')}</span>
           </div>
           <ExternalLink className="w-3.5 h-3.5 text-zinc-400 opacity-60" />
         </a>
