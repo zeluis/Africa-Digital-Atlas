@@ -193,8 +193,30 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
   const [fitScale, setFitScale] = useState<number>(0.65);
   const [pos, setPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  // Custom SVG upload state
+  // Custom SVG upload and dynamic fetch state
   const [customSvgMarkup, setCustomSvgMarkup] = useState<string | null>(null);
+  const [canvasBg, setCanvasBg] = useState<'parchment' | 'white' | 'sepia'>('parchment');
+
+  // Dynamically fetch public master SVG with cache busting, while bundled fallback is immediately available
+  useEffect(() => {
+    let isMounted = true;
+    fetch(`/africalia-ethnic-tree.svg?t=${Date.now()}`, { cache: 'no-store' })
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.text();
+      })
+      .then(svgText => {
+        if (isMounted && svgText && svgText.includes('<svg')) {
+          setCustomSvgMarkup(svgText);
+        }
+      })
+      .catch(err => {
+        console.info('Using bundled authentic master SVG:', err);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Active raw SVG markup displayed in DOM
   const rawSvgToDisplay = useMemo(() => {
@@ -777,7 +799,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
           3. RAW AUTHENTIC SVG CANVAS WITH FULL 100% FIDELITY & ZOOM/PAN
           ========================================================================= */}
       <div 
-        className="absolute inset-0 w-full h-full overflow-hidden"
+        className="absolute inset-0 w-full h-full overflow-hidden bg-[#161412] dark:bg-[#0D0B0A]"
         style={{ touchAction: 'none' }}
       >
         <div
@@ -790,7 +812,12 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         >
           {/* Raw Authentic SVG rendered directly with 100% fidelity */}
           <div 
-            className="w-[4427.0043px] h-[4427.0043px] select-none pointer-events-auto"
+            style={{ 
+              width: `${VBW}px`, 
+              height: `${VBH}px`,
+              backgroundColor: canvasBg === 'white' ? '#FFFFFF' : canvasBg === 'sepia' ? '#F4EDE2' : '#FAF7F2'
+            }}
+            className="relative select-none pointer-events-auto shadow-[0_20px_100px_rgba(0,0,0,0.6)] [&>svg]:w-full [&>svg]:h-full [&>svg]:block cursor-pointer transition-colors duration-200"
             dangerouslySetInnerHTML={{ __html: rawSvgToDisplay }}
             onClick={handleSvgClick}
           />
@@ -798,7 +825,8 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
           {/* Interactivity Overlay Layer (Reticle & Highlight Rings) */}
           {selectedEntity?.coords && (
             <svg 
-              className="absolute inset-0 w-[4427.0043px] h-[4427.0043px] pointer-events-none"
+              style={{ width: `${VBW}px`, height: `${VBH}px` }}
+              className="absolute inset-0 pointer-events-none"
               viewBox={`0 0 ${VBW} ${VBH}`}
             >
               <g transform={`translate(${selectedEntity.coords.x}, ${selectedEntity.coords.y})`}>
@@ -828,7 +856,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       </div>
 
       {/* =========================================================================
-          4. UNIFIED BOTTOM CONTROL DOCK (Camera + TAST Fruit Pills)
+          4. UNIFIED BOTTOM CONTROL DOCK (Camera + Canvas Paper + TAST Fruit Pills)
           ========================================================================= */}
       <div 
         className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 sm:gap-3 p-1.5 sm:p-2 rounded-full bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_8px_30px_rgba(75,55,35,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] text-xs max-w-[95vw] overflow-x-auto no-scrollbar no-drag"
@@ -871,7 +899,53 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         </div>
 
         {/* Vertical Divider */}
-        <div className="w-[1px] h-5 bg-[#E5DDD0] dark:border-[#38322B] shrink-0" />
+        <div className="w-[1px] h-5 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0" />
+
+        {/* Canvas Paper Mode */}
+        <div className="flex items-center gap-1 shrink-0">
+          <span className="text-[10px] uppercase tracking-wider font-mono font-bold text-[#7D6B5A] dark:text-[#B5A492] px-1 hidden xl:inline">
+            PAPER
+          </span>
+          <button
+            type="button"
+            onClick={() => setCanvasBg('parchment')}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
+              canvasBg === 'parchment'
+                ? 'bg-[#E67E48] text-white shadow-sm'
+                : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
+            }`}
+            title="Museum Parchment Paper (Default authentic blend)"
+          >
+            Parchment
+          </button>
+          <button
+            type="button"
+            onClick={() => setCanvasBg('white')}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
+              canvasBg === 'white'
+                ? 'bg-[#E67E48] text-white shadow-sm'
+                : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
+            }`}
+            title="Pure White Paper (High contrast)"
+          >
+            White
+          </button>
+          <button
+            type="button"
+            onClick={() => setCanvasBg('sepia')}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
+              canvasBg === 'sepia'
+                ? 'bg-[#E67E48] text-white shadow-sm'
+                : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
+            }`}
+            title="Antique Sepia Paper"
+          >
+            Sepia
+          </button>
+        </div>
+
+        {/* Vertical Divider */}
+        <div className="w-[1px] h-5 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0" />
 
         {/* TAST Layer Cohort Fruit Pills */}
         <div className="flex items-center gap-1.5 shrink-0">

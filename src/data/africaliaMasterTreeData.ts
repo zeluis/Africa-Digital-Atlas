@@ -56,11 +56,11 @@ export interface CentralClusterNode {
   subregion: string;
 }
 
-// 4427.0043 x 4427.0043 coordinate space matching Africalia Sovereign Vector
-export const VBW = 4427.0043;
-export const VBH = 4427.0043;
-export const CX = 2214.2903;
-export const CY = 2227.8188;
+// Master SVG coordinate space matching authentic Africalia Sovereign Vector
+export const VBW = 4331.1877;
+export const VBH = 4326.1193;
+export const CX = 2166.382;
+export const CY = 2158.9057;
 
 // TAST Quantitative Cohorts matching source documentation
 export const TAST_COHORTS = [
