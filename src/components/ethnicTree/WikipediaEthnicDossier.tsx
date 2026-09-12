@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { motion } from 'motion/react';
 import { 
   BookOpen, 
   ExternalLink, 
@@ -62,8 +63,12 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
   const languageChain = dossier ? parseLanguageChain(dossier.languages) : [];
 
   return (
-    <aside 
-      className="absolute top-4 right-4 z-30 w-80 sm:w-96 max-h-[calc(100vh-32px)] flex flex-col rounded-3xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_50px_rgba(75,55,35,0.18)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.6)] backdrop-blur-md overflow-hidden no-drag transition-all duration-200"
+    <motion.aside 
+      initial={{ opacity: 0, x: 28, scale: 0.98 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={{ opacity: 0, x: 20, scale: 0.98 }}
+      transition={{ type: "spring", damping: 27, stiffness: 330 }}
+      className="absolute top-4 right-4 z-30 w-80 sm:w-96 max-h-[calc(100vh-32px)] flex flex-col rounded-3xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_50px_rgba(75,55,35,0.18)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.6)] backdrop-blur-md overflow-hidden no-drag"
       id="wikipedia-ethnic-dossier"
       aria-label={`Encyclopedic dossier for ${ethnicName}`}
     >
@@ -332,6 +337,6 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
           </a>
         )}
       </div>
-    </aside>
+    </motion.aside>
   );
 };

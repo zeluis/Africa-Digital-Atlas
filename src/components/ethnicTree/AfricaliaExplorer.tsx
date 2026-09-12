@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   ZoomIn, 
   ZoomOut, 
@@ -817,11 +818,17 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       {/* =========================================================================
           2. UNIFIED LEFT DOCK: FOCUS GEOGRAPHY & SEARCH (Never Stacks!)
           ========================================================================= */}
-      {isLeftDockOpen ? (
-        <div 
-          className="absolute top-4 left-4 z-30 w-76 sm:w-84 max-h-[calc(100vh-32px)] flex flex-col rounded-3xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_12px_40px_rgba(75,55,35,0.1)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.45)] overflow-hidden no-drag transition-all duration-200"
-          id="unified-geography-search-dock"
-        >
+      <AnimatePresence mode="wait">
+        {isLeftDockOpen ? (
+          <motion.div 
+            key="geography-search-dock"
+            initial={{ opacity: 0, x: -28, scale: 0.98 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -20, scale: 0.98 }}
+            transition={{ type: "spring", damping: 27, stiffness: 330 }}
+            className="absolute top-4 left-4 z-30 w-76 sm:w-84 max-h-[calc(100vh-32px)] flex flex-col rounded-3xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_12px_40px_rgba(75,55,35,0.1)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.45)] overflow-hidden no-drag backdrop-blur-md"
+            id="unified-geography-search-dock"
+          >
           {/* Dock Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-[#E5DDD0] dark:border-[#38322B]">
             <div className="flex items-center gap-2">
@@ -1113,21 +1120,27 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
       ) : (
         /* Minimized Left Floating Pill */
-        <button
+        <motion.button
+          key="left-dock-toggle-btn"
+          initial={{ opacity: 0, x: -16, scale: 0.95 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          exit={{ opacity: 0, x: -12, scale: 0.95 }}
+          transition={{ duration: 0.18 }}
           type="button"
           onClick={() => setIsLeftDockOpen(true)}
-          className="absolute top-4 left-4 z-30 px-4 py-2.5 rounded-full bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-md flex items-center gap-2 text-xs font-semibold text-[#52463B] dark:text-[#C4B7A6] hover:bg-[#F2ECE2] dark:hover:bg-[#27231F] transition-all cursor-pointer active:scale-95"
+          className="absolute top-4 left-4 z-30 px-4 py-2.5 rounded-full bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-md flex items-center gap-2 text-xs font-semibold text-[#52463B] dark:text-[#C4B7A6] hover:bg-[#F2ECE2] dark:hover:bg-[#27231F] transition-all cursor-pointer active:scale-95 backdrop-blur-md"
         >
           <Compass className="w-3.5 h-3.5 text-[#E67E48]" />
           <span>Focus & Search</span>
           {(selectedRegion !== 'All' || selectedCountry !== 'All' || searchQuery) && (
             <span className="w-2 h-2 rounded-full bg-[#E67E48]" />
           )}
-        </button>
+        </motion.button>
       )}
+      </AnimatePresence>
 
       {/* =========================================================================
           3. RAW AUTHENTIC SVG CANVAS WITH FULL 100% FIDELITY & ZOOM/PAN
@@ -1230,176 +1243,189 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       {/* =========================================================================
           4A. EXPANDABLE DISPLAY, PAPER & TRANS-ATLANTIC SLAVE TRADE (TAST) COHORTS PANEL
           ========================================================================= */}
-      {isControlBarExpanded && (
-        <div 
-          className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 p-3.5 sm:p-4 rounded-3xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 backdrop-blur-md border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_12px_40px_rgba(75,55,35,0.18)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.6)] text-xs flex flex-col gap-3 max-w-[95vw] w-auto animate-in fade-in slide-in-from-bottom-2 duration-200 no-drag"
-          id="bottom-control-expanded-panel"
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between gap-4 border-b border-[#E5DDD0]/60 dark:border-[#38322B]/60 pb-2">
-            <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider font-mono text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">
-              <Sliders className="w-3.5 h-3.5 text-[#E67E48]" />
-              <span>Display Canvas & Trans-Atlantic Slave Trade (TAST) Layers</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsControlBarExpanded(false)}
-              className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-[#7D6B5A] cursor-pointer"
-              aria-label="Collapse panel"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
+      <AnimatePresence>
+        {isControlBarExpanded && (
+          <motion.div 
+            key="bottom-control-expanded-panel"
+            initial={{ opacity: 0, y: 16, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.97, transition: { duration: 0.15, ease: 'easeIn' } }}
+            transition={{ type: "spring", damping: 28, stiffness: 380, mass: 0.8 }}
+            className="absolute bottom-[70px] sm:bottom-[74px] left-1/2 -translate-x-1/2 z-30 p-3.5 sm:p-4 rounded-3xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 backdrop-blur-md border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_50px_rgba(75,55,35,0.18)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.6)] text-xs flex flex-col gap-3 max-w-[95vw] w-auto max-h-[calc(100vh-100px)] overflow-y-auto no-scrollbar origin-bottom no-drag"
+            id="bottom-control-expanded-panel"
+          >
+            {/* Connected pointer caret pointing down to dock */}
+            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border-r border-b border-[#E5DDD0] dark:border-[#38322B] pointer-events-none" />
 
-          {/* Archival Paper Canvas Row */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] font-bold uppercase tracking-wider font-mono text-[#7D6B5A] dark:text-[#B5A492] w-28 shrink-0">
-              Archival Paper:
-            </span>
-            <div className="flex items-center gap-1.5">
+            {/* Header */}
+            <div className="flex items-center justify-between gap-4 border-b border-[#E5DDD0]/60 dark:border-[#38322B]/60 pb-2">
+              <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider font-mono text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">
+                <Sliders className="w-3.5 h-3.5 text-[#E67E48]" />
+                <span>Display Canvas & Trans-Atlantic Slave Trade (TAST) Layers</span>
+              </div>
               <button
                 type="button"
-                onClick={() => setCanvasBg('parchment')}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
-                  canvasBg === 'parchment'
-                    ? 'bg-[#E67E48] text-white shadow-sm'
-                    : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
-                }`}
-                title="Museum Parchment Paper (Default authentic blend)"
+                onClick={() => setIsControlBarExpanded(false)}
+                className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-[#7D6B5A] cursor-pointer"
+                aria-label="Collapse panel"
               >
-                Museum Parchment
-              </button>
-              <button
-                type="button"
-                onClick={() => setCanvasBg('white')}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
-                  canvasBg === 'white'
-                    ? 'bg-[#E67E48] text-white shadow-sm'
-                    : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
-                }`}
-                title="Pure White Paper (High contrast)"
-              >
-                Pure White
-              </button>
-              <button
-                type="button"
-                onClick={() => setCanvasBg('sepia')}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
-                  canvasBg === 'sepia'
-                    ? 'bg-[#E67E48] text-white shadow-sm'
-                    : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
-                }`}
-                title="Antique Sepia Paper"
-              >
-                Antique Sepia
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
-          </div>
 
-          {/* Trans-Atlantic Slave Trade (TAST) Cohorts Row */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] font-bold uppercase tracking-wider font-mono text-[#7D6B5A] dark:text-[#B5A492] w-28 shrink-0">
-              TAST Cohorts:
-            </span>
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <button
-                type="button"
-                onClick={() => setActiveTastLayer('all')}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
-                  activeTastLayer === 'all'
-                    ? 'bg-[#724E5B] text-white shadow-sm'
-                    : 'bg-[#724E5B]/15 hover:bg-[#724E5B]/25 text-[#5F3B4A] dark:text-[#E2B2C6] border border-[#724E5B]/30'
-                }`}
-              >
-                All Cohorts
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTastLayer('first');
-                  panToCoordinates(2011.6, 2397.0, 2.0);
-                }}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
-                  activeTastLayer === 'first'
-                    ? 'bg-[#4F7942] text-white shadow-sm'
-                    : 'bg-[#4F7942]/15 hover:bg-[#4F7942]/25 text-[#3D6132] dark:text-[#B0DB9C] border border-[#4F7942]/30'
-                }`}
-                title="1st Cohort (1501-1600): 5.69M Captives (West Central Africa)"
-              >
-                1st: 5.69M (West Central Africa)
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTastLayer('second');
-                  panToCoordinates(2110.1, 2085.3, 2.0);
-                }}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
-                  activeTastLayer === 'second'
-                    ? 'bg-[#D87040] text-white shadow-sm'
-                    : 'bg-[#D87040]/15 hover:bg-[#D87040]/25 text-[#B05325] dark:text-[#FFB594] border border-[#D87040]/30'
-                }`}
-                title="2nd Cohort (1601-1700): 4.80M Captives (Bights of Benin & Biafra)"
-              >
-                2nd: 4.80M (Bights)
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTastLayer('third');
-                  panToCoordinates(2045.5, 1950.1, 2.0);
-                }}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
-                  activeTastLayer === 'third'
-                    ? 'bg-[#C68B29] text-white shadow-sm'
-                    : 'bg-[#C68B29]/15 hover:bg-[#C68B29]/25 text-[#9C6918] dark:text-[#FCE19B] border border-[#C68B29]/30'
-                }`}
-                title="3rd Cohort (1701-1867): 2.02M Captives (Upper Guinea & Senegambia)"
-              >
-                3rd: 2.02M (Upper Guinea)
-              </button>
-              {activeTastLayer !== 'all' && (
+            {/* Archival Paper Canvas Row */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[10px] font-bold uppercase tracking-wider font-mono text-[#7D6B5A] dark:text-[#B5A492] w-28 shrink-0">
+                Archival Paper:
+              </span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setCanvasBg('parchment')}
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer active:scale-95 ${
+                    canvasBg === 'parchment'
+                      ? 'bg-[#E67E48] text-white shadow-sm'
+                      : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
+                  }`}
+                  title="Museum Parchment Paper (Default authentic blend)"
+                >
+                  Museum Parchment
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCanvasBg('white')}
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer active:scale-95 ${
+                    canvasBg === 'white'
+                      ? 'bg-[#E67E48] text-white shadow-sm'
+                      : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
+                  }`}
+                  title="Pure White Paper (High contrast)"
+                >
+                  Pure White
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCanvasBg('sepia')}
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer active:scale-95 ${
+                    canvasBg === 'sepia'
+                      ? 'bg-[#E67E48] text-white shadow-sm'
+                      : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
+                  }`}
+                  title="Antique Sepia Paper"
+                >
+                  Antique Sepia
+                </button>
+              </div>
+            </div>
+
+            {/* Trans-Atlantic Slave Trade (TAST) Cohorts Row */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[10px] font-bold uppercase tracking-wider font-mono text-[#7D6B5A] dark:text-[#B5A492] w-28 shrink-0">
+                TAST Cohorts:
+              </span>
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <button
                   type="button"
                   onClick={() => setActiveTastLayer('all')}
-                  className="px-2.5 py-1.5 rounded-full text-[11px] font-semibold flex items-center gap-1 bg-[#C44536]/15 hover:bg-[#C44536]/25 text-[#9C2F22] dark:text-[#F89D93] border border-[#C44536]/40 transition-all cursor-pointer"
-                  title="Clear cohort filter"
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer active:scale-95 ${
+                    activeTastLayer === 'all'
+                      ? 'bg-[#724E5B] text-white shadow-sm'
+                      : 'bg-[#724E5B]/15 hover:bg-[#724E5B]/25 text-[#5F3B4A] dark:text-[#E2B2C6] border border-[#724E5B]/30'
+                  }`}
                 >
-                  <X className="w-3 h-3" />
-                  <span>Clear</span>
+                  All Cohorts
                 </button>
-              )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTastLayer('first');
+                    panToCoordinates(2011.6, 2397.0, 2.0);
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer active:scale-95 ${
+                    activeTastLayer === 'first'
+                      ? 'bg-[#4F7942] text-white shadow-sm'
+                      : 'bg-[#4F7942]/15 hover:bg-[#4F7942]/25 text-[#3D6132] dark:text-[#B0DB9C] border border-[#4F7942]/30'
+                  }`}
+                  title="1st Cohort (1501-1600): 5.69M Captives (West Central Africa)"
+                >
+                  1st: 5.69M (West Central Africa)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTastLayer('second');
+                    panToCoordinates(2110.1, 2085.3, 2.0);
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer active:scale-95 ${
+                    activeTastLayer === 'second'
+                      ? 'bg-[#D87040] text-white shadow-sm'
+                      : 'bg-[#D87040]/15 hover:bg-[#D87040]/25 text-[#B05325] dark:text-[#FFB594] border border-[#D87040]/30'
+                  }`}
+                  title="2nd Cohort (1601-1700): 4.80M Captives (Bights of Benin & Biafra)"
+                >
+                  2nd: 4.80M (Bights)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTastLayer('third');
+                    panToCoordinates(2045.5, 1950.1, 2.0);
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer active:scale-95 ${
+                    activeTastLayer === 'third'
+                      ? 'bg-[#C68B29] text-white shadow-sm'
+                      : 'bg-[#C68B29]/15 hover:bg-[#C68B29]/25 text-[#9C6918] dark:text-[#FCE19B] border border-[#C68B29]/30'
+                  }`}
+                  title="3rd Cohort (1701-1867): 2.02M Captives (Upper Guinea & Senegambia)"
+                >
+                  3rd: 2.02M (Upper Guinea)
+                </button>
+                {activeTastLayer !== 'all' && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveTastLayer('all')}
+                    className="px-2.5 py-1.5 rounded-full text-[11px] font-semibold flex items-center gap-1 bg-[#C44536]/15 hover:bg-[#C44536]/25 text-[#9C2F22] dark:text-[#F89D93] border border-[#C44536]/40 transition-all cursor-pointer active:scale-95"
+                    title="Clear cohort filter"
+                  >
+                    <X className="w-3 h-3" />
+                    <span>Clear</span>
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
 
-          {/* Sovereign Country Silhouette Spotlight Toggle */}
-          <div className="flex items-center justify-between pt-2 border-t border-[#E5DDD0]/50 dark:border-[#38322B]/50">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-3.5 h-3.5 text-[#E67E48]" />
-              <span className="text-[11px] font-medium text-[#2B241E] dark:text-[#F5EFE6]">
-                Country Silhouette Spotlight (Dims Tree on Selection)
-              </span>
+            {/* Sovereign Country Silhouette Spotlight Toggle */}
+            <div className="flex items-center justify-between pt-2 border-t border-[#E5DDD0]/50 dark:border-[#38322B]/50">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-[#E67E48]" />
+                <span className="text-[11px] font-medium text-[#2B241E] dark:text-[#F5EFE6]">
+                  Country Silhouette Spotlight (Dims Tree on Selection)
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSilhouetteGlowEnabled(prev => !prev)}
+                className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer active:scale-95 ${
+                  silhouetteGlowEnabled
+                    ? 'bg-[#E67E48] text-white shadow-sm'
+                    : 'bg-black/10 dark:bg-white/10 text-[#7D6B5A] dark:text-[#B5A492]'
+                }`}
+              >
+                {silhouetteGlowEnabled ? 'Active' : 'Disabled'}
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setSilhouetteGlowEnabled(prev => !prev)}
-              className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                silhouetteGlowEnabled
-                  ? 'bg-[#E67E48] text-white shadow-sm'
-                  : 'bg-black/10 dark:bg-white/10 text-[#7D6B5A] dark:text-[#B5A492]'
-              }`}
-            >
-              {silhouetteGlowEnabled ? 'Active' : 'Disabled'}
-            </button>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* =========================================================================
           4B. UNIFIED BOTTOM CONTROL DOCK (Camera + Expand Icon)
           ========================================================================= */}
-      <div 
-        className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 sm:gap-3 p-1.5 sm:p-2 rounded-full bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_8px_30px_rgba(75,55,35,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] text-xs max-w-[95vw] overflow-x-auto no-scrollbar no-drag"
+      <motion.div 
+        initial={{ opacity: 0, y: 18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", damping: 26, stiffness: 320 }}
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 sm:gap-3 p-1.5 sm:p-2 rounded-full bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_8px_30px_rgba(75,55,35,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] text-xs max-w-[95vw] overflow-x-auto no-scrollbar no-drag backdrop-blur-md"
         id="unified-bottom-control-dock"
       >
         {/* Camera Navigation Group */}
@@ -1471,45 +1497,52 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             <ChevronUp className="w-3.5 h-3.5 ml-0.5" />
           )}
         </button>
-      </div>
+      </motion.div>
 
       {/* =========================================================================
           5. SCHOLARLY DOSSIER INSPECTOR DRAWER (Slim Smooth Cozy Scrollbar)
           ========================================================================= */}
-      {selectedEntity && selectedEntity.type === 'ethnic' && (
-        <WikipediaEthnicDossier
-          ethnicName={selectedEntity.name}
-          countryName={selectedEntity.country}
-          regionName={selectedEntity.region}
-          tastVolumeShare={selectedEntity.tastVolumeShare}
-          cohortLabel={
-            selectedEntity.tastVolumeShare !== undefined
-              ? selectedEntity.tastVolumeShare > 40
-                ? '1st Cohort · West Central Africa'
-                : selectedEntity.tastVolumeShare > 15
-                ? '2nd Cohort · Bights of Benin & Biafra'
-                : '3rd Cohort · Gold Coast & Senegambia'
-              : undefined
-          }
-          cohortColor={selectedEntity.color}
-          onClose={() => setSelectedEntity(null)}
-          onFocusCoordinates={
-            selectedEntity.coords
-              ? () => panToCoordinates(selectedEntity.coords!.x, selectedEntity.coords!.y, 2.4)
-              : undefined
-          }
-          onSelectLinguisticFamily={(fam) => {
-            setSelectedLinguisticFamily(fam);
-            setIsLeftDockOpen(true);
-          }}
-        />
-      )}
+      <AnimatePresence mode="wait">
+        {selectedEntity && selectedEntity.type === 'ethnic' && (
+          <WikipediaEthnicDossier
+            key={`ethnic-${selectedEntity.name}`}
+            ethnicName={selectedEntity.name}
+            countryName={selectedEntity.country}
+            regionName={selectedEntity.region}
+            tastVolumeShare={selectedEntity.tastVolumeShare}
+            cohortLabel={
+              selectedEntity.tastVolumeShare !== undefined
+                ? selectedEntity.tastVolumeShare > 40
+                  ? '1st Cohort · West Central Africa'
+                  : selectedEntity.tastVolumeShare > 15
+                  ? '2nd Cohort · Bights of Benin & Biafra'
+                  : '3rd Cohort · Gold Coast & Senegambia'
+                : undefined
+            }
+            cohortColor={selectedEntity.color}
+            onClose={() => setSelectedEntity(null)}
+            onFocusCoordinates={
+              selectedEntity.coords
+                ? () => panToCoordinates(selectedEntity.coords!.x, selectedEntity.coords!.y, 2.4)
+                : undefined
+            }
+            onSelectLinguisticFamily={(fam) => {
+              setSelectedLinguisticFamily(fam);
+              setIsLeftDockOpen(true);
+            }}
+          />
+        )}
 
-      {selectedEntity && selectedEntity.type !== 'ethnic' && (
-        <div 
-          className="absolute top-4 right-4 bottom-4 z-40 w-80 sm:w-96 max-w-[calc(100vw-32px)] rounded-3xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_15px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.6)] p-5 flex flex-col space-y-4 no-drag animate-in fade-in slide-in-from-right-4 duration-200"
-          id="scholarly-dossier-inspector"
-        >
+        {selectedEntity && selectedEntity.type !== 'ethnic' && (
+          <motion.div 
+            key={`entity-${selectedEntity.id}`}
+            initial={{ opacity: 0, x: 28, scale: 0.98 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 20, scale: 0.98 }}
+            transition={{ type: "spring", damping: 27, stiffness: 330 }}
+            className="absolute top-4 right-4 bottom-4 z-40 w-80 sm:w-96 max-w-[calc(100vw-32px)] rounded-3xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_15px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.6)] p-5 flex flex-col space-y-4 no-drag backdrop-blur-md"
+            id="scholarly-dossier-inspector"
+          >
           {/* Drawer Header */}
           <div className="flex items-start justify-between pb-3 border-b border-[#E5DDD0] dark:border-[#38322B]">
             <div>
@@ -1641,13 +1674,14 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             <button
               type="button"
               onClick={() => setSelectedEntity(null)}
-              className="w-full py-2 px-3 rounded-full text-xs font-semibold border border-[#E5DDD0] dark:border-[#38322B] text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
+              className="w-full py-2 px-3 rounded-full text-xs font-semibold border border-[#E5DDD0] dark:border-[#38322B] text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer active:scale-95"
             >
               Close Dossier
             </button>
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 };
