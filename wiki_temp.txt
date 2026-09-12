@@ -1,0 +1,1974 @@
+{{Short description|List of African ethnic groups}}
+{{Use dmy dates|date=January 2026}}
+
+The following is a '''list of contemporary ethnic groups of Africa'''. There has been constant debate over the classification of [[ethnicity|ethnic groups]]. Membership of an ethnic group tends to be associated with shared [[ancestry]], [[history]], [[homeland]], [[language|language or dialect]] and [[cultural heritage]]; where the term "[[culture]]" specifically includes aspects such as [[religion]], [[myth]]ology and [[ritual]], [[cuisine]], [[folk costume|dressing (clothing) style]], and other factors.
+
+By the nature of the concept, ethnic groups tend to be divided into subgroups, may themselves be or not be identified as independent ethnic groups depending on the source consulted.
+
+[[Africa]] here is considered to be approximately delimited from South America by the [[Atlantic Ocean|South Atlantic Ocean]]; from Asia by the [[Red Sea]], [[Suez Canal]], and [[Gulf of Aden]]; and from Europe by the [[Mediterranean Sea]], [[Strait of Sicily]], and [[Strait of Gibraltar]].
+
+==Ethnic groups==
+{{Dynamic list}}
+{{See also|List of language names}}
+The following groups are commonly identified as "ethnic groups", as opposed to [[Ethnolinguistics|ethno-linguistic]] phyla, national groups, [[Race (human categorization)|racial groups]] or similar.<ref>{{Cite book|title=Ethnic Groups Worldwide: A Ready Reference Handbook|first=David|last=Levinson|year=1998|publisher=Greenwood Publishing Group|isbn=978-1-57356-019-1|url-access=registration|url=https://archive.org/details/ethnicgroupsworl00levi}}</ref><ref>Goran Burenhult, ''Traditional Peoples Today: Continuity and Change in the Modern World'' Illustrated History of Humankind, vol. 5 (1994).</ref>
+
+{{Compact TOC|name=no|allowtoc=yes}}
+{| class="wikitable sortable" width="100%"
+|+
+! style="width:8%" | Ethnicity
+! style="width:25%" | Language(s)
+! style="width:12%" | Primary homeland
+! style="width:25%" | Subgroups, tribes & castes
+! style="width:20%" | Religion(s) 
+|- id=A
+| [[Kisii people|Abagusii]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Bantu languages|Bantu]] → [[Gusii language|Gusii]]
+| [[Kenya]] ([[Kisii County]], [[Nyamira County]], [[Kericho County]], [[Bomet County]])
+| Abagetutu, Abanyaribari, Abagirango, Abanchari, Abamachoge, Ababasi
+| Christianity, [[Traditional African religion]]
+|-
+| [[Acholi people|Acholi]] 
+| [[Nilotic languages|Nilotic]] → [[Luo languages|Luo]] → [[Acholi language|Acholi]] 
+| [[South Sudan]], [[Uganda]] ([[Northern Region, Uganda|Acholiland]])
+| [[Agago District|Agago]], [[Amuru District|Amuru]], [[Gulu District|Gulu]], [[Kitgum District|Kitgum]], [[Lamwo District|Lamwo]], [[Nwoya District|Nwoya]], [[Pader District|Pader]], [[Omoro District|Omoro]]
+| Christianity, Islam
+|-
+| [[Adara people|Adara]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Plateau languages|Plateau]] → [[Adara language|Adara]]
+| [[Nigeria]] ([[Benue State]], [[Kaduna State]])
+|
+| Christianity, Islam, [[Traditional African religions]]
+|-
+| [[Adjoukrou people|Adjoukrou]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Kwa languages|Kwa]] → [[Adjukru language|Adjukru]]
+| [[Ivory Coast]] ([[Dabou]])
+| [[Akradio]], [[Agneby]], Armébé, Gbougbo, Vieil-Aklodj, Débrimou, [[Lopou]], Tiaha, Kpass, [[Orbaff]], [[Bonn]], [[Kaka, Ivory Coast|Kaka]], Kpanda, Mopoyem, [[Cosrou]], Dabouly, Abraniamienbro, Bodou, [[Bouboury]], Agbaille, Yassap, Vieux-Badien, Youhouli, N'gatty, Toupah
+| Christianity
+|-
+| [[Afar people|Afar]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Cushitic languages|Cushitic]] → [[Afar language|Afar]]
+| [[Djibouti]], [[Eritrea]], Ethiopia ([[Afar Region|Afaria]])
+| Asaimara, Adoimara 
+| Islam, Early Cushitic
+|-
+| [[Afemai people|Afemai]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Edoid languages|Edoid]] → [[Afenmai language|Afenmai]]
+| Nigeria ([[Edo State]])
+| Agenebode, Weppa, Oshiolo, Emokwemhe Iviagbapue, Auchi, [[Ihievbe]], Afuze, Warrake, Iviukwe, South Ibie, Agbede, Sabongida Ora, Igarra, Ekperi, Jattu, Fugar, Aviele, Okpella, Uneme Ehrunrun, Uneme Osu, Iviukhua, Ososo, Uzanu, Uzebba, Iviukhua, Weppa, Okpella, [[Okpekpe]], Somorika
+| Christianity
+|-
+| [[Afrikaners]]
+| [[Indo-European languages|Indo-European]] → [[Germanic languages|Germanic]] → [[Dutch language|Dutch]] → [[Afrikaans]]
+| South Africa, [[Namibia]], [[Zambia]], [[Botswana]], [[Eswatini]]
+| [[Afrikaner-Jews]], [[Boers]] (including [[Trekboers]] and [[Voortrekkers]]), [[Cape Dutch]], [[Afrikaners#Black Afrikaners|Black Afrikaners]], along with significant populations in [[Afrikaners in Zimbabwe|Zimbabwe]]
+| Christianity → [[Catholicism]], [[Protestantism]] → [[Calvinism]]<br/> Irreligion → [[Agnosticism]], [[Atheism]]<br/> [[Judaism]]
+|-
+| [[Agaw people|Agaw]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Cushitic languages|Cushitic]] → [[Agaw languages|Agaw]]<ref name="Language family" group="note">Language family; with some exceptions, all speakers of the various languages within this family are typically seen as one singular ethnicity.</ref>
+| Ethiopia, [[Eritrea]]<ref name="non-contiguous" group="note">Non-contiguous homeland. Throughout most of its history (if not its entire history), this ethnic group has lived in separate, isolated communities scattered throughout the countries/subdivisions listed.</ref>
+| [[Bilen people|Bilen]], [[Xamtanga language|Ximre]], [[Awi people|Awi]], [[Qemant people|Qemant]]
+| Christianity → [[Oriental Orthodoxy]] → [[Ethiopian Orthodox Tewahedo Church|Ethiopian Orthodoxy]]
+|-
+| [[Aja people|Aja]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Kwa languages|Kwa]] → [[Adja language|Adja]]
+| [[Benin]], [[Togo]]
+|
+| [[West African Vodun]]
+|-
+| [[Aka people|Aka]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Aka language|Aka]]
+| [[Central African Republic]], [[Republic of the Congo]]
+|
+| [[Traditional African religions|Traditional Aka religion]]<ref>{{Cite book|title=Indigenous Peoples – An Encyclopedia of Culture, History, and Threats to Survival|last=Williams|first=Victoria R.|publisher=[[ABC-CLIO]]|year=2020|isbn=9781440861178|pages=47|language=En|url=https://www.abc-clio.com/products/a5638c/|volume=4|access-date=10 May 2023|archive-url=https://web.archive.org/web/20220518192508/https://www.abc-clio.com/products/a5638c/|archive-date=18 May 2022|url-status=live}}</ref>
+|-
+| [[Akan people|Akans]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Kwa languages|Kwa]] → [[Central Tano languages|Central Tano]],<ref name="Language family" group="note" /><ref group="note">Although Akan is the principal language of the Akan people, the Akan language has only [[Akan Orthography Committee|recently been standardized]]. The majority of Akan people still speak their [[Central Tano languages|local dialects]], which are usually considered by linguists to be separate languages altogether.</ref> [[Avikam language|Avikam]]–[[Alladian language|Alladian]],<ref name="Language family" group="note" /> [[Potou–Tano languages|Potou]],<ref name="Language family" group="note" /> [[Abé language|Abé]], [[Abidji language|Abidji]], [[Attie language|Attie]], [[Ega language|Ega]]<ref name="Olson 1996">{{cite book|last=Olson|first=James Stuart|title=The peoples of Africa: an ethnohistorical dictionary|publisher=Greenwood Press|location=Santa Barbara, CA|year=1996|pages=18|isbn=978-0-313-27918-8|url=https://books.google.com/books?id=MdaAdBC-_S4C&q=%22AKAN.+The+Akan%22&pg=PA41}}</ref><br/> [[French Sign Language family|Francosign]] → [[American Sign Language|American Sign]] → [[Varieties of American Sign Language#Ghanaian Sign Language|Ghanaian Sign]]<br/> [[Adamorobe Sign Language|Adamorobe Sign]], [[Nanabin Sign Language|Nanabin Sign]]
+| [[Ghana]] ([[Gold Coast (region)|Gold Coast]])<ref group="note">Due to historical migrations, about half of the Akan population reside in [[Ivory Coast]].</ref>
+| [[Abbé people|Abbé]], [[Abidji people|Abidji]], [[Ahafo]], [[Ahanta people|Ahanta]], [[Akuapem people|Akuapem]], [[Akwamu people|Akwamu]], [[Akyem]], [[Alladian language|Alladian]], [[Anyi people|Anyi]], [[Ashanti people|Ashanti]], [[Assin]], [[Attie people|Attie]], [[Avikam people|Avikam]], [[Baoulé people|Baoulé]], [[Bono people|Bonos]], [[Chakosi people|Chakosi]], [[Ega language|Egas]], [[Evalue people|Evalue]], [[Fante people|Fante]], [[M'Bato]], [[Nzema people|Nzema]], [[Sefwi people|Sefwi]] (including [[House of Israel (Ghana)|House of Israel]]), [[Tchaman]], [[Wasa people|Wasa]]
+| Christianity
+|-
+| [[Akie people|Akie]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Nilotic languages|Nilotic]] → [[Akie people#Language|Akie]]<br/> [[Maasai language|Maasai]]<ref>{{Cite book|title=Indigenous Peoples – An Encyclopedia of Culture, History, and Threats to Survival|last=Williams|first=Victoria R.|publisher=[[ABC-CLIO]]|year=2020|isbn=9781440861178|pages=56|language=En|url=https://www.abc-clio.com/products/a5638c/|volume=4|access-date=10 May 2023|archive-url=https://web.archive.org/web/20220518192508/https://www.abc-clio.com/products/a5638c/|archive-date=18 May 2022|url-status=live}}</ref>
+| [[Tanzania]] ([[Manyara Region]])
+|
+| [[Traditional African religions|Traditional Akie religion]]<ref>{{Cite book|title=Indigenous Peoples – An Encyclopedia of Culture, History, and Threats to Survival|last=Williams|first=Victoria R.|publisher=[[ABC-CLIO]]|year=2020|isbn=9781440861178|pages=58|language=En|url=https://www.abc-clio.com/products/a5638c/|volume=4|access-date=10 May 2023|archive-url=https://web.archive.org/web/20220518192508/https://www.abc-clio.com/products/a5638c/|archive-date=18 May 2022|url-status=live}}</ref>
+|-
+| [[Alur people|Alur]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Nilotic languages|Nilotic]] → [[Alur language|Alur]]
+| [[Uganda]] ([[West Nile sub-region]]), [[Democratic Republic of the Congo]] ([[Ituri Province]])
+|
+| Christianity
+|-
+| [[Amba people|Amba]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Amba language (Bantu)|Amba]]
+| [[Uganda]] ([[Bundibugyo District]]), [[Democratic Republic of the Congo]] ([[Ituri Province]])
+|
+| Christianity, [[Traditional African religion]]
+|-
+| [[Ambundu]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Kimbundu]]
+| [[Angola]]
+| 
+| Christianity, [[Traditional African religions]]
+|-
+| [[Amdang people|Amdang]]
+| [[Fur languages|Furan]] → [[Amdang language|Amdang]]
+| [[Sudan]] ([[West Darfur]]), [[Chad]] ([[Wadi Fira (region)|Wadi Fira]])
+|
+| Islam
+|-
+| [[Americo-Liberian people|Americo-Liberians]]
+| [[Indo-European languages|Indo-European]] → [[Germanic languages|Germanic]] → [[English language|English]] → [[Standard Liberian English]]<br/> [[Indo-European languages|Indo-European]] → [[English-based creole languages|English]] → [[Merico language|Merico]], [[Liberian Kreyol language|Liberian Kreyol]]
+| [[Liberia]]
+|
+| Christianity → [[Protestantism]]
+|-
+| [[Amhara people|Amhara]]
+| [[Afroasiatic languages|Afroasiatic]] → [[West Semitic languages|West Semitic]] → [[Amharic]] 
+| Ethiopia ([[Amhara Region|Amharia]])
+|
+| Christianity → [[Oriental Orthodoxy]] → [[Ethiopian Orthodox Tewahedo Church|Ethiopian Orthodoxy]]
+|-
+| [[British diaspora in Africa|Anglo-Africans]]
+| [[Indo-European languages|Indo-European]] → [[Germanic languages|Germanic]] → [[English language|English]] → [[South African English]], [[Zimbabwean English]]
+| South Africa, Zimbabwe, [[Saint Helena, Ascension and Tristan da Cunha]]
+| [[British diaspora in Africa#South Africa|Anglo-South Africans]] (with diaspora in the [[South Africans in the United Kingdom|United Kingdom]], [[South African Australians|Australia]], [[South African New Zealanders|New Zealand]], [[South African Canadians|Canada]], and the [[South African Americans|United States]])<br/> [[White Zimbabweans|Anglo-Zimbabweans]] (with diaspora in the [[United Kingdom]])<br/> [[Demographics of Saint Helena|Saint Helenians]]
+| Christianity 
+|-
+| [[Anuak people|Anuak]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Nilotic languages|Nilotic]] → [[Anuak language|Anuak]]
+| Ethiopia ([[Anuak Zone|Anuakia]]), [[South Sudan]] ([[Boma State|Boma]])
+|
+| Christianity
+|-
+| [[Arabs]]
+| [[Afroasiatic languages|Afroasiatic]] → [[West Semitic languages|West Semitic]] → [[Arabic]]<ref name="Language family" group="note" /><br/> [[Arab sign-language family|Arab Sign]],<ref name="Language family" group="note" /> [[Sudanese sign languages]]<ref name="Language family" group="note" />
+| [[North Africa]]
+| [[Bedouin]]s (including [[Beni Ades]]), [[Egypt|Egyptian Arabs]] (including [[Sa'idi people|Upper Egyptian Arabs]]<ref>{{cite book | last = Abu-Lughod | first = Lila | author-link = Lila Abu-Lughod | title = Local Contexts of Islamism in Popular Media | publisher = [[University of Amsterdam|Amsterdam University Press]] | year = 2006 | isbn = 90-5356-824-7 | page = 24 pages}}</ref>), [[Maghrebi Arabs]] (including the [[Sahrawi people|Sahrawis]]), [[Dawada]], [[Sudanese Arabs]], [[Arab Christians]]<ref>{{Cite journal|doi=10.1177/0265378812439955|title=Christians in the Middle East – Past, Present and Future|year=2012|last1=Chapman|first1=Colin|journal=Transformation: An International Journal of Holistic Mission Studies|volume=29|issue=2|pages=91–110|s2cid=145722860|doi-access=free}}</ref> (including [[Greek Orthodox Church of Alexandria|Alexandrians]]), [[Rashaida people|Rashaida]], [[Baggara Arabs]] (including [[Shuweihat tribe|Shuweihat]]), [[Abbala Arabs]], [[Azawagh Arabs]], [[Diffa Arabs]], [[Manga Arabs]], [[Ababda people|Ababda]], [[Arab-Berber]]s
+| Islam<br/> [[Christianity]] → [[Eastern Orthodoxy]] → [[Greek Orthodoxy]] → [[Greek Orthodox Church of Alexandria]]<br/> Christianity → [[Catholicism]] → [[Melkite Greek Catholic Church|Melkite Catholicism]]
+|-
+| [[Argobba people|Argobba]]
+| [[Afroasiatic languages|Afroasiatic]] → [[West Semitic languages|West]] → [[Argobba language|Argobba]]<ref group="note">The Argobba have typically been a merchant community and usually trades with other ethnic groups; recently, these factors have resulted in the majority only speaking Amharic or Oromo.</ref>
+| Ethiopia ([[Afar Region|Afar]], [[Harari Region|Harari]], [[Amhara Region|Amhara]], and [[Oromia Region|Oromia]] Regions)<ref name="non-contiguous" group="note" />
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Atyap people|Atyap]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Plateau languages|Plateau]] → [[Tyap language|Tyap]]
+| Nigeria ([[Kaduna State]]) 
+|
+| Christianity, [[Abwoi religion|Abwoi]]
+|- id=B
+| [[Babur and Bura people|Babur and Bura]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Chadic languages|Chadic]] → [[Bura language|Bura]]
+| Nigeria ([[Borno State]] and [[Adamawa State]])
+| Babur, Bura
+| Islam
+|-
+| [[Bagirmi people|Bagirmi]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Central Sudanic languages|Central Sudanic]] → [[Bongo-Bagirmi languages|Bongo-Bagirmi]] → [[Bagirmi language|Bagirmi]]
+| [[Chad]] ([[Chari-Baguirmi (region)|Chari-Baguirmi]])
+|
+| Islam → [[Folk Islam]]
+|-
+| [[Bajju people|Bajju]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Plateau languages|Plateau]] → [[Jju language|Jju]]
+| Nigeria ([[Middle Belt]])
+|
+| Christianity, [[Abwoi religion|Abwoi]]
+|-
+| [[Bajuni people|Bajuni]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Bantu languages|Bantu]] → [[Swahili language|Swahili]] → [[Bajuni dialect|Bajuni]]
+| [[Somalia]] ([[Bajuni Islands]]), [[Kenya]] ([[Coast Province]])
+|
+| Islam → [[Sunni Islam|Sunnism]] → [[Shafi'i school|Shafi'ism]]
+|-
+| [[Bakossi people|Bakossi]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Manenguba languages|Akoose]]
+| [[Cameroon]] ([[Bakossi Mountains]])
+|
+| Christianity → [[Catholic Church|Catholicism]]
+|-
+| [[Beidane]]s
+| [[Afroasiatic languages|Afroasiatic]] → [[West Semitic languages|West Semitic]] → [[Hassaniya Arabic]]
+| [[Mauritania]]
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Bekulu people|Bakulu]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Plateau languages|Plateau]] → [[Kulu language|Kulu]]
+| Nigeria ([[Kaduna State]])
+|
+| Christianity, Islam, [[Traditional African religion]]
+|-
+| [[Balanta people|Balanta]]
+| [[Niger–Congo languages|Niger–Congo]] → [[West Atlantic languages|West Atlantic]] → [[Balanta languages|Balanta]]<ref name="Language family" group="note" />
+| [[Guinea-Bissau]], [[Senegal]], [[The Gambia]]
+|
+| [[Traditional African religions]]
+|-
+| [[Balondo Civilization|Balondo-ba-Konja]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Londo language|Londo]]
+| [[Cameroon]]
+|
+| [[Creationism]] → [[Balondo Civilization#Religion|Balondo-ba-Konja religion]]
+|-
+| [[Bambara people|Bambara]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Mande languages|Mande]] → [[Manding languages|Manding]] → [[Bambara language|Bambara]] 
+| [[Mali]]
+|
+| Islam
+|-
+| [[Bamileke people|Bamileke]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Grassfields languages|Grassfields]] → [[Bamileke languages|Bamileke]]<ref name="Language family" group="note" />
+| [[Cameroon]] ([[West Region (Cameroon)|West]] and [[Northwest Region (Cameroon)|Northwest]] regions)
+| [[Mengaka language|Mengaka]], [[Ngiemboon language|Ngiemboon]], [[Ngombale language|Ngombale]], [[Ngomba language|Ngomba]], [[Ngwe language|Ngwe]], [[Yemba language|Yemba]], [[Fe'fe' language|Fe'fe']], [[Ghomala' language|Ghomala']], [[Kwaʼ language|Kwaʼ]], [[Nda'nda' language|Nda'nda']], [[Medumba language|Medumba]]
+| Christianity
+|-
+| [[Bamum people|Bamum]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Grassfields languages|Grassfields]] → [[Bamum language|Bamum]]
+| [[Cameroon]] ([[West Region (Cameroon)|West Region]])
+|
+| Islam
+|-
+| [[Banda people|Banda]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Ubangian languages|Ubangian]] → [[Banda languages|Banda]]<ref name="Language family" group="note" />
+| [[Central African Republic]], [[South Sudan]], [[Democratic Republic of the Congo]]
+| [[Central Banda language|Central Banda]], [[South Banda language|South Banda]], [[West Banda language|West Banda]]
+| Christianity
+|-
+| [[Bangweulu Twa]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Bemba language|Bemba]]
+| [[Zambia]] ([[Bangweulu Wetlands]])
+|
+| [[Traditional African Religion]]
+|-
+| [[Bari people|Bari]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Nilotic languages|Nilotic]] → [[Bari language|Bari]]
+| [[South Sudan]] ([[Central Equatoria]]), [[Uganda]]
+| [[Pojulu people|Pojulu]], [[Kakwa people|Kakwa]], [[Nyangwara people|Nyangwara]], [[Mandari people|Mandari]], [[Kuku people|Kuku]], other [[Karo people (East Africa)|Karo tribes]]
+| Christianity, [[Traditional African religion]], Islam → [[Sunni Islam]] (minority religion among some Kakwa bordering [[Uganda]])
+|-
+| [[Bariba people|Bariba]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Gur languages|Gur]] → [[Bariba language|Bariba]]
+| [[Borgu]] ([[Benin]], Nigeria) 
+|
+| Islam
+|-
+| [[Bassa people (Liberia)|Bassa]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Kru languages|Kru]] → [[Bassa language|Bassa]]
+| [[Liberia]] ([[Grand Bassa County|Bassaland]])
+|
+| Christianity → [[Protestantism]] → [[Anglicanism]]
+|-
+| [[Basters]]
+| [[Indo-European languages|Indo-European]] → [[Germanic languages|Germanic]] → [[Dutch language|Dutch]] → [[Afrikaans]]
+| [[Namibia]] ([[Rehoboth, Namibia|Rehoboth]])
+|
+| Christianity → [[Protestantism]]
+|-
+| [[Great Lakes Twa|Batwa]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Kirundi]]<br/> [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Kiga language|Kiga]]
+| [[African Great Lakes]]
+|
+| [[Traditional African religion]]
+|-
+| [[Beja people|Beja]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Cushitic languages|Cushitic]] → [[Beja language|Beja]]
+| [[Sudan]], [[Egypt]], [[Eritrea]]
+| [[Bishari tribe|Bishari]], [[Hadendoa]], [[Hedareb people|Hedareb]], [[Amarar tribe|Amarar]], [[Beni-Amer people|Beni-Amer]]
+| Islam → [[Sunni Islam]]
+|-
+| [[Bemba people|Bemba]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Bemba language|Bemba]]
+| [[Zambia]] ([[Northern Province, Zambia|Northern]], [[Luapula Province|Luapula]], and [[Copperbelt Province|Copperbelt]] Provinces), [[Democratic Republic of the Congo]] ([[Katanga Province]])
+|
+| Christianity → [[Protestantism]]
+|-
+| [[Bembe people|Bembe]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Bembe language (Ibembe)|Bembe]]
+| [[Democratic Republic of the Congo]], Tanzania
+|
+| Christianity → [[Protestantism]], [[Traditional African religions]]
+|-
+| [[Bena people|Bena]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Bena language|Bena]]
+| [[Tanzania]] ([[Njombe Region]])
+|
+| Christianity → [[Catholic Church|Catholicism]]
+|-
+| [[Berom people|Berom]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Plateau languages|Plateau]] → [[Berom language|Berom]]
+| [[Niger]] ([[Plateau State]])
+|
+| Christianity
+|-
+| [[Berta people|Berta]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Berta language|Berta]]
+| Ethiopia ([[Benishangul-Gumuz Region]]), [[South Sudan]]
+|
+| Islam
+|-
+| [[Beti people|Beti]]<ref group="note">The Beti and the Fang form the [[Beti-Pahuin peoples]]. While the term Beti is sometimes used interchangeably to refer to the Beti-Pahuin people, the Beti ethnicity is specifically limited to Ewondo and Eton speakers.</ref>
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Ewondo language|Ewondo]], [[Eton language|Eton]]
+| [[Cameroon]]
+| [[Ewondo language|Ewondo]], [[Eton language|Eton]]
+| Christianity
+|-
+| [[Bissa people|Bissa]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Mande languages|Mande]] → [[Bissa language|Bissa]]
+| [[Burkina Faso]]
+|
+| Islam
+|-
+| [[Boa people|Boa]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Bwa language|Boa]]
+| [[Democratic Republic of the Congo]] ([[Bas-Uele]])
+|
+| Christianity
+|-
+| [[Bobo people|Bobo]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Mande languages|Mande]] → [[Bobo language|Bobo]] 
+| [[Burkina Faso]], [[Mali]]
+|
+| [[Traditional African religions]]
+|-
+| [[Bolewa people|Bolewa]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Chadic languages|Chadic]] → [[Bole language|Bole]]
+| [[Nigeria]] ([[Gombe State]])
+|
+| Islam
+|-
+| [[Bondei people|Bondei]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Bondei language|Bondei]]
+| [[Tanzania]] ([[Pangani District]])
+|
+| Islam, [[Traditional African religions]]
+|-
+| [[Bozo people|Bozo]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Mande languages|Mande]] → [[Bozo language|Bozo]] 
+| [[Mali]]
+|
+| Islam
+|-
+| [[Bubi people|Bubi]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Bube language|Bube]]
+| [[Equatorial Guinea]] ([[Bioko]])
+|
+| Christianity → [[Catholicism]]
+|-
+| [[Budu people|Budu]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Budu language|Budu]]
+| [[Democratic Republic of the Congo]] ([[Wamba Territory]])
+|
+| Christianity
+|-
+| [[Buduma people|Buduma]] 
+| [[Afroasiatic languages|Afroasiatic]] → [[Chadic languages|Chadic]] → [[Yedina language|Yedina]]
+| [[Lake Chad]] ([[Chad]], Nigeria, [[Cameroon]])
+|
+| Islam
+|-
+| [[Bwa people|Bwa]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Gur languages|Gur]] → [[Bwa languages|Bwa]]<ref name="Language family" group="note" />
+| [[Burkina Faso]], [[Mali]]
+|
+| [[Traditional African religions]]
+|-
+| [[Bwatiye people|Bwatiye]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Chadic languages|Chadic]] → [[Bacama language|Bacama]]
+| Nigeria ([[Adamawa State]])
+|
+| Christianity, [[Neo-charismatic movement|Neo-Pentecostalism]]
+|- id=C
+|-
+| [[Cafres]]
+| [[Indo-European languages|Indo-European]] → [[French-based creole languages|French]] → [[Réunion Creole]]
+| [[Réunion]]
+|
+| [[Christianity]]
+|-
+| [[Cape Malays]]
+| [[Indo-European languages|Indo-European]] → [[Germanic languages|Germanic]] → [[Dutch language|Dutch]] → [[Afrikaans]]<br/> [[Indo-European languages|Indo-European]] → [[Germanic languages|Germanic]] → [[English language|English]] → [[South African English]]<br/> Historically [[Indo-European languages|Indo-European]] → [[Germanic languages|Germanic]] → [[Dutch language|Dutch]] → [[Arabic Afrikaans]]<br/> [[Austronesian languages|Austronesian]] → [[Malayo-Polynesian languages|Malayo-Polynesian]] → [[Malay language|Malay]], [[Makassarese language|Makassarese]]
+| South Africa ([[Western Cape]])
+|
+| Islam
+|-
+| [[Chaga people|Chaga]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Chaga languages|Chaga]]<ref name="Language family" group="note" />
+| [[Tanzania]]
+| [[Gweno language|Gwenos]], [[Rombo language|Rombos]], [[Central Kilimanjaro language|Central Chaga]] (including [[Kahe language|Kahe]]), [[Rusa language|Rusa]], [[West Kilimanjaro language|West Chaga]]
+| Christianity, Islam, [[Traditional African religions]]
+|-
+| [[Chagossians]]
+| [[Indo-European languages|Indo-European]] → [[French-based creole languages|French]] → [[Chagossian Creole]]
+| [[Chagos Archipelago]]<ref name="Chagossian expulsion" group="note">Due to the [[Expulsion of the Chagossians]], there are no Chagossians living on the [[Chagos Archipelago]]. The majority of Chagossians now live in the United Kingdom, [[Mauritius]], and [[Seychelles]].</ref>
+|
+| Christianity, [[Rastafari]]
+|-
+| [[Chaoui people|Chaoui]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Berber languages|Berber]] → [[Shawiya language|Shawiya]]
+| [[Algeria]] ([[Aurès]])
+|
+| Islam → [[Sunni Islam|Sunnism]]
+|-
+| [[Chenouas]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Berber languages|Berber]] → [[Shenwa language|Shenwa]]
+| [[Algeria]] ([[Mount Chenoua]])
+|
+| Islam → [[Sunni Islam|Sunnism]]
+|-
+| [[Chewa people|Chewa]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Chewa language|Chewa]]
+| [[Malawi]], [[Zambia]], [[Zimbabwe]], [[Mozambique]]
+|
+| Christianity, [[Traditional African religions]]
+|-
+| [[Chinese people in Réunion|Chinois]]
+| [[Indo-European languages|Indo-European]] → [[French-based creole languages|French]] → [[Réunion Creole]]<br/> [[Sino-Tibetan languages|Sino-Tibetan]] → [[Sinitic languages|Sinitic]] → [[Hakka language|Hakka]], [[Cantonese language|Cantonese]]
+| [[Réunion]]
+|
+| Christianity → [[Catholic Church|Catholicism]]<br/> [[Buddhism]] → [[Mahayana Buddhism]]
+|-
+| [[Chokwe people|Chokwe]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Chokwe language|Chokwe]]
+| [[Angola]], [[Democratic Republic of the Congo]], [[Zambia]]
+|
+| Christianity
+|-
+| [[Coloureds]]
+| [[Indo-European languages|Indo-European]] → [[Germanic languages|Germanic]] → [[English language|English]], [[Dutch language|Dutch]] → [[Afrikaans]], [[Kaaps]]
+| South Africa ([[Western Cape]])
+|[[Cape Coloureds]] (South Africa)
+| Christianity
+|-
+| [[Demographics of the Comoros|Comorians]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Comorian languages|Comorian]]<ref name="Language family" group="note" />
+| [[Comoros]], France ([[Mayotte]])
+| [[Grande Comore|Grande Comorians]], [[Anjouan]]s, [[Mohéli]]ans, [[Mayotte|Maorais]], Significant population in [[Comorians in France|Metropolitan France]]
+| Islam → [[Sunni Islam|Sunnism]]
+|-
+|- id=D
+| [[Dagaaba people|Dagaaba]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Gur languages|Gur]] → [[Dagaare language|Dagaare]]
+| [[Ghana]], [[Burkina Faso]] 
+|
+| Christianity, [[Traditional African religions]]
+|-
+| [[Dagomba people|Dagombas]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Gur languages|Gur]] → [[Dagbani language|Dagbani]]
+| [[Ghana]] ([[Kingdom of Dagbon]])
+|
+| Islam → [[Sunni Islam|Sunnism]]
+|-
+| [[Damara people|Damara]]
+| [[Khoe languages|Khoe]] → [[Khoekhoe language|Khoekhoe]]
+| [[Namibia]] ([[Damaraland]])
+|
+| Christianity
+|-
+| [[Dinka people|Dinka]] 
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Nilotic languages|Nilotic]] → [[Dinka language|Dinka]] 
+| [[South Sudan]]
+|
+| Christianity, [[Dinka religion]]
+|-
+| [[Dogon people|Dogon]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Dogon languages|Dogon]]<ref name="Language family" group="note" /><br/> [[Bangime language|Bangime]], [[Tebul Sign Language|Tebul Sign]]
+| [[Mali]] ([[Bandiagara Escarpment]])
+| [[Ampari Dogon]] (including Nyamboli), [[Tebul Dogon|Tebul U]], [[Mombo Dogon]], [[Escarpment Dogon]] (including [[Tommo So]]), [[Jamsai Dogon]], [[Nanga Dogon]], [[Yanda Dogon]], [[Bankan Tey Dogon|Walo]], [[Ben Tey Dogon|Beente]], [[Duleri Dogon]], [[Penange Dogon|Pinia]], [[Bondum Dogon]], [[Dogul Dogon]], [[Budu Dogon|Budu]], [[Western Plains Dogon]], [[Toro-tegu Dogon]], [[Bangime language|Bangande]]
+| [[Traditional African religions]]
+|-
+| [[Dwe'e people|Dwe'e]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Nzime language|Nzime]]
+| [[Cameroon]]
+|
+| Christianity
+|-
+| [[Dyula people|Dyula]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Mande languages|Mande]] → [[Manding languages|Manding]] → [[Dyula language|Dyula]]
+| [[Burkina Faso]], [[Ivory Coast]], [[Mali]]
+|
+| Islam → [[Sunni Islam|Sunnism]]
+|- id=E
+| [[Ebira people|Ebira]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Nupoid languages|Nupoid]] → [[Ebira language|Ebira]]
+| Nigeria ([[Kogi State]])
+|
+| Islam
+|-
+| [[Edo people|Edo]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Edoid languages|Edoid]] → [[Edo language|Edo]]
+| Nigeria ([[Edo State]])
+| [[Ika people|Ika]], [[Emai people|Emai]]
+| Christianity
+|-
+| [[Efik people|Efik]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Cross River languages|Cross River]] → [[Efik language|Efik]]
+| Nigeria ([[Cross River State]])
+|
+| Christianity, [[Efik mythology|Efik religion]]
+|-
+| [[Egyptians]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Semitic languages|Semitic]] → [[Egyptian Arabic]]<ref name="Language family" group="note" /><br/> [[Egyptian Sign Language|Egyptian Sign]]<br/> Historically [[Afroasiatic languages|Afroasiatic]] → [[Egyptian language|Egyptian]]<ref group="note">The original [[Egyptian language]], which morphed into the Coptic language around the 1st century AD, died out as a spoken language around the 17th century and is now only [[Liturgical language|used for religious ceremonies]] in the form of [[Coptic language|Coptic]]. Today, the Egyptians, including the Copts, speak [[Egyptian Arabic]].</ref>
+| [[Egypt]], Sudan, [[Libya]]
+| [[Copts]], [[Sa'idi people]]<ref>{{cite web |url=http://arabi.ahram.org.eg/arabi/Ahram/2009/5/9/Fron0.htm |title=::الأهرام العربي - الصفحة الأولى :: |access-date=2010-09-10 |url-status=dead |archive-url=https://web.archive.org/web/20100123083655/http://arabi.ahram.org.eg/arabi/Ahram/2009/5/9/fron0.htm |archive-date=2010-01-23 }}</ref>
+| Islam → [[Sunni Islam]]<br/> Christianity → [[Oriental Orthodox Churches|Oriental Orthodoxy]] → [[Coptic Orthodox Church|Coptic Orthodoxy]]<br/> Christianity → [[Catholic Church|Catholicism]] → [[Eastern Catholic Churches|Eastern Catholicism]] → [[Coptic Catholic Church|Coptic Catholicism]]
+|-
+| [[Ekoi people|Ekoi]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantoid languages|Bantoid]] → [[Jagham language|Jagham]]
+| Nigeria, [[Cameroon]]
+|
+| Christianity, [[Ekoi religion]]
+|-
+| [[Embu people|Embu]]
+| [[Niger-Congo languages|Niger-Congo]] ~ [[Bantu languages|Bantu]] ~ [[Embu language|Embu]]
+|[[Kenya]] ([[Eastern Province (Kenya)|Eastern Province]]) 
+|
+| Christianity 
+|-
+| [[Esan people|Esan]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Edoid languages|Edoid]] → [[Esan language|Esan]]
+| Nigeria ([[Esanland]])
+|
+| Christianity
+|-
+| [[Ewe people|Ewe]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Kwa languages|Kwa]] → [[Ewe language|Ewe]], [[Waci language|Waci]], Kpessi
+| [[Togo]], [[Ghana]]
+| [[Agave people|Agave]], [[Agome people|Agome]], [[Anlo Ewe|Anlo]], [[Avenor Ewe|Avenor]], [[Waci language|Waci]]
+| Christianity, [[West African Vodun]]
+|- id=F
+| [[Fang people|Fang]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Fang language|Fang]]
+| [[Equatorial Guinea]] ([[Rio Muni]]), [[Gabon]]
+|
+| Christianity
+|-
+| [[Fipa people|Fipa]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] ([[Guthrie classification of Bantu languages#Zone M|Zone M]]) → [[Fipa language|Fipa]]<br/> [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Mambwe-Lungu language|Mambwe-Lungu]]
+| [[Rukwa Region]], Tanzania ([[Sumbawanga Rural District]], [[Nkasi District]])
+|
+| Christianity → [[Catholic Church|Catholicism]]
+|-
+| [[Fon people|Fon]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Kwa languages|Kwa]] → [[Gbe languages|Gbe]] → [[Fon language|Fon]]
+| [[Benin]] ([[Dahomey]])
+|
+| Christianity → [[Catholic Church|Catholicism]], [[West African Vodun]]
+|-
+| [[Franco-Mauritians]]
+| [[Indo-European languages|Indo-European]] → [[French-based creole languages|French]] → [[Mauritian Creole]]
+| [[Mauritius]] 
+|
+| Christianity → [[Catholicism]]
+|-
+| [[Franco-Seychellois]]
+| [[Indo-European languages|Indo-European]] → [[French-based creole languages|French]] → [[Seychellois Creole]]
+| [[Seychelles]]
+|
+| Christianity → [[Catholicism]]
+|-
+| [[French people in Madagascar|Frantsay]]
+| [[Indo-European languages|Indo-European]] → [[Romance languages|Romance]] → [[French language|French]]
+| [[Madagascar]]
+|
+| Christianity → [[Catholic Church|Catholicism]], Christianity → [[Protestantism]]
+|-
+| [[Fula people|Fula]] 
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Senegambian languages|Senegambian]] → [[Fula language|Fula]]<ref name="Language family" group="note" />
+| [[West Africa]] ([[Guinea]], [[Senegal]], [[Mali]], [[Mauritania]], Nigeria, [[Cameroon]], [[Niger]], [[Burkina Faso]], [[Benin]], [[Chad]])<ref name="nomadic" group="note">This ethnic group is largely a nomadic or semi-nomadic one and do not have a particular area to claim as a primary homeland; these countries are listed here due to having a significant population.</ref>
+| [[Wodaabe]], [[Maasina Fulfulde]], [[Fula people of Sierra Leone|Sierra Leonean Fula]], [[Toucouleur people|Toucouleur]]
+| Islam
+|-
+| [[Fur people|Fur]]
+| [[Fur languages|Furan]] → [[Fur language|Fur]]
+| [[Sudan]] ([[Darfur]])
+|
+| Islam → [[Sunni Islam]]
+|- id=G
+| [[Ga-Adangbe people|Ga-Adangbe]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Kwa languages|Kwa]] → [[Ga–Dangme languages|Ga–Dangme]]<ref name="Language family" group="note" />
+| [[Greater Accra]] ([[Ghana]])
+| [[Ga language|Ga]], [[Dangme language|Adangbe]]
+| Christianity
+|-
+| [[Gade people|Gade]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Nupoid languages|Nupoid]] → [[Gade language|Gade]]
+| Nigeria ([[Niger State]])
+|
+| Gobo
+|-
+| [[Baganda|Ganda]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Great Lakes Bantu languages|Great Lakes]] → [[Luganda]] 
+| [[Uganda]] ([[Buganda]]) 
+| 
+| Christianity
+|-
+| [[Gbagyi people|Gbagyi]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Nupoid languages|Nupoid]] → [[Gwari language|Gwari]]
+| Nigeria 
+|
+| [[Traditional African religions]]
+|-
+| [[Gbaya people|Gbaya]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Ubangian languages|Ubangian]] → [[Gbaya languages|Gbaya]]<ref name="Language family" group="note" />
+| [[Central African Republic]], [[Cameroon]]
+| [[Bokoto language|Bokoto]], [[Northwest Gbaya language|Kara]], [[Biyanda-Buli language|Buli]] (including [[Toongo language|Toongo]]), [[Ali language|Ali]], [[Mandja people|Mandja]], [[Gbeya language|Gbaya-Bossangoa]], [[Bozom language|Bozom]], [[Mbodomo language|Mbodomo]], [[Gbanu language|Gbanu]], [[Bangandu language|Bangandu]]
+| Islam
+|-
+| [[Gedeo people|Gedeo]] 
+| [[Afroasiatic languages|Afroasiatic]] → [[Cushitic languages|Cushitic]] → [[Gedeo language|Gedeo]]
+| Ethiopia ([[Gedeo Zone|Gedeo]])
+|
+| Christianity → [[Protestantism]] → [[P'ent'ay]]
+|-
+| [[Ghomaras]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Berber languages|Berber]] → [[Ghomara language|Ghomara]]
+| [[Morocco]] (Western [[Rif]])
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Gnawa]]s
+| [[Afroasiatic languages|Afroasiatic]] → [[West Semitic languages|West Semitic]] → [[Moroccan Arabic]]
+| [[Morocco]]
+|
+| Islam and [[Animism]] → [[Sufism]] and [[Animism]] → Gnawa religion
+|-
+| [[Gogo people|Gogo]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Gogo language|Gogo]]
+| [[Tanzania]] ([[Dodoma Region]])
+|
+| Christianity, [[Traditional African religions|African Traditional Religion]]
+|-
+| [[Gola people|Gola]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Gola language|Gola]]
+| [[Liberia]], [[Sierra Leone]]
+|
+| Islam
+|-
+| [[Somali Bantus|Gosha]]
+| [[Niger-Congo languages|Niger-Congo]] → [[Bantu languages|Bantu]] → [[Zigula language|Zigula]] → Mushunguli<br/> [[Afroasiatic languages|Afroasiatic]] → [[Cushitic languages|Cushitic]] → [[Maay Maay]]
+| [[Somalia]]
+| 
+| Islam
+|-
+| [[Greeks]]
+| [[Indo-European languages|Indo-European]] → [[Hellenic languages|Hellenic]]<ref name="Language family" group="note" /><br/> [[Afroasiatic languages|Afroasiatic]] → [[Arabic language|Arabic]] → [[Egyptian Arabic]]<br/> [[French Sign Language family|Francosign]] → [[French Sign Language|French Sign]] and [[American Sign Language|American Sign]] → [[Greek Sign Language|Greek Sign]]
+| Egypt
+| [[Egyptian Greeks]] (including [[Greek Orthodox Church of Alexandria|Alexandrian Greeks]]), along with [[Greek diaspora|significant populations]] in the [[Greeks in the Democratic Republic of the Congo|Democratic Republic of the Congo]], [[Greeks in Ethiopia|Ethiopia]], [[Greeks in South Africa|South Africa]], [[Greeks in Sudan|Sudan]], [[Greeks in South Sudan|South Sudan]], and [[Greeks in Zimbabwe|Zimbabwe]]
+| Christianity → [[Greek Orthodox Church|Eastern Orthodoxy]], [[Catholic Church|Catholicism]] → [[Greek Byzantine Catholic Church|Greek Byzantine Catholicism]], historically [[Greek mythology|Hellenism]], [[Neoplatonism]], [[Mystery religions|Greco-Roman Mysteries]]
+|-
+| [[Griquas]]
+| [[Indo-European languages|Indo-European]] → [[Germanic languages|Germanic]] → [[Dutch language|Dutch]] → [[Afrikaans]]
+| [[South Africa]] ([[Griqua people#Griqualand|Griqualand]])
+|
+| Christianity → [[Protestantism]] → [[Calvinism]]
+|-
+| [[Guang people|Guang]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Kwa languages|Kwa]] → [[Guang languages|Guang]]<ref name="Language family" group="note" />
+| [[Ghana]] ([[Brong-Ahafo region|Brong-Ahafo]] and [[Volta Region|Volta]] Regions)
+| [[Gonja people|Gonja]], [[Kyode people|Kyode]], [[Cherepon language|Cherepon]], [[Efutu people|Efutu]], [[Ginyanga language|Anyanga]], [[Larteh language|Larteh]], [[Chumburung language|Chumburung]], [[Krache language|Krache]], [[Gua language|Anum-Boso]]
+| Christianity
+|-
+| [[Gumuz people|Gumuz]]
+| [[Bʼaga languages]]<ref name="Language family" group="note" />
+| Ethiopia ([[Benishangul-Gumuz Region]])
+|
+| [[Traditional African religion]]
+|-
+| [[Gungu people|Gungu]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Gungu language|Gungu]]
+| [[Uganda]] ([[Buliisa District]])
+|
+| Christianity, [[Traditional African religion]]
+|-
+| [[Gurage people|Gurage]]
+| [[Afroasiatic languages|Afroasiatic]] → [[West Semitic languages|West Semitic]] → [[Gurage languages|Gurage]]<ref name="Language family" group="note" /><br/> historically [[Afroasiatic languages|Afroasiatic]] → [[West Semitic languages|West Semitic]] → [[Mesmes language|Mesmes]]
+| Ethiopia ([[Gurage Zone|Guragia]])
+| [[Soddo language|Kistane]], [[Zay people|Zay]], [[Inor language|Inor]], [[Mesqan language|Mesqan]], [[Muher language|Muher]] [[Sebat Bet Gurage language|Sebat Bet]] (including [[Chaha language|Chaha]])
+| Christianity
+|-
+| [[Gurma people|Gurma]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Gur languages|Gur]] → [[Gourmanche language|Gourmanche]]
+| [[Gourma Province|Gurmaland]] ([[Burkina Faso]], [[Ghana]])
+| [[Ntcham language|Ntcham]], [[Bimoba people|Bimoba]]
+| Islam
+|-
+| [[Gurunsi people|Gurunsi]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Gur languages|Gur]] → [[Gurunsi languages|Gurunsi]]<ref name="Language family" group="note" />
+| [[Burkina Faso]], [[Ghana]], [[Togo]]
+| [[Lukpa language|Lukpa]], [[Kabye people|Kabye]], [[Tem people|Tem]], [[Lamba people|Lamba]], [[Delo language|Delo]], [[Bago-Kusuntu language|Bago-Kusuntu]], [[Chala language|Chala]], [[Lyele language|Lyele]], [[Nuna people|Nuna]], [[Kalamse language|Kalamse]], [[Pana language (Gur)|Pana]], [[Winye language|Winye]], [[Deg language|Deg]], [[Puguli language|Puguli]], [[Paasaal language|Paasaal]], [[Sisaala language|Sisaala]], [[Chakali language|Chakali]], [[Siti language|Siti]], [[Tamprusi language|Tamprusi]], [[Vagla language|Vagla]]
+| [[Traditional African religions]], Islam → [[Sunni Islam]]
+|- id=H
+| [[Ha people|Ha]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Ha language|Ha]]
+| [[Tanzania]] ([[Kigoma Region]])
+|
+| [[Animism]]
+|-
+| [[Hadiya people|Hadiya]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Cushitic languages|Cushitic]] → [[Hadiyya language|Hadiyya]]
+| Ethiopia ([[Hadiya Zone|Hadiya]])
+|
+| Islam
+|-
+| [[Hadza people|Hadza]]
+| [[Hadza language]]
+| [[Tanzania]] ([[Karatu District]])
+|
+| [[Hadza people#Religion, myths, and tales|Hadza mythology]]
+|-
+| [[Ham people|Ham]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Plateau languages|Plateau]] → [[Hyam language|Hyam]]
+| Nigeria ([[Kaduna State]])
+|
+| Christianity, [[Abwoi religion|Abwoi]]
+|-
+| [[Hangaza people|Hangaza]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Hangaza language|Hangaza]]
+| [[Tanzania]] ([[Kagera Region]])
+|
+| Christianity
+|-
+| [[Harari people|Harari]]
+| [[Afroasiatic languages|Afroasiatic]] → [[West Semitic languages|West Semitic]] → [[Harari language|Harari]]
+| Ethiopia ([[Harari Region|Hararia]])
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Haratin]]s
+| [[Afroasiatic languages|Afroasiatic]] → [[West Semitic languages|West Semitic]] → [[Maghrebi Arabic]]<ref name="Language family" group="note" /><br/> [[Afroasiatic languages|Afroasiatic]] → [[Berber languages|Berber]]<ref name="Language family" group="note" />
+| [[Mauritania]]
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Hausa people|Hausa]] 
+| [[Afroasiatic languages|Afroasiatic]] → [[Chadic languages|Chadic]] → [[Hausa language|Hausa]] 
+| [[North West (Nigeria)|Hausaland]] ([[Niger]], Nigeria, [[Ghana]])
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Haya people|Haya]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Haya language|Haya]]
+| [[Tanzania]] ([[Kagera Region]])
+|
+| Christianity, [[Ruhanga]]
+|-
+| [[Hawwara]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Berber languages|Berber]],<ref name="Language family" group="note" /> [[West Semitic languages|Semitic]] → [[Arabic]]<ref name="Language family" group="note" />
+| [[Libya]], [[Egypt]], [[Sudan]], [[Algeria]] and [[Morocco]]
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Hehe people|Hehe]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Hehe language|Hehe]]
+| [[Tanzania]] ([[Iringa Region]])
+|
+| Christianity
+|-
+| [[Herero people|Herero]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Herero language|Herero]]
+| [[Namibia]] ([[Hereroland]]), [[Angola]]
+| [[Himba people|OvaHimba]], [[Mbanderu people|Ovambanderu]]
+| Christianity
+|-
+| [[Hutu]]{{NoteTag|Due to the history of intermingling and intermarrying of Hutu and Tutsi, some ethnographers and historians believe that the Hutu and Tutsi cannot be called distinct ethnic groups.<ref>[[Philip Gourevitch]], {{cite book |title=We Wish to Inform You That Tomorrow We Will Be Killed With Our Families |title-link=We Wish to Inform You That Tomorrow We Will Be Killed With Our Families |year=1998}}</ref><ref>{{cite web|url=http://www.preventgenocide.org/edu/pastgenocides/rwanda/indangamuntu.htm|title='Indangamuntu 1994: Ten years ago in Rwanda this ID Card cost a woman her life' by Jim Fussell|website=www.preventgenocide.org}}</ref><ref>{{Cite magazine |last=Gourevitch |first=Philip |date=10 December 1995 |title=From 1995: Rwanda, After the Genocide |url=https://www.newyorker.com/magazine/1995/12/18/after-the-genocide |access-date=14 May 2025 |magazine=The New Yorker |language=en-US |issn=0028-792X}}</ref>}}
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Rwanda-Rundi]]<ref name="Hutu, Tutsi, Twa" group="note">Refers specifically to the [[Kinyarwanda]] and [[Kirundi]] dialects. The other speakers of the dialects within the Rwanda-Rundi continuum are considered to be separate from the Hutu, Tutsi, and Twa peoples.</ref>
+| [[Rwanda]], [[Burundi]], [[Democratic Republic of the Congo]] ([[Kivu]])
+|
+| Christianity
+|- id=I
+| [[Ibibio people|Ibibio]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Cross River languages|Cross River]] → [[Ibibio language|Ibibio]], [[Anaang language|Anaang]], [[Eket language|Eket]], [[Oron language|Oron]]
+| Nigeria ([[Akwa Ibom State]])
+| [[Eket#People|Eket]], [[Anaang people|Anaang]], [[Oron people|Oron]]
+| Christianity
+|-
+| [[Idoma people|Idoma]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Idomoid languages|Idomoid]] → [[Idoma language|Idoma]]
+| Nigeria ([[Benue State]]) 
+| [[Agatu language|Agatu]], [[Alago language|Alago]], [[Yala language|Yala]]
+| Christianity
+|-
+| [[Igala people|Igala]]
+| [[Niger-Congo languages|Niger-Congo]] → [[Igala language|Igala]] → [[Igala language|Igala]]
+| Nigeria ([[Idah|AneIgala]])
+| [[Anyigba|Ayangba]], [[Igalamela]], [[Ogugu]], [[Akpanya]], [[Ebu]]
+| Christianity, Islam
+|-
+| [[Igbo people|Igbo]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Igbo language|Igbo]] 
+| Nigeria ([[Igboland]]) , [[Equatorial Guinea]]
+| [[Anioma people|Anioma]], [[Aro people|Aro]], [[Edda people|Edda]], [[Ekpeye people|Ekpeye]], [[Etche]], [[Ezaa people|Ezaa]], [[Ika people|Ika]], [[Ikwerre people|Ikwerre]], [[Ikwo people|Ikwo]], [[Isu people|Isu]], [[Izzi people|Izzi]], [[Mbaise]], [[Mgbo people|Mgbo]], [[Ngwa]], [[Nri-Igbo]], [[Ogba people|Ogba]], [[Ohafia]], [[Ohuhu people|Ohuhu]], [[Onitsha-Ado]], [[Ukwuani people|Ukwuani]], [[Waawa]]
+| Christianity, [[Odinala]]
+|-
+| [[Igdalen people|Igdalen]]
+| [[Songhay languages|Songhay]] → [[Northern Songhay languages|Northern Songhay]] → [[Tagdal language|Tagdal]]
+| [[Niger]], [[Mali]], [[Algeria]] 
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Igede]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Idomoid languages|Idomoid]] → [[Igede language|Igede]]
+| Nigeria ([[Benue State]])
+|
+| Christianity
+|-
+| [[Ijaw people|Ijaw]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Ijaw languages|Ijaw]]<ref name="Language family" group="note" />
+| Nigeria ([[Rivers State|Rivers]], [[Bayelsa State|Bayelsa]], and [[Delta State|Delta]] States)
+| [[Bille tribe|Bille]], [[Engenni people|Engenni]], [[Ibani tribe|Ibani]], [[Kalabari tribe|Kalabari]], [[Kula tribe (Rivers State)|Kula]], [[Nkoro tribe|Nkoro]], [[Nkoroo people|Nkoroo]], [[Obolo people|Obolo]]
+| Christianity
+|-
+| [[Imraguen people|Imraguen]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Arabic]] → [[Hassaniya Arabic]] → [[Imraguen people#Language|Imraguen]]
+| [[Mauritania]], [[Western Sahara]]
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Mauritians of Indian origin|Indo-Mauritians]]
+| [[Indo-European languages|Indo-European]] → [[French-based creole languages|French]] → [[Mauritian Creole]]
+| [[Mauritius]] 
+| [[Bihari Mauritians]], [[Tamil Mauritians]]
+| [[Hinduism]], Islam
+|-
+| [[Indo-Seychellois]]
+| [[Indo-European languages|Indo-European]] → [[French-based creole languages|French]] → [[Seychellois Creole]]
+| [[Seychelles]]
+|
+| [[Hinduism]], Islam, Christianity, [[Jainism]]
+|-
+| [[Indian South Africans|Indo-South Africans]]
+| [[Indo-European languages|Indo-European]] → [[Germanic languages|Germanic]] → [[English language|English]] → [[South African English]]
+| South Africa
+| 
+| [[Hinduism]], Islam, [[Sikhism]], [[Jainism]]
+|-
+| [[Iraqw people|Iraqw]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Cushitic languages|Cushitic]] → [[Iraqw language|Iraqw]]
+| [[Tanzania]]
+|
+| Christianity
+|-
+| [[Isoko people|Isoko]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Edoid languages|Edoid]] → [[Isoko language|Isoko]]
+| Nigeria ([[Isoko region]])
+|
+| Christianity
+|- id=J
+| [[Jerba people|Jerba]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Berber languages|Berber]] → [[Nafusi language|Nafusi]]
+| [[Tunisia]] 
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Jews]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Canaanite languages|Canaanite]] → [[Hebrew language|Hebrew]] → [[Modern Hebrew]],<ref group="note">Despite the [[Revival of the Hebrew language|successful revival]] of the Hebrew language, many Jews continue to speak the [[Jewish languages|various languages]] that have developed by the diaspora populations, including [[Yiddish]], [[Judaeo-Spanish|Ladino]], and [[Judeo-Arabic languages|Judeo-Arabic]]. In addition, English serves as the ''[[lingua franca]]'' of Israel.</ref> [[Jewish languages]],<ref name="Language family" group="note" /><ref name="Jewish languages" group="note">Though many Jewish languages are not genetically related to each other, they are all known to be ethnolects developed by the Jewish diaspora.</ref> [[German Sign Language family|DGSic]] → [[Israeli Sign Language|Israeli Sign]]
+| [[North Africa]] (Morocco, Algeria, Tunisia, Libya, and Egypt)
+[[East Africa]]
+| [[Sephardi Jews|Sephardim]] (including [[Moroccan Jews]], [[Eastern Sephardim|Egyptian Sephardim]], [[North African Sephardim]], [[Moroccan Jews|Maroka'im]], [[History of the Jews in Algeria|Algerian Jews]], [[History of the Jews in Tunisia|Tunisian Jews]], [[Libyan Jews]], [[Berber Jews]] (including [[Mozabite Jews]]), [[Beta Israel]] (including [[Beta Abraham]] and [[Falash Mura]]), [[Jews of Rusape|Rusape Jews]], [[Abayudaya]], [[Igbo Jews]], as well as historically some [[Aksumites]], along with [[Jewish diaspora|significant populations]] in [[History of the Jews in South Africa|South Africa]] (including [[Afrikaner-Jews]]), [[History of the Jews in Namibia|Namibia]], and [[History of the Jews in Zimbabwe|Zimbabwe]]
+| [[Judaism]]
+|-
+| [[Jita people|Jita]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Bantu languages|Bantu]] → [[Suguti language|Suguti]]
+| [[Tanzania]] ([[Mara Region]])
+|
+| Christianity, [[Ethnic religion|Ethnic Religion]]
+|-
+| [[Jola people|Jola]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Senegambian languages|Senegambian]] → [[Jola languages|Jola]]<ref name="Language family" group="note" />
+| [[Senegal]] ([[Casamance|Jolaland]])
+| [[Bandial language|Banjaal]], [[Bayot language|Bayot]], [[Gusilay language|Gusilay]], [[Jola-Fonyi language|Fogni]], [[Karon language|Karon]], [[Kasa language|Kasa]], [[Kwatay language|Kuwaataay]], [[Mlomp language|Mlomp]]
+| [[Traditional African religions]]
+|-
+| [[Jukun people (West Africa)|Jukun]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Jukun Takum language|Jukun Takum]]<ref group="note">The [[Wapan language]] have largely replaced Jukun Takum as the main language.</ref>
+| Nigeria ([[Wukari Federation|Wukari]])
+| [[Wannu language|Wannu]]
+| [[Traditional African religions]]
+|-
+| [[Jur people|Jur]]
+| [[Nilotic languages|Nilotic]] → [[Luo languages|Luo]] → [[Jur language|Jur]] 
+| [[South Sudan]]
+| Beli, Sopi, Mödö, Nyamusa, Wira, Biti, [[Morokodo]]
+| Christianity, [[Traditional African religions]]<ref>{{cite web |title=Jur (Beli & Modo)|url=http://www.gurtong.net/Peoples/PeoplesProfiles/Jurbielbeli/tabid/198/Default.aspx |publisher=gurtong |access-date=17 June 2014}}</ref>
+|- id=K
+| [[Kabyle people|Kabyle]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Berber languages|Berber]] → [[Kabyle languages|Kabyle]]
+| [[Algeria]] 
+([[Kabylia]])
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Kafwe Twa]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Tonga language (Zambia and Zimbabwe)|Tonga]]
+| [[Zambia]] ([[Kafue Flats]])
+|
+| [[Traditional African religions|Traditional African religion]]
+|-
+| [[Kaguru people|Kaguru]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Kagulu language|Kagulu]]
+| [[Tanzania]] ([[Ukaguru Mountains]])
+|
+| [[Folk religion]]
+|-
+| [[Kalanga people|Kalanga]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Kalanga language|Kalanga]]
+| [[Zimbabwe]], [[Botswana]]
+| [[Nambya people|Nambya]]
+| Christianity
+|-
+| [[Kalenjin people|Kalenjin]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Nilotic languages|Nilotic]] → [[Nandi–Markweta languages|Kalenjin]]<ref name="Language family" group="note" />
+| [[Kenya]] ([[Rift Valley Province]])
+| [[Keiyo people|Keiyo]], [[Tugen people|Tugen]], [[Marakwet people|Marakwet]], [[Nandi people|Nandi]], [[Kipsigis people|Kipsigis]], [[Sabaot people|Sabaot]], [[Pokot people|Pokoot]], [[Terik people|Terik]]
+| Christianity
+|-
+| [[Kamba people|Kamba]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Kamba language|Kamba]]
+| [[Kenya]] ([[Eastern Province (Kenya)|Ukambani]])
+|
+| Christianity
+|-
+| [[Kanuri people|Kanuri]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Saharan languages|Saharan]] → [[Kanuri language|Kanuri]]
+| [[Borno State|Kanuriland]] (Nigeria, [[Niger]], [[Chad]], [[Cameroon]])
+| [[Kanembu people|Kanembu]], Yerwa Kanuri
+| Islam
+|-
+| [[Kapsiki people|Kapsiki]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Chadic languages|Chadic]] → [[Psikyɛ dialect|Kapsiki]]
+| [[Mandara Mountains]] (Nigeria, [[Cameroon]])
+|
+| Islam
+|-
+| [[Karai-Karai people|Karai-Karai]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Chadic languages|Chadic]] → [[Karai-Karai language|Karai-Karai]]
+| Nigeria ([[Bauchi State]], [[Gombe State]], [[Yobe State]] and [[Jigawa State]])
+|
+| Islam, Christianity
+|-
+| [[Karamojong people|Karamojong]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Nilotic languages|Nilotic]] → [[Karamojong language|Karamojong]]
+| [[Uganda]]
+|
+| Christianity, [[Traditional African religion]]
+|-
+| [[Indians in Madagascar|Karana]]
+| [[Indo-European languages|Indo-European]] → [[Indo-Aryan languages|Indo-Aryan]] → [[Gujarati language|Gujarati]], [[Hindustani language|Hindustani]], [[Kutchi language|Kutchi]], [[Sindhi language|Sindhi]]<br/> [[Dravidian languages|Dravidian]] → [[Tamil language|Tamil]], [[Telugu language|Telugu]]
+
+| [[Madagascar]]
+|
+| Islam
+|-
+| [[Kassena]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Gur languages|Gur]] → [[Kasena language|Kasena]]
+| [[Ghana]] ([[Kassena-Nankana Municipal District|Kassena-Nankana]]), [[Burkina Faso]]
+|
+| [[Traditional African religions|Kassena religion]]
+|-
+| [[Kavango people|Kavango]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Bantu languages|Bantu]] → [[Kavango languages|Kavango]]<ref name="Language family" group="note" />
+| [[Namibia]]
+| [[Kwangali]], [[Mbunza]], [[Shambyu]], [[Gciriku]], [[Mbukushu]]
+| Christianity, [[Traditional African religions]]
+|-
+| [[Kerewe people|Kerewe]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Bantu languages|Bantu]] → [[Kerewe language|Kerewe]]
+| [[Tanzania]] ([[Ukerewe Island]])
+|
+| Christianity, [[Traditional African religions]]
+|-
+| [[Khassonké people|Khassonké]]
+| [[Mande languages|Mande]] → [[Manding languages|Manding]] → [[Kassonke language|Kassonke]]
+| [[Mali]] ([[Kayes Region]])
+|
+| Islam
+|-
+| [[Kiga people|Kiga]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Bantu languages|Bantu]] → [[Kiga language|Kiga]]
+| [[Uganda]], [[Rwanda]]
+|
+| Christianity → [[Catholic Church|Catholicism]], Christianity → [[Protestantism]]
+|-
+| [[Kikuyu people|Kikuyu]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Bantu languages|Bantu]] → [[Kikuyu language|Kikuyu]]
+| [[Kenya]] ([[Central Province (Kenya)|Central Province]])
+|
+| Christianity
+|-
+| [[Kilba people|Kilba]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Chadic languages|Chadic]] → [[Huba language|Huba]]
+| Nigeria ([[Hong, Nigeria|Hong]])
+|
+| Christianity
+|-
+| [[Kinga people|Kinga]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Kinga language|Kinga]]
+| [[Tanzania]] ([[Kipengere Range]])
+|
+| Christianity, [[Traditional African religions|Traditional African religion]]
+|-
+| [[Kissi people|Kissi]] 
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Mel languages|Mel]] → [[Kissi language|Kissi]]
+| [[Guinea]], [[Sierra Leone]]
+|
+| Christianity
+|-
+| [[Kofyar people|Kofyar]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Chadic languages|Chadic]] → [[Kofyar language|Kofyar]]
+| Nigeria ([[Plateau State]])
+|
+| [[Traditional African religions]]
+|-
+| [[Kongo people|Kongo]] 
+| [[Atlantic–Congo languages|Atlantic–Congo]]] → [[Bantu languages|Bantu]] → [[Kongo language|Kongo]]
+| [[Kongo Central|Kongoland]] ([[Democratic Republic of the Congo]], [[Republic of the Congo]], [[Angola]])
+| [[Lari people (Congo)|Lari]], [[Vili people|Vili]], [[Yombe people (Congo and Angola)|Yombe]], [[Suundi people|Suundi]], [[Dondo people|Dondo]], [[Hangala people|Hangala]], [[Kugni people|Kugni]], [[Manyanga people|Manyanga]], [[Beembe tribe (Kongo)|Beembe]]
+| Christianity, [[Kongo religion]]
+|-
+| [[Konjo people|Konjo]] 
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Bantu languages|Bantu]] → [[Konjo language (Bantu)|Konjo]]
+| [[Rwenzori Mountains]] ([[Democratic Republic of the Congo]], [[Uganda]])
+| [[Nande language|Nande]]
+| Christianity
+|-
+| [[Konkomba people|Konkomba]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Gur languages|Gur]] → [[Konkomba language|Konkomba]]
+| [[Ghana]], [[Togo]]
+|
+| [[Traditional African religions]], Christianity
+|-
+| [[Kono people|Kono]]
+| [[Mande languages|Mande]] → [[Vai–Kono languages|Vai–Kono]] → [[Kono language (Sierra Leone)|Kono]]
+| [[Sierra Leone]] ([[Kono District]])
+|
+| Christianity, Islam, [[Traditional African religion]]
+|-
+| [[Konso people|Konso]] 
+| [[Afroasiatic languages|Afroasiatic]] → [[Cushitic languages|Cushitic]] → [[Konso language|Konso]]
+| Ethiopia ([[Konso special woreda|Konso]])
+|
+| [[Traditional African religions]]
+|-
+| [[Kpelle people|Kpelle]] 
+| [[Mande languages|Mande]] → [[Southwestern Mande languages|Southwestern Mande]] → [[Kpelle language|Kpelle]]
+| [[Liberia]], [[Guinea]]
+|
+| [[Traditional African religions]]
+|-
+| [[Kposo people|Kposo]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Kwa languages|Kwa]] → [[Ghana–Togo Mountain languages|Ghana–Togo Mountain]] → [[Kposo language|Kposo]]
+| [[Togo]] ([[Plateaux Region, Togo|Plateaux]]), [[Ghana]]
+|
+| Christianity → [[Catholic Church|Catholicism]]
+|-
+| [[Kru people|Kru]] 
+| [[Kru languages]]<ref name="Language family" group="note" />
+| [[Liberia]] ([[Grand Kru County|Grand Kru]] and [[Maryland County|Maryland]] Counties)
+| [[Aizi]], [[Bete people|Bete]], [[Bakwe language|Bakwe]], [[Grebo people|Grebo]], [[Krahn people|Krahn]] (including [[Sapo language|Sapo]]), [[Kuwaa language|Kuwaa]]
+| Christianity
+|-
+| [[Kunama people|Kunama]] 
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Kunama language|Kunama]]
+| [[Eritrea]], Ethiopia
+|
+| Christianity → [[Oriental Orthodoxy]] → [[Ethiopian Orthodox Tewahedo Church|Ethiopian Orthodoxy]]
+|-
+| [[Kuria people|Kuria]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Kuria language|Kuria]]
+| [[Kenya]], Tanzania
+|
+| [[Traditional African religions]], Christianity
+|-
+| [[Kuteb people|Kuteb]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Jukunoid languages|Jukunoid]] → [[Kuteb language|Kuteb]]
+| Nigeria ([[Taraba State]])
+|
+| Christianity
+|-
+| [[Kwaya people|Kwaya]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Kwaya language|Kwaya]]
+| [[Tanzania]] ([[Mara Region]])
+|
+| Christianity, [[Traditional African religion]]
+|-
+| [[Kwere people|Kwere]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Kwere language|Kwere]]
+| [[Tanzania]] ([[Bagamoyo District]])
+|
+| Islam, [[Traditional African religion]]
+|- id=L
+| [[Lega people|Lega]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Lega language|Lega]]
+| [[Democratic Republic of the Congo]]
+|
+| [[Traditional African religions]]
+|-
+| [[Lemba people|Lemba]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Venda language|Venda]], [[Shona language|Shona]]
+| [[Zimbabwe]], South Africa, [[Malawi]], [[Mozambique]]
+|
+| Christianity, Islam, [[Judaism]]
+|-
+| [[Limba people (Sierra Leone)|Limba]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Limba language|Limba]]
+| [[Sierra Leone]] ([[Bombali District|Bombali]] and [[Koinadugu District]]s)
+|
+| Christianity
+|-
+| [[Lisi people|Lisi]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Central Sudanic languages|Central Sudanic]] → [[Naba language|Naba]]
+| [[Chad]] ([[Lake Fitri]]) 
+| [[Bilala]], [[Kuka people|Kuka]] and the [[Medogo]]
+| Islam
+|-
+| [[Lozi people|Lozi]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Lozi language|Lozi]]
+| [[Zambia]] ([[Barotseland]]), [[Zimbabwe]], [[Namibia]] ([[Zambezi Region]]), [[Botswana]]
+| [[Mafwe]], [[Mbukushu]], [[Totela]], [[Yeyi people|Yeyi]]
+| Christianity, [[Traditional African religions]]
+|-
+| [[Luba people|Luba]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Luban languages|Luban]]<ref name="Language family" group="note" />
+| [[Democratic Republic of the Congo]] ([[Lubaland]])
+| [[Luba-Kasai language|Luba-Kasai]], [[Luba-Katanga language|Luba-Katanga]], [[Hemba people|Hemba]] (including [[Bangubangu]]), [[Songe language|Songe]], [[Lulua people|Lulua]]
+| Christianity
+|-
+| [[Lugbara people|Lugbara]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Central Sudanic languages|Central Sudanic]] → [[Lugbara language|Lugbara]]
+| [[Democratic Republic of the Congo]] ([[Orientale Province]]), [[South Sudan]], [[Uganda]] ([[West Nile sub-region|West Nile]] (particularly [[Arua City]], [[Arua District|Arua]], [[Maracha District|Maracha]], [[Terego District|Terego]], [[Madi-Okollo District|Madi-Okollo]], [[Yumbe District|Yumbe]] and [[Koboko District|Koboko]] [[Districts of Uganda|districts]]))
+| Ayivu, Maracha, Terego, Vurra, Aringa
+| Christianity, Islam, [[Lugbara mythology|Lugbara religion]]<ref>{{cite web|url=https://www.ubos.org/wp-content/uploads/publications/03_20182002_CensusPopnCompostionAnalyticalReport_(1).pdf|title=Population Composition|website=ubos.org|access-date=7 August 2023}}</ref>
+|-
+| [[Luhya people|Luhya]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Luhya language|Luhya]]
+| [[Kenya]] ([[Western Province (Kenya)|Western Province]])
+| [[Bukusu]], [[Idakho]], [[Isukha]], [[Kabras]], [[Khayo]], [[Kisa tribe|Kisa]], [[Marachi]], [[Maragoli]], [[Marama tribe|Marama]], [[Nyole tribe|Nyole]], [[Samia tribe|Samia]], [[Tachoni]], [[Tiriki]], [[Tsotso]], [[Wanga tribe (Luhya)|Wanga]], 
+| Christianity
+|-
+| [[Luo people (Kenya)|Luo]] 
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Nilotic languages|Nilotic]] → [[Luo dialect|Dholuo]]
+| [[Kenya]]
+|
+| Christianity
+|-
+| [[Luso-Africans]]
+| [[Indo-European languages|Indo-European]] → [[Romance languages|Romance]] → [[Portuguese language|Portuguese]] → [[Portuguese language in Africa|African Portuguese]]
+| PALOP countries ([[Angola]], [[Guinea-Bissau]], [[Cape Verde]], [[Mozambique]], [[São Tomé and Príncipe]], [[Equatorial Guinea]]), South Africa
+| | [[Portuguese Africans]] (including [[Portuguese Angolans|Luso-Angolans]], [[Cape Verdeans]], [[Demographics of Equatorial Guinea|Luso-Equatoguineans]], [[Portuguese Guineans|Luso-Guineans]], [[Portuguese Mozambicans|Luso-Mozambicans]], [[Demographics of São Tomé and Príncipe|Santomeans]], [[Portuguese South African|Luso-South Africans]])
+| Christianity → [[Catholic Church|Catholicism]]
+|- id=M
+| [[Maasai people|Maasai]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Nilotic languages|Nilotic]] → [[Maasai language|Maasai]]
+| [[Maasailand]] ([[Tanzania]], [[Kenya]]) 
+| [[Samburu people|Samburu]], [[Arusha people|Arusha]], [[Kwavi people|Kwavi]]
+| [[Traditional African religions]]
+|-
+| [[Madi people|Madi]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Central Sudanic languages|Central Sudanic]] → [[Ma'di language|Ma'di]]
+| [[Democratic Republic of the Congo]], [[South Sudan]], [[Uganda]]
+|
+| Christianity
+|-
+| [[Mafa people|Mafa]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Chadic languages|Chadic]] → [[Mafa language|Mafa]]
+| [[Cameroon]], [[Nigeria]]
+|
+| Christianity
+|-
+| [[Majang people|Majang]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Surmic languages|Surmic]] → [[Majang language|Majang]]
+| [[Ethiopia]] ([[Gambela Region]])
+|
+| Christianity, [[Traditional African religion]]
+|-
+| [[Makaa people|Makaa]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Makaa language|Makaa]], [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Byep language|Byep]]
+| [[Cameroon]] ([[East Region (Cameroon)|East Region]], [[Centre Region (Cameroon)|Centre Region]])
+| [[Makaa language|South Makaa]], [[Byep language|North Makaa]]
+| Christianity, [[Traditional African religion]]
+|-
+| [[Makonde people|Makonde]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Makonde language|Makonde]]
+| [[Tanzania]], [[Mozambique]] ([[Mueda Plateau]])
+| [[Machinga people|Machinga]]
+| Islam
+|-
+| [[Makua people|Makua]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Makhuwa language|Makhuwa]]
+| [[Mozambique]]
+| [[Lomwe people|Lomwe]], [[Chuwabu language|Chuwabu]], [[Moniga language|Moniga]], [[Koti language|Koti]], [[Nathembo language|Nathembo]]
+| [[Traditional African religions]]
+|-
+| [[Malagasy people|Malagasy]]
+| [[Austronesian languages|Austronesian]] → [[Barito languages|Greater Barito]] → [[Malagasy language|Malagasy]]
+| [[Madagascar]], [[Comoros]], [[Mayotte]], [[Réunion]], [[Mauritius]]
+| [[Merina people|Merina]], [[Sihanaka]], [[Betsileo people|Betsileo]], [[Zafimaniry]], [[Antaifasy]], [[Antemoro people|Antemoro]], [[Antaisaka people|Antaisaka]], [[Antambahoaka]], [[Antandroy|Tandroy]], [[Antankarana]], [[Antanosy people|Antanosy]], [[Bara people|Bara]], [[Betsimisaraka people|Betsimisaraka]], [[Bezanozano]], [[Mahafaly]], [[Makoa]], [[Mikea people|Mikea]], [[Sakalava people|Sakalava]], [[Tanala]], [[Tsimihety people|Tsimihety]], [[Vezo people|Vezo]]
+| Christianity, [[Malagasy mythology|Malagasy religion]]
+|-
+| [[Malbars]]
+| [[Indo-European languages|Indo-European]] → [[French-based creole languages|French]] → [[Réunion Creole]]<br/> Historically [[Indo-European languages|Indo-European]] → [[Romance languages|Romance]] → [[French language|French]]
+| [[Réunion]]
+|
+| [[Hinduism]]
+|-
+| [[Mambila people|Mambila]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Mambila language|Mambila]]
+| [[Mambilla Plateau]] (Nigeria, [[Cameroon]])
+| [[Somyev language|Somyev]]
+| [[Traditional African religions]]
+|-
+| [[Mandinka people|Mandinka]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Mande languages|Mande]] → [[Manding languages|Manding]]<ref name="Language family" group="note" />
+| [[Mali]], [[The Gambia]], [[Guinea]], [[Senegal]]
+| [[Bolon language|Bolon]]
+| Islam
+|-
+| [[Manjak people|Manjak]]
+| [[Niger–Congo languages|Niger–Congo]] → [[West Atlantic languages|West Atlantic]] → [[Senegambian languages|Senegambian]] → [[Manjak language|Manjak]]
+| [[Guinea-Bissau]], [[Senegal]]
+|
+| [[Traditional African religions]]
+|- 
+| [[Masa people|Masa]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Chadic languages|Chadic]] → [[Massa language|Masana]]
+| [[Cameroon]], [[Chad]]
+|
+| Christianity, Islam{{citation needed|date=August 2022}}
+|-
+| [[Masalit people|Masalit]] 
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Masalit language|Masalit]]
+| [[Sudan]], [[Chad]]
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Mauritian Creoles]]
+| [[Indo-European languages|Indo-European]] → [[French-based creole languages|French-]] → [[Mauritian Creole]]
+| [[Mauritius]] 
+|
+| Christianity → [[Catholicism]], [[Rastafari]]
+|-
+| [[Mbaka people|Mbaka]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Ubangian languages|Ubangian]] → [[Mbaka language|Mbaka]]
+| [[Central African Republic]], [[Democratic Republic of the Congo]]
+|
+| Christianity → [[Catholic Church|Catholicism]]
+|-
+| [[Mbugu people|Mbugu]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Mbugu language|Mbugu]], [[Pare language|Pare]]<br/> [[Niger–Congo languages|Niger–Congo]] and [[Afroasiatic languages|Afroasiatic]] → [[Bantu languages|Bantu]] and [[Cushitic languages|Cushitic]] → [[Mbugu language|Maʼa]]
+| [[Tanzania]] ([[Usambara Mountains]])
+|
+| Christianity, Islam, [[Traditional African religion]]
+|-
+| [[Mende people|Mende]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Mande languages|Mande]] → [[Mende language|Mende]]
+| [[Sierra Leone]] ([[Southern Province, Sierra Leone|Southern]] and [[Eastern Province, Sierra Leone|Eastern]] Provinces)
+|
+| Islam
+|-
+| [[Mijikenda peoples|Mijikenda]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Mijikenda language|Mijikenda]]
+| [[Kenya]] ([[Coast Province]])
+| [[Chonyi people|Chonyi]], [[Giriama people|Giriama]], [[Digo people|Digo]], [[Segeju people|Segeju]], [[Rabai]]
+| Christianity
+|-
+| [[Mongo people|Mongo]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Mongo language|Mongo]]
+| [[Democratic Republic of the Congo]] ([[Province of Equateur|Equateur]], [[Tshuapa]], [[Mongala]], [[Nord-Ubangi]], [[Sud-Ubangi]])
+| [[Lia-Ntomba language|Bolia, Ntomba]], [[Ngando people|Ngando]], [[Iyaelima people|Iyaelima]], [[Mbole people|Mbole]], [[Mpama people|Mpama]], [[Nkutu language|Nkutu]], [[Sengele language|Sengele]], [[Hendo language|Hendo]], [[Dengese people|Dengese]], [[Tetela people|Tetela]]
+| Christianity
+|-
+| [[Moru people|Moru]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Central Sudanic languages|Central Sudanic]] → [[Moru language|Moru]]
+| [[South Sudan]] ([[Western Equatoria]])
+| Miza, Ägyi, Moroändri, Kediro, 'Bari'ba<ref>Tucker, A.N. (1940) The Eastern Sudanic Languages. OUP</ref>
+| Christianity → [[Protestantism]] → [[Anglicanism]] → [[Province of the Episcopal Church of South Sudan|Episcopal Church of the South Sudan]]<ref>Lawiri, E.B. (1987) The Growth of the Church in Moru Country. Moru Literacy Project, Mundri, Sudan. He set the Christian foundation through his work in Lui.</ref>
+|-
+| [[Mossi people|Mossi]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Gur languages|Gur]] → [[Mossi language|Mossi]]
+| [[Burkina Faso]] ([[Mossi Kingdoms|Mossiland]])
+|
+| Islam
+|-
+| [[Mozabite people|Mozabite]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Berber languages|Berber]] → [[Mozabite language|Mozabite]]<br/> [[Afroasiatic languages|Afroasiatic]] → [[West Semitic languages|West Semitic]] → [[Algerian Arabic]]
+| [[Algeria]]
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Mumuye people|Mumuye]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Adamawa languages|Adamawa]] → [[Mumuye language|Mumuye]]
+| Nigeria ([[Taraba State]])
+|
+| [[Traditional African religions]]
+|-
+| [[Musgum people|Musgum]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Chadic languages|Chadic]] → [[Musgu language|Musgu]]
+| [[Cameroon]] ([[Far North Region, Cameroon|Far North Region]]), [[Chad]] ([[Chari-Baguirmi (region)|Chari-Baguirmi]], [[Mayo-Kebbi Est]])
+|
+| Islam
+|-
+| [[Mwera people|Mwera]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Mwera language|Mwera]]
+| [[Tanzania]] ([[Mtwara Region|Mtwara]] and [[Ruvuma Region|Ruvuma]] Regions)
+|
+| Islam
+|- id=N
+| [[Nama people|Nama]]
+| [[Khoe languages|Khoe]] → [[Khoekhoe language|Khoekhoe]]
+| [[Namibia]] ([[Namaland]]), South Africa
+| [[Oorlam people|Oorlams]]
+| Christianity
+|-
+| [[Nara people|Nara]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Eastern Sudanic languages|Eastern Sudanic]] → [[Nara language|Nara]]
+| [[Eritrea]]
+| Higir, Mogareb, Koyta, Santora
+| Islam, [[Animism]]
+|-
+| [[Ndendeule people|Ndendeule]]
+| [[Niger-Congo languages]] → [[Bantu languages]] → [[Ndendeule language|Ndendeule]]
+| [[Tanzania]]
+|
+| [[Animism]]
+|-
+| [[Ngbandi people|Ngbandi]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Ubangian languages|Ubangian]] → [[Ngbandi language|Ngbandi]]
+| [[Democratic Republic of the Congo]], [[Central African Republic]]
+| [[Yakoma people|Yakoma]]
+| Christianity
+|-
+| [[Ngoni people|Ngoni]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Ngoni dialect|Ngoni]]
+| [[Malawi]], [[Mozambique]], Tanzania, [[Zimbabwe]], and [[Zambia]]
+|
+| Christianity, [[African Traditional Religion]], [[Sangoma]], Islam
+|-
+| [[Nkole people|Nkole]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Nkore-Kiga language|Nkore-Kiga]] → [[Nkore language|Nkore]]
+| [[Uganda]] ([[Ankole]])
+|
+| Christianity, [[Ruhanga]]
+|-
+| [[Northern Ndebele people|Northern Ndebele]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Nguni languages|Nguni]] → [[Northern Ndebele language|Northern Ndebele]]
+| [[Zimbabwe]] ([[Matabeleland]])
+|
+| Christianity, [[Traditional African religions]]
+|-
+| [[Nubians]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Nubian languages|Nubian]]<ref name="Language family" group="note" />
+| [[Nubia]] ([[Egypt]], Sudan)
+| [[Nobiin language|Nobiin]], [[Kenzi language|Mattokki]], [[Dongolawi language|Dongolawi]], [[Midob people|Midob]], [[Birgid language|Birgid]], [[Hill Nubian languages|Hill Nubians]] (including [[Dilling people|Dilling]], [[Debri people|Debri]], [[Ghulfan people|Ghulfan]], [[Kadaru people|Kadaru]], [[Karko people|Karko]], and [[Wali language (Sudan)|Wali]])
+| Islam → [[Sunni Islam]]
+|-
+| [[Nubians (Uganda)|Nubis]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Arabic-based creole languages|Arabic]] → [[Nubi language|Nubi]]
+| [[Uganda]], [[Kenya]]
+| Ugandan Nubis, Kenyan Nubis
+| Islam
+|-
+| [[Nuer people|Nuer]] 
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Nilotic languages|Nilotic]] → [[Nuer language|Nuer]]
+| [[South Sudan]] ([[Nuerland]])
+|
+| [[Traditional African religions]]
+|-
+| [[Nupe people|Nupe]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Nupoid languages|Nupoid]] → [[Nupe language|Nupe]]
+| [[Nigeria]] ([[Niger State]], [[Kwara State]])
+|
+| Islam, Christianity, [[Traditional African religions]]
+|-
+| [[Nyambo language|Nyambo]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Nyambo language|Nyambo]]
+| [[Tanzania]] ([[Karagwe District]], [[Kagera Region]])
+|
+| Christianity → [[Protestantism]] → [[Evangelicalism]]
+|-
+| [[Nyoro people|Nyoro]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Nyoro language|Nyoro]]
+| [[Uganda]] ([[Bunyoro]])
+|
+| Christianity, Islam, [[Traditional African religion]]
+|- id=O
+| [[Okiek people|Ogiek]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Nilotic languages|Nilotic]] → [[Ogiek language|Ogiek]]
+| [[Kenya]] ([[Mau Forest]], [[Mount Elgon]])
+|
+| Christianity, [[Traditional African religions|Traditional Ogiek religion]]<ref>{{Cite book|title=Indigenous Peoples – An Encyclopedia of Culture, History, and Threats to Survival|last=Williams|first=Victoria R.|publisher=[[ABC-CLIO]]|year=2020|isbn=9781440861178|pages=833|language=En|url=https://www.abc-clio.com/products/a5638c/|volume=4|access-date=9 May 2023|archive-url=https://web.archive.org/web/20220518192508/https://www.abc-clio.com/products/a5638c/|archive-date=18 May 2022|url-status=live}}</ref>
+|-
+| [[Ogoni people|Ogoni]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Cross River languages|Cross River]] → [[Ogoni languages|Ogoni]]<ref name="Language family" group="note" />
+| Nigeria ([[Rivers State|Ogoniland]])
+| [[Baan language|Baan]], [[Eleme people|Eleme]], [[Gokana language|Gokana]], [[Tee language|Tẹẹ]]
+| Christianity
+|-
+| [[Ogu people|Ogu]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Kwa languages|Kwa]] → [[Gbe languages|Gbe]] → [[Gun language|Gun]]
+| Nigeria ([[Lagos]], [[Ogun State]]), [[Benin]]
+|
+| Christianity, Islam, [[West African Vodun]]<ref>{{cite news |author=Segun Olatunji |date=27 December 2013 |title=Egun people blame underdevelopment on minority status |url=http://www.punchng.com/news/egun-people-blame-underdevelopment-on-minority-status/ |access-date=13 August 2015|newspaper=[[The Punch]]}}</ref>
+|-
+| [[Oku people (Sierra Leone)|Oku]]
+| [[Indo-European languages|Indo-European]] → [[English-based creole languages|English]] → [[Krio language|Krio]]<br/> [[Indo-European languages|Indo-European]] → [[Germanic languages|Germanic]] → [[English language|English]] → [[Sierra Leonean English]]
+| [[Sierra Leone]], [[The Gambia]]
+|
+| Islam
+|-
+| [[Oromo people|Oromo]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Cushitic languages|Cushitic]] → [[Oromo language|Oromo]]<ref name="Language family" group="note" />
+| Ethiopia ([[Oromia Region|Oromia]]), [[Kenya]]
+| [[Boorana]], [[Barento]], [[Salale]], [[Machaa]], [[Arsi people|Arsi]], [[Wollo Oromo people|Wollo]]
+| Islam → [[Sunni Islam]]
+|- 
+| [[Ovambo people|Ovambo]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Ovambo language|Ovambo]]
+| [[Namibia]] ([[Ovamboland]]), [[Angola]]
+|
+| Christianity → [[Protestantism]] → [[Lutheranism]]
+|-
+| [[Ovimbundu]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Umbundu]]
+| [[Angola]]
+|
+| Christianity
+|-
+| [[Papel people|Papel]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Senegambian languages|Senegambian]] → [[Papel language|Papel]]
+| [[Guinea-Bissau]] ([[Biombo Region]])
+|
+| Christianity → [[Catholic Church|Catholicism]]
+|-
+| [[Pare people|Pare]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Pare language|Pare]]
+| [[Tanzania]] ([[Pare Mountains]])
+|
+| Islam
+|-
+| [[Pedi people|Pedi]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Northern Sotho]] → Sepedi
+| South Africa ([[Limpopo]])
+|
+| Christianity
+|-
+| [[Pende people|Pende]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Pende language|Pende]]
+| [[Democratic Republic of the Congo]]
+|
+| Christianity
+|-
+|- id=R
+| [[Rendille people|Rendille]] 
+| [[Afroasiatic languages|Afroasiatic]] → [[Cushitic languages|Cushitic]] → [[Rendille language|Rendille]]
+| [[Kenya]] ([[Eastern Province (Kenya)|Eastern Province]])
+| 
+| [[Waaq]]
+|-
+| [[Rifians]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Berber languages|Berber]] → [[Tarifit]]
+| [[Morocco]]
+| 
+| Islam → [[Sunni Islam|Sunnism]]
+|- id=S
+| [[Saho people|Saho]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Cushitic languages|Cushitic]] → [[Saho language|Saho]]
+| [[Eritrea]], Ethiopia
+|
+| Islam → [[Sunni Islam|Sunnism]]
+|-
+| [[Sandawe people|Sandawe]]
+| [[Sandawe language|Sandawe]]
+| [[Tanzania]] ([[Chemba District (Tanzania)|Chemba District]])
+|
+| [[Traditional African Religion]], Islam
+|-
+| [[Sara people|Sara]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Central Sudanic languages|Central Sudanic]] → [[Sara languages|Sara]]<ref name="Language family" group="note" />
+| [[Chad]], [[Central African Republic]]
+| [[Ngambay language|Ngambay]], [[Doba language|Doba]], [[Laka language|Laka]], [[Kabba language|Kabba]], [[Sar language|Sar]], [[Mbay language|Mbay]], [[Ngam language|Ngam]], [[Dagba language|Dagba]], [[Gulay language|Gulay]]
+| [[Traditional African religions]]
+|-
+| [[Senufo people|Senufo]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → (disputed) → [[Senufo languages|Senufo]]<ref name="Language family" group="note" />
+| [[Mali]], [[Ivory Coast]], [[Burkina Faso]]
+| [[Nafana people|Nafana]], [[Minyanka language|Minyanka]]
+| [[Traditional African religions]]
+|-
+| [[Serer people|Serer]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Senegambian languages|Senegambian]] → [[Serer language|Serer]], [[Cangin languages|Cangin]]<ref name="Language family" group="note" />
+| [[Senegal]]
+| [[Serer-Laalaa|Laalaa]], [[Serer-Ndut people|Ndut]], [[Niominka people|Niominka]], [[Serer-Noon]], [[Palor people|Palor]], [[Saafi people|Saafi]]
+| Islam, [[Serer religion]]
+|-
+| [[Seychellois Creole people|Seychellois Creoles]]
+| [[Indo-European languages|Indo-European]] → [[French-based creole languages|French]] → [[Seychellois Creole]]
+| [[Seychelles]]
+|
+| Christianity → [[Catholicism]]
+|-
+| [[Sherbro people|Sherbro]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Mel languages|Mel]] → [[Sherbro language|Sherbro]]
+| [[Sierra Leone]] ([[Sherbro Island]])
+|
+| [[Traditional African religions]]
+|-
+| [[Bushi (region)|Shi]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Great Lakes Bantu languages|Great Lakes]] →[[Shi language|Mashi]]
+| [[Democratic Republic of the Congo]]
+| Havu, Bahavu, Nyindu, Banyindu, Fuliru, Bafuliru
+| [[Christianity]] → [[Catholic Church]], [[African traditional religions|Kubandwa]]
+|-
+| [[Shilha people|Shilha]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Berber languages|Berber]] → [[Shilha language|Shilha]]
+| [[Morocco]]
+|
+| Islam → [[Sunni Islam|Sunnism]]
+|-
+| [[Shilluk people|Shilluk]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Nilotic languages|Nilotic]] → [[Shilluk language|Shilluk]]
+| [[South Sudan]]
+| [[Gule tribe|Gule]]
+| Christianity → [[Catholic Church|Catholicism]]
+|-
+| [[Shona people|Shona]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Shona language|Shona]]
+| [[Zimbabwe]] ([[Mashonaland]])
+| [[Manyika dialect|Manyika]], [[Ndau people|Ndau]]
+| Christianity
+|-
+| [[Sidama people|Sidama]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Cushitic languages|Cushitic]] → [[Sidama language|Sidaama]]
+| Ethiopia ([[Sidama Region|Sidamia]])
+|
+| Christianity
+|-
+| [[Sierra Leone Creole people|Sierra Leone Creoles]]
+| [[Indo-European languages|Indo-European]] → [[English-based creole languages|English]] → [[Krio language|Krio]], [[Pichinglis]]
+| [[Sierra Leone]]
+| [[Gambian Creole people|Gambian Creoles]], [[Saro people|Saros]], [[Fernandino peoples#Krio Fernandinos|Krio Fernandinos]], with significant populations in the [[Sierra Leonean Americans|United States]]
+| Christianity
+|-
+| [[Siltʼe people|Siltʼe]]
+| [[Afroasiatic languages|Afroasiatic]] → [[West Semitic languages|West Semitic]] → [[Siltʼe language|Siltʼe]]
+| Ethiopia ([[Silt'e Zone|Siltia]])
+|
+| Islam
+|-
+| [[Sino-Mauritians]]
+| [[Indo-European languages|Indo-European]] → [[French-based creole languages|French]] → [[Mauritian Creole]]<br/> [[Sino-Tibetan languages|Sino-Tibetan]] → [[Sinitic languages|Sinitic]] → [[Hakka language|Hakka]], [[Cantonese language|Cantonese]]
+| [[Mauritius]] 
+|
+| Christianity, [[Chinese folk religion]], [[Buddhism]]
+|-
+| [[Sino-Seychellois]]
+| [[Indo-European languages|Indo-European]] → [[French-based creole languages|French]] → [[Seychellois Creole]]<br/> [[Sino-Tibetan languages|Sino-Tibetan]] → [[Sinitic languages|Sinitic]] → [[Hakka language|Hakka]], [[Cantonese language|Cantonese]]
+| [[Seychelles]] 
+|
+| Christianity, [[Chinese folk religion]], [[Buddhism]]
+|-
+| [[Chinese people in Madagascar|Sinoa]]
+| [[Sino-Tibetan languages|Sino-Tibetan]] → [[Sinitic languages|Sinitic]] → [[Cantonese language|Cantonese]], [[Mandarin language|Mandarin]]
+| [[Madagascar]]
+|
+| Christianity → [[Catholicism]]
+|-
+| [[Siwi people|Siwi]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Berber languages|Berber]] → [[Siwi language|Siwi]]
+| [[Egypt]], [[Libya]]
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Soga people|Soga]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Soga language|Soga]] 
+| [[Uganda]] ([[Busoga]])
+|
+| Christianity, [[Traditional African religions]]
+|-
+| [[Somalis]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Cushitic languages|Cushitic]] → [[Somali languages|Somali]]<ref name="Language family" group="note" />
+| [[Greater Somalia]] ([[Somalia]], Ethiopia, [[Djibouti]], [[Kenya]])
+| [[Hawiye]], [[Darod]] (including [[Majeerteen]]), [[Isaaq]], [[Dir (clan)|Dir]], [[Rahanweyn]], [[Madhiban]], [[Yibir]], [[Ajuran (clan)|Ajuran]] along with [[Somali diaspora|significant populations]] in the [[Somali Americans|United States]], the [[Somalis in the United Kingdom|United Kingdom]], [[Somalis in Sweden|Sweden]], and [[Somali Canadians|Canada]]
+| Islam → [[Sunni Islam|Sunnism]] → [[Shafi'i school|Shafi'ism]]
+|-
+| [[Songhai people|Songhai]]
+| [[Songhay languages]]<ref name="Language family" group="note" />
+| [[West Africa]]
+| [[Songhai proper]], [[Zarma people|Zarma]], [[Wogo people|Wogo]], [[Kurtey people|Kurtey]], [[Ingalkoyyu people|Ingalkoyyu]], [[Arma people|Arma]], [[Belbali people|Belbali]], [[Dendi people|Dendi]]
+| Islam
+|-
+| [[Soninke people|Soninke]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Mande languages|Mande]] → [[Soninke language|Soninke]] 
+| [[Mali]] 
+|
+| Islam → [[Sunni Islam]] → [[Maliki school|Malikism]]
+|-
+| [[Soqotri people|Soqotris]]
+| [[Afroasiatic languages|Afroasiatic]] → [[West Semitic languages|West Semitic]] → [[Soqotri language|Soqotri]]
+| [[Yemen]] ([[Socotra]])
+|
+| Islam
+|-
+| [[Basotho|Sotho]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Sotho language|Sotho]]
+| South Africa ([[Free State (province)|Free State]]), [[Lesotho]] 
+|
+| Christianity
+|-
+| [[Southern Ndebele people|Southern Ndebele]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Nguni languages|Nguni]] → [[Southern Ndebele language|Southern Ndebele]]
+| [[South Africa]] ([[Mpumalanga]], [[Gauteng]], [[Limpopo]])
+|
+| Christianity, [[Traditional African religions]]
+|-
+| [[Spaniards]]
+| [[Indo-European languages|Indo-European]] → [[Romance languages|Romance]] → [[Spanish language|Spanish]] → [[Canarian Spanish]], [[Silbo Gomero]], [[Isleño Spanish]]
+| Spain ([[Canary Islands]], [[Ceuta]], [[Melilla]])
+| 
+| Christianity → [[Catholicism]]
+|-
+| [[Sukuma people|Sukuma]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Sukuma language|Sukuma]] 
+| [[Tanzania]]
+|
+| Christianity → [[Catholic Church|Catholicism]]
+|-
+| [[Surma people|Surma]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Surmic languages|Surmic]]<ref name="Language family" group="note" />
+| Ethiopia, [[South Sudan]]
+| [[Mekan people|Me'en]], [[Mursi people|Mursi]], [[Kichepo people|Kichepo]]
+| [[Traditional African religions]]
+|-
+| [[Susu people|Susu]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Mande languages|Mande]] → [[Susu language|Susu]]
+| [[Guinea]], [[Sierra Leone]] ([[Kambia District|Kambia]])
+|
+| Islam
+|-
+| [[Swahili people|Swahili]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Swahili language|Swahili]]
+| [[Swahili coast]] ([[Kenya]], Tanzania, [[Mozambique]], [[Comoros]])
+| [[Shirazi people|Shirazi]] (including [[Zanzibar]]is, and [[Mayotte|Maore]])
+| Islam
+|-
+| [[Swazi people|Swazi]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Swazi language|Swazi]] 
+| South Africa ([[Mpumalanga]]), [[Eswatini]] 
+|
+| Christianity → [[African Zionism]]
+|- id=T
+| [[Tallensi]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Gur languages|Gur]] → [[Talni language|Talni]]
+| [[Ghana]] (Tallensi Traditional Area), [[Burkina Faso]]
+|
+| [[Traditional African religions|Tallensi religion]]
+|-
+| [[Tama people|Tama]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Taman languages|Taman]] → [[Tama language|Tama]]
+| [[Chad]], Sudan
+|
+| Islam
+|-
+| [[Tarok people|Tarok]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Plateau languages|Plateau]] → [[Tarok language|Tarok]]
+| Nigeria ([[Plateau State]])
+|
+| Christianity
+|-
+| [[Teke people|Teke]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Teke languages|Teke]]
+| [[Republic of the Congo]], [[Democratic Republic of the Congo]]
+|
+| [[Traditional African religions]]<ref>{{cite book |last1=Ndinga Mbo |first1=Abraham Constant |editor1-last=Obenga |editor1-first=Theophile |title=Histoire générale du Congo des origines à nos jours I. Méthodologie historique Genèse du Congo |date=2010 |publisher=L'Harmattan |pages=148–149 |language=French |chapter=Les preludes historiques : Geneses, migrations, installation des peuples}}</ref>
+|-
+| [[Temne people|Temne]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Mel languages|Mel]] → [[Temne language|Temne]]
+| [[Sierra Leone]] ([[Northern Province, Sierra Leone|Northern Sierra Leone]])
+|
+| Islam
+|-
+| [[Tigrayans]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Ethiopian Semitic languages|Ethiopic]] → [[Tigrinya language|Tigrinya]]
+| [[Eritrea]] ([[Eritrean Highlands]]), Ethiopia ([[Tigray Region|Tigrayia]])
+|
+| Christianity → [[Oriental Orthodoxy]] → [[Ethiopian Orthodox Tewahedo Church|Ethiopian Orthodoxy]]
+|-
+| [[Tigre people|Tigre]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Ethiopian Semitic languages|Ethiopic]] → [[Tigre language|Tigre]]
+| [[Eritrea]]
+|
+| Islam
+|-
+| [[Tiv people|Tiv]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Tiv language|Tiv]]
+| Nigeria ([[Benue State]]) 
+|
+| Christianity
+|-
+| [[Tonga language (Zambia and Zimbabwe)|Tonga]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Tonga language (Zambia and Zimbabwe)|Tonga]]
+| [[Zambia]], [[Zimbabwe]]
+|
+| [[Traditional African Religion]]
+|-
+| [[Tooro people|Tooro]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Tooro language|Tooro]]
+| [[Uganda]] ([[Tooro Kingdom]])
+| Abagweri, Abasingo, Abahinda, Ababiito, Abasumbi, Abayaga, Ababwiju, Abasiita, Abasambo, Ababoopi, Ababwooro, Abagaya, Abalebeki, Abango, Abagimu, Abarungu, Abanyakyoozi, Abasoigi<ref>{{Cite book|last=Kaji|first=Shigeki|url=http://archive.org/details/rutoorovocabular10kaji|title=A Rutooro Vocabulary|date=2007|publisher=アジア・アフリカ言語文化研究所|others=PanLex Project The Long Now Foundation|isbn=978-4-87297-890-2|pages=190–196}}</ref>
+| Christianity, [[Ruhanga]]
+|-
+| [[Toubou people|Toubou]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Saharan languages|Saharan]] → [[Tebu languages|Tebu]]<ref name="Language family" group="note" />
+| [[Tibesti Mountains|Toubouland]] ([[Chad]], [[Niger]], Sudan, [[Libya]])
+| [[Daza language|Daza]], [[Teda language|Teda]]
+| Islam → [[Sunni Islam]]
+|-
+| [[Tsonga people|Tsonga]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Tsonga language|Tsonga]]
+| [[Mozambique]] ([[Maputo]] City and [[Province|Maputo Province]], [[Gaza Province]]), South Africa ([[Limpopo]], [[Mpumalanga]])
+|
+| Christianity → [[Catholic Church|Catholicism]]
+|-
+| [[Tswana people|Tswana]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Tswana language|Tswana]]
+| [[Botswana]], South Africa ([[North West (South African province)|South Tswanaland]])
+| [[Balete people|Balete]], [[Mangwato tribe|Mangwato]], [[Bangwaketse]], [[Bakwena]], [[Batlokwa]], [[Bahurutshe]], [[Bakgatla]], [[Rolong tribe|Rolong]]
+| Christianity
+|-
+| [[Tuareg people|Tuareg]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Berber languages|Berber]] → [[Tuareg languages]]<ref name="Language family" group="note" />
+| [[Algeria]], [[Burkina Faso]], [[Niger]], [[Nigeria]], [[Mali]], [[Mauritania]] 
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Tumbuka people|Tumbuka]]
+| [[Niger-Congo languages|Niger-Congo]] → [[Bantu languages|Bantu]] → [[Tumbuka language|Tumbuka]]
+| [[Malawi]], [[Zambia]], [[Tanzania]], [[Zimbabwe]]
+| [[Senga people|Senga]], Henga, [[Yombe people (Zambia)|Yombe]], Phoka, [[Tonga people (Malawi)|Tonga]]
+| Christianity, [[Tumbuka mythology]]
+|-
+| [[Tupuri people|Tupuri]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Adamawa languages|Adamawa]] → [[Tupuri language|Tupuri]]
+| [[Cameroon]] ([[Far North Region, Cameroon|Far North Region]]), [[Chad]] ([[Mayo-Kebbi (prefecture)|Mayo-Kebbi]])
+|
+| Christianity
+|-
+| [[Turkana people|Turkana]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Nilotic languages|Nilotic]] → [[Turkana language|Turkana]]
+| [[Kenya]] ([[Turkana County|Turkanaland]])
+|
+| Christianity → [[Catholic Church|Catholicism]]
+|-
+| [[Tutsi]]{{NoteTag|Due to the history of intermingling and intermarrying of Hutu and Tutsi, some ethnographers and historians believe that the Hutu and Tutsi cannot be called distinct ethnic groups.<ref>[[Philip Gourevitch]], {{cite book |title=We Wish to Inform You That Tomorrow We Will Be Killed With Our Families |title-link=We Wish to Inform You That Tomorrow We Will Be Killed With Our Families |year=1998}}</ref><ref>{{cite web|url=http://www.preventgenocide.org/edu/pastgenocides/rwanda/indangamuntu.htm|title='Indangamuntu 1994: Ten years ago in Rwanda this ID Card cost a woman her life' by Jim Fussell|website=www.preventgenocide.org}}</ref><ref>{{Cite magazine |last=Gourevitch |first=Philip |date=10 December 1995 |title=From 1995: Rwanda, After the Genocide |url=https://www.newyorker.com/magazine/1995/12/18/after-the-genocide |access-date=14 May 2025 |magazine=The New Yorker |language=en-US |issn=0028-792X}}</ref>}}
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Great Lakes Bantu languages|Great Lakes]] → [[Rwanda-Rundi]]<ref name="Hutu, Tutsi, Twa" group="note" />
+| [[Rwanda]], [[Burundi]], [[Democratic Republic of the Congo]] ([[Kivu]])
+| [[Banyamulenge]]
+| Christianity, Islam
+|- id=U
+| [[Urhobo people|Urhobos]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Edoid languages|Edoid]] → [[Urhobo language|Urhobo]] 
+| Nigeria ([[Delta State]])
+|
+| Christianity
+|- id=V
+| [[Vai people|Vai]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Mande languages|Mande]] → [[Vai language|Vai]]
+| [[Liberia]], [[Sierra Leone]]
+|
+| Islam, Christianity, [[Traditional African religions]]
+|-
+| [[Venda people|Venda]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Venda language|Tshivenda]]
+| South Africa ([[Vhembe District Municipality|Vendaland]])
+|
+| Christianity, [[Traditional African religions]]
+|- id=W
+| [[Wala people|Wala]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Gur languages|Gur]] → [[Wali language (Gur)|Wali]]
+| [[Ghana]] ([[Upper West Region]])
+|
+| Islam → [[Sunni Islam]], [[Animism]]
+|-
+| [[Welayta people|Welayta]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Omotic languages|Omotic]] → [[Wolaitta language|Wolaitta]]
+| Ethiopia ([[Wolayita Zone|Wolayitia]])
+|
+| Christianity → [[Protestantism]] → [[P'ent'ay]]
+|-
+| [[Wolane people|Wolane]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Ethiopian Semitic languages|Ethiopic]] → [[Siltʼe language|Wolane]]
+| Ethiopia ([[Gurage Zone|Gurage]])
+|
+| Islam<ref>{{cite web |title=Wolane in Ethiopia |url=https://joshuaproject.net/people_groups/19814/ET |website=Joshua Project}}</ref>
+|-
+| [[Wolof people|Wolof]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Atlantic languages|Atlantic]] → [[Senegambian languages|Senegambian]] → [[Wolof language|Wolof]]
+| [[Senegambia]] ([[Senegal]], [[The Gambia]])
+| [[Lebu people|Lebu]]
+| Islam → [[Sunni Islam]] → [[Sufism]] → [[Mouride]]
+|- id=X
+| [[Xhosa people|Xhosa]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Nguni languages|Nguni]] → [[Xhosa language|Xhosa]]
+| South Africa ([[Eastern Cape|Xhosaland]])
+| [[Fengu people|Fengu]], [[Gcaleka House|Gcaleka]], [[Gqunukhwebe]], [[Gaika people|Gaika]], [[Mpondomise people|Mpondomise]], [[Thembu]], [[Xesibe people|Xesibe]]
+| Christianity
+|- id=Y
+| [[Demographics of Réunion#Ethnic groups|Yabs]]
+| [[Indo-European languages|Indo-European]] → [[French-based creole languages|French]] → [[Réunion Creole]]
+| [[Réunion]]
+|
+| [[Christianity]]
+|-
+| [[Yako people|Yako]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Cross River languages|Cross River]] → [[Yako language|Yako]]
+| Nigeria ([[Yakurr Local Government]])
+|
+| Christianity
+|-
+| [[Yao people (East Africa)|Yao]] 
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Yao language|Yao]]
+| [[Malawi]], [[Mozambique]], Tanzania ([[Ruvuma Region|Ruvuma]] and [[Mtwara Region|Mtwara]] Regions)
+|
+| Islam and [[Animism]] → [[Folk religion#Folk Islam|Yao Folk Islam]]
+|-
+| [[Yoa-Lokpa people|Yoa-Lokpa]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Gur languages|Gur]] → [[Oti–Volta languages|Oti–Volta]] → [[Yom language|Yom]], [[Niger–Congo languages|Niger–Congo]] → [[Gur languages|Gur]] → [[Gurunsi languages|Gurunsi]] → [[Lukpa language|Lukpa]]
+| [[Benin]] ([[Donga Department]])
+|
+| [[Ethnic religion]]<ref name=enc>Toyin Falola, Daniel Jean-Jacques (2016). [https://books.google.com/books?id=YjoVCwAAQBAJ&pg=PA52 ''Africa: An Encyclopedia of Culture and Society''], volume 1. Santa Barbara, California; Denver, Colorado: ABC-CLIO. {{isbn|9781786844576}}.</ref>
+|-
+| [[Yoruba people|Yoruba]]
+| [[Atlantic–Congo languages|Atlantic–Congo]] → [[Yoruboid languages|Yoruboid]] → [[Yoruba language|Yoruba]]<br/> [[Yoruba Sign Language|Yoruba Sign]]
+| [[Yorubaland]] (Nigeria, [[Benin]], [[Togo]])
+| [[Ijesha]], [[Egba people|Egba]], [[Yewa clan|Yewa]], [[Igbomina]], [[Awori people|Awori]], [[Akoko]], [[Okun people|Okun]], [[Ana people|Ana]], [[Ekiti people|Ekiti]], [[Ilaje]], [[Ijebu people|Ijebu]], Oyo, Ondo, Ife, [[Nagos]], with significant populations in the [[Yoruba Americans|United States]] and [[Yoruba Canadians|Canada]]
+| Christianity, Islam, [[Yoruba religion]]
+|- id=Z
+| [[Zaghawa people|Zaghawa]]
+| [[Nilo-Saharan languages|Nilo-Saharan]] → [[Saharan languages|Saharan]] → [[Zaghawa language|Zaghawa]]
+| [[Chad]], Sudan
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Zande people|Zande]]<ref group="note">Otherwise known as Azande.</ref><ref>{{cite encyclopedia|last=Gordon|first=Raymond|title=Lugbara language|encyclopedia=Ethnologue: Languages of the World|publisher=SIL International|location=Dallas, Texas|url=http://www.ethnologue.com/show_language.asp?code=lgg|year=2005}}</ref>
+| [[Niger–Congo languages|Niger–Congo]] → [[Zande language|Zande]]
+| [[Democratic Republic of the Congo]], [[Central African Republic]], [[South Sudan]]
+| [[Barambu people|Barambu]]
+| Christianity
+|-
+| [[Zarabes]]
+| [[Indo-European languages|Indo-European]] → [[French-based creole languages|French]] → [[Réunion Creole]]<br/> [[Indo-European languages|Indo-European]] → [[Indo-Aryan languages|Indo-Aryan]] → [[Gujarati language|Gujarati]]
+| [[Réunion]]
+|
+| [[Islam]]
+|-
+| [[Zayanes]]
+| [[Afroasiatic languages|Afroasiatic]] → [[Berber languages|Berber]] → [[Central Atlas Tamazight]]
+| [[Morocco]] ([[Khenifra]])
+|
+| Islam → [[Sunni Islam]]
+|-
+| [[Zulu people|Zulu]]
+| [[Niger–Congo languages|Niger–Congo]] → [[Bantu languages|Bantu]] → [[Nguni languages|Nguni]] → [[Zulu language|Zulu]]
+| South Africa ([[KwaZulu-Natal]])
+|
+| Christianity
+|-
+| [[ǃKung people|ǃKung]]
+| [[Kxʼa languages|Kxʼa]] → [[ǃKung languages|ǃKung]]<ref name="Language family" group="note" />
+| [[Namibia]] ([[Kalahari Desert]])
+| ǃXun, Ju
+| [[Animism]]
+|-
+| [[ǂAakhoe dialect|ǂAakhoe]]
+| [[Khoe-Kwadi languages|Khoe-Kwadi]] → [[Khoe languages|Khoe]] → [[Khoekhoe language|Khoekhoe]] → [[ǂAakhoe dialect|ǂAakhoe]]
+| [[Namibia]]
+|
+| [[Animism]]
+|}
+
+{{notelist}}
+
+==Lists of ethnic groups==
+;<nowiki>By status:</nowiki>
+* [[List of Indigenous peoples]]
+* [[List of diasporas]]
+* [[Stateless nation#List|List of stateless nations]]
+
+;<nowiki>Regional lists:</nowiki>
+* [[African people]]
+** [[Indigenous people of Africa]]
+** [[Ethnic groups in Algeria]]
+** [[Ethnic groups in Botswana]]
+** [[Ethnic groups in Burundi]]
+** [[Ethnic groups in Chad]]
+** [[Demographics of Eritrea#Ethno-linguistic groups|List of ethno-linguistic groups in Eritrea]]
+** [[List of ethnic groups in Ethiopia]]
+** [[List of ethnic groups in Nigeria]]
+*** [[List of ethnic groups in Rivers State]]
+** [[Ethnic groups in Rwanda]]
+** [[List of ethnic groups in Tanzania]]
+** [[Ethnic groups in Senegal]]
+** [[Ethnic groups in Sierra Leone]]
+** [[List of ethnic groups in South Sudan]]
+** [[List of ethnic groups in Zambia]]
+* [[Ethnic groups in Asia|Asian people]]
+** [[List of contemporary ethnic groups of Asia]]
+** [[Ethnic groups in Northern Asia]]
+*** [[List of ethnic groups in Russia]]
+** [[East Asian people|List of ethnic groups in East Asia]]
+*** [[List of ethnic groups in China]]
+*** [[Ethnic groups of Japan|List of ethnic groups in Japan]]
+*** [[Demographics of North Korea|List of ethnic groups in North Korea]]
+*** [[Demographics of South Korea#Ethnic groups|List of ethnic groups in South Korea]]
+*** [[Demographics of Taiwan|List of ethnic groups in Taiwan]]
+**** [[List of indigenous peoples of Taiwan]]
+** [[South Asian ethnic groups]]
+*** [[Ethnic groups in Nepal]]
+*** [[Ethnic groups in Pakistan]]
+**** [[Demographics of Sindh]]
+** [[Ethnic groups in Southeast Asia]]
+*** [[Ethnic groups in Indonesia]]
+*** [[List of ethnic groups in Laos]]
+*** [[Ethnic groups in Malaysia]]
+*** [[List of ethnic groups in Myanmar]]
+*** [[Ethnic groups in the Philippines]]
+*** [[List of ethnic groups in Vietnam]]
+** [[Ethnic groups in the Middle East]]
+* [[Ethnic groups in Europe|European people]]
+** [[List of contemporary ethnic groups of Europe]]
+** [[Ethnic groups in Bosnia and Herzegovina]]
+** [[Peoples of the Caucasus]]
+* [[Indigenous peoples of the Americas]]
+** [[List of contemporary ethnic groups of North America]]
+** [[List of contemporary ethnic groups of South America]]
+** [[Classification of indigenous peoples of the Americas]]
+* [[Demographics of Oceania|Oceanian people]]
+** [[List of contemporary ethnic groups of Oceania]]
+** [[List of Indigenous Australian group names]]
+** [[Melanesians|List of Melanesian ethnic groups]]
+*** [[Indigenous people of New Guinea#Papuan ethnic groups|List of New Guinean ethnic groups]]
+** [[Micronesians#List of ethnic groups|List of Micronesian ethnic groups]]
+** [[Polynesians#People|List of Polynesian ethnic groups]]
+* [[Ethnoreligious group]]
+* [[List of countries by ethnic groups|Ethnic groups by country]]
+
+==See also==
+* [[List of languages by number of native speakers]]
+* [[List of language families]]
+* [[Lists of people by nationality]]
+* [[Lists of active separatist movements]]
+* [[Uncontacted peoples]]
+* [[Ethnic flag]]
+* [[Race (human categorization)]]
+* [[List of Y-chromosome haplogroups in populations of the world]]
+
+== Notes ==
+{{Reflist|liststyle=lower-alpha|group=note}}
+
+==References==
+{{Reflist}}
+
+[[Category:Ethnic groups in Africa]]
+[[Category:Lists of ethnic groups]]

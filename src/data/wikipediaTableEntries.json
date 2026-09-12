@@ -1,0 +1,2482 @@
+[
+  {
+    "name": "Abagusii",
+    "article": "Kisii people",
+    "languages": "Atlantic–Congo → Bantu → Gusii",
+    "homeland": "Kenya (Kisii County, Nyamira County, Kericho County, Bomet County)",
+    "subgroups": "Abagetutu, Abanyaribari, Abagirango, Abanchari, Abamachoge, Ababasi",
+    "religion": "Christianity, Traditional African religion"
+  },
+  {
+    "name": "Acholi",
+    "article": "Acholi people",
+    "languages": "Nilotic → Luo → Acholi",
+    "homeland": "South Sudan, Uganda (Acholiland)",
+    "subgroups": "Agago, Amuru, Gulu, Kitgum, Lamwo, Nwoya, Pader, Omoro",
+    "religion": "Christianity, Islam"
+  },
+  {
+    "name": "Adara",
+    "article": "Adara people",
+    "languages": "Niger–Congo → Plateau → Adara",
+    "homeland": "Nigeria (Benue State, Kaduna State)",
+    "subgroups": "Christianity, Islam, Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Adjoukrou",
+    "article": "Adjoukrou people",
+    "languages": "Niger–Congo → Kwa → Adjukru",
+    "homeland": "Ivory Coast (Dabou)",
+    "subgroups": "Akradio, Agneby, Armébé, Gbougbo, Vieil-Aklodj, Débrimou, Lopou, Tiaha, Kpass, Orbaff, Bonn, Kaka, Kpanda, Mopoyem, Cosrou, Dabouly, Abraniamienbro, Bodou, Bouboury, Agbaille, Yassap, Vieux-Badien, Youhouli, N'gatty, Toupah",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Afar",
+    "article": "Afar people",
+    "languages": "Afroasiatic → Cushitic → Afar",
+    "homeland": "Djibouti, Eritrea, Ethiopia (Afaria)",
+    "subgroups": "Asaimara, Adoimara",
+    "religion": "Islam, Early Cushitic"
+  },
+  {
+    "name": "Afemai",
+    "article": "Afemai people",
+    "languages": "Atlantic–Congo → Edoid → Afenmai",
+    "homeland": "Nigeria (Edo State)",
+    "subgroups": "Agenebode, Weppa, Oshiolo, Emokwemhe Iviagbapue, Auchi, Ihievbe, Afuze, Warrake, Iviukwe, South Ibie, Agbede, Sabongida Ora, Igarra, Ekperi, Jattu, Fugar, Aviele, Okpella, Uneme Ehrunrun, Uneme Osu, Iviukhua, Ososo, Uzanu, Uzebba, Iviukhua, Weppa, Okpella, Okpekpe, Somorika",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Afrikaners",
+    "article": "Afrikaners",
+    "languages": "Indo-European → Germanic → Dutch → Afrikaans",
+    "homeland": "South Africa, Namibia, Zambia, Botswana, Eswatini",
+    "subgroups": "Afrikaner-Jews, Boers (including Trekboers and Voortrekkers), Cape Dutch, Black Afrikaners, along with significant populations in Zimbabwe",
+    "religion": "Christianity → Catholicism, Protestantism → Calvinism Irreligion → Agnosticism, Atheism Judaism"
+  },
+  {
+    "name": "Agaw",
+    "article": "Agaw people",
+    "languages": "Afroasiatic → Cushitic → Agaw",
+    "homeland": "Ethiopia, Eritrea",
+    "subgroups": "Bilen, Ximre, Awi, Qemant",
+    "religion": "Christianity → Oriental Orthodoxy → Ethiopian Orthodoxy"
+  },
+  {
+    "name": "Aja",
+    "article": "Aja people",
+    "languages": "Niger–Congo → Kwa → Adja",
+    "homeland": "Benin, Togo",
+    "subgroups": "West African Vodun",
+    "religion": ""
+  },
+  {
+    "name": "Aka",
+    "article": "Aka people",
+    "languages": "Niger–Congo → Bantu → Aka",
+    "homeland": "Central African Republic, Republic of the Congo",
+    "subgroups": "Traditional Aka religion",
+    "religion": ""
+  },
+  {
+    "name": "Akans",
+    "article": "Akan people",
+    "languages": "Niger–Congo → Kwa → Central Tano, Avikam–Alladian, Francosign → American Sign → Ghanaian Sign Adamorobe Sign, Nanabin Sign",
+    "homeland": "Ghana (Gold Coast)",
+    "subgroups": "Abbé, Abidji, Ahafo, Ahanta, Akuapem, Akwamu, Akyem, Alladian, Anyi, Ashanti, Assin, Attie, Avikam, Baoulé, Bonos, Chakosi, Egas, Evalue, Fante, M'Bato, Nzema, Sefwi (including House of Israel), Tchaman, Wasa",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Akie",
+    "article": "Akie people",
+    "languages": "Nilo-Saharan → Nilotic → Akie Maasai",
+    "homeland": "Tanzania (Manyara Region)",
+    "subgroups": "Traditional Akie religion",
+    "religion": ""
+  },
+  {
+    "name": "Alur",
+    "article": "Alur people",
+    "languages": "Nilo-Saharan → Nilotic → Alur",
+    "homeland": "Uganda (West Nile sub-region), Democratic Republic of the Congo (Ituri Province)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Amba",
+    "article": "Amba people",
+    "languages": "Niger–Congo → Bantu → Amba",
+    "homeland": "Uganda (Bundibugyo District), Democratic Republic of the Congo (Ituri Province)",
+    "subgroups": "Christianity, Traditional African religion",
+    "religion": ""
+  },
+  {
+    "name": "Ambundu",
+    "article": "Ambundu",
+    "languages": "Niger–Congo → Bantu → Kimbundu",
+    "homeland": "Angola",
+    "subgroups": "Christianity, Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Amdang",
+    "article": "Amdang people",
+    "languages": "Furan → Amdang",
+    "homeland": "Sudan (West Darfur), Chad (Wadi Fira)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Americo-Liberians",
+    "article": "Americo-Liberian people",
+    "languages": "Indo-European → Germanic → English → Standard Liberian English Indo-European → English → Merico, Liberian Kreyol",
+    "homeland": "Liberia",
+    "subgroups": "Christianity → Protestantism",
+    "religion": ""
+  },
+  {
+    "name": "Amhara",
+    "article": "Amhara people",
+    "languages": "Afroasiatic → West Semitic → Amharic",
+    "homeland": "Ethiopia (Amharia)",
+    "subgroups": "Christianity → Oriental Orthodoxy → Ethiopian Orthodoxy",
+    "religion": ""
+  },
+  {
+    "name": "Anglo-Africans",
+    "article": "British diaspora in Africa",
+    "languages": "Indo-European → Germanic → English → South African English, Zimbabwean English",
+    "homeland": "South Africa, Zimbabwe, Saint Helena, Ascension and Tristan da Cunha",
+    "subgroups": "Anglo-South Africans (with diaspora in the United Kingdom, Australia, New Zealand, Canada, and the United States) Anglo-Zimbabweans (with diaspora in the United Kingdom) Saint Helenians",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Anuak",
+    "article": "Anuak people",
+    "languages": "Nilo-Saharan → Nilotic → Anuak",
+    "homeland": "Ethiopia (Anuakia), South Sudan (Boma)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Arabs",
+    "article": "Arabs",
+    "languages": "Afroasiatic → West Semitic → Arabic Arab Sign, Sudanese sign languages",
+    "homeland": "North Africa",
+    "subgroups": "Bedouins (including Beni Ades), Egyptian Arabs (including Upper Egyptian Arabs), Maghrebi Arabs (including the Sahrawis), Dawada, Sudanese Arabs, Arab Christians (including Alexandrians), Rashaida, Baggara Arabs (including Shuweihat), Abbala Arabs, Azawagh Arabs, Diffa Arabs, Manga Arabs, Ababda, Arab-Berbers",
+    "religion": "Islam Christianity → Eastern Orthodoxy → Greek Orthodoxy → Greek Orthodox Church of Alexandria Christianity → Catholicism → Melkite Catholicism"
+  },
+  {
+    "name": "Argobba",
+    "article": "Argobba people",
+    "languages": "Afroasiatic → West → Argobba",
+    "homeland": "Ethiopia (Afar, Harari, Amhara, and Oromia Regions)",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Atyap",
+    "article": "Atyap people",
+    "languages": "Niger–Congo → Plateau → Tyap",
+    "homeland": "Nigeria (Kaduna State)",
+    "subgroups": "Christianity, Abwoi",
+    "religion": ""
+  },
+  {
+    "name": "Babur and Bura",
+    "article": "Babur and Bura people",
+    "languages": "Afroasiatic → Chadic → Bura",
+    "homeland": "Nigeria (Borno State and Adamawa State)",
+    "subgroups": "Babur, Bura",
+    "religion": "Islam"
+  },
+  {
+    "name": "Bagirmi",
+    "article": "Bagirmi people",
+    "languages": "Nilo-Saharan → Central Sudanic → Bongo-Bagirmi → Bagirmi",
+    "homeland": "Chad (Chari-Baguirmi)",
+    "subgroups": "Islam → Folk Islam",
+    "religion": ""
+  },
+  {
+    "name": "Bajju",
+    "article": "Bajju people",
+    "languages": "Niger–Congo → Plateau → Jju",
+    "homeland": "Nigeria (Middle Belt)",
+    "subgroups": "Christianity, Abwoi",
+    "religion": ""
+  },
+  {
+    "name": "Bajuni",
+    "article": "Bajuni people",
+    "languages": "Atlantic–Congo → Bantu → Swahili → Bajuni",
+    "homeland": "Somalia (Bajuni Islands), Kenya (Coast Province)",
+    "subgroups": "Islam → Sunnism → Shafi'ism",
+    "religion": ""
+  },
+  {
+    "name": "Bakossi",
+    "article": "Bakossi people",
+    "languages": "Niger–Congo → Bantu → Akoose",
+    "homeland": "Cameroon (Bakossi Mountains)",
+    "subgroups": "Christianity → Catholicism",
+    "religion": ""
+  },
+  {
+    "name": "Beidane",
+    "article": "Beidane",
+    "languages": "Afroasiatic → West Semitic → Hassaniya Arabic",
+    "homeland": "Mauritania",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Bakulu",
+    "article": "Bekulu people",
+    "languages": "Niger–Congo → Plateau → Kulu",
+    "homeland": "Nigeria (Kaduna State)",
+    "subgroups": "Christianity, Islam, Traditional African religion",
+    "religion": ""
+  },
+  {
+    "name": "Balanta",
+    "article": "Balanta people",
+    "languages": "Niger–Congo → West Atlantic → Balanta",
+    "homeland": "Guinea-Bissau, Senegal, The Gambia",
+    "subgroups": "Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Balondo-ba-Konja",
+    "article": "Balondo Civilization",
+    "languages": "Niger–Congo → Bantu → Londo",
+    "homeland": "Cameroon",
+    "subgroups": "Creationism → Balondo-ba-Konja religion",
+    "religion": ""
+  },
+  {
+    "name": "Bambara",
+    "article": "Bambara people",
+    "languages": "Niger–Congo → Mande → Manding → Bambara",
+    "homeland": "Mali",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Bamileke",
+    "article": "Bamileke people",
+    "languages": "Niger–Congo → Grassfields → Bamileke",
+    "homeland": "Cameroon (West and Northwest regions)",
+    "subgroups": "Mengaka, Ngiemboon, Ngombale, Ngomba, Ngwe, Yemba, Fe'fe', Ghomala', Kwaʼ, Nda'nda', Medumba",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Bamum",
+    "article": "Bamum people",
+    "languages": "Niger–Congo → Grassfields → Bamum",
+    "homeland": "Cameroon (West Region)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Banda",
+    "article": "Banda people",
+    "languages": "Niger–Congo → Ubangian → Banda",
+    "homeland": "Central African Republic, South Sudan, Democratic Republic of the Congo",
+    "subgroups": "Central Banda, South Banda, West Banda",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Bangweulu Twa",
+    "article": "Bangweulu Twa",
+    "languages": "Niger–Congo → Bantu → Bemba",
+    "homeland": "Zambia (Bangweulu Wetlands)",
+    "subgroups": "Traditional African Religion",
+    "religion": ""
+  },
+  {
+    "name": "Bari",
+    "article": "Bari people",
+    "languages": "Nilo-Saharan → Nilotic → Bari",
+    "homeland": "South Sudan (Central Equatoria), Uganda",
+    "subgroups": "Pojulu, Kakwa, Nyangwara, Mandari, Kuku, other Karo tribes",
+    "religion": "Christianity, Traditional African religion, Islam → Sunni Islam (minority religion among some Kakwa bordering Uganda)"
+  },
+  {
+    "name": "Bariba",
+    "article": "Bariba people",
+    "languages": "Niger–Congo → Gur → Bariba",
+    "homeland": "Borgu (Benin, Nigeria)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Bassa",
+    "article": "Bassa people (Liberia)",
+    "languages": "Niger–Congo → Kru → Bassa",
+    "homeland": "Liberia (Bassaland)",
+    "subgroups": "Christianity → Protestantism → Anglicanism",
+    "religion": ""
+  },
+  {
+    "name": "Basters",
+    "article": "Basters",
+    "languages": "Indo-European → Germanic → Dutch → Afrikaans",
+    "homeland": "Namibia (Rehoboth)",
+    "subgroups": "Christianity → Protestantism",
+    "religion": ""
+  },
+  {
+    "name": "Batwa",
+    "article": "Great Lakes Twa",
+    "languages": "Niger–Congo → Bantu → Kirundi Niger–Congo → Bantu → Kiga",
+    "homeland": "African Great Lakes",
+    "subgroups": "Traditional African religion",
+    "religion": ""
+  },
+  {
+    "name": "Beja",
+    "article": "Beja people",
+    "languages": "Afroasiatic → Cushitic → Beja",
+    "homeland": "Sudan, Egypt, Eritrea",
+    "subgroups": "Bishari, Hadendoa, Hedareb, Amarar, Beni-Amer",
+    "religion": "Islam → Sunni Islam"
+  },
+  {
+    "name": "Bemba",
+    "article": "Bemba people",
+    "languages": "Niger–Congo → Bantu → Bemba",
+    "homeland": "Zambia (Northern, Luapula, and Copperbelt Provinces), Democratic Republic of the Congo (Katanga Province)",
+    "subgroups": "Christianity → Protestantism",
+    "religion": ""
+  },
+  {
+    "name": "Bembe",
+    "article": "Bembe people",
+    "languages": "Niger–Congo → Bantu → Bembe",
+    "homeland": "Democratic Republic of the Congo, Tanzania",
+    "subgroups": "Christianity → Protestantism, Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Bena",
+    "article": "Bena people",
+    "languages": "Niger–Congo → Bantu → Bena",
+    "homeland": "Tanzania (Njombe Region)",
+    "subgroups": "Christianity → Catholicism",
+    "religion": ""
+  },
+  {
+    "name": "Berom",
+    "article": "Berom people",
+    "languages": "Niger–Congo → Plateau → Berom",
+    "homeland": "Niger (Plateau State)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Berta",
+    "article": "Berta people",
+    "languages": "Nilo-Saharan → Berta",
+    "homeland": "Ethiopia (Benishangul-Gumuz Region), South Sudan",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Beti",
+    "article": "Beti people",
+    "languages": "Niger–Congo → Bantu → Ewondo, Eton",
+    "homeland": "Cameroon",
+    "subgroups": "Ewondo, Eton",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Bissa",
+    "article": "Bissa people",
+    "languages": "Niger–Congo → Mande → Bissa",
+    "homeland": "Burkina Faso",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Boa",
+    "article": "Boa people",
+    "languages": "Niger–Congo → Bantu → Boa",
+    "homeland": "Democratic Republic of the Congo (Bas-Uele)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Bobo",
+    "article": "Bobo people",
+    "languages": "Niger–Congo → Mande → Bobo",
+    "homeland": "Burkina Faso, Mali",
+    "subgroups": "Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Bolewa",
+    "article": "Bolewa people",
+    "languages": "Afroasiatic → Chadic → Bole",
+    "homeland": "Nigeria (Gombe State)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Bondei",
+    "article": "Bondei people",
+    "languages": "Niger–Congo → Bantu → Bondei",
+    "homeland": "Tanzania (Pangani District)",
+    "subgroups": "Islam, Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Bozo",
+    "article": "Bozo people",
+    "languages": "Niger–Congo → Mande → Bozo",
+    "homeland": "Mali",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Bubi",
+    "article": "Bubi people",
+    "languages": "Niger–Congo → Bantu → Bube",
+    "homeland": "Equatorial Guinea (Bioko)",
+    "subgroups": "Christianity → Catholicism",
+    "religion": ""
+  },
+  {
+    "name": "Budu",
+    "article": "Budu people",
+    "languages": "Niger–Congo → Bantu → Budu",
+    "homeland": "Democratic Republic of the Congo (Wamba Territory)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Buduma",
+    "article": "Buduma people",
+    "languages": "Afroasiatic → Chadic → Yedina",
+    "homeland": "Lake Chad (Chad, Nigeria, Cameroon)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Bwa",
+    "article": "Bwa people",
+    "languages": "Niger–Congo → Gur → Bwa",
+    "homeland": "Burkina Faso, Mali",
+    "subgroups": "Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Bwatiye",
+    "article": "Bwatiye people",
+    "languages": "Afroasiatic → Chadic → Bacama",
+    "homeland": "Nigeria (Adamawa State)",
+    "subgroups": "Christianity, Neo-Pentecostalism",
+    "religion": ""
+  },
+  {
+    "name": "Cafres",
+    "article": "Cafres",
+    "languages": "Indo-European → French → Réunion Creole",
+    "homeland": "Réunion",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Cape Malays",
+    "article": "Cape Malays",
+    "languages": "Indo-European → Germanic → Dutch → Afrikaans Indo-European → Germanic → English → South African English Historically Indo-European → Germanic → Dutch → Arabic Afrikaans Austronesian → Malayo-Polynesian → Malay, Makassarese",
+    "homeland": "South Africa (Western Cape)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Chaga",
+    "article": "Chaga people",
+    "languages": "Niger–Congo → Bantu → Chaga",
+    "homeland": "Tanzania",
+    "subgroups": "Gwenos, Rombos, Central Chaga (including Kahe), Rusa, West Chaga",
+    "religion": "Christianity, Islam, Traditional African religions"
+  },
+  {
+    "name": "Chagossians",
+    "article": "Chagossians",
+    "languages": "Indo-European → French → Chagossian Creole",
+    "homeland": "Chagos Archipelago",
+    "subgroups": "Christianity, Rastafari",
+    "religion": ""
+  },
+  {
+    "name": "Chaoui",
+    "article": "Chaoui people",
+    "languages": "Afroasiatic → Berber → Shawiya",
+    "homeland": "Algeria (Aurès)",
+    "subgroups": "Islam → Sunnism",
+    "religion": ""
+  },
+  {
+    "name": "Chenouas",
+    "article": "Chenouas",
+    "languages": "Afroasiatic → Berber → Shenwa",
+    "homeland": "Algeria (Mount Chenoua)",
+    "subgroups": "Islam → Sunnism",
+    "religion": ""
+  },
+  {
+    "name": "Chewa",
+    "article": "Chewa people",
+    "languages": "Niger–Congo → Bantu → Chewa",
+    "homeland": "Malawi, Zambia, Zimbabwe, Mozambique",
+    "subgroups": "Christianity, Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Chinois",
+    "article": "Chinese people in Réunion",
+    "languages": "Indo-European → French → Réunion Creole Sino-Tibetan → Sinitic → Hakka, Cantonese",
+    "homeland": "Réunion",
+    "subgroups": "Christianity → Catholicism Buddhism → Mahayana Buddhism",
+    "religion": ""
+  },
+  {
+    "name": "Chokwe",
+    "article": "Chokwe people",
+    "languages": "Niger–Congo → Bantu → Chokwe",
+    "homeland": "Angola, Democratic Republic of the Congo, Zambia",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Coloureds",
+    "article": "Coloureds",
+    "languages": "Indo-European → Germanic → English, Dutch → Afrikaans, Kaaps",
+    "homeland": "South Africa (Western Cape)",
+    "subgroups": "Cape Coloureds (South Africa)",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Comorians",
+    "article": "Demographics of the Comoros",
+    "languages": "Niger–Congo → Bantu → Comorian",
+    "homeland": "Comoros, France (Mayotte)",
+    "subgroups": "Grande Comorians, Anjouans, Mohélians, Maorais, Significant population in Metropolitan France",
+    "religion": "Islam → Sunnism"
+  },
+  {
+    "name": "Dagaaba",
+    "article": "Dagaaba people",
+    "languages": "Niger–Congo → Gur → Dagaare",
+    "homeland": "Ghana, Burkina Faso",
+    "subgroups": "Christianity, Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Dagombas",
+    "article": "Dagomba people",
+    "languages": "Niger–Congo → Gur → Dagbani",
+    "homeland": "Ghana (Kingdom of Dagbon)",
+    "subgroups": "Islam → Sunnism",
+    "religion": ""
+  },
+  {
+    "name": "Damara",
+    "article": "Damara people",
+    "languages": "Khoe → Khoekhoe",
+    "homeland": "Namibia (Damaraland)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Dinka",
+    "article": "Dinka people",
+    "languages": "Nilo-Saharan → Nilotic → Dinka",
+    "homeland": "South Sudan",
+    "subgroups": "Christianity, Dinka religion",
+    "religion": ""
+  },
+  {
+    "name": "Dogon",
+    "article": "Dogon people",
+    "languages": "Niger–Congo → Dogon Bangime, Tebul Sign",
+    "homeland": "Mali (Bandiagara Escarpment)",
+    "subgroups": "Ampari Dogon (including Nyamboli), Tebul U, Mombo Dogon, Escarpment Dogon (including Tommo So), Jamsai Dogon, Nanga Dogon, Yanda Dogon, Walo, Beente, Duleri Dogon, Pinia, Bondum Dogon, Dogul Dogon, Budu, Western Plains Dogon, Toro-tegu Dogon, Bangande",
+    "religion": "Traditional African religions"
+  },
+  {
+    "name": "Dwe'e",
+    "article": "Dwe'e people",
+    "languages": "Niger–Congo → Bantu → Nzime",
+    "homeland": "Cameroon",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Dyula",
+    "article": "Dyula people",
+    "languages": "Niger–Congo → Mande → Manding → Dyula",
+    "homeland": "Burkina Faso, Ivory Coast, Mali",
+    "subgroups": "Islam → Sunnism",
+    "religion": ""
+  },
+  {
+    "name": "Ebira",
+    "article": "Ebira people",
+    "languages": "Niger–Congo → Nupoid → Ebira",
+    "homeland": "Nigeria (Kogi State)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Edo",
+    "article": "Edo people",
+    "languages": "Niger–Congo → Edoid → Edo",
+    "homeland": "Nigeria (Edo State)",
+    "subgroups": "Ika, Emai",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Efik",
+    "article": "Efik people",
+    "languages": "Niger–Congo → Cross River → Efik",
+    "homeland": "Nigeria (Cross River State)",
+    "subgroups": "Christianity, Efik religion",
+    "religion": ""
+  },
+  {
+    "name": "Egyptians",
+    "article": "Egyptians",
+    "languages": "Afroasiatic → Semitic → Egyptian Arabic",
+    "homeland": "Egypt, Sudan, Libya",
+    "subgroups": "Copts, Sa'idi people",
+    "religion": "Islam → Sunni Islam Christianity → Oriental Orthodoxy → Coptic Orthodoxy Christianity → Catholicism → Eastern Catholicism → Coptic Catholicism"
+  },
+  {
+    "name": "Ekoi",
+    "article": "Ekoi people",
+    "languages": "Niger–Congo → Bantoid → Jagham",
+    "homeland": "Nigeria, Cameroon",
+    "subgroups": "Christianity, Ekoi religion",
+    "religion": ""
+  },
+  {
+    "name": "Embu",
+    "article": "Embu people",
+    "languages": "Niger-Congo ~ Bantu ~ Embu",
+    "homeland": "Kenya (Eastern Province)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Esan",
+    "article": "Esan people",
+    "languages": "Niger–Congo → Edoid → Esan",
+    "homeland": "Nigeria (Esanland)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Ewe",
+    "article": "Ewe people",
+    "languages": "Niger–Congo → Kwa → Ewe, Waci, Kpessi",
+    "homeland": "Togo, Ghana",
+    "subgroups": "Agave, Agome, Anlo, Avenor, Waci",
+    "religion": "Christianity, West African Vodun"
+  },
+  {
+    "name": "Fang",
+    "article": "Fang people",
+    "languages": "Niger–Congo → Bantu → Fang",
+    "homeland": "Equatorial Guinea (Rio Muni), Gabon",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Fipa",
+    "article": "Fipa people",
+    "languages": "Niger–Congo → Bantu (Zone M) → Fipa Niger–Congo → Bantu → Mambwe-Lungu",
+    "homeland": "Rukwa Region, Tanzania (Sumbawanga Rural District, Nkasi District)",
+    "subgroups": "Christianity → Catholicism",
+    "religion": ""
+  },
+  {
+    "name": "Fon",
+    "article": "Fon people",
+    "languages": "Niger–Congo → Kwa → Gbe → Fon",
+    "homeland": "Benin (Dahomey)",
+    "subgroups": "Christianity → Catholicism, West African Vodun",
+    "religion": ""
+  },
+  {
+    "name": "Franco-Mauritians",
+    "article": "Franco-Mauritians",
+    "languages": "Indo-European → French → Mauritian Creole",
+    "homeland": "Mauritius",
+    "subgroups": "Christianity → Catholicism",
+    "religion": ""
+  },
+  {
+    "name": "Franco-Seychellois",
+    "article": "Franco-Seychellois",
+    "languages": "Indo-European → French → Seychellois Creole",
+    "homeland": "Seychelles",
+    "subgroups": "Christianity → Catholicism",
+    "religion": ""
+  },
+  {
+    "name": "Frantsay",
+    "article": "French people in Madagascar",
+    "languages": "Indo-European → Romance → French",
+    "homeland": "Madagascar",
+    "subgroups": "Christianity → Catholicism, Christianity → Protestantism",
+    "religion": ""
+  },
+  {
+    "name": "Fula",
+    "article": "Fula people",
+    "languages": "Atlantic–Congo → Senegambian → Fula",
+    "homeland": "West Africa (Guinea, Senegal, Mali, Mauritania, Nigeria, Cameroon, Niger, Burkina Faso, Benin, Chad)",
+    "subgroups": "Wodaabe, Maasina Fulfulde, Sierra Leonean Fula, Toucouleur",
+    "religion": "Islam"
+  },
+  {
+    "name": "Fur",
+    "article": "Fur people",
+    "languages": "Furan → Fur",
+    "homeland": "Sudan (Darfur)",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Ga-Adangbe",
+    "article": "Ga-Adangbe people",
+    "languages": "Niger–Congo → Kwa → Ga–Dangme",
+    "homeland": "Greater Accra (Ghana)",
+    "subgroups": "Ga, Adangbe",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Gade",
+    "article": "Gade people",
+    "languages": "Niger–Congo → Nupoid → Gade",
+    "homeland": "Nigeria (Niger State)",
+    "subgroups": "Gobo",
+    "religion": ""
+  },
+  {
+    "name": "Ganda",
+    "article": "Baganda",
+    "languages": "Niger–Congo → Bantu → Great Lakes → Luganda",
+    "homeland": "Uganda (Buganda)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Gbagyi",
+    "article": "Gbagyi people",
+    "languages": "Niger–Congo → Nupoid → Gwari",
+    "homeland": "Nigeria",
+    "subgroups": "Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Gbaya",
+    "article": "Gbaya people",
+    "languages": "Niger–Congo → Ubangian → Gbaya",
+    "homeland": "Central African Republic, Cameroon",
+    "subgroups": "Bokoto, Kara, Buli (including Toongo), Ali, Mandja, Gbaya-Bossangoa, Bozom, Mbodomo, Gbanu, Bangandu",
+    "religion": "Islam"
+  },
+  {
+    "name": "Gedeo",
+    "article": "Gedeo people",
+    "languages": "Afroasiatic → Cushitic → Gedeo",
+    "homeland": "Ethiopia (Gedeo)",
+    "subgroups": "Christianity → Protestantism → P'ent'ay",
+    "religion": ""
+  },
+  {
+    "name": "Ghomaras",
+    "article": "Ghomaras",
+    "languages": "Afroasiatic → Berber → Ghomara",
+    "homeland": "Morocco (Western Rif)",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Gnawa",
+    "article": "Gnawa",
+    "languages": "Afroasiatic → West Semitic → Moroccan Arabic",
+    "homeland": "Morocco",
+    "subgroups": "Islam and Animism → Sufism and Animism → Gnawa religion",
+    "religion": ""
+  },
+  {
+    "name": "Gogo",
+    "article": "Gogo people",
+    "languages": "Niger–Congo → Bantu → Gogo",
+    "homeland": "Tanzania (Dodoma Region)",
+    "subgroups": "Christianity, African Traditional Religion",
+    "religion": ""
+  },
+  {
+    "name": "Gola",
+    "article": "Gola people",
+    "languages": "Niger–Congo → Gola",
+    "homeland": "Liberia, Sierra Leone",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Gosha",
+    "article": "Somali Bantus",
+    "languages": "Niger-Congo → Bantu → Zigula → Mushunguli Afroasiatic → Cushitic → Maay Maay",
+    "homeland": "Somalia",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Greeks",
+    "article": "Greeks",
+    "languages": "Indo-European → Hellenic Afroasiatic → Arabic → Egyptian Arabic Francosign → French Sign and American Sign → Greek Sign",
+    "homeland": "Egypt",
+    "subgroups": "Egyptian Greeks (including Alexandrian Greeks), along with significant populations in the Democratic Republic of the Congo, Ethiopia, South Africa, Sudan, South Sudan, and Zimbabwe",
+    "religion": "Christianity → Eastern Orthodoxy, Catholicism → Greek Byzantine Catholicism, historically Hellenism, Neoplatonism, Greco-Roman Mysteries"
+  },
+  {
+    "name": "Griquas",
+    "article": "Griquas",
+    "languages": "Indo-European → Germanic → Dutch → Afrikaans",
+    "homeland": "South Africa (Griqualand)",
+    "subgroups": "Christianity → Protestantism → Calvinism",
+    "religion": ""
+  },
+  {
+    "name": "Guang",
+    "article": "Guang people",
+    "languages": "Niger–Congo → Kwa → Guang",
+    "homeland": "Ghana (Brong-Ahafo and Volta Regions)",
+    "subgroups": "Gonja, Kyode, Cherepon, Efutu, Anyanga, Larteh, Chumburung, Krache, Anum-Boso",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Gumuz",
+    "article": "Gumuz people",
+    "languages": "Bʼaga languages",
+    "homeland": "Ethiopia (Benishangul-Gumuz Region)",
+    "subgroups": "Traditional African religion",
+    "religion": ""
+  },
+  {
+    "name": "Gungu",
+    "article": "Gungu people",
+    "languages": "Niger–Congo → Bantu → Gungu",
+    "homeland": "Uganda (Buliisa District)",
+    "subgroups": "Christianity, Traditional African religion",
+    "religion": ""
+  },
+  {
+    "name": "Gurage",
+    "article": "Gurage people",
+    "languages": "Afroasiatic → West Semitic → Gurage historically Afroasiatic → West Semitic → Mesmes",
+    "homeland": "Ethiopia (Guragia)",
+    "subgroups": "Kistane, Zay, Inor, Mesqan, Muher Sebat Bet (including Chaha)",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Gurma",
+    "article": "Gurma people",
+    "languages": "Niger–Congo → Gur → Gourmanche",
+    "homeland": "Gurmaland (Burkina Faso, Ghana)",
+    "subgroups": "Ntcham, Bimoba",
+    "religion": "Islam"
+  },
+  {
+    "name": "Gurunsi",
+    "article": "Gurunsi people",
+    "languages": "Niger–Congo → Gur → Gurunsi",
+    "homeland": "Burkina Faso, Ghana, Togo",
+    "subgroups": "Lukpa, Kabye, Tem, Lamba, Delo, Bago-Kusuntu, Chala, Lyele, Nuna, Kalamse, Pana, Winye, Deg, Puguli, Paasaal, Sisaala, Chakali, Siti, Tamprusi, Vagla",
+    "religion": "Traditional African religions, Islam → Sunni Islam"
+  },
+  {
+    "name": "Ha",
+    "article": "Ha people",
+    "languages": "Niger–Congo → Bantu → Ha",
+    "homeland": "Tanzania (Kigoma Region)",
+    "subgroups": "Animism",
+    "religion": ""
+  },
+  {
+    "name": "Hadiya",
+    "article": "Hadiya people",
+    "languages": "Afroasiatic → Cushitic → Hadiyya",
+    "homeland": "Ethiopia (Hadiya)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Hadza",
+    "article": "Hadza people",
+    "languages": "Hadza language",
+    "homeland": "Tanzania (Karatu District)",
+    "subgroups": "Hadza mythology",
+    "religion": ""
+  },
+  {
+    "name": "Ham",
+    "article": "Ham people",
+    "languages": "Niger–Congo → Plateau → Hyam",
+    "homeland": "Nigeria (Kaduna State)",
+    "subgroups": "Christianity, Abwoi",
+    "religion": ""
+  },
+  {
+    "name": "Hangaza",
+    "article": "Hangaza people",
+    "languages": "Niger–Congo → Bantu → Hangaza",
+    "homeland": "Tanzania (Kagera Region)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Harari",
+    "article": "Harari people",
+    "languages": "Afroasiatic → West Semitic → Harari",
+    "homeland": "Ethiopia (Hararia)",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Haratin",
+    "article": "Haratin",
+    "languages": "Afroasiatic → West Semitic → Maghrebi Arabic Afroasiatic → Berber",
+    "homeland": "Mauritania",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Hausa",
+    "article": "Hausa people",
+    "languages": "Afroasiatic → Chadic → Hausa",
+    "homeland": "Hausaland (Niger, Nigeria, Ghana)",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Haya",
+    "article": "Haya people",
+    "languages": "Niger–Congo → Bantu → Haya",
+    "homeland": "Tanzania (Kagera Region)",
+    "subgroups": "Christianity, Ruhanga",
+    "religion": ""
+  },
+  {
+    "name": "Hawwara",
+    "article": "Hawwara",
+    "languages": "Afroasiatic → Berber, Semitic → Arabic",
+    "homeland": "Libya, Egypt, Sudan, Algeria and Morocco",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Hehe",
+    "article": "Hehe people",
+    "languages": "Niger–Congo → Bantu → Hehe",
+    "homeland": "Tanzania (Iringa Region)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Herero",
+    "article": "Herero people",
+    "languages": "Niger–Congo → Bantu → Herero",
+    "homeland": "Namibia (Hereroland), Angola",
+    "subgroups": "OvaHimba, Ovambanderu",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Hutu",
+    "article": "Hutu",
+    "languages": "Niger–Congo → Bantu → Rwanda-Rundi",
+    "homeland": "Rwanda, Burundi, Democratic Republic of the Congo (Kivu)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Ibibio",
+    "article": "Ibibio people",
+    "languages": "Niger–Congo → Cross River → Ibibio, Anaang, Eket, Oron",
+    "homeland": "Nigeria (Akwa Ibom State)",
+    "subgroups": "Eket, Anaang, Oron",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Idoma",
+    "article": "Idoma people",
+    "languages": "Niger–Congo → Idomoid → Idoma",
+    "homeland": "Nigeria (Benue State)",
+    "subgroups": "Agatu, Alago, Yala",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Igala",
+    "article": "Igala people",
+    "languages": "Niger-Congo → Igala → Igala",
+    "homeland": "Nigeria (AneIgala)",
+    "subgroups": "Ayangba, Igalamela, Ogugu, Akpanya, Ebu",
+    "religion": "Christianity, Islam"
+  },
+  {
+    "name": "Igbo",
+    "article": "Igbo people",
+    "languages": "Niger–Congo → Igbo",
+    "homeland": "Nigeria (Igboland) , Equatorial Guinea",
+    "subgroups": "Anioma, Aro, Edda, Ekpeye, Etche, Ezaa, Ika, Ikwerre, Ikwo, Isu, Izzi, Mbaise, Mgbo, Ngwa, Nri-Igbo, Ogba, Ohafia, Ohuhu, Onitsha-Ado, Ukwuani, Waawa",
+    "religion": "Christianity, Odinala"
+  },
+  {
+    "name": "Igdalen",
+    "article": "Igdalen people",
+    "languages": "Songhay → Northern Songhay → Tagdal",
+    "homeland": "Niger, Mali, Algeria",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Igede",
+    "article": "Igede",
+    "languages": "Niger–Congo → Idomoid → Igede",
+    "homeland": "Nigeria (Benue State)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Ijaw",
+    "article": "Ijaw people",
+    "languages": "Niger–Congo → Ijaw",
+    "homeland": "Nigeria (Rivers, Bayelsa, and Delta States)",
+    "subgroups": "Bille, Engenni, Ibani, Kalabari, Kula, Nkoro, Nkoroo, Obolo",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Imraguen",
+    "article": "Imraguen people",
+    "languages": "Afroasiatic → Arabic → Hassaniya Arabic → Imraguen",
+    "homeland": "Mauritania, Western Sahara",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Indo-Mauritians",
+    "article": "Mauritians of Indian origin",
+    "languages": "Indo-European → French → Mauritian Creole",
+    "homeland": "Mauritius",
+    "subgroups": "Bihari Mauritians, Tamil Mauritians",
+    "religion": "Hinduism, Islam"
+  },
+  {
+    "name": "Indo-Seychellois",
+    "article": "Indo-Seychellois",
+    "languages": "Indo-European → French → Seychellois Creole",
+    "homeland": "Seychelles",
+    "subgroups": "Hinduism, Islam, Christianity, Jainism",
+    "religion": ""
+  },
+  {
+    "name": "Indo-South Africans",
+    "article": "Indian South Africans",
+    "languages": "Indo-European → Germanic → English → South African English",
+    "homeland": "South Africa",
+    "subgroups": "Hinduism, Islam, Sikhism, Jainism",
+    "religion": ""
+  },
+  {
+    "name": "Iraqw",
+    "article": "Iraqw people",
+    "languages": "Afroasiatic → Cushitic → Iraqw",
+    "homeland": "Tanzania",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Isoko",
+    "article": "Isoko people",
+    "languages": "Niger–Congo → Edoid → Isoko",
+    "homeland": "Nigeria (Isoko region)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Jerba",
+    "article": "Jerba people",
+    "languages": "Afroasiatic → Berber → Nafusi",
+    "homeland": "Tunisia",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Jews",
+    "article": "Jews",
+    "languages": "Afroasiatic → Canaanite → Hebrew → Modern Hebrew, Jewish languages, DGSic → Israeli Sign",
+    "homeland": "North Africa (Morocco, Algeria, Tunisia, Libya, and Egypt) East Africa",
+    "subgroups": "Sephardim (including Moroccan Jews, Egyptian Sephardim, North African Sephardim, Maroka'im, Algerian Jews, Tunisian Jews, Libyan Jews, Berber Jews (including Mozabite Jews), Beta Israel (including Beta Abraham and Falash Mura), Rusape Jews, Abayudaya, Igbo Jews, as well as historically some Aksumites, along with significant populations in South Africa (including Afrikaner-Jews), Namibia, and Zimbabwe",
+    "religion": "Judaism"
+  },
+  {
+    "name": "Jita",
+    "article": "Jita people",
+    "languages": "Atlantic–Congo → Bantu → Suguti",
+    "homeland": "Tanzania (Mara Region)",
+    "subgroups": "Christianity, Ethnic Religion",
+    "religion": ""
+  },
+  {
+    "name": "Jola",
+    "article": "Jola people",
+    "languages": "Atlantic–Congo → Senegambian → Jola",
+    "homeland": "Senegal (Jolaland)",
+    "subgroups": "Banjaal, Bayot, Gusilay, Fogni, Karon, Kasa, Kuwaataay, Mlomp",
+    "religion": "Traditional African religions"
+  },
+  {
+    "name": "Jukun",
+    "article": "Jukun people (West Africa)",
+    "languages": "Niger–Congo → Jukun Takum",
+    "homeland": "Nigeria (Wukari)",
+    "subgroups": "Wannu",
+    "religion": "Traditional African religions"
+  },
+  {
+    "name": "Jur",
+    "article": "Jur people",
+    "languages": "Nilotic → Luo → Jur",
+    "homeland": "South Sudan",
+    "subgroups": "Beli, Sopi, Mödö, Nyamusa, Wira, Biti, Morokodo",
+    "religion": "Christianity, Traditional African religions"
+  },
+  {
+    "name": "Kabyle",
+    "article": "Kabyle people",
+    "languages": "Afroasiatic → Berber → Kabyle",
+    "homeland": "Algeria (Kabylia)",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Kafwe Twa",
+    "article": "Kafwe Twa",
+    "languages": "Niger–Congo → Bantu → Tonga",
+    "homeland": "Zambia (Kafue Flats)",
+    "subgroups": "Traditional African religion",
+    "religion": ""
+  },
+  {
+    "name": "Kaguru",
+    "article": "Kaguru people",
+    "languages": "Niger–Congo → Bantu → Kagulu",
+    "homeland": "Tanzania (Ukaguru Mountains)",
+    "subgroups": "Folk religion",
+    "religion": ""
+  },
+  {
+    "name": "Kalanga",
+    "article": "Kalanga people",
+    "languages": "Niger–Congo → Bantu → Kalanga",
+    "homeland": "Zimbabwe, Botswana",
+    "subgroups": "Nambya",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Kalenjin",
+    "article": "Kalenjin people",
+    "languages": "Nilo-Saharan → Nilotic → Kalenjin",
+    "homeland": "Kenya (Rift Valley Province)",
+    "subgroups": "Keiyo, Tugen, Marakwet, Nandi, Kipsigis, Sabaot, Pokoot, Terik",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Kamba",
+    "article": "Kamba people",
+    "languages": "Niger–Congo → Bantu → Kamba",
+    "homeland": "Kenya (Ukambani)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Kanuri",
+    "article": "Kanuri people",
+    "languages": "Nilo-Saharan → Saharan → Kanuri",
+    "homeland": "Kanuriland (Nigeria, Niger, Chad, Cameroon)",
+    "subgroups": "Kanembu, Yerwa Kanuri",
+    "religion": "Islam"
+  },
+  {
+    "name": "Kapsiki",
+    "article": "Kapsiki people",
+    "languages": "Afroasiatic → Chadic → Kapsiki",
+    "homeland": "Mandara Mountains (Nigeria, Cameroon)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Karai-Karai",
+    "article": "Karai-Karai people",
+    "languages": "Afroasiatic → Chadic → Karai-Karai",
+    "homeland": "Nigeria (Bauchi State, Gombe State, Yobe State and Jigawa State)",
+    "subgroups": "Islam, Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Karamojong",
+    "article": "Karamojong people",
+    "languages": "Nilo-Saharan → Nilotic → Karamojong",
+    "homeland": "Uganda",
+    "subgroups": "Christianity, Traditional African religion",
+    "religion": ""
+  },
+  {
+    "name": "Karana",
+    "article": "Indians in Madagascar",
+    "languages": "Indo-European → Indo-Aryan → Gujarati, Hindustani, Kutchi, Sindhi Dravidian → Tamil, Telugu",
+    "homeland": "Madagascar",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Kassena",
+    "article": "Kassena",
+    "languages": "Atlantic–Congo → Gur → Kasena",
+    "homeland": "Ghana (Kassena-Nankana), Burkina Faso",
+    "subgroups": "Kassena religion",
+    "religion": ""
+  },
+  {
+    "name": "Kavango",
+    "article": "Kavango people",
+    "languages": "Atlantic–Congo → Bantu → Kavango",
+    "homeland": "Namibia",
+    "subgroups": "Kwangali, Mbunza, Shambyu, Gciriku, Mbukushu",
+    "religion": "Christianity, Traditional African religions"
+  },
+  {
+    "name": "Kerewe",
+    "article": "Kerewe people",
+    "languages": "Atlantic–Congo → Bantu → Kerewe",
+    "homeland": "Tanzania (Ukerewe Island)",
+    "subgroups": "Christianity, Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Khassonké",
+    "article": "Khassonké people",
+    "languages": "Mande → Manding → Kassonke",
+    "homeland": "Mali (Kayes Region)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Kiga",
+    "article": "Kiga people",
+    "languages": "Atlantic–Congo → Bantu → Kiga",
+    "homeland": "Uganda, Rwanda",
+    "subgroups": "Christianity → Catholicism, Christianity → Protestantism",
+    "religion": ""
+  },
+  {
+    "name": "Kikuyu",
+    "article": "Kikuyu people",
+    "languages": "Atlantic–Congo → Bantu → Kikuyu",
+    "homeland": "Kenya (Central Province)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Kilba",
+    "article": "Kilba people",
+    "languages": "Afroasiatic → Chadic → Huba",
+    "homeland": "Nigeria (Hong)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Kinga",
+    "article": "Kinga people",
+    "languages": "Niger–Congo → Bantu → Kinga",
+    "homeland": "Tanzania (Kipengere Range)",
+    "subgroups": "Christianity, Traditional African religion",
+    "religion": ""
+  },
+  {
+    "name": "Kissi",
+    "article": "Kissi people",
+    "languages": "Atlantic–Congo → Mel → Kissi",
+    "homeland": "Guinea, Sierra Leone",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Kofyar",
+    "article": "Kofyar people",
+    "languages": "Afroasiatic → Chadic → Kofyar",
+    "homeland": "Nigeria (Plateau State)",
+    "subgroups": "Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Kongo",
+    "article": "Kongo people",
+    "languages": "Atlantic–Congo] → Bantu → Kongo",
+    "homeland": "Kongoland (Democratic Republic of the Congo, Republic of the Congo, Angola)",
+    "subgroups": "Lari, Vili, Yombe, Suundi, Dondo, Hangala, Kugni, Manyanga, Beembe",
+    "religion": "Christianity, Kongo religion"
+  },
+  {
+    "name": "Konjo",
+    "article": "Konjo people",
+    "languages": "Atlantic–Congo → Bantu → Konjo",
+    "homeland": "Rwenzori Mountains (Democratic Republic of the Congo, Uganda)",
+    "subgroups": "Nande",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Konkomba",
+    "article": "Konkomba people",
+    "languages": "Atlantic–Congo → Gur → Konkomba",
+    "homeland": "Ghana, Togo",
+    "subgroups": "Traditional African religions, Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Kono",
+    "article": "Kono people",
+    "languages": "Mande → Vai–Kono → Kono",
+    "homeland": "Sierra Leone (Kono District)",
+    "subgroups": "Christianity, Islam, Traditional African religion",
+    "religion": ""
+  },
+  {
+    "name": "Konso",
+    "article": "Konso people",
+    "languages": "Afroasiatic → Cushitic → Konso",
+    "homeland": "Ethiopia (Konso)",
+    "subgroups": "Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Kpelle",
+    "article": "Kpelle people",
+    "languages": "Mande → Southwestern Mande → Kpelle",
+    "homeland": "Liberia, Guinea",
+    "subgroups": "Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Kposo",
+    "article": "Kposo people",
+    "languages": "Niger–Congo → Kwa → Ghana–Togo Mountain → Kposo",
+    "homeland": "Togo (Plateaux), Ghana",
+    "subgroups": "Christianity → Catholicism",
+    "religion": ""
+  },
+  {
+    "name": "Kru",
+    "article": "Kru people",
+    "languages": "Kru languages",
+    "homeland": "Liberia (Grand Kru and Maryland Counties)",
+    "subgroups": "Aizi, Bete, Bakwe, Grebo, Krahn (including Sapo), Kuwaa",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Kunama",
+    "article": "Kunama people",
+    "languages": "Nilo-Saharan → Kunama",
+    "homeland": "Eritrea, Ethiopia",
+    "subgroups": "Christianity → Oriental Orthodoxy → Ethiopian Orthodoxy",
+    "religion": ""
+  },
+  {
+    "name": "Kuria",
+    "article": "Kuria people",
+    "languages": "Niger–Congo → Bantu → Kuria",
+    "homeland": "Kenya, Tanzania",
+    "subgroups": "Traditional African religions, Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Kuteb",
+    "article": "Kuteb people",
+    "languages": "Niger–Congo → Jukunoid → Kuteb",
+    "homeland": "Nigeria (Taraba State)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Kwaya",
+    "article": "Kwaya people",
+    "languages": "Niger–Congo → Bantu → Kwaya",
+    "homeland": "Tanzania (Mara Region)",
+    "subgroups": "Christianity, Traditional African religion",
+    "religion": ""
+  },
+  {
+    "name": "Kwere",
+    "article": "Kwere people",
+    "languages": "Niger–Congo → Bantu → Kwere",
+    "homeland": "Tanzania (Bagamoyo District)",
+    "subgroups": "Islam, Traditional African religion",
+    "religion": ""
+  },
+  {
+    "name": "Lega",
+    "article": "Lega people",
+    "languages": "Niger–Congo → Bantu → Lega",
+    "homeland": "Democratic Republic of the Congo",
+    "subgroups": "Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Lemba",
+    "article": "Lemba people",
+    "languages": "Niger–Congo → Bantu → Venda, Shona",
+    "homeland": "Zimbabwe, South Africa, Malawi, Mozambique",
+    "subgroups": "Christianity, Islam, Judaism",
+    "religion": ""
+  },
+  {
+    "name": "Limba",
+    "article": "Limba people (Sierra Leone)",
+    "languages": "Niger–Congo → Limba",
+    "homeland": "Sierra Leone (Bombali and Koinadugu Districts)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Lisi",
+    "article": "Lisi people",
+    "languages": "Nilo-Saharan → Central Sudanic → Naba",
+    "homeland": "Chad (Lake Fitri)",
+    "subgroups": "Bilala, Kuka and the Medogo",
+    "religion": "Islam"
+  },
+  {
+    "name": "Lozi",
+    "article": "Lozi people",
+    "languages": "Niger–Congo → Bantu → Lozi",
+    "homeland": "Zambia (Barotseland), Zimbabwe, Namibia (Zambezi Region), Botswana",
+    "subgroups": "Mafwe, Mbukushu, Totela, Yeyi",
+    "religion": "Christianity, Traditional African religions"
+  },
+  {
+    "name": "Luba",
+    "article": "Luba people",
+    "languages": "Niger–Congo → Bantu → Luban",
+    "homeland": "Democratic Republic of the Congo (Lubaland)",
+    "subgroups": "Luba-Kasai, Luba-Katanga, Hemba (including Bangubangu), Songe, Lulua",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Lugbara",
+    "article": "Lugbara people",
+    "languages": "Nilo-Saharan → Central Sudanic → Lugbara",
+    "homeland": "Democratic Republic of the Congo (Orientale Province), South Sudan, Uganda (West Nile (particularly Arua City, Arua, Maracha, Terego, Madi-Okollo, Yumbe and Koboko districts))",
+    "subgroups": "Ayivu, Maracha, Terego, Vurra, Aringa",
+    "religion": "Christianity, Islam, Lugbara religion"
+  },
+  {
+    "name": "Luhya",
+    "article": "Luhya people",
+    "languages": "Niger–Congo → Bantu → Luhya",
+    "homeland": "Kenya (Western Province)",
+    "subgroups": "Bukusu, Idakho, Isukha, Kabras, Khayo, Kisa, Marachi, Maragoli, Marama, Nyole, Samia, Tachoni, Tiriki, Tsotso, Wanga,",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Luo",
+    "article": "Luo people (Kenya)",
+    "languages": "Nilo-Saharan → Nilotic → Dholuo",
+    "homeland": "Kenya",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Luso-Africans",
+    "article": "Luso-Africans",
+    "languages": "Indo-European → Romance → Portuguese → African Portuguese",
+    "homeland": "PALOP countries (Angola, Guinea-Bissau, Cape Verde, Mozambique, São Tomé and Príncipe, Equatorial Guinea), South Africa",
+    "subgroups": "| Portuguese Africans (including Luso-Angolans, Cape Verdeans, Luso-Equatoguineans, Luso-Guineans, Luso-Mozambicans, Santomeans, Luso-South Africans)",
+    "religion": "Christianity → Catholicism"
+  },
+  {
+    "name": "Maasai",
+    "article": "Maasai people",
+    "languages": "Nilo-Saharan → Nilotic → Maasai",
+    "homeland": "Maasailand (Tanzania, Kenya)",
+    "subgroups": "Samburu, Arusha, Kwavi",
+    "religion": "Traditional African religions"
+  },
+  {
+    "name": "Madi",
+    "article": "Madi people",
+    "languages": "Nilo-Saharan → Central Sudanic → Ma'di",
+    "homeland": "Democratic Republic of the Congo, South Sudan, Uganda",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Mafa",
+    "article": "Mafa people",
+    "languages": "Afroasiatic → Chadic → Mafa",
+    "homeland": "Cameroon, Nigeria",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Majang",
+    "article": "Majang people",
+    "languages": "Nilo-Saharan → Surmic → Majang",
+    "homeland": "Ethiopia (Gambela Region)",
+    "subgroups": "Christianity, Traditional African religion",
+    "religion": ""
+  },
+  {
+    "name": "Makaa",
+    "article": "Makaa people",
+    "languages": "Niger–Congo → Bantu → Makaa, Niger–Congo → Bantu → Byep",
+    "homeland": "Cameroon (East Region, Centre Region)",
+    "subgroups": "South Makaa, North Makaa",
+    "religion": "Christianity, Traditional African religion"
+  },
+  {
+    "name": "Makonde",
+    "article": "Makonde people",
+    "languages": "Niger–Congo → Bantu → Makonde",
+    "homeland": "Tanzania, Mozambique (Mueda Plateau)",
+    "subgroups": "Machinga",
+    "religion": "Islam"
+  },
+  {
+    "name": "Makua",
+    "article": "Makua people",
+    "languages": "Niger–Congo → Bantu → Makhuwa",
+    "homeland": "Mozambique",
+    "subgroups": "Lomwe, Chuwabu, Moniga, Koti, Nathembo",
+    "religion": "Traditional African religions"
+  },
+  {
+    "name": "Malagasy",
+    "article": "Malagasy people",
+    "languages": "Austronesian → Greater Barito → Malagasy",
+    "homeland": "Madagascar, Comoros, Mayotte, Réunion, Mauritius",
+    "subgroups": "Merina, Sihanaka, Betsileo, Zafimaniry, Antaifasy, Antemoro, Antaisaka, Antambahoaka, Tandroy, Antankarana, Antanosy, Bara, Betsimisaraka, Bezanozano, Mahafaly, Makoa, Mikea, Sakalava, Tanala, Tsimihety, Vezo",
+    "religion": "Christianity, Malagasy religion"
+  },
+  {
+    "name": "Malbars",
+    "article": "Malbars",
+    "languages": "Indo-European → French → Réunion Creole Historically Indo-European → Romance → French",
+    "homeland": "Réunion",
+    "subgroups": "Hinduism",
+    "religion": ""
+  },
+  {
+    "name": "Mambila",
+    "article": "Mambila people",
+    "languages": "Niger–Congo → Mambila",
+    "homeland": "Mambilla Plateau (Nigeria, Cameroon)",
+    "subgroups": "Somyev",
+    "religion": "Traditional African religions"
+  },
+  {
+    "name": "Mandinka",
+    "article": "Mandinka people",
+    "languages": "Niger–Congo → Mande → Manding",
+    "homeland": "Mali, The Gambia, Guinea, Senegal",
+    "subgroups": "Bolon",
+    "religion": "Islam"
+  },
+  {
+    "name": "Manjak",
+    "article": "Manjak people",
+    "languages": "Niger–Congo → West Atlantic → Senegambian → Manjak",
+    "homeland": "Guinea-Bissau, Senegal",
+    "subgroups": "Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Masa",
+    "article": "Masa people",
+    "languages": "Afroasiatic → Chadic → Masana",
+    "homeland": "Cameroon, Chad",
+    "subgroups": "Christianity, Islam",
+    "religion": ""
+  },
+  {
+    "name": "Masalit",
+    "article": "Masalit people",
+    "languages": "Nilo-Saharan → Masalit",
+    "homeland": "Sudan, Chad",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Mauritian Creoles",
+    "article": "Mauritian Creoles",
+    "languages": "Indo-European → French- → Mauritian Creole",
+    "homeland": "Mauritius",
+    "subgroups": "Christianity → Catholicism, Rastafari",
+    "religion": ""
+  },
+  {
+    "name": "Mbaka",
+    "article": "Mbaka people",
+    "languages": "Niger–Congo → Ubangian → Mbaka",
+    "homeland": "Central African Republic, Democratic Republic of the Congo",
+    "subgroups": "Christianity → Catholicism",
+    "religion": ""
+  },
+  {
+    "name": "Mbugu",
+    "article": "Mbugu people",
+    "languages": "Niger–Congo → Bantu → Mbugu, Pare Niger–Congo and Afroasiatic → Bantu and Cushitic → Maʼa",
+    "homeland": "Tanzania (Usambara Mountains)",
+    "subgroups": "Christianity, Islam, Traditional African religion",
+    "religion": ""
+  },
+  {
+    "name": "Mende",
+    "article": "Mende people",
+    "languages": "Niger–Congo → Mande → Mende",
+    "homeland": "Sierra Leone (Southern and Eastern Provinces)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Mijikenda",
+    "article": "Mijikenda peoples",
+    "languages": "Niger–Congo → Bantu → Mijikenda",
+    "homeland": "Kenya (Coast Province)",
+    "subgroups": "Chonyi, Giriama, Digo, Segeju, Rabai",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Mongo",
+    "article": "Mongo people",
+    "languages": "Niger–Congo → Bantu → Mongo",
+    "homeland": "Democratic Republic of the Congo (Equateur, Tshuapa, Mongala, Nord-Ubangi, Sud-Ubangi)",
+    "subgroups": "Bolia, Ntomba, Ngando, Iyaelima, Mbole, Mpama, Nkutu, Sengele, Hendo, Dengese, Tetela",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Moru",
+    "article": "Moru people",
+    "languages": "Nilo-Saharan → Central Sudanic → Moru",
+    "homeland": "South Sudan (Western Equatoria)",
+    "subgroups": "Miza, Ägyi, Moroändri, Kediro, 'Bari'ba",
+    "religion": "Christianity → Protestantism → Anglicanism → Episcopal Church of the South Sudan"
+  },
+  {
+    "name": "Mossi",
+    "article": "Mossi people",
+    "languages": "Niger–Congo → Gur → Mossi",
+    "homeland": "Burkina Faso (Mossiland)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Mozabite",
+    "article": "Mozabite people",
+    "languages": "Afroasiatic → Berber → Mozabite Afroasiatic → West Semitic → Algerian Arabic",
+    "homeland": "Algeria",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Mumuye",
+    "article": "Mumuye people",
+    "languages": "Niger–Congo → Adamawa → Mumuye",
+    "homeland": "Nigeria (Taraba State)",
+    "subgroups": "Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Musgum",
+    "article": "Musgum people",
+    "languages": "Afroasiatic → Chadic → Musgu",
+    "homeland": "Cameroon (Far North Region), Chad (Chari-Baguirmi, Mayo-Kebbi Est)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Mwera",
+    "article": "Mwera people",
+    "languages": "Niger–Congo → Bantu → Mwera",
+    "homeland": "Tanzania (Mtwara and Ruvuma Regions)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Nama",
+    "article": "Nama people",
+    "languages": "Khoe → Khoekhoe",
+    "homeland": "Namibia (Namaland), South Africa",
+    "subgroups": "Oorlams",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Nara",
+    "article": "Nara people",
+    "languages": "Nilo-Saharan → Eastern Sudanic → Nara",
+    "homeland": "Eritrea",
+    "subgroups": "Higir, Mogareb, Koyta, Santora",
+    "religion": "Islam, Animism"
+  },
+  {
+    "name": "Ndendeule",
+    "article": "Ndendeule people",
+    "languages": "Niger-Congo languages → Bantu languages → Ndendeule",
+    "homeland": "Tanzania",
+    "subgroups": "Animism",
+    "religion": ""
+  },
+  {
+    "name": "Ngbandi",
+    "article": "Ngbandi people",
+    "languages": "Niger–Congo → Ubangian → Ngbandi",
+    "homeland": "Democratic Republic of the Congo, Central African Republic",
+    "subgroups": "Yakoma",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Ngoni",
+    "article": "Ngoni people",
+    "languages": "Niger–Congo → Bantu → Ngoni",
+    "homeland": "Malawi, Mozambique, Tanzania, Zimbabwe, and Zambia",
+    "subgroups": "Christianity, African Traditional Religion, Sangoma, Islam",
+    "religion": ""
+  },
+  {
+    "name": "Nkole",
+    "article": "Nkole people",
+    "languages": "Niger–Congo → Bantu → Nkore-Kiga → Nkore",
+    "homeland": "Uganda (Ankole)",
+    "subgroups": "Christianity, Ruhanga",
+    "religion": ""
+  },
+  {
+    "name": "Northern Ndebele",
+    "article": "Northern Ndebele people",
+    "languages": "Niger–Congo → Bantu → Nguni → Northern Ndebele",
+    "homeland": "Zimbabwe (Matabeleland)",
+    "subgroups": "Christianity, Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Nubians",
+    "article": "Nubians",
+    "languages": "Nilo-Saharan → Nubian",
+    "homeland": "Nubia (Egypt, Sudan)",
+    "subgroups": "Nobiin, Mattokki, Dongolawi, Midob, Birgid, Hill Nubians (including Dilling, Debri, Ghulfan, Kadaru, Karko, and Wali)",
+    "religion": "Islam → Sunni Islam"
+  },
+  {
+    "name": "Nubis",
+    "article": "Nubians (Uganda)",
+    "languages": "Afroasiatic → Arabic → Nubi",
+    "homeland": "Uganda, Kenya",
+    "subgroups": "Ugandan Nubis, Kenyan Nubis",
+    "religion": "Islam"
+  },
+  {
+    "name": "Nuer",
+    "article": "Nuer people",
+    "languages": "Nilo-Saharan → Nilotic → Nuer",
+    "homeland": "South Sudan (Nuerland)",
+    "subgroups": "Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Nupe",
+    "article": "Nupe people",
+    "languages": "Niger–Congo → Nupoid → Nupe",
+    "homeland": "Nigeria (Niger State, Kwara State)",
+    "subgroups": "Islam, Christianity, Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Nyambo",
+    "article": "Nyambo language",
+    "languages": "Niger–Congo → Bantu → Nyambo",
+    "homeland": "Tanzania (Karagwe District, Kagera Region)",
+    "subgroups": "Christianity → Protestantism → Evangelicalism",
+    "religion": ""
+  },
+  {
+    "name": "Nyoro",
+    "article": "Nyoro people",
+    "languages": "Niger–Congo → Bantu → Nyoro",
+    "homeland": "Uganda (Bunyoro)",
+    "subgroups": "Christianity, Islam, Traditional African religion",
+    "religion": ""
+  },
+  {
+    "name": "Ogiek",
+    "article": "Okiek people",
+    "languages": "Nilo-Saharan → Nilotic → Ogiek",
+    "homeland": "Kenya (Mau Forest, Mount Elgon)",
+    "subgroups": "Christianity, Traditional Ogiek religion",
+    "religion": ""
+  },
+  {
+    "name": "Ogoni",
+    "article": "Ogoni people",
+    "languages": "Niger–Congo → Cross River → Ogoni",
+    "homeland": "Nigeria (Ogoniland)",
+    "subgroups": "Baan, Eleme, Gokana, Tẹẹ",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Ogu",
+    "article": "Ogu people",
+    "languages": "Niger–Congo → Kwa → Gbe → Gun",
+    "homeland": "Nigeria (Lagos, Ogun State), Benin",
+    "subgroups": "Christianity, Islam, West African Vodun",
+    "religion": ""
+  },
+  {
+    "name": "Oku",
+    "article": "Oku people (Sierra Leone)",
+    "languages": "Indo-European → English → Krio Indo-European → Germanic → English → Sierra Leonean English",
+    "homeland": "Sierra Leone, The Gambia",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Oromo",
+    "article": "Oromo people",
+    "languages": "Afroasiatic → Cushitic → Oromo",
+    "homeland": "Ethiopia (Oromia), Kenya",
+    "subgroups": "Boorana, Barento, Salale, Machaa, Arsi, Wollo",
+    "religion": "Islam → Sunni Islam"
+  },
+  {
+    "name": "Ovambo",
+    "article": "Ovambo people",
+    "languages": "Niger–Congo → Bantu → Ovambo",
+    "homeland": "Namibia (Ovamboland), Angola",
+    "subgroups": "Christianity → Protestantism → Lutheranism",
+    "religion": ""
+  },
+  {
+    "name": "Ovimbundu",
+    "article": "Ovimbundu",
+    "languages": "Niger–Congo → Bantu → Umbundu",
+    "homeland": "Angola",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Papel",
+    "article": "Papel people",
+    "languages": "Niger–Congo → Senegambian → Papel",
+    "homeland": "Guinea-Bissau (Biombo Region)",
+    "subgroups": "Christianity → Catholicism",
+    "religion": ""
+  },
+  {
+    "name": "Pare",
+    "article": "Pare people",
+    "languages": "Niger–Congo → Bantu → Pare",
+    "homeland": "Tanzania (Pare Mountains)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Pedi",
+    "article": "Pedi people",
+    "languages": "Niger–Congo → Bantu → Northern Sotho → Sepedi",
+    "homeland": "South Africa (Limpopo)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Pende",
+    "article": "Pende people",
+    "languages": "Niger–Congo → Bantu → Pende",
+    "homeland": "Democratic Republic of the Congo",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Rendille",
+    "article": "Rendille people",
+    "languages": "Afroasiatic → Cushitic → Rendille",
+    "homeland": "Kenya (Eastern Province)",
+    "subgroups": "Waaq",
+    "religion": ""
+  },
+  {
+    "name": "Rifians",
+    "article": "Rifians",
+    "languages": "Afroasiatic → Berber → Tarifit",
+    "homeland": "Morocco",
+    "subgroups": "Islam → Sunnism",
+    "religion": ""
+  },
+  {
+    "name": "Saho",
+    "article": "Saho people",
+    "languages": "Afroasiatic → Cushitic → Saho",
+    "homeland": "Eritrea, Ethiopia",
+    "subgroups": "Islam → Sunnism",
+    "religion": ""
+  },
+  {
+    "name": "Sandawe",
+    "article": "Sandawe people",
+    "languages": "Sandawe",
+    "homeland": "Tanzania (Chemba District)",
+    "subgroups": "Traditional African Religion, Islam",
+    "religion": ""
+  },
+  {
+    "name": "Sara",
+    "article": "Sara people",
+    "languages": "Nilo-Saharan → Central Sudanic → Sara",
+    "homeland": "Chad, Central African Republic",
+    "subgroups": "Ngambay, Doba, Laka, Kabba, Sar, Mbay, Ngam, Dagba, Gulay",
+    "religion": "Traditional African religions"
+  },
+  {
+    "name": "Senufo",
+    "article": "Senufo people",
+    "languages": "Atlantic–Congo → (disputed) → Senufo",
+    "homeland": "Mali, Ivory Coast, Burkina Faso",
+    "subgroups": "Nafana, Minyanka",
+    "religion": "Traditional African religions"
+  },
+  {
+    "name": "Serer",
+    "article": "Serer people",
+    "languages": "Atlantic–Congo → Senegambian → Serer, Cangin",
+    "homeland": "Senegal",
+    "subgroups": "Laalaa, Ndut, Niominka, Serer-Noon, Palor, Saafi",
+    "religion": "Islam, Serer religion"
+  },
+  {
+    "name": "Seychellois Creoles",
+    "article": "Seychellois Creole people",
+    "languages": "Indo-European → French → Seychellois Creole",
+    "homeland": "Seychelles",
+    "subgroups": "Christianity → Catholicism",
+    "religion": ""
+  },
+  {
+    "name": "Sherbro",
+    "article": "Sherbro people",
+    "languages": "Atlantic–Congo → Mel → Sherbro",
+    "homeland": "Sierra Leone (Sherbro Island)",
+    "subgroups": "Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Shi",
+    "article": "Bushi (region)",
+    "languages": "Niger–Congo → Bantu → Great Lakes →Mashi",
+    "homeland": "Democratic Republic of the Congo",
+    "subgroups": "Havu, Bahavu, Nyindu, Banyindu, Fuliru, Bafuliru",
+    "religion": "Christianity → Catholic Church, Kubandwa"
+  },
+  {
+    "name": "Shilha",
+    "article": "Shilha people",
+    "languages": "Afroasiatic → Berber → Shilha",
+    "homeland": "Morocco",
+    "subgroups": "Islam → Sunnism",
+    "religion": ""
+  },
+  {
+    "name": "Shilluk",
+    "article": "Shilluk people",
+    "languages": "Nilo-Saharan → Nilotic → Shilluk",
+    "homeland": "South Sudan",
+    "subgroups": "Gule",
+    "religion": "Christianity → Catholicism"
+  },
+  {
+    "name": "Shona",
+    "article": "Shona people",
+    "languages": "Niger–Congo → Bantu → Shona",
+    "homeland": "Zimbabwe (Mashonaland)",
+    "subgroups": "Manyika, Ndau",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Sidama",
+    "article": "Sidama people",
+    "languages": "Afroasiatic → Cushitic → Sidaama",
+    "homeland": "Ethiopia (Sidamia)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Sierra Leone Creoles",
+    "article": "Sierra Leone Creole people",
+    "languages": "Indo-European → English → Krio, Pichinglis",
+    "homeland": "Sierra Leone",
+    "subgroups": "Gambian Creoles, Saros, Krio Fernandinos, with significant populations in the United States",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Siltʼe",
+    "article": "Siltʼe people",
+    "languages": "Afroasiatic → West Semitic → Siltʼe",
+    "homeland": "Ethiopia (Siltia)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Sino-Mauritians",
+    "article": "Sino-Mauritians",
+    "languages": "Indo-European → French → Mauritian Creole Sino-Tibetan → Sinitic → Hakka, Cantonese",
+    "homeland": "Mauritius",
+    "subgroups": "Christianity, Chinese folk religion, Buddhism",
+    "religion": ""
+  },
+  {
+    "name": "Sino-Seychellois",
+    "article": "Sino-Seychellois",
+    "languages": "Indo-European → French → Seychellois Creole Sino-Tibetan → Sinitic → Hakka, Cantonese",
+    "homeland": "Seychelles",
+    "subgroups": "Christianity, Chinese folk religion, Buddhism",
+    "religion": ""
+  },
+  {
+    "name": "Sinoa",
+    "article": "Chinese people in Madagascar",
+    "languages": "Sino-Tibetan → Sinitic → Cantonese, Mandarin",
+    "homeland": "Madagascar",
+    "subgroups": "Christianity → Catholicism",
+    "religion": ""
+  },
+  {
+    "name": "Siwi",
+    "article": "Siwi people",
+    "languages": "Afroasiatic → Berber → Siwi",
+    "homeland": "Egypt, Libya",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Soga",
+    "article": "Soga people",
+    "languages": "Niger–Congo → Bantu → Soga",
+    "homeland": "Uganda (Busoga)",
+    "subgroups": "Christianity, Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Somalis",
+    "article": "Somalis",
+    "languages": "Afroasiatic → Cushitic → Somali",
+    "homeland": "Greater Somalia (Somalia, Ethiopia, Djibouti, Kenya)",
+    "subgroups": "Hawiye, Darod (including Majeerteen), Isaaq, Dir, Rahanweyn, Madhiban, Yibir, Ajuran along with significant populations in the United States, the United Kingdom, Sweden, and Canada",
+    "religion": "Islam → Sunnism → Shafi'ism"
+  },
+  {
+    "name": "Songhai",
+    "article": "Songhai people",
+    "languages": "Songhay languages",
+    "homeland": "West Africa",
+    "subgroups": "Songhai proper, Zarma, Wogo, Kurtey, Ingalkoyyu, Arma, Belbali, Dendi",
+    "religion": "Islam"
+  },
+  {
+    "name": "Soninke",
+    "article": "Soninke people",
+    "languages": "Niger–Congo → Mande → Soninke",
+    "homeland": "Mali",
+    "subgroups": "Islam → Sunni Islam → Malikism",
+    "religion": ""
+  },
+  {
+    "name": "Soqotris",
+    "article": "Soqotri people",
+    "languages": "Afroasiatic → West Semitic → Soqotri",
+    "homeland": "Yemen (Socotra)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Sotho",
+    "article": "Basotho",
+    "languages": "Niger–Congo → Bantu → Sotho",
+    "homeland": "South Africa (Free State), Lesotho",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Southern Ndebele",
+    "article": "Southern Ndebele people",
+    "languages": "Niger–Congo → Bantu → Nguni → Southern Ndebele",
+    "homeland": "South Africa (Mpumalanga, Gauteng, Limpopo)",
+    "subgroups": "Christianity, Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Spaniards",
+    "article": "Spaniards",
+    "languages": "Indo-European → Romance → Spanish → Canarian Spanish, Silbo Gomero, Isleño Spanish",
+    "homeland": "Spain (Canary Islands, Ceuta, Melilla)",
+    "subgroups": "Christianity → Catholicism",
+    "religion": ""
+  },
+  {
+    "name": "Sukuma",
+    "article": "Sukuma people",
+    "languages": "Niger–Congo → Bantu → Sukuma",
+    "homeland": "Tanzania",
+    "subgroups": "Christianity → Catholicism",
+    "religion": ""
+  },
+  {
+    "name": "Surma",
+    "article": "Surma people",
+    "languages": "Nilo-Saharan → Surmic",
+    "homeland": "Ethiopia, South Sudan",
+    "subgroups": "Me'en, Mursi, Kichepo",
+    "religion": "Traditional African religions"
+  },
+  {
+    "name": "Susu",
+    "article": "Susu people",
+    "languages": "Niger–Congo → Mande → Susu",
+    "homeland": "Guinea, Sierra Leone (Kambia)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Swahili",
+    "article": "Swahili people",
+    "languages": "Niger–Congo → Bantu → Swahili",
+    "homeland": "Swahili coast (Kenya, Tanzania, Mozambique, Comoros)",
+    "subgroups": "Shirazi (including Zanzibaris, and Maore)",
+    "religion": "Islam"
+  },
+  {
+    "name": "Swazi",
+    "article": "Swazi people",
+    "languages": "Niger–Congo → Bantu → Swazi",
+    "homeland": "South Africa (Mpumalanga), Eswatini",
+    "subgroups": "Christianity → African Zionism",
+    "religion": ""
+  },
+  {
+    "name": "Tallensi",
+    "article": "Tallensi",
+    "languages": "Atlantic–Congo → Gur → Talni",
+    "homeland": "Ghana (Tallensi Traditional Area), Burkina Faso",
+    "subgroups": "Tallensi religion",
+    "religion": ""
+  },
+  {
+    "name": "Tama",
+    "article": "Tama people",
+    "languages": "Nilo-Saharan → Taman → Tama",
+    "homeland": "Chad, Sudan",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Tarok",
+    "article": "Tarok people",
+    "languages": "Niger–Congo → Plateau → Tarok",
+    "homeland": "Nigeria (Plateau State)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Teke",
+    "article": "Teke people",
+    "languages": "Niger–Congo → Bantu → Teke",
+    "homeland": "Republic of the Congo, Democratic Republic of the Congo",
+    "subgroups": "Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Temne",
+    "article": "Temne people",
+    "languages": "Niger–Congo → Mel → Temne",
+    "homeland": "Sierra Leone (Northern Sierra Leone)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Tigrayans",
+    "article": "Tigrayans",
+    "languages": "Afroasiatic → Ethiopic → Tigrinya",
+    "homeland": "Eritrea (Eritrean Highlands), Ethiopia (Tigrayia)",
+    "subgroups": "Christianity → Oriental Orthodoxy → Ethiopian Orthodoxy",
+    "religion": ""
+  },
+  {
+    "name": "Tigre",
+    "article": "Tigre people",
+    "languages": "Afroasiatic → Ethiopic → Tigre",
+    "homeland": "Eritrea",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Tiv",
+    "article": "Tiv people",
+    "languages": "Niger–Congo → Tiv",
+    "homeland": "Nigeria (Benue State)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Tonga",
+    "article": "Tonga language (Zambia and Zimbabwe)",
+    "languages": "Niger–Congo → Bantu → Tonga",
+    "homeland": "Zambia, Zimbabwe",
+    "subgroups": "Traditional African Religion",
+    "religion": ""
+  },
+  {
+    "name": "Tooro",
+    "article": "Tooro people",
+    "languages": "Niger–Congo → Bantu → Tooro",
+    "homeland": "Uganda (Tooro Kingdom)",
+    "subgroups": "Abagweri, Abasingo, Abahinda, Ababiito, Abasumbi, Abayaga, Ababwiju, Abasiita, Abasambo, Ababoopi, Ababwooro, Abagaya, Abalebeki, Abango, Abagimu, Abarungu, Abanyakyoozi, Abasoigi",
+    "religion": "Christianity, Ruhanga"
+  },
+  {
+    "name": "Toubou",
+    "article": "Toubou people",
+    "languages": "Nilo-Saharan → Saharan → Tebu",
+    "homeland": "Toubouland (Chad, Niger, Sudan, Libya)",
+    "subgroups": "Daza, Teda",
+    "religion": "Islam → Sunni Islam"
+  },
+  {
+    "name": "Tsonga",
+    "article": "Tsonga people",
+    "languages": "Niger–Congo → Bantu → Tsonga",
+    "homeland": "Mozambique (Maputo City and Maputo Province, Gaza Province), South Africa (Limpopo, Mpumalanga)",
+    "subgroups": "Christianity → Catholicism",
+    "religion": ""
+  },
+  {
+    "name": "Tswana",
+    "article": "Tswana people",
+    "languages": "Niger–Congo → Bantu → Tswana",
+    "homeland": "Botswana, South Africa (South Tswanaland)",
+    "subgroups": "Balete, Mangwato, Bangwaketse, Bakwena, Batlokwa, Bahurutshe, Bakgatla, Rolong",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Tuareg",
+    "article": "Tuareg people",
+    "languages": "Afroasiatic → Berber → Tuareg languages",
+    "homeland": "Algeria, Burkina Faso, Niger, Nigeria, Mali, Mauritania",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Tumbuka",
+    "article": "Tumbuka people",
+    "languages": "Niger-Congo → Bantu → Tumbuka",
+    "homeland": "Malawi, Zambia, Tanzania, Zimbabwe",
+    "subgroups": "Senga, Henga, Yombe, Phoka, Tonga",
+    "religion": "Christianity, Tumbuka mythology"
+  },
+  {
+    "name": "Tupuri",
+    "article": "Tupuri people",
+    "languages": "Niger–Congo → Adamawa → Tupuri",
+    "homeland": "Cameroon (Far North Region), Chad (Mayo-Kebbi)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Turkana",
+    "article": "Turkana people",
+    "languages": "Nilo-Saharan → Nilotic → Turkana",
+    "homeland": "Kenya (Turkanaland)",
+    "subgroups": "Christianity → Catholicism",
+    "religion": ""
+  },
+  {
+    "name": "Tutsi",
+    "article": "Tutsi",
+    "languages": "Niger–Congo → Bantu → Great Lakes → Rwanda-Rundi",
+    "homeland": "Rwanda, Burundi, Democratic Republic of the Congo (Kivu)",
+    "subgroups": "Banyamulenge",
+    "religion": "Christianity, Islam"
+  },
+  {
+    "name": "Urhobos",
+    "article": "Urhobo people",
+    "languages": "Niger–Congo → Edoid → Urhobo",
+    "homeland": "Nigeria (Delta State)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Vai",
+    "article": "Vai people",
+    "languages": "Niger–Congo → Mande → Vai",
+    "homeland": "Liberia, Sierra Leone",
+    "subgroups": "Islam, Christianity, Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Venda",
+    "article": "Venda people",
+    "languages": "Niger–Congo → Bantu → Tshivenda",
+    "homeland": "South Africa (Vendaland)",
+    "subgroups": "Christianity, Traditional African religions",
+    "religion": ""
+  },
+  {
+    "name": "Wala",
+    "article": "Wala people",
+    "languages": "Niger–Congo → Gur → Wali",
+    "homeland": "Ghana (Upper West Region)",
+    "subgroups": "Islam → Sunni Islam, Animism",
+    "religion": ""
+  },
+  {
+    "name": "Welayta",
+    "article": "Welayta people",
+    "languages": "Afroasiatic → Omotic → Wolaitta",
+    "homeland": "Ethiopia (Wolayitia)",
+    "subgroups": "Christianity → Protestantism → P'ent'ay",
+    "religion": ""
+  },
+  {
+    "name": "Wolane",
+    "article": "Wolane people",
+    "languages": "Afroasiatic → Ethiopic → Wolane",
+    "homeland": "Ethiopia (Gurage)",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Wolof",
+    "article": "Wolof people",
+    "languages": "Niger–Congo → Atlantic → Senegambian → Wolof",
+    "homeland": "Senegambia (Senegal, The Gambia)",
+    "subgroups": "Lebu",
+    "religion": "Islam → Sunni Islam → Sufism → Mouride"
+  },
+  {
+    "name": "Xhosa",
+    "article": "Xhosa people",
+    "languages": "Niger–Congo → Bantu → Nguni → Xhosa",
+    "homeland": "South Africa (Xhosaland)",
+    "subgroups": "Fengu, Gcaleka, Gqunukhwebe, Gaika, Mpondomise, Thembu, Xesibe",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Yabs",
+    "article": "Demographics of Réunion",
+    "languages": "Indo-European → French → Réunion Creole",
+    "homeland": "Réunion",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Yako",
+    "article": "Yako people",
+    "languages": "Niger–Congo → Cross River → Yako",
+    "homeland": "Nigeria (Yakurr Local Government)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "Yao",
+    "article": "Yao people (East Africa)",
+    "languages": "Niger–Congo → Bantu → Yao",
+    "homeland": "Malawi, Mozambique, Tanzania (Ruvuma and Mtwara Regions)",
+    "subgroups": "Islam and Animism → Yao Folk Islam",
+    "religion": ""
+  },
+  {
+    "name": "Yoa-Lokpa",
+    "article": "Yoa-Lokpa people",
+    "languages": "Niger–Congo → Gur → Oti–Volta → Yom, Niger–Congo → Gur → Gurunsi → Lukpa",
+    "homeland": "Benin (Donga Department)",
+    "subgroups": "Ethnic religion",
+    "religion": ""
+  },
+  {
+    "name": "Yoruba",
+    "article": "Yoruba people",
+    "languages": "Atlantic–Congo → Yoruboid → Yoruba Yoruba Sign",
+    "homeland": "Yorubaland (Nigeria, Benin, Togo)",
+    "subgroups": "Ijesha, Egba, Yewa, Igbomina, Awori, Akoko, Okun, Ana, Ekiti, Ilaje, Ijebu, Oyo, Ondo, Ife, Nagos, with significant populations in the United States and Canada",
+    "religion": "Christianity, Islam, Yoruba religion"
+  },
+  {
+    "name": "Zaghawa",
+    "article": "Zaghawa people",
+    "languages": "Nilo-Saharan → Saharan → Zaghawa",
+    "homeland": "Chad, Sudan",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Zande",
+    "article": "Zande people",
+    "languages": "Niger–Congo → Zande",
+    "homeland": "Democratic Republic of the Congo, Central African Republic, South Sudan",
+    "subgroups": "Barambu",
+    "religion": "Christianity"
+  },
+  {
+    "name": "Zarabes",
+    "article": "Zarabes",
+    "languages": "Indo-European → French → Réunion Creole Indo-European → Indo-Aryan → Gujarati",
+    "homeland": "Réunion",
+    "subgroups": "Islam",
+    "religion": ""
+  },
+  {
+    "name": "Zayanes",
+    "article": "Zayanes",
+    "languages": "Afroasiatic → Berber → Central Atlas Tamazight",
+    "homeland": "Morocco (Khenifra)",
+    "subgroups": "Islam → Sunni Islam",
+    "religion": ""
+  },
+  {
+    "name": "Zulu",
+    "article": "Zulu people",
+    "languages": "Niger–Congo → Bantu → Nguni → Zulu",
+    "homeland": "South Africa (KwaZulu-Natal)",
+    "subgroups": "Christianity",
+    "religion": ""
+  },
+  {
+    "name": "ǃKung",
+    "article": "ǃKung people",
+    "languages": "Kxʼa → ǃKung",
+    "homeland": "Namibia (Kalahari Desert)",
+    "subgroups": "ǃXun, Ju",
+    "religion": "Animism"
+  },
+  {
+    "name": "ǂAakhoe",
+    "article": "ǂAakhoe dialect",
+    "languages": "Khoe-Kwadi → Khoe → Khoekhoe → ǂAakhoe",
+    "homeland": "Namibia",
+    "subgroups": "Animism",
+    "religion": ""
+  }
+]

@@ -1,321 +1,433 @@
-/**
- * Wikipedia Narrative Integration Service
- * Fetches structured editorial summaries, lead images, and section extracts
- * from the Wikimedia REST API, with localStorage caching and curated fallbacks.
- */
+import { 
+  findWikipediaEntry, 
+  WikipediaEthnicEntry, 
+  WIKIPEDIA_TABLE_ENTRIES,
+  normalizeEthnicKey 
+} from '../data/wikipediaEthnicAtlas';
 
 export type ThematicPillarId = 
-  | 'geography'
-  | 'history'
-  | 'people'
-  | 'languages'
-  | 'culture'
-  | 'climate'
-  | 'economy'
+  | 'geography' 
+  | 'history' 
+  | 'people' 
+  | 'languages' 
+  | 'culture' 
+  | 'climate' 
+  | 'economy' 
   | 'future';
 
-export interface ThematicPillarMeta {
+export interface ThematicPillarDef {
   id: ThematicPillarId;
   number: number;
   label: string;
   shortLabel: string;
-  icon: string; // lucide icon name
+  title: string;
+  subtitle: string;
   description: string;
-  wikiSectionKeywords: string[];
   primaryIndicatorIds: string[];
 }
 
-export const THEMATIC_PILLARS: ThematicPillarMeta[] = [
+export const THEMATIC_PILLARS: ThematicPillarDef[] = [
   {
     id: 'geography',
     number: 1,
-    label: 'Geography & Physical Landscape',
+    label: 'Physical Geography & Territoriality',
     shortLabel: 'Geography',
-    icon: 'Globe',
-    description: 'Physical terrain, elevation gradients, hydrological basins, borders, and OpenStreetMap infrastructure networks.',
-    wikiSectionKeywords: ['geography', 'geology', 'topography', 'biodiversity', 'terrain', 'borders'],
-    primaryIndicatorIds: ['AG.LND.FRST.ZS', 'FAO.LND.ARBL.HA', 'OSM.INFRA.AIRPORTS', 'OSM.INFRA.SEAPORTS', 'OSM.INFRA.RAILWAYS_KM']
+    title: 'Physical Geography & Territoriality',
+    subtitle: 'Topography, waterways, borders and maritime zones',
+    description: 'Sovereign spatial morphology, natural basins, littoral reaches, and territorial demarcations.',
+    primaryIndicatorIds: ['LAND_AREA', 'FOREST_COVER', 'ARABLE_LAND']
   },
   {
     id: 'history',
     number: 2,
-    label: 'History & State Formation',
+    label: 'Historiography & Liberation Chronologies',
     shortLabel: 'History',
-    icon: 'History',
-    description: 'Pre-colonial kingdoms, trade routes, colonial partitions, liberation movements, and post-independence consolidation.',
-    wikiSectionKeywords: ['history', 'prehistory', 'ancient', 'kingdom', 'colonial', 'independence', 'revolution'],
-    primaryIndicatorIds: ['UNDP.HDI.INDEX', 'MO.IIAG.SCORE', 'TI.CPI.SCORE']
+    title: 'Historiography & Liberation Chronologies',
+    subtitle: 'Pre-colonial kingdoms, colonial ruptures, and independence movements',
+    description: 'Epochs of civilizational governance, anti-colonial resistance, and sovereign state consolidation.',
+    primaryIndicatorIds: ['INDEPENDENCE_YEAR', 'CONFLICT_EVENTS', 'PEACE_INDEX']
   },
   {
     id: 'people',
     number: 3,
-    label: 'People, Demography & Health',
+    label: 'Demography & Human Development',
     shortLabel: 'People',
-    icon: 'Users',
-    description: 'Demographic dynamics, age distribution, urbanization rates, maternal health, and public healthcare networks.',
-    wikiSectionKeywords: ['demographics', 'population', 'ethnic', 'health', 'healthcare', 'education', 'urban'],
-    primaryIndicatorIds: ['SP.POP.TOTL', 'SP.URB.TOTL.IN.ZS', 'SP.DYN.LE00.IN', 'DHS.HLTH.MAT.MORT', 'DHS.HLTH.CHLD.STNT', 'OSM.INFRA.HOSPITALS']
+    title: 'Demography & Human Development',
+    subtitle: 'Population dynamics, urbanization, and societal vitality',
+    description: 'Generational demographics, life expectations, human development indexes, and civic health.',
+    primaryIndicatorIds: ['POPULATION', 'MEDIAN_AGE', 'LIFE_EXPECTANCY', 'HDI']
   },
   {
     id: 'languages',
     number: 4,
-    label: 'Languages & Linguistic Phyla',
+    label: 'Linguistic Geography & Phyla',
     shortLabel: 'Languages',
-    icon: 'MessageSquare',
-    description: 'Indigenous language families (Niger-Congo, Afroasiatic, Nilo-Saharan, Khoisan), vehicular lingua francas, and official statuses.',
-    wikiSectionKeywords: ['languages', 'official languages', 'linguistics', 'dialects'],
-    primaryIndicatorIds: ['SE.ADT.LITR.ZS', 'SP.POP.TOTL']
+    title: 'Linguistic Geography & Phyla',
+    subtitle: 'Mother tongues, polyglot lineages, and orthographies',
+    description: 'Niger-Congo, Afroasiatic, Nilo-Saharan, and Khoisan language families and vehicular state tongues.',
+    primaryIndicatorIds: ['OFFICIAL_LANGUAGES', 'LITERACY_RATE']
   },
   {
     id: 'culture',
     number: 5,
-    label: 'Culture, Arts & Heritage',
+    label: 'Material Culture, Heritage & Arts',
     shortLabel: 'Culture',
-    icon: 'Landmark',
-    description: 'Tangible UNESCO heritage, music traditions, literature, visual arts, culinary patrimony, and indigenous architecture.',
-    wikiSectionKeywords: ['culture', 'art', 'music', 'cuisine', 'heritage', 'monuments', 'architecture'],
-    primaryIndicatorIds: ['UNDP.HDI.INDEX']
+    title: 'Material Culture, Heritage & Arts',
+    subtitle: 'UNESCO sites, cosmological heritage, architectures, and traditions',
+    description: 'Intangible practices, ancestral shrines, architectural monuments, and contemporary creative industries.',
+    primaryIndicatorIds: ['HERITAGE_SITES', 'CREATIVE_EXPORTS']
   },
   {
     id: 'climate',
     number: 6,
-    label: 'Climate, Biomes & Ecology',
+    label: 'Biomes, Climate & Ecological Resilience',
     shortLabel: 'Climate',
-    icon: 'CloudSun',
-    description: 'Köppen climate classifications, ecological zones, precipitation trends, temperature anomalies, and energy transition.',
-    wikiSectionKeywords: ['climate', 'environment', 'ecology', 'biomes', 'wildlife', 'conservation', 'weather'],
-    primaryIndicatorIds: ['CCKP.CLIM.TAS.ANN', 'CCKP.CLIM.PR.ANN', 'CCKP.CLIM.TASMAX.EXTR', 'EN.ATM.CO2E.PC', 'EG.FEC.RNEW.ZS']
+    title: 'Biomes, Climate & Ecological Resilience',
+    subtitle: 'Sahel, rainforest, savannah, and green energy horizons',
+    description: 'Ecological zones, biodiversity reserves, rainfall cycles, and climate adaptation investments.',
+    primaryIndicatorIds: ['RENEWABLE_ENERGY_SHARE', 'CO2_EMISSIONS', 'CLIMATE_VULNERABILITY']
   },
   {
     id: 'economy',
     number: 7,
-    label: 'Economy, Trade & Production',
+    label: 'Macroeconomics, Sovereignty & Trade',
     shortLabel: 'Economy',
-    icon: 'TrendingUp',
-    description: 'Macroeconomic accounts, UN COMTRADE commodity exports, FAO agricultural yields, fiscal balances, and capital flows.',
-    wikiSectionKeywords: ['economy', 'agriculture', 'mining', 'trade', 'transport', 'industry', 'exports', 'finance'],
-    primaryIndicatorIds: ['NY.GDP.MKTP.CD', 'NY.GDP.PCAP.CD', 'COMTRADE.EXP.TOTL', 'COMTRADE.INTRA.AFRICA.SHARE', 'FAO.QCL.CEREAL.YLD', 'GFS.FISC.BAL.GDP']
+    title: 'Macroeconomics, Sovereignty & Trade',
+    subtitle: 'GDP, mineral reserves, regional trade, and fiscal balance',
+    description: 'Productive sectors, currency regimes, AfCFTA trade integration, and national budget allocations.',
+    primaryIndicatorIds: ['GDP_NOMINAL', 'GDP_GROWTH', 'INFLATION_RATE', 'EXTERNAL_DEBT']
   },
   {
     id: 'future',
     number: 8,
-    label: 'Future, AfCFTA & Governance',
+    label: 'Agenda 2063 & Future Horizons',
     shortLabel: 'Future',
-    icon: 'Sparkles',
-    description: 'AfCFTA tariff corridors, regional economic bloc integration, institutional governance ratings, and demographic dividend projections.',
-    wikiSectionKeywords: ['politics', 'government', 'foreign relations', 'future', 'development', 'vision', 'goals'],
-    primaryIndicatorIds: ['MO.IIAG.SCORE', 'TI.CPI.SCORE', 'COMTRADE.INTRA.AFRICA.SHARE', 'EG.ELC.ACCS.ZS']
+    title: 'Agenda 2063 & Future Horizons',
+    subtitle: 'Digital transformation, continental corridors, and technological innovation',
+    description: 'Fiber-optic penetration, space agencies, research output, and youth-led entrepreneurial ecosystems.',
+    primaryIndicatorIds: ['INTERNET_PENETRATION', 'MOBILE_SUBSCRIPTIONS', 'INNOVATION_INDEX']
   }
 ];
 
 export interface WikiSummaryData {
   title: string;
-  extract: string;
+  displaytitle?: string;
   description?: string;
-  thumbnailUrl?: string;
-  originalImageUrl?: string;
-  pageUrl: string;
-  coordinates?: {
-    lat: number;
-    lon: number;
+  extract: string;
+  extract_html?: string;
+  thumbnailUrl?: string | null;
+  thumbnail?: { source: string; width: number; height: number };
+  originalimage?: { source: string; width: number; height: number };
+  content_urls?: {
+    desktop: { page: string };
   };
 }
 
-export interface WikiSectionContent {
-  title: string;
-  content: string;
-  pillarId: ThematicPillarId;
-}
-
-const CACHE_PREFIX = 'africa_atlas_wiki_cache_';
-const CACHE_EXPIRY_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
-
-export async function fetchWikipediaSummary(entityName: string): Promise<WikiSummaryData | null> {
-  const cacheKey = `${CACHE_PREFIX}summary_${entityName.toLowerCase().replace(/\s+/g, '_')}`;
-  
-  // Check local cache
+export async function fetchWikipediaSummary(articleTitle: string): Promise<WikiSummaryData | null> {
   try {
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) {
-      const parsed = JSON.parse(cached);
-      if (Date.now() - parsed.timestamp < CACHE_EXPIRY_MS) {
-        return parsed.data;
-      }
-    }
-  } catch (e) {
-    // Ignore cache error
-  }
-
-  try {
-    const slug = encodeURIComponent(entityName.replace(/\s+/g, '_'));
-    const response = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${slug}`, {
-      headers: {
-        'Accept': 'application/json',
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Wikipedia API error: ${response.status}`);
-    }
-
-    const json = await response.json();
-    const data: WikiSummaryData = {
-      title: json.title,
-      extract: json.extract,
-      description: json.description,
-      thumbnailUrl: json.thumbnail?.source,
-      originalImageUrl: json.originalimage?.source,
-      pageUrl: json.content_urls?.desktop?.page || `https://en.wikipedia.org/wiki/${slug}`,
-      coordinates: json.coordinates ? { lat: json.coordinates.lat, lon: json.coordinates.lon } : undefined
+    const cleanTitle = articleTitle.replace(/\s+/g, '_');
+    const res = await fetch(
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleanTitle)}`,
+      { headers: { 'Accept': 'application/json' } }
+    );
+    if (!res.ok) return null;
+    const j = await res.json();
+    return {
+      ...j,
+      thumbnailUrl: j.thumbnail?.source || null
     };
-
-    // Save to cache
-    try {
-      localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data }));
-    } catch (e) {
-      // Storage full or quota exceeded
-    }
-
-    return data;
-  } catch (error) {
-    console.warn(`Could not fetch live Wikipedia summary for ${entityName}:`, error);
+  } catch (err) {
+    console.warn(`Error fetching wiki summary for ${articleTitle}:`, err);
     return null;
   }
 }
 
-/**
- * Editorial narrative synthesis generator for each pillar
- * Provides rich, verified fallback context when Wikipedia is offline or loading.
- */
+export interface CuratedPillarNarrativeResult {
+  headline: string;
+  narrative: string[];
+  keyFacts: { label: string; value: string }[];
+}
+
 export function getCuratedPillarNarrative(
-  countryName: string,
-  countryIso3: string,
-  pillarId: ThematicPillarId,
-  countryData?: any
-): { headline: string; narrative: string[]; keyFacts: Array<{ label: string; value: string }> } {
-  const c = countryName;
-  const iso = countryIso3.toUpperCase();
-  const region = countryData?.region || 'Africa';
+  entityName: string, 
+  entityId: string, 
+  pillarId: ThematicPillarId, 
+  entity?: any
+): CuratedPillarNarrativeResult {
+  const reg = entity?.unGeoschemeRegion || 'Africa';
+  const capital = entity?.capital || 'Capital City';
+  const pop = entity?.indicators?.POPULATION?.value ? `${(entity.indicators.POPULATION.value / 1e6).toFixed(1)}M` : 'Documented';
 
   switch (pillarId) {
     case 'geography':
       return {
-        headline: `Physical Geography & Topographical Corridors of ${c}`,
+        headline: `Spatial Morphology & Environmental Matrix of ${entityName}`,
         narrative: [
-          `${c} encompasses diverse physiographic landscapes within the ${region} geoscheme, characterized by distinct ecological transition zones, watershed basins, and national border frontiers.`,
-          `The territorial topography encompasses critical inland hydrographic networks and transport infrastructure corridors that connect primary urban nodes with regional economic gateways.`
+          `${entityName} occupies a pivotal geopolitical station in ${reg}, defined by diverse topographic contours and strategic territorial connectivity.`,
+          `Riverine systems, watershed basins, and littoral passages anchor national trade routes and cross-border ecological corridors.`
         ],
         keyFacts: [
-          { label: 'Territorial Extent', value: countryData?.landAreaKm2 ? `${countryData.landAreaKm2.toLocaleString()} km²` : 'Harmonized' },
-          { label: 'Geographic Classification', value: countryData?.geographicType || 'Continental' },
-          { label: 'Geoscheme Subregion', value: countryData?.subregion || region },
-          { label: 'Capital Coordinates', value: countryData?.coordinates ? `${countryData.coordinates.lat.toFixed(2)}°N, ${countryData.coordinates.lng.toFixed(2)}°E` : 'Geo-referenced' }
+          { label: 'Geoscheme Region', value: reg },
+          { label: 'Administrative Seat', value: capital }
         ]
       };
-
     case 'history':
       return {
-        headline: `Historical Evolution & Sovereign Statehood of ${c}`,
+        headline: `Dynastic Antiquity & Anti-Colonial Self-Determination in ${entityName}`,
         narrative: [
-          `${c} possesses a rich historical trajectory spanning ancient civilizations, regional commercial trade crossroads, and sovereign liberation struggles that shaped modern statehood.`,
-          `Following national independence, ${c} established its constitutional governance framework and emerged as an active participant in pan-African institutional bodies including the African Union.`
+          `Civilizational antiquity in ${entityName} traces through pre-colonial dynasties, autonomous city-states, and profound trade networks.`,
+          `The struggle for liberation culminated in national sovereignty, establishing modern pan-African diplomatic commitments.`
         ],
         keyFacts: [
-          { label: 'Independence Year', value: countryData?.independenceYear ? `${countryData.independenceYear}` : 'Sovereign' },
-          { label: 'Sovereign Status', value: 'UN & AU Member State' },
-          { label: 'Constitutional Form', value: countryData?.governmentType || 'Constitutional Republic' },
-          { label: 'Historical Blocs', value: (countryData?.blocs || ['AU', 'AfCFTA']).join(', ') }
+          { label: 'Sovereign Status', value: 'AU Member State' },
+          { label: 'Historical Nexus', value: `${reg} Antiquity` }
         ]
       };
-
     case 'people':
       return {
-        headline: `Demographic Transition & Human Development in ${c}`,
+        headline: `Demographic Dynamism & Human Potential of ${entityName}`,
         narrative: [
-          `${c} features a dynamic demographic profile characterized by a vibrant youth cohort, expanding urban centers, and accelerating investments in public health systems.`,
-          `Key national development strategies prioritize expanding primary healthcare accessibility, child immunization coverage, and vocational education across all administrative regions.`
+          `With a rapidly expanding youth generation, ${entityName} manifests vital social energy, creative entrepreneurship, and urbanization.`,
+          `Investments in vocational learning, primary education, and health infrastructure drive long-term structural transformation.`
         ],
         keyFacts: [
-          { label: 'Total Population', value: countryData?.facts?.population ? `${(countryData.facts.population / 1e6).toFixed(1)} Million` : 'Demographic Census' },
-          { label: 'Urbanization Ratio', value: countryData?.facts?.urbanPop ? `${(countryData.facts.urbanPop).toFixed(1)}%` : 'Harmonized' },
-          { label: 'Life Expectancy', value: countryData?.facts?.lifeExpectancy ? `${countryData.facts.lifeExpectancy.toFixed(1)} Years` : 'WDI Baseline' },
-          { label: 'Human Dev. Index', value: countryData?.facts?.hdi ? `${countryData.facts.hdi.toFixed(3)}` : 'UNDP HDR' }
+          { label: 'Total Population', value: pop },
+          { label: 'Demographic Horizon', value: 'Youth-Centric Dynamism' }
         ]
       };
-
     case 'languages':
       return {
-        headline: `Linguistic Patrimony & Multilingual Landscape of ${c}`,
+        headline: `Polyglot Heritage & Mother Tongues of ${entityName}`,
         narrative: [
-          `The linguistic heritage of ${c} reflects deep-rooted indigenous phyla and vehicular languages that bridge diverse ethnic communities and cross-border trade corridors.`,
-          `Official state administration operates alongside widely spoken regional lingua francas that preserve oral traditions, indigenous literature, and community culture.`
+          `Linguistic diversity in ${entityName} spans ancient continental language phyla alongside national official languages.`,
+          `Indigenous oral traditions, codified orthographies, and cross-border vehicular idioms enrich daily civic discourse.`
         ],
         keyFacts: [
-          { label: 'Official Languages', value: (countryData?.languages?.official || ['National']).join(', ') },
-          { label: 'Vehicular Languages', value: (countryData?.languages?.national || countryData?.languages?.mostSpoken || ['Indigenous Dialects']).join(', ') },
-          { label: 'Linguistic Phyla', value: 'Afroasiatic / Niger-Congo Families' },
-          { label: 'Literacy Baseline', value: countryData?.facts?.literacy ? `${countryData.facts.literacy.toFixed(1)}%` : 'UNESCO UIS' }
+          { label: 'Linguistic Families', value: 'Continental Phyla' },
+          { label: 'Communication Hub', value: 'Polyglot Vehicular Networks' }
         ]
       };
-
     case 'culture':
       return {
-        headline: `Cultural Traditions, Arts & UNESCO Heritage in ${c}`,
+        headline: `Living Traditions, Material Heritage & Creative Arts in ${entityName}`,
         narrative: [
-          `${c} boasts a celebrated cultural tapestry expressed through visual arts, musical heritage, traditional craftsmanship, and architectural monuments.`,
-          `Inscribed UNESCO World Heritage properties and national cultural sanctuaries preserve both ancient historical landmarks and sacred ecological landscapes.`
+          `Ancestral cosmologies, sacred architectural monuments, and tangible artisan guilds remain foundational to cultural identity in ${entityName}.`,
+          `Contemporary musical, literary, and cinematographic exports continue to garner international acclaim across the global diaspora.`
         ],
         keyFacts: [
-          { label: 'National Heritage', value: 'UNESCO Inscribed Properties' },
-          { label: 'Cultural Traditions', value: 'Music, Culinary Arts & Crafts' },
-          { label: 'Religious Traditions', value: (countryData?.religions || ['Diverse Traditions']).slice(0, 3).join(', ') },
-          { label: 'National Currency', value: countryData?.currency?.name ? `${countryData.currency.name} (${countryData.currency.code})` : 'National Currency' }
+          { label: 'Heritage Matrix', value: 'Tangible & Living Intangible' },
+          { label: 'Artistic Vanguard', value: 'Pan-African Cultural Vanguard' }
         ]
       };
-
     case 'climate':
       return {
-        headline: `Climatic Regimes, Biomes & Ecological Resilience in ${c}`,
+        headline: `Ecological Biomes & Climate Transition in ${entityName}`,
         narrative: [
-          `Spanning distinctive bioclimatic zones, ${c} experiences seasonal rainfall dynamics influenced by continental meteorological systems and regional ecological biomes.`,
-          `National climate action strategies focus on expanding renewable energy deployment, climate-smart agriculture, watershed protection, and biodiversity conservation.`
+          `Encompassing unique ecological biomes, ${entityName} balances conservation stewardship with vital resource requirements.`,
+          `National green initiatives prioritize solar, wind, hydro energy, and reforestation resilience.`
         ],
         keyFacts: [
-          { label: 'Bioclimatic Zone', value: 'Tropical / Savanna / Arid Gradient' },
-          { label: 'Forest Cover', value: countryData?.facts?.forestCover ? `${countryData.facts.forestCover.toFixed(1)}% of Land` : 'FAOSTAT' },
-          { label: 'Renewable Power Share', value: countryData?.facts?.renewables ? `${countryData.facts.renewables.toFixed(1)}%` : 'IRENA Baseline' },
-          { label: 'Climate Policy', value: 'UNFCCC NDC Target' }
+          { label: 'Ecological Zone', value: `${reg} Biomes` },
+          { label: 'Resilience Strategy', value: 'Renewable Expansion & Protection' }
         ]
       };
-
     case 'economy':
       return {
-        headline: `Economic Architecture, Trade & Productive Capacities of ${c}`,
+        headline: `Productive Capacities & AfCFTA Regional Integration in ${entityName}`,
         narrative: [
-          `The economy of ${c} combines agricultural production, natural resource endowment, manufacturing development, and expanding services and digital infrastructure.`,
-          `Under regional economic partnerships and the African Continental Free Trade Area (AfCFTA), ${c} continues to modernize its export value chains and trade logistics.`
+          `Economic sovereignty in ${entityName} is supported by mineral endowment, agricultural productivity, and expanding tertiary sectors.`,
+          `Active integration in the African Continental Free Trade Area (AfCFTA) stimulates intra-African value chains.`
         ],
         keyFacts: [
-          { label: 'Gross Domestic Product', value: countryData?.facts?.gdp ? `$${(countryData.facts.gdp / 1e9).toFixed(1)} Billion` : 'World Bank WDI' },
-          { label: 'GDP per Capita', value: countryData?.facts?.gdpPerCapita ? `$${countryData.facts.gdpPerCapita.toLocaleString()}` : 'Nominal USD' },
-          { label: 'Income Category', value: countryData?.incomeLevel || 'Middle-Income Tier' },
-          { label: 'AfCFTA Tariff Track', value: 'Operational Customs Corridor' }
+          { label: 'Trade Architecture', value: 'AfCFTA Signatory' },
+          { label: 'Primary Engines', value: 'Resources, Agribusiness & Services' }
         ]
       };
-
     case 'future':
+    default:
       return {
-        headline: `Governance Trajectory, Regional Blocs & Horizon 2050 in ${c}`,
+        headline: `Agenda 2063 Aspirations & Next-Century Frontiers for ${entityName}`,
         narrative: [
-          `${c} is positioning its public institutions to capture the African demographic dividend through investments in youth skilling, digital connectivity, and green industrialization.`,
-          `Active integration in Regional Economic Communities (RECs) and continental governance mechanisms reinforces cross-border security, trade harmonization, and sustainable growth.`
+          `Positioned within the African Union Agenda 2063 master plan, ${entityName} accelerates digital infrastructure and STEM education.`,
+          `Youth-driven technological innovation hubs are pioneering local fintech, agritech, and renewable solutions.`
         ],
         keyFacts: [
-          { label: 'Governance Index', value: countryData?.facts?.iiagScore ? `${countryData.facts.iiagScore.toFixed(1)} / 100` : 'IIAG Ibrahim Index' },
-          { label: 'Transparency Score', value: countryData?.facts?.cpiScore ? `${countryData.facts.cpiScore} / 100` : 'Transparency Intl.' },
-          { label: 'Regional Bloc Commitments', value: (countryData?.blocs || ['AU', 'AfCFTA']).join(' • ') },
-          { label: 'Continental Agenda', value: 'AU Agenda 2063 Framework' }
+          { label: 'Long-term Roadmap', value: 'AU Agenda 2063' },
+          { label: 'Innovation Focus', value: 'Digital Infrastructure & Tech Hubs' }
         ]
       };
   }
+}
+
+// Memory cache for runtime fetched summaries
+const RUNTIME_SUMMARY_CACHE = new Map<string, Partial<WikipediaEthnicEntry>>();
+
+/**
+ * Clean and parse language lineage string into a navigable chain of badges
+ * e.g. "Atlantic–Congo → Bantu → Gusii" -> ["Atlantic–Congo", "Bantu", "Gusii"]
+ */
+export function parseLanguageChain(languageStr: string): string[] {
+  if (!languageStr) return [];
+  return languageStr
+    .split(/\s*→\s*|\s*,\s*|\s*–\s*/)
+    .map(s => s.trim())
+    .filter(s => s.length > 1 && !s.startsWith('(') && !s.endsWith(')'));
+}
+
+/**
+ * Fetch Wikipedia summary dynamically from official Wikipedia REST API (CORS enabled)
+ */
+export async function fetchLiveWikipediaSummary(articleTitle: string): Promise<{
+  title?: string;
+  canonicalTitle?: string;
+  extract?: string;
+  thumbnail?: string | null;
+  description?: string;
+  url?: string;
+} | null> {
+  const cleanTitle = articleTitle.replace(/\s+/g, '_');
+  if (RUNTIME_SUMMARY_CACHE.has(cleanTitle)) {
+    return RUNTIME_SUMMARY_CACHE.get(cleanTitle) || null;
+  }
+
+  // Check localStorage for offline persistence
+  const localKey = `wiki_summary_${cleanTitle}`;
+  try {
+    const stored = localStorage.getItem(localKey);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      RUNTIME_SUMMARY_CACHE.set(cleanTitle, parsed);
+      return parsed;
+    }
+  } catch {
+    // ignore localStorage errors in sandboxed iframes
+  }
+
+  // Generate sensible search candidates
+  const candidates: string[] = [];
+  if (cleanTitle.toLowerCase().endsWith('_people') || cleanTitle.toLowerCase().endsWith('_peoples')) {
+    candidates.push(cleanTitle);
+    candidates.push(cleanTitle.replace(/_peoples?$/, ''));
+  } else {
+    candidates.push(`${cleanTitle}_people`);
+    candidates.push(`${cleanTitle}_peoples`);
+    candidates.push(cleanTitle);
+  }
+
+  for (const candidate of candidates) {
+    try {
+      const res = await fetch(
+        `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(candidate)}`,
+        {
+          headers: {
+            'Accept': 'application/json'
+          }
+        }
+      );
+
+      if (!res.ok) continue;
+
+      const j = await res.json();
+      // Skip disambiguation pages
+      if (j.type === 'disambiguation') continue;
+      if (j.extract && (j.extract.includes('may refer to:') || j.extract.length < 40)) continue;
+
+      const result = {
+        title: j.title,
+        canonicalTitle: j.title || candidate.replace(/_/g, ' '),
+        extract: j.extract,
+        thumbnail: j.thumbnail?.source || null,
+        description: j.description,
+        url: j.content_urls?.desktop?.page
+      };
+
+      RUNTIME_SUMMARY_CACHE.set(cleanTitle, result);
+      try {
+        localStorage.setItem(localKey, JSON.stringify(result));
+      } catch {
+        // quota or iframe block
+      }
+
+      return result;
+    } catch {
+      // try next candidate
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Get enriched Wikipedia dossier for any ethnic group name in the tree
+ */
+export async function getEthnicDossier(rawName: string): Promise<WikipediaEthnicEntry | null> {
+  const baseEntry = findWikipediaEntry(rawName);
+  if (!baseEntry) {
+    // Attempt dynamic fetch for unknown group directly
+    const live = await fetchLiveWikipediaSummary(rawName);
+    if (live && live.extract) {
+      return {
+        name: rawName,
+        article: live.canonicalTitle || `${rawName} people`,
+        canonicalTitle: live.canonicalTitle || `${rawName} people`,
+        languages: 'African Linguistic Lineage',
+        homeland: 'Historical African Homeland',
+        subgroups: '',
+        religion: 'Traditional & Contemporary Traditions',
+        extract: live.extract,
+        thumbnail: live.thumbnail,
+        description: live.description,
+        url: live.url
+      };
+    }
+    return null;
+  }
+
+  // If we already have extract & thumbnail, return immediately with canonicalTitle
+  if (baseEntry.extract && baseEntry.thumbnail) {
+    return {
+      ...baseEntry,
+      canonicalTitle: baseEntry.canonicalTitle || baseEntry.article
+    };
+  }
+
+  // Otherwise fetch live from Wikipedia REST API in background
+  const live = await fetchLiveWikipediaSummary(baseEntry.article || rawName);
+  if (live) {
+    return {
+      ...baseEntry,
+      canonicalTitle: live.canonicalTitle || baseEntry.canonicalTitle || baseEntry.article,
+      extract: live.extract || baseEntry.extract,
+      thumbnail: live.thumbnail !== undefined ? live.thumbnail : baseEntry.thumbnail,
+      description: live.description || baseEntry.description,
+      url: live.url || baseEntry.url
+    };
+  }
+
+  return {
+    ...baseEntry,
+    canonicalTitle: baseEntry.canonicalTitle || baseEntry.article
+  };
+}
+
+/**
+ * Get all major linguistic families present in the Wikipedia atlas
+ */
+export function getMajorLinguisticFamilies(): string[] {
+  return [
+    'All',
+    'Bantu',
+    'Kwa',
+    'Mande',
+    'Atlantic–Congo',
+    'Afroasiatic',
+    'Nilotic',
+    'Cushitic',
+    'Chadic',
+    'Khoisan',
+    'Edoid',
+    'Gur',
+    'Yoruboid',
+    'Igboid'
+  ];
 }
