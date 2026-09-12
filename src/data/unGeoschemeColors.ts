@@ -85,23 +85,23 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
     svgFillRgba: 'rgba(234, 88, 12, 0.08)',
     svgFillActiveRgba: 'rgba(234, 88, 12, 0.28)',
     badge: {
-      bg: 'bg-orange-500/10 dark:bg-orange-500/15',
-      border: 'border-orange-500/25 dark:border-orange-500/35',
-      text: 'text-orange-800 dark:text-orange-300',
+      bg: 'bg-orange-500/10 dark:bg-orange-500/20',
+      border: 'border-orange-500/25 dark:border-orange-400/40',
+      text: 'text-orange-900 dark:text-orange-200 font-semibold',
       dot: 'bg-[#EA580C]'
     },
     pill: {
-      bg: 'bg-orange-50 dark:bg-orange-950/40',
-      border: 'border-orange-200/80 dark:border-orange-800/50',
-      text: 'text-orange-800 dark:text-orange-300',
+      bg: 'bg-orange-50 dark:bg-orange-500/15',
+      border: 'border-orange-200/80 dark:border-orange-400/35',
+      text: 'text-orange-900 dark:text-orange-200 font-medium',
       activeBg: 'bg-[#EA580C] text-white',
       activeText: 'text-white font-bold'
     },
     card: {
-      borderHover: 'hover:border-orange-500/40',
-      bgHover: 'hover:bg-orange-500/[0.03]',
+      borderHover: 'hover:border-orange-500/50 dark:hover:border-orange-400/60',
+      bgHover: 'hover:bg-orange-500/[0.04] dark:hover:bg-orange-500/[0.08]',
       glow: 'shadow-orange-500/10',
-      accentText: 'text-orange-600 dark:text-orange-400'
+      accentText: 'text-orange-600 dark:text-orange-300'
     },
     button: {
       primary: 'bg-[#EA580C] hover:bg-orange-600 text-white shadow-orange-500/20',
@@ -128,23 +128,23 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
     svgFillRgba: 'rgba(99, 102, 241, 0.08)',
     svgFillActiveRgba: 'rgba(99, 102, 241, 0.28)',
     badge: {
-      bg: 'bg-indigo-500/10 dark:bg-indigo-500/15',
-      border: 'border-indigo-500/25 dark:border-indigo-500/35',
-      text: 'text-indigo-800 dark:text-indigo-300',
+      bg: 'bg-indigo-500/10 dark:bg-indigo-500/20',
+      border: 'border-indigo-500/25 dark:border-indigo-400/40',
+      text: 'text-indigo-900 dark:text-indigo-200 font-semibold',
       dot: 'bg-[#6366F1]'
     },
     pill: {
-      bg: 'bg-indigo-50 dark:bg-indigo-950/40',
-      border: 'border-indigo-200/80 dark:border-indigo-800/50',
-      text: 'text-indigo-800 dark:text-indigo-300',
+      bg: 'bg-indigo-50 dark:bg-indigo-500/15',
+      border: 'border-indigo-200/80 dark:border-indigo-400/35',
+      text: 'text-indigo-900 dark:text-indigo-200 font-medium',
       activeBg: 'bg-[#6366F1] text-white',
       activeText: 'text-white font-bold'
     },
     card: {
-      borderHover: 'hover:border-indigo-500/40',
-      bgHover: 'hover:bg-indigo-500/[0.03]',
+      borderHover: 'hover:border-indigo-500/50 dark:hover:border-indigo-400/60',
+      bgHover: 'hover:bg-indigo-500/[0.04] dark:hover:bg-indigo-500/[0.08]',
       glow: 'shadow-indigo-500/10',
-      accentText: 'text-indigo-600 dark:text-indigo-400'
+      accentText: 'text-indigo-600 dark:text-indigo-300'
     },
     button: {
       primary: 'bg-[#6366F1] hover:bg-indigo-600 text-white shadow-indigo-500/20',
@@ -171,23 +171,23 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
     svgFillRgba: 'rgba(217, 119, 6, 0.08)',
     svgFillActiveRgba: 'rgba(217, 119, 6, 0.28)',
     badge: {
-      bg: 'bg-amber-500/10 dark:bg-amber-500/15',
-      border: 'border-amber-500/25 dark:border-amber-500/35',
-      text: 'text-amber-800 dark:text-amber-300',
+      bg: 'bg-amber-500/10 dark:bg-amber-500/20',
+      border: 'border-amber-500/25 dark:border-amber-400/40',
+      text: 'text-amber-900 dark:text-amber-200 font-semibold',
       dot: 'bg-[#D97706]'
     },
     pill: {
-      bg: 'bg-amber-50 dark:bg-amber-950/40',
-      border: 'border-amber-200/80 dark:border-amber-800/50',
-      text: 'text-amber-800 dark:text-amber-300',
+      bg: 'bg-amber-50 dark:bg-amber-500/15',
+      border: 'border-amber-200/80 dark:border-amber-400/35',
+      text: 'text-amber-900 dark:text-amber-200 font-medium',
       activeBg: 'bg-[#D97706] text-white',
       activeText: 'text-white font-bold'
     },
     card: {
-      borderHover: 'hover:border-amber-500/40',
-      bgHover: 'hover:bg-amber-500/[0.03]',
+      borderHover: 'hover:border-amber-500/50 dark:hover:border-amber-400/60',
+      bgHover: 'hover:bg-amber-500/[0.04] dark:hover:bg-amber-500/[0.08]',
       glow: 'shadow-amber-500/10',
-      accentText: 'text-amber-600 dark:text-amber-400'
+      accentText: 'text-amber-600 dark:text-amber-300'
     },
     button: {
       primary: 'bg-[#D97706] hover:bg-amber-600 text-white shadow-amber-500/20',
@@ -214,23 +214,23 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
     svgFillRgba: 'rgba(225, 29, 72, 0.08)',
     svgFillActiveRgba: 'rgba(225, 29, 72, 0.28)',
     badge: {
-      bg: 'bg-rose-500/10 dark:bg-rose-500/15',
-      border: 'border-rose-500/25 dark:border-rose-500/35',
-      text: 'text-rose-800 dark:text-rose-300',
+      bg: 'bg-rose-500/10 dark:bg-rose-500/20',
+      border: 'border-rose-500/25 dark:border-rose-400/40',
+      text: 'text-rose-900 dark:text-rose-200 font-semibold',
       dot: 'bg-[#E11D48]'
     },
     pill: {
-      bg: 'bg-rose-50 dark:bg-rose-950/40',
-      border: 'border-rose-200/80 dark:border-rose-800/50',
-      text: 'text-rose-800 dark:text-rose-300',
+      bg: 'bg-rose-50 dark:bg-rose-500/15',
+      border: 'border-rose-200/80 dark:border-rose-400/35',
+      text: 'text-rose-900 dark:text-rose-200 font-medium',
       activeBg: 'bg-[#E11D48] text-white',
       activeText: 'text-white font-bold'
     },
     card: {
-      borderHover: 'hover:border-rose-500/40',
-      bgHover: 'hover:bg-rose-500/[0.03]',
+      borderHover: 'hover:border-rose-500/50 dark:hover:border-rose-400/60',
+      bgHover: 'hover:bg-rose-500/[0.04] dark:hover:bg-rose-500/[0.08]',
       glow: 'shadow-rose-500/10',
-      accentText: 'text-rose-600 dark:text-rose-400'
+      accentText: 'text-rose-600 dark:text-rose-300'
     },
     button: {
       primary: 'bg-[#E11D48] hover:bg-rose-600 text-white shadow-rose-500/20',
@@ -257,23 +257,23 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
     svgFillRgba: 'rgba(5, 150, 105, 0.08)',
     svgFillActiveRgba: 'rgba(5, 150, 105, 0.28)',
     badge: {
-      bg: 'bg-emerald-500/10 dark:bg-emerald-500/15',
-      border: 'border-emerald-500/25 dark:border-emerald-500/35',
-      text: 'text-emerald-800 dark:text-emerald-300',
+      bg: 'bg-emerald-500/10 dark:bg-emerald-500/20',
+      border: 'border-emerald-500/25 dark:border-emerald-400/40',
+      text: 'text-emerald-900 dark:text-emerald-200 font-semibold',
       dot: 'bg-[#059669]'
     },
     pill: {
-      bg: 'bg-emerald-50 dark:bg-emerald-950/40',
-      border: 'border-emerald-200/80 dark:border-emerald-800/50',
-      text: 'text-emerald-800 dark:text-emerald-300',
+      bg: 'bg-emerald-50 dark:bg-emerald-500/15',
+      border: 'border-emerald-200/80 dark:border-emerald-400/35',
+      text: 'text-emerald-900 dark:text-emerald-200 font-medium',
       activeBg: 'bg-[#059669] text-white',
       activeText: 'text-white font-bold'
     },
     card: {
-      borderHover: 'hover:border-emerald-500/40',
-      bgHover: 'hover:bg-emerald-500/[0.03]',
+      borderHover: 'hover:border-emerald-500/50 dark:hover:border-emerald-400/60',
+      bgHover: 'hover:bg-emerald-500/[0.04] dark:hover:bg-emerald-500/[0.08]',
       glow: 'shadow-emerald-500/10',
-      accentText: 'text-emerald-600 dark:text-emerald-400'
+      accentText: 'text-emerald-600 dark:text-emerald-300'
     },
     button: {
       primary: 'bg-[#059669] hover:bg-emerald-600 text-white shadow-emerald-500/20',

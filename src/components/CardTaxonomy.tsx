@@ -150,7 +150,7 @@ export const DataCard: React.FC<DataCardProps> = ({
   return (
     <div
       id={id}
-      className={`rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 p-5 shadow-lg flex flex-col justify-between transition-all hover:shadow-xl ${className}`}
+      className={`rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-5 shadow-xs flex flex-col justify-between transition-all hover:shadow-md hover:border-zinc-300 dark:hover:border-zinc-700 ${className}`}
     >
       <div>
         <div className="flex items-center justify-between gap-2 mb-2">
@@ -159,7 +159,7 @@ export const DataCard: React.FC<DataCardProps> = ({
           </span>
           {icon && (
             <div 
-              className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+              className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-800/80"
               style={{ color: regionalAccent }}
             >
               {icon}
@@ -179,7 +179,7 @@ export const DataCard: React.FC<DataCardProps> = ({
         </div>
       </div>
 
-      <div className="pt-3 mt-2 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between gap-2 text-[11px]">
+      <div className="pt-3 mt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between gap-2 text-[11px]">
         {delta && (
           <div className="flex items-center gap-1 font-mono font-semibold">
             {delta.isPositive ? (
@@ -187,17 +187,17 @@ export const DataCard: React.FC<DataCardProps> = ({
             ) : (
               <TrendingDown className="w-3.5 h-3.5 text-rose-500" />
             )}
-            <span className={delta.isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}>
+            <span className={delta.isPositive ? 'text-emerald-600 dark:text-emerald-300' : 'text-rose-600 dark:text-rose-300'}>
               {delta.value}
             </span>
-            {delta.period && <span className="text-zinc-400">({delta.period})</span>}
+            {delta.period && <span className="text-zinc-400 dark:text-zinc-500">({delta.period})</span>}
           </div>
         )}
 
         {benchmark && (
           <div className="text-zinc-500 dark:text-zinc-400 font-mono">
             <span>{benchmark.label}: </span>
-            <span className="font-semibold text-zinc-700 dark:text-zinc-300">{benchmark.value}</span>
+            <span className="font-semibold text-zinc-700 dark:text-zinc-200">{benchmark.value}</span>
           </div>
         )}
 
@@ -252,7 +252,7 @@ export const ExplorationCard: React.FC<ExplorationCardProps> = ({
       <div>
         <div className="flex items-center justify-between gap-3 mb-3">
           <span 
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 border border-emerald-200/80 dark:border-emerald-400/35"
           >
             <Compass className="w-3 h-3 text-emerald-500" />
             {badge}
@@ -264,16 +264,16 @@ export const ExplorationCard: React.FC<ExplorationCardProps> = ({
           )}
         </div>
 
-        <h3 className="text-lg md:text-xl font-bold font-display text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors mb-2">
+        <h3 className="text-lg md:text-xl font-bold font-display text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition-colors mb-2">
           {title}
         </h3>
 
-        <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed line-clamp-3">
+        <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed line-clamp-3">
           {description}
         </p>
       </div>
 
-      <div className="pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400">
+      <div className="pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-300">
         <span>{actionPrompt}</span>
         <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1.5" />
       </div>
@@ -310,9 +310,9 @@ export const ReferenceCard: React.FC<ReferenceCardProps> = ({
   return (
     <div
       id={id}
-      className={`rounded-2xl border border-zinc-200 dark:border-zinc-800/90 bg-zinc-50/70 dark:bg-zinc-900/40 p-5 space-y-3 text-xs shadow-xs ${className}`}
+      className={`rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900/80 p-5 space-y-3 text-xs shadow-xs ${className}`}
     >
-      <div className="flex items-center justify-between gap-2 border-b border-zinc-200 dark:border-zinc-800/60 pb-2">
+      <div className="flex items-center justify-between gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2">
         <div className="flex items-center gap-2">
           <Database className="w-4 h-4 text-emerald-500" />
           <span className="font-bold text-zinc-900 dark:text-zinc-100 font-mono uppercase">
@@ -320,7 +320,7 @@ export const ReferenceCard: React.FC<ReferenceCardProps> = ({
           </span>
         </div>
         {indicatorCode && (
-          <span className="font-mono text-[10px] bg-zinc-200 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-700 dark:text-zinc-300">
+          <span className="font-mono text-[10px] bg-zinc-200 dark:bg-zinc-800/90 px-2 py-0.5 rounded text-zinc-800 dark:text-zinc-200 border border-zinc-300/50 dark:border-zinc-700/60">
             {indicatorCode}
           </span>
         )}
@@ -332,7 +332,7 @@ export const ReferenceCard: React.FC<ReferenceCardProps> = ({
 
       <div className="pt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
         <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+          <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-300">
             <CheckCircle2 className="w-3 h-3" /> Verified {verifiedYear}
           </span>
           <span>•</span>

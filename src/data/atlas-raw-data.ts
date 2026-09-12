@@ -2045,8 +2045,8 @@ export const ATLAS_ENTITIES: AtlasEntity[] = [
     summary: 'A global copper powerhouse sharing the majestic Victoria Falls with Zimbabwe, undergoing major debt restructuring and clean energy expansion.'
   },
   {
-    id: 'SEN_ADD', // Additional Sovereign Nations
-    iso2: 'MDG',
+    id: 'MDG',
+    iso2: 'MG',
     name: 'Madagascar',
     officialName: 'Republic of Madagascar',
     type: 'country',

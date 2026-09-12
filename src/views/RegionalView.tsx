@@ -437,25 +437,25 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                         key={country.id}
                         id={`member-card-${country.id.toLowerCase()}`}
                         onClick={() => onSelectCountry(country.id)}
-                        className="p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-black/20 hover:bg-white dark:hover:bg-zinc-800/80 transition-all cursor-pointer group flex items-center justify-between shadow-xs hover:border-emerald-500/50"
+                        className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all cursor-pointer group flex items-center justify-between shadow-xs hover:border-emerald-500/50 dark:hover:border-emerald-500/40 hover:shadow-sm"
                       >
                         <div className="flex items-center gap-3">
                           <CountryFlag entityId={country.id} size="md" />
                           <div>
-                            <div className="font-bold text-sm text-zinc-800 dark:text-zinc-200 group-hover:text-emerald-500 transition-colors">
+                            <div className="font-bold text-sm text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition-colors">
                               {country.name}
                             </div>
-                            <div className="text-xs text-zinc-500">
+                            <div className="text-xs text-zinc-500 dark:text-zinc-400">
                               Cap: {country.capital} • <span className="font-mono">M49: {countryM49}</span>
                             </div>
                           </div>
                         </div>
 
                         <div className="text-right font-mono text-xs">
-                          <div className="font-bold text-zinc-800 dark:text-zinc-300">
+                          <div className="font-bold text-zinc-900 dark:text-zinc-100">
                             ${country.gdp.toFixed(1)}B
                           </div>
-                          <div className="text-[10px] text-zinc-500">
+                          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">
                             {country.pop.toFixed(1)}M pop
                           </div>
                         </div>

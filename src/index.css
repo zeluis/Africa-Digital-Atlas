@@ -145,53 +145,68 @@
   [data-theme="dark"] {
     color-scheme: dark;
 
-    /* 1. Surface & Canvas Architecture (Tatami Charcoal & Slate Elevation) */
-    --bg-primary: #141512;
-    --surface-canvas: #141512;
-    --surface-card: #181A16;
-    --surface-card-elevated: #1B1D19;
-    --surface-subtle: #1B1D19;
-    --surface-sunken: #0E0F0C;
+    /* 1. Surface & Canvas Architecture (Swiss Precision Obsidian & Elevated Slate) */
+    --bg-primary: #0F1218;         /* Calm, deep Swiss obsidian-graphite canvas */
+    --surface-canvas: #0F1218;     /* Base viewport canvas */
+    --surface-card: #181D26;       /* Primary card surface: distinct +5.5% lightness step */
+    --surface-card-elevated: #202634; /* Floating modals, dropdowns, hovered cards */
+    --surface-subtle: #141821;     /* Inset panels & wells */
+    --surface-sunken: #0B0E13;     /* Deep recessed inputs */
 
-    /* 2. Typography & Content (Bleached Silk & Luminous Pale Lichen) */
-    --text-primary: #E6E3DB;       /* Soft Bleached Silk - WCAG AAA */
-    --text-secondary: #AEC6B1;     /* Luminous Pale Lichen */
-    --text-tertiary: #B5A79C;      /* Muted Silver Sandstone */
-    --text-inverse: #191816;
+    /* 2. Typography & Content (Swiss Neo-Grotesk High Contrast Ratios) */
+    --text-primary: #F8FAFC;       /* Crisp Swiss display white (>14:1 contrast on cards, WCAG AAA) */
+    --text-secondary: #CBD5E1;     /* Slate-300: highly legible body text (>9.5:1 contrast, WCAG AAA) */
+    --text-tertiary: #94A3B8;      /* Slate-400: clear metadata & captions (>5.5:1 contrast, WCAG AA) */
+    --text-muted: #64748B;         /* Slate-500: uppercase tracking, subtle micro-accents */
+    --text-inverse: #0F1218;
 
     /* 3. Interface Borders & Structural Dividers */
-    --border-subtle: #2D2E2A;
-    --border-strong: #3F413B;
-    --border-focus: #AEC6B1;
+    --border-subtle: #2A3241;      /* Crisp, optical 1px hairline border */
+    --border-strong: #3D475C;      /* High emphasis & active borders */
+    --border-focus: #38BDF8;       /* Precision focus ring */
 
-    /* 4. Data-Agnostic Chart Utility Tokens */
-    --chart-gridline: rgba(230, 227, 219, 0.08);
-    --chart-axis-line: #B5A79C;
-    --chart-axis-label: #AEC6B1;
-    --chart-crosshair: #E6E3DB;
-    --chart-brush-bg: rgba(230, 227, 219, 0.04);
-    --chart-brush-handle: #B5A79C;
+    /* 4. Scoped Tailwind Palette Mappings for Dark Theme Uniformity */
+    --color-zinc-950: #181D26;     /* Card background level 1: elevated from body #0F1218 */
+    --color-zinc-900: #202634;     /* Card background level 2: inner containers & chips */
+    --color-zinc-850: #262E3E;     /* Interactive elements */
+    --color-zinc-800: #2A3241;     /* Hairline borders & subtle outlines */
+    --color-zinc-700: #3D475C;     /* Hover borders & secondary dividers */
+    --color-zinc-600: #64748B;     /* Muted uppercase tracking */
+    --color-zinc-500: #94A3B8;     /* Secondary metadata & labels (clear WCAG AA contrast!) */
+    --color-zinc-400: #CBD5E1;     /* Primary body & reading typography (clear WCAG AAA contrast!) */
+    --color-zinc-300: #E2E8F0;     /* High emphasis text */
+    --color-zinc-200: #F1F5F9;     /* Display subheadings */
+    --color-zinc-100: #F8FAFC;     /* Pure crisp white headings */
+    --color-zinc-50: #FFFFFF;
+
+    /* 5. Data-Agnostic Chart Utility Tokens */
+    --chart-gridline: rgba(248, 250, 252, 0.08);
+    --chart-axis-line: #475569;
+    --chart-axis-label: #94A3B8;
+    --chart-crosshair: #F8FAFC;
+    --chart-brush-bg: rgba(248, 250, 252, 0.04);
+    --chart-brush-handle: #94A3B8;
 
     /* Universal Tooltip System */
-    --tooltip-bg: #1B1D19;
-    --tooltip-text-title: #E6E3DB;
-    --tooltip-text-body: #AEC6B1;
-    --tooltip-border: #2D2E2A;
-    --tooltip-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.6), 0 8px 16px -6px rgba(0, 0, 0, 0.4);
+    --tooltip-bg: #202634;
+    --tooltip-text-title: #F8FAFC;
+    --tooltip-text-body: #CBD5E1;
+    --tooltip-border: #3D475C;
+    --tooltip-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.7), 0 8px 16px -6px rgba(0, 0, 0, 0.5);
 
-    /* 5. Exact UN Geoscheme Regional Brand Hexes (Glow & Fill Adjustments) */
+    /* 6. Exact UN Geoscheme Regional Brand Hexes (Glow & Fill Adjustments) */
     --region-eastern-raw: #FFA500;
     --region-middle-raw: #FF00FE;
     --region-northern-raw: #1802FF;
     --region-southern-raw: #FF0A0A;
     --region-western-raw: #00FF00;
 
-    /* Chart Fill Tints (Dark Mode 12% Bloom) */
-    --region-eastern-fill: rgba(234, 88, 12, 0.12);
-    --region-middle-fill: rgba(99, 102, 241, 0.12);
-    --region-northern-fill: rgba(217, 119, 6, 0.12);
-    --region-southern-fill: rgba(225, 29, 72, 0.12);
-    --region-western-fill: rgba(5, 150, 105, 0.12);
+    /* Chart Fill Tints (Dark Mode 14% Luminous Bloom) */
+    --region-eastern-fill: rgba(249, 115, 22, 0.14);
+    --region-middle-fill: rgba(99, 102, 241, 0.14);
+    --region-northern-fill: rgba(217, 119, 6, 0.14);
+    --region-southern-fill: rgba(225, 29, 72, 0.14);
+    --region-western-fill: rgba(16, 185, 129, 0.14);
 
     /* Vector Stroke Accents */
     --region-eastern-stroke: #FB923C;
@@ -201,40 +216,40 @@
     --region-western-stroke: #34D399;
 
     /* Text Contrast Tokens Over Solid Region Fills */
-    --region-eastern-on-solid: #111827;
+    --region-eastern-on-solid: #0F1218;
     --region-middle-on-solid: #FFFFFF;
     --region-northern-on-solid: #FFFFFF;
     --region-southern-on-solid: #FFFFFF;
-    --region-western-on-solid: #111827;
+    --region-western-on-solid: #0F1218;
 
     /* Report tokens in dark mode */
-    --report-paper:       #141512;
-    --report-paper-warm:  #1B1D19;
-    --report-paper-deep:  #20231F;
-    --report-white:       #181A16;
+    --report-paper:       #0F1218;
+    --report-paper-warm:  #181D26;
+    --report-paper-deep:  #202634;
+    --report-white:       #181D26;
 
-    --report-ink:         #E6E3DB;
-    --report-ink-soft:    #CCC8BC;
-    --report-graphite:    #A8A499;
-    --report-muted:       #807C74;
+    --report-ink:         #F8FAFC;
+    --report-ink-soft:    #CBD5E1;
+    --report-graphite:    #94A3B8;
+    --report-muted:       #64748B;
 
-    --report-rule:        #2D2E2A;
-    --report-border:      #3B3D37;
-    --report-sand:        #262823;
+    --report-rule:        #2A3241;
+    --report-border:      #3D475C;
+    --report-sand:        #1A202C;
 
-    --region-eastern-pale:   rgba(255, 165, 0, 0.12);
-    --region-middle-pale:    rgba(255, 0, 254, 0.12);
-    --region-northern-pale:  rgba(24, 2, 255, 0.12);
-    --region-southern-pale:  rgba(255, 10, 10, 0.12);
-    --region-western-pale:   rgba(0, 255, 0, 0.12);
+    --region-eastern-pale:   rgba(249, 115, 22, 0.12);
+    --region-middle-pale:    rgba(99, 102, 241, 0.12);
+    --region-northern-pale:  rgba(217, 119, 6, 0.12);
+    --region-southern-pale:  rgba(225, 29, 72, 0.12);
+    --region-western-pale:   rgba(16, 185, 129, 0.12);
 
-    /* MD3-Inspired Calm Tonal Regional Surfaces in Dark Mode */
-    --region-eastern-calm:   #1c1713;
-    --region-middle-calm:    #1b1420;
-    --region-northern-calm:  #131622;
-    --region-southern-calm:  #1e1415;
-    --region-western-calm:   #111c15;
-    --region-pan-african-calm: #151814;
+    /* MD3-Inspired Calm Tonal Regional Surfaces in Dark Mode (Warm, Elevated, Distinct) */
+    --region-eastern-calm:   #231C18; /* Warm Terracotta-Slate, lightness ~12.5% */
+    --region-middle-calm:    #1C1E2C; /* Royal Indigo-Slate, lightness ~13% */
+    --region-northern-calm:  #211E16; /* Warm Amber-Slate, lightness ~12.5% */
+    --region-southern-calm:  #24191E; /* Deep Berry-Rose-Slate, lightness ~12.5% */
+    --region-western-calm:   #15231C; /* Balanced Sage-Pine-Slate, lightness ~12.5% */
+    --region-pan-african-calm: #181D26; /* Universal Swiss Obsidian-Slate Card */
   }
 
   body {

@@ -220,7 +220,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
               <div
                 key={entity.id}
                 onClick={() => onSelectCountry(entity.id)}
-                className={`group rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-lg hover:shadow-2xl ${tonal.card.borderHover} transition-all cursor-pointer flex flex-col justify-between`}
+                className={`group rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xs hover:shadow-xl hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200 cursor-pointer flex flex-col justify-between`}
               >
                 <div>
                   {/* Card Header: Flag + Regional ISO3 code on left, Prominent UN Geoscheme Vector Silhouette on right */}
@@ -234,7 +234,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
                     {silhouette && (
                       <div 
-                        className={`w-14 h-14 flex items-center justify-center p-1.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/70 dark:border-zinc-800/80 ${tonal.card.borderHover} ${tonal.card.bgHover} transition-all shrink-0`}
+                        className={`w-14 h-14 flex items-center justify-center p-1.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 ${tonal.card.borderHover} ${tonal.card.bgHover} transition-all shrink-0`}
                       >
                         <svg
                           viewBox={silhouette.viewBox}
@@ -282,21 +282,21 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                     </span>
                   </div>
 
-                  <div className="space-y-2 pt-3 border-t border-zinc-100 dark:border-zinc-800/80 text-xs">
+                  <div className="space-y-2 pt-3 border-t border-zinc-100 dark:border-zinc-800 text-xs">
                     <div className="flex justify-between items-center">
-                      <span className="text-zinc-400 dark:text-zinc-500">Population</span>
-                      <span className="font-bold text-zinc-800 dark:text-zinc-200 font-mono">
+                      <span className="text-zinc-500 dark:text-zinc-400 font-medium font-mono text-[11px] uppercase tracking-wider">Population</span>
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100 font-mono">
                         {formatPopulation(pop)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-zinc-400 dark:text-zinc-500">Nominal GDP</span>
-                      <span className="font-bold text-zinc-800 dark:text-zinc-200 font-mono">
+                      <span className="text-zinc-500 dark:text-zinc-400 font-medium font-mono text-[11px] uppercase tracking-wider">Nominal GDP</span>
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100 font-mono">
                         {formatGDP(gdp)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-zinc-400 dark:text-zinc-500">HDI Score</span>
+                      <span className="text-zinc-500 dark:text-zinc-400 font-medium font-mono text-[11px] uppercase tracking-wider">HDI Score</span>
                       <span className={`font-bold font-mono ${tonal.badge.text}`}>
                         {formatHDI(hdi)}
                       </span>
@@ -304,7 +304,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                   </div>
                 </div>
 
-                <div className={`mt-5 pt-3 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs font-semibold ${tonal.card.accentText} group-hover:translate-x-1 transition-transform`}>
+                <div className={`mt-5 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-xs font-semibold ${tonal.card.accentText} group-hover:translate-x-1 transition-transform`}>
                   <span>View Full Dossier</span>
                   <ChevronRight className="w-4 h-4" />
                 </div>

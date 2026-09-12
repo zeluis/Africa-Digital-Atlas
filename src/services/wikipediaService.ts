@@ -45,7 +45,7 @@ export const THEMATIC_PILLARS: ThematicPillarDef[] = [
     title: 'Historiography & Liberation Chronologies',
     subtitle: 'Pre-colonial kingdoms, colonial ruptures, and independence movements',
     description: 'Epochs of civilizational governance, anti-colonial resistance, and sovereign state consolidation.',
-    primaryIndicatorIds: ['INDEPENDENCE_YEAR', 'CONFLICT_EVENTS', 'PEACE_INDEX']
+    primaryIndicatorIds: ['INDEPENDENCE_YEAR', 'UN_MEMBER_DATE', 'PEACE_INDEX', 'CONFLICT_EVENTS']
   },
   {
     id: 'people',
