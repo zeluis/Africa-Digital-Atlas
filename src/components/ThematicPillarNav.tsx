@@ -61,8 +61,8 @@ export const ThematicPillarNav: React.FC<ThematicPillarNavProps> = ({
   return (
     <div className={`sticky top-0 z-30 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 py-2.5 px-4 transition-colors ${className}`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-        {/* Pillar Ribbon Container */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 w-full">
+        {/* Pillar Ribbon Container - Fully Wrapping */}
+        <div className="flex flex-wrap items-center gap-1.5 py-0.5 w-full">
           {THEMATIC_PILLARS.map(pillar => {
             const isActive = activePillar === pillar.id;
             return (

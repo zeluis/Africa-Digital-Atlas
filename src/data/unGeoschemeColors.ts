@@ -336,6 +336,25 @@ export function getRegionContrastColor(regionHex: string): '#111827' | '#FFFFFF'
 }
 
 /**
+ * Returns the CSS variable for the region's calm tonal surface
+ * e.g., 'var(--region-eastern-calm)'
+ */
+export function getRegionCalmColor(region?: string): string {
+  if (!region) return 'var(--region-pan-african-calm)';
+  const resolved = resolveAfricanRegion(region);
+  const palette = UN_GEOSCHEME_TONAL_PALETTES[resolved];
+  return `var(--region-${palette.cssVarKey}-calm)`;
+}
+
+/**
+ * Returns the CSS variable for the country's region calm tonal surface
+ */
+export function getCountryRegionCalmColor(countryId: string): string {
+  const entity = atlas.getEntity(countryId);
+  return getRegionCalmColor(entity?.region);
+}
+
+/**
  * Get silhouette styling parameters for a country based on its UN Geoscheme region
  */
 export function getCountrySilhouettePalette(countryId: string) {

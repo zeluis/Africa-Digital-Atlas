@@ -156,8 +156,8 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             />
           </div>
 
-          {/* Region Tabs Filter */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 md:pb-0">
+          {/* Region Tabs Filter - Fully Wrapping */}
+          <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-xs text-zinc-400 font-medium mr-1 hidden lg:inline flex items-center gap-1">
               <Filter className="w-3 h-3" /> Region:
             </span>

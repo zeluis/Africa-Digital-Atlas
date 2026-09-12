@@ -6,6 +6,7 @@ import { CountrySilhouette } from '../components/CountrySilhouette';
 import { CountryHeaderInfo } from '../components/CountryHeaderInfo';
 import { ClimateEcologySection } from '../components/ClimateEcologySection';
 import { DataSourceBadge } from '../components/DataSourceBadge';
+import { getRegionCalmColor } from '../data/unGeoschemeColors';
 import { useTranslation } from '../i18n/LanguageContext';
 import { useSavedEntities } from '../contexts/SavedEntitiesContext';
 import { 
@@ -121,6 +122,8 @@ export const CountryView: React.FC<CountryViewProps> = ({
     { id: 'provenance' as TabType, label: t('tab.provenance', 'Provenance & Sources'), icon: <BookOpen className="w-4 h-4" /> },
   ];
 
+  const countryCalmBg = getRegionCalmColor(entity.region);
+
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       {/* Top Country Dossier Header Card */}
@@ -233,18 +236,19 @@ export const CountryView: React.FC<CountryViewProps> = ({
         )}
       </div>
 
-      {/* Tabs Navigation Bar */}
-      <div className="flex space-x-1.5 overflow-x-auto no-scrollbar border-b border-zinc-800 pb-2">
+      {/* Tabs Navigation Bar - Fully Wrapping so All Buttons are Visible */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-3">
         {tabs.map(t => {
           const isActive = activeTab === t.id;
           return (
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id)}
+              style={!isActive ? { backgroundColor: countryCalmBg } : undefined}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
                 isActive
-                  ? 'bg-zinc-100 text-zinc-950 font-bold shadow-md'
-                  : 'bg-zinc-900/60 border border-zinc-800/80 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800'
+                  ? 'bg-emerald-600 text-white dark:bg-zinc-100 dark:text-zinc-950 font-bold shadow-sm'
+                  : 'border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:opacity-90'
               }`}
             >
               {t.icon}
@@ -262,7 +266,10 @@ export const CountryView: React.FC<CountryViewProps> = ({
             {/* Left: General Facts Card */}
             <div className="lg:col-span-6 space-y-6">
               {/* Why This Nation Matters: Executive Strategic Insight */}
-              <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 space-y-3 shadow-lg">
+              <div 
+                className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-3 shadow-xs transition-colors"
+                style={{ backgroundColor: countryCalmBg }}
+              >
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" /> Macroeconomic & Regional Role
@@ -276,13 +283,13 @@ export const CountryView: React.FC<CountryViewProps> = ({
                   As a leading constituent of {entity.region}, {entity.name} accounts for an estimated {formatPopulation(pop)} population and {formatGDP(gdp)} in economic output. With membership in {entity.blocs.join(', ')}, the nation plays a central role in regional trade corridors, infrastructure harmonization, and continental workforce dynamics.
                 </p>
                 <div className="pt-2 flex flex-wrap gap-2 text-[11px] font-mono">
-                  <span className="px-2.5 py-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300">
+                  <span className="px-2.5 py-1 rounded-xl bg-white/80 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300">
                     Capita: <strong>{formatCurrency(gdpPerCapita)}</strong>
                   </span>
-                  <span className="px-2.5 py-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300">
+                  <span className="px-2.5 py-1 rounded-xl bg-white/80 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300">
                     HDI: <strong>{formatHDI(hdi)} ({hdiCat.label.split(' ')[0]})</strong>
                   </span>
-                  <span className="px-2.5 py-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300">
+                  <span className="px-2.5 py-1 rounded-xl bg-white/80 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300">
                     Grid: <strong>{formatPercentage(electricity)}</strong>
                   </span>
                 </div>
@@ -311,46 +318,49 @@ export const CountryView: React.FC<CountryViewProps> = ({
                 </span>
               </div>
 
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4">
-                <h3 className="font-bold text-base text-zinc-100 flex items-center gap-2 border-b border-zinc-800 pb-3">
-                  <Globe className="w-4 h-4 text-emerald-400" /> Geographic & National Profile
+              <div 
+                className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-4 shadow-xs transition-colors"
+                style={{ backgroundColor: countryCalmBg }}
+              >
+                <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2 border-b border-zinc-200/60 dark:border-zinc-800 pb-3">
+                  <Globe className="w-4 h-4 text-emerald-500" /> Geographic & National Profile
                 </h3>
 
                 <div className="grid grid-cols-2 gap-4 text-xs">
                   <div>
                     <span className="text-zinc-500 font-medium">Capital City</span>
-                    <div className="font-semibold text-zinc-200 text-sm mt-0.5">{entity.capital}</div>
+                    <div className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm mt-0.5">{entity.capital}</div>
                   </div>
                   <div>
                     <span className="text-zinc-500 font-medium">Land Area</span>
-                    <div className="font-semibold text-zinc-200 text-sm mt-0.5">{formatArea(entity.landAreaKm2)}</div>
+                    <div className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm mt-0.5">{formatArea(entity.landAreaKm2)}</div>
                   </div>
                   <div>
                     <span className="text-zinc-500 font-medium">Currency</span>
-                    <div className="font-semibold text-zinc-200 text-sm mt-0.5">
+                    <div className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm mt-0.5">
                       {entity.currency.name} ({entity.currency.code}, {entity.currency.symbol})
                     </div>
                   </div>
                   <div>
                     <span className="text-zinc-500 font-medium">Income Classification</span>
-                    <div className="font-semibold text-zinc-200 text-sm mt-0.5">
+                    <div className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm mt-0.5">
                       {entity.incomeLevel} • {entity.geographicType}
                     </div>
                   </div>
                   <div>
                     <span className="text-zinc-500 font-medium">Official Languages</span>
-                    <div className="font-semibold text-zinc-200 text-sm mt-0.5">
+                    <div className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm mt-0.5">
                       {entity.languages.official.join(', ')}
                     </div>
                   </div>
                   <div>
                     <span className="text-zinc-500 font-medium">Government Form</span>
-                    <div className="font-semibold text-zinc-200 text-sm mt-0.5">{entity.governmentType}</div>
+                    <div className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm mt-0.5">{entity.governmentType}</div>
                   </div>
                 </div>
 
                 {/* Bordering Nations */}
-                <div className="pt-3 border-t border-zinc-800">
+                <div className="pt-3 border-t border-zinc-200/60 dark:border-zinc-800">
                   <span className="text-xs text-zinc-500 font-medium">Land Borders ({(entity.borders || []).length}):</span>
                   <div className="flex flex-wrap gap-1.5 mt-2">
                     {entity.borders && entity.borders.length > 0 ? (
@@ -360,7 +370,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
                           <button
                             key={borderId}
                             onClick={() => onSelectCountry(borderId)}
-                            className="flex items-center gap-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs px-2.5 py-1 rounded-lg border border-zinc-700 transition-colors cursor-pointer"
+                            className="flex items-center gap-1.5 bg-white/80 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs px-2.5 py-1 rounded-lg border border-zinc-200/80 dark:border-zinc-700 transition-colors cursor-pointer shadow-xs"
                           >
                             <CountryFlag entityId={borderId} size="xs" />
                             <span>{borderEntity?.name || borderId}</span>
@@ -375,9 +385,12 @@ export const CountryView: React.FC<CountryViewProps> = ({
               </div>
 
               {/* Economic Drivers & Facts */}
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4">
-                <h3 className="font-bold text-base text-zinc-100 flex items-center gap-2 border-b border-zinc-800 pb-3">
-                  <Award className="w-4 h-4 text-amber-400" /> Strategic Commodities & Exports
+              <div 
+                className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-4 shadow-xs transition-colors"
+                style={{ backgroundColor: countryCalmBg }}
+              >
+                <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2 border-b border-zinc-200/60 dark:border-zinc-800 pb-3">
+                  <Award className="w-4 h-4 text-amber-500" /> Strategic Commodities & Exports
                 </h3>
                 <div className="space-y-3">
                   <div>
@@ -385,7 +398,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
                     <div className="flex flex-wrap gap-2 mt-1.5">
                       {Array.isArray(entity.facts.majorExports) ? (
                         entity.facts.majorExports.map((exp: string, idx: number) => (
-                          <span key={idx} className="rounded-lg bg-emerald-950/40 border border-emerald-800/40 px-3 py-1 text-xs font-semibold text-emerald-300">
+                          <span key={idx} className="rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
                             {exp}
                           </span>
                         ))
@@ -399,7 +412,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
                     <div className="flex flex-wrap gap-2 mt-1.5">
                       {Array.isArray(entity.facts.majorTradingPartners) ? (
                         entity.facts.majorTradingPartners.map((tp: string, idx: number) => (
-                          <span key={idx} className="rounded-lg bg-zinc-800 border border-zinc-700 px-3 py-1 text-xs text-zinc-300">
+                          <span key={idx} className="rounded-lg bg-white/80 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700 px-3 py-1 text-xs text-zinc-700 dark:text-zinc-300 shadow-xs">
                             {tp}
                           </span>
                         ))
@@ -414,13 +427,16 @@ export const CountryView: React.FC<CountryViewProps> = ({
 
             {/* Right: GDP Trajectory Preview Chart */}
             <div className="lg:col-span-6 space-y-6">
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4">
-                <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div 
+                className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-4 shadow-xs transition-colors"
+                style={{ backgroundColor: countryCalmBg }}
+              >
+                <div className="flex items-center justify-between border-b border-zinc-200/60 dark:border-zinc-800 pb-3">
                   <div>
-                    <h3 className="font-bold text-base text-zinc-100 flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-cyan-400" /> Gross Domestic Product Trajectory
+                    <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4 text-cyan-500" /> Gross Domestic Product Trajectory
                     </h3>
-                    <p className="text-xs text-zinc-400">Nominal GDP in USD Billions (2015-2024)</p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">Nominal GDP in USD Billions (2015-2024)</p>
                   </div>
                   <DataSourceBadge entityId={entity.id} indicatorId="NY.GDP.MKTP.CD" />
                 </div>
@@ -434,7 +450,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
                           <stop offset="95%" stopColor="#06b6d4" stopOpacity={0.0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" className="dark:stroke-zinc-800" />
                       <XAxis dataKey="year" stroke="#71717a" textAnchor="middle" fontSize={11} />
                       <YAxis stroke="#71717a" fontSize={11} tickFormatter={v => `$${v}B`} />
                       <Tooltip
@@ -448,13 +464,16 @@ export const CountryView: React.FC<CountryViewProps> = ({
               </div>
 
               {/* Population Trajectory Chart */}
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4">
-                <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div 
+                className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-4 shadow-xs transition-colors"
+                style={{ backgroundColor: countryCalmBg }}
+              >
+                <div className="flex items-center justify-between border-b border-zinc-200/60 dark:border-zinc-800 pb-3">
                   <div>
-                    <h3 className="font-bold text-base text-zinc-100 flex items-center gap-2">
-                      <Users className="w-4 h-4 text-emerald-400" /> Population Expansion
+                    <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                      <Users className="w-4 h-4 text-emerald-500" /> Population Expansion
                     </h3>
-                    <p className="text-xs text-zinc-400">Total Population in Millions (2015-2024)</p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">Total Population in Millions (2015-2024)</p>
                   </div>
                   <DataSourceBadge entityId={entity.id} indicatorId="SP.POP.TOTL" />
                 </div>
@@ -468,7 +487,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
                           <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" className="dark:stroke-zinc-800" />
                       <XAxis dataKey="year" stroke="#71717a" fontSize={11} />
                       <YAxis stroke="#71717a" fontSize={11} tickFormatter={v => `${v}M`} />
                       <Tooltip
@@ -493,24 +512,36 @@ export const CountryView: React.FC<CountryViewProps> = ({
         {activeTab === 'economy' && (
           <div className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-1">
+              <div 
+                className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-4 space-y-1 shadow-xs transition-colors"
+                style={{ backgroundColor: countryCalmBg }}
+              >
                 <span className="text-xs text-zinc-500 font-medium">Real GDP Growth</span>
-                <div className="text-xl font-bold font-mono text-emerald-400">+{gdpGrowth || 0}%</div>
+                <div className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">+{gdpGrowth || 0}%</div>
                 <DataSourceBadge entityId={entity.id} indicatorId="NY.GDP.MKTP.KD.ZG" />
               </div>
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-1">
+              <div 
+                className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-4 space-y-1 shadow-xs transition-colors"
+                style={{ backgroundColor: countryCalmBg }}
+              >
                 <span className="text-xs text-zinc-500 font-medium">Annual Inflation (CPI)</span>
-                <div className="text-xl font-bold font-mono text-amber-400">{formatPercentage(inflation)}</div>
+                <div className="text-xl font-bold font-mono text-amber-600 dark:text-amber-400">{formatPercentage(inflation)}</div>
                 <DataSourceBadge entityId={entity.id} indicatorId="FP.CPI.TOTL.ZG" />
               </div>
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-1">
+              <div 
+                className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-4 space-y-1 shadow-xs transition-colors"
+                style={{ backgroundColor: countryCalmBg }}
+              >
                 <span className="text-xs text-zinc-500 font-medium">General Govt Debt / GDP</span>
-                <div className="text-xl font-bold font-mono text-rose-400">{formatPercentage(debtGdp)}</div>
+                <div className="text-xl font-bold font-mono text-rose-600 dark:text-rose-400">{formatPercentage(debtGdp)}</div>
                 <DataSourceBadge entityId={entity.id} indicatorId="GC.DOD.TOTL.GD.ZS" />
               </div>
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-1">
+              <div 
+                className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-4 space-y-1 shadow-xs transition-colors"
+                style={{ backgroundColor: countryCalmBg }}
+              >
                 <span className="text-xs text-zinc-500 font-medium">Trade Openness (% GDP)</span>
-                <div className="text-xl font-bold font-mono text-cyan-400">
+                <div className="text-xl font-bold font-mono text-cyan-600 dark:text-cyan-400">
                   {formatPercentage(atlas.getIndicatorValue(entity.id, 'NE.TRD.GNFS.ZS'))}
                 </div>
                 <DataSourceBadge entityId={entity.id} indicatorId="NE.TRD.GNFS.ZS" />
@@ -518,14 +549,17 @@ export const CountryView: React.FC<CountryViewProps> = ({
             </div>
 
             {/* Macroeconomic Detail Chart */}
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4">
-              <h3 className="font-bold text-base text-zinc-100 flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-cyan-400" /> Multi-Year Real GDP Growth Rate (%)
+            <div 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-4 shadow-xs transition-colors"
+              style={{ backgroundColor: countryCalmBg }}
+            >
+              <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                <DollarSign className="w-4 h-4 text-cyan-500" /> Multi-Year Real GDP Growth Rate (%)
               </h3>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={gdpSeries}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" className="dark:stroke-zinc-800" />
                     <XAxis dataKey="year" stroke="#71717a" fontSize={11} />
                     <YAxis stroke="#71717a" fontSize={11} tickFormatter={v => `${v}%`} />
                     <Tooltip
@@ -543,28 +577,37 @@ export const CountryView: React.FC<CountryViewProps> = ({
         {/* TAB 3: DEMOGRAPHICS */}
         {activeTab === 'demographics' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 space-y-2">
+            <div 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-2 shadow-xs transition-colors"
+              style={{ backgroundColor: countryCalmBg }}
+            >
               <span className="text-xs text-zinc-500 font-medium">Fertility Rate</span>
-              <div className="text-2xl font-bold font-mono text-indigo-400">
+              <div className="text-2xl font-bold font-mono text-indigo-600 dark:text-indigo-400">
                 {(atlas.getIndicatorValue(entity.id, 'SP.DYN.TFRT.IN') || 4.2).toFixed(2)}
               </div>
-              <p className="text-xs text-zinc-400">Births per woman (UN Population Division)</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">Births per woman (UN Population Division)</p>
               <DataSourceBadge entityId={entity.id} indicatorId="SP.DYN.TFRT.IN" />
             </div>
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 space-y-2">
+            <div 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-2 shadow-xs transition-colors"
+              style={{ backgroundColor: countryCalmBg }}
+            >
               <span className="text-xs text-zinc-500 font-medium">Urban Population Share</span>
-              <div className="text-2xl font-bold font-mono text-cyan-400">
+              <div className="text-2xl font-bold font-mono text-cyan-600 dark:text-cyan-400">
                 {formatPercentage(atlas.getIndicatorValue(entity.id, 'SP.URB.TOTL.IN.ZS'))}
               </div>
-              <p className="text-xs text-zinc-400">Metropolitan and urban agglomerations</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">Metropolitan and urban agglomerations</p>
               <DataSourceBadge entityId={entity.id} indicatorId="SP.URB.TOTL.IN.ZS" />
             </div>
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 space-y-2">
+            <div 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-2 shadow-xs transition-colors"
+              style={{ backgroundColor: countryCalmBg }}
+            >
               <span className="text-xs text-zinc-500 font-medium">Net Migration Rate</span>
-              <div className="text-2xl font-bold font-mono text-zinc-200">
+              <div className="text-2xl font-bold font-mono text-zinc-800 dark:text-zinc-200">
                 {(atlas.getIndicatorValue(entity.id, 'SM.POP.NETM') || -0.8).toFixed(1)} / 1k
               </div>
-              <p className="text-xs text-zinc-400">Annual net migrants per 1,000 population</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">Annual net migrants per 1,000 population</p>
             </div>
           </div>
         )}
@@ -572,28 +615,37 @@ export const CountryView: React.FC<CountryViewProps> = ({
         {/* TAB 4: HEALTH & EDUCATION */}
         {activeTab === 'health_edu' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 space-y-2">
+            <div 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-2 shadow-xs transition-colors"
+              style={{ backgroundColor: countryCalmBg }}
+            >
               <span className="text-xs text-zinc-500 font-medium">Life Expectancy at Birth</span>
-              <div className="text-2xl font-bold font-mono text-emerald-400">
+              <div className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
                 {(life || 63).toFixed(1)} Years
               </div>
-              <p className="text-xs text-zinc-400">WHO & UN DESA 2024 Estimates</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">WHO & UN DESA 2024 Estimates</p>
               <DataSourceBadge entityId={entity.id} indicatorId="SP.DYN.LE00.IN" />
             </div>
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 space-y-2">
+            <div 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-2 shadow-xs transition-colors"
+              style={{ backgroundColor: countryCalmBg }}
+            >
               <span className="text-xs text-zinc-500 font-medium">Adult Literacy Rate</span>
-              <div className="text-2xl font-bold font-mono text-cyan-400">
+              <div className="text-2xl font-bold font-mono text-cyan-600 dark:text-cyan-400">
                 {formatPercentage(literacy)}
               </div>
-              <p className="text-xs text-zinc-400">Population aged 15 and above (UNESCO UIS)</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">Population aged 15 and above (UNESCO UIS)</p>
               <DataSourceBadge entityId={entity.id} indicatorId="SE.ADT.LITR.ZS" />
             </div>
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 space-y-2">
+            <div 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-2 shadow-xs transition-colors"
+              style={{ backgroundColor: countryCalmBg }}
+            >
               <span className="text-xs text-zinc-500 font-medium">Infant Mortality Rate</span>
-              <div className="text-2xl font-bold font-mono text-rose-400">
+              <div className="text-2xl font-bold font-mono text-rose-600 dark:text-rose-400">
                 {(atlas.getIndicatorValue(entity.id, 'SP.DYN.IMRT.IN') || 38.5).toFixed(1)}
               </div>
-              <p className="text-xs text-zinc-400">Deaths per 1,000 live births</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">Deaths per 1,000 live births</p>
               <DataSourceBadge entityId={entity.id} indicatorId="SP.DYN.IMRT.IN" />
             </div>
           </div>
@@ -602,28 +654,37 @@ export const CountryView: React.FC<CountryViewProps> = ({
         {/* TAB 5: INFRASTRUCTURE & TECH */}
         {activeTab === 'infrastructure' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 space-y-2">
+            <div 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-2 shadow-xs transition-colors"
+              style={{ backgroundColor: countryCalmBg }}
+            >
               <span className="text-xs text-zinc-500 font-medium">Electricity Access Rate</span>
-              <div className="text-2xl font-bold font-mono text-yellow-400">
+              <div className="text-2xl font-bold font-mono text-yellow-600 dark:text-yellow-400">
                 {formatPercentage(electricity)}
               </div>
-              <p className="text-xs text-zinc-400">Electrification across grid and mini-grid</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">Electrification across grid and mini-grid</p>
               <DataSourceBadge entityId={entity.id} indicatorId="EG.ELC.ACCS.ZS" />
             </div>
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 space-y-2">
+            <div 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-2 shadow-xs transition-colors"
+              style={{ backgroundColor: countryCalmBg }}
+            >
               <span className="text-xs text-zinc-500 font-medium">Renewable Energy Share</span>
-              <div className="text-2xl font-bold font-mono text-emerald-400">
+              <div className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
                 {formatPercentage(atlas.getIndicatorValue(entity.id, 'EG.FEC.RNEW.ZS'))}
               </div>
-              <p className="text-xs text-zinc-400">Hydro, solar, wind, and geothermal share</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">Hydro, solar, wind, and geothermal share</p>
               <DataSourceBadge entityId={entity.id} indicatorId="EG.FEC.RNEW.ZS" />
             </div>
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 space-y-2">
+            <div 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-2 shadow-xs transition-colors"
+              style={{ backgroundColor: countryCalmBg }}
+            >
               <span className="text-xs text-zinc-500 font-medium">Mobile Subscriptions</span>
-              <div className="text-2xl font-bold font-mono text-cyan-400">
+              <div className="text-2xl font-bold font-mono text-cyan-600 dark:text-cyan-400">
                 {(atlas.getIndicatorValue(entity.id, 'IT.CEL.SETS.P2') || 98.4).toFixed(1)} / 100
               </div>
-              <p className="text-xs text-zinc-400">Active cellular subscriptions per 100 people</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">Active cellular subscriptions per 100 people</p>
               <DataSourceBadge entityId={entity.id} indicatorId="IT.CEL.SETS.P2" />
             </div>
           </div>
@@ -632,28 +693,34 @@ export const CountryView: React.FC<CountryViewProps> = ({
         {/* TAB 6: GOVERNANCE & PEACE */}
         {activeTab === 'governance' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-3">
+            <div 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-3 shadow-xs transition-colors"
+              style={{ backgroundColor: countryCalmBg }}
+            >
               <div className="flex items-center justify-between">
-                <span className="text-xs text-zinc-400 uppercase font-semibold">Ibrahim Index of African Governance (IIAG)</span>
+                <span className="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold">Ibrahim Index of African Governance (IIAG)</span>
                 <DataSourceBadge entityId={entity.id} indicatorId="MO.IIAG.SCORE" />
               </div>
-              <div className="text-3xl font-extrabold font-mono text-purple-400">
+              <div className="text-3xl font-extrabold font-mono text-purple-600 dark:text-purple-400">
                 {ibrahimScore ? `${ibrahimScore.toFixed(1)} / 100` : 'Data Pending'}
               </div>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 Evaluates Security & Rule of Law, Participation, Rights & Inclusion, Economic Opportunity, and Human Development.
               </p>
             </div>
 
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-3">
+            <div 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-3 shadow-xs transition-colors"
+              style={{ backgroundColor: countryCalmBg }}
+            >
               <div className="flex items-center justify-between">
-                <span className="text-xs text-zinc-400 uppercase font-semibold">Global Peace Index (GPI)</span>
+                <span className="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-semibold">Global Peace Index (GPI)</span>
                 <DataSourceBadge entityId={entity.id} indicatorId="IEP.GPI.SCORE" />
               </div>
-              <div className="text-3xl font-extrabold font-mono text-rose-400">
+              <div className="text-3xl font-extrabold font-mono text-rose-600 dark:text-rose-400">
                 {peaceIndex ? `${peaceIndex.toFixed(2)} (1-5)` : 'Data Pending'}
               </div>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 Measures societal safety and security, ongoing domestic and international conflict, and militarization levels.
               </p>
             </div>
@@ -665,12 +732,12 @@ export const CountryView: React.FC<CountryViewProps> = ({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-base text-zinc-100 flex items-center gap-2">
-                  <Landmark className="w-5 h-5 text-amber-400" /> UNESCO World Heritage Sites in {entity.name}
+                <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                  <Landmark className="w-5 h-5 text-amber-500" /> UNESCO World Heritage Sites in {entity.name}
                 </h3>
-                <p className="text-xs text-zinc-400">Properties of outstanding universal cultural and natural value</p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">Properties of outstanding universal cultural and natural value</p>
               </div>
-              <span className="text-xs font-mono text-amber-400 bg-amber-950/40 border border-amber-800/50 px-2.5 py-1 rounded-lg">
+              <span className="text-xs font-mono text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/50 px-2.5 py-1 rounded-lg">
                 {heritageSites.length} Inscribed Sites
               </span>
             </div>
@@ -678,19 +745,23 @@ export const CountryView: React.FC<CountryViewProps> = ({
             {heritageSites.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {heritageSites.map(site => (
-                  <div key={site.id} className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 space-y-3 hover:border-amber-800/40 transition-colors">
+                  <div 
+                    key={site.id} 
+                    className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-3 hover:border-amber-400/50 dark:hover:border-amber-800/40 transition-colors shadow-xs"
+                    style={{ backgroundColor: countryCalmBg }}
+                  >
                     <div className="flex items-start justify-between gap-2">
-                      <h4 className="font-bold text-sm text-zinc-100">{site.name}</h4>
+                      <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">{site.name}</h4>
                       <span className={`text-[10px] uppercase font-semibold px-2 py-0.5 rounded border ${
-                        site.category === 'Cultural' ? 'bg-amber-950 text-amber-300 border-amber-800/50' :
-                        site.category === 'Natural' ? 'bg-emerald-950 text-emerald-300 border-emerald-800/50' :
-                        'bg-cyan-950 text-cyan-300 border-cyan-800/50'
+                        site.category === 'Cultural' ? 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800/50' :
+                        site.category === 'Natural' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800/50' :
+                        'bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border-cyan-300 dark:border-cyan-800/50'
                       }`}>
                         {site.category}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-400 leading-relaxed">{site.description}</p>
-                    <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-xs text-zinc-500 font-mono">
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">{site.description}</p>
+                    <div className="pt-2 border-t border-zinc-200/60 dark:border-zinc-800 flex items-center justify-between text-xs text-zinc-500 font-mono">
                       <span>Inscribed: <strong>{site.inscribedYear}</strong></span>
                       <span>Location: {site.location}</span>
                     </div>
@@ -698,8 +769,11 @@ export const CountryView: React.FC<CountryViewProps> = ({
                 ))}
               </div>
             ) : (
-              <div className="py-12 text-center rounded-2xl border border-zinc-800 bg-zinc-900/40 text-zinc-500">
-                <Landmark className="w-8 h-8 mx-auto mb-2 opacity-40 text-amber-400" />
+              <div 
+                className="py-12 text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-500"
+                style={{ backgroundColor: countryCalmBg }}
+              >
+                <Landmark className="w-8 h-8 mx-auto mb-2 opacity-40 text-amber-500" />
                 <p className="text-sm">No UNESCO World Heritage sites formally inscribed for this territory.</p>
               </div>
             )}
@@ -711,20 +785,23 @@ export const CountryView: React.FC<CountryViewProps> = ({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-base text-zinc-100 flex items-center gap-2">
-                  <Layers className="w-5 h-5 text-emerald-400" /> First-Level Administrative Units
+                <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                  <Layers className="w-5 h-5 text-emerald-500" /> First-Level Administrative Units
                 </h3>
-                <p className="text-xs text-zinc-400">Provinces, regions, and federal states in {entity.name}</p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">Provinces, regions, and federal states in {entity.name}</p>
               </div>
-              <span className="text-xs font-mono text-zinc-400 bg-zinc-800 px-2.5 py-1 rounded-lg">
+              <span className="text-xs font-mono text-zinc-700 dark:text-zinc-400 bg-white/80 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-2.5 py-1 rounded-lg">
                 {subnationalUnits.length} Primary Divisions
               </span>
             </div>
 
             {subnationalUnits.length > 0 ? (
-              <div className="overflow-x-auto rounded-2xl border border-zinc-800 bg-zinc-900/60">
+              <div 
+                className="overflow-x-auto rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs"
+                style={{ backgroundColor: countryCalmBg }}
+              >
                 <table className="w-full text-left text-xs">
-                  <thead className="border-b border-zinc-800 bg-zinc-950/80 font-mono text-zinc-400">
+                  <thead className="border-b border-zinc-200/80 dark:border-zinc-800 bg-black/5 dark:bg-zinc-950/80 font-mono text-zinc-600 dark:text-zinc-400">
                     <tr>
                       <th className="py-3 px-4">Division Name</th>
                       <th className="py-3 px-4">Type</th>
@@ -733,21 +810,24 @@ export const CountryView: React.FC<CountryViewProps> = ({
                       <th className="py-3 px-4">Area</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-800/60">
+                  <tbody className="divide-y divide-zinc-200/60 dark:divide-zinc-800/60">
                     {subnationalUnits.map(unit => (
-                      <tr key={unit.id} className="hover:bg-zinc-800/40 transition-colors">
-                        <td className="py-3 px-4 font-semibold text-zinc-200">{unit.name}</td>
-                        <td className="py-3 px-4 text-zinc-400">{unit.type}</td>
-                        <td className="py-3 px-4 text-zinc-300">{unit.capital}</td>
-                        <td className="py-3 px-4 font-mono text-emerald-400">{formatPopulation(unit.population)}</td>
-                        <td className="py-3 px-4 font-mono text-zinc-400">{formatArea(unit.areaKm2)}</td>
+                      <tr key={unit.id} className="hover:bg-black/5 dark:hover:bg-zinc-800/40 transition-colors">
+                        <td className="py-3 px-4 font-semibold text-zinc-800 dark:text-zinc-200">{unit.name}</td>
+                        <td className="py-3 px-4 text-zinc-600 dark:text-zinc-400">{unit.type}</td>
+                        <td className="py-3 px-4 text-zinc-700 dark:text-zinc-300">{unit.capital}</td>
+                        <td className="py-3 px-4 font-mono text-emerald-600 dark:text-emerald-400">{formatPopulation(unit.population)}</td>
+                        <td className="py-3 px-4 font-mono text-zinc-600 dark:text-zinc-400">{formatArea(unit.areaKm2)}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             ) : (
-              <div className="py-12 text-center rounded-2xl border border-zinc-800 bg-zinc-900/40 text-zinc-500">
+              <div 
+                className="py-12 text-center rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-500"
+                style={{ backgroundColor: countryCalmBg }}
+              >
                 <Layers className="w-8 h-8 mx-auto mb-2 opacity-40 text-zinc-400" />
                 <p className="text-sm">Administrative division tables are cataloged under national statistical office indices.</p>
               </div>
@@ -758,9 +838,12 @@ export const CountryView: React.FC<CountryViewProps> = ({
         {/* TAB 9: PROVENANCE & OFFICIAL LINKS */}
         {activeTab === 'provenance' && (
           <div className="space-y-6">
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4">
-              <h3 className="font-bold text-base text-zinc-100 flex items-center gap-2 border-b border-zinc-800 pb-3">
-                <ExternalLink className="w-4 h-4 text-emerald-400" /> Official Institutional Portals
+            <div 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-4 shadow-xs transition-colors"
+              style={{ backgroundColor: countryCalmBg }}
+            >
+              <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2 border-b border-zinc-200/60 dark:border-zinc-800 pb-3">
+                <ExternalLink className="w-4 h-4 text-emerald-500" /> Official Institutional Portals
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -768,55 +851,55 @@ export const CountryView: React.FC<CountryViewProps> = ({
                   href={media.worldBankProfileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl border border-zinc-800 bg-zinc-950/40 hover:bg-zinc-800 text-xs font-semibold text-zinc-200 transition-colors group"
+                  className="flex items-center justify-between p-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition-colors group shadow-xs"
                 >
                   <span>World Bank Country Profile</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-zinc-500 group-hover:text-emerald-400" />
+                  <ExternalLink className="w-3.5 h-3.5 text-zinc-400 group-hover:text-emerald-500" />
                 </a>
                 <a
                   href={media.imfProfileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl border border-zinc-800 bg-zinc-950/40 hover:bg-zinc-800 text-xs font-semibold text-zinc-200 transition-colors group"
+                  className="flex items-center justify-between p-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition-colors group shadow-xs"
                 >
                   <span>IMF Article IV & WEO</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-zinc-500 group-hover:text-emerald-400" />
+                  <ExternalLink className="w-3.5 h-3.5 text-zinc-400 group-hover:text-emerald-500" />
                 </a>
                 <a
                   href={media.unProfileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl border border-zinc-800 bg-zinc-950/40 hover:bg-zinc-800 text-xs font-semibold text-zinc-200 transition-colors group"
+                  className="flex items-center justify-between p-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition-colors group shadow-xs"
                 >
                   <span>UN Data Country Table</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-zinc-500 group-hover:text-emerald-400" />
+                  <ExternalLink className="w-3.5 h-3.5 text-zinc-400 group-hover:text-emerald-500" />
                 </a>
                 <a
                   href={media.africanUnionUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl border border-zinc-800 bg-zinc-950/40 hover:bg-zinc-800 text-xs font-semibold text-zinc-200 transition-colors group"
+                  className="flex items-center justify-between p-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition-colors group shadow-xs"
                 >
                   <span>African Union Member State</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-zinc-500 group-hover:text-emerald-400" />
+                  <ExternalLink className="w-3.5 h-3.5 text-zinc-400 group-hover:text-emerald-500" />
                 </a>
                 <a
                   href={media.wikipediaUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl border border-zinc-800 bg-zinc-950/40 hover:bg-zinc-800 text-xs font-semibold text-zinc-200 transition-colors group"
+                  className="flex items-center justify-between p-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition-colors group shadow-xs"
                 >
                   <span>Wikipedia Encyclopedia</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-zinc-500 group-hover:text-emerald-400" />
+                  <ExternalLink className="w-3.5 h-3.5 text-zinc-400 group-hover:text-emerald-500" />
                 </a>
                 <a
                   href={media.wikidataUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl border border-zinc-800 bg-zinc-950/40 hover:bg-zinc-800 text-xs font-semibold text-zinc-200 transition-colors group"
+                  className="flex items-center justify-between p-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition-colors group shadow-xs"
                 >
                   <span>Wikidata Semantic Entity</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-zinc-500 group-hover:text-emerald-400" />
+                  <ExternalLink className="w-3.5 h-3.5 text-zinc-400 group-hover:text-emerald-500" />
                 </a>
               </div>
             </div>

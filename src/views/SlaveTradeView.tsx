@@ -295,8 +295,8 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
         </div>
       </div>
 
-      {/* 2. Sub-Navigation Tabs Bar */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-zinc-200 dark:border-zinc-800 no-scrollbar">
+      {/* 2. Sub-Navigation Tabs Bar - Fully Wrapping */}
+      <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-zinc-200 dark:border-zinc-800">
         {[
           { id: 'overview', label: '01 — Overview & Flow Map', icon: Globe },
           { id: 'voyages', label: '02 — Explore Voyages', icon: Compass },

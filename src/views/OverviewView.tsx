@@ -16,6 +16,7 @@ import {
 } from '../components/CardTaxonomy';
 import { FirstViewportClarity, ProgressiveAccordion, ReadMore } from '../components/ProgressiveDisclosure';
 import { JapandiTooltip } from '../components/JapandiTooltip';
+import { getRegionCalmColor } from '../data/unGeoschemeColors';
 import { 
   formatPopulation, 
   formatGDP, 
@@ -137,7 +138,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       <section aria-label="Interactive Cartography" className="space-y-4 cascade-item cascade-3">
         {/* Region Filter Chips */}
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+          <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 flex items-center gap-1 pr-2">
               <Compass className="w-3.5 h-3.5 text-emerald-500" /> Filter Region:
             </span>
@@ -243,9 +244,10 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             {regionalSummaries.map(reg => (
               <div 
                 key={reg.region}
-                className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/60 p-4 space-y-3 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all shadow-xs"
+                className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-4 space-y-3 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all shadow-xs"
+                style={{ backgroundColor: getRegionCalmColor(reg.region) }}
               >
-                <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800/80 pb-2">
+                <div className="flex items-center justify-between border-b border-zinc-200/60 dark:border-zinc-800/80 pb-2">
                   <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">{reg.region}</h4>
                   <span className="rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[10px] font-mono text-zinc-600 dark:text-zinc-400">
                     {reg.countryCount} States
@@ -291,8 +293,11 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         {/* Right Column: Top Economic & HDI Leaders */}
         <div className="lg:col-span-5 space-y-6">
           {/* Top Economies Card */}
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/60 p-5 space-y-4 shadow-lg">
-            <div className="flex items-center justify-between">
+          <div 
+            className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-4 shadow-sm transition-colors"
+            style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+          >
+            <div className="flex items-center justify-between border-b border-zinc-200/60 dark:border-zinc-800/80 pb-3">
               <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                 <DollarSign className="w-4 h-4 text-cyan-500" /> Largest African Economies (GDP)
               </h4>
@@ -329,8 +334,11 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           </div>
 
           {/* Top HDI Leaders Card */}
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/60 p-5 space-y-4 shadow-lg">
-            <div className="flex items-center justify-between">
+          <div 
+            className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-4 shadow-sm transition-colors"
+            style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+          >
+            <div className="flex items-center justify-between border-b border-zinc-200/60 dark:border-zinc-800/80 pb-3">
               <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-emerald-500" /> Highest Human Development (HDI)
               </h4>

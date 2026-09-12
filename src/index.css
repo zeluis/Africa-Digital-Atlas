@@ -125,6 +125,8 @@
     --region-western-accent: #4DFF4D;
     --region-western-strong: #009D00;
     --region-western-pale:   #F3FAF1;
+
+    --region-pan-african-calm: #F4FAF5;
   }
 
   html.light,
@@ -225,6 +227,14 @@
     --region-northern-pale:  rgba(24, 2, 255, 0.12);
     --region-southern-pale:  rgba(255, 10, 10, 0.12);
     --region-western-pale:   rgba(0, 255, 0, 0.12);
+
+    /* MD3-Inspired Calm Tonal Regional Surfaces in Dark Mode */
+    --region-eastern-calm:   #1c1713;
+    --region-middle-calm:    #1b1420;
+    --region-northern-calm:  #131622;
+    --region-southern-calm:  #1e1415;
+    --region-western-calm:   #111c15;
+    --region-pan-african-calm: #151814;
   }
 
   body {

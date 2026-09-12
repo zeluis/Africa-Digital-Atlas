@@ -163,7 +163,10 @@ export const CompareView: React.FC<CompareViewProps> = ({
       )}
 
       {/* Comparison Grid Matrix Table */}
-      <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 shadow-xl overflow-hidden">
+      <div 
+        className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-md overflow-hidden transition-colors"
+        style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+      >
         {/* Table Header with Country Dossiers */}
         <div className="grid border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950" style={{ gridTemplateColumns: `240px repeat(${countries.length}, 1fr)` }}>
           <div className="p-4 md:p-6 flex items-end font-bold text-xs text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">

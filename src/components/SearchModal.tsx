@@ -392,7 +392,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         </div>
 
         {/* Keyboard Navigation Footer */}
-        <div className="border-t border-zinc-200 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-900/60 px-5 py-3 flex items-center justify-between text-xs text-zinc-500 font-mono">
+        <div 
+          className="border-t border-zinc-200 dark:border-zinc-800/80 px-5 py-3 flex items-center justify-between text-xs text-zinc-500 font-mono transition-colors"
+          style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+        >
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5">
               <kbd className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-1.5 py-0.5 rounded text-zinc-700 dark:text-zinc-300">↑</kbd>

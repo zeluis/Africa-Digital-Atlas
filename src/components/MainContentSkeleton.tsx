@@ -62,7 +62,10 @@ export const MainContentSkeleton: React.FC<MainContentSkeletonProps> = () => {
             <div className="h-5 w-44 bg-zinc-200 dark:bg-zinc-800 rounded-lg animate-pulse" />
             <div className="h-7 w-28 bg-zinc-200/80 dark:bg-zinc-800/60 rounded-xl animate-pulse" />
           </div>
-          <div className="h-64 rounded-2xl bg-zinc-100/80 dark:bg-zinc-900/60 flex items-end justify-between p-6 gap-3">
+          <div 
+            className="h-64 rounded-2xl flex items-end justify-between p-6 gap-3 border border-zinc-200/60 dark:border-zinc-800/60"
+            style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+          >
             {[45, 60, 30, 80, 50, 75, 40, 90, 65, 55].map((h, i) => (
               <div
                 key={i}

@@ -373,7 +373,10 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                     </div>
                   </div>
 
-                  <div className="space-y-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 p-5">
+                  <div 
+                    className="space-y-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 shadow-xs transition-colors"
+                    style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+                  >
                     <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider flex items-center gap-2">
                       <Layers className="w-4 h-4 text-emerald-500" /> Sub-Branches & Taxa
                     </h4>

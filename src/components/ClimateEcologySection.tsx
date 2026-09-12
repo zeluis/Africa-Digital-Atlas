@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { getCountryClimateData, CountryClimateData } from '../data/climateData';
 import { fetchLiveWeather, LiveWeatherData, decodeWmoCode } from '../services/weatherService';
+import { atlas } from '../data/atlas-store';
+import { getRegionCalmColor } from '../data/unGeoschemeColors';
 import { useTranslation } from '../i18n/LanguageContext';
 import {
   ResponsiveContainer,
@@ -61,6 +63,8 @@ export const ClimateEcologySection: React.FC<ClimateEcologySectionProps> = ({
   const [isLoadingWeather, setIsLoadingWeather] = useState<boolean>(false);
 
   const climateData = getCountryClimateData(entityId, countryName);
+  const entity = atlas.getEntity(entityId);
+  const regionCalmBg = entity ? getRegionCalmColor(entity.region) : 'var(--region-pan-african-calm, #f4f5f4)';
 
   // Fetch live weather data with fallback
   const loadWeather = async () => {
@@ -286,22 +290,25 @@ export const ClimateEcologySection: React.FC<ClimateEcologySectionProps> = ({
       {/* Grid: 12-Month Climatology Cycle & Historical Warming Trends */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Dual Axis 12-Month Temperature Cycle & Monthly Precipitation */}
-        <div className="lg:col-span-7 rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+        <div 
+          className="lg:col-span-7 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-4 shadow-xs transition-colors"
+          style={{ backgroundColor: regionCalmBg }}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-200/60 dark:border-zinc-800 pb-3">
             <div>
-              <h3 className="font-bold text-base text-zinc-100 flex items-center gap-2">
-                <Thermometer className="w-4 h-4 text-amber-400" />
+              <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                <Thermometer className="w-4 h-4 text-amber-500" />
                 {t('climate.temp_cycle_title', '12-Month Temperature & Precipitation Cycle')}
               </h3>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
                 {t('climate.temp_cycle_desc', 'Monthly mean temperatures (°C/°F) and precipitation distribution (mm)')}
               </p>
             </div>
             <div className="flex items-center gap-3 text-xs font-mono">
-              <span className="flex items-center gap-1.5 text-amber-400">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span> Temp ({tempUnit === 'C' ? '°C' : '°F'})
+              <span className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Temp ({tempUnit === 'C' ? '°C' : '°F'})
               </span>
-              <span className="flex items-center gap-1.5 text-cyan-400">
+              <span className="flex items-center gap-1.5 text-cyan-600 dark:text-cyan-400">
                 <span className="w-2.5 h-2.5 rounded-xs bg-cyan-500"></span> Rain (mm)
               </span>
             </div>
@@ -316,7 +323,7 @@ export const ClimateEcologySection: React.FC<ClimateEcologySectionProps> = ({
                     <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" className="dark:stroke-zinc-800" />
                 <XAxis dataKey="month" stroke="#71717a" fontSize={11} />
                 <YAxis yAxisId="temp" stroke="#f59e0b" fontSize={11} tickFormatter={v => `${v}°`} />
                 <YAxis yAxisId="precip" orientation="right" stroke="#06b6d4" fontSize={11} tickFormatter={v => `${v}mm`} />
@@ -334,24 +341,24 @@ export const ClimateEcologySection: React.FC<ClimateEcologySectionProps> = ({
           </div>
 
           {/* Climatology Callout Badges */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 border-t border-zinc-800/80 text-xs">
-            <div className="p-2.5 rounded-xl bg-zinc-950/40 border border-zinc-800">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 border-t border-zinc-200/60 dark:border-zinc-800/80 text-xs">
+            <div className="p-2.5 rounded-xl bg-white/80 dark:bg-zinc-950/40 border border-zinc-200/80 dark:border-zinc-800 shadow-xs">
               <span className="text-zinc-500 block text-[10px] uppercase font-bold">Annual Mean Temp</span>
-              <span className="font-mono font-bold text-amber-300 text-sm">
+              <span className="font-mono font-bold text-amber-600 dark:text-amber-300 text-sm">
                 {tempUnit === 'C'
                   ? `${climateData.annualMeanTempC}°C`
                   : `${Math.round((climateData.annualMeanTempC * 9) / 5 + 32)}°F`}
               </span>
             </div>
-            <div className="p-2.5 rounded-xl bg-zinc-950/40 border border-zinc-800">
+            <div className="p-2.5 rounded-xl bg-white/80 dark:bg-zinc-950/40 border border-zinc-200/80 dark:border-zinc-800 shadow-xs">
               <span className="text-zinc-500 block text-[10px] uppercase font-bold">Annual Rainfall</span>
-              <span className="font-mono font-bold text-cyan-300 text-sm">
+              <span className="font-mono font-bold text-cyan-600 dark:text-cyan-300 text-sm">
                 {climateData.annualPrecipitationMm} mm/yr
               </span>
             </div>
-            <div className="p-2.5 rounded-xl bg-zinc-950/40 border border-zinc-800 col-span-2 sm:col-span-1">
+            <div className="p-2.5 rounded-xl bg-white/80 dark:bg-zinc-950/40 border border-zinc-200/80 dark:border-zinc-800 col-span-2 sm:col-span-1 shadow-xs">
               <span className="text-zinc-500 block text-[10px] uppercase font-bold">Warming Trajectory</span>
-              <span className="font-mono font-bold text-rose-400 text-sm">
+              <span className="font-mono font-bold text-rose-600 dark:text-rose-400 text-sm">
                 +{climateData.warmingRatePerDecadeC}°C / decade
               </span>
             </div>
@@ -359,16 +366,19 @@ export const ClimateEcologySection: React.FC<ClimateEcologySectionProps> = ({
         </div>
 
         {/* Historical Warming Trend (1970-2024) */}
-        <div className="lg:col-span-5 rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4">
-          <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+        <div 
+          className="lg:col-span-5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-4 shadow-xs transition-colors"
+          style={{ backgroundColor: regionCalmBg }}
+        >
+          <div className="flex items-center justify-between border-b border-zinc-200/60 dark:border-zinc-800 pb-3">
             <div>
-              <h3 className="font-bold text-base text-zinc-100 flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-rose-400" />
+              <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-rose-500" />
                 {t('climate.historical_trend_title', 'Historical Warming Trends')}
               </h3>
-              <p className="text-xs text-zinc-400">1970–2024 Mean Temperature Evolution</p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">1970–2024 Mean Temperature Evolution</p>
             </div>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-rose-950/60 border border-rose-800/60 text-rose-300 font-mono font-semibold">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-800/60 text-rose-800 dark:text-rose-300 font-mono font-semibold">
               +{climateData.warmingRatePerDecadeC}°C/dec
             </span>
           </div>
@@ -419,18 +429,21 @@ export const ClimateEcologySection: React.FC<ClimateEcologySectionProps> = ({
       </div>
 
       {/* Climate Vulnerability & Risk Matrix */}
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+      <div 
+        className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-5 shadow-xs transition-colors"
+        style={{ backgroundColor: regionCalmBg }}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-200/60 dark:border-zinc-800 pb-3">
           <div>
-            <h3 className="font-bold text-base text-zinc-100 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-400" />
+            <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-500" />
               {t('climate.vulnerability_title', 'Climate Vulnerability & Readiness Matrix')}
             </h3>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
               {t('climate.vulnerability_desc', 'ND-GAIN Index, ecosystem resilience, extreme weather exposure, and structural adaptation indicators')}
             </p>
           </div>
-          <span className="text-xs text-emerald-400 font-semibold bg-emerald-950/40 border border-emerald-800/40 px-2.5 py-1 rounded-md self-start sm:self-auto">
+          <span className="text-xs text-emerald-700 dark:text-emerald-400 font-semibold bg-emerald-100 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800/40 px-2.5 py-1 rounded-md self-start sm:self-auto">
             Notre Dame Global Adaptation Initiative (ND-GAIN)
           </span>
         </div>
@@ -524,18 +537,21 @@ export const ClimateEcologySection: React.FC<ClimateEcologySectionProps> = ({
       </div>
 
       {/* National Ecological Profile & Clamped Resilience Narrative */}
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+      <div 
+        className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-5 shadow-xs transition-colors"
+        style={{ backgroundColor: regionCalmBg }}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-200/60 dark:border-zinc-800 pb-3">
           <div>
-            <h3 className="font-bold text-base text-zinc-100 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-500" />
               {t('climate.resilience_title', 'National Resilience Narrative & Adaptation Strategy')}
             </h3>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
               {t('climate.resilience_desc', 'Comprehensive policy adaptation programs, NDC commitments, renewable integration, and ecological conservation')}
             </p>
           </div>
-          <span className="text-xs font-mono font-semibold text-zinc-400">
+          <span className="text-xs font-mono font-semibold text-zinc-500 dark:text-zinc-400">
             Biome: {climateData.ecology.biome}
           </span>
         </div>

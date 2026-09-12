@@ -11,7 +11,7 @@ import {
 import { ThematicPillarNav } from '../components/ThematicPillarNav';
 import { EntityBlocsBrowser } from '../components/EntityBlocsBrowser';
 import { CountryFlag } from '../components/CountryFlag';
-import { getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
+import { getCountryRegionTonalPalette, getRegionCalmColor } from '../data/unGeoschemeColors';
 import { 
   formatPopulation, 
   formatGDP, 
@@ -55,6 +55,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
   const countries = useMemo(() => atlas.getSovereignCountries(), []);
   const currentEntity = atlas.getEntity(selectedEntityId) || countries[0];
   const tonal = getCountryRegionTonalPalette(currentEntity.id);
+  const calmBg = getRegionCalmColor(currentEntity.region);
   const currentPillarMeta = THEMATIC_PILLARS.find(p => p.id === activePillar) || THEMATIC_PILLARS[0];
 
   // Fetch Wikipedia summary on country change
@@ -189,7 +190,10 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
 
             {/* Wikipedia Image & Lead Paragraph */}
             {wikiData?.thumbnailUrl && (
-              <div className="flex flex-col sm:flex-row gap-5 items-start bg-zinc-50 dark:bg-zinc-900/60 p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80">
+              <div 
+                className="flex flex-col sm:flex-row gap-5 items-start p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs transition-colors"
+                style={{ backgroundColor: calmBg }}
+              >
                 <img
                   src={wikiData.thumbnailUrl}
                   alt={currentEntity.name}
@@ -228,7 +232,8 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                 {curatedNarrative.keyFacts.map((fact, idx) => (
                   <div
                     key={idx}
-                    className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/80 flex flex-col justify-between"
+                    className="p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs flex flex-col justify-between transition-colors"
+                    style={{ backgroundColor: calmBg }}
                   >
                     <span className="text-[10px] uppercase font-mono text-zinc-400">{fact.label}</span>
                     <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 mt-1">{fact.value}</span>
@@ -250,7 +255,8 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                   {heritageSites.map(site => (
                     <div
                       key={site.id}
-                      className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/80 flex items-start justify-between gap-3"
+                      className="p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs flex items-start justify-between gap-3 transition-colors"
+                      style={{ backgroundColor: calmBg }}
                     >
                       <div>
                         <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100">{site.name}</div>
@@ -292,7 +298,8 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                 return (
                   <div
                     key={ind.id}
-                    className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/80 space-y-2 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+                    className="p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs space-y-2 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+                    style={{ backgroundColor: calmBg }}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300">

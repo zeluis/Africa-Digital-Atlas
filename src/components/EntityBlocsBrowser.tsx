@@ -116,7 +116,10 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
 
       {/* Comparison Mode Deck */}
       {showCompareMode && (
-        <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 p-6 space-y-6 animate-enter-japandi">
+        <div 
+          className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-6 animate-enter-japandi shadow-sm transition-colors"
+          style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left Bloc Selection */}
             <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-5 rounded-2xl space-y-4">

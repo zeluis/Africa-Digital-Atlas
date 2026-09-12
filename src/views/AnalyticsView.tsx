@@ -300,7 +300,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar pt-1">
+          <div className="flex flex-wrap items-center gap-2 pt-1">
             {DOMAIN_CONFIGS.map(d => {
               const isSelected = selectedDomain === d.id;
               return (
@@ -365,7 +365,10 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
       {activeTab === 'rankings' && (
         <div className="space-y-6 animate-in fade-in duration-150">
           {/* Indicator Info Banner - Styled as elevated sub-card */}
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-900/60 p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs shadow-xs">
+          <div 
+            className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs shadow-xs transition-colors"
+            style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+          >
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-mono font-semibold border ${getDomainColorClasses(currentIndicator.domain)}`}>

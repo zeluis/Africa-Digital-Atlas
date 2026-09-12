@@ -3,7 +3,7 @@ import { getCountrySilhouette, CountrySilhouetteData } from '../data/countrySilh
 import { getEntityGeographyMetadata, UN_M49_NUMERIC_CODES } from '../data/svgGeographySystem';
 import { atlas } from '../data/atlas-store';
 import { formatArea } from '../data/atlas-formatters';
-import { getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
+import { getCountryRegionTonalPalette, getRegionCalmColor } from '../data/unGeoschemeColors';
 import { 
   MapPin, 
   Maximize2, 
@@ -43,6 +43,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
   const geoMetadata = getEntityGeographyMetadata(entityId);
   const m49Code = UN_M49_NUMERIC_CODES[entityId.toUpperCase()] || '000';
   const regionalTonal = getCountryRegionTonalPalette(entityId);
+  const calmBg = getRegionCalmColor(entity?.region);
 
   if (!silhouette) return null;
 
@@ -250,7 +251,10 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
             </div>
 
             {/* Modal Drawing Display */}
-            <div className="relative bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800/80 rounded-2xl p-8 flex items-center justify-center h-80 overflow-hidden shadow-inner">
+            <div 
+              className="relative border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl p-8 flex items-center justify-center h-80 overflow-hidden shadow-inner transition-colors"
+              style={{ backgroundColor: calmBg }}
+            >
               {/* Radar Coordinate Grid */}
               <div className="absolute inset-0 pointer-events-none opacity-20 flex items-center justify-center">
                 <div className="w-full h-full border border-dashed border-zinc-400 dark:border-zinc-700" />
@@ -314,23 +318,35 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
 
             {/* Geographical Specs Bar */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 p-3">
+              <div 
+                className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 p-3 shadow-xs transition-colors"
+                style={{ backgroundColor: calmBg }}
+              >
                 <span className="text-zinc-500 font-medium">Land Area</span>
                 <div className="font-bold text-zinc-900 dark:text-zinc-200 mt-0.5">{formatArea(entity?.landAreaKm2)}</div>
               </div>
-              <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 p-3">
+              <div 
+                className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 p-3 shadow-xs transition-colors"
+                style={{ backgroundColor: calmBg }}
+              >
                 <span className="text-zinc-500 font-medium">Geographic Center</span>
                 <div className="font-bold font-mono text-zinc-900 dark:text-zinc-200 mt-0.5">
                   {silhouette.geoCenter.lat.toFixed(2)}°, {silhouette.geoCenter.lng.toFixed(2)}°
                 </div>
               </div>
-              <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 p-3">
+              <div 
+                className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 p-3 shadow-xs transition-colors"
+                style={{ backgroundColor: calmBg }}
+              >
                 <span className="text-zinc-500 font-medium">Coastline Length</span>
                 <div className="font-bold font-mono text-zinc-900 dark:text-zinc-200 mt-0.5">
                   {silhouette.coastlineKm ? `${silhouette.coastlineKm.toLocaleString()} km` : 'Landlocked'}
                 </div>
               </div>
-              <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 p-3">
+              <div 
+                className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 p-3 shadow-xs transition-colors"
+                style={{ backgroundColor: calmBg }}
+              >
                 <span className="text-zinc-500 font-medium">Pipeline Geometry</span>
                 <div className="font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">W3C SVG • {geoMetadata?.vertexCount || 48} Nodes</div>
               </div>

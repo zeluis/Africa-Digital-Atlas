@@ -95,9 +95,12 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
       </div>
 
       {/* Filter, Search & Timeline Sort Bar */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 p-4 rounded-2xl">
-        {/* Category Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto no-scrollbar">
+      <div 
+        className="flex flex-col md:flex-row items-center justify-between gap-4 border border-zinc-200/80 dark:border-zinc-800/80 p-4 rounded-2xl shadow-xs transition-colors"
+        style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+      >
+        {/* Category Pills - Fully Wrapping */}
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
           {categories.map(cat => (
             <button
               key={cat}

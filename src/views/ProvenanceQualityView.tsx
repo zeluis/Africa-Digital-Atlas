@@ -185,27 +185,45 @@ export const ProvenanceQualityView: React.FC = () => {
 
         {/* Benefits Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 font-mono text-xs">
-          <div className="bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 p-3 rounded-2xl">
+          <div 
+            className="border border-zinc-200/80 dark:border-zinc-800/80 p-3 rounded-2xl shadow-xs transition-colors"
+            style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+          >
             <span className="text-[10px] uppercase text-zinc-500 block font-bold">Predictability</span>
             <span className="font-bold text-zinc-900 dark:text-zinc-100 text-xs">Deterministic</span>
           </div>
-          <div className="bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 p-3 rounded-2xl">
+          <div 
+            className="border border-zinc-200/80 dark:border-zinc-800/80 p-3 rounded-2xl shadow-xs transition-colors"
+            style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+          >
             <span className="text-[10px] uppercase text-zinc-500 block font-bold">Runtime Delay</span>
             <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs">0ms Overhead</span>
           </div>
-          <div className="bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 p-3 rounded-2xl">
+          <div 
+            className="border border-zinc-200/80 dark:border-zinc-800/80 p-3 rounded-2xl shadow-xs transition-colors"
+            style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+          >
             <span className="text-[10px] uppercase text-zinc-500 block font-bold">Connectivity</span>
             <span className="font-bold text-cyan-600 dark:text-cyan-400 text-xs">100% Offline</span>
           </div>
-          <div className="bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 p-3 rounded-2xl">
+          <div 
+            className="border border-zinc-200/80 dark:border-zinc-800/80 p-3 rounded-2xl shadow-xs transition-colors"
+            style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+          >
             <span className="text-[10px] uppercase text-zinc-500 block font-bold">Rendering</span>
             <span className="font-bold text-amber-600 dark:text-amber-400 text-xs">Unified 1000px</span>
           </div>
-          <div className="bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 p-3 rounded-2xl">
+          <div 
+            className="border border-zinc-200/80 dark:border-zinc-800/80 p-3 rounded-2xl shadow-xs transition-colors"
+            style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+          >
             <span className="text-[10px] uppercase text-zinc-500 block font-bold">Country Silhouettes</span>
             <span className="font-bold text-zinc-900 dark:text-zinc-100 text-xs">54 Reusable</span>
           </div>
-          <div className="bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 p-3 rounded-2xl">
+          <div 
+            className="border border-zinc-200/80 dark:border-zinc-800/80 p-3 rounded-2xl shadow-xs transition-colors"
+            style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+          >
             <span className="text-[10px] uppercase text-zinc-500 block font-bold">Regional Silhouettes</span>
             <span className="font-bold text-zinc-900 dark:text-zinc-100 text-xs">5 UN Geoscheme</span>
           </div>
@@ -238,7 +256,10 @@ export const ProvenanceQualityView: React.FC = () => {
 
       {/* Quality Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5 space-y-2 shadow-lg">
+        <div 
+          className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-2 shadow-sm transition-colors"
+          style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs text-zinc-500 font-medium">Entities Monitored</span>
             <Database className="w-4 h-4 text-emerald-500" />
@@ -249,7 +270,10 @@ export const ProvenanceQualityView: React.FC = () => {
           <p className="text-[11px] text-zinc-500">54 sovereign nations + territories</p>
         </div>
 
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5 space-y-2 shadow-lg">
+        <div 
+          className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-2 shadow-sm transition-colors"
+          style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs text-zinc-500 font-medium">Statistical Observations</span>
             <Layers className="w-4 h-4 text-cyan-500" />
@@ -260,7 +284,10 @@ export const ProvenanceQualityView: React.FC = () => {
           <p className="text-[11px] text-zinc-500">Canonical data points ingested</p>
         </div>
 
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5 space-y-2 shadow-lg">
+        <div 
+          className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-2 shadow-sm transition-colors"
+          style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs text-zinc-500 font-medium">Authoritative Sources</span>
             <FileCode className="w-4 h-4 text-amber-500" />
@@ -271,7 +298,10 @@ export const ProvenanceQualityView: React.FC = () => {
           <p className="text-[11px] text-zinc-500">World Bank, IMF, UN DESA, UNESCO</p>
         </div>
 
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5 space-y-2 shadow-lg">
+        <div 
+          className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 space-y-2 shadow-sm transition-colors"
+          style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs text-zinc-500 font-medium">Integrity Score</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
@@ -294,7 +324,11 @@ export const ProvenanceQualityView: React.FC = () => {
 
         <div className="space-y-3">
           {pipelineSteps.map((step, idx) => (
-            <div key={step.id} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-4 space-y-2 shadow-sm">
+            <div 
+              key={step.id} 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-4 space-y-2 shadow-xs transition-colors"
+              style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 flex items-center justify-center text-xs font-mono font-bold text-zinc-700 dark:text-zinc-300">
@@ -493,7 +527,10 @@ export const ProvenanceQualityView: React.FC = () => {
           <AlertCircle className="w-5 h-5 text-amber-500" /> Quality Flags & Cross-Source Conflict Reconciliation
         </h3>
 
-        <div className="overflow-x-auto rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 shadow-xl">
+        <div 
+          className="overflow-x-auto rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-md transition-colors"
+          style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+        >
           <table className="w-full text-left text-xs">
             <thead className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/80 font-mono text-zinc-500 dark:text-zinc-400">
               <tr>

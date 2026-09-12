@@ -108,15 +108,24 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
               African data has historically been siloed across disparate agency repositories, missing temporal continuity or geospatial context. This atlas eliminates ambiguity by cross-verifying World Bank, IMF, UN DESA, and UNESCO records with transparent ingestion pipelines and open-access licensing (CC-BY 4.0).
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-              <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-xs">
+              <div 
+                className="p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 text-xs shadow-xs"
+                style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+              >
                 <div className="font-bold text-zinc-900 dark:text-zinc-100 mb-1">Verifiable Provenance</div>
                 <div className="text-zinc-500 dark:text-zinc-400">Direct indicator tracing down to source agency series codes.</div>
               </div>
-              <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-xs">
+              <div 
+                className="p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 text-xs shadow-xs"
+                style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+              >
                 <div className="font-bold text-zinc-900 dark:text-zinc-100 mb-1">Comparative Integrity</div>
                 <div className="text-zinc-500 dark:text-zinc-400">Normalized currency values (USD) and population-weighted regional aggregates.</div>
               </div>
-              <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-xs">
+              <div 
+                className="p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 text-xs shadow-xs"
+                style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+              >
                 <div className="font-bold text-zinc-900 dark:text-zinc-100 mb-1">Cultural Depth</div>
                 <div className="text-zinc-500 dark:text-zinc-400">104 UNESCO World Heritage properties and 4 major language super-families.</div>
               </div>
@@ -132,7 +141,8 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <button
                 onClick={() => onExploreClick?.('explore')}
-                className="p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500 bg-zinc-50 dark:bg-zinc-900/60 text-left transition-all group cursor-pointer"
+                style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+                className="p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 hover:border-emerald-500 text-left transition-all group cursor-pointer shadow-xs"
               >
                 <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-500 flex items-center justify-between">
                   <span>Country Matrix</span>
@@ -143,7 +153,8 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
 
               <button
                 onClick={() => onExploreClick?.('analytics')}
-                className="p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500 bg-zinc-50 dark:bg-zinc-900/60 text-left transition-all group cursor-pointer"
+                style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+                className="p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 hover:border-emerald-500 text-left transition-all group cursor-pointer shadow-xs"
               >
                 <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-500 flex items-center justify-between">
                   <span>Time-Series</span>
@@ -154,7 +165,8 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
 
               <button
                 onClick={() => onExploreClick?.('languages')}
-                className="p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500 bg-zinc-50 dark:bg-zinc-900/60 text-left transition-all group cursor-pointer"
+                style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+                className="p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 hover:border-emerald-500 text-left transition-all group cursor-pointer shadow-xs"
               >
                 <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-500 flex items-center justify-between">
                   <span>Linguistics</span>
@@ -165,7 +177,8 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
 
               <button
                 onClick={() => onExploreClick?.('heritage')}
-                className="p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500 bg-zinc-50 dark:bg-zinc-900/60 text-left transition-all group cursor-pointer"
+                style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
+                className="p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 hover:border-emerald-500 text-left transition-all group cursor-pointer shadow-xs"
               >
                 <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-500 flex items-center justify-between">
                   <span>World Heritage</span>
