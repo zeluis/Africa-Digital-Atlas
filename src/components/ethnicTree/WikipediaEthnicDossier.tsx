@@ -9,7 +9,6 @@ import {
   X, 
   Compass, 
   Sparkles,
-  Loader2,
   ShieldCheck,
   ChevronRight
 } from 'lucide-react';
@@ -104,16 +103,16 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
       <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
         {/* Visual Hero Image Banner (if available from Wikipedia) */}
         {dossier?.thumbnail && !imageFailed ? (
-          <div className="relative w-full h-40 rounded-2xl overflow-hidden border border-[#E5DDD0] dark:border-[#38322B] shadow-inner bg-black/10">
+          <div className="relative w-full rounded-2xl overflow-hidden border border-[#E5DDD0] dark:border-[#38322B] shadow-inner bg-black/10">
             <img 
               src={dossier.thumbnail} 
               alt={dossier.name}
               referrerPolicy="no-referrer"
               onError={() => setImageFailed(true)}
-              className="w-full h-full object-cover object-center"
+              className="w-full h-auto block object-contain"
+              style={{ height: 'auto', maxHeight: 'none' }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
-            <div className="absolute bottom-2.5 left-3 right-3 text-white">
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 via-40% to-transparent pt-16 pb-3 px-3 text-white pointer-events-none">
               <div className="flex flex-col gap-0.5">
                 <h3 className="text-base font-serif font-bold tracking-wide drop-shadow-sm">
                   {dossier.canonicalTitle || dossier.article || `${ethnicName} people`}
@@ -216,12 +215,22 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
             </div>
 
             {isLoading ? (
-              <div className="flex items-center justify-center py-4 gap-2 text-[#7D6B5A] dark:text-[#B5A492]">
-                <Loader2 className="w-4 h-4 animate-spin text-[#E67E48]" />
-                <span className="text-xs">Connecting to Wikipedia Archive...</span>
+              <div 
+                id="wikipedia-summary-skeleton"
+                className="space-y-2.5 py-1 min-h-[96px] flex flex-col justify-center"
+                aria-label="Loading summary paragraph"
+                role="status"
+              >
+                <div className="h-3 bg-[#E5DDD0]/80 dark:bg-[#38322B]/80 rounded-md w-full animate-pulse" />
+                <div className="h-3 bg-[#E5DDD0]/70 dark:bg-[#38322B]/70 rounded-md w-[95%] animate-pulse" />
+                <div className="h-3 bg-[#E5DDD0]/60 dark:bg-[#38322B]/60 rounded-md w-[88%] animate-pulse" />
+                <div className="h-3 bg-[#E5DDD0]/50 dark:bg-[#38322B]/50 rounded-md w-[60%] animate-pulse" />
               </div>
             ) : (
-              <p className="text-[#3E342B] dark:text-[#E2D8CC] leading-relaxed text-[12px] font-serif">
+              <p 
+                id="wikipedia-summary-paragraph"
+                className="text-[#2B241E] dark:text-[#E8DFD5] leading-relaxed text-[13px] font-sans antialiased min-h-[96px]"
+              >
                 {dossier?.extract || 
                   `The ${dossier?.canonicalTitle || `${ethnicName} people`} are an indigenous African population with extensive documented cultural, linguistic, and historical presence in ${countryName || 'Africa'}.`
                 }
