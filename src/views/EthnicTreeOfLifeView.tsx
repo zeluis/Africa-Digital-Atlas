@@ -4,11 +4,15 @@ import { AfricaliaExplorer } from '../components/ethnicTree/AfricaliaExplorer';
 interface EthnicTreeOfLifeViewProps {
   onSelectReport?: (reportId: string) => void;
   onNavigateToSlaveTrade?: () => void;
+  onNavigateToMolecular?: () => void;
+  onNavigateToFoundations?: () => void;
 }
 
 export const EthnicTreeOfLifeView: React.FC<EthnicTreeOfLifeViewProps> = ({
   onSelectReport,
-  onNavigateToSlaveTrade
+  onNavigateToSlaveTrade,
+  onNavigateToMolecular,
+  onNavigateToFoundations
 }) => {
   return (
     <div 
@@ -19,6 +23,8 @@ export const EthnicTreeOfLifeView: React.FC<EthnicTreeOfLifeViewProps> = ({
       <AfricaliaExplorer
         onSelectReport={onSelectReport}
         onNavigateToSlaveTrade={onNavigateToSlaveTrade}
+        onNavigateToMolecular={onNavigateToMolecular}
+        onNavigateToFoundations={onNavigateToFoundations}
       />
     </div>
   );

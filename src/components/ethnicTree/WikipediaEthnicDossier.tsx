@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { WikipediaEthnicEntry } from '../../data/wikipediaEthnicAtlas';
 import { getEthnicDossier, parseLanguageChain } from '../../services/wikipediaService';
+import { RichEditorialCountryDevelopmentPanel } from './RichEditorialCountryDevelopmentPanel';
 
 interface WikipediaEthnicDossierProps {
   ethnicName: string;
@@ -26,6 +27,9 @@ interface WikipediaEthnicDossierProps {
   onClose: () => void;
   onFocusCoordinates?: () => void;
   onSelectLinguisticFamily?: (family: string) => void;
+  onNavigateToMolecular?: () => void;
+  onNavigateToFoundations?: () => void;
+  onSelectReport?: (reportId: string) => void;
 }
 
 export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
@@ -37,7 +41,10 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
   cohortColor,
   onClose,
   onFocusCoordinates,
-  onSelectLinguisticFamily
+  onSelectLinguisticFamily,
+  onNavigateToMolecular,
+  onNavigateToFoundations,
+  onSelectReport
 }) => {
   const [dossier, setDossier] = useState<WikipediaEthnicEntry | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -309,6 +316,17 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
             </div>
           </div>
         )}
+
+        {/* Rich Historical & TAST Sovereign Development Panel */}
+        <RichEditorialCountryDevelopmentPanel
+          countryName={countryName || dossier?.homeland?.split('(')[0]?.trim() || 'Nigeria'}
+          regionName={regionName}
+          tastVolumeShare={tastVolumeShare}
+          onNavigateToMolecular={onNavigateToMolecular}
+          onNavigateToFoundations={onNavigateToFoundations}
+          onSelectReport={onSelectReport}
+          compact={true}
+        />
       </div>
 
       {/* 3. Bottom Action Footer */}

@@ -320,6 +320,8 @@ function AppContent() {
                   <EthnicTreeOfLifeView
                     onSelectReport={(reportId) => handleSelectTab(reportId as CanonicalNavTab)}
                     onNavigateToSlaveTrade={() => handleSelectTab('slave-trade')}
+                    onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
+                    onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
                   />
                 )}
 

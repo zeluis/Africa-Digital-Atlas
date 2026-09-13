@@ -22,7 +22,12 @@ import {
   Users,
   Activity,
   Maximize2,
-  Languages
+  Languages,
+  Settings2,
+  Dna,
+  Landmark,
+  ArrowRight,
+  Globe
 } from 'lucide-react';
 import { 
   VBW, 
@@ -35,12 +40,15 @@ import {
 import { AFRICALIA_REGIONS } from '../../data/africaliaSourceData';
 import { AUTHENTIC_ETHNIC_TREE_RAW_SVG } from '../../data/authenticEthnicTreeSvg';
 import { WikipediaEthnicDossier } from './WikipediaEthnicDossier';
+import { RichEditorialCountryDevelopmentPanel } from './RichEditorialCountryDevelopmentPanel';
 import { getMajorLinguisticFamilies } from '../../services/wikipediaService';
 import { findWikipediaEntry, WIKIPEDIA_TABLE_ENTRIES } from '../../data/wikipediaEthnicAtlas';
 
 interface AfricaliaExplorerProps {
   onSelectReport?: (reportId: string) => void;
   onNavigateToSlaveTrade?: () => void;
+  onNavigateToMolecular?: () => void;
+  onNavigateToFoundations?: () => void;
 }
 
 export interface SelectedEntityData {
@@ -265,9 +273,23 @@ export function getGeoCountryId(countryName?: string): string | null {
   return null;
 }
 
+// Historical & UN GeoScheme Region to Country Mappings for accurate regional filtering
+const HISTORICAL_REGION_COUNTRY_MAP: Record<string, string[]> = {
+  'West Sahel': ['senegal', 'cape-verde', 'guinea-bissau', 'guinea-conacry', 'burkina-faso'],
+  'East Sahel': ['chad', 'sudan', 'nubia-south-sudan', 'eritrea'],
+  'East Guinea': ['nigeria', 'cameroon', 'benin', 'ghana', 'ivory-coast', 'sierra-leone'],
+  'Western Africa': ['nigeria', 'benin', 'ghana', 'ivory-coast', 'burkina-faso', 'sierra-leone', 'guinea-conacry', 'guinea-bissau', 'senegal', 'cape-verde'],
+  'Central Africa': ['angola', 'drc', 'gabon', 'rc', 'cameroon', 'car', 'chad'],
+  'Southern Africa': ['south-africa', 'mozambique'],
+  'Northern Africa': ['sudan', 'egypt', 'libya', 'morocco'],
+  'Eastern Africa': ['tanzania', 'kenya', 'uganda', 'rwanda', 'nubia-south-sudan', 'ethiopia', 'somalia', 'eritrea']
+};
+
 export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
   onSelectReport,
-  onNavigateToSlaveTrade
+  onNavigateToSlaveTrade,
+  onNavigateToMolecular,
+  onNavigateToFoundations
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -319,6 +341,10 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
   
   // Expandable bottom control bar state (user requested: only expand by clicking icon)
   const [isControlBarExpanded, setIsControlBarExpanded] = useState<boolean>(false);
+  // Top bar expanded/collapsed title state
+  const [isTopBarExpanded, setIsTopBarExpanded] = useState<boolean>(false);
+  // Africa UN Geo Scheme continent visibility on geography layer
+  const [showUnGeoScheme, setShowUnGeoScheme] = useState<boolean>(true);
   // Sovereign silhouette spotlight glow (dims tree and highlights country contour)
   const [silhouetteGlowEnabled, setSilhouetteGlowEnabled] = useState<boolean>(true);
   // Search dropdown open state
@@ -336,18 +362,36 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     x: 0, y: 0, startX: 0, startY: 0, moved: false
   });
 
-  // Prominent view on load: Western Africa & the Cabo Verde Maritime Crucible (the transatlantic gateway)
+  // Fit View: Full continental tree overview (hard minimum scale limit 64% enforced, centered)
+  const fitView = useCallback(() => {
+    if (!containerRef.current) return;
+    const { clientWidth, clientHeight } = containerRef.current;
+    
+    const optimalScale = Math.max(clientWidth, clientHeight) / 2800;
+    const clampedScale = Math.min(Math.max(optimalScale, 0.45), 1.25);
+    const minZoom = 0.64; // Enforced hard minimum scale limit of 64% (0.64)
+    
+    setFitScale(clampedScale);
+    setZoom(minZoom);
+    const nextScale = clampedScale * minZoom;
+    setPos({
+      x: clientWidth / 2 - CX * nextScale,
+      y: clientHeight / 2 - CY * nextScale
+    });
+  }, []);
+
+  // Prominent view: Zoom and center directly on the Cabo Verde Maritime Crucible ellipse node & lineages
   const panToCrucible = useCallback(() => {
     if (!containerRef.current) return;
     const { clientWidth, clientHeight } = containerRef.current;
     const optimalScale = Math.max(clientWidth, clientHeight) / 2800;
     const clampedScale = Math.min(Math.max(optimalScale, 0.45), 1.25);
-    const targetZoom = 1.35;
+    const targetZoom = 2.8;
     setFitScale(clampedScale);
     setZoom(targetZoom);
-    // Focus coordinates: Western Africa / Upper Guinea & Cabo Verde gateway
-    const targetX = 1820;
-    const targetY = 1950;
+    // Focus coordinates: Cabo Verde ellipse node (cx="1188.4369" cy="2708.2075")
+    const targetX = 1188.4369;
+    const targetY = 2708.2075;
     const nextScale = clampedScale * targetZoom;
     setPos({
       x: clientWidth / 2 - targetX * nextScale,
@@ -355,39 +399,63 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     });
   }, []);
 
-  // Fit View: Full continental tree overview
-  const fitView = useCallback(() => {
+  // Upper middle top region start view
+  const startUpperTopView = useCallback(() => {
     if (!containerRef.current) return;
     const { clientWidth, clientHeight } = containerRef.current;
-    
-    // Scale generously so the vector tree fills the screen instead of being shrunken into a small letterbox
     const optimalScale = Math.max(clientWidth, clientHeight) / 2800;
     const clampedScale = Math.min(Math.max(optimalScale, 0.45), 1.25);
-    
+    const startZoom = 1.0;
     setFitScale(clampedScale);
-    setZoom(1);
+    setZoom(startZoom);
+    // Upper middle top region of the tree canopy
+    const targetX = CX; // 2166.382
+    const targetY = 1150; // Upper middle top region
+    const nextScale = clampedScale * startZoom;
     setPos({
-      x: clientWidth / 2 - CX * clampedScale,
-      y: clientHeight / 2 - CY * clampedScale
+      x: clientWidth / 2 - targetX * nextScale,
+      y: clientHeight / 2 - targetY * nextScale
     });
   }, []);
 
-  // Initial load: Prominently frame the Western Africa crucible instead of generic center
+  // Handler to clear all selection and reset view and search fields
+  const handleClearFocus = useCallback(() => {
+    setSelectedEntity(null);
+    setSearchQuery('');
+    setSelectedRegion('All');
+    setSelectedCountry('All');
+    setSelectedLinguisticFamily('All');
+    setIsSearchDropdownOpen(false);
+    fitView();
+  }, [fitView]);
+
+  // Initial load: Start at the upper middle top region of the tree
   const initialFramedRef = useRef(false);
   useEffect(() => {
     if (!initialFramedRef.current) {
-      panToCrucible();
+      startUpperTopView();
       initialFramedRef.current = true;
     }
-    const handleResize = () => fitView();
+    const handleResize = () => startUpperTopView();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [panToCrucible, fitView]);
+  }, [startUpperTopView]);
 
-  // Camera Zoom delta
+  // Camera Zoom delta (enforcing hard minimum 64% and maintaining viewport center alignment)
   const handleZoomDelta = (factor: number) => {
+    if (!containerRef.current) return;
+    const { clientWidth: w, clientHeight: h } = containerRef.current;
     setZoom(prev => {
-      const next = Math.min(Math.max(prev * factor, 0.25), 6.0);
+      const next = Math.min(Math.max(prev * factor, 0.64), 6.0);
+      const currentScale = fitScale * prev;
+      const nextScale = fitScale * next;
+      // Keep center of the view aligned with center of SVG focal point
+      const currentCenterSvgX = (w / 2 - pos.x) / currentScale;
+      const currentCenterSvgY = (h / 2 - pos.y) / currentScale;
+      setPos({
+        x: w / 2 - currentCenterSvgX * nextScale,
+        y: h / 2 - currentCenterSvgY * nextScale
+      });
       return next;
     });
   };
@@ -423,7 +491,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     isDragging.current = false;
   };
 
-  // Mouse wheel zoom centered on cursor
+  // Mouse wheel zoom centered on cursor (enforcing 64% minimum)
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     if (!containerRef.current) return;
@@ -431,9 +499,9 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
-    const zoomFactor = e.deltaY < 0 ? 1.15 : 0.87;
+    const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
     const currentScale = fitScale * zoom;
-    const nextZoom = Math.min(Math.max(zoom * zoomFactor, 0.25), 6.0);
+    const nextZoom = Math.min(Math.max(zoom * zoomFactor, 0.64), 6.0);
     const nextScale = fitScale * nextZoom;
 
     setPos(prev => ({
@@ -443,19 +511,94 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     setZoom(nextZoom);
   };
 
-  // Pan camera to specific SVG coordinates
+  // Pan camera to specific SVG coordinates (enforces 64% minimum)
   const panToCoordinates = useCallback((targetX: number, targetY: number, targetZoom = 1.8) => {
     if (!containerRef.current) return;
     const { clientWidth: w, clientHeight: h } = containerRef.current;
-    const nextScale = fitScale * targetZoom;
-    setZoom(targetZoom);
+    const clampedZoom = Math.min(Math.max(targetZoom, 0.64), 6.0);
+    const nextScale = fitScale * clampedZoom;
+    setZoom(clampedZoom);
     setPos({
       x: w / 2 - targetX * nextScale,
       y: h / 2 - targetY * nextScale
     });
   }, [fitScale]);
 
+  // Precision zoom transition to bring all country branches and nodes clearly in view
+  const zoomToCountryRegion = useCallback((countryName: string, entityFallbackCoords?: { x: number, y: number }) => {
+    if (!containerRef.current) return;
+    const { clientWidth, clientHeight } = containerRef.current;
+    
+    const cleanSlug = countryName.toLowerCase()
+      .replace(/^the\s+/, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/-+$/, '');
+    
+    // Possible branch and node group IDs in the sovereign SVG for this country
+    const possibleIds = [
+      `branch--country--${cleanSlug}`,
+      `branches--country--${cleanSlug}`,
+      cleanSlug === 'cabo-verde' || cleanSlug === 'cape-verde' ? 'CABO-VERDE' : '',
+      cleanSlug === 'guinea' ? 'branch--country--guinea-conacry' : '',
+      cleanSlug === 'guinea-bissau' ? 'branch--country--guinea-bissau' : '',
+      cleanSlug === 'cote-d-ivoire' || cleanSlug === 'ivory-coast' ? 'branch--country--ivory-coast' : '',
+      cleanSlug === 'dr-congo' || cleanSlug === 'democratic-republic-of-the-congo' || cleanSlug === 'drc' ? 'branch--country--drc' : '',
+      cleanSlug === 'republic-of-the-congo' || cleanSlug === 'congo' || cleanSlug === 'rc' ? 'branch--country--rc' : '',
+      cleanSlug === 'central-african-republic' || cleanSlug === 'car' ? 'branch--country--car' : '',
+      cleanSlug === 'equatorial-guinea' || cleanSlug === 'guinea-eq' ? 'branch--country--guinea-eq' : '',
+      cleanSlug === 'namibia' || cleanSlug === 'south-namibia' ? 'branch--country--south-namibia' : '',
+      cleanSlug === 'south-sudan' ? 'branches--country--nubia--south-sudan' : '',
+      `geo--country--${cleanSlug}`,
+      `node--country--${cleanSlug}`,
+      `label--country--${cleanSlug}`
+    ].filter(Boolean);
+
+    let targetElement: SVGGraphicsElement | null = null;
+    for (const id of possibleIds) {
+      const el = (document.getElementById(id) as unknown) as SVGGraphicsElement | null;
+      if (el) {
+        targetElement = el;
+        break;
+      }
+    }
+
+    // Calculate bounding box so ALL branches, nodes, and labels of the country are in view
+    if (targetElement && typeof targetElement.getBBox === 'function') {
+      try {
+        const bbox = targetElement.getBBox();
+        if (bbox && bbox.width > 15 && bbox.height > 15) {
+          const centerX = bbox.x + bbox.width / 2;
+          const centerY = bbox.y + bbox.height / 2;
+          const paddingRatio = 0.78; // 22% generous margin around branches and nodes
+          const scaleX = (clientWidth * paddingRatio) / bbox.width;
+          const scaleY = (clientHeight * paddingRatio) / bbox.height;
+          const targetScale = Math.min(scaleX, scaleY);
+          const calculatedZoom = Math.min(Math.max(targetScale / (fitScale || 1), 0.64), 4.5);
+          
+          panToCoordinates(centerX, centerY, calculatedZoom);
+          return;
+        }
+      } catch {
+        // Fallback
+      }
+    }
+
+    // Fallback to country conduit coordinates
+    const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
+      c.name.toLowerCase() === countryName.toLowerCase() || 
+      c.id.toLowerCase() === cleanSlug ||
+      c.countryCode.toLowerCase() === cleanSlug
+    );
+
+    if (conduit) {
+      panToCoordinates(conduit.labelX, conduit.labelY, 2.2);
+    } else if (entityFallbackCoords) {
+      panToCoordinates(entityFallbackCoords.x, entityFallbackCoords.y, 2.2);
+    }
+  }, [fitScale, panToCoordinates]);
+
   // Combined search dataset enriched with Wikipedia African Atlas
+  // Combined search dataset enriched with Wikipedia African Atlas & Historical Regions
   const searchIndex = useMemo(() => {
     const list: { 
       id: string; 
@@ -519,12 +662,23 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
     const q = searchQuery.toLowerCase();
-    return searchIndex.filter(item => 
-      item.name.toLowerCase().includes(q) || 
-      item.region.toLowerCase().includes(q) ||
-      (item.country && item.country.toLowerCase().includes(q)) ||
-      (item.languages && item.languages.toLowerCase().includes(q))
-    ).slice(0, 10);
+    return searchIndex.filter(item => {
+      if (item.name.toLowerCase().includes(q) || item.region.toLowerCase().includes(q)) return true;
+      if (item.country && item.country.toLowerCase().includes(q)) return true;
+      if (item.languages && item.languages.toLowerCase().includes(q)) return true;
+      
+      // Match historical region names if applicable
+      for (const [histRegion, countryIds] of Object.entries(HISTORICAL_REGION_COUNTRY_MAP)) {
+        if (histRegion.toLowerCase().includes(q)) {
+          const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
+            (item.type === 'country' && c.name.toLowerCase() === item.name.toLowerCase() && countryIds.includes(c.id)) ||
+            (item.type === 'ethnic' && c.name.toLowerCase() === item.country?.toLowerCase() && countryIds.includes(c.id))
+          );
+          if (conduit) return true;
+        }
+      }
+      return false;
+    }).slice(0, 10);
   }, [searchQuery, searchIndex]);
 
   // Linguistic Family Filtered Groups
@@ -536,9 +690,13 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     );
   }, [selectedLinguisticFamily, searchIndex]);
 
-  // Available countries filtered by selected region
+  // Available countries filtered by selected region (supports UN GeoScheme & Historical regions: West Sahel, East Sahel, East Guinea)
   const availableCountries = useMemo(() => {
     if (selectedRegion === 'All') return AFRICALIA_COUNTRY_CONDUITS;
+    const mappedCountrySlugs = HISTORICAL_REGION_COUNTRY_MAP[selectedRegion];
+    if (mappedCountrySlugs && mappedCountrySlugs.length > 0) {
+      return AFRICALIA_COUNTRY_CONDUITS.filter(c => mappedCountrySlugs.includes(c.id));
+    }
     return AFRICALIA_COUNTRY_CONDUITS.filter(c => c.region === selectedRegion);
   }, [selectedRegion]);
 
@@ -583,13 +741,21 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       };
     }
 
-    // 2. Country match: e.g. branch--country--niger or node--country--mali
-    const countryMatch = id.match(/(?:branch|node)--country--([a-z-]+)/);
+    // 2. Country match: e.g. branch--country--niger or node--country--mali or label--country--cameroon
+    const countryMatch = id.match(/(?:branch|node|label)--country--([a-z0-9-]+)/);
     if (countryMatch) {
-      const countrySlug = countryMatch[1];
+      const countryRawSlug = countryMatch[1];
+      const countrySlug = countryRawSlug.replace(/-\d+$/, ''); // strip trailing numeric suffix like -2
       const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
         c.id.toLowerCase() === countrySlug || 
-        c.name.toLowerCase().replace(/\s+/g, '-') === countrySlug
+        c.id.toLowerCase() === countryRawSlug ||
+        c.name.toLowerCase().replace(/\s+/g, '-') === countrySlug ||
+        (countrySlug === 'guinea-conacry' && c.id === 'guinea') ||
+        (countrySlug === 'guinea-eq' && c.id === 'equatorial-guinea') ||
+        (countrySlug === 'drc' && c.id === 'dr-congo') ||
+        (countrySlug === 'rc' && c.id === 'republic-of-the-congo') ||
+        (countrySlug === 'south-namibia' && c.id === 'namibia') ||
+        (countrySlug === 'cape-verde' && c.name.toLowerCase().includes('verde'))
       );
       if (conduit) {
         return {
@@ -607,14 +773,18 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     }
 
     // 3. Ethnic match: e.g. branch--ethnic--tuareg--country--niger or label--ethnic--mafa or assoc--ethnic--baga--country--cabo-verde
-    const ethnicPattern = /(?:branch|node|label|assoc)--ethnic--([a-z0-9-]+)(?:--country--([a-z-]+))?/;
+    const ethnicPattern = /(?:branch|node|label|assoc)--ethnic--([a-z0-9-]+)(?:--country--([a-z0-9-]+))?/;
     const ethnicMatch = id.match(ethnicPattern);
     if (ethnicMatch) {
       const ethnicSlug = ethnicMatch[1];
-      const countrySlug = ethnicMatch[2];
+      const countrySlug = ethnicMatch[2]?.replace(/-\d+$/, '');
       let conduit = countrySlug ? AFRICALIA_COUNTRY_CONDUITS.find(c => 
         c.id.toLowerCase() === countrySlug || 
-        c.name.toLowerCase().replace(/\s+/g, '-') === countrySlug
+        c.name.toLowerCase().replace(/\s+/g, '-') === countrySlug ||
+        (countrySlug === 'cabo-verde' && (c.id === 'cape-verde' || c.name.toLowerCase().includes('verde'))) ||
+        (countrySlug === 'guinea-conacry' && c.id === 'guinea') ||
+        (countrySlug === 'guinea-eq' && c.id === 'equatorial-guinea') ||
+        (countrySlug === 'drc' && c.id === 'dr-congo')
       ) : undefined;
 
       const textContent = element?.textContent?.trim();
@@ -629,7 +799,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       }
 
       // Resolve country from Wikipedia homeland if still not resolved
-      let resolvedCountry = conduit?.name;
+      let resolvedCountry = conduit?.name || (countrySlug === 'cabo-verde' ? 'Cabo Verde' : undefined);
       if (!resolvedCountry && wiki?.homeland) {
         const homelandCountry = wiki.homeland.split('(')[0].split(',')[0].trim();
         const matchingConduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
@@ -642,32 +812,54 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         id,
         name: cleanName,
         type: 'ethnic',
-        country: resolvedCountry,
-        region: conduit ? conduit.region : (wiki?.homeland || 'African Continent'),
-        tastVolumeShare: conduit ? conduit.tastVolumeShare : undefined,
-        linguisticFamily: wiki?.languages,
-        description: wiki?.extract || `Documented ethnic branch for ${cleanName} within historical genealogical records.`,
+        country: resolvedCountry || 'Cabo Verde',
+        region: conduit ? conduit.region : (countrySlug === 'cabo-verde' ? 'Western Africa' : wiki?.homeland || 'African Continent'),
+        tastVolumeShare: conduit ? conduit.tastVolumeShare : (countrySlug === 'cabo-verde' ? 8.5 : undefined),
+        linguisticFamily: wiki?.languages || 'Niger-Congo / Atlantic Substrate',
+        description: wiki?.extract || `Documented historical ethnic lineage for ${cleanName} preserved in African sovereign genealogical records.`,
         coords: conduit ? { x: conduit.labelX, y: conduit.labelY, r: 14 } : undefined
       };
     }
 
-    // 4. Cabo Verde transatlantic association
-    if (id.includes('cabo-verde')) {
+    // 4. Cabo Verde transatlantic crucible ellipse & country node
+    if (id === 'node--geo--country--cabo-verde' || id === 'geo--country--Cabo-Verde' || id === 'label--country--cabo-verde' || id === 'CABO-VERDE' || id.includes('cabo-verde')) {
+      const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => c.id === 'cape-verde' || c.name.toLowerCase().includes('verde'));
       return {
-        id,
-        name: 'Cabo Verde Island Crucible',
-        type: 'cabo-verde',
+        id: 'node--geo--country--cabo-verde',
+        name: conduit?.name || 'Cabo Verde',
+        type: 'country',
         country: 'Cabo Verde',
         region: 'Western Africa',
-        description: 'First maritime creole crucible linking Senegambian and Upper Guinea lineages with the transatlantic diaspora.',
-        coords: { x: 924.38, y: 1842.10, r: 22 }
+        tastVolumeShare: conduit?.tastVolumeShare || 8.5,
+        color: conduit?.color || '#E67E48',
+        description: 'First transatlantic maritime creole crucible linking Senegambian and Upper Guinea lineages with the transatlantic diaspora.',
+        coords: { x: 1188.4369, y: 2708.2075, r: 125 }
       };
     }
 
-    // 5. Fallback if element has text content or data attributes
+    // 5. Fallback if element has text content or data attributes (captures any outer ethnic or country label)
     if (element) {
       const textContent = element.textContent?.trim();
       if (textContent && textContent.length > 1 && textContent.length < 50 && !textContent.startsWith('100%') && !textContent.startsWith('TAST')) {
+        // Check if this text matches a country conduit
+        const countryMatch = AFRICALIA_COUNTRY_CONDUITS.find(c => 
+          c.name.toLowerCase() === textContent.toLowerCase() ||
+          c.id.toLowerCase() === textContent.toLowerCase().replace(/\s+/g, '-')
+        );
+        if (countryMatch) {
+          return {
+            id: id || `country--${countryMatch.id}`,
+            name: countryMatch.name,
+            type: 'country',
+            country: countryMatch.name,
+            region: countryMatch.region,
+            tastVolumeShare: countryMatch.tastVolumeShare,
+            color: countryMatch.color,
+            description: `Sovereign conduit for ${countryMatch.name} carrying documented ethnic lineages and embarkation flows.`,
+            coords: { x: countryMatch.labelX, y: countryMatch.labelY, r: 16 }
+          };
+        }
+
         const wiki = findWikipediaEntry(textContent);
         const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c =>
           c.ethnicGroups.some(eg => eg.name.toLowerCase() === textContent.toLowerCase())
@@ -685,7 +877,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
           id: id || `ethnic--${textContent.toLowerCase().replace(/\s+/g, '-')}`,
           name: textContent,
           type: 'ethnic',
-          country: resolvedCountry,
+          country: resolvedCountry || 'African Continent',
           region: conduit?.region || wiki?.homeland || 'African Continent',
           linguisticFamily: wiki?.languages,
           description: wiki?.extract || `Historical ethnic lineage identified in sovereign vector cartography.`
@@ -698,7 +890,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
   // Active sovereign country resolution for SVG contour spotlight & tree dimming
   const activeCountryName = useMemo(() => {
-    if (selectedEntity?.country) return selectedEntity.country;
+    if (selectedEntity?.country && selectedEntity.country !== 'African Continent') return selectedEntity.country;
     if (selectedEntity?.type === 'country') return selectedEntity.name;
     if (selectedCountry !== 'All') return selectedCountry;
     return null;
@@ -747,9 +939,18 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
           }
         }
 
+        // Open the rich editorial panel
         setSelectedEntity(entity);
-        if (entity.coords) {
-          panToCoordinates(entity.coords.x, entity.coords.y, 2.2);
+
+        // Smooth zoom transition framing the country's branches and nodes
+        if (entity.country && entity.country !== 'African Continent') {
+          setSelectedCountry(entity.country);
+          zoomToCountryRegion(entity.country, entity.coords);
+        } else if (entity.type === 'country') {
+          setSelectedCountry(entity.name);
+          zoomToCountryRegion(entity.name, entity.coords);
+        } else if (entity.coords) {
+          panToCoordinates(entity.coords.x, entity.coords.y, 2.4);
         }
       }
     }
@@ -776,24 +977,6 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     reader.readAsText(file);
   };
 
-  // Reset all filters and camera to default
-  const handleResetAll = () => {
-    setSelectedRegion('All');
-    setSelectedCountry('All');
-    setSearchQuery('');
-    setActiveTastLayer('all');
-    setSelectedEntity(null);
-    fitView();
-  };
-
-  // Reset focus filters only
-  const handleClearFocus = () => {
-    setSelectedRegion('All');
-    setSelectedCountry('All');
-    setSearchQuery('');
-    setActiveTastLayer('all');
-  };
-
   return (
     <div 
       ref={containerRef}
@@ -806,14 +989,63 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       id="africalia-explorer-root"
     >
       {/* =========================================================================
-          1. TOP CENTER TITLE PILL (Clean & Non-colliding)
+          1. TOP CENTER TITLE & GEOGRAPHY CONTROL BAR (Expandable / Collapsible)
           ========================================================================= */}
-      <div 
-        className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none hidden md:flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-md text-xs font-semibold text-[#52463B] dark:text-[#C4B7A6] backdrop-blur-md"
+      <motion.div 
+        layout
+        className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1.5 px-4 py-2 rounded-2xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-lg backdrop-blur-md transition-all duration-300 pointer-events-auto max-w-[90vw]"
+        id="africalia-top-control-bar"
       >
-        <div className="w-2 h-2 rounded-full bg-[#E67E48] animate-pulse" />
-        <span>Sovereign Africalia Vector Tree • Raw Authentic SVG (100% Fidelity)</span>
-      </div>
+        <div className="flex items-center gap-3">
+          {/* Pulsing indicator */}
+          <div className="w-2 h-2 rounded-full bg-[#E67E48] animate-pulse shrink-0" />
+
+          {/* Interactive Title & Expand Toggle */}
+          <button
+            type="button"
+            onClick={() => setIsTopBarExpanded(prev => !prev)}
+            className="flex items-center gap-1.5 text-xs sm:text-sm font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6] hover:text-[#E67E48] dark:hover:text-[#FFA573] transition-colors cursor-pointer group"
+            title={isTopBarExpanded ? "Collapse title" : "Expand full title"}
+          >
+            <span>
+              {isTopBarExpanded 
+                ? "Africalia — Legacies of the Trans-Atlantic Slave Trade" 
+                : "Africalia"}
+            </span>
+            <ChevronDown 
+              className={`w-3.5 h-3.5 text-[#7D6B5A] group-hover:text-[#E67E48] transition-transform duration-200 ${
+                isTopBarExpanded ? 'rotate-180' : ''
+              }`} 
+            />
+          </button>
+
+          {/* Divider */}
+          <div className="h-3.5 w-px bg-[#E5DDD0] dark:bg-[#38322B]" />
+
+          {/* Africa UN Geo Scheme Continent Toggle Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowUnGeoScheme(prev => !prev);
+            }}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
+              showUnGeoScheme
+                ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/35 hover:bg-[#E67E48]/25'
+                : 'bg-black/5 dark:bg-white/5 text-[#7D6B5A] dark:text-[#B5A492] border border-[#E5DDD0] dark:border-[#38322B] hover:bg-black/10'
+            }`}
+            title={showUnGeoScheme ? "Hide Africa UN Geo Scheme continent layer" : "Show Africa UN Geo Scheme continent layer"}
+          >
+            <Globe className="w-3 h-3 text-[#E67E48]" />
+            <span>UN Geo Scheme: {showUnGeoScheme ? 'Visible' : 'Hidden'}</span>
+          </button>
+        </div>
+
+        {/* Subtitle Line (Always preserved as requested) */}
+        <p className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492] font-medium tracking-tight">
+          Sovereign Africalia Vector tree — Raw Authentic SVG (100% fidelity) by line
+        </p>
+      </motion.div>
 
       {/* =========================================================================
           2. UNIFIED LEFT DOCK: FOCUS GEOGRAPHY & SEARCH (Never Stacks!)
@@ -976,9 +1208,18 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                   setSelectedRegion(reg);
                   setSelectedCountry('All');
                   if (reg !== 'All') {
-                    const firstConduit = AFRICALIA_COUNTRY_CONDUITS.find(c => c.region === reg);
-                    if (firstConduit) {
-                      panToCoordinates(firstConduit.labelX, firstConduit.labelY, 1.6);
+                    // Check if historical region mapping exists
+                    const historicalCountryIds = HISTORICAL_REGION_COUNTRY_MAP[reg];
+                    if (historicalCountryIds && historicalCountryIds.length > 0) {
+                      const firstHistConduit = AFRICALIA_COUNTRY_CONDUITS.find(c => historicalCountryIds.includes(c.id));
+                      if (firstHistConduit) {
+                        panToCoordinates(firstHistConduit.labelX, firstHistConduit.labelY, 1.6);
+                      }
+                    } else {
+                      const firstConduit = AFRICALIA_COUNTRY_CONDUITS.find(c => c.region === reg);
+                      if (firstConduit) {
+                        panToCoordinates(firstConduit.labelX, firstConduit.labelY, 1.6);
+                      }
                     }
                   } else {
                     fitView();
@@ -1157,6 +1398,72 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
           }}
           className="relative inline-block"
         >
+          {/* SVG Global Interactive Styles */}
+          <style>{`
+            #africalia-master-sovereign-svg text,
+            #africalia-master-sovereign-svg tspan {
+              cursor: pointer;
+            }
+            #africalia-master-sovereign-svg [id^="label--country--"],
+            #africalia-master-sovereign-svg [id^="branch--country--"],
+            #africalia-master-sovereign-svg [id^="branches--country--"],
+            #africalia-master-sovereign-svg [id^="node--country--"] {
+              cursor: pointer;
+              transition: filter 0.25s ease, opacity 0.25s ease;
+            }
+            #africalia-master-sovereign-svg [id^="label--country--"]:hover,
+            #africalia-master-sovereign-svg [id^="branch--country--"]:hover,
+            #africalia-master-sovereign-svg [id^="node--country--"]:hover {
+              filter: drop-shadow(0 0 10px rgba(230,126,72,0.95)) drop-shadow(0 0 20px rgba(230,126,72,0.6));
+            }
+            #africalia-master-sovereign-svg [id^="label--ethnic--"],
+            #africalia-master-sovereign-svg [id^="assoc--ethnic--"],
+            #africalia-master-sovereign-svg [id^="branch--ethnic--"],
+            #africalia-master-sovereign-svg [id^="node--ethnic--"] {
+              cursor: pointer;
+              transition: fill 0.2s ease, filter 0.2s ease;
+            }
+            #africalia-master-sovereign-svg [id^="label--ethnic--"]:hover text,
+            #africalia-master-sovereign-svg [id^="assoc--ethnic--"]:hover text,
+            #africalia-master-sovereign-svg text:hover {
+              fill: #E67E48 !important;
+              filter: drop-shadow(0 0 6px rgba(230,126,72,0.8));
+            }
+            #node--geo--country--cabo-verde,
+            #CABO-VERDE {
+              cursor: pointer;
+              transition: all 0.3s ease;
+            }
+            #node--geo--country--cabo-verde:hover,
+            #CABO-VERDE:hover {
+              filter: drop-shadow(0 0 16px rgba(230,126,72,0.95)) drop-shadow(0 0 28px rgba(230,126,72,0.5));
+            }
+            #assoc--ethnic--country--cabo-verde text {
+              cursor: pointer;
+              transition: fill 0.2s ease, font-weight 0.2s ease, filter 0.2s ease;
+            }
+            #assoc--ethnic--country--cabo-verde text:hover {
+              fill: #E67E48 !important;
+              font-weight: 700;
+              filter: drop-shadow(0 0 6px rgba(230,126,72,0.75));
+            }
+          `}</style>
+
+          {/* Africa UN Geo Scheme Visibility Toggle Rule */}
+          {!showUnGeoScheme && (
+            <style>{`
+              #GEOGRAPHY,
+              #geo--Africa--un-geoscheme,
+              [id^="geo--region--"],
+              [id^="geo--country--"] {
+                display: none !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+              }
+            `}</style>
+          )}
+
           {/* Dynamic SVG Country Silhouette Spotlight and Tree Dimming Injection */}
           {silhouetteGlowEnabled && activeGeoCountryId && (
             <style>{`
@@ -1414,6 +1721,70 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                 {silhouetteGlowEnabled ? 'Active' : 'Disabled'}
               </button>
             </div>
+
+            {/* Direct Research Monographs & Reports */}
+            <div className="space-y-2 pt-2 border-t border-[#E5DDD0]/50 dark:border-[#38322B]/50">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492] flex items-center gap-1">
+                  <BookOpen className="w-3 h-3 text-[#E67E48]" />
+                  Investigative Research Monographs
+                </span>
+                <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold font-mono">
+                  Peer-Reviewed
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onNavigateToMolecular) onNavigateToMolecular();
+                    else if (onSelectReport) onSelectReport('molecular-legacies');
+                  }}
+                  className="p-2.5 rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 hover:from-indigo-500/20 hover:to-purple-500/20 border border-indigo-500/30 text-left transition-all cursor-pointer group flex items-center justify-between active:scale-98"
+                  title="Open Molecular & Genetic Ancestry Report"
+                >
+                  <div className="flex items-center gap-2 min-w-0 pr-1">
+                    <div className="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 grid place-items-center shrink-0">
+                      <Dna className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="block text-[11px] font-bold text-indigo-900 dark:text-indigo-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors truncate">
+                        Molecular Report
+                      </span>
+                      <span className="block text-[9px] text-[#7D6B5A] dark:text-[#A79888] truncate">
+                        Genetic Lineages & Diaspora
+                      </span>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onNavigateToFoundations) onNavigateToFoundations();
+                    else if (onSelectReport) onSelectReport('african-development-foundations');
+                  }}
+                  className="p-2.5 rounded-xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 hover:from-emerald-500/20 hover:to-teal-500/20 border border-emerald-500/30 text-left transition-all cursor-pointer group flex items-center justify-between active:scale-98"
+                  title="Open African Development Master Foundations Report"
+                >
+                  <div className="flex items-center gap-2 min-w-0 pr-1">
+                    <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 grid place-items-center shrink-0">
+                      <Landmark className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="block text-[11px] font-bold text-emerald-900 dark:text-emerald-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition-colors truncate">
+                        Foundations Report
+                      </span>
+                      <span className="block text-[9px] text-[#7D6B5A] dark:text-[#A79888] truncate">
+                        Colonial Roots & Institutions
+                      </span>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                </button>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -1457,7 +1828,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             type="button"
             onClick={panToCrucible}
             className="px-3 py-1.5 rounded-full text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/40 shadow-xs active:scale-95"
-            title="Prominent Crucible View: Western Africa & Cabo Verde diaspora gateway"
+            title="Prominent Crucible View: Zoom directly to Cabo Verde nexus & orbiting lineages"
           >
             <Compass className="w-3.5 h-3.5 text-[#E67E48]" />
             <span>Crucible View</span>
@@ -1478,24 +1849,19 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         {/* Vertical Divider */}
         <div className="w-[1px] h-5 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0" />
 
-        {/* Expand/Collapse Settings & Layers Button */}
+        {/* Settings & Configuration Icon Button */}
         <button
           type="button"
           onClick={() => setIsControlBarExpanded(prev => !prev)}
-          className={`px-3 py-1.5 rounded-full text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+          className={`p-2 rounded-full transition-all cursor-pointer flex items-center justify-center ${
             isControlBarExpanded || activeTastLayer !== 'all' || canvasBg !== 'parchment'
-              ? 'bg-[#E67E48] text-white shadow-sm'
+              ? 'bg-[#E67E48] text-white shadow-sm ring-2 ring-[#E67E48]/30'
               : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
           }`}
-          title="Toggle Paper Canvas and Trans-Atlantic Slave Trade (TAST) Cohorts"
+          title={isControlBarExpanded ? "Close Configuration Panel" : "Settings & Configuration (Palettes, TAST Cohorts & Reports)"}
+          aria-label="Settings and Configuration"
         >
-          <Sliders className="w-3.5 h-3.5" />
-          <span>Paper & Cohorts</span>
-          {isControlBarExpanded ? (
-            <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
-          ) : (
-            <ChevronUp className="w-3.5 h-3.5 ml-0.5" />
-          )}
+          <Settings2 className="w-4 h-4" />
         </button>
       </motion.div>
 
@@ -1520,7 +1886,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                 : undefined
             }
             cohortColor={selectedEntity.color}
-            onClose={() => setSelectedEntity(null)}
+            onClose={handleClearFocus}
             onFocusCoordinates={
               selectedEntity.coords
                 ? () => panToCoordinates(selectedEntity.coords!.x, selectedEntity.coords!.y, 2.4)
@@ -1530,6 +1896,9 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
               setSelectedLinguisticFamily(fam);
               setIsLeftDockOpen(true);
             }}
+            onNavigateToMolecular={onNavigateToMolecular}
+            onNavigateToFoundations={onNavigateToFoundations}
+            onSelectReport={onSelectReport}
           />
         )}
 
@@ -1560,7 +1929,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             </div>
             <button
               type="button"
-              onClick={() => setSelectedEntity(null)}
+              onClick={handleClearFocus}
               className="p-1.5 rounded-full text-[#7D6B5A] hover:bg-black/5 dark:hover:bg-white/10 text-zinc-500 transition-colors cursor-pointer"
               title="Close dossier"
             >
@@ -1644,6 +2013,18 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                 </p>
               </div>
             )}
+
+            {/* Rich Editorial Country Development & TAST Foundations Panel */}
+            <RichEditorialCountryDevelopmentPanel
+              countryName={selectedEntity.country || selectedEntity.name}
+              countryCode={selectedEntity.name}
+              regionName={selectedEntity.region}
+              tastVolumeShare={selectedEntity.tastVolumeShare}
+              onNavigateToMolecular={onNavigateToMolecular}
+              onNavigateToFoundations={onNavigateToFoundations}
+              onSelectReport={onSelectReport}
+              compact={false}
+            />
 
             {/* Cabo Verde Crucible Linkage */}
             <div className="p-3 rounded-2xl bg-[#E67E48]/10 border border-[#E67E48]/25 space-y-1">

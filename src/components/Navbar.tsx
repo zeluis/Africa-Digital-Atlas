@@ -73,15 +73,19 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-base sm:text-lg tracking-tight text-zinc-900 dark:text-zinc-100">
-                    {t('app.title', 'AFRICA DATA ATLAS')}
+                  <span className="font-extrabold text-base sm:text-lg tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+                    <span className="text-emerald-700 dark:text-emerald-400 font-serif">Africalia</span>
+                    <span className="text-zinc-400 dark:text-zinc-500 font-normal hidden xs:inline">·</span>
+                    <span className="hidden xs:inline text-zinc-700 dark:text-zinc-300 font-semibold text-xs sm:text-sm uppercase tracking-wider font-mono">
+                      Atlas
+                    </span>
                   </span>
                   <span className="rounded-full bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700/60 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-800 dark:text-emerald-300">
                     v{manifest.atlasVersion}
                   </span>
                 </div>
                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium hidden sm:block">
-                  {t('app.subtitle', 'Authoritative Pan-African Socio-Economic Platform • 54 Sovereign Nations')}
+                  Sovereign Data Atlas, Cultural Cartography & Horizon Studies
                 </p>
               </div>
             </div>
