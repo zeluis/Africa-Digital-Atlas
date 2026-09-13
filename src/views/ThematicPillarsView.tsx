@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { atlas } from '../data/atlas-store';
 import { AtlasEntity } from '../data/types';
 import { COUNTRY_HEADER_DATA } from '../data/countryHeaderData';
+import { getCountrySilhouette } from '../data/countrySilhouettes';
+import { getCountryLandmarkImage } from '../data/countryLandmarkImages';
+import { 
+  getPillarThematicImage, 
+  getPillarWikiSearchCandidates,
+  PillarThematicImage 
+} from '../data/countryPillarImages';
+import { UN_M49_NUMERIC_CODES } from '../data/svgGeographySystem';
 import { 
   ThematicPillarId, 
   THEMATIC_PILLARS, 
@@ -10,7 +19,7 @@ import {
   getCuratedPillarNarrative 
 } from '../services/wikipediaService';
 import { ThematicPillarNav } from '../components/ThematicPillarNav';
-import { EntityBlocsBrowser } from '../components/EntityBlocsBrowser';
+import { ThematicPillarBottomSection } from '../components/ThematicPillarBottomSection';
 import { CountryFlag } from '../components/CountryFlag';
 import { getCountryRegionTonalPalette, getRegionCalmColor } from '../data/unGeoschemeColors';
 import { 
@@ -18,7 +27,8 @@ import {
   formatGDP, 
   formatCurrency, 
   formatPercentage, 
-  formatHDI 
+  formatHDI,
+  formatArea
 } from '../data/atlas-formatters';
 import {
   ExternalLink,
@@ -33,38 +43,91 @@ import {
   ShieldCheck,
   Activity,
   ArrowUpRight,
-  Compass
+  Compass,
+  MapPin,
+  Crosshair,
+  Maximize2,
+  Download,
+  Copy,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Quote,
+  Feather,
+  FileText,
+  X
 } from 'lucide-react';
 
 interface ThematicPillarsViewProps {
   initialEntityId?: string;
   initialPillar?: ThematicPillarId;
   onSelectCountry: (entityId: string) => void;
+  onNavigateTab?: (tab: string) => void;
 }
 
 export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
   initialEntityId = 'NGA',
   initialPillar = 'geography',
-  onSelectCountry
+  onSelectCountry,
+  onNavigateTab
 }) => {
   const [selectedEntityId, setSelectedEntityId] = useState<string>(initialEntityId);
   const [activePillar, setActivePillar] = useState<ThematicPillarId>(initialPillar);
   const [wikiData, setWikiData] = useState<WikiSummaryData | null>(null);
   const [isLoadingWiki, setIsLoadingWiki] = useState<boolean>(false);
   const [showFullWiki, setShowFullWiki] = useState<boolean>(false);
+  const [isSilhouetteModalOpen, setIsSilhouetteModalOpen] = useState<boolean>(false);
+  const [copiedPath, setCopiedPath] = useState<boolean>(false);
+  const [downloadSuccess, setDownloadSuccess] = useState<boolean>(false);
+  const [showFullImgCaption, setShowFullImgCaption] = useState<boolean>(false);
 
   const countries = useMemo(() => atlas.getSovereignCountries(), []);
   const currentEntity = atlas.getEntity(selectedEntityId) || countries[0];
   const tonal = getCountryRegionTonalPalette(currentEntity.id);
   const calmBg = getRegionCalmColor(currentEntity.region);
   const currentPillarMeta = THEMATIC_PILLARS.find(p => p.id === activePillar) || THEMATIC_PILLARS[0];
+  const silhouette = useMemo(() => getCountrySilhouette(currentEntity.id), [currentEntity.id]);
+  const m49Code = UN_M49_NUMERIC_CODES[currentEntity.id.toUpperCase()] || '000';
+  const silhouetteGradId = `editorial-silhouette-grad-${currentEntity.id}`;
 
-  // Fetch Wikipedia summary on country change
+  const handleCopySvgPath = () => {
+    if (silhouette?.path) {
+      navigator.clipboard.writeText(silhouette.path);
+      setCopiedPath(true);
+      setTimeout(() => setCopiedPath(false), 2000);
+    }
+  };
+
+  const handleDownloadSVG = () => {
+    const svgElement = document.getElementById(`editorial-silhouette-svg-${currentEntity.id}`);
+    if (!svgElement) return;
+
+    const serializer = new XMLSerializer();
+    const source = serializer.serializeToString(svgElement);
+    const commentedSource = `<!-- African Continental Atlas: ${currentEntity.name} (ISO3: ${currentEntity.id}, M49: ${m49Code}) -->\n${source}`;
+    const blob = new Blob([commentedSource], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `UN_M49_${m49Code}_${currentEntity.id}_silhouette.svg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setDownloadSuccess(true);
+    setTimeout(() => setDownloadSuccess(false), 2500);
+  };
+
+  // Fetch Wikipedia summary and topic-specific articles when country or pillar changes
+  const [pillarWikiData, setPillarWikiData] = useState<WikiSummaryData | null>(null);
+
   useEffect(() => {
     let isMounted = true;
     setIsLoadingWiki(true);
     setShowFullWiki(false);
 
+    // 1. Fetch general country summary
     fetchWikipediaSummary(currentEntity.name)
       .then(data => {
         if (isMounted) {
@@ -76,15 +139,67 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
         if (isMounted) setIsLoadingWiki(false);
       });
 
+    // 2. Fetch pillar-specific topic article from Wikipedia (e.g. Demographics, Wildlife, Science/Economy)
+    const searchQueries = getPillarWikiSearchCandidates(currentEntity.name, activePillar);
+    const fetchBestPillarArticle = async () => {
+      for (const query of searchQueries) {
+        if (!isMounted) return;
+        try {
+          const res = await fetchWikipediaSummary(query);
+          if (res && res.extract && res.extract.length > 50) {
+            if (isMounted) {
+              setPillarWikiData(res);
+            }
+            return;
+          }
+        } catch {
+          // continue to next candidate
+        }
+      }
+      if (isMounted) {
+        setPillarWikiData(null);
+      }
+    };
+
+    fetchBestPillarArticle();
+
     return () => {
       isMounted = false;
     };
-  }, [currentEntity.name]);
+  }, [currentEntity.name, activePillar]);
 
   // Curated narrative fallback / enhancement
   const curatedNarrative = useMemo(() => {
     return getCuratedPillarNarrative(currentEntity.name, currentEntity.id, activePillar, currentEntity);
   }, [currentEntity, activePillar]);
+
+  // Curated Topic Photography across all 8 Pillars (People, Climate, Future, History, Culture, Economy, Languages, Geography)
+  const curatedPillarImage = useMemo(() => {
+    return getPillarThematicImage(currentEntity.id, activePillar, currentEntity.name);
+  }, [currentEntity.id, activePillar, currentEntity.name]);
+
+  // Resolve Editorial Image: prioritize authentic topic photography for the active pillar
+  const editorialImage = useMemo(() => {
+    if (
+      pillarWikiData?.thumbnailUrl && 
+      !pillarWikiData.thumbnailUrl.toLowerCase().includes('flag') && 
+      !pillarWikiData.thumbnailUrl.toLowerCase().includes('coat_of_arms') &&
+      !pillarWikiData.thumbnailUrl.toLowerCase().includes('arms_of') &&
+      !pillarWikiData.thumbnailUrl.toLowerCase().includes('locator')
+    ) {
+      return {
+        id: currentEntity.id,
+        country: currentEntity.name,
+        pillarId: activePillar,
+        title: pillarWikiData.title || curatedPillarImage.title,
+        category: curatedPillarImage.category,
+        imageUrl: pillarWikiData.thumbnailUrl,
+        caption: pillarWikiData.description || curatedPillarImage.caption,
+        credit: 'Wikimedia Commons / Curated Archive'
+      };
+    }
+    return curatedPillarImage;
+  }, [pillarWikiData, curatedPillarImage, currentEntity.id, currentEntity.name, activePillar]);
 
   // Specific Pillar Data calculations
   const headerData = useMemo(() => {
@@ -485,177 +600,456 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
 
   return (
     <div className="space-y-6 animate-enter-japandi">
-      {/* Sticky 8-Pillar Navigation Ribbon */}
-      <ThematicPillarNav
-        activePillar={activePillar}
-        onSelectPillar={setActivePillar}
-        entityName={currentEntity.name}
-      />
-
-      {/* Top Country Selector & Pillar Hero Banner */}
-      <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-xl transition-all">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className={`text-[11px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full border ${tonal.badge.bg} ${tonal.badge.border} ${tonal.badge.text}`}>
-                PILLAR {currentPillarMeta.number} OF 8 • {currentPillarMeta.label.toUpperCase()}
-              </span>
-              <span className="text-xs font-mono text-zinc-500">
-                {currentEntity.region}
-              </span>
+      {/* Consolidated Unified Sticky / Fixed Header */}
+      <div className="sticky top-0 z-40 -mx-3 sm:-mx-6 -mt-3 sm:-mt-6 px-4 sm:px-6 py-3 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-zinc-200/90 dark:border-zinc-800/90 shadow-md transition-all space-y-2.5">
+        <div className="max-w-7xl mx-auto space-y-2.5">
+          {/* Top Row: Flag, Country Name, Pillar Badge, Region, Description & Controls */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <CountryFlag entityId={currentEntity.id} size="md" />
+              <div className="space-y-0.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display flex items-center gap-2">
+                    {currentEntity.name}
+                  </h1>
+                  <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border shadow-2xs ${tonal.badge.bg} ${tonal.badge.border} ${tonal.badge.text}`}>
+                    PILLAR {currentPillarMeta.number}/8 • {currentPillarMeta.label.toUpperCase()}
+                  </span>
+                  <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
+                    {currentEntity.region}
+                  </span>
+                </div>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-1 max-w-3xl hidden sm:block">
+                  {currentPillarMeta.description}
+                </p>
+              </div>
             </div>
 
-            <h1 className="text-2xl md:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display flex items-center gap-3">
-              <CountryFlag entityId={currentEntity.id} size="md" />
-              <span>{currentEntity.name}</span>
-            </h1>
+            {/* Quick Country Switcher & Wiki Link */}
+            <div className="flex items-center gap-2.5 self-start md:self-auto shrink-0">
+              <select
+                value={selectedEntityId}
+                onChange={e => handleCountrySwitch(e.target.value)}
+                className="bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200/80 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold text-xs py-2 px-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-2xs"
+              >
+                {countries.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} ({c.id}) — {c.region}
+                  </option>
+                ))}
+              </select>
 
-            <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400 max-w-3xl leading-relaxed">
-              {currentPillarMeta.description}
-            </p>
+              <a
+                href={`https://en.wikipedia.org/wiki/${encodeURIComponent(currentEntity.name)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-700 dark:text-zinc-300 transition-colors shadow-2xs"
+                title="View Wikipedia Article"
+              >
+                <span>Wikipedia</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
           </div>
 
-          {/* Quick Country Switcher Select */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-            <select
-              value={selectedEntityId}
-              onChange={e => handleCountrySwitch(e.target.value)}
-              className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold text-xs py-2.5 px-3.5 rounded-2xl focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
-            >
-              {countries.map(c => (
-                <option key={c.id} value={c.id}>
-                  {c.name} ({c.id}) — {c.region}
-                </option>
-              ))}
-            </select>
-
-            <a
-              href={`https://en.wikipedia.org/wiki/${encodeURIComponent(currentEntity.name)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-700 dark:text-zinc-300 transition-colors"
-            >
-              <span>Wikipedia</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
+          {/* Bottom Row: 8 Pillars Navigation Tabs Ribbon */}
+          <ThematicPillarNav
+            activePillar={activePillar}
+            onSelectPillar={setActivePillar}
+            entityName={currentEntity.name}
+            isEmbedded={true}
+          />
         </div>
       </div>
 
       {/* Main 2-Column Hybrid Layout: Editorial on Left, Empirical on Right */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: Wikipedia & Curated Narrative */}
-        <div className="lg:col-span-7 space-y-6">
-          {/* Wikipedia Narrative Card */}
-          <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 space-y-6 shadow-lg">
-            <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800/80 pb-4">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-amber-500" />
-                <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 font-display">
-                  Encyclopedic Context & Analysis
-                </h3>
-              </div>
-              <span className="text-[10px] font-mono text-zinc-400">
-                Wikimedia REST API • Verified
-              </span>
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Column: Luxury Editorial Encyclopedic Dossier */}
+        <div className="lg:col-span-7">
+          <div className="rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-6 md:p-8 space-y-6 shadow-xl relative overflow-hidden backdrop-blur-xs flex flex-col lg:max-h-[820px]">
+            {/* Ambient Tonal Gradient Glow */}
+            <div 
+              className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl pointer-events-none opacity-20 dark:opacity-25"
+              style={{ background: tonal.warmAccent }}
+            />
 
-            {/* Wikipedia Image & Lead Paragraph */}
-            {wikiData?.thumbnailUrl && (
-              <div 
-                className="flex flex-col sm:flex-row gap-5 items-start p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs transition-colors"
-                style={{ backgroundColor: calmBg }}
-              >
-                <img
-                  src={wikiData.thumbnailUrl}
-                  alt={currentEntity.name}
-                  className="w-full sm:w-36 h-28 object-cover rounded-xl shadow-sm shrink-0"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="space-y-1.5">
-                  <div className="text-[11px] font-mono font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                    {wikiData.description || 'Sovereign African State'}
+            {/* 1. Unified Masthead Header Capsule with SVG Silhouette, Flag & Classification */}
+            <div className="relative z-10 space-y-3.5 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5 shrink-0">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                {/* Left Side: Editorial Kicker, Flag, Sovereign Title & Classification Pills */}
+                <div className="space-y-2.5 flex-1 min-w-0">
+                  {/* Kicker Label */}
+                  <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest font-bold text-zinc-500 dark:text-zinc-400">
+                    <Feather className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                    <span>CONTINENTAL ENCYCLOPEDIC DOSSIER</span>
+                    <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                    <span>VOL. 2026</span>
                   </div>
-                  <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed line-clamp-4">
-                    {wikiData.extract}
-                  </p>
+
+                  {/* Sovereign Title & Flag Header */}
+                  <div className="flex items-start gap-3.5">
+                    <CountryFlag 
+                      entityId={currentEntity.id} 
+                      size="lg" 
+                      className="shrink-0 mt-0.5 shadow-md ring-1 ring-zinc-900/10 dark:ring-white/10" 
+                    />
+                    <div className="min-w-0 flex-1">
+                      <h2 
+                        className="text-2xl sm:text-3xl text-zinc-950 dark:text-zinc-50 tracking-tight leading-tight truncate"
+                        style={{ fontFamily: "'Noto Serif Display', Georgia, 'Times New Roman', serif", fontWeight: 500 }}
+                      >
+                        {currentEntity.name}
+                      </h2>
+                      <p 
+                        className="text-xs text-zinc-600 dark:text-zinc-400 italic mt-0.5"
+                        style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+                      >
+                        {headerData?.governmentType || currentEntity.governmentType}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Classification Pills Row */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                    <span className="px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 shadow-2xs">
+                      ISO: {currentEntity.id}
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 shadow-2xs">
+                      UN M49: {m49Code}
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 shadow-2xs">
+                      {currentEntity.subregion}
+                    </span>
+                    {silhouette?.capital && (
+                      <span className="px-2.5 py-0.5 rounded-full font-mono text-[10px] font-semibold bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 flex items-center gap-1 shadow-2xs">
+                        <MapPin className="w-2.5 h-2.5 text-amber-500" />
+                        {silhouette.capital.name}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
 
-            {/* Curated Pillar Narrative Section */}
-            <div className="space-y-4">
-              <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 font-display">
-                {curatedNarrative.headline}
-              </h4>
-              {curatedNarrative.narrative.map((paragraph, idx) => (
-                <p key={idx} className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-
-            {/* Key Facts Summary Table */}
-            <div className="space-y-2.5 pt-2">
-              <div className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-mono">
-                Key Strategic Facts & Baseline
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {curatedNarrative.keyFacts.map((fact, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs flex flex-col justify-between transition-colors"
+                {/* Right Side: Integrated SVG Silhouette Module */}
+                {silhouette && (
+                  <div 
+                    className="w-full md:w-56 lg:w-60 h-22 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 p-2.5 flex items-center justify-between gap-3 overflow-hidden shadow-xs shrink-0 group transition-all hover:border-zinc-300 dark:hover:border-zinc-700 self-start md:self-center"
                     style={{ backgroundColor: calmBg }}
                   >
-                    <span className="text-[10px] uppercase font-mono text-zinc-500 dark:text-zinc-400">{fact.label}</span>
-                    <span className="text-xs font-bold font-mono text-zinc-900 dark:text-zinc-100 mt-1">{fact.value}</span>
+                    {/* SVG Canvas */}
+                    <div className="relative w-24 sm:w-28 h-full flex items-center justify-center shrink-0">
+                      <svg
+                        id={`editorial-silhouette-svg-${currentEntity.id}`}
+                        viewBox={silhouette.viewBox}
+                        width="100%"
+                        height="100%"
+                        preserveAspectRatio="xMidYMid meet"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-full h-full max-h-16 transition-transform duration-300 group-hover:scale-105 select-none"
+                      >
+                        <defs>
+                          <linearGradient id={silhouetteGradId} x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor={tonal.warmAccent} stopOpacity="0.55" />
+                            <stop offset="100%" stopColor={tonal.deepTone} stopOpacity="0.2" />
+                          </linearGradient>
+                        </defs>
+
+                        {/* Silhouette Path */}
+                        <path
+                          d={silhouette.path}
+                          fill={`url(#${silhouetteGradId})`}
+                          stroke={tonal.warmAccent}
+                          strokeWidth="2.2"
+                          strokeLinejoin="round"
+                          strokeLinecap="round"
+                        />
+
+                        {/* Islands */}
+                        {silhouette.islandPaths && silhouette.islandPaths.map((islandD, idx) => (
+                          <path
+                            key={idx}
+                            d={islandD}
+                            fill={`url(#${silhouetteGradId})`}
+                            stroke={tonal.warmAccent}
+                            strokeWidth="1.8"
+                            strokeLinejoin="round"
+                            strokeLinecap="round"
+                          />
+                        ))}
+
+                        {/* Capital Beacon */}
+                        {silhouette.capital && (
+                          <g transform={`translate(${silhouette.capital.x}, ${silhouette.capital.y})`} className="pointer-events-none">
+                            <circle r="7" fill={tonal.warmAccent} opacity="0.35" className="animate-ping" />
+                            <circle r="3.5" fill={tonal.warmAccent} />
+                            <circle r="1.5" fill="#ffffff" />
+                          </g>
+                        )}
+                      </svg>
+                    </div>
+
+                    {/* Vector Controls & Geo Coordinates */}
+                    <div className="flex flex-col justify-between items-end h-full text-[9px] font-mono text-zinc-500 dark:text-zinc-400 pl-2.5 border-l border-zinc-200/70 dark:border-zinc-800/70 flex-1 min-w-0">
+                      <div className="flex flex-col items-end leading-tight w-full truncate">
+                        <span className="text-[8px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-semibold">GEO CENTER</span>
+                        <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-[9px] truncate">
+                          {silhouette.geoCenter.lat >= 0 ? `${silhouette.geoCenter.lat.toFixed(1)}°N` : `${Math.abs(silhouette.geoCenter.lat).toFixed(1)}°S`}, {' '}
+                          {silhouette.geoCenter.lng >= 0 ? `${silhouette.geoCenter.lng.toFixed(1)}°E` : `${Math.abs(silhouette.geoCenter.lng).toFixed(1)}°W`}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 pt-0.5">
+                        <button
+                          onClick={handleCopySvgPath}
+                          className="p-1.5 rounded-md bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors border border-zinc-200/80 dark:border-zinc-700/80 shadow-2xs cursor-pointer"
+                          title={copiedPath ? "Vector path copied!" : "Copy SVG path string"}
+                        >
+                          {copiedPath ? <CheckCircle2 className="w-2.5 h-2.5 text-emerald-500" /> : <Copy className="w-2.5 h-2.5" />}
+                        </button>
+                        <button
+                          onClick={handleDownloadSVG}
+                          className="p-1.5 rounded-md bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors border border-zinc-200/80 dark:border-zinc-700/80 shadow-2xs cursor-pointer"
+                          title={downloadSuccess ? "Downloaded!" : "Download SVG file"}
+                        >
+                          {downloadSuccess ? <CheckCircle2 className="w-2.5 h-2.5 text-emerald-500" /> : <Download className="w-2.5 h-2.5" />}
+                        </button>
+                        <button
+                          onClick={() => setIsSilhouetteModalOpen(true)}
+                          className="p-1.5 rounded-md bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors border border-zinc-200/80 dark:border-zinc-700/80 shadow-2xs cursor-pointer"
+                          title="Expand High-Res Silhouette View"
+                        >
+                          <Maximize2 className="w-2.5 h-2.5" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                ))}
+                )}
+              </div>
+
+              {/* Pillar Ribbon & Issue Tag */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full border shadow-2xs ${tonal.badge.bg} ${tonal.badge.border} ${tonal.badge.text}`}>
+                  THEMATIC PILLAR {currentPillarMeta.number}/8 • {currentPillarMeta.label.toUpperCase()}
+                </span>
+                <span className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
+                  <BookOpen className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <span>Peer-Reviewed Monograph Archive</span>
+                </span>
               </div>
             </div>
 
-            {/* Special Pillar Sub-Section: Culture & Heritage Sites */}
-            {activePillar === 'culture' && heritageSites.length > 0 && (
-              <div className="space-y-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 font-mono">
-                    UNESCO Inscribed Properties ({heritageSites.length})
-                  </h4>
-                  <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">World Heritage List</span>
+            {/* Scrollable Editorial Body (Controlled Height) */}
+            <div className="space-y-6 overflow-y-auto pr-1.5 custom-scrollbar flex-1">
+              {/* 2. Full-Width Landscape / Nature / City / Demographic Landmark Photography with Lead Below */}
+              <div className="space-y-3.5">
+                <div className="relative w-full rounded-2xl overflow-hidden shadow-sm border border-zinc-200/80 dark:border-zinc-800/80 group">
+                  <div className="relative w-full h-60 sm:h-72 lg:h-80 overflow-hidden bg-zinc-900">
+                    <img
+                      key={`${currentEntity.id}-${activePillar}-${editorialImage.imageUrl}`}
+                      src={editorialImage.imageUrl}
+                      alt={editorialImage.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      referrerPolicy="no-referrer"
+                    />
+                    {/* Subtle Gradient Veil */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent pointer-events-none" />
+
+                    {/* Unified Image Overlay Capsule with Warm Tonal Background & Controlled Pills */}
+                    <div 
+                      className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 rounded-2xl p-3 sm:p-4 backdrop-blur-md shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-0 transition-all duration-300"
+                      style={{
+                        backgroundColor: 'rgba(20, 16, 15, 0.82)',
+                        boxShadow: '0 8px 32px -4px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08)'
+                      }}
+                    >
+                      <div className="min-w-0 flex-1 space-y-1.5">
+                        {/* Controlled Tonal Colorful Pills */}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-500/25 text-amber-300 border-0 leading-none">
+                            {editorialImage.category}
+                          </span>
+                          <span className="text-white/30 text-xs select-none">•</span>
+                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold text-zinc-100 bg-white/15 border-0 leading-none">
+                            {editorialImage.title}
+                          </span>
+                        </div>
+
+                        {/* Paragraph: Clear Contrasting Font, No Pill Decoration */}
+                        <div>
+                          <p 
+                            className={`text-xs sm:text-[13px] font-normal leading-relaxed drop-shadow-xs transition-all duration-300 ${showFullImgCaption ? '' : 'line-clamp-2'}`}
+                            style={{ 
+                              fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+                              color: '#F4F4F5' 
+                            }}
+                          >
+                            {editorialImage.caption}
+                            {editorialImage.caption && editorialImage.caption.length > 40 && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setShowFullImgCaption(!showFullImgCaption);
+                                }}
+                                className="ml-1.5 text-[11px] font-semibold text-amber-300 hover:text-amber-200 underline underline-offset-2 inline-flex items-center gap-0.5 cursor-pointer"
+                              >
+                                <span>{showFullImgCaption ? 'Show less' : 'Read more'}</span>
+                                {showFullImgCaption ? <ChevronUp className="w-2.5 h-2.5 inline" /> : <ChevronDown className="w-2.5 h-2.5 inline" />}
+                              </button>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Credit Span: Controlled Tonal Colorful Pill */}
+                      <span 
+                        className="inline-flex items-center justify-center text-center px-3 py-1 rounded-full text-[9px] font-mono font-medium tracking-wide leading-none text-emerald-300 bg-emerald-950/60 border-0 shrink-0 self-start sm:self-center"
+                      >
+                        {editorialImage.credit}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  {heritageSites.map(site => (
+
+                {/* Lead Paragraph / Encyclopedic Abstract DIRECTLY BELOW Image */}
+                <div 
+                  className="p-4 sm:p-5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs space-y-2.5 transition-colors"
+                  style={{ backgroundColor: calmBg }}
+                >
+                  <div className="text-[10px] font-mono font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <FileText className="w-3 h-3 text-amber-500" />
+                    <span>ENCYCLOPEDIC ABSTRACT & STRATEGIC CONTEXT</span>
+                  </div>
+
+                  <p 
+                    className="text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed"
+                    style={{ fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif" }}
+                  >
+                    {showFullWiki ? (wikiData?.extract || curatedNarrative.narrative.join(' ')) : ((wikiData?.extract || curatedNarrative.narrative.join(' ')).slice(0, 260) + '...')}
+                  </p>
+
+                  <div className="flex items-center justify-between pt-1">
+                    <button
+                      onClick={() => setShowFullWiki(!showFullWiki)}
+                      className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 flex items-center gap-1 cursor-pointer transition-colors"
+                    >
+                      <span>{showFullWiki ? 'Show Less' : 'Read Full Monograph Abstract'}</span>
+                      {showFullWiki ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                    </button>
+                    <a
+                      href={`https://en.wikipedia.org/wiki/${encodeURIComponent(currentEntity.name)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 flex items-center gap-1 transition-colors"
+                    >
+                      <span>Wikipedia Monograph</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Curated Pillar Narrative Section (Luxury Magazine Essay) */}
+              <div className="space-y-4 pt-1">
+                <div className="flex items-center gap-2 pb-2 border-b border-zinc-100 dark:border-zinc-800/80">
+                  <Quote className="w-4 h-4 text-amber-500 shrink-0" />
+                  <h4 
+                    className="text-base md:text-lg text-zinc-950 dark:text-zinc-100 tracking-tight"
+                    style={{ fontFamily: "'Noto Serif Display', Georgia, 'Times New Roman', serif", fontWeight: 500 }}
+                  >
+                    {curatedNarrative.headline}
+                  </h4>
+                </div>
+
+                <div 
+                  className="space-y-3.5 text-xs md:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed"
+                  style={{ fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif" }}
+                >
+                  {curatedNarrative.narrative.map((paragraph, idx) => (
+                    <p 
+                      key={idx} 
+                      className={idx === 0 ? "first-letter:text-3xl first-letter:font-light first-letter:float-left first-letter:mr-2.5 first-letter:text-zinc-950 dark:first-letter:text-zinc-50" : ""}
+                      style={idx === 0 ? { fontFamily: "'Plus Jakarta Sans', sans-serif" } : undefined}
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </div>
+
+              {/* 4. Key Strategic Baseline Specifications Matrix */}
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between pb-1 border-b border-zinc-200/60 dark:border-zinc-800/60">
+                  <div className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 font-mono flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                    <span>STRATEGIC BASELINE SPECIFICATIONS</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-zinc-400">UN / AU Harmonized</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {curatedNarrative.keyFacts.map((fact, idx) => (
                     <div
-                      key={site.id}
-                      className="p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs flex items-start justify-between gap-3 transition-colors"
+                      key={idx}
+                      className="p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs flex flex-col justify-between transition-all hover:border-zinc-300 dark:hover:border-zinc-700"
                       style={{ backgroundColor: calmBg }}
                     >
-                      <div>
-                        <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100">{site.name}</div>
-                        <div className="text-[11px] text-zinc-600 dark:text-zinc-300 line-clamp-1">{site.description}</div>
-                      </div>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700/60 text-amber-800 dark:text-amber-300 shrink-0 font-semibold">
-                        {site.inscribedYear}
+                      <span className="text-[10px] uppercase font-mono tracking-wider text-zinc-500 dark:text-zinc-400 font-medium">
+                        {fact.label}
+                      </span>
+                      <span className="text-xs sm:text-sm font-bold font-mono text-zinc-950 dark:text-zinc-50 mt-1">
+                        {fact.value}
                       </span>
                     </div>
                   ))}
                 </div>
               </div>
-            )}
+
+              {/* 5. Special Pillar Sub-Section: Culture & Heritage Sites */}
+              {activePillar === 'culture' && heritageSites.length > 0 && (
+                <div className="space-y-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 font-mono flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>UNESCO Inscribed Properties ({heritageSites.length})</span>
+                    </h4>
+                    <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">World Heritage List</span>
+                  </div>
+                  <div className="space-y-2">
+                    {heritageSites.map(site => (
+                      <div
+                        key={site.id}
+                        className="p-3.5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs flex items-start justify-between gap-3 transition-colors"
+                        style={{ backgroundColor: calmBg }}
+                      >
+                        <div>
+                          <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100">{site.name}</div>
+                          <div className="text-[11px] text-zinc-600 dark:text-zinc-300 line-clamp-1">{site.description}</div>
+                        </div>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700/60 text-amber-800 dark:text-amber-300 shrink-0 font-semibold">
+                          {site.inscribedYear}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Right Column: Live Empirical Indicator Deck */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-6 space-y-5 shadow-sm hover:shadow-md transition-all duration-300">
-            <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800/80 pb-3">
+        <div className="lg:col-span-5">
+          <div className="rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-6 space-y-5 shadow-sm hover:shadow-md transition-all duration-300 lg:max-h-[820px] overflow-y-auto custom-scrollbar flex flex-col">
+            <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800/80 pb-3 shrink-0">
               <div className="flex items-center gap-2.5">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
                 <div>
-                  <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 font-display tracking-tight">
+                  <h3 
+                    className="text-base text-zinc-900 dark:text-zinc-100 tracking-tight"
+                    style={{ fontFamily: "'Noto Serif Display', Georgia, 'Times New Roman', serif", fontWeight: 500 }}
+                  >
                     Empirical Indicator Deck
                   </h3>
                   <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">
@@ -669,7 +1063,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
             </div>
 
             {/* Indicator Metric Cards */}
-            <div className="space-y-3">
+            <div className="space-y-3 flex-1">
               {primaryIndicators.map(ind => (
                 <div
                   key={ind.id}
@@ -677,7 +1071,10 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                   style={{ backgroundColor: calmBg }}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 leading-snug">
+                    <span 
+                      className="text-xs font-bold text-zinc-900 dark:text-zinc-100 leading-snug"
+                      style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                    >
                       {ind.name}
                     </span>
                     <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded-md bg-zinc-200/80 dark:bg-zinc-800/90 text-zinc-700 dark:text-zinc-200 border border-zinc-300/40 dark:border-zinc-700/60 shrink-0 font-semibold">
@@ -697,7 +1094,10 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                   {(ind.subtext || ind.status) && (
                     <div className="flex items-center justify-between gap-2 pt-1 border-t border-zinc-200/40 dark:border-zinc-700/60 text-[11px]">
                       {ind.subtext && (
-                        <span className="text-zinc-600 dark:text-zinc-300 font-medium truncate font-sans">
+                        <span 
+                          className="text-zinc-600 dark:text-zinc-300 font-medium truncate"
+                          style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                        >
                           {ind.subtext}
                         </span>
                       )}
@@ -713,7 +1113,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
             </div>
 
             {/* Regional Bloc Affiliation Quick Tag */}
-            <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 space-y-2">
+            <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 space-y-2 shrink-0">
               <div className="text-[10px] font-mono uppercase font-bold text-zinc-500 dark:text-zinc-400">
                 Sovereign Blocs & Communities
               </div>
@@ -732,13 +1132,149 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
         </div>
       </div>
 
-      {/* Bottom Section: 21 Entity Blocs Comparator & Browser */}
+      {/* Bottom Section: Dynamic Thematic-Pillar Tailored Content */}
       <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800">
-        <EntityBlocsBrowser
+        <ThematicPillarBottomSection
+          activePillar={activePillar}
+          currentEntity={currentEntity}
           onSelectCountry={handleCountrySwitch}
-          initialBlocId="ECOWAS"
+          onNavigateTab={onNavigateTab}
         />
       </div>
+
+      {/* High-Resolution SVG Silhouette Inspection Modal */}
+      <AnimatePresence>
+        {isSilhouetteModalOpen && silhouette && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 sm:p-6"
+            onClick={() => setIsSilhouetteModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.94, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.94, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl relative space-y-6"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="flex items-start justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4">
+                <div className="flex items-center gap-3">
+                  <CountryFlag entityId={currentEntity.id} size="md" className="shadow-xs" />
+                  <div>
+                    <h3 className="text-xl font-bold text-zinc-950 dark:text-zinc-50 font-display">
+                      {currentEntity.name} Vector Silhouette
+                    </h3>
+                    <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 dark:text-zinc-400 mt-0.5">
+                      <span>ISO: {currentEntity.id}</span>
+                      <span>•</span>
+                      <span>M49: {m49Code}</span>
+                      <span>•</span>
+                      <span>{silhouette.shapeType?.toUpperCase() || 'CONTINENTAL'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setIsSilhouetteModalOpen(false)}
+                  className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Vector Display */}
+              <div 
+                className="w-full h-80 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 flex items-center justify-center relative overflow-hidden"
+                style={{ backgroundColor: calmBg }}
+              >
+                <svg
+                  viewBox={silhouette.viewBox}
+                  width="100%"
+                  height="100%"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-full h-full max-h-72 drop-shadow-lg"
+                >
+                  <defs>
+                    <linearGradient id={`modal-grad-${currentEntity.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor={tonal.warmAccent} stopOpacity="0.8" />
+                      <stop offset="100%" stopColor={tonal.deepTone} stopOpacity="0.4" />
+                    </linearGradient>
+                  </defs>
+
+                  <path
+                    d={silhouette.path}
+                    fill={`url(#modal-grad-${currentEntity.id})`}
+                    stroke={tonal.warmAccent}
+                    strokeWidth="3"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                  />
+
+                  {silhouette.islandPaths && silhouette.islandPaths.map((islandD, idx) => (
+                    <path
+                      key={idx}
+                      d={islandD}
+                      fill={`url(#modal-grad-${currentEntity.id})`}
+                      stroke={tonal.warmAccent}
+                      strokeWidth="2.2"
+                      strokeLinejoin="round"
+                      strokeLinecap="round"
+                    />
+                  ))}
+
+                  {silhouette.capital && (
+                    <g transform={`translate(${silhouette.capital.x}, ${silhouette.capital.y})`}>
+                      <circle r="12" fill={tonal.warmAccent} opacity="0.3" className="animate-ping" />
+                      <circle r="6" fill={tonal.warmAccent} />
+                      <circle r="2.5" fill="#ffffff" />
+                      <text
+                        x="10"
+                        y="4"
+                        fontSize="14"
+                        fontWeight="bold"
+                        fill="currentColor"
+                        className="text-zinc-900 dark:text-zinc-100 font-sans"
+                      >
+                        {silhouette.capital.name} (Capital)
+                      </text>
+                    </g>
+                  )}
+                </svg>
+              </div>
+
+              {/* Modal Actions */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <div className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
+                  Geo Center: {silhouette.geoCenter.lat}°, {silhouette.geoCenter.lng}°
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleCopySvgPath}
+                    className="px-4 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-xs font-semibold text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-800 flex items-center gap-2 transition-colors cursor-pointer"
+                  >
+                    {copiedPath ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                    <span>{copiedPath ? 'Path String Copied' : 'Copy SVG Path'}</span>
+                  </button>
+
+                  <button
+                    onClick={handleDownloadSVG}
+                    className="px-4 py-2 rounded-xl bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-xs font-semibold text-white dark:text-zinc-950 flex items-center gap-2 transition-colors cursor-pointer shadow-sm"
+                  >
+                    {downloadSuccess ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <Download className="w-4 h-4" />}
+                    <span>{downloadSuccess ? 'Downloaded' : 'Download SVG'}</span>
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -16,6 +16,7 @@ interface ThematicPillarNavProps {
   onSelectPillar: (pillarId: ThematicPillarId) => void;
   entityName?: string;
   className?: string;
+  isEmbedded?: boolean;
 }
 
 const PILLAR_ICONS: Record<ThematicPillarId, React.ReactNode> = {
@@ -33,7 +34,8 @@ export const ThematicPillarNav: React.FC<ThematicPillarNavProps> = ({
   activePillar,
   onSelectPillar,
   entityName,
-  className = ''
+  className = '',
+  isEmbedded = false
 }) => {
   // Global keyboard shortcut: Press 1-8 to switch pillars
   useEffect(() => {
@@ -58,39 +60,50 @@ export const ThematicPillarNav: React.FC<ThematicPillarNavProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onSelectPillar]);
 
+  const pillsContent = (
+    <div className="flex flex-wrap items-center gap-1.5 py-0.5 w-full">
+      {THEMATIC_PILLARS.map(pillar => {
+        const isActive = activePillar === pillar.id;
+        return (
+          <button
+            key={pillar.id}
+            onClick={() => onSelectPillar(pillar.id)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              isActive
+                ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-md scale-[1.02]'
+                : 'bg-zinc-100/90 dark:bg-zinc-900/90 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 border border-zinc-200/70 dark:border-zinc-800/70'
+            }`}
+            title={`Switch to Pillar ${pillar.number}: ${pillar.label} (Press ${pillar.number})`}
+          >
+            <span className={isActive ? 'text-amber-400 dark:text-amber-600' : 'text-zinc-400'}>
+              {PILLAR_ICONS[pillar.id]}
+            </span>
+            <span>{pillar.shortLabel}</span>
+            <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-md ${
+              isActive
+                ? 'bg-zinc-800 text-zinc-300 dark:bg-zinc-200 dark:text-zinc-800'
+                : 'bg-zinc-200/80 dark:bg-zinc-800/80 text-zinc-500 dark:text-zinc-400'
+            }`}>
+              {pillar.number}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+
+  if (isEmbedded) {
+    return (
+      <div className={`w-full ${className}`}>
+        {pillsContent}
+      </div>
+    );
+  }
+
   return (
     <div className={`sticky top-0 z-30 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 py-2.5 px-4 transition-colors ${className}`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-        {/* Pillar Ribbon Container - Fully Wrapping */}
-        <div className="flex flex-wrap items-center gap-1.5 py-0.5 w-full">
-          {THEMATIC_PILLARS.map(pillar => {
-            const isActive = activePillar === pillar.id;
-            return (
-              <button
-                key={pillar.id}
-                onClick={() => onSelectPillar(pillar.id)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-md scale-[1.02]'
-                    : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 border border-zinc-200/60 dark:border-zinc-800/60'
-                }`}
-                title={`Switch to Pillar ${pillar.number}: ${pillar.label} (Press ${pillar.number})`}
-              >
-                <span className={isActive ? 'text-amber-400 dark:text-amber-600' : 'text-zinc-400'}>
-                  {PILLAR_ICONS[pillar.id]}
-                </span>
-                <span>{pillar.shortLabel}</span>
-                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-md ${
-                  isActive
-                    ? 'bg-zinc-800 text-zinc-300 dark:bg-zinc-200 dark:text-zinc-800'
-                    : 'bg-zinc-200/80 dark:bg-zinc-800/80 text-zinc-500 dark:text-zinc-400'
-                }`}>
-                  {pillar.number}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        {pillsContent}
 
         {entityName && (
           <div className="hidden lg:flex items-center gap-1.5 shrink-0 text-xs font-mono text-zinc-500 dark:text-zinc-400">

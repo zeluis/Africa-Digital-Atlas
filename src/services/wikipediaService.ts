@@ -132,9 +132,32 @@ export async function fetchWikipediaSummary(articleTitle: string): Promise<WikiS
     );
     if (!res.ok) return null;
     const j = await res.json();
+    
+    // Check if thumbnail is a flag, coat of arms, seal, or locator map
+    let rawThumb = j.thumbnail?.source || null;
+    if (rawThumb) {
+      const lower = rawThumb.toLowerCase();
+      if (
+        lower.includes('flag') || 
+        lower.includes('coat_of_arms') || 
+        lower.includes('arms_of') || 
+        lower.includes('emblem') || 
+        lower.includes('seal_of') || 
+        lower.includes('locator') || 
+        lower.includes('location_in') || 
+        lower.includes('orthographic') ||
+        lower.includes('blason') ||
+        lower.includes('escudo') ||
+        lower.endsWith('.svg') ||
+        lower.endsWith('.svg.png')
+      ) {
+        rawThumb = null;
+      }
+    }
+
     return {
       ...j,
-      thumbnailUrl: j.thumbnail?.source || null
+      thumbnailUrl: rawThumb
     };
   } catch (err) {
     console.warn(`Error fetching wiki summary for ${articleTitle}:`, err);
