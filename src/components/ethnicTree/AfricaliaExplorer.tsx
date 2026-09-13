@@ -27,8 +27,10 @@ import {
   Dna,
   Landmark,
   ArrowRight,
-  Globe
+  Globe,
+  Download
 } from 'lucide-react';
+import { AcademicExportModal } from '../AcademicExportModal';
 import { 
   VBW, 
   VBH, 
@@ -355,12 +357,22 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
   // Single Left Dock Collapse State (never stacks with other panels)
   const [isLeftDockOpen, setIsLeftDockOpen] = useState<boolean>(true);
   const [methodologyModalOpen, setMethodologyModalOpen] = useState<boolean>(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
+  // Accessible ARIA announcement for screen readers on camera refocus
+  const [liveAnnouncement, setLiveAnnouncement] = useState<string>('Africalia sovereign ethnic tree loaded');
 
-  // Drag pan tracking
+  // Drag pan & kinetic momentum tracking
   const isDragging = useRef<boolean>(false);
   const dragStart = useRef<{ x: number; y: number; startX: number; startY: number; moved: boolean }>({
     x: 0, y: 0, startX: 0, startY: 0, moved: false
   });
+  const activePointers = useRef<Map<number, { x: number; y: number }>>(new Map());
+  const pinchStartDist = useRef<number | null>(null);
+  const pinchStartZoom = useRef<number>(1);
+  const velocityTracker = useRef<{ vx: number; vy: number; lastTime: number; lastX: number; lastY: number }>({
+    vx: 0, vy: 0, lastTime: 0, lastX: 0, lastY: 0
+  });
+  const momentumAnimId = useRef<number | null>(null);
 
   // Fit View: Full continental tree overview (hard minimum scale limit 64% enforced, centered)
   const fitView = useCallback(() => {
@@ -397,6 +409,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       x: clientWidth / 2 - targetX * nextScale,
       y: clientHeight / 2 - targetY * nextScale
     });
+    setLiveAnnouncement('Framed West Africa conduit: Cabo Verde Maritime Crucible & Atlantic lineages');
   }, []);
 
   // Upper middle top region start view
@@ -427,6 +440,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     setSelectedLinguisticFamily('All');
     setIsSearchDropdownOpen(false);
     fitView();
+    setLiveAnnouncement('View reset to full continental overview');
   }, [fitView]);
 
   // Initial load: Start at the upper middle top region of the tree
@@ -460,24 +474,93 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     });
   };
 
-  // Pointer drag panning
+  // Pointer drag panning with kinetic momentum & pinch-to-zoom
   const handlePointerDown = (e: React.PointerEvent) => {
     if ((e.target as HTMLElement).closest('button, input, select, a, .no-drag')) return;
-    isDragging.current = true;
-    dragStart.current = {
-      x: e.clientX,
-      y: e.clientY,
-      startX: pos.x,
-      startY: pos.y,
-      moved: false
-    };
-    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    
+    // Stop any ongoing kinetic inertia animation on user touch/click
+    if (momentumAnimId.current) {
+      cancelAnimationFrame(momentumAnimId.current);
+      momentumAnimId.current = null;
+    }
+
+    activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (activePointers.current.size === 1) {
+      isDragging.current = true;
+      dragStart.current = {
+        x: e.clientX,
+        y: e.clientY,
+        startX: pos.x,
+        startY: pos.y,
+        moved: false
+      };
+      velocityTracker.current = {
+        vx: 0,
+        vy: 0,
+        lastTime: performance.now(),
+        lastX: e.clientX,
+        lastY: e.clientY
+      };
+      (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    } else if (activePointers.current.size === 2) {
+      // Initialize two-finger pinch-to-zoom
+      isDragging.current = false;
+      const points = Array.from(activePointers.current.values());
+      const dist = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
+      pinchStartDist.current = dist;
+      pinchStartZoom.current = zoom;
+    }
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
+    if (activePointers.current.has(e.pointerId)) {
+      activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    }
+
+    // Two-finger Pinch Zoom gesture
+    if (activePointers.current.size === 2 && pinchStartDist.current !== null && containerRef.current) {
+      const points = Array.from(activePointers.current.values());
+      const currentDist = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
+      const pinchMidX = (points[0].x + points[1].x) / 2;
+      const pinchMidY = (points[0].y + points[1].y) / 2;
+      
+      const rect = containerRef.current.getBoundingClientRect();
+      const focalX = pinchMidX - rect.left;
+      const focalY = pinchMidY - rect.top;
+
+      const scaleMultiplier = currentDist / pinchStartDist.current;
+      const nextZoom = Math.min(Math.max(pinchStartZoom.current * scaleMultiplier, 0.64), 6.0);
+      
+      const currentScale = fitScale * zoom;
+      const nextScale = fitScale * nextZoom;
+
+      setPos(prev => ({
+        x: focalX - (focalX - prev.x) * (nextScale / currentScale),
+        y: focalY - (focalY - prev.y) * (nextScale / currentScale)
+      }));
+      setZoom(nextZoom);
+      return;
+    }
+
+    // Single finger / mouse cursor drag
     if (!isDragging.current) return;
+    const now = performance.now();
+    const dt = Math.max(now - velocityTracker.current.lastTime, 8);
     const dx = e.clientX - dragStart.current.x;
     const dy = e.clientY - dragStart.current.y;
+    
+    // Instantaneous velocity calculation with smoothing
+    const instVx = (e.clientX - velocityTracker.current.lastX) / dt;
+    const instVy = (e.clientY - velocityTracker.current.lastY) / dt;
+    velocityTracker.current = {
+      vx: velocityTracker.current.vx * 0.3 + instVx * 0.7,
+      vy: velocityTracker.current.vy * 0.3 + instVy * 0.7,
+      lastTime: now,
+      lastX: e.clientX,
+      lastY: e.clientY
+    };
+
     if (Math.hypot(dx, dy) > 4) {
       dragStart.current.moved = true;
     }
@@ -487,8 +570,38 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     });
   };
 
-  const handlePointerUp = () => {
-    isDragging.current = false;
+  const handlePointerUp = (e: React.PointerEvent) => {
+    activePointers.current.delete(e.pointerId);
+    if (activePointers.current.size < 2) {
+      pinchStartDist.current = null;
+    }
+
+    if (activePointers.current.size === 0) {
+      isDragging.current = false;
+
+      // Launch kinetic momentum decay if velocity is meaningful
+      let vx = velocityTracker.current.vx * 14;
+      let vy = velocityTracker.current.vy * 14;
+      const speed = Math.hypot(vx, vy);
+
+      if (speed > 1.2) {
+        const friction = 0.92;
+        const stepKinetic = () => {
+          vx *= friction;
+          vy *= friction;
+          if (Math.hypot(vx, vy) < 0.2) {
+            momentumAnimId.current = null;
+            return;
+          }
+          setPos(prev => ({
+            x: prev.x + vx,
+            y: prev.y + vy
+          }));
+          momentumAnimId.current = requestAnimationFrame(stepKinetic);
+        };
+        momentumAnimId.current = requestAnimationFrame(stepKinetic);
+      }
+    }
   };
 
   // Mouse wheel zoom centered on cursor (enforcing 64% minimum)
@@ -576,6 +689,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
           const calculatedZoom = Math.min(Math.max(targetScale / (fitScale || 1), 0.64), 4.5);
           
           panToCoordinates(centerX, centerY, calculatedZoom);
+          setLiveAnnouncement(`Framed sovereign lineage nodes for ${countryName}`);
           return;
         }
       } catch {
@@ -592,8 +706,10 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
     if (conduit) {
       panToCoordinates(conduit.labelX, conduit.labelY, 2.2);
+      setLiveAnnouncement(`Framed ${countryName} conduit and branches`);
     } else if (entityFallbackCoords) {
       panToCoordinates(entityFallbackCoords.x, entityFallbackCoords.y, 2.2);
+      setLiveAnnouncement(`Framed ${countryName} lineages`);
     }
   }, [fitScale, panToCoordinates]);
 
@@ -988,6 +1104,15 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       onWheel={handleWheel}
       id="africalia-explorer-root"
     >
+      {/* Screen Reader Live Announcement Region */}
+      <div 
+        role="status" 
+        aria-live="polite" 
+        className="sr-only"
+      >
+        {liveAnnouncement}
+      </div>
+
       {/* =========================================================================
           1. TOP CENTER TITLE & GEOGRAPHY CONTROL BAR (Expandable / Collapsible)
           ========================================================================= */}
@@ -1388,12 +1513,13 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
           ========================================================================= */}
       <div 
         className="absolute inset-0 w-full h-full overflow-hidden transition-colors duration-300"
-        style={{ touchAction: 'none', backgroundColor: paperColor }}
+        style={{ touchAction: 'none', backgroundColor: paperColor, contain: 'layout paint' }}
       >
         <div
           style={{
             transform: `translate3d(${pos.x}px, ${pos.y}px, 0) scale(${fitScale * zoom})`,
             transformOrigin: '0 0',
+            willChange: 'transform',
             transition: isDragging.current ? 'none' : 'transform 0.08s ease-out'
           }}
           className="relative inline-block"
@@ -1428,6 +1554,10 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             #africalia-master-sovereign-svg text:hover {
               fill: #E67E48 !important;
               filter: drop-shadow(0 0 6px rgba(230,126,72,0.8));
+            }
+            #africalia-master-sovereign-svg *:focus-visible {
+              outline: 2.5px dashed #E67E48 !important;
+              outline-offset: 4px !important;
             }
             #node--geo--country--cabo-verde,
             #CABO-VERDE {
@@ -1863,6 +1993,17 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         >
           <Settings2 className="w-4 h-4" />
         </button>
+
+        {/* Academic Citation & SVG Vector Export Button */}
+        <button
+          type="button"
+          onClick={() => setIsExportModalOpen(true)}
+          className="p-2 rounded-full transition-all cursor-pointer flex items-center justify-center bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-[#E67E48]/20 hover:text-[#E67E48]"
+          title="Export Academic Citation & SVG Vector Tree"
+          aria-label="Export and Cite"
+        >
+          <Download className="w-4 h-4" />
+        </button>
       </motion.div>
 
       {/* =========================================================================
@@ -1898,6 +2039,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             }}
             onNavigateToMolecular={onNavigateToMolecular}
             onNavigateToFoundations={onNavigateToFoundations}
+            onNavigateToSlaveTrade={onNavigateToSlaveTrade}
             onSelectReport={onSelectReport}
           />
         )}
@@ -2022,6 +2164,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
               tastVolumeShare={selectedEntity.tastVolumeShare}
               onNavigateToMolecular={onNavigateToMolecular}
               onNavigateToFoundations={onNavigateToFoundations}
+              onNavigateToSlaveTrade={onNavigateToSlaveTrade}
               onSelectReport={onSelectReport}
               compact={false}
             />
@@ -2063,6 +2206,23 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         </motion.div>
       )}
       </AnimatePresence>
+
+      {/* Academic Citation & Vector Export Modal */}
+      <AcademicExportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        title="Africalia Sovereign Ethnic Tree of Life"
+        sourceContext="Africalia Sovereign Lineage Vector Atlas & Harvard / Wikipedia Anthropological Corpus"
+        citationMetadata={{
+          authors: ['Africalia Sovereign Lineage Initiative', 'UNESCO General History of Africa Project', 'Greenberg Linguistic Classification'],
+          year: 2026,
+          datasetName: 'Pan-African Ethno-Linguistic Continuum and Conduit Lineages',
+          url: window?.location?.href || 'https://africalia.org/#ethnic-tree',
+          doi: '10.5281/zenodo.africalia.tree.2026',
+          version: '2026.2'
+        }}
+        svgContainerId="africalia-master-sovereign-svg"
+      />
     </div>
   );
 };

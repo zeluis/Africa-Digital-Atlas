@@ -11,11 +11,13 @@ import {
   Compass, 
   Sparkles,
   ShieldCheck,
-  ChevronRight
+  ChevronRight,
+  Volume2
 } from 'lucide-react';
 import { WikipediaEthnicEntry } from '../../data/wikipediaEthnicAtlas';
 import { getEthnicDossier, parseLanguageChain } from '../../services/wikipediaService';
 import { RichEditorialCountryDevelopmentPanel } from './RichEditorialCountryDevelopmentPanel';
+import { AFRICAN_MOTHER_TONGUES, playMotherTongueAudio } from '../../data/motherTonguesAudioData';
 
 interface WikipediaEthnicDossierProps {
   ethnicName: string;
@@ -29,6 +31,7 @@ interface WikipediaEthnicDossierProps {
   onSelectLinguisticFamily?: (family: string) => void;
   onNavigateToMolecular?: () => void;
   onNavigateToFoundations?: () => void;
+  onNavigateToSlaveTrade?: () => void;
   onSelectReport?: (reportId: string) => void;
 }
 
@@ -44,6 +47,7 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
   onSelectLinguisticFamily,
   onNavigateToMolecular,
   onNavigateToFoundations,
+  onNavigateToSlaveTrade,
   onSelectReport
 }) => {
   const [dossier, setDossier] = useState<WikipediaEthnicEntry | null>(null);
@@ -75,7 +79,8 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
       animate={{ opacity: 1, x: 0, scale: 1 }}
       exit={{ opacity: 0, x: 20, scale: 0.98 }}
       transition={{ type: "spring", damping: 27, stiffness: 330 }}
-      className="absolute top-4 right-4 z-30 w-80 sm:w-96 max-h-[calc(100vh-32px)] flex flex-col rounded-3xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_50px_rgba(75,55,35,0.18)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.6)] backdrop-blur-md overflow-hidden no-drag"
+      style={{ containerType: 'inline-size', containerName: 'dossier' }}
+      className="@container absolute top-4 right-4 z-30 w-80 sm:w-96 max-h-[calc(100vh-32px)] flex flex-col rounded-3xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_50px_rgba(75,55,35,0.18)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.6)] backdrop-blur-md overflow-hidden no-drag"
       id="wikipedia-ethnic-dossier"
       aria-label={`Encyclopedic dossier for ${ethnicName}`}
     >
@@ -317,6 +322,56 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
           </div>
         )}
 
+        {/* Mother Tongue Soundscape & Authentic Pronunciation */}
+        {(() => {
+          // Attempt to match ethnic name or primary language to available Mother Tongues
+          const lookupKey = ethnicName.toLowerCase().replace(/[^a-z]/g, '');
+          const matchedEntry = Object.values(AFRICAN_MOTHER_TONGUES).find(t => 
+            lookupKey.includes(t.id) ||
+            t.language.toLowerCase().includes(ethnicName.toLowerCase()) ||
+            (dossier?.languages && dossier.languages.toLowerCase().includes(t.language.toLowerCase()))
+          );
+
+          if (!matchedEntry) return null;
+
+          return (
+            <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider font-mono text-amber-900 dark:text-amber-200">
+                  <Volume2 className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                  <span>MOTHER TONGUE SOUNDSCAPE</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => playMotherTongueAudio(matchedEntry)}
+                  className="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer active:scale-95"
+                  title="Listen to native greeting and tonal harmonics"
+                >
+                  <Volume2 className="w-3 h-3" />
+                  <span>Listen</span>
+                </button>
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex items-baseline justify-between text-xs">
+                  <span className="font-extrabold text-[#2B241E] dark:text-[#F5EFE6] font-serif">
+                    {matchedEntry.greetingText}
+                  </span>
+                  <span className="text-[10px] font-mono text-[#7D6B5A] dark:text-[#B5A492]">
+                    {matchedEntry.greetingPhonetic}
+                  </span>
+                </div>
+                <p className="text-[11px] text-[#52463B] dark:text-[#C4B7A6] italic">
+                  "{matchedEntry.greetingMeaning}"
+                </p>
+                <p className="text-[10px] text-[#7D6B5A] dark:text-[#A79888] pt-1 border-t border-amber-500/20">
+                  <strong>Proverb:</strong> {matchedEntry.proverbText} — <em>{matchedEntry.proverbTranslation}</em>
+                </p>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Rich Historical & TAST Sovereign Development Panel */}
         <RichEditorialCountryDevelopmentPanel
           countryName={countryName || dossier?.homeland?.split('(')[0]?.trim() || 'Nigeria'}
@@ -324,6 +379,7 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
           tastVolumeShare={tastVolumeShare}
           onNavigateToMolecular={onNavigateToMolecular}
           onNavigateToFoundations={onNavigateToFoundations}
+          onNavigateToSlaveTrade={onNavigateToSlaveTrade}
           onSelectReport={onSelectReport}
           compact={true}
         />

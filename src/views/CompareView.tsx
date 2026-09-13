@@ -11,7 +11,8 @@ import {
   formatHDI, 
   formatArea 
 } from '../data/atlas-formatters';
-import { GitCompare, Plus, X, ArrowRight, ShieldCheck, Check, Layers, Crosshair } from 'lucide-react';
+import { GitCompare, Plus, X, ArrowRight, ShieldCheck, Check, Layers, Crosshair, Ship } from 'lucide-react';
+import { getCountryHistoricalDevelopmentDossier } from '../data/countryHistoricalDevelopmentData';
 
 interface CompareViewProps {
   onSelectCountry: (entityId: string) => void;
@@ -79,6 +80,54 @@ export const CompareView: React.FC<CompareViewProps> = ({
         { label: 'UNESCO Heritage Sites', format: (id: string) => `${atlas.getHeritageSites(id).length} Sites`, isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getHeritageSites(id).length },
         { label: 'Electricity Access %', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'EG.ELC.ACCS.ZS')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'EG.ELC.ACCS.ZS') || 0 },
         { label: 'Renewable Energy Share %', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'EG.FEC.RNEW.ZS')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'EG.FEC.RNEW.ZS') || 0 },
+      ]
+    },
+    {
+      group: 'Transatlantic & Historical Development Heritage',
+      items: [
+        { 
+          label: 'Historical TAST Zone', 
+          format: (id: string) => {
+            const country = atlas.getEntity(id);
+            const dossier = getCountryHistoricalDevelopmentDossier(country?.name || id);
+            return dossier.historicalTastRegion;
+          }, 
+          isLeader: () => 0, 
+          getValue: () => 0 
+        },
+        { 
+          label: 'Archival Embarkation Ports', 
+          format: (id: string) => {
+            const country = atlas.getEntity(id);
+            const dossier = getCountryHistoricalDevelopmentDossier(country?.name || id);
+            return dossier.portsOfEmbarkation.length > 0 ? `${dossier.portsOfEmbarkation.length} documented ports` : 'None (Interior/Inland)';
+          }, 
+          isLeader: (values: number[]) => Math.max(...values), 
+          getValue: (id: string) => {
+            const country = atlas.getEntity(id);
+            return getCountryHistoricalDevelopmentDossier(country?.name || id).portsOfEmbarkation.length;
+          } 
+        },
+        { 
+          label: 'Historical Extraction Scope', 
+          format: (id: string) => {
+            const country = atlas.getEntity(id);
+            const dossier = getCountryHistoricalDevelopmentDossier(country?.name || id);
+            return dossier.tastVolumeEstimate.length > 45 ? `${dossier.tastVolumeEstimate.slice(0, 42)}...` : dossier.tastVolumeEstimate;
+          }, 
+          isLeader: () => 0, 
+          getValue: () => 0 
+        },
+        { 
+          label: 'Colonial Power & Mandate', 
+          format: (id: string) => {
+            const country = atlas.getEntity(id);
+            const dossier = getCountryHistoricalDevelopmentDossier(country?.name || id);
+            return dossier.colonialPower.split('(')[0].trim();
+          }, 
+          isLeader: () => 0, 
+          getValue: () => 0 
+        }
       ]
     }
   ];

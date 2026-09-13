@@ -366,9 +366,21 @@ export async function fetchLiveWikipediaSummary(articleTitle: string): Promise<{
 
       RUNTIME_SUMMARY_CACHE.set(cleanTitle, result);
       try {
+        // Safe localStorage with LRU eviction safeguard (cap at 150 summaries to avoid QuotaExceededError)
         localStorage.setItem(localKey, JSON.stringify(result));
+        const indexKey = 'wiki_summary_index';
+        const rawIndex = localStorage.getItem(indexKey);
+        const indexList: string[] = rawIndex ? JSON.parse(rawIndex) : [];
+        if (!indexList.includes(cleanTitle)) {
+          indexList.push(cleanTitle);
+          if (indexList.length > 150) {
+            const oldest = indexList.shift();
+            if (oldest) localStorage.removeItem(`wiki_summary_${oldest}`);
+          }
+          localStorage.setItem(indexKey, JSON.stringify(indexList));
+        }
       } catch {
-        // quota or iframe block
+        // Safe fallback for sandboxed iframes or quota exhaustion
       }
 
       return result;

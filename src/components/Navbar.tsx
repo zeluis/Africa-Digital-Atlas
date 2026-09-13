@@ -6,6 +6,8 @@ import { useTranslation } from '../i18n/LanguageContext';
 import { useDensity } from '../contexts/DensityContext';
 import { JapandiTooltip } from './JapandiTooltip';
 import { CanonicalNavTab } from './NavigationDrawer';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
+import { AfricaUnLogo } from './AfricaUnLogo';
 import { 
   Globe, 
   Menu,
@@ -14,7 +16,8 @@ import {
   Sun, 
   Moon,
   SlidersHorizontal,
-  Database
+  Database,
+  WifiOff
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -28,6 +31,7 @@ interface NavbarProps {
   theme?: 'dark' | 'light';
   onToggleTheme?: () => void;
   onOpenApiHub?: () => void;
+  activeRegion?: string;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -40,10 +44,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   isDrawerOpen,
   theme = 'dark',
   onToggleTheme,
-  onOpenApiHub
+  onOpenApiHub,
+  activeRegion
 }) => {
   const { t } = useTranslation();
   const { density, cycleDensity } = useDensity();
+  const isOnline = useNetworkStatus();
   const allEntities = atlas.getAllEntities();
   const manifest = atlas.getManifest();
 
@@ -65,12 +71,25 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Logo & Brand */}
             <div 
-              className="flex items-center gap-3 cursor-pointer select-none" 
+              className="flex items-center gap-3 cursor-pointer select-none group/logo" 
               onClick={() => onSelectTab('overview')}
             >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center shadow-lg shadow-emerald-950/20 border border-emerald-400/30 shrink-0">
-                <Globe className="w-6 h-6 text-zinc-950 stroke-[2.2]" />
-              </div>
+              <AfricaUnLogo 
+                className="w-10 h-10 shrink-0" 
+                activeRegion={activeRegion}
+                onSelectRegion={(reg) => {
+                  const regTabMap: Record<string, CanonicalNavTab> = {
+                    'Northern Africa': 'region-northern',
+                    'Western Africa': 'region-western',
+                    'Central Africa': 'region-central',
+                    'Eastern Africa': 'region-eastern',
+                    'Southern Africa': 'region-southern'
+                  };
+                  if (regTabMap[reg]) {
+                    onSelectTab(regTabMap[reg]);
+                  }
+                }}
+              />
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-extrabold text-base sm:text-lg tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
@@ -93,6 +112,24 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Right Section: Quick Search, Live Indicator, Language Selector, Country Dropdown & Theme Toggle */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Network Status: Offline indicator pill when offline */}
+            {!isOnline && (
+              <JapandiTooltip
+                title="PWA Offline Mode Active"
+                content="Operating from cached sovereign cartography, pre-loaded Wikipedia archives, and local indicators. Live API queries will resume upon reconnection."
+                regionalAccent="#f59e0b"
+              >
+                <div 
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-amber-300/80 dark:border-amber-700/80 bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 text-[11px] font-mono font-bold select-none"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <WifiOff className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                  <span className="hidden xs:inline tracking-wider uppercase">Offline PWA</span>
+                </div>
+              </JapandiTooltip>
+            )}
+
             {/* Real-time Live Data Status Indicator with Japandi Tooltip */}
             <JapandiTooltip
               title="Multilateral Data APIs (16 Active)"

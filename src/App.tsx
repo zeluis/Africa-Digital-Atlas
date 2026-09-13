@@ -74,17 +74,34 @@ function AppContent() {
   // Mobile Bottom Navigation Sheet
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
 
-  // Helper to trigger brief transition skeleton loader for perceived performance
+  // Helper to trigger brief transition skeleton loader and native View Transitions for smooth morphing
   const startTransition = (callback: () => void) => {
     if (transitionTimerRef.current) {
       window.clearTimeout(transitionTimerRef.current);
     }
-    setIsTransitioning(true);
-    callback();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    transitionTimerRef.current = window.setTimeout(() => {
-      setIsTransitioning(false);
-    }, 180);
+    
+    // Future-proof CSS View Transitions API (Chrome 111+) with graceful fallback
+    const execute = () => {
+      setIsTransitioning(true);
+      callback();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      transitionTimerRef.current = window.setTimeout(() => {
+        setIsTransitioning(false);
+      }, 180);
+    };
+
+    if (typeof document !== 'undefined' && 'startViewTransition' in document && typeof (document as any).startViewTransition === 'function') {
+      try {
+        (document as any).startViewTransition(() => {
+          execute();
+        });
+        return;
+      } catch {
+        execute();
+      }
+    } else {
+      execute();
+    }
   };
 
   useEffect(() => {

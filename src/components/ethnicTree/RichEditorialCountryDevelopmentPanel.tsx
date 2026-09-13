@@ -13,7 +13,8 @@ import {
   ChevronDown, 
   ChevronUp, 
   ShieldCheck,
-  Compass
+  Compass,
+  Ship
 } from 'lucide-react';
 import { 
   getCountryHistoricalDevelopmentDossier, 
@@ -27,6 +28,7 @@ interface RichEditorialCountryDevelopmentPanelProps {
   tastVolumeShare?: number;
   onNavigateToMolecular?: () => void;
   onNavigateToFoundations?: () => void;
+  onNavigateToSlaveTrade?: () => void;
   onSelectReport?: (reportId: string) => void;
   compact?: boolean;
 }
@@ -38,6 +40,7 @@ export const RichEditorialCountryDevelopmentPanel: React.FC<RichEditorialCountry
   tastVolumeShare,
   onNavigateToMolecular,
   onNavigateToFoundations,
+  onNavigateToSlaveTrade,
   onSelectReport,
   compact = false
 }) => {
@@ -219,6 +222,31 @@ export const RichEditorialCountryDevelopmentPanel: React.FC<RichEditorialCountry
                 </div>
                 <ArrowRight className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
               </button>
+
+              {/* SlaveVoyages Flow Map Cross-Reference */}
+              {onNavigateToSlaveTrade && (
+                <button
+                  type="button"
+                  onClick={onNavigateToSlaveTrade}
+                  className="sm:col-span-2 p-2.5 rounded-xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20 border border-amber-500/30 text-left transition-all cursor-pointer group flex items-center justify-between active:scale-98"
+                  title="Cross-reference embarkation volume in Atlantic Flow Map"
+                >
+                  <div className="flex items-center gap-2 min-w-0 pr-1">
+                    <div className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-700 dark:text-amber-300 grid place-items-center shrink-0">
+                      <Ship className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="block text-[11px] font-bold text-amber-900 dark:text-amber-200 group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors truncate">
+                        Atlantic Flow Map & SlaveVoyages Registry
+                      </span>
+                      <span className="block text-[9px] text-[#7D6B5A] dark:text-[#A79888] truncate">
+                        Cross-reference embarkation zones, captive manifests, and routes for {countryName}
+                      </span>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                </button>
+              )}
             </div>
           </div>
 

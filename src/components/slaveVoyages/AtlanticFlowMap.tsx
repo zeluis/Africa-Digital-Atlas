@@ -231,6 +231,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
       {/* Main SVG Vector Canvas */}
       <div className="relative w-full aspect-[16/9] min-h-[420px] max-h-[620px] bg-[#020617] flex items-center justify-center overflow-hidden">
         <svg
+          id="atlantic-flow-map-svg"
           viewBox="0 0 1000 580"
           className="w-full h-full object-contain"
           preserveAspectRatio="xMidYMid meet"

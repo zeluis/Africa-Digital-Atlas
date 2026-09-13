@@ -30,6 +30,7 @@ import { VoyageDossierModal } from '../components/slaveVoyages/VoyageDossierModa
 import { QueryBuilderPanel } from '../components/slaveVoyages/QueryBuilderPanel';
 import { MolecularLegaciesView } from '../components/slaveVoyages/MolecularLegaciesView';
 import { AfricanDevelopmentMasterReportView } from './AfricanDevelopmentMasterReportView';
+import { AcademicExportModal } from '../components/AcademicExportModal';
 import { 
   Anchor, 
   Compass, 
@@ -55,7 +56,8 @@ import {
   Dna,
   ArrowRight,
   Sparkles,
-  Scale
+  Scale,
+  Download
 } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 
@@ -86,6 +88,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
   const [selectedRoute, setSelectedRoute] = useState<RegionalRouteFlow | null>(null);
   const [peopleSearch, setPeopleSearch] = useState('');
   const [enslaverSearch, setEnslaverSearch] = useState('');
+  const [isExportOpen, setIsExportOpen] = useState(false);
 
   // Filtered dataset
   const filterResult = useMemo(() => {
@@ -221,8 +224,18 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
             </div>
           </div>
 
-          <div className="text-xs font-mono text-zinc-400">
-            Current Filter View: <strong className="text-emerald-400">{filterResult.totalMatches}</strong> matching voyages
+          <div className="flex items-center gap-3">
+            <div className="text-xs font-mono text-zinc-400">
+              Current Filter View: <strong className="text-emerald-400">{filterResult.totalMatches}</strong> matching voyages
+            </div>
+            <button
+              onClick={() => setIsExportOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-xs font-semibold cursor-pointer transition-colors shadow-xs"
+              title="Export Academic Citation & SVG"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Export & Cite</span>
+            </button>
           </div>
         </div>
 
@@ -1111,6 +1124,23 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
       <VoyageDossierModal
         voyage={selectedVoyage}
         onClose={() => setSelectedVoyage(null)}
+      />
+
+      {/* Academic Citation & Vector Export Modal */}
+      <AcademicExportModal
+        isOpen={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+        title="Atlantic Slave Trade Data Atlas & Maritime Flow Corridors"
+        sourceContext="SlaveVoyages Consortium (api.slavevoyages.org), TAST Database v2026.1"
+        citationMetadata={{
+          authors: ['SlaveVoyages Consortium', 'Africalia Historical Analytics Group', 'Eltis et al.'],
+          year: 2026,
+          datasetName: 'Trans-Atlantic and Intra-American Slave Trade Databases',
+          url: window?.location?.href || 'https://africalia.org/#slave-trade',
+          doi: '10.5281/zenodo.slavevoyages.2026',
+          version: SLAVEVOYAGES_METADATA.version
+        }}
+        svgContainerId="atlantic-flow-map-svg"
       />
     </div>
   );
