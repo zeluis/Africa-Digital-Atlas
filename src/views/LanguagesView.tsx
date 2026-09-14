@@ -16,8 +16,11 @@ import {
   ChevronRight,
   Landmark,
   Layers,
-  Award
+  Award,
+  Volume2
 } from 'lucide-react';
+import { VoiceWelcomeFab } from '../components/VoiceWelcomeFab';
+import { LANGUAGE_FAMILY_GREETINGS } from '../utils/africaliaVoiceEngine';
 
 interface LanguageFamily {
   id: string;
@@ -281,51 +284,67 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
       {activeTab === 'families' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {LANGUAGE_FAMILIES.map(family => (
-              <div
-                key={family.id}
-                onClick={() => setSelectedFamilyId(family.id)}
-                className={`rounded-3xl border p-6 transition-all cursor-pointer ${
-                  selectedFamilyId === family.id
-                    ? 'border-emerald-500 bg-emerald-950/10 dark:bg-emerald-950/30 shadow-xl ring-1 ring-emerald-500'
-                    : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-zinc-300 dark:hover:border-zinc-700'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">
-                    {family.languagesCount}
-                  </span>
-                  <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                    {family.speakers}
-                  </span>
-                </div>
-
-                <h3 className="text-xl font-extrabold text-zinc-900 dark:text-zinc-100 mb-2">
-                  {family.name}
-                </h3>
-                <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4 line-clamp-3">
-                  {family.description}
-                </p>
-
-                <div className="space-y-2 pt-3 border-t border-zinc-200 dark:border-zinc-800">
-                  <div className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
-                    Key Languages:
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {family.keyLanguages.slice(0, 4).map(l => (
-                      <span key={l} className="text-[10px] font-medium bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-300 px-2 py-0.5 rounded-md border border-zinc-200 dark:border-zinc-800">
-                        {l}
+            {LANGUAGE_FAMILIES.map(family => {
+              const greeting = LANGUAGE_FAMILY_GREETINGS[family.id];
+              return (
+                <div
+                  key={family.id}
+                  onClick={() => setSelectedFamilyId(family.id)}
+                  className={`relative group/familyCard rounded-3xl border p-6 transition-all cursor-pointer ${
+                    selectedFamilyId === family.id
+                      ? 'border-emerald-500 bg-emerald-950/10 dark:bg-emerald-950/30 shadow-xl ring-1 ring-emerald-500'
+                      : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-zinc-300 dark:hover:border-zinc-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-3 gap-2">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                      {family.languagesCount}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 hidden xs:inline">
+                        {family.speakers}
                       </span>
-                    ))}
+                      {greeting && (
+                        <VoiceWelcomeFab
+                          text={greeting.nativePhrase}
+                          langTag={greeting.langTag}
+                          languageName={greeting.languageName}
+                          subtitle={greeting.meaningEn}
+                          tooltip={`Listen to Welcome in ${greeting.languageName}`}
+                          ariaLabel={`Listen to welcome greeting in ${family.name}`}
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  <h3 className="text-xl font-extrabold text-zinc-900 dark:text-zinc-100 mb-2">
+                    {family.name}
+                  </h3>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4 line-clamp-3">
+                    {family.description}
+                  </p>
+
+                  <div className="space-y-2 pt-3 border-t border-zinc-200 dark:border-zinc-800">
+                    <div className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
+                      Key Languages:
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {family.keyLanguages.slice(0, 4).map(l => (
+                        <span key={l} className="text-[10px] font-medium bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-300 px-2 py-0.5 rounded-md border border-zinc-200 dark:border-zinc-800">
+                          {l}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Detailed Selected Family Deep Dive */}
           {(() => {
             const family = LANGUAGE_FAMILIES.find(f => f.id === selectedFamilyId) || LANGUAGE_FAMILIES[0];
+            const deepGreeting = LANGUAGE_FAMILY_GREETINGS[family.id];
             return (
               <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-xl space-y-6">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-5">
@@ -355,6 +374,33 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                     <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
                       {family.description}
                     </p>
+
+                    {/* Welcoming Voice Greeting Bar */}
+                    {deepGreeting && (
+                      <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-3">
+                        <div className="space-y-0.5">
+                          <div className="text-[10px] font-mono uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1.5">
+                            <span>Welcome Greeting Voice</span>
+                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-sans">
+                              {deepGreeting.languageName}
+                            </span>
+                          </div>
+                          <p className="text-sm font-serif font-bold text-zinc-900 dark:text-zinc-100 italic">
+                            "{deepGreeting.nativePhrase}"
+                          </p>
+                          <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                            Phonetics: <code className="font-mono text-[11px] text-emerald-600 dark:text-emerald-400">{deepGreeting.phoneticGuide}</code> • <em>"{deepGreeting.meaningEn}"</em>
+                          </p>
+                        </div>
+                        <VoiceWelcomeFab
+                          text={deepGreeting.nativePhrase}
+                          langTag={deepGreeting.langTag}
+                          languageName={deepGreeting.languageName}
+                          subtitle={deepGreeting.meaningEn}
+                          tooltip={`Listen to Welcome in ${deepGreeting.languageName}`}
+                        />
+                      </div>
+                    )}
 
                     <div className="space-y-2 pt-3">
                       <h5 className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase">

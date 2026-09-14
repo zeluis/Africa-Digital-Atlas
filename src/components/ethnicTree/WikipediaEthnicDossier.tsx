@@ -18,6 +18,7 @@ import { WikipediaEthnicEntry } from '../../data/wikipediaEthnicAtlas';
 import { getEthnicDossier, parseLanguageChain } from '../../services/wikipediaService';
 import { RichEditorialCountryDevelopmentPanel } from './RichEditorialCountryDevelopmentPanel';
 import { AFRICAN_MOTHER_TONGUES, playMotherTongueAudio } from '../../data/motherTonguesAudioData';
+import { useTranslation } from '../../i18n';
 
 interface WikipediaEthnicDossierProps {
   ethnicName: string;
@@ -33,6 +34,7 @@ interface WikipediaEthnicDossierProps {
   onNavigateToFoundations?: () => void;
   onNavigateToSlaveTrade?: () => void;
   onSelectReport?: (reportId: string) => void;
+  onNavigateToLanguages?: () => void;
 }
 
 export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
@@ -48,8 +50,10 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
   onNavigateToMolecular,
   onNavigateToFoundations,
   onNavigateToSlaveTrade,
-  onSelectReport
+  onSelectReport,
+  onNavigateToLanguages
 }) => {
+  const { language } = useTranslation();
   const [dossier, setDossier] = useState<WikipediaEthnicEntry | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [imageFailed, setImageFailed] = useState<boolean>(false);
@@ -59,7 +63,7 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
     setIsLoading(true);
     setImageFailed(false);
 
-    getEthnicDossier(ethnicName).then((data) => {
+    getEthnicDossier(ethnicName, language).then((data) => {
       if (isMounted) {
         setDossier(data);
         setIsLoading(false);
@@ -69,7 +73,7 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [ethnicName]);
+  }, [ethnicName, language]);
 
   const languageChain = dossier ? parseLanguageChain(dossier.languages) : [];
 
@@ -220,9 +224,12 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
             )}
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-white/50 dark:bg-black/25 border border-[#E5DDD0]/80 dark:border-[#38322B]/80 shadow-xs space-y-2">
+          <div 
+            id="wikipedia-dossier-summary-card"
+            className="p-4 rounded-2xl bg-white/70 dark:bg-black/35 backdrop-blur-xs border border-[#E5DDD0] dark:border-[#38322B] shadow-xs hover:border-[#E67E48]/40 dark:hover:border-[#E67E48]/40 transition-colors space-y-2.5"
+          >
             {/* Prominent Canonical Wikipedia Title */}
-            <div className="flex items-baseline justify-between gap-2 border-b border-[#E5DDD0]/50 dark:border-[#38322B]/50 pb-1.5">
+            <div className="flex items-baseline justify-between gap-2 border-b border-[#E5DDD0]/60 dark:border-[#38322B]/60 pb-2">
               <h4 className="text-sm font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6]">
                 {dossier?.canonicalTitle || dossier?.article || `${ethnicName} people`}
               </h4>
@@ -254,6 +261,35 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
               </p>
             )}
           </div>
+
+          {/* Sophisticated Link to the Languages Page */}
+          {onNavigateToLanguages && (
+            <button
+              id="dossier-languages-page-link"
+              type="button"
+              onClick={onNavigateToLanguages}
+              className="w-full mt-2.5 p-3 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-[#E67E48]/10 to-amber-500/10 hover:from-emerald-500/20 hover:via-[#E67E48]/20 hover:to-amber-500/20 border border-emerald-500/30 dark:border-emerald-500/40 text-[#2B241E] dark:text-[#F5EFE6] transition-all duration-200 cursor-pointer flex items-center justify-between group/langDossier shadow-xs hover:shadow-md active:scale-[0.99]"
+              title="Explore 2,000+ African languages and 6 major linguistic phyla in the Languages Atlas"
+            >
+              <div className="flex items-center gap-2.5 text-left">
+                <div className="w-8 h-8 rounded-xl bg-emerald-500/15 dark:bg-emerald-500/25 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover/langDossier:scale-110 transition-transform shadow-xs">
+                  <Languages className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                    <span>Explore African Languages Atlas</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 font-mono font-bold uppercase tracking-wider">
+                      6 Phyla
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-[#7D6B5A] dark:text-[#B5A492]">
+                    Deep dive into 6 phyla, phonetic roots & spoken greetings
+                  </div>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400 group-hover/langDossier:translate-x-1 transition-transform" />
+            </button>
+          )}
         </div>
 
         {/* Linguistic Family Lineage */}

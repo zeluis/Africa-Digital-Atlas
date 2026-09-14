@@ -77,6 +77,7 @@ interface NavigationDrawerProps {
   isDesktopOpen: boolean;
   isMobileOpen: boolean;
   onCloseMobile: () => void;
+  onOpenOnboarding?: () => void;
 }
 
 interface NavItemDef {
@@ -143,7 +144,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onSelectTab,
   isDesktopOpen,
   isMobileOpen,
-  onCloseMobile
+  onCloseMobile,
+  onOpenOnboarding
 }) => {
   const { t } = useTranslation();
 
@@ -441,7 +443,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             >
               <div className="flex items-center gap-3">
                 <Globe2 className={`w-5 h-5 ${currentTab === 'overview' ? 'text-emerald-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
-                <span>Overview</span>
+                <span>{t('nav.overview', 'Overview')}</span>
               </div>
               {currentTab === 'overview' && (
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -462,7 +464,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               >
                 <div className="flex items-center gap-3">
                   <Compass className={`w-5 h-5 ${isExploreGroupActive ? 'text-blue-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
-                  <span>Explore</span>
+                  <span>{t('nav.explore', 'Explore')}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10px] font-mono text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md">
@@ -528,7 +530,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               >
                 <div className="flex items-center gap-3">
                   <Anchor className={`w-5 h-5 ${isHistoricalLegaciesGroupActive ? 'text-amber-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
-                  <span className="truncate">History</span>
+                  <span className="truncate">{t('nav.history', 'History')}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10px] font-mono font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded-md border border-amber-500/20">
@@ -566,7 +568,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                             <div className="flex items-center gap-2.5 min-w-0 pr-1">
                               <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-amber-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                               <div className="flex flex-col min-w-0">
-                                <span className="truncate">{sub.label}</span>
+                                <span className="truncate">{t(`report.title.${sub.id}`, sub.label)}</span>
                                 <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
                               </div>
                             </div>
@@ -594,7 +596,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               >
                 <div className="flex items-center gap-3">
                   <BookOpen className={`w-5 h-5 ${isReportsGroupActive ? 'text-indigo-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
-                  <span>Reports</span>
+                  <span>{t('nav.reports', 'Reports')}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10px] font-mono font-bold text-indigo-500 bg-indigo-500/10 px-1.5 py-0.5 rounded-md border border-indigo-500/20">
@@ -637,7 +639,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                 <div className="flex items-center gap-2 min-w-0 pr-1">
                                   <SubIcon className={`w-3.5 h-3.5 shrink-0 ${isSubActive ? 'text-amber-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                                   <div className="flex flex-col min-w-0">
-                                    <span className="truncate leading-tight">{sub.label}</span>
+                                    <span className="truncate leading-tight">{t(`report.title.${sub.id}`, sub.label)}</span>
                                     <span className="text-[9px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
                                   </div>
                                 </div>
@@ -667,7 +669,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               >
                 <div className="flex items-center gap-3">
                   <Globe2 className={`w-5 h-5 ${isRegionsGroupActive ? 'text-purple-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
-                  <span>Regions</span>
+                  <span>{t('nav.regions', 'Regions')}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10px] font-mono text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md">
@@ -733,7 +735,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               >
                 <div className="flex items-center gap-3">
                   <BarChart3 className={`w-5 h-5 ${isAnalyticsGroupActive ? 'text-emerald-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
-                  <span>Analytics</span>
+                  <span>{t('nav.analytics', 'Analytics')}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10px] font-mono text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md">
@@ -892,6 +894,25 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           </div>
           <ExternalLink className="w-3.5 h-3.5 text-zinc-400 opacity-60" />
         </a>
+
+        {/* Orientation & Onboarding Trigger */}
+        {onOpenOnboarding && (
+          <button
+            onClick={() => {
+              if (isMobile) onCloseMobile();
+              onOpenOnboarding();
+            }}
+            className="w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer py-2 px-3 text-xs text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 dark:hover:bg-amber-500/15 mt-1 font-medium"
+          >
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+              <span>{t('nav.orientation', 'Orientation & Heritage')}</span>
+            </div>
+            <span className="text-[10px] font-mono uppercase bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-700 dark:text-amber-300">
+              3-Step
+            </span>
+          </button>
+        )}
 
         <div className="pt-4 mt-2 border-t border-zinc-100 dark:border-zinc-800/50 px-2 select-none">
           <div className="text-[10px] leading-relaxed text-zinc-400 dark:text-zinc-500">

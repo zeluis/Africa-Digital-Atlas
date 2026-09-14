@@ -1,10 +1,20 @@
 import React from 'react';
+import { RadialTreeSkeleton } from './ethnicTree/RadialTreeSkeleton';
 
 interface MainContentSkeletonProps {
   viewType?: string;
 }
 
-export const MainContentSkeleton: React.FC<MainContentSkeletonProps> = () => {
+export const MainContentSkeleton: React.FC<MainContentSkeletonProps> = ({ viewType }) => {
+  // If navigating to the Sovereign Radial Ethnic Tree of Life, render the specialized radial geometry skeleton
+  if (viewType === 'ethnic-tree') {
+    return (
+      <div className="w-full h-[calc(100vh-140px)] min-h-[580px] rounded-3xl overflow-hidden border border-amber-900/30 shadow-2xl">
+        <RadialTreeSkeleton />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 animate-in fade-in duration-150 w-full" aria-busy="true" aria-label="Loading content">
       {/* Indeterminate Shimmer Progress Bar at Top of Content */}

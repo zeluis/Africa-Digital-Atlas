@@ -299,8 +299,12 @@ export function parseLanguageChain(languageStr: string): string[] {
 
 /**
  * Fetch Wikipedia summary dynamically from official Wikipedia REST API (CORS enabled)
+ * Supports multilingual subdomains (e.g., es.wikipedia.org, it.wikipedia.org, nl.wikipedia.org, pt.wikipedia.org, fr.wikipedia.org, de.wikipedia.org)
  */
-export async function fetchLiveWikipediaSummary(articleTitle: string): Promise<{
+export async function fetchLiveWikipediaSummary(
+  articleTitle: string,
+  lang: string = 'en'
+): Promise<{
   title?: string;
   canonicalTitle?: string;
   extract?: string;
@@ -309,21 +313,76 @@ export async function fetchLiveWikipediaSummary(articleTitle: string): Promise<{
   url?: string;
 } | null> {
   const cleanTitle = articleTitle.replace(/\s+/g, '_');
-  if (RUNTIME_SUMMARY_CACHE.has(cleanTitle)) {
-    return RUNTIME_SUMMARY_CACHE.get(cleanTitle) || null;
+  const cacheKey = `${lang}:${cleanTitle}`;
+  if (RUNTIME_SUMMARY_CACHE.has(cacheKey)) {
+    return RUNTIME_SUMMARY_CACHE.get(cacheKey) || null;
   }
 
   // Check localStorage for offline persistence
-  const localKey = `wiki_summary_${cleanTitle}`;
+  const localKey = `wiki_summary_${lang}_${cleanTitle}`;
   try {
     const stored = localStorage.getItem(localKey);
     if (stored) {
       const parsed = JSON.parse(stored);
-      RUNTIME_SUMMARY_CACHE.set(cleanTitle, parsed);
+      RUNTIME_SUMMARY_CACHE.set(cacheKey, parsed);
       return parsed;
     }
   } catch {
     // ignore localStorage errors in sandboxed iframes
+  }
+
+  // Helper to fetch summary from a specific subdomain and title
+  const tryFetchSummary = async (targetLang: string, titleToFetch: string) => {
+    try {
+      const res = await fetch(
+        `https://${targetLang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(titleToFetch)}`,
+        { headers: { Accept: 'application/json' } }
+      );
+      if (!res.ok) return null;
+      const j = await res.json();
+      if (j.type === 'disambiguation') return null;
+      if (j.extract && (j.extract.includes('may refer to:') || j.extract.length < 35)) return null;
+
+      return {
+        title: j.title,
+        canonicalTitle: j.title || titleToFetch.replace(/_/g, ' '),
+        extract: j.extract,
+        thumbnail: j.thumbnail?.source || null,
+        description: j.description,
+        url: j.content_urls?.desktop?.page
+      };
+    } catch {
+      return null;
+    }
+  };
+
+  // If language is not English, first attempt direct translation lookup via Wikipedia interwiki langlinks
+  if (lang && lang !== 'en') {
+    try {
+      const langlinkRes = await fetch(
+        `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(cleanTitle)}&prop=langlinks&lllang=${encodeURIComponent(lang)}&format=json&origin=*`
+      );
+      if (langlinkRes.ok) {
+        const langlinkData = await langlinkRes.json();
+        const pages = langlinkData?.query?.pages;
+        if (pages) {
+          const pageId = Object.keys(pages)[0];
+          const foreignTitle = pages[pageId]?.langlinks?.[0]?.['*'];
+          if (foreignTitle) {
+            const localizedSummary = await tryFetchSummary(lang, foreignTitle.replace(/\s+/g, '_'));
+            if (localizedSummary && localizedSummary.extract) {
+              RUNTIME_SUMMARY_CACHE.set(cacheKey, localizedSummary);
+              try {
+                localStorage.setItem(localKey, JSON.stringify(localizedSummary));
+              } catch {}
+              return localizedSummary;
+            }
+          }
+        }
+      }
+    } catch {
+      // Fall through to standard candidate searching
+    }
   }
 
   // Generate sensible search candidates
@@ -337,55 +396,34 @@ export async function fetchLiveWikipediaSummary(articleTitle: string): Promise<{
     candidates.push(cleanTitle);
   }
 
-  for (const candidate of candidates) {
-    try {
-      const res = await fetch(
-        `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(candidate)}`,
-        {
-          headers: {
-            'Accept': 'application/json'
+  // First try the requested language
+  const searchLangs = lang && lang !== 'en' ? [lang, 'en'] : ['en'];
+
+  for (const targetLang of searchLangs) {
+    for (const candidate of candidates) {
+      const result = await tryFetchSummary(targetLang, candidate);
+      if (result) {
+        RUNTIME_SUMMARY_CACHE.set(cacheKey, result);
+        try {
+          // Safe localStorage with LRU eviction safeguard (cap at 150 summaries to avoid QuotaExceededError)
+          localStorage.setItem(localKey, JSON.stringify(result));
+          const indexKey = 'wiki_summary_index';
+          const rawIndex = localStorage.getItem(indexKey);
+          const indexList: string[] = rawIndex ? JSON.parse(rawIndex) : [];
+          if (!indexList.includes(cacheKey)) {
+            indexList.push(cacheKey);
+            if (indexList.length > 150) {
+              const oldest = indexList.shift();
+              if (oldest) localStorage.removeItem(`wiki_summary_${oldest}`);
+            }
+            localStorage.setItem(indexKey, JSON.stringify(indexList));
           }
+        } catch {
+          // Safe fallback for sandboxed iframes or quota exhaustion
         }
-      );
 
-      if (!res.ok) continue;
-
-      const j = await res.json();
-      // Skip disambiguation pages
-      if (j.type === 'disambiguation') continue;
-      if (j.extract && (j.extract.includes('may refer to:') || j.extract.length < 40)) continue;
-
-      const result = {
-        title: j.title,
-        canonicalTitle: j.title || candidate.replace(/_/g, ' '),
-        extract: j.extract,
-        thumbnail: j.thumbnail?.source || null,
-        description: j.description,
-        url: j.content_urls?.desktop?.page
-      };
-
-      RUNTIME_SUMMARY_CACHE.set(cleanTitle, result);
-      try {
-        // Safe localStorage with LRU eviction safeguard (cap at 150 summaries to avoid QuotaExceededError)
-        localStorage.setItem(localKey, JSON.stringify(result));
-        const indexKey = 'wiki_summary_index';
-        const rawIndex = localStorage.getItem(indexKey);
-        const indexList: string[] = rawIndex ? JSON.parse(rawIndex) : [];
-        if (!indexList.includes(cleanTitle)) {
-          indexList.push(cleanTitle);
-          if (indexList.length > 150) {
-            const oldest = indexList.shift();
-            if (oldest) localStorage.removeItem(`wiki_summary_${oldest}`);
-          }
-          localStorage.setItem(indexKey, JSON.stringify(indexList));
-        }
-      } catch {
-        // Safe fallback for sandboxed iframes or quota exhaustion
+        return result;
       }
-
-      return result;
-    } catch {
-      // try next candidate
     }
   }
 
@@ -395,11 +433,11 @@ export async function fetchLiveWikipediaSummary(articleTitle: string): Promise<{
 /**
  * Get enriched Wikipedia dossier for any ethnic group name in the tree
  */
-export async function getEthnicDossier(rawName: string): Promise<WikipediaEthnicEntry | null> {
+export async function getEthnicDossier(rawName: string, lang: string = 'en'): Promise<WikipediaEthnicEntry | null> {
   const baseEntry = findWikipediaEntry(rawName);
   if (!baseEntry) {
     // Attempt dynamic fetch for unknown group directly
-    const live = await fetchLiveWikipediaSummary(rawName);
+    const live = await fetchLiveWikipediaSummary(rawName, lang);
     if (live && live.extract) {
       return {
         name: rawName,
@@ -418,22 +456,22 @@ export async function getEthnicDossier(rawName: string): Promise<WikipediaEthnic
     return null;
   }
 
-  // If we already have extract & thumbnail, return immediately with canonicalTitle
-  if (baseEntry.extract && baseEntry.thumbnail) {
+  // If we are on English and already have extract & thumbnail, return immediately with canonicalTitle
+  if (lang === 'en' && baseEntry.extract && baseEntry.thumbnail) {
     return {
       ...baseEntry,
       canonicalTitle: baseEntry.canonicalTitle || baseEntry.article
     };
   }
 
-  // Otherwise fetch live from Wikipedia REST API in background
-  const live = await fetchLiveWikipediaSummary(baseEntry.article || rawName);
+  // Fetch live from Wikipedia REST API in requested language
+  const live = await fetchLiveWikipediaSummary(baseEntry.article || rawName, lang);
   if (live) {
     return {
       ...baseEntry,
       canonicalTitle: live.canonicalTitle || baseEntry.canonicalTitle || baseEntry.article,
       extract: live.extract || baseEntry.extract,
-      thumbnail: live.thumbnail !== undefined ? live.thumbnail : baseEntry.thumbnail,
+      thumbnail: live.thumbnail !== undefined && live.thumbnail !== null ? live.thumbnail : baseEntry.thumbnail,
       description: live.description || baseEntry.description,
       url: live.url || baseEntry.url
     };

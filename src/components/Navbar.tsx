@@ -2,6 +2,8 @@ import React from 'react';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from './CountryFlag';
 import { LanguageSelector } from './LanguageSelector';
+import { VoiceWelcomeFab } from './VoiceWelcomeFab';
+import { TOP_BAR_UI_GREETINGS } from '../utils/africaliaVoiceEngine';
 import { useTranslation } from '../i18n/LanguageContext';
 import { useDensity } from '../contexts/DensityContext';
 import { JapandiTooltip } from './JapandiTooltip';
@@ -17,7 +19,8 @@ import {
   Moon,
   SlidersHorizontal,
   Database,
-  WifiOff
+  WifiOff,
+  Sparkles
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -31,6 +34,7 @@ interface NavbarProps {
   theme?: 'dark' | 'light';
   onToggleTheme?: () => void;
   onOpenApiHub?: () => void;
+  onOpenOnboarding?: () => void;
   activeRegion?: string;
 }
 
@@ -45,13 +49,16 @@ export const Navbar: React.FC<NavbarProps> = ({
   theme = 'dark',
   onToggleTheme,
   onOpenApiHub,
+  onOpenOnboarding,
   activeRegion
 }) => {
-  const { t } = useTranslation();
+  const { t, language, currentLanguageOption } = useTranslation();
   const { density, cycleDensity } = useDensity();
   const isOnline = useNetworkStatus();
   const allEntities = atlas.getAllEntities();
   const manifest = atlas.getManifest();
+
+  const currentGreeting = TOP_BAR_UI_GREETINGS[language] || TOP_BAR_UI_GREETINGS['en'];
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/90 backdrop-blur-md transition-colors duration-200">
@@ -168,6 +175,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Language Selector Dropdown (12 Languages) */}
             <LanguageSelector />
 
+            {/* Top Bar Voice Welcome FAB (Speaks Welcome Greeting in Selected UI Language) */}
+            <VoiceWelcomeFab
+              variant="navbar"
+              text={currentGreeting.phrase}
+              langTag={currentGreeting.langTag}
+              languageName={currentLanguageOption.name}
+              tooltip={`Listen to Africalia Welcome in ${currentLanguageOption.name}`}
+              ariaLabel={`Play Africalia Welcome greeting in ${currentLanguageOption.name}`}
+            />
+
             {/* Global Search Button */}
             <button
               onClick={onOpenSearch}
@@ -180,6 +197,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ⌘K
               </kbd>
             </button>
+
+            {/* Curated Onboarding & Historical Framework Trigger */}
+            {onOpenOnboarding && (
+              <button
+                onClick={onOpenOnboarding}
+                className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 hover:bg-amber-500/10 hover:border-amber-500/30 text-zinc-700 dark:text-zinc-300 hover:text-amber-600 dark:hover:text-amber-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                title="Africalia Curated Orientation & Historical Framework"
+                aria-label="Open Africalia Orientation"
+              >
+                <Sparkles className="w-4 h-4 text-amber-500" />
+              </button>
+            )}
 
             {/* Quick Country Dropdown Jumper */}
             <div className="relative flex items-center">

@@ -173,24 +173,36 @@ export const AFRICAN_MOTHER_TONGUES: Record<string, MotherTongueEntry> = {
   }
 };
 
+import { getAfricanFemaleVoice } from '../utils/africaliaVoiceEngine';
+
 /**
- * Play an indigenous musical greeting soundscape using the Web Audio API
+ * Play an indigenous musical greeting soundscape using strictly female voice & harmonic Web Audio
  */
 export function playMotherTongueAudio(entry: MotherTongueEntry) {
   if (typeof window === 'undefined') return;
 
-  // 1. Try Browser Native Speech Synthesis if available and supported
-  let spoken = false;
+  // 1. Play Browser Native Speech Synthesis with strictly female voice selection
   if ('speechSynthesis' in window) {
     try {
+      window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(entry.greetingText);
-      utterance.lang = entry.bcp47Tag;
-      utterance.rate = 0.92;
-      utterance.pitch = 1.05;
-      window.speechSynthesis.speak(utterance);
-      spoken = true;
+      const femaleVoice = getAfricanFemaleVoice(entry.bcp47Tag);
+      if (femaleVoice) {
+        utterance.voice = femaleVoice;
+        utterance.lang = femaleVoice.lang;
+      } else {
+        utterance.lang = entry.bcp47Tag;
+      }
+      utterance.rate = 0.90;
+      utterance.pitch = 1.06;
+      utterance.volume = 1.0;
+
+      // Slight delay so the opening kalimba chime resonates cleanly
+      setTimeout(() => {
+        window.speechSynthesis.speak(utterance);
+      }, 150);
     } catch {
-      spoken = false;
+      // Graceful fallback
     }
   }
 

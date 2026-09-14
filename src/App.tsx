@@ -3,6 +3,7 @@ import { Navbar } from './components/Navbar';
 import { NavigationDrawer, CanonicalNavTab } from './components/NavigationDrawer';
 import { SearchModal } from './components/SearchModal';
 import { MultiSourceApiHubModal } from './components/MultiSourceApiHubModal';
+import { OnboardingModal } from './components/OnboardingModal';
 import { MainContentSkeleton } from './components/MainContentSkeleton';
 import { Footer } from './components/Footer';
 import { DensityProvider } from './contexts/DensityContext';
@@ -64,6 +65,15 @@ function AppContent() {
   
   // Multilateral Data APIs & Ingestion Hub modal state
   const [isApiHubOpen, setIsApiHubOpen] = useState<boolean>(false);
+
+  // 3-Screen Curated Orientation & Historical Context Consent Modal (Auto-open for new users)
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('africalia_onboarding_v1') !== 'true';
+    } catch {
+      return true;
+    }
+  });
   
   // Analytics selected indicator
   const [selectedIndicatorForAnalytics, setSelectedIndicatorForAnalytics] = useState<string>('NY.GDP.MKTP.CD');
@@ -200,6 +210,7 @@ function AppContent() {
         theme={theme}
         onToggleTheme={toggleTheme}
         onOpenApiHub={() => setIsApiHubOpen(true)}
+        onOpenOnboarding={() => setIsOnboardingOpen(true)}
       />
 
       {/* Main Workspace Layout with Desktop Navigation Drawer & Content */}
@@ -211,6 +222,7 @@ function AppContent() {
           isDesktopOpen={isDesktopDrawerOpen}
           isMobileOpen={isMobileNavOpen}
           onCloseMobile={() => setIsMobileNavOpen(false)}
+          onOpenOnboarding={() => setIsOnboardingOpen(true)}
         />
 
         {/* Main Content Area */}
@@ -240,7 +252,7 @@ function AppContent() {
               )}
 
               {currentTab === 'slave-trade' && (
-                <Suspense fallback={<MainContentSkeleton />}>
+                <Suspense fallback={<MainContentSkeleton viewType={currentTab} />}>
                   <SlaveTradeView 
                     onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
                     onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
@@ -249,7 +261,7 @@ function AppContent() {
               )}
 
               {currentTab === 'molecular-legacies' && (
-                <Suspense fallback={<MainContentSkeleton />}>
+                <Suspense fallback={<MainContentSkeleton viewType={currentTab} />}>
                   <MolecularLegaciesArticleView 
                     onNavigateToAtlas={() => handleSelectTab('slave-trade')}
                     onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
@@ -258,7 +270,7 @@ function AppContent() {
               )}
 
               {currentTab === 'african-development-foundations' && (
-                <Suspense fallback={<MainContentSkeleton />}>
+                <Suspense fallback={<MainContentSkeleton viewType={currentTab} />}>
                   <AfricanDevelopmentMasterReportView 
                     onNavigateToAtlas={() => handleSelectTab('slave-trade')}
                     onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
@@ -273,7 +285,7 @@ function AppContent() {
                 />
               )}
 
-              <Suspense fallback={<MainContentSkeleton />}>
+              <Suspense fallback={<MainContentSkeleton viewType={currentTab} />}>
                 {currentTab === 'pillars' && (
                   <ThematicPillarsView
                     initialEntityId={selectedEntityId}
@@ -339,6 +351,7 @@ function AppContent() {
                     onNavigateToSlaveTrade={() => handleSelectTab('slave-trade')}
                     onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
                     onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
+                    onNavigateToLanguages={() => handleSelectTab('languages')}
                   />
                 )}
 
@@ -380,6 +393,16 @@ function AppContent() {
         isOpen={isApiHubOpen}
         onClose={() => setIsApiHubOpen(false)}
         onSelectIndicator={handleSelectIndicator}
+      />
+
+      {/* 3-Screen Curated Orientation & Historical Context Consent Modal */}
+      <OnboardingModal
+        isOpen={isOnboardingOpen}
+        onClose={() => setIsOnboardingOpen(false)}
+        onNavigate={(targetTab) => {
+          setIsOnboardingOpen(false);
+          handleSelectTab(targetTab);
+        }}
       />
 
       {/* Structured Credibility Footer (Hidden on map view for edge-to-edge cartographic full-screen) */}

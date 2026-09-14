@@ -45,12 +45,14 @@ import { WikipediaEthnicDossier } from './WikipediaEthnicDossier';
 import { RichEditorialCountryDevelopmentPanel } from './RichEditorialCountryDevelopmentPanel';
 import { getMajorLinguisticFamilies } from '../../services/wikipediaService';
 import { findWikipediaEntry, WIKIPEDIA_TABLE_ENTRIES } from '../../data/wikipediaEthnicAtlas';
+import { RadialTreeSkeleton } from './RadialTreeSkeleton';
 
 interface AfricaliaExplorerProps {
   onSelectReport?: (reportId: string) => void;
   onNavigateToSlaveTrade?: () => void;
   onNavigateToMolecular?: () => void;
   onNavigateToFoundations?: () => void;
+  onNavigateToLanguages?: () => void;
 }
 
 export interface SelectedEntityData {
@@ -291,7 +293,8 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
   onSelectReport,
   onNavigateToSlaveTrade,
   onNavigateToMolecular,
-  onNavigateToFoundations
+  onNavigateToFoundations,
+  onNavigateToLanguages
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -303,11 +306,16 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
   // Custom SVG upload and dynamic fetch state
   const [customSvgMarkup, setCustomSvgMarkup] = useState<string | null>(null);
+  const [isSvgLoading, setIsSvgLoading] = useState<boolean>(true);
   const [canvasBg, setCanvasBg] = useState<'parchment' | 'white' | 'sepia'>('parchment');
 
   // Dynamically fetch public master SVG with cache busting, while bundled fallback is immediately available
   useEffect(() => {
     let isMounted = true;
+    const timer = setTimeout(() => {
+      if (isMounted) setIsSvgLoading(false);
+    }, 450);
+
     fetch(`/africalia-ethnic-tree.svg?t=${Date.now()}`, { cache: 'no-store' })
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -320,9 +328,15 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       })
       .catch(err => {
         console.info('Using bundled authentic master SVG:', err);
+      })
+      .finally(() => {
+        if (isMounted) {
+          setTimeout(() => setIsSvgLoading(false), 200);
+        }
       });
     return () => {
       isMounted = false;
+      clearTimeout(timer);
     };
   }, []);
 
@@ -1461,29 +1475,65 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
               </div>
             )}
 
-            {/* Fruit-Inspired Pills for Clear & Reset Buttons */}
-            <div className="pt-2 border-t border-[#E5DDD0] dark:border-[#38322B] flex items-center gap-2">
-              {/* Reset View Pill (Warm Apricot / Persimmon) */}
-              <button
-                type="button"
-                onClick={fitView}
-                className="flex-1 px-3 py-2 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-[#FA8C58]/15 hover:bg-[#FA8C58]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#FA8C58]/40 shadow-sm active:scale-95"
-                title="Reset zoom and center on origin"
-              >
-                <RotateCcw className="w-3.5 h-3.5 text-[#E67E48]" />
-                <span>Reset View</span>
-              </button>
+            {/* Fruit-Inspired Pills for Clear & Reset Buttons & Sophisticated Languages Link */}
+            <div 
+              id="dock-footer-actions-container"
+              className="pt-3 border-t border-[#E5DDD0] dark:border-[#38322B] flex flex-col gap-2.5"
+            >
+              <div className="flex items-center gap-2">
+                {/* Reset View Pill (Warm Apricot / Persimmon) */}
+                <button
+                  id="dock-reset-view-btn"
+                  type="button"
+                  onClick={fitView}
+                  className="flex-1 px-3 py-2 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-[#FA8C58]/15 hover:bg-[#FA8C58]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#FA8C58]/40 shadow-xs hover:shadow-sm active:scale-95"
+                  title="Reset zoom and center on origin"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 text-[#E67E48]" />
+                  <span>Reset View</span>
+                </button>
 
-              {/* Clear Filters Pill (Warm Pomegranate / Ripe Fig) */}
-              <button
-                type="button"
-                onClick={handleClearFocus}
-                className="flex-1 px-3 py-2 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-[#C44536]/15 hover:bg-[#C44536]/25 text-[#9C2F22] dark:text-[#F89D93] border border-[#C44536]/40 shadow-sm active:scale-95"
-                title="Clear all region and search filters"
-              >
-                <X className="w-3.5 h-3.5 text-[#BF4342]" />
-                <span>Clear Filters</span>
-              </button>
+                {/* Clear Filters Pill (Warm Pomegranate / Ripe Fig) */}
+                <button
+                  id="dock-clear-filters-btn"
+                  type="button"
+                  onClick={handleClearFocus}
+                  className="flex-1 px-3 py-2 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-[#C44536]/15 hover:bg-[#C44536]/25 text-[#9C2F22] dark:text-[#F89D93] border border-[#C44536]/40 shadow-xs hover:shadow-sm active:scale-95"
+                  title="Clear all region and search filters"
+                >
+                  <X className="w-3.5 h-3.5 text-[#BF4342]" />
+                  <span>Clear Filters</span>
+                </button>
+              </div>
+
+              {/* Sophisticated Link to Languages Page */}
+              {onNavigateToLanguages && (
+                <button
+                  id="dock-languages-page-link"
+                  type="button"
+                  onClick={onNavigateToLanguages}
+                  className="w-full p-2.5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-[#E67E48]/10 to-amber-500/10 hover:from-emerald-500/20 hover:via-[#E67E48]/20 hover:to-amber-500/20 border border-emerald-500/30 dark:border-emerald-500/40 text-[#2B241E] dark:text-[#F5EFE6] transition-all duration-200 cursor-pointer flex items-center justify-between group/dockLang shadow-xs hover:shadow-md active:scale-[0.99]"
+                  title="Explore 2,000+ living languages across 6 major African linguistic phyla"
+                >
+                  <div className="flex items-center gap-2.5 text-left">
+                    <div className="w-7 h-7 rounded-xl bg-emerald-500/15 dark:bg-emerald-500/25 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover/dockLang:scale-110 transition-transform">
+                      <Languages className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1">
+                        <span>African Languages Atlas</span>
+                        <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                          6 Phyla
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">
+                        Explore 2,000+ living tongues & soundscapes
+                      </div>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 group-hover/dockLang:translate-x-1 transition-transform" />
+                </button>
+              )}
             </div>
           </div>
         </motion.div>
@@ -1675,6 +1725,21 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             </svg>
           )}
         </div>
+
+        {/* Radial Tree Geometry Skeleton Indicator Overlay on Initial Master Render */}
+        <AnimatePresence>
+          {isSvgLoading && (
+            <motion.div
+              key="radial-tree-canvas-skeleton"
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.45, ease: 'easeOut' }}
+              className="absolute inset-0 z-40 w-full h-full pointer-events-none"
+            >
+              <RadialTreeSkeleton />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* =========================================================================
@@ -2041,6 +2106,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             onNavigateToFoundations={onNavigateToFoundations}
             onNavigateToSlaveTrade={onNavigateToSlaveTrade}
             onSelectReport={onSelectReport}
+            onNavigateToLanguages={onNavigateToLanguages}
           />
         )}
 

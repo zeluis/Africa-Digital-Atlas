@@ -6,13 +6,15 @@ interface EthnicTreeOfLifeViewProps {
   onNavigateToSlaveTrade?: () => void;
   onNavigateToMolecular?: () => void;
   onNavigateToFoundations?: () => void;
+  onNavigateToLanguages?: () => void;
 }
 
 export const EthnicTreeOfLifeView: React.FC<EthnicTreeOfLifeViewProps> = ({
   onSelectReport,
   onNavigateToSlaveTrade,
   onNavigateToMolecular,
-  onNavigateToFoundations
+  onNavigateToFoundations,
+  onNavigateToLanguages
 }) => {
   return (
     <div 
@@ -25,6 +27,7 @@ export const EthnicTreeOfLifeView: React.FC<EthnicTreeOfLifeViewProps> = ({
         onNavigateToSlaveTrade={onNavigateToSlaveTrade}
         onNavigateToMolecular={onNavigateToMolecular}
         onNavigateToFoundations={onNavigateToFoundations}
+        onNavigateToLanguages={onNavigateToLanguages}
       />
     </div>
   );

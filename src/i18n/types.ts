@@ -3,6 +3,9 @@ export type SupportedLanguage =
   | 'fr' // French
   | 'de' // German
   | 'pt' // Portuguese (Portugal)
+  | 'es' // Spanish
+  | 'it' // Italian
+  | 'nl' // Dutch
   | 'am' // Amharic
   | 'ha' // Hausa
   | 'ig' // Igbo
