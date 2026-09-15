@@ -44,6 +44,7 @@ import {
   CartesianGrid, 
   Legend 
 } from 'recharts';
+import { ReportVoiceReader } from '../components/ReportVoiceReader';
 import { 
   IBD_GENOMIC_CONCORDANCE, 
   SEX_BIASED_GENE_FLOW, 
@@ -213,7 +214,11 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
             </div>
 
             {/* Quick Actions Strip */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <ReportVoiceReader
+                title="The Molecular and Material Legacies of Slavery"
+                abstractOrSummary="An Interdisciplinary Synthesis of Genomic, Historical, and Bioarchaeological Records examining how transatlantic enslavement shaped genomic concordance, sex-biased gene flow, and structural underdevelopment."
+              />
               <button
                 onClick={() => setFontSizeClass(prev => prev === 'normal' ? 'large' : 'normal')}
                 className="px-3 py-1.5 rounded-xl border border-[#DCD9CE] dark:border-[#2C2E2A] bg-transparent hover:bg-[#181816] hover:text-[#FAFAF6] dark:hover:bg-[#E6E3DB] dark:hover:text-[#181816] text-[#181816] dark:text-[#E6E3DB] text-[0.75rem] font-mono uppercase tracking-wider transition-colors cursor-pointer"

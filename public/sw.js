@@ -1,7 +1,7 @@
 // Africa Data Atlas - Progressive Web App Service Worker
 // Multi-Tier Caching Strategies with full Chrome-Extension & Offline Safety
 
-const VERSION = 'v1.2';
+const VERSION = 'v1.3';
 const CACHE_STATIC = `africa-atlas-static-${VERSION}`;
 const CACHE_IMMUTABLE = `africa-atlas-immutable-${VERSION}`;
 const CACHE_FONTS = `africa-atlas-fonts-${VERSION}`;

@@ -57,6 +57,7 @@ import {
   Legend,
   ComposedChart
 } from 'recharts';
+import { ReportVoiceReader } from '../components/ReportVoiceReader';
 
 interface AfricanDevelopmentMasterReportViewProps {
   onNavigateToAtlas?: () => void;
@@ -152,7 +153,11 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
             </div>
 
             {/* Quick Actions Strip */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <ReportVoiceReader
+                title="The Structural & Evolutionary Foundations of African Development"
+                abstractOrSummary="An Interdisciplinary Master Treatise Uniting Macro-Geonomic, Historical-Institutional, and Contemporary Geopolitical Frontiers exploring serial founder effect gradient, transatlantic extraction regressions, and colonial fiscal monopolies."
+              />
               <button
                 onClick={() => setFontSizeClass(prev => prev === 'normal' ? 'large' : 'normal')}
                 className="px-3.5 py-1.5 rounded-lg border border-[#D7D6CD] dark:border-[#2D2E2A] bg-transparent hover:bg-[#181816] hover:text-[#FAFAF6] dark:hover:bg-[#E6E3DB] dark:hover:text-[#181816] text-[#181816] dark:text-[#E6E3DB] text-[0.75rem] font-mono uppercase tracking-wider transition-colors cursor-pointer"

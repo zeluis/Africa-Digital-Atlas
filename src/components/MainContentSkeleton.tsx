@@ -9,7 +9,7 @@ export const MainContentSkeleton: React.FC<MainContentSkeletonProps> = ({ viewTy
   // If navigating to the Sovereign Radial Ethnic Tree of Life, render the specialized radial geometry skeleton
   if (viewType === 'ethnic-tree') {
     return (
-      <div className="w-full h-[calc(100vh-140px)] min-h-[580px] rounded-3xl overflow-hidden border border-amber-900/30 shadow-2xl">
+      <div className="w-full h-[calc(100vh-64px)] min-h-[640px] flex-1 overflow-hidden">
         <RadialTreeSkeleton />
       </div>
     );

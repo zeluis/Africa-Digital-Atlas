@@ -95,7 +95,7 @@ export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-emerald-700 dark:text-emerald-400 font-mono">
                 <Sparkles className="w-3 h-3 text-emerald-500" />
-                <span>AFRICALIA FEMALE VOICE (MID 30's)</span>
+                <span>AFRICALIA SOVEREIGN VOICE</span>
               </div>
               <button
                 type="button"

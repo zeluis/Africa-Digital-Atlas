@@ -173,28 +173,28 @@ export const AFRICAN_MOTHER_TONGUES: Record<string, MotherTongueEntry> = {
   }
 };
 
-import { getAfricanFemaleVoice } from '../utils/africaliaVoiceEngine';
+import { getBestSystemVoice } from '../utils/africaliaVoiceEngine';
 
 /**
- * Play an indigenous musical greeting soundscape using strictly female voice & harmonic Web Audio
+ * Play an indigenous musical greeting soundscape using high-fidelity native voice & harmonic Web Audio
  */
 export function playMotherTongueAudio(entry: MotherTongueEntry) {
   if (typeof window === 'undefined') return;
 
-  // 1. Play Browser Native Speech Synthesis with strictly female voice selection
+  // 1. Play Browser Native Speech Synthesis with natural voice selection
   if ('speechSynthesis' in window) {
     try {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(entry.greetingText);
-      const femaleVoice = getAfricanFemaleVoice(entry.bcp47Tag);
-      if (femaleVoice) {
-        utterance.voice = femaleVoice;
-        utterance.lang = femaleVoice.lang;
+      const { voice, langCode, rate, pitch } = getBestSystemVoice(entry.bcp47Tag);
+      if (voice) {
+        utterance.voice = voice;
+        utterance.lang = voice.lang;
       } else {
-        utterance.lang = entry.bcp47Tag;
+        utterance.lang = langCode;
       }
-      utterance.rate = 0.90;
-      utterance.pitch = 1.06;
+      utterance.rate = rate;
+      utterance.pitch = pitch;
       utterance.volume = 1.0;
 
       // Slight delay so the opening kalimba chime resonates cleanly

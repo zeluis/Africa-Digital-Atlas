@@ -217,7 +217,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
               </button>
               <span>•</span>
               <button
-                onClick={() => onNavigateTab('overview')}
+                onClick={() => onNavigateTab('privacy')}
                 className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer"
               >
                 Privacy & License

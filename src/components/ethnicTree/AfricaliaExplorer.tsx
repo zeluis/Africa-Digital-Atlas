@@ -46,6 +46,8 @@ import { RichEditorialCountryDevelopmentPanel } from './RichEditorialCountryDeve
 import { getMajorLinguisticFamilies } from '../../services/wikipediaService';
 import { findWikipediaEntry, WIKIPEDIA_TABLE_ENTRIES } from '../../data/wikipediaEthnicAtlas';
 import { RadialTreeSkeleton } from './RadialTreeSkeleton';
+import { useCanvasViewport } from '../../hooks/useCanvasViewport';
+import type { WorkerSearchRequest, WorkerSearchResponse } from '../../workers/ethnicAtlasWorker';
 
 interface AfricaliaExplorerProps {
   onSelectReport?: (reportId: string) => void;
@@ -299,10 +301,32 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Camera State
-  const [zoom, setZoom] = useState<number>(1);
-  const [fitScale, setFitScale] = useState<number>(0.65);
-  const [pos, setPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  // Accessible ARIA announcement for screen readers on camera refocus
+  const [liveAnnouncement, setLiveAnnouncement] = useState<string>('Africalia sovereign ethnic tree loaded');
+
+  // Shared Viewport, Zoom, Pan & Keyboard/Pinch/Inertia state via custom hook
+  const {
+    zoom,
+    setZoom,
+    fitScale,
+    setFitScale,
+    pos,
+    setPos,
+    isDragging,
+    dragStart,
+    isPinching,
+    handleZoomDelta,
+    panToCoordinates,
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+    handleWheel
+  } = useCanvasViewport(containerRef, {
+    initialZoom: 1.0,
+    minZoom: 0.64,
+    maxZoom: 6.0,
+    baseFitScale: 0.65
+  });
 
   // Custom SVG upload and dynamic fetch state
   const [customSvgMarkup, setCustomSvgMarkup] = useState<string | null>(null);
@@ -366,27 +390,20 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
   // Search dropdown open state
   const [isSearchDropdownOpen, setIsSearchDropdownOpen] = useState<boolean>(false);
   
+  // Web Worker for asynchronous background ethnic search and indexation
+  const [workerSearchResults, setWorkerSearchResults] = useState<{ id: string; name: string; type: 'ethnic' | 'country'; region: string; country?: string; languages?: string; x?: number; y?: number }[] | null>(null);
+  const ethnicWorkerRef = useRef<Worker | null>(null);
+
+  // Transient Pinch-to-Zoom feedback badge state
+  const [showPinchFeedback, setShowPinchFeedback] = useState<boolean>(false);
+  const pinchFeedbackTimeoutRef = useRef<number | null>(null);
+  
   const majorLinguisticFamilies = useMemo(() => getMajorLinguisticFamilies(), []);
 
   // Single Left Dock Collapse State (never stacks with other panels)
   const [isLeftDockOpen, setIsLeftDockOpen] = useState<boolean>(true);
   const [methodologyModalOpen, setMethodologyModalOpen] = useState<boolean>(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
-  // Accessible ARIA announcement for screen readers on camera refocus
-  const [liveAnnouncement, setLiveAnnouncement] = useState<string>('Africalia sovereign ethnic tree loaded');
-
-  // Drag pan & kinetic momentum tracking
-  const isDragging = useRef<boolean>(false);
-  const dragStart = useRef<{ x: number; y: number; startX: number; startY: number; moved: boolean }>({
-    x: 0, y: 0, startX: 0, startY: 0, moved: false
-  });
-  const activePointers = useRef<Map<number, { x: number; y: number }>>(new Map());
-  const pinchStartDist = useRef<number | null>(null);
-  const pinchStartZoom = useRef<number>(1);
-  const velocityTracker = useRef<{ vx: number; vy: number; lastTime: number; lastX: number; lastY: number }>({
-    vx: 0, vy: 0, lastTime: 0, lastX: 0, lastY: 0
-  });
-  const momentumAnimId = useRef<number | null>(null);
 
   // Fit View: Full continental tree overview (hard minimum scale limit 64% enforced, centered)
   const fitView = useCallback(() => {
@@ -404,7 +421,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       x: clientWidth / 2 - CX * nextScale,
       y: clientHeight / 2 - CY * nextScale
     });
-  }, []);
+  }, [containerRef, setFitScale, setZoom, setPos]);
 
   // Prominent view: Zoom and center directly on the Cabo Verde Maritime Crucible ellipse node & lineages
   const panToCrucible = useCallback(() => {
@@ -424,7 +441,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       y: clientHeight / 2 - targetY * nextScale
     });
     setLiveAnnouncement('Framed West Africa conduit: Cabo Verde Maritime Crucible & Atlantic lineages');
-  }, []);
+  }, [containerRef, setFitScale, setZoom, setPos]);
 
   // Upper middle top region start view
   const startUpperTopView = useCallback(() => {
@@ -443,7 +460,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       x: clientWidth / 2 - targetX * nextScale,
       y: clientHeight / 2 - targetY * nextScale
     });
-  }, []);
+  }, [containerRef, setFitScale, setZoom, setPos]);
 
   // Handler to clear all selection and reset view and search fields
   const handleClearFocus = useCallback(() => {
@@ -468,188 +485,6 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [startUpperTopView]);
-
-  // Camera Zoom delta (enforcing hard minimum 64% and maintaining viewport center alignment)
-  const handleZoomDelta = (factor: number) => {
-    if (!containerRef.current) return;
-    const { clientWidth: w, clientHeight: h } = containerRef.current;
-    setZoom(prev => {
-      const next = Math.min(Math.max(prev * factor, 0.64), 6.0);
-      const currentScale = fitScale * prev;
-      const nextScale = fitScale * next;
-      // Keep center of the view aligned with center of SVG focal point
-      const currentCenterSvgX = (w / 2 - pos.x) / currentScale;
-      const currentCenterSvgY = (h / 2 - pos.y) / currentScale;
-      setPos({
-        x: w / 2 - currentCenterSvgX * nextScale,
-        y: h / 2 - currentCenterSvgY * nextScale
-      });
-      return next;
-    });
-  };
-
-  // Pointer drag panning with kinetic momentum & pinch-to-zoom
-  const handlePointerDown = (e: React.PointerEvent) => {
-    if ((e.target as HTMLElement).closest('button, input, select, a, .no-drag')) return;
-    
-    // Stop any ongoing kinetic inertia animation on user touch/click
-    if (momentumAnimId.current) {
-      cancelAnimationFrame(momentumAnimId.current);
-      momentumAnimId.current = null;
-    }
-
-    activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-    if (activePointers.current.size === 1) {
-      isDragging.current = true;
-      dragStart.current = {
-        x: e.clientX,
-        y: e.clientY,
-        startX: pos.x,
-        startY: pos.y,
-        moved: false
-      };
-      velocityTracker.current = {
-        vx: 0,
-        vy: 0,
-        lastTime: performance.now(),
-        lastX: e.clientX,
-        lastY: e.clientY
-      };
-      (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
-    } else if (activePointers.current.size === 2) {
-      // Initialize two-finger pinch-to-zoom
-      isDragging.current = false;
-      const points = Array.from(activePointers.current.values());
-      const dist = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
-      pinchStartDist.current = dist;
-      pinchStartZoom.current = zoom;
-    }
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (activePointers.current.has(e.pointerId)) {
-      activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    }
-
-    // Two-finger Pinch Zoom gesture
-    if (activePointers.current.size === 2 && pinchStartDist.current !== null && containerRef.current) {
-      const points = Array.from(activePointers.current.values());
-      const currentDist = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
-      const pinchMidX = (points[0].x + points[1].x) / 2;
-      const pinchMidY = (points[0].y + points[1].y) / 2;
-      
-      const rect = containerRef.current.getBoundingClientRect();
-      const focalX = pinchMidX - rect.left;
-      const focalY = pinchMidY - rect.top;
-
-      const scaleMultiplier = currentDist / pinchStartDist.current;
-      const nextZoom = Math.min(Math.max(pinchStartZoom.current * scaleMultiplier, 0.64), 6.0);
-      
-      const currentScale = fitScale * zoom;
-      const nextScale = fitScale * nextZoom;
-
-      setPos(prev => ({
-        x: focalX - (focalX - prev.x) * (nextScale / currentScale),
-        y: focalY - (focalY - prev.y) * (nextScale / currentScale)
-      }));
-      setZoom(nextZoom);
-      return;
-    }
-
-    // Single finger / mouse cursor drag
-    if (!isDragging.current) return;
-    const now = performance.now();
-    const dt = Math.max(now - velocityTracker.current.lastTime, 8);
-    const dx = e.clientX - dragStart.current.x;
-    const dy = e.clientY - dragStart.current.y;
-    
-    // Instantaneous velocity calculation with smoothing
-    const instVx = (e.clientX - velocityTracker.current.lastX) / dt;
-    const instVy = (e.clientY - velocityTracker.current.lastY) / dt;
-    velocityTracker.current = {
-      vx: velocityTracker.current.vx * 0.3 + instVx * 0.7,
-      vy: velocityTracker.current.vy * 0.3 + instVy * 0.7,
-      lastTime: now,
-      lastX: e.clientX,
-      lastY: e.clientY
-    };
-
-    if (Math.hypot(dx, dy) > 4) {
-      dragStart.current.moved = true;
-    }
-    setPos({
-      x: dragStart.current.startX + dx,
-      y: dragStart.current.startY + dy
-    });
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
-    activePointers.current.delete(e.pointerId);
-    if (activePointers.current.size < 2) {
-      pinchStartDist.current = null;
-    }
-
-    if (activePointers.current.size === 0) {
-      isDragging.current = false;
-
-      // Launch kinetic momentum decay if velocity is meaningful
-      let vx = velocityTracker.current.vx * 14;
-      let vy = velocityTracker.current.vy * 14;
-      const speed = Math.hypot(vx, vy);
-
-      if (speed > 1.2) {
-        const friction = 0.92;
-        const stepKinetic = () => {
-          vx *= friction;
-          vy *= friction;
-          if (Math.hypot(vx, vy) < 0.2) {
-            momentumAnimId.current = null;
-            return;
-          }
-          setPos(prev => ({
-            x: prev.x + vx,
-            y: prev.y + vy
-          }));
-          momentumAnimId.current = requestAnimationFrame(stepKinetic);
-        };
-        momentumAnimId.current = requestAnimationFrame(stepKinetic);
-      }
-    }
-  };
-
-  // Mouse wheel zoom centered on cursor (enforcing 64% minimum)
-  const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
-    const currentScale = fitScale * zoom;
-    const nextZoom = Math.min(Math.max(zoom * zoomFactor, 0.64), 6.0);
-    const nextScale = fitScale * nextZoom;
-
-    setPos(prev => ({
-      x: mouseX - (mouseX - prev.x) * (nextScale / currentScale),
-      y: mouseY - (mouseY - prev.y) * (nextScale / currentScale)
-    }));
-    setZoom(nextZoom);
-  };
-
-  // Pan camera to specific SVG coordinates (enforces 64% minimum)
-  const panToCoordinates = useCallback((targetX: number, targetY: number, targetZoom = 1.8) => {
-    if (!containerRef.current) return;
-    const { clientWidth: w, clientHeight: h } = containerRef.current;
-    const clampedZoom = Math.min(Math.max(targetZoom, 0.64), 6.0);
-    const nextScale = fitScale * clampedZoom;
-    setZoom(clampedZoom);
-    setPos({
-      x: w / 2 - targetX * nextScale,
-      y: h / 2 - targetY * nextScale
-    });
-  }, [fitScale]);
 
   // Precision zoom transition to bring all country branches and nodes clearly in view
   const zoomToCountryRegion = useCallback((countryName: string, entityFallbackCoords?: { x: number, y: number }) => {
@@ -728,6 +563,90 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
   }, [fitScale, panToCoordinates]);
 
   // Combined search dataset enriched with Wikipedia African Atlas
+  // Initialize Web Worker for background search off-main-thread
+  useEffect(() => {
+    try {
+      ethnicWorkerRef.current = new Worker(
+        new URL('../../workers/ethnicAtlasWorker.ts', import.meta.url),
+        { type: 'module' }
+      );
+
+      ethnicWorkerRef.current.onmessage = (e: MessageEvent<WorkerSearchResponse>) => {
+        if (e.data.type === 'SEARCH_AND_INDEX_RESULT') {
+          const mapped = e.data.results.map(entry => {
+            // Find coordinate conduit if already in tree or match from homeland string
+            const matchedConduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
+              (entry.homeland && entry.homeland.toLowerCase().includes(c.name.toLowerCase())) ||
+              c.ethnicGroups.some(g => g.name.toLowerCase() === entry.name.toLowerCase())
+            );
+            const eg = matchedConduit?.ethnicGroups.find(g => 
+              g.name.toLowerCase() === entry.name.toLowerCase()
+            );
+
+            return {
+              id: `worker-${entry.name.toLowerCase().replace(/\s+/g, '-')}`,
+              name: entry.name,
+              type: 'ethnic' as const,
+              region: matchedConduit?.region || 'African Continent',
+              country: matchedConduit?.name || entry.homeland || undefined,
+              languages: entry.languages || undefined,
+              x: eg?.nodeX,
+              y: eg?.nodeY
+            };
+          });
+          setWorkerSearchResults(mapped);
+        }
+      };
+    } catch {
+      // Fallback cleanly to main thread if worker environment is unavailable
+      ethnicWorkerRef.current = null;
+    }
+
+    return () => {
+      ethnicWorkerRef.current?.terminate();
+      ethnicWorkerRef.current = null;
+    };
+  }, []);
+
+  // Post search task to Web Worker when user types or filters change
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setWorkerSearchResults(null);
+      return;
+    }
+
+    if (ethnicWorkerRef.current) {
+      const req: WorkerSearchRequest = {
+        type: 'SEARCH_AND_INDEX',
+        query: searchQuery,
+        region: selectedRegion,
+        country: selectedCountry,
+        linguisticFamily: selectedLinguisticFamily
+      };
+      ethnicWorkerRef.current.postMessage(req);
+    }
+  }, [searchQuery, selectedRegion, selectedCountry, selectedLinguisticFamily]);
+
+  // Track active pinching to display floating feedback chip
+  useEffect(() => {
+    if (isPinching) {
+      setShowPinchFeedback(true);
+      if (pinchFeedbackTimeoutRef.current) {
+        window.clearTimeout(pinchFeedbackTimeoutRef.current);
+        pinchFeedbackTimeoutRef.current = null;
+      }
+    } else if (showPinchFeedback) {
+      pinchFeedbackTimeoutRef.current = window.setTimeout(() => {
+        setShowPinchFeedback(false);
+      }, 900);
+    }
+    return () => {
+      if (pinchFeedbackTimeoutRef.current) {
+        window.clearTimeout(pinchFeedbackTimeoutRef.current);
+      }
+    };
+  }, [isPinching, showPinchFeedback]);
+
   // Combined search dataset enriched with Wikipedia African Atlas & Historical Regions
   const searchIndex = useMemo(() => {
     const list: { 
@@ -791,6 +710,12 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
+    
+    // If worker results are populated, prioritize enriched worker results
+    if (workerSearchResults && workerSearchResults.length > 0) {
+      return workerSearchResults.slice(0, 10);
+    }
+
     const q = searchQuery.toLowerCase();
     return searchIndex.filter(item => {
       if (item.name.toLowerCase().includes(q) || item.region.toLowerCase().includes(q)) return true;
@@ -809,7 +734,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       }
       return false;
     }).slice(0, 10);
-  }, [searchQuery, searchIndex]);
+  }, [searchQuery, searchIndex, workerSearchResults]);
 
   // Linguistic Family Filtered Groups
   const linguisticFilteredGroups = useMemo(() => {
@@ -1627,6 +1552,23 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
               font-weight: 700;
               filter: drop-shadow(0 0 6px rgba(230,126,72,0.75));
             }
+
+            /* Dynamic Level of Detail (LOD): At low zoom levels (<0.8x), declutter fine sub-branch text labels */
+            ${zoom < 0.8 ? `
+              #africalia-master-sovereign-svg [id^="label--ethnic--"],
+              #africalia-master-sovereign-svg [id^="assoc--ethnic--"] text {
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+                transition: opacity 0.2s ease-out;
+              }
+            ` : `
+              #africalia-master-sovereign-svg [id^="label--ethnic--"],
+              #africalia-master-sovereign-svg [id^="assoc--ethnic--"] text {
+                opacity: 1;
+                transition: opacity 0.25s ease-in;
+              }
+            `}
           `}</style>
 
           {/* Africa UN Geo Scheme Visibility Toggle Rule */}
@@ -1727,16 +1669,44 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         </div>
 
         {/* Radial Tree Geometry Skeleton Indicator Overlay on Initial Master Render */}
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {isSvgLoading && (
             <motion.div
               key="radial-tree-canvas-skeleton"
-              initial={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.45, ease: 'easeOut' }}
+              initial={{ opacity: 1, scale: 1 }}
+              exit={{ 
+                opacity: 0, 
+                scale: 1.04,
+                filter: 'blur(8px)',
+                transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] } 
+              }}
               className="absolute inset-0 z-40 w-full h-full pointer-events-none"
             >
               <RadialTreeSkeleton />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Floating Pinch-to-Zoom Visual Feedback Chip */}
+        <AnimatePresence>
+          {(showPinchFeedback || isPinching) && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85, y: -10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -8, transition: { duration: 0.3 } }}
+              transition={{ type: 'spring', damping: 20, stiffness: 350 }}
+              className="absolute top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
+            >
+              <div className="px-4 py-2 rounded-full bg-[#1E1B18]/90 text-amber-200 border border-amber-500/40 shadow-2xl backdrop-blur-md flex items-center gap-2 text-xs font-mono font-bold tracking-wider">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin" style={{ animationDuration: '3s' }} />
+                <span>Zoom Scale:</span>
+                <span className="text-white text-sm font-black">{Math.round(zoom * 100)}%</span>
+                {zoom < 0.8 && (
+                  <span className="text-[10px] text-amber-400/80 uppercase font-sans font-normal ml-1">
+                    (Overview LOD)
+                  </span>
+                )}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

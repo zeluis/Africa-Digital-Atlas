@@ -22,6 +22,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { RESEARCH_REPORTS, ResearchReport } from '../data/reportsData';
+import { ReportVoiceReader } from '../components/ReportVoiceReader';
 
 interface ResearchReportArticleViewProps {
   reportId: string;
@@ -138,7 +139,14 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
         </div>
 
         {/* Reader Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Audio Voice Narration Engine */}
+          <ReportVoiceReader
+            title={report.title}
+            abstractOrSummary={report.executiveSummary}
+            sections={report.sections.map(s => ({ id: s.id, title: s.title, content: s.content }))}
+          />
+
           {/* Font Size Toggler */}
           <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-xl p-0.5 border border-zinc-200 dark:border-zinc-700 text-[11px]">
             <button

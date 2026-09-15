@@ -211,16 +211,19 @@ ER  -`;
             </div>
           </div>
 
-          {/* Permanent Identifiers Info */}
-          <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-600 dark:text-zinc-400 space-y-1">
-            <div className="flex items-center justify-between">
+          {/* Permanent Identifiers & Non-Affiliation Info */}
+          <div className="p-3.5 rounded-xl bg-stone-50 dark:bg-zinc-900/60 border border-stone-200 dark:border-zinc-800 text-[11px] text-stone-600 dark:text-zinc-400 space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-1.5 border-b border-stone-200/60 dark:border-zinc-800">
               <span>Permanent Digital Object Identifier (DOI):</span>
-              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">{citationMetadata.doi}</span>
+              <span className="font-mono text-emerald-700 dark:text-emerald-400 font-bold">{citationMetadata.doi}</span>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-1.5 border-b border-stone-200/60 dark:border-zinc-800">
               <span>Canonical Repository Version:</span>
-              <span className="font-mono text-zinc-800 dark:text-zinc-200">{citationMetadata.version}</span>
+              <span className="font-mono text-stone-800 dark:text-zinc-200">{citationMetadata.version}</span>
             </div>
+            <p className="text-[10px] text-stone-500 dark:text-zinc-400 leading-normal pt-0.5">
+              <strong>Attribution & Independence:</strong> Africalia is an independent, open-access platform. Indexed academic works belong exclusively to their respective authors and journals; cited scholars are not affiliated with Africalia unless explicitly noted under formal bilateral agreement.
+            </p>
           </div>
         </div>
 
