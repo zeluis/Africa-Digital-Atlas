@@ -34,6 +34,7 @@ export interface ResearchReport {
   sections: ReportSection[];
   citations: ReportCitation[];
   relatedEthnicNodes?: string[];
+  icon?: string;
 }
 
 export const RESEARCH_REPORTS: Record<string, ResearchReport> = {

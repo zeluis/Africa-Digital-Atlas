@@ -9,6 +9,7 @@ import { DataSourceBadge } from '../components/DataSourceBadge';
 import { getRegionCalmColor } from '../data/unGeoschemeColors';
 import { useTranslation } from '../i18n/LanguageContext';
 import { useSavedEntities } from '../contexts/SavedEntitiesContext';
+import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
 import { 
   formatPopulation, 
   formatGDP, 
@@ -849,8 +850,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 <a
                   href={media.worldBankProfileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...SAFE_EXTERNAL_LINK_PROPS}
                   className="flex items-center justify-between p-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition-colors group shadow-xs"
                 >
                   <span>World Bank Country Profile</span>
@@ -858,8 +858,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
                 </a>
                 <a
                   href={media.imfProfileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...SAFE_EXTERNAL_LINK_PROPS}
                   className="flex items-center justify-between p-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition-colors group shadow-xs"
                 >
                   <span>IMF Article IV & WEO</span>
@@ -867,8 +866,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
                 </a>
                 <a
                   href={media.unProfileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...SAFE_EXTERNAL_LINK_PROPS}
                   className="flex items-center justify-between p-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition-colors group shadow-xs"
                 >
                   <span>UN Data Country Table</span>
@@ -876,8 +874,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
                 </a>
                 <a
                   href={media.africanUnionUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...SAFE_EXTERNAL_LINK_PROPS}
                   className="flex items-center justify-between p-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition-colors group shadow-xs"
                 >
                   <span>African Union Member State</span>
@@ -885,8 +882,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
                 </a>
                 <a
                   href={media.wikipediaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...SAFE_EXTERNAL_LINK_PROPS}
                   className="flex items-center justify-between p-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition-colors group shadow-xs"
                 >
                   <span>Wikipedia Encyclopedia</span>
@@ -894,8 +890,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
                 </a>
                 <a
                   href={media.wikidataUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...SAFE_EXTERNAL_LINK_PROPS}
                   className="flex items-center justify-between p-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition-colors group shadow-xs"
                 >
                   <span>Wikidata Semantic Entity</span>

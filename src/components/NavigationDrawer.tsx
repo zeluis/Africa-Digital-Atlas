@@ -25,11 +25,15 @@ import {
   ExternalLink,
   X,
   TrendingUp,
-  Cpu
+  Cpu,
+  PanelLeftClose
 } from 'lucide-react';
 import { UN_REGIONAL_SILHOUETTES } from '../data/svgGeographySystem';
 import { AfricanRegion } from '../data/types';
 import { getRegionTonalPalette } from '../data/unGeoschemeColors';
+import { getCategorizedReports, NavReportGroup } from '../data/reportsDataLoader';
+import { DynamicIcon } from './DynamicIcon';
+import { AfricaUnLogo } from './AfricaUnLogo';
 
 export type MainNavId = 
   | 'overview'
@@ -56,7 +60,8 @@ export type MainNavId =
   | 'report-ancestry-ideology-underdevelopment'
   | 'report-rao-model-socioeconomic'
   | 'report-sociological-origins-racism'
-  | 'privacy';
+  | 'privacy'
+  | (string & {});
 
 export type RegionNavId = 
   | 'region-northern'
@@ -76,6 +81,7 @@ interface NavigationDrawerProps {
   currentTab: CanonicalNavTab;
   onSelectTab: (tab: CanonicalNavTab) => void;
   isDesktopOpen: boolean;
+  onToggleDesktop?: () => void;
   isMobileOpen: boolean;
   onCloseMobile: () => void;
   onOpenOnboarding?: () => void;
@@ -151,6 +157,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   currentTab,
   onSelectTab,
   isDesktopOpen,
+  onToggleDesktop,
   isMobileOpen,
   onCloseMobile,
   onOpenOnboarding
@@ -317,40 +324,15 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     { id: 'map', label: 'Map', icon: MapIcon, badge: 'Spatial GIS' }
   ];
 
-  // Submenu categorized items for Reports (Ultra-Minimal style)
-  const reportsSubGroups = [
-    {
-      title: 'Overview',
-      items: [
-        { id: 'research-directory', label: 'Directory', icon: BookOpen, badge: 'Directory' }
-      ]
-    },
-    {
-      title: 'Genetics',
-      items: [
-        { id: 'report-genetic-linguistic-blueprints', label: 'Genetic & Linguistic Blueprints', icon: Dna, badge: 'Creole DNA' },
-        { id: 'report-genetic-social-structure-cape-verde', label: 'Genetic & Social Structure: Cabo Verde', icon: Dna, badge: 'Genealogies' },
-        { id: 'report-creole-admixture-cabo-verde', label: 'Creole Admixture: Cabo Verde & São Tomé', icon: Dna, badge: 'Crucibles' },
-        { id: 'report-latest-developments-genetic-legacy', label: 'Latest Developments: Genetic Legacy', icon: Dna, badge: 'Ancient DNA' }
-      ]
-    },
-    {
-      title: 'Law & Reparations',
-      items: [
-        { id: 'report-slavery-international-law-reparatory', label: 'Slavery, Law & Reparatory Justice', icon: Scale, badge: 'CARICOM / ICJ' },
-        { id: 'report-sovereign-responsibility-reparations', label: 'Sovereign Responsibility & Reparations', icon: Scale, badge: 'Balance Sheets' },
-        { id: 'report-reparations-debt-anthropocene', label: 'Reparations, Debt & Anthropocene', icon: Scale, badge: 'Climate Debt' }
-      ]
-    },
-    {
-      title: 'Development',
-      items: [
-        { id: 'report-ancestry-ideology-underdevelopment', label: 'Ancestry, Ideology & Underdevelopment', icon: TrendingUp, badge: 'Econometric' },
-        { id: 'report-rao-model-socioeconomic', label: 'RAO Model & Socioeconomic Legacies', icon: Cpu, badge: 'Capital Policy' },
-        { id: 'report-sociological-origins-racism', label: 'Sociological Origins of Racism', icon: FileText, badge: 'Historical' }
-      ]
-    }
-  ];
+  // Dynamic submenu categorized items for Reports (from static + drop-in markdown + custom)
+  const reportsSubGroups = React.useMemo(() => getCategorizedReports(), []);
+  const totalReportsCount = React.useMemo(() => {
+    return reportsSubGroups.reduce((acc, group) => {
+      // Exclude overview/directory item from count to show actual reports count
+      const count = group.categoryKey === 'overview' ? 0 : group.items.length;
+      return acc + count;
+    }, 0);
+  }, [reportsSubGroups]);
 
   // Section 2: Regions - Using Regional SVG Silhouettes
   const regionNavItems: NavItemDef[] = [
@@ -403,6 +385,27 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     return (
       <div className="flex flex-col h-full justify-between pb-6">
         <div className="space-y-6">
+          {/* Optional Desktop Drawer Header with tucked collapse button */}
+          {!isMobile && onToggleDesktop && (
+            <div className={`flex items-center justify-between pb-2 mb-1 border-b border-zinc-100 dark:border-zinc-800/80 ${
+              isDesktopCollapsed ? 'px-1 justify-center' : 'px-3'
+            }`}>
+              {!isDesktopCollapsed && (
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                  Navigation
+                </span>
+              )}
+              <button
+                onClick={onToggleDesktop}
+                className="p-1.5 rounded-lg border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+                title="Collapse Navigation Drawer (⌘B)"
+                aria-label="Collapse Navigation Drawer"
+              >
+                <DynamicIcon icon="codicon:layout-sidebar-right-dock" className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
           {/* Section 1: AFRICA */}
           <div>
             {isDesktopCollapsed ? (
@@ -432,7 +435,18 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 }`}
               >
                 <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-3'}`}>
-                  <Globe2 className={`w-5 h-5 shrink-0 ${currentTab === 'overview' ? 'text-emerald-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                  <AfricaUnLogo
+                    variant="warm-tonal"
+                    fillOpacity={0.6}
+                    interactive={false}
+                    className={`w-5 h-5 shrink-0 transition-colors ${
+                      currentTab === 'overview'
+                        ? 'text-emerald-500 stroke-emerald-500'
+                        : 'text-zinc-500 group-hover:text-zinc-300 stroke-zinc-500 group-hover:stroke-zinc-300'
+                    }`}
+                    strokeColor="currentColor"
+                    strokeWidth={1.8}
+                  />
                   {!isDesktopCollapsed && <span>{t('nav.overview', 'Overview')}</span>}
                 </div>
                 {!isDesktopCollapsed && currentTab === 'overview' && (
@@ -635,7 +649,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                       title={isReportsExpanded ? "Collapse Reports submenu" : "Expand Reports submenu"}
                     >
                       <span className="text-[10px] font-mono font-bold text-indigo-500 bg-indigo-500/10 px-1.5 py-0.5 rounded-md border border-indigo-500/20">
-                        11
+                        {totalReportsCount}
                       </span>
                       {isReportsExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
                     </div>
@@ -658,7 +672,6 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                               {group.title}
                             </div>
                             {group.items.map(sub => {
-                              const SubIcon = sub.icon;
                               const isSubActive = currentTab === sub.id;
                               return (
                                 <motion.div key={sub.id} variants={submenuItemVariants}>
@@ -674,7 +687,10 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                     }`}
                                   >
                                     <div className="flex items-center gap-2 min-w-0 pr-1">
-                                      <SubIcon className={`w-3.5 h-3.5 shrink-0 ${isSubActive ? 'text-amber-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                                      <DynamicIcon
+                                        icon={sub.icon}
+                                        className={`w-3.5 h-3.5 shrink-0 ${isSubActive ? 'text-amber-400' : 'text-zinc-500 group-hover:text-zinc-300'}`}
+                                      />
                                       <div className="flex flex-col min-w-0">
                                         <span className="truncate leading-tight">{t(`report.title.${sub.id}`, sub.label)}</span>
                                         <span className="text-[9px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   BookOpen, 
   Search, 
@@ -12,9 +12,15 @@ import {
   ExternalLink, 
   ChevronRight,
   Filter,
-  Layers
+  Layers,
+  Upload,
+  Plus
 } from 'lucide-react';
 import { RESEARCH_REPORTS, ResearchReport, ReportCategory } from '../data/reportsData';
+import { getAllReports } from '../data/reportsDataLoader';
+import { NotebookIngestionModal } from '../components/NotebookIngestionModal';
+import { IngestionResult } from '../data/notebookIngestionPipeline';
+import { DynamicIcon } from '../components/DynamicIcon';
 
 interface ResearchReportsDirectoryViewProps {
   onSelectReport: (reportId: string) => void;
@@ -33,6 +39,36 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [isIngestionModalOpen, setIsIngestionModalOpen] = useState<boolean>(false);
+  const [customReports, setCustomReports] = useState<Record<string, ResearchReport>>(() => {
+    try {
+      const saved = localStorage.getItem('africalia_custom_reports');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const handleReportIngested = (newReport: ResearchReport, result: IngestionResult) => {
+    // Add to in-memory catalog
+    RESEARCH_REPORTS[newReport.id] = newReport;
+    const updated = { ...customReports, [newReport.id]: newReport };
+    setCustomReports(updated);
+    try {
+      localStorage.setItem('africalia_custom_reports', JSON.stringify(updated));
+    } catch (e) {
+      console.error('Failed to persist custom report:', e);
+    }
+    // Automatically select and view newly ingested report
+    onSelectReport(newReport.id);
+  };
+
+  // Load custom reports into global store on mount
+  useEffect(() => {
+    Object.values(customReports).forEach(rep => {
+      RESEARCH_REPORTS[rep.id] = rep;
+    });
+  }, [customReports]);
 
   // Master historical reports included in the directory
   const masterLegacyReports = [
@@ -65,8 +101,8 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
   ];
 
   const allReportsList = useMemo(() => {
-    return Object.values(RESEARCH_REPORTS);
-  }, []);
+    return Object.values(getAllReports());
+  }, [customReports]);
 
   const filteredReports = useMemo(() => {
     return allReportsList.filter(rep => {
@@ -100,16 +136,28 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
             </p>
           </div>
 
-          {onNavigateToEthnicTree && (
+          <div className="flex items-center gap-3 shrink-0 self-start md:self-auto flex-wrap">
             <button
               type="button"
-              onClick={onNavigateToEthnicTree}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-zinc-950 transition-all cursor-pointer shadow-md shrink-0 self-start md:self-auto"
+              onClick={() => setIsIngestionModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition-all cursor-pointer shadow-md"
+              title="Import Google Notebook Markdown or .md report with automatic classification"
             >
-              <Layers className="w-4 h-4" />
-              <span>Explore Ethnic Tree of Life</span>
+              <Upload className="w-4 h-4" />
+              <span>Import Notebook Report</span>
             </button>
-          )}
+
+            {onNavigateToEthnicTree && (
+              <button
+                type="button"
+                onClick={onNavigateToEthnicTree}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-zinc-950 transition-all cursor-pointer shadow-md"
+              >
+                <Layers className="w-4 h-4" />
+                <span>Explore Ethnic Tree of Life</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Search & Category Filter Pills */}
@@ -213,14 +261,18 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-2">
                   <span 
-                    className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md"
+                    className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md inline-flex items-center gap-1.5"
                     style={{ 
                       backgroundColor: `${rep.categoryColor}15`, 
                       color: rep.categoryColor,
                       border: `1px solid ${rep.categoryColor}30`
                     }}
                   >
-                    {rep.categoryLabel}
+                    <DynamicIcon 
+                      icon={rep.icon || (rep.category === 'genetics' ? 'lucide:dna' : rep.category === 'international-law' ? 'lucide:scale' : 'lucide:trending-up')} 
+                      className="w-3 h-3" 
+                    />
+                    <span>{rep.categoryLabel}</span>
                   </span>
                   <span className="text-[11px] text-zinc-400 flex items-center gap-1">
                     <Clock className="w-3 h-3" />
@@ -249,6 +301,13 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
           ))}
         </div>
       </div>
+
+      {/* Google NotebookLM Markdown Ingestion Modal */}
+      <NotebookIngestionModal
+        isOpen={isIngestionModalOpen}
+        onClose={() => setIsIngestionModalOpen(false)}
+        onReportIngested={handleReportIngested}
+      />
     </div>
   );
 };

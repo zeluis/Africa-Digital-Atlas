@@ -7,7 +7,10 @@ An authoritative, real-time socioeconomic data platform, interactive vector cart
 [![Vite 6](https://img.shields.io/badge/Vite-6.2-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
 [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-v4.1-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Offline_Enabled-success?style=flat-square&logo=pwa)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Data Charter: FAIR & Open Science](https://img.shields.io/badge/Data_Charter-FAIR_&_Open_Science-059669?style=flat-square)](https://www.go-fair.org/fair-principles/)
+[![Privacy: Zero Tracker GDPR](https://img.shields.io/badge/Privacy-Zero_Tracker_•_GDPR_Compliant-10b981?style=flat-square)](https://zeluis.github.io/Africa-Digital-Atlas/)
+[![Data License: CC BY--NC--SA 4.0](https://img.shields.io/badge/Data_License-CC_BY--NC--SA_4.0-amber.svg?style=flat-square)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![License: MIT](https://img.shields.io/badge/Code_License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
 ---
 
@@ -40,6 +43,9 @@ The production application is deployed on GitHub Pages:
    - [Multilateral Data APIs & Ingestion Hub (16 Active Connectors)](#6-multilateral-data-apis--ingestion-hub-16-active-connectors)
    - [Data Provenance, Quality Audits & Cryptographic Verification](#7-data-provenance-quality-audits--cryptographic-verification)
    - [Visual Identity & Japandi Design System](#8-visual-identity--japandi-design-system)
+   - [African Ethnic Tree & Ancestral Lineages Explorer](#9-african-ethnic-tree--ancestral-lineages-explorer)
+   - [Scholarly Treatises & Econometric Working Papers](#10-scholarly-treatises--econometric-working-papers)
+   - [Privacy, Data Governance & Scholarly Charter (MD3 Architecture)](#11-privacy-data-governance--scholarly-charter-md3-architecture)
 3. [Indicators & Multilateral Data Sources Catalog](#-indicators--multilateral-data-sources-catalog)
 4. [SVG Geography Engine & Projection Geometry](#-svg-geography-engine--projection-geometry)
 5. [Multilingual Translation Engine (i18n)](#-multilingual-translation-engine-i18n)
@@ -47,8 +53,8 @@ The production application is deployed on GitHub Pages:
 7. [Technology Stack & Architecture](#-technology-stack--architecture)
 8. [Installation & Local Development](#-installation--local-development)
 9. [Deployment & Production Builds](#-deployment--production-builds)
-10. [Official Scalable SVG Vectors & Institutional Logos Catalog](#️-official-scalable-svg-vectors--institutional-logos-catalog)
-11. [Academic Citations & Data Governance](#-academic-citations--data-governance)
+10. [Academic Citations & Data Governance](#-academic-citations--data-governance)
+11. [Official Scalable SVG Vectors & Institutional Logos Catalog](#️-official-scalable-svg-vectors--institutional-logos-catalog)
 12. [Roadmap & Enhancement Suggestions](#-roadmap--enhancement-suggestions)
 
 ---
@@ -65,6 +71,9 @@ Understanding Africa's demographic and economic trajectory is critical for polic
 - **54 Sovereign Nations & Island States**: Complete geospatial and statistical coverage across Northern, Western, Central, Eastern, and Southern Africa.
 - **Over 90 Harmonized Indicators**: Spanning macroeconomic accounts, poverty lines, external debt stocks, governance ratings, gender equity, climate projections, and trade balances.
 - **36,000+ Documented Historical Voyages**: 3D globe and spatiotemporal flow visualizer charting the transatlantic slave trade from 1501 to 1867.
+- **African Ethnic Tree & Deep Ancestral Lineages**: Interactive anthropological and phylogenetic taxonomy mapping African linguistic phyla (*Niger-Congo*, *Afroasiatic*, *Nilo-Saharan*, *Khoisan*) and deep genetic population structures.
+- **10 Scholarly Treatises & Econometric Working Papers**: Peer-reviewed empirical research dossiers examining long-run colonial and slave trade impacts (Nathan Nunn QJE/AER models), Cabo Verdean genetic admixture, and reparatory economics in the Anthropocene.
+- **Sovereign Privacy, Zero Surveillance & GDPR Right to Erasure**: Complete client-side state minimization, zero commercial advertising cookies or tracking pixels, stateless neural speech audio, and a live client-side `localStorage` inspector with one-click wipe.
 - **100% Offline-Capable PWA**: Service Worker caching of vector geometries, baseline observations, and styling for low-bandwidth field environments.
 
 ---
@@ -194,6 +203,37 @@ The UI adheres to a refined **Japandi aesthetic**—blending Japanese minimalism
   - **Compact**: Maximizes data density for multi-monitor workstations and intensive analytical audits.
   - **Standard**: The default balanced configuration with generous optical padding.
   - **Spacious**: Relaxed touch-friendly layout optimized for presentations, tablets, and kiosks.
+
+---
+
+### 9. African Ethnic Tree & Ancestral Lineages Explorer
+An interactive anthropological, linguistic, and genomic taxonomy explorer mapping Africa's living heritage:
+- **Hierarchical Phyla & Macro-Families**: Visualizes deep linguistic lineages rooted in four principal continental phyla:
+  - **Niger-Congo**: Atlantic-Congo, Bantu dispersal, Volta-Niger, and Mande expansions.
+  - **Afroasiatic**: Semitic, Berber/Tamazight, Cushitic, and Chadic branches.
+  - **Nilo-Saharan**: Nilotic pastoralist corridors, Central Sudanic, and Saharan traditions.
+  - **Khoisan**: Juu-ǂHoan, Tuu, and Khoe-Kwadi click-consonant phonological lineages.
+- **Population Genetics & Admixture Integration**: Connects archaeological evidence with modern genomic research on Out-of-Africa migrations, agricultural dispersals, and Atlantic creolization.
+- **UNESCO Memory of the World Alignment**: Preserves indigenous self-determination and scholarly rigor by rejecting colonial tribal essentialisms in favor of living, evolving cultural taxonomies.
+
+---
+
+### 10. Scholarly Treatises & Econometric Working Papers
+A dedicated research library featuring 10 peer-reviewed empirical dossiers exploring development economics, historical persistence, and institutional formation:
+- **Nathan Nunn Econometric Models**: Detailed analysis of *The Long-Term Effects of Africa's Slave Trades* (Quarterly Journal of Economics, 2008) and the intergenerational transmission of mistrust (*The Slave Trade and the Origins of Mistrust in Africa*, American Economic Review, 2011).
+- **Genomic & Population Architecture**: Dossiers on tri-continental genetic admixture in Cabo Verde, molecular legacies, and founder effects across the Middle Passage.
+- **Reparatory Justice & International Law**: Rigorous academic frameworks examining historical debt, sovereign responsibility, and reparatory mechanisms in the Anthropocene.
+- **Direct Interactive Exploration**: Users can launch cross-referenced cartographic views, indicator correlations, and bibliographies directly from each treatise.
+
+---
+
+### 11. Privacy, Data Governance & Scholarly Charter (MD3 Architecture)
+An in-app four-pillar governance framework built with Material Design 3 (MD3) navigation:
+- **Zero-Surveillance Architecture**: Compliant with EU GDPR (Articles 12–22), ePrivacy, CCPA/CPRA, and the African Union Malabo Convention on Personal Data Protection. No commercial advertising cookies, tracking pixels, or cross-site fingerprinting.
+- **Interactive Local Storage Inspector**: Live in-app transparency utility scanning browser `localStorage` keys, enabling users to audit cached data and execute their GDPR **Right to Erasure** (Art. 17) with one click.
+- **Stateless Neural Audio**: Text-to-speech audio executes through the client's native Web Speech API or transient, stateless in-memory neural streams without vocal fingerprinting or server disk retention.
+- **Strict Academic Independence**: Explicit non-endorsement decoupling verifying that cited institutions (Harvard, AER, QJE, UNESCO, SlaveVoyages Consortium) are referenced under academic fair use and do not constitute corporate sponsors.
+- **Dual Licensing & Citation Generator**: One-click generation of standardized academic citations in **APA 7th**, **Chicago 17th**, and **BibTeX** formats.
 
 ---
 
@@ -404,8 +444,13 @@ CMD ["npm", "start"]
 
 ## 📚 Academic Citations & Data Governance
 
+### Dual Licensing Matrix
+The Africa Data Atlas operates under a dual-licensing charter to support open scholarly inquiry while ensuring proper attribution and reproducible open science:
+- **Codebase & Software Architecture**: Released under the **[MIT License](https://opensource.org/licenses/MIT)**. Free for modification, reuse, and deployment.
+- **Empirical Research Data & Synthesis**: Licensed under **[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/)**. Free for academic, classroom, policy research, and student use with attribution.
+
 ### Open Data Licensing & Attribution
-The Africa Data Atlas is released under the **MIT License**. Statistical indicators and geospatial data aggregated by the platform remain subject to the respective open data licenses and attribution policies of their sponsoring institutions:
+Statistical indicators and geospatial data aggregated by the platform remain subject to the respective open data licenses and attribution policies of their sponsoring institutions:
 
 - **World Bank Open Data**: [Creative Commons Attribution 4.0 (CC-BY 4.0)](https://datacatalog.worldbank.org/)
 - **United Nations Statistics Division (UNSD)**: [UN Open Data Terms of Use](https://unstats.un.org/)
@@ -413,6 +458,30 @@ The Africa Data Atlas is released under the **MIT License**. Statistical indicat
 - **Transatlantic Slave Voyages Database**: [Emory University & Hutchins Center Attribution Terms](https://www.slavevoyages.org/)
 - **WHO Global Health Observatory**: [WHO Data Sharing Policy](https://www.who.int/data/gho)
 - **UNESCO Institute for Statistics**: [UIS Data Licensing](https://uis.unesco.org/)
+
+### Academic Independence & Institutional Decoupling
+The Africa Data Atlas is an independent academic, educational, and public-interest platform. Scholars, universities, and multilateral bodies referenced throughout the application (such as Prof. Nathan Nunn, Harvard University, the American Economic Review, Quarterly Journal of Economics, UNESCO, and the SlaveVoyages Consortium) are cited for empirical provenance and historiographical documentation under scholarly fair use. They are not commercial sponsors, institutional partners, or endorsers of this platform.
+
+### Standardized Citation Formats:
+When citing the Africa Data Atlas in academic papers, working dossiers, or syllabi:
+
+**APA 7th Edition:**
+> Africalia Academic Atlas Consortium. (2026). *The Africa Data Atlas: Sovereign Socio-Economic, Genomic, and Geospatial Synthesis*. Open Science Repository Africa. https://github.com/zeluis/Africa-Digital-Atlas
+
+**Chicago 17th Edition (Author-Date):**
+> Africalia Academic Atlas Consortium. 2026. "The Africa Data Atlas: Sovereign Socio-Economic, Genomic, and Geospatial Synthesis." Open Science Repository Africa. https://github.com/zeluis/Africa-Digital-Atlas.
+
+**Academic BibTeX Citation:**
+```bibtex
+@misc{africa_data_atlas_2026,
+  author       = {Africa Digital Atlas Development Consortium},
+  title        = {Africa Data Atlas: Multilateral Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform},
+  year         = {2026},
+  publisher    = {GitHub},
+  howpublished = {\url{https://zeluis.github.io/Africa-Digital-Atlas/}},
+  note         = {Covering 54 Sovereign African States across 16 Multilateral APIs, Anthropological Lineages, and Historical Maritime Voyages}
+}
+```
 
 ---
 

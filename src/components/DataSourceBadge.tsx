@@ -2,6 +2,7 @@ import React from 'react';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from './CountryFlag';
 import { ExternalLink, ShieldCheck, AlertCircle, Info, Database, Calendar, Layers, X } from 'lucide-react';
+import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
 
 interface DataProvenanceModalProps {
   isOpen: boolean;
@@ -102,8 +103,7 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
                 {source?.url && (
                   <a
                     href={source.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    {...SAFE_EXTERNAL_LINK_PROPS}
                     className="text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-medium underline-offset-2 hover:underline"
                   >
                     Source Portal <ExternalLink className="w-3 h-3" />

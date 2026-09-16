@@ -22,7 +22,10 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { RESEARCH_REPORTS, ResearchReport } from '../data/reportsData';
+import { getAllReports } from '../data/reportsDataLoader';
 import { ReportVoiceReader } from '../components/ReportVoiceReader';
+import { resolveDoi, SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
+import { SemanticReportRenderer } from '../components/SemanticReportRenderer';
 
 interface ResearchReportArticleViewProps {
   reportId: string;
@@ -39,7 +42,8 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
   onNavigateToSlaveTrade,
   onSelectOtherReport
 }) => {
-  const report: ResearchReport = RESEARCH_REPORTS[reportId] || RESEARCH_REPORTS['report-genetic-linguistic-blueprints'];
+  const allReports = React.useMemo(() => getAllReports(), []);
+  const report: ResearchReport = allReports[reportId] || RESEARCH_REPORTS[reportId] || RESEARCH_REPORTS['report-genetic-linguistic-blueprints'];
 
   const [activeSectionId, setActiveSectionId] = useState<string>(report.sections[0]?.id || 'sec-intro');
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
@@ -238,9 +242,8 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
           <div className="flex items-center gap-2">
             <span className="font-mono text-zinc-400">DOI:</span>
             <a 
-              href={`https://doi.org/${report.doi}`} 
-              target="_blank" 
-              rel="noopener noreferrer" 
+              href={resolveDoi(report.doi)} 
+              {...SAFE_EXTERNAL_LINK_PROPS}
               className="font-mono text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1"
             >
               <span>{report.doi}</span>
@@ -360,11 +363,14 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
                 {section.title}
               </h2>
 
-              <p className={`text-zinc-700 dark:text-zinc-300 font-serif leading-relaxed ${
+              <div className={`text-zinc-700 dark:text-zinc-300 font-serif leading-relaxed ${
                 fontSize === 'large' ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'
               }`}>
-                {section.content}
-              </p>
+                <SemanticReportRenderer 
+                  content={section.content} 
+                  citations={report.citations} 
+                />
+              </div>
 
               {/* Key Takeaway Callout Box */}
               {section.keyTakeaway && (
@@ -404,7 +410,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
 
             <div className="divide-y divide-zinc-100 dark:divide-zinc-800/80 text-xs">
               {report.citations.map(cit => (
-                <div key={cit.id} className="py-3.5 space-y-1">
+                <div key={cit.id} id={cit.id} className="py-3.5 space-y-1 p-2 rounded-xl transition-all duration-300">
                   <div className="font-semibold text-zinc-800 dark:text-zinc-200">
                     {cit.authors} ({cit.year}).
                   </div>
@@ -413,9 +419,8 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
                   </div>
                   {cit.doiOrUrl && (
                     <a
-                      href={cit.doiOrUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={resolveDoi(cit.doiOrUrl)}
+                      {...SAFE_EXTERNAL_LINK_PROPS}
                       className="inline-flex items-center gap-1 font-mono text-amber-600 dark:text-amber-400 hover:underline pt-0.5"
                     >
                       <span>{cit.doiOrUrl}</span>

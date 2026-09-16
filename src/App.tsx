@@ -16,6 +16,7 @@ import { AfricanRegion } from './data/types';
 import { atlas } from './data/atlas-store';
 import { lazyWithRetry, ViewErrorBoundary } from './utils/lazyWithRetry';
 import { Globe, Database } from 'lucide-react';
+import { DynamicIcon } from './components/DynamicIcon';
 
 // Lazy-load heavier views with automatic chunk recovery and cache resilience for GitHub Pages
 const AnalyticsView = lazyWithRetry(() => import('./views/AnalyticsView').then(m => ({ default: m.AnalyticsView })), 'AnalyticsView');
@@ -143,12 +144,20 @@ function AppContent() {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  // Keyboard shortcut: Cmd+K / Ctrl+K opens quick search
+  // Keyboard shortcut: Cmd+K / Ctrl+K opens quick search; Cmd+B / Ctrl+B toggles navigation drawer
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         setIsSearchOpen(prev => !prev);
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        if (window.innerWidth >= 768) {
+          setIsDesktopDrawerOpen(prev => !prev);
+        } else {
+          setIsMobileNavOpen(prev => !prev);
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -216,12 +225,35 @@ function AppContent() {
       />
 
       {/* Main Workspace Layout with Desktop Navigation Drawer & Content */}
-      <div className="flex-1 w-full flex">
+      <div className="flex-1 w-full flex relative">
+        {/* Docked Drawer Toggle Button (Positioned just under top bar, aligned under the logo when collapsed) */}
+        {!isDesktopDrawerOpen && (
+          <button
+            onClick={handleToggleMenu}
+            className="hidden lg:flex fixed top-[4.75rem] left-3 sm:left-6 lg:left-8 z-30 p-2 rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-900/95 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 shadow-md backdrop-blur-md transition-all duration-200 cursor-pointer items-center justify-center hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+            title="Expand Navigation Drawer (⌘B)"
+            aria-label="Expand Navigation Drawer"
+          >
+            <DynamicIcon icon="codicon:layout-sidebar-left-dock" className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />
+          </button>
+        )}
+
+        {/* Mobile Floating Drawer Trigger (Aligned under the logo) */}
+        <button
+          onClick={() => setIsMobileNavOpen(true)}
+          className="lg:hidden fixed bottom-5 left-4 z-40 p-3 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-900/95 text-zinc-800 dark:text-zinc-200 shadow-xl backdrop-blur-md flex items-center gap-2 text-xs font-mono font-bold cursor-pointer hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+          aria-label="Open Navigation Menu"
+        >
+          <DynamicIcon icon="codicon:layout-sidebar-left-dock" className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+          <span>Menu</span>
+        </button>
+
         {/* Desktop Navigation Drawer (Starts open, 272px width, doesn't close on tab clicks) + Mobile Bottom Sheet */}
         <NavigationDrawer
           currentTab={currentTab}
           onSelectTab={handleSelectTab}
           isDesktopOpen={isDesktopDrawerOpen}
+          onToggleDesktop={handleToggleMenu}
           isMobileOpen={isMobileNavOpen}
           onCloseMobile={() => setIsMobileNavOpen(false)}
           onOpenOnboarding={() => setIsOnboardingOpen(true)}

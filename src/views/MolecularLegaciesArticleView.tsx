@@ -56,6 +56,7 @@ import {
   MOLECULAR_RESEARCH_CITATIONS,
   ResearchCitation
 } from '../data/molecularLegaciesData';
+import { resolveDoi, SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
 
 export type ArticleSectionId = 
   | 'sec-epistemology'
@@ -881,9 +882,8 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
                   </p>
                   {cite.doiOrUrl && (
                     <a
-                      href={cite.doiOrUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={resolveDoi(cite.doiOrUrl)}
+                      {...SAFE_EXTERNAL_LINK_PROPS}
                       className="text-[11px] font-mono text-[#181816] dark:text-[#E6E3DB] hover:underline inline-flex items-center gap-1.5 mt-1 font-medium"
                     >
                       <span>DOI / Reference URL</span>

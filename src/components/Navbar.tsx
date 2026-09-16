@@ -1,26 +1,18 @@
 import React from 'react';
 import { atlas } from '../data/atlas-store';
-import { CountryFlag } from './CountryFlag';
 import { LanguageSelector } from './LanguageSelector';
 import { VoiceWelcomeFab } from './VoiceWelcomeFab';
 import { TOP_BAR_UI_GREETINGS } from '../utils/africaliaVoiceEngine';
 import { useTranslation } from '../i18n/LanguageContext';
-import { useDensity } from '../contexts/DensityContext';
 import { JapandiTooltip } from './JapandiTooltip';
 import { CanonicalNavTab } from './NavigationDrawer';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { AfricaUnLogo } from './AfricaUnLogo';
+import { PreferencesDropdown } from './PreferencesDropdown';
 import { 
-  Globe, 
-  Menu,
   Search, 
-  CheckCircle2, 
-  Sun, 
-  Moon,
-  SlidersHorizontal,
-  Database,
   WifiOff,
-  Sparkles
+  Database
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -29,8 +21,8 @@ interface NavbarProps {
   selectedEntityId: string;
   onSelectCountry: (entityId: string) => void;
   onOpenSearch: () => void;
-  onToggleMenu: () => void;
-  isDrawerOpen: boolean;
+  onToggleMenu?: () => void;
+  isDrawerOpen?: boolean;
   theme?: 'dark' | 'light';
   onToggleTheme?: () => void;
   onOpenApiHub?: () => void;
@@ -53,73 +45,110 @@ export const Navbar: React.FC<NavbarProps> = ({
   activeRegion
 }) => {
   const { t, language, currentLanguageOption } = useTranslation();
-  const { density, cycleDensity } = useDensity();
   const isOnline = useNetworkStatus();
-  const allEntities = atlas.getAllEntities();
   const manifest = atlas.getManifest();
 
   const currentGreeting = TOP_BAR_UI_GREETINGS[language] || TOP_BAR_UI_GREETINGS['en'];
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/90 backdrop-blur-md transition-colors duration-200">
-      <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-3">
-          {/* Left Section: Menu Toggle Button & Logo */}
-          <div className="flex items-center gap-3 md:gap-4">
-            {/* Menu Button: Always visible, icon-only, no visible text label */}
-            <button
-              onClick={onToggleMenu}
-              className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100/90 dark:bg-zinc-900/90 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 transition-all cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
-              aria-label="Toggle navigation drawer"
-              title={isDrawerOpen ? 'Close Navigation Drawer' : 'Open Navigation Drawer'}
-            >
-              <Menu className="w-5 h-5 text-zinc-800 dark:text-zinc-200" />
-            </button>
+      <div className="w-full px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
+          
+          {/* ========================================================= */}
+          {/* ZONE 1: PRIMARY NAVIGATION & BRAND (LEFT)                */}
+          {/* Prominent Hero SVG Logo with Stacked Editorial Title     */}
+          {/* ========================================================= */}
+          <div className="flex items-center shrink-0">
+            {/* Logo & Brand Identity (Standalone Masthead) */}
+            <div className="flex items-center gap-2.5 sm:gap-3 select-none">
+              <div 
+                className="relative flex items-center justify-center cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 py-0.5 shrink-0"
+                onClick={() => onSelectTab('overview')}
+                title="Africalia Continental Atlas - Return to Primary Overview"
+              >
+                <AfricaUnLogo 
+                  className="shrink-0 drop-shadow-[0_2px_8px_rgba(217,119,6,0.22)] dark:drop-shadow-[0_2px_10px_rgba(251,191,36,0.25)]" 
+                  viewBox="65 55 885 970"
+                  size={54}
+                  activeRegion={activeRegion}
+                  onSelectRegion={(reg) => {
+                    const regTabMap: Record<string, CanonicalNavTab> = {
+                      'Northern Africa': 'region-northern',
+                      'Western Africa': 'region-western',
+                      'Central Africa': 'region-central',
+                      'Eastern Africa': 'region-eastern',
+                      'Southern Africa': 'region-southern'
+                    };
+                    if (regTabMap[reg]) {
+                      onSelectTab(regTabMap[reg]);
+                    }
+                  }}
+                />
+              </div>
+              
+              {/* Stacked Vertical Title Hierarchy: Title is second most prominent */}
+              <div className="flex flex-col justify-center leading-none">
+                {/* Africalia Title - Explicit Serif font, bold terracotta, dominant over pill */}
+                <button
+                  type="button"
+                  onClick={() => onSelectTab('overview')}
+                  style={{ fontFamily: '"Noto Serif Display", Georgia, Cambria, "Times New Roman", serif' }}
+                  className="font-extrabold text-[1.15rem] sm:text-xl tracking-tight text-amber-900 dark:text-amber-400 hover:opacity-85 transition-opacity cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded py-0.5 leading-tight"
+                  aria-label="Africalia - Return to Primary Overview"
+                  title="Return to Primary Overview"
+                >
+                  Africalia
+                </button>
 
-            {/* Logo & Brand */}
-            <div 
-              className="flex items-center gap-3 cursor-pointer select-none group/logo" 
-              onClick={() => onSelectTab('overview')}
-            >
-              <AfricaUnLogo 
-                className="w-10 h-10 shrink-0" 
-                activeRegion={activeRegion}
-                onSelectRegion={(reg) => {
-                  const regTabMap: Record<string, CanonicalNavTab> = {
-                    'Northern Africa': 'region-northern',
-                    'Western Africa': 'region-western',
-                    'Central Africa': 'region-central',
-                    'Eastern Africa': 'region-eastern',
-                    'Southern Africa': 'region-southern'
-                  };
-                  if (regTabMap[reg]) {
-                    onSelectTab(regTabMap[reg]);
-                  }
-                }}
-              />
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-base sm:text-lg tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                    <span className="text-emerald-700 dark:text-emerald-400 font-serif">Africalia</span>
-                    <span className="text-zinc-400 dark:text-zinc-500 font-normal hidden xs:inline">·</span>
-                    <span className="hidden xs:inline text-zinc-700 dark:text-zinc-300 font-semibold text-xs sm:text-sm uppercase tracking-wider font-mono">
-                      Atlas
-                    </span>
-                  </span>
-                  <span className="rounded-full bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700/60 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-800 dark:text-emerald-300">
-                    v{manifest.atlasVersion}
-                  </span>
+                {/* Quiet [ ATLAS v{manifest.atlasVersion} ] Pill - delicate, understated micro-typography */}
+                <div className="flex items-center mt-0.5">
+                  <button
+                    type="button"
+                    onClick={() => onSelectTab('overview')}
+                    style={{ fontSize: '9px', lineHeight: '1.2' }}
+                    className="inline-flex items-center gap-1 rounded-full bg-amber-100/60 dark:bg-amber-950/60 hover:bg-amber-200/80 dark:hover:bg-amber-900/80 border border-amber-300/60 dark:border-amber-700/50 px-1.5 py-[1px] font-mono text-amber-800/80 dark:text-amber-300/80 transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 max-w-fit"
+                    title={`Africalia Atlas v${manifest.atlasVersion} - Return to Primary Overview`}
+                    aria-label={`Atlas v${manifest.atlasVersion} - Return to Overview`}
+                  >
+                    <span className="font-semibold uppercase tracking-widest text-[8px] text-amber-900/75 dark:text-amber-300/75">Atlas</span>
+                    <span className="font-medium text-[8px] text-amber-800/70 dark:text-amber-300/70">v{manifest.atlasVersion}</span>
+                  </button>
                 </div>
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium hidden sm:block">
-                  Sovereign Data Atlas, Cultural Cartography & Horizon Studies
-                </p>
               </div>
             </div>
           </div>
 
-          {/* Right Section: Quick Search, Live Indicator, Language Selector, Country Dropdown & Theme Toggle */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Network Status: Offline indicator pill when offline */}
+          {/* ========================================================= */}
+          {/* ZONE 2: EXPLORATION & DISCOVERY COMMAND TRIGGER (CENTER)  */}
+          {/* ========================================================= */}
+          <div className="flex-1 max-w-sm md:max-w-md lg:max-w-lg mx-1 sm:mx-4">
+            <button
+              onClick={onOpenSearch}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-zinc-100/80 dark:bg-zinc-900/80 hover:bg-white dark:hover:bg-zinc-800/90 hover:border-amber-400/60 dark:hover:border-amber-600/60 text-zinc-600 dark:text-zinc-300 text-xs transition-all shadow-2xs group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              aria-label="Quick command search and country jumper"
+            >
+              <div className="flex items-center gap-2.5 truncate">
+                <Search className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
+                <span className="font-sans text-xs text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 truncate">
+                  <span className="hidden sm:inline">Search 54 countries, indicators, or jump...</span>
+                  <span className="sm:hidden">Search countries...</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0 pl-2">
+                <kbd className="hidden sm:inline-flex items-center gap-0.5 bg-white dark:bg-zinc-950 border border-zinc-300/80 dark:border-zinc-700/80 px-1.5 py-0.5 rounded text-[10px] font-mono text-zinc-500 dark:text-zinc-400 font-semibold shadow-2xs">
+                  ⌘K
+                </kbd>
+              </div>
+            </button>
+          </div>
+
+          {/* ========================================================= */}
+          {/* ZONE 3: CONTROL DECK & UTILITIES CLUSTER (RIGHT)          */}
+          {/* ========================================================= */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            
+            {/* Offline PWA indicator (shown only when disconnected) */}
             {!isOnline && (
               <JapandiTooltip
                 title="PWA Offline Mode Active"
@@ -127,132 +156,63 @@ export const Navbar: React.FC<NavbarProps> = ({
                 regionalAccent="#f59e0b"
               >
                 <div 
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-amber-300/80 dark:border-amber-700/80 bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 text-[11px] font-mono font-bold select-none"
+                  className="flex items-center gap-1 px-2 py-1.5 rounded-xl border border-amber-300/80 dark:border-amber-700/80 bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 text-[11px] font-mono font-bold select-none"
                   role="status"
                   aria-live="polite"
                 >
                   <WifiOff className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                  <span className="hidden xs:inline tracking-wider uppercase">Offline PWA</span>
+                  <span className="hidden md:inline tracking-wider uppercase text-[10px]">Offline</span>
                 </div>
               </JapandiTooltip>
             )}
 
-            {/* Real-time Live Data Status Indicator with Japandi Tooltip */}
-            <JapandiTooltip
-              title="Multilateral Data APIs (16 Active)"
-              content="Click to explore and live-test 16 international APIs: FH_FIW, WGI, UNESCO, GHO, PIP, IDS, UN Comtrade, IMF WEO, WB CPIA, and WB Climate."
-              regionalAccent="#10b981"
-            >
-              <button 
-                onClick={onOpenApiHub}
-                className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-emerald-300/80 dark:border-emerald-800/80 bg-emerald-50/90 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-300 shadow-xs cursor-pointer select-none transition-colors"
-                title="Open Multilateral Data APIs & Ingestion Hub"
+            {/* Live Data Hub Indicator Pill (16 APIs) */}
+            {onOpenApiHub && (
+              <JapandiTooltip
+                title="Multilateral Data APIs (16 Active)"
+                content="Explore 16 institutional API connectors: World Bank, IMF, WHO, UNESCO, UN Comtrade, and historical archives."
+                regionalAccent="#10b981"
               >
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span className="tracking-wide">16 DATA APIs</span>
-              </button>
-            </JapandiTooltip>
+                <button 
+                  onClick={onOpenApiHub}
+                  className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-emerald-300/80 dark:border-emerald-800/80 bg-emerald-50/90 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-[11px] font-mono font-bold text-emerald-800 dark:text-emerald-300 shadow-xs cursor-pointer select-none transition-colors"
+                  title="Open Multilateral Data APIs & Ingestion Hub"
+                  aria-label="Open 16 Multilateral Data APIs hub"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  <span className="tracking-tight hidden md:inline">16 APIs</span>
+                  <Database className="w-3.5 h-3.5 md:hidden text-emerald-600 dark:text-emerald-400" />
+                </button>
+              </JapandiTooltip>
+            )}
 
-            {/* Density Mode Switcher Button */}
-            <JapandiTooltip
-              title="Information Density"
-              content={`Current layout mode: ${density.toUpperCase()}. Click to cycle between Standard, Analytical (compact), and Editorial (spacious).`}
-              regionalAccent="#06b6d4"
-            >
-              <button
-                onClick={cycleDensity}
-                className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer flex items-center gap-1 text-xs font-mono font-semibold"
-                aria-label={`Current density mode: ${density}. Click to switch.`}
-              >
-                <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-500" />
-                <span className="hidden lg:inline capitalize">{density}</span>
-              </button>
-            </JapandiTooltip>
+            {/* Semantic Language Group: Language Selector Pill + Voice Welcome Button */}
+            <div className="flex items-center rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-zinc-100/80 dark:bg-zinc-900/80 p-0.5">
+              <LanguageSelector />
+              <div className="w-[1px] h-4 bg-zinc-300 dark:bg-zinc-700/80 mx-0.5" />
+              <VoiceWelcomeFab
+                variant="navbar"
+                text={currentGreeting.phrase}
+                langTag={currentGreeting.langTag}
+                languageName={currentLanguageOption.name}
+                tooltip={`Listen to Africalia Welcome in ${currentLanguageOption.name}`}
+                ariaLabel={`Play Africalia Welcome greeting in ${currentLanguageOption.name}`}
+              />
+            </div>
 
-            {/* Language Selector Dropdown (12 Languages) */}
-            <LanguageSelector />
-
-            {/* Top Bar Voice Welcome FAB (Speaks Welcome Greeting in Selected UI Language) */}
-            <VoiceWelcomeFab
-              variant="navbar"
-              text={currentGreeting.phrase}
-              langTag={currentGreeting.langTag}
-              languageName={currentLanguageOption.name}
-              tooltip={`Listen to Africalia Welcome in ${currentLanguageOption.name}`}
-              ariaLabel={`Play Africalia Welcome greeting in ${currentLanguageOption.name}`}
+            {/* Unified Preferences & Settings Dropdown */}
+            <PreferencesDropdown
+              theme={theme}
+              onToggleTheme={onToggleTheme}
+              onOpenOnboarding={onOpenOnboarding}
+              onSelectTab={onSelectTab}
             />
 
-            {/* Global Search Button */}
-            <button
-              onClick={onOpenSearch}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100/90 dark:bg-zinc-900/80 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-medium transition-all shadow-inner hover:border-zinc-300 dark:hover:border-zinc-700 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
-              aria-label="Search countries, regions, and indicators"
-            >
-              <Search className="w-3.5 h-3.5 text-emerald-500" />
-              <span className="hidden md:inline">{t('action.search', 'Quick Search...')}</span>
-              <kbd className="hidden md:inline-block bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 px-1.5 py-0.2 rounded text-[10px] font-mono text-zinc-500 dark:text-zinc-400">
-                ⌘K
-              </kbd>
-            </button>
-
-            {/* Curated Onboarding & Historical Framework Trigger */}
-            {onOpenOnboarding && (
-              <button
-                onClick={onOpenOnboarding}
-                className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 hover:bg-amber-500/10 hover:border-amber-500/30 text-zinc-700 dark:text-zinc-300 hover:text-amber-600 dark:hover:text-amber-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-                title="Africalia Curated Orientation & Historical Framework"
-                aria-label="Open Africalia Orientation"
-              >
-                <Sparkles className="w-4 h-4 text-amber-500" />
-              </button>
-            )}
-
-            {/* Quick Country Dropdown Jumper */}
-            <div className="relative flex items-center">
-              <select
-                value={selectedEntityId}
-                onChange={e => {
-                  onSelectCountry(e.target.value);
-                }}
-                aria-label="Jump to sovereign country or territory"
-                className="appearance-none bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-semibold py-1.5 pl-8 pr-7 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer max-w-[120px] sm:max-w-[150px]"
-              >
-                {allEntities.map(e => (
-                  <option key={e.id} value={e.id}>
-                    {e.name} ({e.id})
-                  </option>
-                ))}
-              </select>
-              <div className="absolute left-2.5 pointer-events-none">
-                <CountryFlag entityId={selectedEntityId} size="xs" />
-              </div>
-            </div>
-
-            {/* Day / Night Mode Toggle Button */}
-            {onToggleTheme && (
-              <button
-                onClick={onToggleTheme}
-                className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
-                title={theme === 'dark' ? 'Switch to Day Mode (Light)' : 'Switch to Night Mode (Dark)'}
-                aria-label="Toggle light or dark theme"
-              >
-                {theme === 'dark' ? (
-                  <Sun className="w-4 h-4 text-amber-400 hover:rotate-45 transition-transform" />
-                ) : (
-                  <Moon className="w-4 h-4 text-indigo-600 hover:-rotate-12 transition-transform" />
-                )}
-              </button>
-            )}
-
-            {/* Verification Status Pill */}
-            <div className="hidden xl:flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-2.5 py-1.5 rounded-xl text-[11px] text-zinc-600 dark:text-zinc-400 font-mono">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-              <span>{t('badge.offline_ready', 'Offline Ready')}</span>
-            </div>
           </div>
+
         </div>
       </div>
     </header>

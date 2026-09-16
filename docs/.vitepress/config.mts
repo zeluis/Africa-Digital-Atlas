@@ -54,7 +54,8 @@ export default defineConfig({
           items: [
             { text: 'Data Sources Catalog', link: '/data/data-sources-catalog' },
             { text: 'SVG Geography Engine', link: '/data/svg-geography-engine' },
-            { text: 'Citations & Licensing', link: '/data/citations-licensing' }
+            { text: 'Citations & Licensing', link: '/data/citations-licensing' },
+            { text: 'Privacy & Academic Terms', link: '/data/privacy-policy' }
           ]
         }
       ],
