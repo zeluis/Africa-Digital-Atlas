@@ -146,7 +146,7 @@ export function getCategorizedReports(): NavReportGroup[] {
       title: 'Overview',
       categoryKey: 'overview',
       items: [
-        { id: 'research-directory', label: 'Directory', icon: BookOpen, badge: 'Directory', category: 'overview' }
+        { id: 'research-directory', label: 'Directory', icon: 'lucide:book-a', badge: 'Directory', category: 'overview' }
       ]
     },
     {

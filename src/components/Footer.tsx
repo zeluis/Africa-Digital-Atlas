@@ -7,11 +7,18 @@ import {
   BookOpen, 
   Layers, 
   Sparkles,
-  Heart
+  Heart,
+  Compass,
+  Globe2,
+  Map as MapIcon,
+  Languages,
+  Landmark,
+  BarChart3
 } from 'lucide-react';
 import { CanonicalNavTab } from './NavigationDrawer';
 import { atlas } from '../data/atlas-store';
 import { OrganizationLogo } from './OrganizationLogo';
+import { AfricaUnLogo } from './AfricaUnLogo';
 
 interface FooterProps {
   onNavigateTab: (tab: CanonicalNavTab) => void;
@@ -32,8 +39,18 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
           {/* Brand & Overview Column */}
           <div className="col-span-2 md:col-span-4 lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center shadow-md">
-                <Globe className="w-5 h-5 text-zinc-950 stroke-[2.2]" />
+              <div 
+                className="relative flex items-center justify-center cursor-pointer transition-transform duration-200 hover:scale-105 shrink-0"
+                onClick={() => onNavigateTab('overview')}
+                title="Africalia Continental Atlas - Return to Primary Overview"
+              >
+                <AfricaUnLogo 
+                  size={42} 
+                  interactive={false} 
+                  variant="warm-tonal" 
+                  fillOpacity={0.6}
+                  className="shrink-0 drop-shadow-[0_2px_8px_rgba(217,119,6,0.2)]"
+                />
               </div>
               <div>
                 <span className="font-extrabold text-base tracking-tight text-zinc-900 dark:text-zinc-100">
@@ -57,40 +74,45 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
 
           {/* Group 1: AFRICA */}
           <div className="space-y-3">
-            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
-              AFRICA
+            <h4 className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+              <Globe className="w-3.5 h-3.5 text-emerald-500" />
+              <span>AFRICA</span>
             </h4>
-            <ul className="space-y-2 text-xs">
+            <ul className="space-y-2.5 text-xs">
               <li>
                 <button
                   onClick={() => onNavigateTab('overview')}
-                  className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                  className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded text-zinc-600 dark:text-zinc-400"
                 >
-                  Overview
+                  <Compass className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                  <span>Overview</span>
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => onNavigateTab('explore')}
-                  className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                  className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded text-zinc-600 dark:text-zinc-400"
                 >
-                  Explore Countries
+                  <Globe2 className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                  <span>Explore Countries</span>
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => onNavigateTab('regions')}
-                  className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                  className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded text-zinc-600 dark:text-zinc-400"
                 >
-                  Regions & Geoschemes
+                  <Layers className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                  <span>Regions & Geoschemes</span>
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => onNavigateTab('map')}
-                  className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                  className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded text-zinc-600 dark:text-zinc-400"
                 >
-                  Continental Cartography
+                  <MapIcon className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                  <span>Continental Cartography</span>
                 </button>
               </li>
             </ul>
@@ -98,40 +120,45 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
 
           {/* Group 2: RESEARCH */}
           <div className="space-y-3">
-            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
-              RESEARCH
+            <h4 className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+              <BookOpen className="w-3.5 h-3.5 text-indigo-500" />
+              <span>RESEARCH</span>
             </h4>
-            <ul className="space-y-2 text-xs">
+            <ul className="space-y-2.5 text-xs">
               <li>
                 <button
                   onClick={() => onNavigateTab('languages')}
-                  className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                  className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded text-zinc-600 dark:text-zinc-400"
                 >
-                  African Languages
+                  <Languages className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                  <span>African Languages</span>
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => onNavigateTab('heritage')}
-                  className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                  className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded text-zinc-600 dark:text-zinc-400"
                 >
-                  World Heritage (UNESCO)
+                  <Landmark className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                  <span>World Heritage (UNESCO)</span>
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => onNavigateTab('analytics')}
-                  className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                  className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded text-zinc-600 dark:text-zinc-400"
                 >
-                  Indicator Engine
+                  <BarChart3 className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                  <span>Indicator Engine</span>
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => onNavigateTab('provenance')}
-                  className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                  className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded text-zinc-600 dark:text-zinc-400"
                 >
-                  Methodology & Audit
+                  <ShieldCheck className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                  <span>Methodology & Audit</span>
                 </button>
               </li>
               <li>
@@ -139,10 +166,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
                   href="./docs/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                  className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded text-zinc-600 dark:text-zinc-400"
                 >
+                  <ExternalLink className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                   <span>Docs & Guides</span>
-                  <ExternalLink className="w-3 h-3 opacity-60" />
                 </a>
               </li>
             </ul>
@@ -150,10 +177,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
 
           {/* Group 3: DATA CITATIONS */}
           <div className="space-y-3">
-            <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
-              DATA SOURCES
+            <h4 className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+              <Database className="w-3.5 h-3.5 text-amber-500" />
+              <span>DATA SOURCES</span>
             </h4>
-            <ul className="space-y-2 text-xs">
+            <ul className="space-y-2.5 text-xs">
               <li className="flex items-center gap-2">
                 <OrganizationLogo org="WB" size={16} />
                 <span>World Bank Data API</span>

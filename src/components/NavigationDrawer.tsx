@@ -308,8 +308,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   const historicalLegaciesSubItems = [
     { id: 'slave-trade', label: 'Voyages', icon: Anchor, badge: 'Voyages Flow' },
     { id: 'molecular-legacies', label: 'Genetics', icon: Dna, badge: 'Monograph' },
-    { id: 'african-development-foundations', label: 'Foundations', icon: TrendingDown, badge: 'Treatise' },
-    { id: 'ethnic-tree', label: 'Ethnic Tree', icon: Layers, badge: 'Transatlantic' }
+    { id: 'african-development-foundations', label: 'Foundations', icon: 'fluent-mdl2:knowledge-article', badge: 'Treatise' },
+    { id: 'ethnic-tree', label: 'Ethnic Tree', icon: 'mdi:family-tree', badge: 'Transatlantic' }
   ];
 
   // Submenu items for Regions (Ultra-Minimal style)
@@ -585,7 +585,6 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                         className="overflow-hidden ml-4 pl-3 border-l-2 border-amber-300/40 dark:border-amber-500/30 space-y-1 my-1.5"
                       >
                         {historicalLegaciesSubItems.map(sub => {
-                          const SubIcon = sub.icon;
                           const isSubActive = currentTab === sub.id;
                           return (
                             <motion.div key={sub.id} variants={submenuItemVariants}>
@@ -601,7 +600,14 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0 pr-1">
-                                  <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-amber-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                                  {typeof sub.icon === 'string' ? (
+                                    <DynamicIcon icon={sub.icon} className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-amber-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                                  ) : (
+                                    (() => {
+                                      const SubIconComponent = sub.icon as any;
+                                      return <SubIconComponent className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-amber-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />;
+                                    })()
+                                  )}
                                   <div className="flex flex-col min-w-0">
                                     <span className="truncate">{t(`report.title.${sub.id}`, sub.label)}</span>
                                     <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
@@ -636,7 +642,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                   }`}
                 >
                   <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-3'}`}>
-                    <BookOpen className={`w-5 h-5 shrink-0 ${isReportsGroupActive ? 'text-indigo-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                    <DynamicIcon icon="lucide:book-open-text" className={`w-5 h-5 shrink-0 ${isReportsGroupActive ? 'text-indigo-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                     {!isDesktopCollapsed && <span>{t('nav.reports', 'Reports')}</span>}
                   </div>
                   {!isDesktopCollapsed && (
@@ -727,7 +733,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                   }`}
                 >
                   <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-3'}`}>
-                    <Globe2 className={`w-5 h-5 shrink-0 ${isRegionsGroupActive ? 'text-purple-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                    <DynamicIcon icon="streamline-freehand-color:hierarchy-web" className={`w-5 h-5 shrink-0 ${isRegionsGroupActive ? 'text-purple-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                     {!isDesktopCollapsed && <span>{t('nav.regions', 'Regions')}</span>}
                   </div>
                   {!isDesktopCollapsed && (
@@ -809,7 +815,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                   }`}
                 >
                   <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-3'}`}>
-                    <BarChart3 className={`w-5 h-5 shrink-0 ${isAnalyticsGroupActive ? 'text-emerald-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                    <DynamicIcon icon="glyphs-poly:analytics" className={`w-5 h-5 shrink-0 ${isAnalyticsGroupActive ? 'text-emerald-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                     {!isDesktopCollapsed && <span>{t('nav.analytics', 'Analytics')}</span>}
                   </div>
                   {!isDesktopCollapsed && (
