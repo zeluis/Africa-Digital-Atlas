@@ -541,3 +541,56 @@
   }
 }
 
+/* =========================================================================
+   Integrated Native Translation Hub & Provenance Shielding Rules
+   ========================================================================= */
+
+/* Suppress Google Translate default banner frames so Africalia navigation remains pristine */
+.goog-te-banner-frame.skiptranslate,
+.goog-te-banner-frame,
+iframe.goog-te-banner-frame {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+}
+
+body {
+  top: 0px !important;
+  position: static !important;
+}
+
+.goog-tooltip,
+.goog-tooltip:hover {
+  display: none !important;
+}
+
+.goog-text-highlight {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-te-spinner-pos {
+  display: none !important;
+}
+
+/* Provenance and Proper Noun Protection Rules */
+.notranslate,
+[translate="no"] {
+  -webkit-font-smoothing: antialiased;
+}
+
+/* RTL Typography & Direction overrides when Arabic is active */
+html[dir="rtl"] {
+  text-align: right;
+  font-family: 'Noto Sans Arabic', 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+html[dir="rtl"] .font-mono {
+  direction: ltr;
+  display: inline-block;
+}
+
+

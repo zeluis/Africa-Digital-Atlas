@@ -277,7 +277,7 @@ export const CountryHeaderInfo: React.FC<CountryHeaderInfoProps> = ({
       </div>
 
       {/* Live Local Time & Temperature Capsule */}
-      <div className="rounded-2xl bg-gradient-to-r from-emerald-500/5 via-zinc-50/50 to-cyan-500/5 dark:from-emerald-950/25 dark:via-zinc-950 dark:to-cyan-950/25 border border-emerald-200 dark:border-emerald-800/60 p-4 shadow-xs">
+      <div className="rounded-2xl bg-gradient-to-r from-amber-500/[0.2] via-orange-500/[0.1] to-emerald-500/[0.16] dark:from-amber-950/35 dark:via-zinc-900/70 dark:to-emerald-950/30 border border-amber-200/80 dark:border-amber-800/60 p-4 shadow-xs transition-colors">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
           {/* Left: Live Ticking Local Time */}
           <div className="flex items-center gap-3.5">
@@ -289,11 +289,11 @@ export const CountryHeaderInfo: React.FC<CountryHeaderInfoProps> = ({
                 <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 font-mono">
                   Live Capital Time
                 </span>
-                <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 font-semibold">
+                <span translate="no" className="notranslate font-mono text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 font-semibold">
                   {metadata.timeZoneAbbr} ({metadata.utcOffset})
                 </span>
               </div>
-              <div className="flex items-baseline gap-2">
+              <div translate="no" className="notranslate flex items-baseline gap-2">
                 <span className="font-mono font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-zinc-100 tracking-tight">
                   {timeStr}
                 </span>
@@ -316,7 +316,7 @@ export const CountryHeaderInfo: React.FC<CountryHeaderInfoProps> = ({
                     Capital Temperature
                   </span>
                   {/* C / F Unit Toggle */}
-                  <div className="inline-flex rounded-md bg-zinc-100 dark:bg-zinc-800 p-0.5 border border-zinc-200 dark:border-zinc-700">
+                  <div translate="no" className="notranslate inline-flex rounded-md bg-zinc-100 dark:bg-zinc-800 p-0.5 border border-zinc-200 dark:border-zinc-700">
                     <button
                       type="button"
                       onClick={() => setTempUnit('C')}
@@ -342,7 +342,7 @@ export const CountryHeaderInfo: React.FC<CountryHeaderInfoProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-baseline gap-2">
+                <div translate="no" className="notranslate flex items-baseline gap-2">
                   <span className="font-mono font-extrabold text-xl md:text-2xl text-amber-600 dark:text-amber-300">
                     {tempUnit === 'C' ? `${currentTempC}°C` : `${currentTempF}°F`}
                   </span>

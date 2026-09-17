@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { SupportedLanguage, LanguageOption } from './types';
 import { TRANSLATIONS, LANGUAGE_OPTIONS } from './translations';
+import { initNativeTranslationEngine, syncNativeTranslation } from '../utils/nativeTranslationBridge';
 
 interface LanguageContextType {
   language: SupportedLanguage;
@@ -30,6 +31,11 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const isRTL = language === 'ar';
 
+  // Initialize native translation bridge on initial app mount
+  useEffect(() => {
+    initNativeTranslationEngine();
+  }, []);
+
   const setLanguage = (lang: SupportedLanguage) => {
     setLanguageState(lang);
     try {
@@ -37,19 +43,13 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     } catch {
       // Ignore storage errors
     }
+    syncNativeTranslation(lang);
   };
 
-  // Synchronize document dir and lang attribute
+  // Synchronize document dir, lang attribute, and native translation bridge on state changes
   useEffect(() => {
-    const root = document.documentElement;
-    root.lang = language;
-    root.dir = isRTL ? 'rtl' : 'ltr';
-    if (isRTL) {
-      root.classList.add('rtl-mode');
-    } else {
-      root.classList.remove('rtl-mode');
-    }
-  }, [language, isRTL]);
+    syncNativeTranslation(language);
+  }, [language]);
 
   const currentLanguageOption = LANGUAGE_OPTIONS.find(l => l.code === language) || LANGUAGE_OPTIONS[0];
 

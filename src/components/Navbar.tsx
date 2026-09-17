@@ -9,6 +9,7 @@ import { CanonicalNavTab } from './NavigationDrawer';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { AfricaUnLogo } from './AfricaUnLogo';
 import { PreferencesDropdown } from './PreferencesDropdown';
+import { PWAInstallButton } from './PWAInstallButton';
 import { 
   Search, 
   WifiOff,
@@ -188,6 +189,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               </JapandiTooltip>
             )}
+
+            {/* PWA In-App Install Button */}
+            <PWAInstallButton className="hidden sm:flex" />
 
             {/* Semantic Language Group: Language Selector Pill + Voice Welcome Button */}
             <div className="flex items-center rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-zinc-100/80 dark:bg-zinc-900/80 p-0.5">

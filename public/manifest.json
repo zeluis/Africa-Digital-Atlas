@@ -1,13 +1,14 @@
 {
-  "name": "Africa Data Atlas & Dashboard",
-  "short_name": "Africa Atlas",
-  "description": "Authoritative Pan-African Socio-Economic Data Platform, Cartography & Analytics across all 54 Member States",
-  "start_url": "./",
-  "scope": "./",
+  "id": "/",
+  "name": "Africalia: Africa Data Atlas",
+  "short_name": "Africalia",
+  "description": "Authoritative Pan-African data platform featuring 54 sovereign nations, Atlantic Slave Trade research database, ethnic tree cartography, 8 thematic pillars, and investigative monographs.",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#09090b",
-  "theme_color": "#064e3b",
+  "background_color": "#18181b",
+  "theme_color": "#4e5e51",
   "categories": ["education", "reference", "productivity", "utilities"],
   "icons": [
     {

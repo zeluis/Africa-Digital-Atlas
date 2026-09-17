@@ -1,3 +1,5 @@
+import type { AfricaliaClassification } from '../types/africaliaReport';
+
 export interface ReportSection {
   id: string;
   title: string;
@@ -29,7 +31,7 @@ export interface ResearchReport {
   publicationDate: string;
   readingTimeMinutes: number;
   doi: string;
-  classification: string;
+  classification: string | AfricaliaClassification;
   executiveSummary: string;
   sections: ReportSection[];
   citations: ReportCitation[];

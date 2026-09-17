@@ -1,4 +1,5 @@
 import React from 'react';
+import { Icon } from '@iconify/react';
 import { 
   Globe, 
   ShieldCheck, 
@@ -45,20 +46,28 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
                 title="Africalia Continental Atlas - Return to Primary Overview"
               >
                 <AfricaUnLogo 
-                  size={42} 
+                  size={46} 
                   interactive={false} 
                   variant="warm-tonal" 
                   fillOpacity={0.6}
                   className="shrink-0 drop-shadow-[0_2px_8px_rgba(217,119,6,0.2)]"
                 />
               </div>
-              <div>
-                <span className="font-extrabold text-base tracking-tight text-zinc-900 dark:text-zinc-100">
-                  AFRICA DATA ATLAS
+              <div className="flex flex-col justify-center">
+                <span 
+                  style={{ fontFamily: '"Noto Serif Display", Georgia, Cambria, "Times New Roman", serif' }}
+                  className="font-extrabold text-xl tracking-tight text-amber-900 dark:text-amber-400 leading-tight"
+                >
+                  Africalia
                 </span>
-                <span className="ml-2 rounded-full bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700/60 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-800 dark:text-emerald-300">
-                  v{manifest.atlasVersion}
-                </span>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="font-extrabold text-[11px] uppercase tracking-wider text-zinc-900 dark:text-zinc-100 font-mono">
+                    AFRICA DIGITAL ATLAS
+                  </span>
+                  <span className="rounded-full bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700/60 px-1.5 py-[1px] text-[9px] font-mono font-bold text-emerald-800 dark:text-emerald-300">
+                    v{manifest.atlasVersion}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -75,7 +84,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
           {/* Group 1: AFRICA */}
           <div className="space-y-3">
             <h4 className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
-              <Globe className="w-3.5 h-3.5 text-emerald-500" />
+              <Icon icon="game-icons:africa" className="w-4 h-4 text-emerald-500 shrink-0" />
               <span>AFRICA</span>
             </h4>
             <ul className="space-y-2.5 text-xs">

@@ -13,6 +13,7 @@
 
 import { ingestNotebookMarkdown } from './notebookIngestionPipeline';
 import { ResearchReport, ReportCategory, RESEARCH_REPORTS as BASELINE_REPORTS } from './reportsData';
+import { AfricaliaReport } from '../types/africaliaReport';
 import { LucideIcon, BookOpen, Dna, Scale, TrendingUp, Cpu, FileText } from 'lucide-react';
 import rawBantu from '../content/reports/bantu-expansion-genomics.md?raw';
 import rawTransSaharan from '../content/reports/trans-saharan-jurisprudence.md?raw';
@@ -48,7 +49,7 @@ export function loadDropInReports(): Record<string, ResearchReport> {
   for (const [path, rawContent] of Object.entries(markdownFiles)) {
     try {
       if (typeof rawContent === 'string' && rawContent.trim()) {
-        const { report } = ingestNotebookMarkdown(rawContent);
+        const { report } = ingestNotebookMarkdown(rawContent, path.replace('../content/reports/', 'reports/'));
         dropInCatalog[report.id] = report;
       }
     } catch (err) {
@@ -57,6 +58,13 @@ export function loadDropInReports(): Record<string, ResearchReport> {
   }
 
   return dropInCatalog;
+}
+
+/**
+ * Returns unified dictionary of all reports (typed as AfricaliaReport | ResearchReport)
+ */
+export function getAllAfricaliaReports(): Record<string, AfricaliaReport> {
+  return getAllReports() as unknown as Record<string, AfricaliaReport>;
 }
 
 /**
@@ -109,9 +117,14 @@ export interface NavReportGroup {
  */
 function getReportBadge(report: ResearchReport): string {
   if (report.classification) {
-    const parts = report.classification.split(/[&,/]/);
-    if (parts[0] && parts[0].trim().length <= 16) {
-      return parts[0].trim();
+    const classStr = typeof report.classification === 'string'
+      ? report.classification
+      : (report.classification.disciplines?.[0] || report.classification.pillar);
+    if (classStr) {
+      const parts = classStr.split(/[&,/]/);
+      if (parts[0] && parts[0].trim().length <= 16) {
+        return parts[0].trim();
+      }
     }
   }
   if (report.category === 'genetics') return 'Genomics';

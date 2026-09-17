@@ -86,7 +86,7 @@ export const SemanticReportRenderer: React.FC<SemanticReportRendererProps> = ({
         const cit = part.citId ? citationMap.get(part.citId) : undefined;
 
         return (
-          <span key={idx} className="relative inline-flex items-center group mx-1 select-none">
+          <span key={idx} translate="no" className="notranslate relative inline-flex items-center group mx-1 select-none">
             <button
               type="button"
               onClick={() => {
@@ -111,7 +111,7 @@ export const SemanticReportRenderer: React.FC<SemanticReportRendererProps> = ({
 
             {/* Hover preview tooltip */}
             {cit && (
-              <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:flex flex-col w-64 p-2.5 rounded-xl bg-zinc-900 text-zinc-100 text-[11px] shadow-xl border border-zinc-700 z-50 animate-in fade-in zoom-in-95">
+              <span translate="no" className="notranslate pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:flex flex-col w-64 p-2.5 rounded-xl bg-zinc-900 text-zinc-100 text-[11px] shadow-xl border border-zinc-700 z-50 animate-in fade-in zoom-in-95">
                 <span className="font-bold text-amber-300">{cit.authors} ({cit.year})</span>
                 <span className="text-zinc-300 italic text-[10px] mt-0.5">{cit.title}</span>
                 <span className="text-zinc-400 text-[10px]">{cit.journalOrPublisher}</span>

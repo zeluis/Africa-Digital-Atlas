@@ -311,3 +311,5 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
     </div>
   );
 };
+
+export default ResearchReportsDirectoryView;

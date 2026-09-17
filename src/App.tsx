@@ -7,6 +7,7 @@ import { MultiSourceApiHubModal } from './components/MultiSourceApiHubModal';
 import { OnboardingModal } from './components/OnboardingModal';
 import { MainContentSkeleton } from './components/MainContentSkeleton';
 import { Footer } from './components/Footer';
+import { OfflineIndicator } from './components/OfflineIndicator';
 import { DensityProvider } from './contexts/DensityContext';
 import { SavedEntitiesProvider } from './contexts/SavedEntitiesContext';
 import { OverviewView } from './views/OverviewView';
@@ -474,6 +475,9 @@ function AppContent() {
 
       {/* Structured Credibility Footer (Hidden on map view for edge-to-edge cartographic full-screen) */}
       {currentTab !== 'map' && <Footer onNavigateTab={handleSelectTab} />}
+
+      {/* Offline Status Toast / Banner */}
+      <OfflineIndicator />
     </div>
   );
 }
