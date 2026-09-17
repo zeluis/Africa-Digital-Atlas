@@ -1,70 +1,38 @@
-import React, { Component, ReactNode, ErrorInfo } from 'react';
+import React, { ReactNode } from 'react';
 
 /**
  * Robust lazy import with automatic retry on chunk failure.
- * When a new version of the app is deployed to GitHub Pages / CDN, older chunks
- * may return 404 (Failed to fetch dynamically imported module).
- * This wrapper catches the error, busts local cache, and gracefully recovers
- * without showing a blank screen.
+ * Retries transient module load failures smoothly before delegating to the ErrorBoundary.
  */
 export function lazyWithRetry<T extends React.ComponentType<any>>(
   factory: () => Promise<{ default: T } | T>,
   componentName: string = 'Component'
-): React.LazyExoticComponent<T> {
-  return React.lazy(async () => {
-    const sessionKey = `atlas_chunk_reload_${componentName}`;
-    const hasAlreadyRetried = window.sessionStorage.getItem(sessionKey) === 'true';
+): React.LazyExoticComponent<T> & { preload: () => Promise<any> } {
+  let cachedPromise: Promise<{ default: T }> | null = null;
 
-    try {
-      const module = await factory();
-      // On success, reset retry flag
-      window.sessionStorage.removeItem(sessionKey);
-      return 'default' in module ? module : { default: module as T };
-    } catch (error: any) {
-      console.warn(`[Module Loader] Dynamic import failed for "${componentName}":`, error);
+  const load = (retriesLeft = 2, delay = 400): Promise<{ default: T }> => {
+    if (cachedPromise) return cachedPromise;
 
-      const errorMessage = String(error?.message || error || '');
-      const isChunkLoadError = 
-        errorMessage.includes('dynamically imported module') ||
-        errorMessage.includes('Loading chunk') ||
-        errorMessage.includes('Failed to fetch') ||
-        errorMessage.includes('Importing a module script failed') ||
-        errorMessage.includes('404') ||
-        error?.name === 'ChunkLoadError' ||
-        error?.name === 'TypeError';
-
-      if (!hasAlreadyRetried && isChunkLoadError) {
-        console.log(`[Module Loader] New deployment detected or chunk missed. Refreshing cache for "${componentName}"...`);
-        window.sessionStorage.setItem(sessionKey, 'true');
-
-        // Clear service worker caches if accessible
-        if ('caches' in window) {
-          try {
-            const cacheKeys = await caches.keys();
-            await Promise.all(
-              cacheKeys.map(key => {
-                if (key.includes('africa-atlas')) {
-                  return caches.delete(key);
-                }
-                return Promise.resolve(false);
-              })
-            );
-          } catch (cErr) {
-            console.warn('[Module Loader] Cache purge error:', cErr);
-          }
+    cachedPromise = factory()
+      .then(module => ('default' in module ? module : { default: module as T }))
+      .catch(error => {
+        cachedPromise = null;
+        if (retriesLeft > 0) {
+          console.warn(`[Module Loader] Retrying dynamic import for "${componentName}" (${retriesLeft} retries left)...`);
+          return new Promise(resolve => setTimeout(resolve, delay)).then(() =>
+            load(retriesLeft - 1, delay * 1.5)
+          );
         }
+        console.error(`[Module Loader] Failed to load component "${componentName}":`, error);
+        throw error;
+      });
 
-        // Force reload page to fetch fresh index.html and newly hashed asset manifest
-        window.location.reload();
-        // Return unresolved promise while browser reloads
-        return new Promise<{ default: T }>(() => {});
-      }
+    return cachedPromise;
+  };
 
-      // If we already tried reloading or it's a code-level error, rethrow to be caught by ErrorBoundary
-      window.sessionStorage.removeItem(sessionKey);
-      throw error;
-    }
-  });
+  const LazyComponent = React.lazy(load) as any;
+  LazyComponent.preload = () => load();
+  return LazyComponent;
 }
 
 interface ErrorBoundaryProps {

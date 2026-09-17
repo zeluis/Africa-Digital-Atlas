@@ -14,15 +14,15 @@ export default defineConfig(() => {
         registerType: 'autoUpdate',
         includeAssets: ['favicon.svg', 'favicon-32x32.png', 'apple-touch-icon.png', 'icon.svg'],
         manifest: {
-          id: '/',
+          id: './',
           name: 'Africalia: Africa Data Atlas',
           short_name: 'Africalia',
           description: 'Authoritative Pan-African data platform featuring 54 sovereign nations, Atlantic Slave Trade research database, ethnic tree cartography, 8 thematic pillars, and investigative monographs.',
           theme_color: '#4e5e51',
           background_color: '#18181b',
           display: 'standalone',
-          start_url: '/',
-          scope: '/',
+          start_url: './',
+          scope: './',
           icons: [
             {
               src: 'icon-192.png',

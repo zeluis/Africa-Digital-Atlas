@@ -21,25 +21,34 @@ const TRANSLATION_CODE_MAP: Record<SupportedLanguage, string> = {
   zu: 'zu'  // Zulu
 };
 
-// Cookie management helper for Google Translate
+// Safe Cookie management helper for Google Translate (compatible with GitHub Pages, local development & custom domains)
 function setCookie(name: string, value: string, days: number = 30) {
-  const expires = new Date(Date.now() + days * 864e5).toUTCString();
-  // Set for current hostname, root path, and same-site
-  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
-  // Also set with explicit domain if on a subdomain
-  const domainParts = window.location.hostname.split('.');
-  if (domainParts.length > 1) {
-    const rootDomain = domainParts.slice(-2).join('.');
-    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; domain=.${rootDomain}; path=/; SameSite=Lax`;
+  try {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    // Raw value (Google Translate expects literal /en/code, not %2Fen%2Fcode)
+    document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Lax`;
+    
+    // Also set on current subpath if hosted in a subdirectory (e.g. GitHub Pages /repo-name/)
+    const pathname = window.location.pathname;
+    if (pathname && pathname !== '/') {
+      const basePath = pathname.endsWith('/') ? pathname : pathname + '/';
+      document.cookie = `${name}=${value}; expires=${expires}; path=${basePath}; SameSite=Lax`;
+    }
+  } catch {
+    // Graceful fallback for restricted cookie environments
   }
 }
 
 function deleteCookie(name: string) {
-  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
-  const domainParts = window.location.hostname.split('.');
-  if (domainParts.length > 1) {
-    const rootDomain = domainParts.slice(-2).join('.');
-    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=.${rootDomain}; path=/; SameSite=Lax`;
+  try {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
+    const pathname = window.location.pathname;
+    if (pathname && pathname !== '/') {
+      const basePath = pathname.endsWith('/') ? pathname : pathname + '/';
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${basePath}; SameSite=Lax`;
+    }
+  } catch {
+    // Graceful fallback
   }
 }
 

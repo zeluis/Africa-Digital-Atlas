@@ -54,10 +54,6 @@ function AppContent() {
   // Canonical Navigation Tab State (starts at 'overview')
   const [currentTab, setCurrentTab] = useState<CanonicalNavTab>('overview');
   
-  // Transition loading state for main content area
-  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
-  const transitionTimerRef = useRef<number | null>(null);
-  
   // Active selected country (Nigeria as default initial)
   const [selectedEntityId, setSelectedEntityId] = useState<string>('NGA');
   
@@ -88,42 +84,32 @@ function AppContent() {
   // Mobile Bottom Navigation Sheet
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
 
-  // Helper to trigger brief transition skeleton loader and native View Transitions for smooth morphing
-  const startTransition = (callback: () => void) => {
-    if (transitionTimerRef.current) {
-      window.clearTimeout(transitionTimerRef.current);
-    }
-    
-    // Future-proof CSS View Transitions API (Chrome 111+) with graceful fallback
-    const execute = () => {
-      setIsTransitioning(true);
-      callback();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      transitionTimerRef.current = window.setTimeout(() => {
-        setIsTransitioning(false);
-      }, 180);
-    };
-
-    if (typeof document !== 'undefined' && 'startViewTransition' in document && typeof (document as any).startViewTransition === 'function') {
-      try {
-        (document as any).startViewTransition(() => {
-          execute();
-        });
-        return;
-      } catch {
-        execute();
-      }
-    } else {
-      execute();
-    }
-  };
-
+  // Background idle preloader for views to make navigation instantaneous
   useEffect(() => {
-    return () => {
-      if (transitionTimerRef.current) {
-        window.clearTimeout(transitionTimerRef.current);
+    const idlePreload = () => {
+      try {
+        ExploreView.preload?.();
+        AnalyticsView.preload?.();
+        MapView.preload?.();
+        SlaveTradeView.preload?.();
+        ThematicPillarsView.preload?.();
+        LanguagesView.preload?.();
+        HeritageView.preload?.();
+        CompareView.preload?.();
+        EthnicTreeOfLifeView.preload?.();
+        ResearchReportsDirectoryView.preload?.();
+      } catch {
+        // Safe idle preload fallback
       }
     };
+
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(idlePreload, { timeout: 2500 });
+      } else {
+        setTimeout(idlePreload, 1200);
+      }
+    }
   }, []);
 
   // Synchronize theme with <html> class, data-theme attribute, and localStorage
@@ -176,9 +162,9 @@ function AppContent() {
     }
   };
 
-  // Canonical Tab Selection Handler
+  // High-performance canonical tab navigation handler
   const handleSelectTab = (tab: CanonicalNavTab) => {
-    startTransition(() => {
+    React.startTransition(() => {
       setCurrentTab(tab);
       
       // If selecting a specific region, set the activeRegion for RegionalView
@@ -188,21 +174,23 @@ function AppContent() {
         setActiveRegion(undefined);
       }
     });
-    // Note: Desktop drawer remains open as per requirements!
+    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   const handleSelectCountry = (id: string) => {
-    startTransition(() => {
+    React.startTransition(() => {
       setSelectedEntityId(id.toUpperCase());
       setCurrentTab('countries');
     });
+    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   const handleSelectIndicator = (indId: string) => {
-    startTransition(() => {
+    React.startTransition(() => {
       setSelectedIndicatorForAnalytics(indId);
       setCurrentTab('analytics');
     });
+    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   // Check if current tab is a regional tab
@@ -270,31 +258,16 @@ function AppContent() {
           id="main-content-workspace"
         >
           <AnimatePresence mode="wait">
-            {isTransitioning ? (
-              <motion.div
-                key={`skeleton-${currentTab}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ 
-                  opacity: 0, 
-                  filter: 'blur(4px)',
-                  transition: { duration: 0.22, ease: 'easeOut' } 
-                }}
-                transition={{ duration: 0.18, ease: 'easeOut' }}
-                className="w-full flex-1 flex flex-col"
-              >
-                <MainContentSkeleton viewType={currentTab} />
-              </motion.div>
-            ) : (
-              <motion.div
-                key={`view-${currentTab}`}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, transition: { duration: 0.15 } }}
-                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full flex-1 flex flex-col"
-              >
-                <ViewErrorBoundary fallbackTitle="Module Unavailable">
+            <motion.div
+              key={`view-${currentTab}`}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, transition: { duration: 0.12 } }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full flex-1 flex flex-col"
+            >
+              <ViewErrorBoundary fallbackTitle="Module Unavailable">
+                <Suspense fallback={<MainContentSkeleton viewType={currentTab} />}>
                   {currentTab === 'overview' && (
                     <OverviewView
                       onSelectCountry={handleSelectCountry}
@@ -309,30 +282,24 @@ function AppContent() {
                   )}
 
                   {currentTab === 'slave-trade' && (
-                    <Suspense fallback={<MainContentSkeleton viewType={currentTab} />}>
-                      <SlaveTradeView 
-                        onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
-                        onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
-                      />
-                    </Suspense>
+                    <SlaveTradeView 
+                      onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
+                      onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
+                    />
                   )}
 
                   {currentTab === 'molecular-legacies' && (
-                    <Suspense fallback={<MainContentSkeleton viewType={currentTab} />}>
-                      <MolecularLegaciesArticleView 
-                        onNavigateToAtlas={() => handleSelectTab('slave-trade')}
-                        onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
-                      />
-                    </Suspense>
+                    <MolecularLegaciesArticleView 
+                      onNavigateToAtlas={() => handleSelectTab('slave-trade')}
+                      onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
+                    />
                   )}
 
                   {currentTab === 'african-development-foundations' && (
-                    <Suspense fallback={<MainContentSkeleton viewType={currentTab} />}>
-                      <AfricanDevelopmentMasterReportView 
-                        onNavigateToAtlas={() => handleSelectTab('slave-trade')}
-                        onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
-                      />
-                    </Suspense>
+                    <AfricanDevelopmentMasterReportView 
+                      onNavigateToAtlas={() => handleSelectTab('slave-trade')}
+                      onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
+                    />
                   )}
 
                   {isRegionalTab && (
@@ -342,108 +309,104 @@ function AppContent() {
                     />
                   )}
 
-                  <Suspense fallback={<MainContentSkeleton viewType={currentTab} />}>
-                    {currentTab === 'pillars' && (
-                      <ThematicPillarsView
-                        initialEntityId={selectedEntityId}
-                        onSelectCountry={handleSelectCountry}
-                        onNavigateTab={(tab) => handleSelectTab(tab as CanonicalNavTab)}
-                      />
-                    )}
+                  {currentTab === 'pillars' && (
+                    <ThematicPillarsView
+                      initialEntityId={selectedEntityId}
+                      onSelectCountry={handleSelectCountry}
+                      onNavigateTab={(tab) => handleSelectTab(tab as CanonicalNavTab)}
+                    />
+                  )}
 
-                    {currentTab === 'blocs' && (
-                      <EntityBlocsBrowser
-                        onSelectCountry={handleSelectCountry}
-                        initialBlocId="ECOWAS"
-                      />
-                    )}
+                  {currentTab === 'blocs' && (
+                    <EntityBlocsBrowser
+                      onSelectCountry={handleSelectCountry}
+                      initialBlocId="ECOWAS"
+                    />
+                  )}
 
-                    {currentTab === 'analytics' && (
-                      <AnalyticsView
-                        onSelectCountry={handleSelectCountry}
-                        initialIndicatorId={selectedIndicatorForAnalytics}
-                      />
-                    )}
+                  {currentTab === 'analytics' && (
+                    <AnalyticsView
+                      onSelectCountry={handleSelectCountry}
+                      initialIndicatorId={selectedIndicatorForAnalytics}
+                    />
+                  )}
 
-                    {currentTab === 'map' && (
-                      <MapView
-                        onSelectCountry={handleSelectCountry}
-                        selectedEntityId={selectedEntityId}
-                      />
-                    )}
+                  {currentTab === 'map' && (
+                    <MapView
+                      onSelectCountry={handleSelectCountry}
+                      selectedEntityId={selectedEntityId}
+                    />
+                  )}
 
-                    {currentTab === 'languages' && (
-                      <LanguagesView
-                        onSelectCountry={handleSelectCountry}
-                      />
-                    )}
+                  {currentTab === 'languages' && (
+                    <LanguagesView
+                      onSelectCountry={handleSelectCountry}
+                    />
+                  )}
 
-                    {currentTab === 'heritage' && (
-                      <HeritageView
-                        onSelectCountry={handleSelectCountry}
-                      />
-                    )}
+                  {currentTab === 'heritage' && (
+                    <HeritageView
+                      onSelectCountry={handleSelectCountry}
+                    />
+                  )}
 
-                    {currentTab === 'countries' && (
-                      <CountryView
-                        entityId={selectedEntityId}
-                        onSelectCountry={handleSelectCountry}
-                        onSelectIndicator={handleSelectIndicator}
-                      />
-                    )}
+                  {currentTab === 'countries' && (
+                    <CountryView
+                      entityId={selectedEntityId}
+                      onSelectCountry={handleSelectCountry}
+                      onSelectIndicator={handleSelectIndicator}
+                    />
+                  )}
 
-                    {currentTab === 'compare' && (
-                      <CompareView
-                        onSelectCountry={handleSelectCountry}
-                      />
-                    )}
+                  {currentTab === 'compare' && (
+                    <CompareView
+                      onSelectCountry={handleSelectCountry}
+                    />
+                  )}
 
-                    {currentTab === 'provenance' && (
-                      <ProvenanceQualityView />
-                    )}
+                  {currentTab === 'provenance' && (
+                    <ProvenanceQualityView />
+                  )}
 
-                    {currentTab === 'privacy' && (
-                      <Suspense fallback={<MainContentSkeleton viewType={currentTab} />}>
-                        <PrivacySectionView 
-                          onBackToOverview={() => handleSelectTab('overview')}
-                          onNavigateTab={(tab) => handleSelectTab(tab)}
-                        />
-                      </Suspense>
-                    )}
+                  {currentTab === 'privacy' && (
+                    <PrivacySectionView 
+                      onBackToOverview={() => handleSelectTab('overview')}
+                      onNavigateTab={(tab) => handleSelectTab(tab)}
+                    />
+                  )}
 
-                    {currentTab === 'ethnic-tree' && (
-                      <EthnicTreeOfLifeView
-                        onSelectReport={(reportId) => handleSelectTab(reportId as CanonicalNavTab)}
-                        onNavigateToSlaveTrade={() => handleSelectTab('slave-trade')}
-                        onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
-                        onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
-                        onNavigateToLanguages={() => handleSelectTab('languages')}
-                      />
-                    )}
+                  {currentTab === 'ethnic-tree' && (
+                    <EthnicTreeOfLifeView
+                      onSelectReport={(reportId) => handleSelectTab(reportId as CanonicalNavTab)}
+                      onNavigateToSlaveTrade={() => handleSelectTab('slave-trade')}
+                      onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
+                      onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
+                      onNavigateToLanguages={() => handleSelectTab('languages')}
+                    />
+                  )}
 
-                    {currentTab === 'research-directory' && (
-                      <ResearchReportsDirectoryView
-                        onSelectReport={(reportId) => handleSelectTab(reportId as CanonicalNavTab)}
-                        onNavigateToEthnicTree={() => handleSelectTab('ethnic-tree')}
-                        onNavigateToSlaveTrade={() => handleSelectTab('slave-trade')}
-                        onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
-                        onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
-                      />
-                    )}
+                  {currentTab === 'research-directory' && (
+                    <ResearchReportsDirectoryView
+                      onSelectReport={(reportId) => handleSelectTab(reportId as CanonicalNavTab)}
+                      onNavigateToEthnicTree={() => handleSelectTab('ethnic-tree')}
+                      onNavigateToSlaveTrade={() => handleSelectTab('slave-trade')}
+                      onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
+                      onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
+                    />
+                  )}
 
-                    {typeof currentTab === 'string' && currentTab.startsWith('report-') && (
-                      <ResearchReportArticleView
-                        reportId={currentTab}
-                        onBackToDirectory={() => handleSelectTab('research-directory')}
-                        onNavigateToEthnicTree={() => handleSelectTab('ethnic-tree')}
-                        onNavigateToSlaveTrade={() => handleSelectTab('slave-trade')}
-                        onSelectOtherReport={(otherId) => handleSelectTab(otherId as CanonicalNavTab)}
-                      />
-                    )}
-                  </Suspense>
-                </ViewErrorBoundary>
-              </motion.div>
-            )}
+                  {typeof currentTab === 'string' && currentTab.startsWith('report-') && (
+                    <ResearchReportArticleView
+                      reportId={currentTab}
+                      onBackToDirectory={() => handleSelectTab('research-directory')}
+                      onNavigateToEthnicTree={() => handleSelectTab('ethnic-tree')}
+                      onNavigateToSlaveTrade={() => handleSelectTab('slave-trade')}
+                      onSelectOtherReport={(otherId) => handleSelectTab(otherId as CanonicalNavTab)}
+                    />
+                  )}
+                </Suspense>
+              </ViewErrorBoundary>
+            </motion.div>
           </AnimatePresence>
         </main>
       </div>
