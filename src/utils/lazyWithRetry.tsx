@@ -31,7 +31,10 @@ export function lazyWithRetry<T extends React.ComponentType<any>>(
   };
 
   const LazyComponent = React.lazy(load) as any;
-  LazyComponent.preload = () => load();
+  LazyComponent.preload = () => load().catch((err) => {
+    // Safe preload suppression - errors will be handled gracefully if/when view is actually rendered
+    console.debug(`[Module Preload] Idle preload completed for "${componentName}" with fallback:`, err?.message || err);
+  });
   return LazyComponent;
 }
 

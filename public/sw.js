@@ -121,7 +121,7 @@ async function cacheFirstStrategy(request, cacheName) {
     return networkResponse;
   } catch (error) {
     console.warn('[SW] Cache-First fetch failed for:', request.url);
-    return cachedResponse || null;
+    return cachedResponse || new Response('', { status: 404, statusText: 'Not Found' });
   }
 }
 
@@ -140,7 +140,7 @@ async function staleWhileRevalidateStrategy(request, cacheName) {
     })
     .catch((err) => {
       console.log('[SW] Network fetch failed, serving from cache:', request.url);
-      return cachedResponse;
+      return cachedResponse || new Response('Offline', { status: 503, statusText: 'Offline' });
     });
 
   // Serve from cache immediately if present, otherwise await the network response
@@ -160,7 +160,11 @@ async function networkFirstStrategy(request, cacheName) {
     if (cachedResponse) {
       return cachedResponse;
     }
-    throw error;
+    return new Response(JSON.stringify({ offline: true, error: 'Network request unavailable' }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 503,
+      statusText: 'Service Unavailable'
+    });
   }
 }
 

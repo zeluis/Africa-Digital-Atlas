@@ -54,15 +54,6 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   const topEconomies = getIndicatorRankings('NY.GDP.MKTP.CD', 6);
   const topHdi = getIndicatorRankings('UNDP.HDI.INDEX', 6);
 
-  const regionTabs: (AfricanRegion | 'All')[] = [
-    'All',
-    'Northern Africa',
-    'Western Africa',
-    'Central Africa',
-    'Eastern Africa',
-    'Southern Africa'
-  ];
-
   return (
     <div className="space-y-8 animate-enter-japandi">
       {/* 1. First Viewport Orientation: What is this? Why does it matter? What can I explore? */}
@@ -135,37 +126,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       </section>
 
       {/* 3. Interactive Map & Cartography Section */}
-      <section aria-label="Interactive Cartography" className="space-y-4 cascade-item cascade-3">
-        {/* Region Filter Chips */}
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 flex items-center gap-1 pr-2">
-              <Compass className="w-3.5 h-3.5 text-emerald-500" /> Filter Region:
-            </span>
-            {regionTabs.map(reg => (
-              <button
-                key={reg}
-                onClick={() => setSelectedRegionFilter(reg)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                  selectedRegionFilter === reg
-                    ? 'bg-zinc-900 text-zinc-100 dark:bg-zinc-100 dark:text-zinc-950 font-bold shadow-md'
-                    : 'bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800'
-                }`}
-              >
-                {reg}
-              </button>
-            ))}
-          </div>
-
-          <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
-            54 Sovereign States + 4 Territories Indexed
-          </span>
-        </div>
-
-        {/* The Live Interactive Map */}
+      <section aria-label="Interactive Cartography" className="cascade-item cascade-3">
+        {/* The Live Interactive Map with Unified Controls & Filters */}
         <AfricaMap
           onSelectCountry={onSelectCountry}
           selectedRegionFilter={selectedRegionFilter}
+          onSelectRegionFilter={setSelectedRegionFilter}
         />
       </section>
 

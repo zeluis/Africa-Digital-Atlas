@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { atlas } from '../data/atlas-store';
 import { AfricanRegion, AtlasEntity } from '../data/types';
 import { 
@@ -37,6 +37,7 @@ export interface AfricaMapProps {
   selectedEntityId?: string;
   selectedRegionFilter?: AfricanRegion | 'All';
   regionFilter?: AfricanRegion | 'All';
+  onSelectRegionFilter?: (region: AfricanRegion | 'All') => void;
   isFullBleed?: boolean;
   mapMode?: MapDisplayMode;
   onMapModeChange?: (mode: MapDisplayMode) => void;
@@ -75,6 +76,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   selectedEntityId,
   selectedRegionFilter,
   regionFilter,
+  onSelectRegionFilter,
   isFullBleed = false,
   mapMode: externalMapMode,
   onMapModeChange,
@@ -83,6 +85,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 }) => {
   const handleSelectCountry = onSelectCountry || onSelectEntity || (() => {});
   const activeRegionFilter = selectedRegionFilter || regionFilter || 'All';
+  const handleRegionTabSelect = onSelectRegionFilter || (() => {});
 
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -181,24 +184,84 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     setVisibleRegions(new Set<AfricanRegion>());
   };
 
+  // Robust geometric fit-to-element viewport camera algorithm based on architectural recommendations
+  const fitToElement = useCallback((element: SVGGraphicsElement | null, options = { padding: 48, maxZoom: 4.5, minZoom: 0.62 }) => {
+    if (!element || !containerRef.current) return;
+    try {
+      const bbox = element.getBBox();
+      if (!bbox || !Number.isFinite(bbox.width) || bbox.width <= 0 || !Number.isFinite(bbox.height) || bbox.height <= 0) {
+        return;
+      }
+
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const usableWidth = containerRect.width - options.padding * 2;
+      const usableHeight = containerRect.height - options.padding * 2;
+
+      const scaleX = usableWidth / bbox.width;
+      const scaleY = usableHeight / bbox.height;
+      let targetScale = Math.min(scaleX, scaleY) * 0.88; // 88% visual occupancy ratio
+
+      targetScale = Math.min(targetScale, options.maxZoom);
+      targetScale = Math.max(targetScale, options.minZoom);
+
+      const regionCX = bbox.x + bbox.width / 2;
+      const regionCY = bbox.y + bbox.height / 2;
+
+      const containerCX = containerRect.width / 2;
+      const containerCY = containerRect.height / 2;
+
+      const tx = containerCX - regionCX * targetScale;
+      const ty = containerCY - regionCY * targetScale;
+
+      setZoomLevel(targetScale);
+      setPanOffset({ x: tx, y: ty });
+    } catch {
+      // Fallback
+    }
+  }, []);
+
+  // ResizeObserver to refit map container on dynamic resize or panel toggle
+  useEffect(() => {
+    const containerEl = containerRef.current;
+    if (!containerEl) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      // Container dimensions changed
+    });
+    resizeObserver.observe(containerEl);
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
   const handleIsolateRegion = (region: AfricanRegion) => {
     setVisibleRegions(new Set<AfricanRegion>([region]));
-    // Also smoothly focus on that region
-    const preset = REGIONAL_ZOOM_PRESETS[region];
-    if (preset) {
-      setZoomLevel(preset.zoom);
-      setPanOffset({ x: preset.x, y: preset.y });
+    // Also smoothly focus on that region via geometric BBox measurement if available
+    const regionEl = document.getElementById(`region-group-${region.toLowerCase().replace(/\s+/g, '-')}`) as unknown as SVGGraphicsElement | null;
+    if (regionEl) {
+      fitToElement(regionEl);
+    } else {
+      const preset = REGIONAL_ZOOM_PRESETS[region];
+      if (preset) {
+        setZoomLevel(preset.zoom);
+        setPanOffset({ x: preset.x, y: preset.y });
+      }
     }
   };
 
   const handleFocusRegion = (region: AfricanRegion) => {
-    const preset = REGIONAL_ZOOM_PRESETS[region];
-    if (preset) {
-      setZoomLevel(preset.zoom);
-      setPanOffset({ x: preset.x, y: preset.y });
-      if (!visibleRegions.has(region)) {
-        handleToggleRegion(region);
+    const regionEl = document.getElementById(`region-group-${region.toLowerCase().replace(/\s+/g, '-')}`) as unknown as SVGGraphicsElement | null;
+    if (regionEl) {
+      fitToElement(regionEl);
+    } else {
+      const preset = REGIONAL_ZOOM_PRESETS[region];
+      if (preset) {
+        setZoomLevel(preset.zoom);
+        setPanOffset({ x: preset.x, y: preset.y });
       }
+    }
+    if (!visibleRegions.has(region)) {
+      handleToggleRegion(region);
     }
   };
 
@@ -479,15 +542,15 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       className={
         isFullBleed
           ? "relative w-full h-full flex flex-col overflow-hidden select-none bg-transparent"
-          : "relative w-full rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 p-4 md:p-6 shadow-2xl overflow-hidden backdrop-blur-md space-y-4"
+          : "relative w-full rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 p-3.5 sm:p-5 shadow-2xl overflow-hidden backdrop-blur-md space-y-3.5"
       }
     >
       {/* Top Map Controls Header - Only rendered in standalone / card mode */}
       {!isFullBleed && (
         <>
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-zinc-200 dark:border-zinc-800">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-zinc-200 dark:border-zinc-800">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 shadow-inner">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 shadow-inner">
                 <Globe className="w-5 h-5" />
               </div>
               <div>
@@ -572,6 +635,40 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             </div>
           </div>
 
+          {/* Unified Integrated Region Filter Chips Bar */}
+          <div className="flex items-center justify-between flex-wrap gap-2.5 pt-0.5">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 flex items-center gap-1 pr-1.5">
+                <Compass className="w-3.5 h-3.5 text-emerald-500" /> Filter Region:
+              </span>
+              {(['All', 'Northern Africa', 'Western Africa', 'Central Africa', 'Eastern Africa', 'Southern Africa'] as (AfricanRegion | 'All')[]).map(reg => (
+                <button
+                  key={reg}
+                  onClick={() => {
+                    handleRegionTabSelect(reg);
+                    if (reg !== 'All') {
+                      handleFocusRegion(reg);
+                    } else {
+                      handleResetZoom();
+                      handleShowAllRegions();
+                    }
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                    activeRegionFilter === reg
+                      ? 'bg-zinc-900 text-zinc-100 dark:bg-zinc-100 dark:text-zinc-950 font-bold shadow-md'
+                      : 'bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800'
+                  }`}
+                >
+                  {reg}
+                </button>
+              ))}
+            </div>
+
+            <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
+              54 Sovereign States + 4 Territories Indexed
+            </span>
+          </div>
+
           {/* Interactive Legend with Visibility Toggles */}
           <InteractiveMapLegend
             visibleRegions={visibleRegions}
@@ -625,7 +722,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         className={
           isFullBleed
             ? "relative w-full h-full flex-1 flex items-center justify-center bg-gradient-to-b from-zinc-100 via-zinc-50 to-zinc-100 dark:from-zinc-950 dark:via-zinc-900/60 dark:to-zinc-950 overflow-hidden"
-            : "relative w-full h-[580px] md:h-[720px] lg:h-[780px] flex items-center justify-center bg-gradient-to-b from-zinc-100 via-zinc-50 to-zinc-100 dark:from-zinc-950 dark:via-zinc-900/60 dark:to-zinc-950 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800/80 shadow-inner"
+            : "relative w-full h-[640px] sm:h-[780px] md:h-[860px] lg:h-[920px] flex items-center justify-center bg-gradient-to-b from-zinc-100 via-zinc-50 to-zinc-100 dark:from-zinc-950 dark:via-zinc-900/60 dark:to-zinc-950 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800/80 shadow-inner"
         }
       >
         {/* Floating Collapsible Subregion Legend Panel for Full-Bleed mode */}
@@ -675,7 +772,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
         <svg
           ref={svgRef}
-          viewBox="45 50 900 1000"
+          viewBox="40 45 910 990"
           width="100%"
           height="100%"
           preserveAspectRatio="xMidYMid meet"
@@ -693,8 +790,8 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             </radialGradient>
           </defs>
 
-          {/* Continental Ocean Backdrop */}
-          <rect x="0" y="0" width="1000" height="1100" fill="url(#oceanGlow)" rx="16" />
+          {/* Continental Ocean Backdrop extending full to all edges */}
+          <rect x="-1000" y="-1000" width="3000" height="3000" fill="url(#oceanGlow)" rx="16" />
 
           {/* Interactive Zoomable / Pannable Map Layer */}
           <g

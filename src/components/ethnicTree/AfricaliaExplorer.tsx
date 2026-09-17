@@ -340,7 +340,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       if (isMounted) setIsSvgLoading(false);
     }, 450);
 
-    fetch(`/africalia-ethnic-tree.svg?t=${Date.now()}`, { cache: 'no-store' })
+    fetch(`./africalia-ethnic-tree.svg?t=${Date.now()}`, { cache: 'no-store' })
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.text();

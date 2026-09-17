@@ -87,19 +87,27 @@ function AppContent() {
   // Background idle preloader for views to make navigation instantaneous
   useEffect(() => {
     const idlePreload = () => {
-      try {
-        ExploreView.preload?.();
-        AnalyticsView.preload?.();
-        MapView.preload?.();
-        SlaveTradeView.preload?.();
-        ThematicPillarsView.preload?.();
-        LanguagesView.preload?.();
-        HeritageView.preload?.();
-        CompareView.preload?.();
-        EthnicTreeOfLifeView.preload?.();
-        ResearchReportsDirectoryView.preload?.();
-      } catch {
-        // Safe idle preload fallback
+      const viewsToPreload = [
+        ExploreView,
+        AnalyticsView,
+        MapView,
+        SlaveTradeView,
+        ThematicPillarsView,
+        LanguagesView,
+        HeritageView,
+        CompareView,
+        EthnicTreeOfLifeView,
+        ResearchReportsDirectoryView,
+      ];
+      for (const view of viewsToPreload) {
+        try {
+          const promise = view.preload?.();
+          if (promise && typeof promise.catch === 'function') {
+            promise.catch(() => {});
+          }
+        } catch {
+          // Safe catch
+        }
       }
     };
 
