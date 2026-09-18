@@ -47,19 +47,19 @@
     --region-southern-raw: #FF0A0A;
     --region-western-raw: #00FF00;
 
-    /* Alpine Serenity & Luminous Terracotta Harmonized Fills (8% Bloom) */
-    --region-eastern-fill: rgba(234, 88, 12, 0.08);
-    --region-middle-fill: rgba(99, 102, 241, 0.08);
-    --region-northern-fill: rgba(217, 119, 6, 0.08);
-    --region-southern-fill: rgba(225, 29, 72, 0.08);
-    --region-western-fill: rgba(5, 150, 105, 0.08);
+    /* Controlled Harmonized Fills (8% Bloom) */
+    --region-eastern-fill: rgba(255, 165, 0, 0.08);
+    --region-middle-fill: rgba(255, 0, 254, 0.08);
+    --region-northern-fill: rgba(24, 2, 255, 0.08);
+    --region-southern-fill: rgba(255, 10, 10, 0.08);
+    --region-western-fill: rgba(0, 255, 0, 0.08);
 
-    /* Precise Vector Stroke Accents */
+    /* Precise Controlled Vector Stroke Accents */
     --region-eastern-stroke: #EA580C;
-    --region-middle-stroke: #6366F1;
-    --region-northern-stroke: #D97706;
-    --region-southern-stroke: #E11D48;
-    --region-western-stroke: #059669;
+    --region-middle-stroke: #D900D8;
+    --region-northern-stroke: #1802FF;
+    --region-southern-stroke: #E00808;
+    --region-western-stroke: #00C800;
 
     /* Text Contrast Tokens Over Solid Region Fills */
     --region-eastern-on-solid: #111827;
@@ -99,34 +99,54 @@
     --region-eastern-id:     #FFA500;
     --region-eastern-calm:   #FFF8ED;
     --region-eastern-accent: #FFB84A;
-    --region-eastern-strong: #D98200;
+    --region-eastern-strong: #C2410C;
     --region-eastern-pale:   #FFF7E8;
 
     --region-middle-id:      #FF00FE;
-    --region-middle-calm:    #FFF7FF;
-    --region-middle-accent:  #FF55FF;
-    --region-middle-strong:  #D600D5;
-    --region-middle-pale:    #FFF5FF;
+    --region-middle-calm:    #FEF7FE;
+    --region-middle-accent:  #FF55FE;
+    --region-middle-strong:  #86198F;
+    --region-middle-pale:    #FDF2F8;
 
     --region-northern-id:     #1802FF;
-    --region-northern-calm:   #F5F5FF;
-    --region-northern-accent: #7770FF;
-    --region-northern-strong: #1600D9;
-    --region-northern-pale:   #F3F4FF;
+    --region-northern-calm:   #F5F7FF;
+    --region-northern-accent: #4B5EFC;
+    --region-northern-strong: #1E1B4B;
+    --region-northern-pale:   #EEF2FF;
 
     --region-southern-id:     #FF0A0A;
-    --region-southern-calm:   #FFF6F5;
-    --region-southern-accent: #FF6666;
-    --region-southern-strong: #D90000;
-    --region-southern-pale:   #FFF5F4;
+    --region-southern-calm:   #FFF5F5;
+    --region-southern-accent: #FF4D4D;
+    --region-southern-strong: #991B1B;
+    --region-southern-pale:   #FEF2F2;
 
     --region-western-id:     #00FF00;
-    --region-western-calm:   #F4FFF3;
-    --region-western-accent: #4DFF4D;
-    --region-western-strong: #009D00;
-    --region-western-pale:   #F3FAF1;
+    --region-western-calm:   #F3FFF3;
+    --region-western-accent: #33FF33;
+    --region-western-strong: #065F46;
+    --region-western-pale:   #F0FDF4;
 
     --region-pan-african-calm: #F4FAF5;
+
+    /* ==========================================
+       TRANS-ATLANTIC SLAVE TRADE PALETTE
+       (Atmospheric Regional Light System: Warm & Crisp)
+       ========================================== */
+    --tast-canvas-warm:     #FAF6EE;
+    --tast-canvas-calm:     #FDFBF7;
+    --tast-canvas-sunken:   #F3ECE0;
+    --tast-surface-card:    #FFFFFF;
+    --tast-border-subtle:   #E8E0D2;
+    --tast-border-crisp:    #DCD3C1;
+    --tast-border-strong:   #C8BAA2;
+    --tast-ink-primary:     #1C1917;
+    --tast-ink-secondary:   #44403C;
+    --tast-ink-muted:       #78716C;
+    --tast-terracotta:      #C2410C;
+    --tast-terracotta-pale: #FFEDD5;
+    --tast-amber-accent:    #D97706;
+    --tast-amber-pale:      #FEF3C7;
+    --tast-maritime-navy:   #1E293B;
   }
 
   html.light,

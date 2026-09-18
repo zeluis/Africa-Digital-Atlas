@@ -401,7 +401,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 title="Collapse Navigation Drawer (⌘B)"
                 aria-label="Collapse Navigation Drawer"
               >
-                <DynamicIcon icon="codicon:layout-sidebar-right-dock" className="w-4 h-4" />
+                <DynamicIcon icon="codicon:layout-sidebar-left-dock" className="w-4 h-4" />
               </button>
             </div>
           )}

@@ -3,6 +3,7 @@ import { atlas } from '../data/atlas-store';
 import { CountryFlag } from './CountryFlag';
 import { ExternalLink, ShieldCheck, AlertCircle, Info, Database, Calendar, Layers, X } from 'lucide-react';
 import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
+import { formatCompactOrgName } from '../data/atlas-formatters';
 
 interface DataProvenanceModalProps {
   isOpen: boolean;
@@ -224,7 +225,7 @@ export const DataSourceBadge: React.FC<DataSourceBadgeProps> = ({
         title="Click to view full data provenance, methodology and confidence rating"
       >
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-        <span className="font-semibold">{source?.organization || 'World Bank/IMF'}</span>
+        <span className="font-semibold">{formatCompactOrgName(source?.organization || source?.name)}</span>
         <span className="text-zinc-400">({obs.period})</span>
         {hasConflict && <AlertCircle className="w-3 h-3 text-amber-400" />}
         {showDetails && <Info className="w-3 h-3 text-zinc-400" />}

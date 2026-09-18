@@ -231,7 +231,7 @@ function AppContent() {
             title="Expand Navigation Drawer (⌘B)"
             aria-label="Expand Navigation Drawer"
           >
-            <DynamicIcon icon="codicon:layout-sidebar-left-dock" className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />
+            <DynamicIcon icon="codicon:layout-sidebar-right-dock" className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />
           </button>
         )}
 
@@ -241,7 +241,7 @@ function AppContent() {
           className="lg:hidden fixed bottom-5 left-4 z-40 p-3 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-900/95 text-zinc-800 dark:text-zinc-200 shadow-xl backdrop-blur-md flex items-center gap-2 text-xs font-mono font-bold cursor-pointer hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           aria-label="Open Navigation Menu"
         >
-          <DynamicIcon icon="codicon:layout-sidebar-left-dock" className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+          <DynamicIcon icon="codicon:layout-sidebar-right-dock" className="w-4 h-4 text-amber-600 dark:text-amber-400" />
           <span>Menu</span>
         </button>
 

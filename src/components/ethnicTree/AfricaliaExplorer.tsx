@@ -22,6 +22,8 @@ import {
   Users,
   Activity,
   Maximize2,
+  Minimize2,
+  GripHorizontal,
   Languages,
   Settings2,
   Dna,
@@ -389,6 +391,10 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
   const [silhouetteGlowEnabled, setSilhouetteGlowEnabled] = useState<boolean>(true);
   // Search dropdown open state
   const [isSearchDropdownOpen, setIsSearchDropdownOpen] = useState<boolean>(false);
+
+  // Unified Floating Pill & Draggable Panel States (User requested: Unified Collapsed Pill default)
+  const [isUnifiedPanelOpen, setIsUnifiedPanelOpen] = useState<boolean>(false);
+  const [isUnifiedPanelMinimized, setIsUnifiedPanelMinimized] = useState<boolean>(false);
   
   // Web Worker for asynchronous background ethnic search and indexation
   const [workerSearchResults, setWorkerSearchResults] = useState<{ id: string; name: string; type: 'ethnic' | 'country'; region: string; country?: string; languages?: string; x?: number; y?: number }[] | null>(null);
@@ -1053,163 +1059,364 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       </div>
 
       {/* =========================================================================
-          1. TOP CENTER TITLE & GEOGRAPHY CONTROL BAR (Expandable / Collapsible)
+          1. SINGLE UNIFIED COLLAPSED FLOATING PILL (Search Trigger, Camera & Info)
           ========================================================================= */}
       <motion.div 
         layout
-        className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1.5 px-4 py-2 rounded-2xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-lg backdrop-blur-md transition-all duration-300 pointer-events-auto max-w-[90vw]"
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="absolute top-4 left-4 sm:left-6 z-30 flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-full bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_8px_30px_rgba(75,55,35,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-xs no-drag select-none max-w-[calc(100vw-32px)]"
         id="africalia-top-control-bar"
       >
-        <div className="flex items-center gap-3">
-          {/* Pulsing indicator */}
-          <div className="w-2 h-2 rounded-full bg-[#E67E48] animate-pulse shrink-0" />
+        {/* Search & Explore Trigger Button */}
+        <button
+          type="button"
+          onClick={() => {
+            setIsUnifiedPanelOpen(prev => !prev);
+            setIsUnifiedPanelMinimized(false);
+          }}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-full font-semibold transition-all cursor-pointer shadow-xs active:scale-95 ${
+            isUnifiedPanelOpen
+              ? 'bg-[#E67E48] text-white'
+              : 'bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/40'
+          }`}
+          title={isUnifiedPanelOpen ? "Close search panel" : "Expand Unified Search, Filters & Controls Panel"}
+        >
+          <Search className="w-3.5 h-3.5" />
+          <span className="font-bold hidden xs:inline">Search & Focus</span>
+          {(selectedRegion !== 'All' || selectedCountry !== 'All' || searchQuery) && (
+            <span className="w-2 h-2 rounded-full bg-[#E67E48] animate-pulse" />
+          )}
+        </button>
 
-          {/* Interactive Title & Expand Toggle */}
-          <button
-            type="button"
-            onClick={() => setIsTopBarExpanded(prev => !prev)}
-            className="flex items-center gap-1.5 text-xs sm:text-sm font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6] hover:text-[#E67E48] dark:hover:text-[#FFA573] transition-colors cursor-pointer group"
-            title={isTopBarExpanded ? "Collapse title" : "Expand full title"}
-          >
-            <span>
-              {isTopBarExpanded 
-                ? "Africalia — Legacies of the Trans-Atlantic Slave Trade" 
-                : "Africalia"}
-            </span>
-            <ChevronDown 
-              className={`w-3.5 h-3.5 text-[#7D6B5A] group-hover:text-[#E67E48] transition-transform duration-200 ${
-                isTopBarExpanded ? 'rotate-180' : ''
-              }`} 
-            />
-          </button>
+        <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0" />
 
-          {/* Divider */}
-          <div className="h-3.5 w-px bg-[#E5DDD0] dark:bg-[#38322B]" />
+        {/* Zoom Controls */}
+        <button
+          type="button"
+          onClick={() => handleZoomDelta(0.82)}
+          className="w-7 h-7 rounded-full flex items-center justify-center text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+          title="Zoom out"
+        >
+          <ZoomOut className="w-3.5 h-3.5" />
+        </button>
 
-          {/* Africa UN Geo Scheme Continent Toggle Button */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowUnGeoScheme(prev => !prev);
-            }}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer ${
-              showUnGeoScheme
-                ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/35 hover:bg-[#E67E48]/25'
-                : 'bg-black/5 dark:bg-white/5 text-[#7D6B5A] dark:text-[#B5A492] border border-[#E5DDD0] dark:border-[#38322B] hover:bg-black/10'
-            }`}
-            title={showUnGeoScheme ? "Hide Africa UN Geo Scheme continent layer" : "Show Africa UN Geo Scheme continent layer"}
-          >
-            <Globe className="w-3 h-3 text-[#E67E48]" />
-            <span>UN Geo Scheme: {showUnGeoScheme ? 'Visible' : 'Hidden'}</span>
-          </button>
+        <span className="text-[11px] font-mono font-bold text-[#7D6B5A] dark:text-[#B5A492] px-0.5 min-w-[2.75rem] text-center">
+          {Math.round(zoom * 100)}%
+        </span>
+
+        <button
+          type="button"
+          onClick={() => handleZoomDelta(1.22)}
+          className="w-7 h-7 rounded-full flex items-center justify-center text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+          title="Zoom in"
+        >
+          <ZoomIn className="w-3.5 h-3.5" />
+        </button>
+
+        <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0" />
+
+        {/* Crucible View & Full Tree Shortcuts */}
+        <button
+          type="button"
+          onClick={panToCrucible}
+          className="hidden sm:flex px-2.5 py-1 rounded-full text-[11px] font-medium items-center gap-1 bg-black/5 dark:bg-white/5 hover:bg-[#E67E48]/15 text-[#52463B] dark:text-[#C4B7A6] hover:text-[#B8571A] dark:hover:text-[#FFA573] border border-[#E5DDD0] dark:border-[#38322B] transition-colors cursor-pointer"
+          title="Crucible View: Zoom directly to Cabo Verde crucible nexus"
+        >
+          <Compass className="w-3 h-3 text-[#E67E48]" />
+          <span>Crucible</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={fitView}
+          className="hidden sm:flex px-2.5 py-1 rounded-full text-[11px] font-medium items-center gap-1 bg-black/5 dark:bg-white/5 hover:bg-black/10 text-[#52463B] dark:text-[#C4B7A6] border border-[#E5DDD0] dark:border-[#38322B] transition-colors cursor-pointer"
+          title="Reset zoom to full tree"
+        >
+          <RotateCcw className="w-3 h-3 text-[#7D6B5A]" />
+          <span>Full Tree</span>
+        </button>
+
+        {/* Africalia Title & SVG Info Tag */}
+        <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0" />
+        <div className="flex items-center gap-1.5 px-1.5 text-[10px] text-[#7D6B5A] dark:text-[#B5A492] font-medium truncate max-w-[130px] sm:max-w-[200px]">
+          <span className="font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6]">Africalia</span>
+          <span className="opacity-60 hidden md:inline">· SVG Vector Tree</span>
         </div>
-
-        {/* Subtitle Line (Always preserved as requested) */}
-        <p className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492] font-medium tracking-tight">
-          Sovereign Africalia Vector tree — Raw Authentic SVG (100% fidelity) by line
-        </p>
       </motion.div>
 
       {/* =========================================================================
-          2. UNIFIED LEFT DOCK: FOCUS GEOGRAPHY & SEARCH (Never Stacks!)
+          2. UNIFIED DRAGGABLE & MINIMIZABLE AFRICALIA SEARCH & CONTROLS PANEL
           ========================================================================= */}
-      <AnimatePresence mode="wait">
-        {isLeftDockOpen ? (
+      <AnimatePresence>
+        {isUnifiedPanelOpen && (
           <motion.div 
-            key="geography-search-dock"
-            initial={{ opacity: 0, x: -28, scale: 0.98 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: -20, scale: 0.98 }}
+            key="unified-geography-search-dock"
+            drag
+            dragMomentum={false}
+            dragConstraints={containerRef}
+            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -8 }}
             transition={{ type: "spring", damping: 27, stiffness: 330 }}
-            className="absolute top-4 left-4 z-30 w-76 sm:w-84 max-h-[calc(100vh-32px)] flex flex-col rounded-3xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_12px_40px_rgba(75,55,35,0.1)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.45)] overflow-hidden no-drag backdrop-blur-md"
+            className={`absolute top-16 left-4 sm:left-6 z-40 rounded-3xl bg-[#FAF7F2]/96 dark:bg-[#1E1B18]/96 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_50px_rgba(75,55,35,0.18)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl overflow-hidden transition-all duration-200 ${
+              isUnifiedPanelMinimized 
+                ? 'w-auto max-w-xs p-3 flex items-center gap-3 cursor-grab active:cursor-grabbing' 
+                : 'w-80 sm:w-88 max-h-[calc(100vh-80px)] flex flex-col'
+            }`}
             id="unified-geography-search-dock"
           >
-          {/* Dock Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-[#E5DDD0] dark:border-[#38322B]">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-xl bg-[#E67E48]/15 border border-[#E67E48]/40 text-[#B8571A] dark:text-[#FFA573] grid place-items-center">
-                <Compass className="w-4 h-4" />
-              </div>
-              <div>
-                <h2 className="text-xs font-bold text-[#2B241E] dark:text-[#F5EFE6] leading-tight">Focus & Tree Search</h2>
-                <p className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">Sovereign Genealogical Navigator</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1">
-              {/* Raw File Upload Button */}
-              <input
-                type="file"
-                ref={fileInputRef}
-                accept=".svg,image/svg+xml,.html,text/html"
-                className="hidden"
-                onChange={handleFileUpload}
-              />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="p-1.5 rounded-lg text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
-                title="Upload custom SVG or HTML file"
-              >
-                <Upload className="w-3.5 h-3.5" />
-              </button>
-
-              {/* Minimize Dock Button */}
-              <button
-                type="button"
-                onClick={() => setIsLeftDockOpen(false)}
-                className="p-1.5 rounded-lg text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
-                title="Minimize panel"
-              >
-                <ChevronUp className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Dock Scrollable Body with Cozy Scrollbar */}
-          <div className="p-3.5 space-y-3 overflow-y-auto drawer-cozy-scrollbar flex-1">
-            {/* Search Input Bar */}
-            <div className="relative">
-              <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] text-xs">
-                <Search className="w-3.5 h-3.5 text-[#8C7C70] shrink-0" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onFocus={() => setIsSearchDropdownOpen(true)}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setIsSearchDropdownOpen(true);
-                  }}
-                  placeholder="Search nation, ethnic node, region..."
-                  className="w-full bg-transparent outline-none text-[#2B241E] dark:text-[#F5EFE6] placeholder-[#8C7C70] text-xs"
-                />
-                {searchQuery && (
-                  <button 
-                    type="button" 
-                    onClick={() => {
-                      setSearchQuery('');
-                      setIsSearchDropdownOpen(false);
-                    }}
-                    className="p-0.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-[#8C7C70] cursor-pointer"
-                    title="Clear search"
+            {isUnifiedPanelMinimized ? (
+              /* Minimized Floating Pill State (Africalia Title & SVG Info) */
+              <div className="flex items-center justify-between w-full gap-3 select-none">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-[#E67E48] animate-pulse shrink-0" />
+                  <div className="text-xs font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6]">
+                    Africalia
+                  </div>
+                  <span className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">· SVG Info</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setIsUnifiedPanelMinimized(false)}
+                    className="p-1.5 rounded-lg text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                    title="Maximize panel"
                   >
-                    <X className="w-3 h-3" />
+                    <Maximize2 className="w-3.5 h-3.5 text-[#E67E48]" />
                   </button>
-                )}
+                  <button
+                    type="button"
+                    onClick={() => setIsUnifiedPanelOpen(false)}
+                    className="p-1.5 rounded-lg text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                    title="Close panel"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
+            ) : (
+              /* Full Expanded Panel */
+              <>
+                {/* Panel Header with Drag Handle, UN GeoScheme Toggle, Minimize & Close */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-[#E5DDD0] dark:border-[#38322B] cursor-grab active:cursor-grabbing select-none">
+                  <div className="flex items-center gap-2">
+                    <GripHorizontal className="w-4 h-4 text-[#8C7C70] opacity-70" />
+                    <div className="w-7 h-7 rounded-xl bg-[#E67E48]/15 border border-[#E67E48]/40 text-[#B8571A] dark:text-[#FFA573] grid place-items-center shrink-0">
+                      <Compass className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h2 className="text-xs font-bold text-[#2B241E] dark:text-[#F5EFE6] leading-tight">Focus & Tree Search</h2>
+                      <p className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">Sovereign Genealogical Navigator</p>
+                    </div>
+                  </div>
 
-              {/* Integrated Search Results List */}
-              {isSearchDropdownOpen && searchResults.length > 0 && (
-                <div className="mt-1.5 rounded-xl bg-[#FAF7F2] dark:bg-[#1E1B18] border border-[#E5DDD0] dark:border-[#38322B] shadow-lg max-h-44 overflow-y-auto drawer-cozy-scrollbar divide-y divide-[#E5DDD0]/50 dark:divide-[#38322B]/50">
-                  {searchResults.map((item) => (
+                  <div className="flex items-center gap-1 no-drag">
+                    {/* Raw File Upload Button */}
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      accept=".svg,image/svg+xml,.html,text/html"
+                      className="hidden"
+                      onChange={handleFileUpload}
+                    />
                     <button
-                      key={item.id}
                       type="button"
-                      onClick={() => {
-                        if (item.type === 'country') {
-                          setSelectedCountry(item.name);
-                          const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => c.name === item.name);
+                      onClick={() => fileInputRef.current?.click()}
+                      className="p-1.5 rounded-lg text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                      title="Upload custom SVG or HTML file"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                    </button>
+
+                    {/* Minimize Panel Button */}
+                    <button
+                      type="button"
+                      onClick={() => setIsUnifiedPanelMinimized(true)}
+                      className="p-1.5 rounded-lg text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                      title="Minimize panel to pill"
+                    >
+                      <Minimize2 className="w-3.5 h-3.5" />
+                    </button>
+
+                    {/* Close Panel Button */}
+                    <button
+                      type="button"
+                      onClick={() => setIsUnifiedPanelOpen(false)}
+                      className="p-1.5 rounded-lg text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                      title="Close panel"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Sub-Header: UN Geo Scheme Toggle & Tree Info */}
+                <div className="px-4 py-2 bg-black/[0.02] dark:bg-white/[0.02] border-b border-[#E5DDD0]/70 dark:border-[#38322B]/70 flex items-center justify-between gap-2 text-[10px]">
+                  <p className="text-[#7D6B5A] dark:text-[#B5A492] font-medium truncate">
+                    Africalia Vector Tree · Raw SVG (100% fidelity)
+                  </p>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowUnGeoScheme(prev => !prev);
+                    }}
+                    className={`flex items-center gap-1 px-2 py-0.5 rounded-full font-semibold transition-all cursor-pointer shrink-0 ${
+                      showUnGeoScheme
+                        ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/35 hover:bg-[#E67E48]/25'
+                        : 'bg-black/5 dark:bg-white/5 text-[#7D6B5A] dark:text-[#B5A492] border border-[#E5DDD0] dark:border-[#38322B]'
+                    }`}
+                    title={showUnGeoScheme ? "Hide Africa UN Geo Scheme continent layer" : "Show Africa UN Geo Scheme continent layer"}
+                  >
+                    <Globe className="w-3 h-3 text-[#E67E48]" />
+                    <span>UN Geo: {showUnGeoScheme ? 'On' : 'Off'}</span>
+                  </button>
+                </div>
+
+                {/* Dock Scrollable Body with Cozy Scrollbar */}
+                <div className="p-3.5 space-y-3 overflow-y-auto drawer-cozy-scrollbar flex-1 no-drag">
+                  {/* Search Input Bar */}
+                  <div className="relative">
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] text-xs">
+                      <Search className="w-3.5 h-3.5 text-[#8C7C70] shrink-0" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onFocus={() => setIsSearchDropdownOpen(true)}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                          setIsSearchDropdownOpen(true);
+                        }}
+                        placeholder="Search nation, ethnic node, region..."
+                        className="w-full bg-transparent outline-none text-[#2B241E] dark:text-[#F5EFE6] placeholder-[#8C7C70] text-xs"
+                      />
+                      {searchQuery && (
+                        <button 
+                          type="button" 
+                          onClick={() => {
+                            setSearchQuery('');
+                            setIsSearchDropdownOpen(false);
+                          }}
+                          className="p-0.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-[#8C7C70] cursor-pointer"
+                          title="Clear search"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Integrated Search Results List */}
+                    {isSearchDropdownOpen && searchResults.length > 0 && (
+                      <div className="mt-1.5 rounded-xl bg-[#FAF7F2] dark:bg-[#1E1B18] border border-[#E5DDD0] dark:border-[#38322B] shadow-lg max-h-44 overflow-y-auto drawer-cozy-scrollbar divide-y divide-[#E5DDD0]/50 dark:divide-[#38322B]/50">
+                        {searchResults.map((item) => (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => {
+                              if (item.type === 'country') {
+                                setSelectedCountry(item.name);
+                                const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => c.name === item.name);
+                                if (conduit) {
+                                  setSelectedRegion(conduit.region);
+                                  panToCoordinates(conduit.labelX, conduit.labelY, 2.2);
+                                  setSelectedEntity({
+                                    id: conduit.id,
+                                    name: conduit.name,
+                                    type: 'country',
+                                    country: conduit.name,
+                                    region: conduit.region,
+                                    tastVolumeShare: conduit.tastVolumeShare,
+                                    color: conduit.color,
+                                    coords: { x: conduit.labelX, y: conduit.labelY, r: 16 }
+                                  });
+                                }
+                              } else if (item.type === 'ethnic') {
+                                if (item.x && item.y) {
+                                  panToCoordinates(item.x, item.y, 2.5);
+                                }
+                                setSelectedEntity({
+                                  id: item.id,
+                                  name: item.name,
+                                  type: 'ethnic',
+                                  country: item.country,
+                                  region: item.region,
+                                  coords: item.x && item.y ? { x: item.x, y: item.y, r: 12 } : undefined
+                                });
+                              } else {
+                                setSelectedRegion(item.name);
+                              }
+                              // Keep selected value active in the search field
+                              setSearchQuery(item.name);
+                              setIsSearchDropdownOpen(false);
+                            }}
+                            className="w-full text-left px-3 py-2 text-xs hover:bg-[#E67E48]/10 transition-colors flex items-center justify-between cursor-pointer"
+                          >
+                            <div className="truncate pr-2">
+                              <p className="font-semibold text-[#2B241E] dark:text-[#F5EFE6] truncate">{item.name}</p>
+                              <p className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">
+                                {item.type === 'ethnic' ? `${item.country} • ${item.region}` : item.region}
+                              </p>
+                            </div>
+                            <span className="text-[9px] px-1.5 py-0.5 rounded uppercase font-bold text-[#E67E48] bg-[#E67E48]/10 shrink-0">
+                              {item.type}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Region Filter Selector */}
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
+                      UN Geoscheme Region
+                    </label>
+                    <select
+                      value={selectedRegion}
+                      onChange={(e) => {
+                        const reg = e.target.value;
+                        setSelectedRegion(reg);
+                        setSelectedCountry('All');
+                        if (reg !== 'All') {
+                          // Check if historical region mapping exists
+                          const historicalCountryIds = HISTORICAL_REGION_COUNTRY_MAP[reg];
+                          if (historicalCountryIds && historicalCountryIds.length > 0) {
+                            const firstHistConduit = AFRICALIA_COUNTRY_CONDUITS.find(c => historicalCountryIds.includes(c.id));
+                            if (firstHistConduit) {
+                              panToCoordinates(firstHistConduit.labelX, firstHistConduit.labelY, 1.6);
+                            }
+                          } else {
+                            const firstConduit = AFRICALIA_COUNTRY_CONDUITS.find(c => c.region === reg);
+                            if (firstConduit) {
+                              panToCoordinates(firstConduit.labelX, firstConduit.labelY, 1.6);
+                            }
+                          }
+                        } else {
+                          fitView();
+                        }
+                      }}
+                      className="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] text-xs text-[#2B241E] dark:text-[#F5EFE6] outline-none font-medium cursor-pointer"
+                    >
+                      <option value="All" className="bg-[#FAF7F2] dark:bg-[#1E1B18]">All Sovereign Regions</option>
+                      {AFRICALIA_REGIONS.map(r => (
+                        <option key={r.value} value={r.label} className="bg-[#FAF7F2] dark:bg-[#1E1B18]">{r.label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Country Conduit Selector */}
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
+                      Nation / Conduit ({availableCountries.length})
+                    </label>
+                    <select
+                      value={selectedCountry}
+                      onChange={(e) => {
+                        const countryName = e.target.value;
+                        setSelectedCountry(countryName);
+                        if (countryName !== 'All') {
+                          const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => c.name === countryName);
                           if (conduit) {
                             setSelectedRegion(conduit.region);
                             panToCoordinates(conduit.labelX, conduit.labelY, 2.2);
@@ -1217,270 +1424,353 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                               id: conduit.id,
                               name: conduit.name,
                               type: 'country',
-                              country: conduit.name,
                               region: conduit.region,
                               tastVolumeShare: conduit.tastVolumeShare,
                               color: conduit.color,
                               coords: { x: conduit.labelX, y: conduit.labelY, r: 16 }
                             });
                           }
-                        } else if (item.type === 'ethnic') {
-                          if (item.x && item.y) {
-                            panToCoordinates(item.x, item.y, 2.5);
-                          }
-                          setSelectedEntity({
-                            id: item.id,
-                            name: item.name,
-                            type: 'ethnic',
-                            country: item.country,
-                            region: item.region,
-                            coords: item.x && item.y ? { x: item.x, y: item.y, r: 12 } : undefined
-                          });
-                        } else {
-                          setSelectedRegion(item.name);
                         }
-                        // Keep selected value active in the search field
-                        setSearchQuery(item.name);
-                        setIsSearchDropdownOpen(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-xs hover:bg-[#E67E48]/10 transition-colors flex items-center justify-between cursor-pointer"
+                      className="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] text-xs text-[#2B241E] dark:text-[#F5EFE6] outline-none font-medium cursor-pointer"
                     >
-                      <div className="truncate pr-2">
-                        <p className="font-semibold text-[#2B241E] dark:text-[#F5EFE6] truncate">{item.name}</p>
-                        <p className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">
-                          {item.type === 'ethnic' ? `${item.country} • ${item.region}` : item.region}
-                        </p>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded uppercase font-bold text-[#E67E48] bg-[#E67E48]/10 shrink-0">
-                        {item.type}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+                      <option value="All" className="bg-[#FAF7F2] dark:bg-[#1E1B18]">All Sovereign Nations</option>
+                      {availableCountries.map(c => (
+                        <option key={c.id} value={c.name} className="bg-[#FAF7F2] dark:bg-[#1E1B18]">{c.name} ({c.region})</option>
+                      ))}
+                    </select>
+                  </div>
 
-            {/* Region Filter Selector */}
-            <div className="space-y-1">
-              <label className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
-                UN Geoscheme Region
-              </label>
-              <select
-                value={selectedRegion}
-                onChange={(e) => {
-                  const reg = e.target.value;
-                  setSelectedRegion(reg);
-                  setSelectedCountry('All');
-                  if (reg !== 'All') {
-                    // Check if historical region mapping exists
-                    const historicalCountryIds = HISTORICAL_REGION_COUNTRY_MAP[reg];
-                    if (historicalCountryIds && historicalCountryIds.length > 0) {
-                      const firstHistConduit = AFRICALIA_COUNTRY_CONDUITS.find(c => historicalCountryIds.includes(c.id));
-                      if (firstHistConduit) {
-                        panToCoordinates(firstHistConduit.labelX, firstHistConduit.labelY, 1.6);
-                      }
-                    } else {
-                      const firstConduit = AFRICALIA_COUNTRY_CONDUITS.find(c => c.region === reg);
-                      if (firstConduit) {
-                        panToCoordinates(firstConduit.labelX, firstConduit.labelY, 1.6);
-                      }
-                    }
-                  } else {
-                    fitView();
-                  }
-                }}
-                className="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] text-xs text-[#2B241E] dark:text-[#F5EFE6] outline-none font-medium cursor-pointer"
-              >
-                <option value="All" className="bg-[#FAF7F2] dark:bg-[#1E1B18]">All Sovereign Regions</option>
-                {AFRICALIA_REGIONS.map(r => (
-                  <option key={r.value} value={r.label} className="bg-[#FAF7F2] dark:bg-[#1E1B18]">{r.label}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Country Conduit Selector */}
-            <div className="space-y-1">
-              <label className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
-                Nation / Conduit ({availableCountries.length})
-              </label>
-              <select
-                value={selectedCountry}
-                onChange={(e) => {
-                  const countryName = e.target.value;
-                  setSelectedCountry(countryName);
-                  if (countryName !== 'All') {
-                    const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => c.name === countryName);
-                    if (conduit) {
-                      setSelectedRegion(conduit.region);
-                      panToCoordinates(conduit.labelX, conduit.labelY, 2.2);
-                      setSelectedEntity({
-                        id: conduit.id,
-                        name: conduit.name,
-                        type: 'country',
-                        region: conduit.region,
-                        tastVolumeShare: conduit.tastVolumeShare,
-                        color: conduit.color,
-                        coords: { x: conduit.labelX, y: conduit.labelY, r: 16 }
-                      });
-                    }
-                  }
-                }}
-                className="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] text-xs text-[#2B241E] dark:text-[#F5EFE6] outline-none font-medium cursor-pointer"
-              >
-                <option value="All" className="bg-[#FAF7F2] dark:bg-[#1E1B18]">All Sovereign Nations</option>
-                {availableCountries.map(c => (
-                  <option key={c.id} value={c.name} className="bg-[#FAF7F2] dark:bg-[#1E1B18]">{c.name} ({c.region})</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Linguistic Phylum Selector from Wikipedia Atlas */}
-            <div className="space-y-1">
-              <div className="flex items-center justify-between">
-                <label className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492] flex items-center gap-1">
-                  <Languages className="w-3 h-3 text-[#E67E48]" />
-                  <span>Linguistic Phylum (Wikipedia)</span>
-                </label>
-                {selectedLinguisticFamily !== 'All' && (
-                  <button 
-                    type="button" 
-                    onClick={() => setSelectedLinguisticFamily('All')}
-                    className="text-[10px] text-[#E67E48] hover:underline cursor-pointer"
-                  >
-                    Reset
-                  </button>
-                )}
-              </div>
-              <select
-                value={selectedLinguisticFamily}
-                onChange={(e) => {
-                  setSelectedLinguisticFamily(e.target.value);
-                }}
-                className="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] text-xs text-[#2B241E] dark:text-[#F5EFE6] outline-none font-medium cursor-pointer"
-              >
-                {majorLinguisticFamilies.map(fam => (
-                  <option key={fam} value={fam} className="bg-[#FAF7F2] dark:bg-[#1E1B18]">{fam}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Quick List for Selected Linguistic Phylum */}
-            {selectedLinguisticFamily !== 'All' && linguisticFilteredGroups.length > 0 && (
-              <div className="p-2.5 rounded-2xl bg-[#E67E48]/10 border border-[#E67E48]/25 space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#B8571A] dark:text-[#FFA573]">
-                    {selectedLinguisticFamily} Lineages ({linguisticFilteredGroups.length})
-                  </span>
-                  <span className="text-[9px] text-[#7D6B5A] dark:text-[#B5A492]">Tap to inspect</span>
-                </div>
-                <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto drawer-cozy-scrollbar pr-1">
-                  {linguisticFilteredGroups.slice(0, 15).map(item => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => {
-                        if (item.x && item.y) {
-                          panToCoordinates(item.x, item.y, 2.5);
-                        }
-                        setSelectedEntity({
-                          id: item.id,
-                          name: item.name,
-                          type: 'ethnic',
-                          country: item.country,
-                          region: item.region,
-                          coords: item.x && item.y ? { x: item.x, y: item.y, r: 12 } : undefined
-                        });
-                      }}
-                      className="px-2 py-0.5 rounded-full text-[10px] bg-white dark:bg-[#2B241E] border border-[#E67E48]/30 hover:border-[#E67E48] text-[#2B241E] dark:text-[#F5EFE6] hover:text-[#E67E48] transition-colors cursor-pointer"
-                    >
-                      {item.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Fruit-Inspired Pills for Clear & Reset Buttons & Sophisticated Languages Link */}
-            <div 
-              id="dock-footer-actions-container"
-              className="pt-3 border-t border-[#E5DDD0] dark:border-[#38322B] flex flex-col gap-2.5"
-            >
-              <div className="flex items-center gap-2">
-                {/* Reset View Pill (Warm Apricot / Persimmon) */}
-                <button
-                  id="dock-reset-view-btn"
-                  type="button"
-                  onClick={fitView}
-                  className="flex-1 px-3 py-2 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-[#FA8C58]/15 hover:bg-[#FA8C58]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#FA8C58]/40 shadow-xs hover:shadow-sm active:scale-95"
-                  title="Reset zoom and center on origin"
-                >
-                  <RotateCcw className="w-3.5 h-3.5 text-[#E67E48]" />
-                  <span>Reset View</span>
-                </button>
-
-                {/* Clear Filters Pill (Warm Pomegranate / Ripe Fig) */}
-                <button
-                  id="dock-clear-filters-btn"
-                  type="button"
-                  onClick={handleClearFocus}
-                  className="flex-1 px-3 py-2 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-[#C44536]/15 hover:bg-[#C44536]/25 text-[#9C2F22] dark:text-[#F89D93] border border-[#C44536]/40 shadow-xs hover:shadow-sm active:scale-95"
-                  title="Clear all region and search filters"
-                >
-                  <X className="w-3.5 h-3.5 text-[#BF4342]" />
-                  <span>Clear Filters</span>
-                </button>
-              </div>
-
-              {/* Sophisticated Link to Languages Page */}
-              {onNavigateToLanguages && (
-                <button
-                  id="dock-languages-page-link"
-                  type="button"
-                  onClick={onNavigateToLanguages}
-                  className="w-full p-2.5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-[#E67E48]/10 to-amber-500/10 hover:from-emerald-500/20 hover:via-[#E67E48]/20 hover:to-amber-500/20 border border-emerald-500/30 dark:border-emerald-500/40 text-[#2B241E] dark:text-[#F5EFE6] transition-all duration-200 cursor-pointer flex items-center justify-between group/dockLang shadow-xs hover:shadow-md active:scale-[0.99]"
-                  title="Explore 2,000+ living languages across 6 major African linguistic phyla"
-                >
-                  <div className="flex items-center gap-2.5 text-left">
-                    <div className="w-7 h-7 rounded-xl bg-emerald-500/15 dark:bg-emerald-500/25 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover/dockLang:scale-110 transition-transform">
-                      <Languages className="w-4 h-4" />
+                  {/* Linguistic Phylum Selector from Wikipedia Atlas */}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492] flex items-center gap-1">
+                        <Languages className="w-3 h-3 text-[#E67E48]" />
+                        <span>Linguistic Phylum (Wikipedia)</span>
+                      </label>
+                      {selectedLinguisticFamily !== 'All' && (
+                        <button 
+                          type="button" 
+                          onClick={() => setSelectedLinguisticFamily('All')}
+                          className="text-[10px] text-[#E67E48] hover:underline cursor-pointer"
+                        >
+                          Reset
+                        </button>
+                      )}
                     </div>
-                    <div>
-                      <div className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1">
-                        <span>African Languages Atlas</span>
-                        <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                          6 Phyla
+                    <select
+                      value={selectedLinguisticFamily}
+                      onChange={(e) => {
+                        setSelectedLinguisticFamily(e.target.value);
+                      }}
+                      className="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] text-xs text-[#2B241E] dark:text-[#F5EFE6] outline-none font-medium cursor-pointer"
+                    >
+                      {majorLinguisticFamilies.map(fam => (
+                        <option key={fam} value={fam} className="bg-[#FAF7F2] dark:bg-[#1E1B18]">{fam}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Quick List for Selected Linguistic Phylum */}
+                  {selectedLinguisticFamily !== 'All' && linguisticFilteredGroups.length > 0 && (
+                    <div className="p-2.5 rounded-2xl bg-[#E67E48]/10 border border-[#E67E48]/25 space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#B8571A] dark:text-[#FFA573]">
+                          {selectedLinguisticFamily} Lineages ({linguisticFilteredGroups.length})
+                        </span>
+                        <span className="text-[9px] text-[#7D6B5A] dark:text-[#B5A492]">Tap to inspect</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto drawer-cozy-scrollbar pr-1">
+                        {linguisticFilteredGroups.slice(0, 15).map(item => (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => {
+                              if (item.x && item.y) {
+                                panToCoordinates(item.x, item.y, 2.5);
+                              }
+                              setSelectedEntity({
+                                id: item.id,
+                                name: item.name,
+                                type: 'ethnic',
+                                country: item.country,
+                                region: item.region,
+                                coords: item.x && item.y ? { x: item.x, y: item.y, r: 12 } : undefined
+                              });
+                            }}
+                            className="px-2 py-0.5 rounded-full text-[10px] bg-white dark:bg-[#2B241E] border border-[#E67E48]/30 hover:border-[#E67E48] text-[#2B241E] dark:text-[#F5EFE6] hover:text-[#E67E48] transition-colors cursor-pointer"
+                          >
+                            {item.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Actions: Clear & Reset Buttons */}
+                  <div 
+                    id="dock-footer-actions-container"
+                    className="pt-2.5 border-t border-[#E5DDD0] dark:border-[#38322B] flex flex-col gap-2.5"
+                  >
+                    <div className="flex items-center gap-2">
+                      {/* Reset View Pill (Warm Apricot / Persimmon) */}
+                      <button
+                        id="dock-reset-view-btn"
+                        type="button"
+                        onClick={fitView}
+                        className="flex-1 px-3 py-2 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-[#FA8C58]/15 hover:bg-[#FA8C58]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#FA8C58]/40 shadow-xs hover:shadow-sm active:scale-95"
+                        title="Reset zoom and center on origin"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5 text-[#E67E48]" />
+                        <span>Reset View</span>
+                      </button>
+
+                      {/* Clear Filters Pill (Warm Pomegranate / Ripe Fig) */}
+                      <button
+                        id="dock-clear-filters-btn"
+                        type="button"
+                        onClick={handleClearFocus}
+                        className="flex-1 px-3 py-2 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-[#C44536]/15 hover:bg-[#C44536]/25 text-[#9C2F22] dark:text-[#F89D93] border border-[#C44536]/40 shadow-xs hover:shadow-sm active:scale-95"
+                        title="Clear all region and search filters"
+                      >
+                        <X className="w-3.5 h-3.5 text-[#BF4342]" />
+                        <span>Clear Filters</span>
+                      </button>
+                    </div>
+
+                    {/* African Languages Atlas Link */}
+                    {onNavigateToLanguages && (
+                      <button
+                        id="dock-languages-page-link"
+                        type="button"
+                        onClick={onNavigateToLanguages}
+                        className="w-full p-2.5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-[#E67E48]/10 to-amber-500/10 hover:from-emerald-500/20 hover:via-[#E67E48]/20 hover:to-amber-500/20 border border-emerald-500/30 dark:border-emerald-500/40 text-[#2B241E] dark:text-[#F5EFE6] transition-all duration-200 cursor-pointer flex items-center justify-between group/dockLang shadow-xs hover:shadow-md active:scale-[0.99]"
+                        title="Explore 2,000+ living languages across 6 major African linguistic phyla"
+                      >
+                        <div className="flex items-center gap-2.5 text-left">
+                          <div className="w-7 h-7 rounded-xl bg-emerald-500/15 dark:bg-emerald-500/25 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover/dockLang:scale-110 transition-transform">
+                            <Languages className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1">
+                              <span>African Languages Atlas</span>
+                              <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                                6 Phyla
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">
+                              Explore 2,000+ living tongues & soundscapes
+                            </div>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 group-hover/dockLang:translate-x-1 transition-transform" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* =========================================================================
+                      INTEGRATED BOTTOM DOCK CONTROLS (Positioned directly below Languages Atlas)
+                      ========================================================================= */}
+                  <div 
+                    id="unified-bottom-control-dock"
+                    className="pt-3 border-t border-[#E5DDD0] dark:border-[#38322B] space-y-3"
+                  >
+                    {/* Section Header */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider font-mono text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">
+                        <Sliders className="w-3.5 h-3.5 text-[#E67E48]" />
+                        <span>Display Canvas & TAST Layers</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setIsExportModalOpen(true)}
+                        className="px-2 py-1 rounded-full text-[10px] font-semibold flex items-center gap-1 bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/40 transition-colors cursor-pointer"
+                        title="Export Citation & SVG"
+                      >
+                        <Download className="w-3 h-3 text-[#E67E48]" />
+                        <span>Cite & Export</span>
+                      </button>
+                    </div>
+
+                    {/* Archival Paper Selection */}
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider font-mono text-[#7D6B5A] dark:text-[#B5A492] block">
+                        Archival Canvas Paper
+                      </span>
+                      <div className="grid grid-cols-3 gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setCanvasBg('parchment')}
+                          className={`px-2 py-1.5 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center ${
+                            canvasBg === 'parchment'
+                              ? 'bg-[#E67E48] text-white shadow-xs'
+                              : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
+                          }`}
+                          title="Museum Parchment Paper"
+                        >
+                          Parchment
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCanvasBg('white')}
+                          className={`px-2 py-1.5 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center ${
+                            canvasBg === 'white'
+                              ? 'bg-[#E67E48] text-white shadow-xs'
+                              : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
+                          }`}
+                          title="Pure White Paper"
+                        >
+                          Pure White
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCanvasBg('sepia')}
+                          className={`px-2 py-1.5 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center ${
+                            canvasBg === 'sepia'
+                              ? 'bg-[#E67E48] text-white shadow-xs'
+                              : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
+                          }`}
+                          title="Antique Sepia Paper"
+                        >
+                          Sepia
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* TAST Historical Cohorts */}
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider font-mono text-[#7D6B5A] dark:text-[#B5A492] block">
+                        TAST Cohorts (Trans-Atlantic Slave Trade)
+                      </span>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setActiveTastLayer('all')}
+                          className={`px-2 py-1 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center ${
+                            activeTastLayer === 'all'
+                              ? 'bg-[#724E5B] text-white shadow-xs'
+                              : 'bg-[#724E5B]/15 hover:bg-[#724E5B]/25 text-[#5F3B4A] dark:text-[#E2B2C6] border border-[#724E5B]/30'
+                          }`}
+                        >
+                          All Cohorts
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveTastLayer('first');
+                            panToCoordinates(2011.6, 2397.0, 2.0);
+                          }}
+                          className={`px-2 py-1 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center truncate ${
+                            activeTastLayer === 'first'
+                              ? 'bg-[#4F7942] text-white shadow-xs'
+                              : 'bg-[#4F7942]/15 hover:bg-[#4F7942]/25 text-[#3D6132] dark:text-[#B0DB9C] border border-[#4F7942]/30'
+                          }`}
+                          title="1st Cohort (1501-1600): 5.69M Captives (West Central Africa)"
+                        >
+                          1st: 5.69M (WCA)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveTastLayer('second');
+                            panToCoordinates(2110.1, 2085.3, 2.0);
+                          }}
+                          className={`px-2 py-1 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center truncate ${
+                            activeTastLayer === 'second'
+                              ? 'bg-[#D87040] text-white shadow-xs'
+                              : 'bg-[#D87040]/15 hover:bg-[#D87040]/25 text-[#B05325] dark:text-[#FFB594] border border-[#D87040]/30'
+                          }`}
+                          title="2nd Cohort (1601-1700): 4.80M Captives (Bights of Benin & Biafra)"
+                        >
+                          2nd: 4.80M (Bights)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveTastLayer('third');
+                            panToCoordinates(2045.5, 1950.1, 2.0);
+                          }}
+                          className={`px-2 py-1 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center truncate ${
+                            activeTastLayer === 'third'
+                              ? 'bg-[#C68B29] text-white shadow-xs'
+                              : 'bg-[#C68B29]/15 hover:bg-[#C68B29]/25 text-[#9C6918] dark:text-[#FCE19B] border border-[#C68B29]/30'
+                          }`}
+                          title="3rd Cohort (1701-1867): 2.02M Captives (Upper Guinea & Senegambia)"
+                        >
+                          3rd: 2.02M (Upper Guinea)
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Silhouette Spotlight Toggle */}
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-[#E67E48]" />
+                        <span className="text-[10px] font-medium text-[#2B241E] dark:text-[#F5EFE6]">
+                          Silhouette Spotlight (Dims Tree)
                         </span>
                       </div>
-                      <div className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">
-                        Explore 2,000+ living tongues & soundscapes
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSilhouetteGlowEnabled(prev => !prev)}
+                        className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                          silhouetteGlowEnabled
+                            ? 'bg-[#E67E48] text-white shadow-xs'
+                            : 'bg-black/10 dark:bg-white/10 text-[#7D6B5A] dark:text-[#B5A492]'
+                        }`}
+                      >
+                        {silhouetteGlowEnabled ? 'Active' : 'Off'}
+                      </button>
+                    </div>
+
+                    {/* Research Monographs Links */}
+                    <div className="grid grid-cols-2 gap-1.5 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (onNavigateToMolecular) onNavigateToMolecular();
+                          else if (onSelectReport) onSelectReport('molecular-legacies');
+                        }}
+                        className="p-2 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-left transition-all cursor-pointer flex items-center justify-between group/mono active:scale-98"
+                        title="Open Molecular & Genetic Ancestry Report"
+                      >
+                        <div className="min-w-0 pr-1">
+                          <span className="block text-[10px] font-bold text-indigo-900 dark:text-indigo-200 group-hover/mono:text-indigo-600 truncate">
+                            Molecular Report
+                          </span>
+                          <span className="block text-[8px] text-[#7D6B5A] dark:text-[#A79888] truncate">
+                            Genetics & Diaspora
+                          </span>
+                        </div>
+                        <Dna className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0 group-hover/mono:translate-x-0.5 transition-transform" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (onNavigateToFoundations) onNavigateToFoundations();
+                          else if (onSelectReport) onSelectReport('african-development-foundations');
+                        }}
+                        className="p-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-left transition-all cursor-pointer flex items-center justify-between group/found active:scale-98"
+                        title="Open African Development Master Foundations Report"
+                      >
+                        <div className="min-w-0 pr-1">
+                          <span className="block text-[10px] font-bold text-emerald-900 dark:text-emerald-200 group-hover/found:text-emerald-600 truncate">
+                            Foundations Report
+                          </span>
+                          <span className="block text-[8px] text-[#7D6B5A] dark:text-[#A79888] truncate">
+                            Colonial Roots
+                          </span>
+                        </div>
+                        <Landmark className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 group-hover/found:translate-x-0.5 transition-transform" />
+                      </button>
                     </div>
                   </div>
-                  <ChevronRight className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 group-hover/dockLang:translate-x-1 transition-transform" />
-                </button>
-              )}
-            </div>
-          </div>
-        </motion.div>
-      ) : (
-        /* Minimized Left Floating Pill */
-        <motion.button
-          key="left-dock-toggle-btn"
-          initial={{ opacity: 0, x: -16, scale: 0.95 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          exit={{ opacity: 0, x: -12, scale: 0.95 }}
-          transition={{ duration: 0.18 }}
-          type="button"
-          onClick={() => setIsLeftDockOpen(true)}
-          className="absolute top-4 left-4 z-30 px-4 py-2.5 rounded-full bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-md flex items-center gap-2 text-xs font-semibold text-[#52463B] dark:text-[#C4B7A6] hover:bg-[#F2ECE2] dark:hover:bg-[#27231F] transition-all cursor-pointer active:scale-95 backdrop-blur-md"
-        >
-          <Compass className="w-3.5 h-3.5 text-[#E67E48]" />
-          <span>Focus & Search</span>
-          {(selectedRegion !== 'All' || selectedCountry !== 'All' || searchQuery) && (
-            <span className="w-2 h-2 rounded-full bg-[#E67E48]" />
-          )}
-        </motion.button>
-      )}
+                </div>
+              </>
+            )}
+          </motion.div>
+        )}
       </AnimatePresence>
 
       {/* =========================================================================
@@ -1713,336 +2003,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       </div>
 
       {/* =========================================================================
-          4A. EXPANDABLE DISPLAY, PAPER & TRANS-ATLANTIC SLAVE TRADE (TAST) COHORTS PANEL
-          ========================================================================= */}
-      <AnimatePresence>
-        {isControlBarExpanded && (
-          <motion.div 
-            key="bottom-control-expanded-panel"
-            initial={{ opacity: 0, y: 16, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.97, transition: { duration: 0.15, ease: 'easeIn' } }}
-            transition={{ type: "spring", damping: 28, stiffness: 380, mass: 0.8 }}
-            className="absolute bottom-[70px] sm:bottom-[74px] left-1/2 -translate-x-1/2 z-30 p-3.5 sm:p-4 rounded-3xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 backdrop-blur-md border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_50px_rgba(75,55,35,0.18)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.6)] text-xs flex flex-col gap-3 max-w-[95vw] w-auto max-h-[calc(100vh-100px)] overflow-y-auto no-scrollbar origin-bottom no-drag"
-            id="bottom-control-expanded-panel"
-          >
-            {/* Connected pointer caret pointing down to dock */}
-            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border-r border-b border-[#E5DDD0] dark:border-[#38322B] pointer-events-none" />
-
-            {/* Header */}
-            <div className="flex items-center justify-between gap-4 border-b border-[#E5DDD0]/60 dark:border-[#38322B]/60 pb-2">
-              <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider font-mono text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">
-                <Sliders className="w-3.5 h-3.5 text-[#E67E48]" />
-                <span>Display Canvas & Trans-Atlantic Slave Trade (TAST) Layers</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsControlBarExpanded(false)}
-                className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-[#7D6B5A] cursor-pointer"
-                aria-label="Collapse panel"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            {/* Archival Paper Canvas Row */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[10px] font-bold uppercase tracking-wider font-mono text-[#7D6B5A] dark:text-[#B5A492] w-28 shrink-0">
-                Archival Paper:
-              </span>
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setCanvasBg('parchment')}
-                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer active:scale-95 ${
-                    canvasBg === 'parchment'
-                      ? 'bg-[#E67E48] text-white shadow-sm'
-                      : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
-                  }`}
-                  title="Museum Parchment Paper (Default authentic blend)"
-                >
-                  Museum Parchment
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCanvasBg('white')}
-                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer active:scale-95 ${
-                    canvasBg === 'white'
-                      ? 'bg-[#E67E48] text-white shadow-sm'
-                      : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
-                  }`}
-                  title="Pure White Paper (High contrast)"
-                >
-                  Pure White
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCanvasBg('sepia')}
-                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer active:scale-95 ${
-                    canvasBg === 'sepia'
-                      ? 'bg-[#E67E48] text-white shadow-sm'
-                      : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
-                  }`}
-                  title="Antique Sepia Paper"
-                >
-                  Antique Sepia
-                </button>
-              </div>
-            </div>
-
-            {/* Trans-Atlantic Slave Trade (TAST) Cohorts Row */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[10px] font-bold uppercase tracking-wider font-mono text-[#7D6B5A] dark:text-[#B5A492] w-28 shrink-0">
-                TAST Cohorts:
-              </span>
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <button
-                  type="button"
-                  onClick={() => setActiveTastLayer('all')}
-                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer active:scale-95 ${
-                    activeTastLayer === 'all'
-                      ? 'bg-[#724E5B] text-white shadow-sm'
-                      : 'bg-[#724E5B]/15 hover:bg-[#724E5B]/25 text-[#5F3B4A] dark:text-[#E2B2C6] border border-[#724E5B]/30'
-                  }`}
-                >
-                  All Cohorts
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveTastLayer('first');
-                    panToCoordinates(2011.6, 2397.0, 2.0);
-                  }}
-                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer active:scale-95 ${
-                    activeTastLayer === 'first'
-                      ? 'bg-[#4F7942] text-white shadow-sm'
-                      : 'bg-[#4F7942]/15 hover:bg-[#4F7942]/25 text-[#3D6132] dark:text-[#B0DB9C] border border-[#4F7942]/30'
-                  }`}
-                  title="1st Cohort (1501-1600): 5.69M Captives (West Central Africa)"
-                >
-                  1st: 5.69M (West Central Africa)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveTastLayer('second');
-                    panToCoordinates(2110.1, 2085.3, 2.0);
-                  }}
-                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer active:scale-95 ${
-                    activeTastLayer === 'second'
-                      ? 'bg-[#D87040] text-white shadow-sm'
-                      : 'bg-[#D87040]/15 hover:bg-[#D87040]/25 text-[#B05325] dark:text-[#FFB594] border border-[#D87040]/30'
-                  }`}
-                  title="2nd Cohort (1601-1700): 4.80M Captives (Bights of Benin & Biafra)"
-                >
-                  2nd: 4.80M (Bights)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveTastLayer('third');
-                    panToCoordinates(2045.5, 1950.1, 2.0);
-                  }}
-                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer active:scale-95 ${
-                    activeTastLayer === 'third'
-                      ? 'bg-[#C68B29] text-white shadow-sm'
-                      : 'bg-[#C68B29]/15 hover:bg-[#C68B29]/25 text-[#9C6918] dark:text-[#FCE19B] border border-[#C68B29]/30'
-                  }`}
-                  title="3rd Cohort (1701-1867): 2.02M Captives (Upper Guinea & Senegambia)"
-                >
-                  3rd: 2.02M (Upper Guinea)
-                </button>
-                {activeTastLayer !== 'all' && (
-                  <button
-                    type="button"
-                    onClick={() => setActiveTastLayer('all')}
-                    className="px-2.5 py-1.5 rounded-full text-[11px] font-semibold flex items-center gap-1 bg-[#C44536]/15 hover:bg-[#C44536]/25 text-[#9C2F22] dark:text-[#F89D93] border border-[#C44536]/40 transition-all cursor-pointer active:scale-95"
-                    title="Clear cohort filter"
-                  >
-                    <X className="w-3 h-3" />
-                    <span>Clear</span>
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Sovereign Country Silhouette Spotlight Toggle */}
-            <div className="flex items-center justify-between pt-2 border-t border-[#E5DDD0]/50 dark:border-[#38322B]/50">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-[#E67E48]" />
-                <span className="text-[11px] font-medium text-[#2B241E] dark:text-[#F5EFE6]">
-                  Country Silhouette Spotlight (Dims Tree on Selection)
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSilhouetteGlowEnabled(prev => !prev)}
-                className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer active:scale-95 ${
-                  silhouetteGlowEnabled
-                    ? 'bg-[#E67E48] text-white shadow-sm'
-                    : 'bg-black/10 dark:bg-white/10 text-[#7D6B5A] dark:text-[#B5A492]'
-                }`}
-              >
-                {silhouetteGlowEnabled ? 'Active' : 'Disabled'}
-              </button>
-            </div>
-
-            {/* Direct Research Monographs & Reports */}
-            <div className="space-y-2 pt-2 border-t border-[#E5DDD0]/50 dark:border-[#38322B]/50">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492] flex items-center gap-1">
-                  <BookOpen className="w-3 h-3 text-[#E67E48]" />
-                  Investigative Research Monographs
-                </span>
-                <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold font-mono">
-                  Peer-Reviewed
-                </span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onNavigateToMolecular) onNavigateToMolecular();
-                    else if (onSelectReport) onSelectReport('molecular-legacies');
-                  }}
-                  className="p-2.5 rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 hover:from-indigo-500/20 hover:to-purple-500/20 border border-indigo-500/30 text-left transition-all cursor-pointer group flex items-center justify-between active:scale-98"
-                  title="Open Molecular & Genetic Ancestry Report"
-                >
-                  <div className="flex items-center gap-2 min-w-0 pr-1">
-                    <div className="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 grid place-items-center shrink-0">
-                      <Dna className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="block text-[11px] font-bold text-indigo-900 dark:text-indigo-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors truncate">
-                        Molecular Report
-                      </span>
-                      <span className="block text-[9px] text-[#7D6B5A] dark:text-[#A79888] truncate">
-                        Genetic Lineages & Diaspora
-                      </span>
-                    </div>
-                  </div>
-                  <ArrowRight className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onNavigateToFoundations) onNavigateToFoundations();
-                    else if (onSelectReport) onSelectReport('african-development-foundations');
-                  }}
-                  className="p-2.5 rounded-xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 hover:from-emerald-500/20 hover:to-teal-500/20 border border-emerald-500/30 text-left transition-all cursor-pointer group flex items-center justify-between active:scale-98"
-                  title="Open African Development Master Foundations Report"
-                >
-                  <div className="flex items-center gap-2 min-w-0 pr-1">
-                    <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 grid place-items-center shrink-0">
-                      <Landmark className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="block text-[11px] font-bold text-emerald-900 dark:text-emerald-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition-colors truncate">
-                        Foundations Report
-                      </span>
-                      <span className="block text-[9px] text-[#7D6B5A] dark:text-[#A79888] truncate">
-                        Colonial Roots & Institutions
-                      </span>
-                    </div>
-                  </div>
-                  <ArrowRight className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* =========================================================================
-          4B. UNIFIED BOTTOM CONTROL DOCK (Camera + Expand Icon)
-          ========================================================================= */}
-      <motion.div 
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", damping: 26, stiffness: 320 }}
-        className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 sm:gap-3 p-1.5 sm:p-2 rounded-full bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_8px_30px_rgba(75,55,35,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] text-xs max-w-[95vw] overflow-x-auto no-scrollbar no-drag backdrop-blur-md"
-        id="unified-bottom-control-dock"
-      >
-        {/* Camera Navigation Group */}
-        <div className="flex items-center gap-1 shrink-0">
-          <button
-            type="button"
-            onClick={() => handleZoomDelta(0.82)}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
-            title="Zoom out"
-          >
-            <ZoomOut className="w-4 h-4" />
-          </button>
-
-          <span className="text-[11px] font-mono font-bold text-[#7D6B5A] dark:text-[#B5A492] px-1 min-w-[3rem] text-center">
-            {Math.round(zoom * 100)}%
-          </span>
-
-          <button
-            type="button"
-            onClick={() => handleZoomDelta(1.22)}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
-            title="Zoom in"
-          >
-            <ZoomIn className="w-4 h-4" />
-          </button>
-
-          {/* Western Africa Crucible View Shortcut (Prominent on load) */}
-          <button
-            type="button"
-            onClick={panToCrucible}
-            className="px-3 py-1.5 rounded-full text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/40 shadow-xs active:scale-95"
-            title="Prominent Crucible View: Zoom directly to Cabo Verde nexus & orbiting lineages"
-          >
-            <Compass className="w-3.5 h-3.5 text-[#E67E48]" />
-            <span>Crucible View</span>
-          </button>
-
-          {/* Reset Continental View Pill */}
-          <button
-            type="button"
-            onClick={fitView}
-            className="px-3 py-1.5 rounded-full text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer bg-black/5 dark:bg-white/10 hover:bg-black/10 text-[#52463B] dark:text-[#C4B7A6] border border-[#E5DDD0] dark:border-[#38322B] active:scale-95"
-            title="Overview of full continental ethnic tree"
-          >
-            <RotateCcw className="w-3.5 h-3.5 text-[#7D6B5A]" />
-            <span>Full Tree</span>
-          </button>
-        </div>
-
-        {/* Vertical Divider */}
-        <div className="w-[1px] h-5 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0" />
-
-        {/* Settings & Configuration Icon Button */}
-        <button
-          type="button"
-          onClick={() => setIsControlBarExpanded(prev => !prev)}
-          className={`p-2 rounded-full transition-all cursor-pointer flex items-center justify-center ${
-            isControlBarExpanded || activeTastLayer !== 'all' || canvasBg !== 'parchment'
-              ? 'bg-[#E67E48] text-white shadow-sm ring-2 ring-[#E67E48]/30'
-              : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
-          }`}
-          title={isControlBarExpanded ? "Close Configuration Panel" : "Settings & Configuration (Palettes, TAST Cohorts & Reports)"}
-          aria-label="Settings and Configuration"
-        >
-          <Settings2 className="w-4 h-4" />
-        </button>
-
-        {/* Academic Citation & SVG Vector Export Button */}
-        <button
-          type="button"
-          onClick={() => setIsExportModalOpen(true)}
-          className="p-2 rounded-full transition-all cursor-pointer flex items-center justify-center bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-[#E67E48]/20 hover:text-[#E67E48]"
-          title="Export Academic Citation & SVG Vector Tree"
-          aria-label="Export and Cite"
-        >
-          <Download className="w-4 h-4" />
-        </button>
-      </motion.div>
-
-      {/* =========================================================================
-          5. SCHOLARLY DOSSIER INSPECTOR DRAWER (Slim Smooth Cozy Scrollbar)
+          3. SCHOLARLY DOSSIER INSPECTOR DRAWER (Slim Smooth Cozy Scrollbar)
           ========================================================================= */}
       <AnimatePresence mode="wait">
         {selectedEntity && selectedEntity.type === 'ethnic' && (

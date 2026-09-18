@@ -151,32 +151,32 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200 text-left">
-      {/* 1. Header Banner & Epistemic Control Strip */}
-      <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-zinc-900 via-zinc-950 to-emerald-950/80 border border-zinc-800 text-white shadow-2xl space-y-6">
+      {/* 1. Header Banner & Epistemic Control Strip (Option A: Atmospheric Warm & Crisp Palette) */}
+      <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#FAF6EE] via-[#F5EFE1] to-[#EFE7D5] dark:from-[#1C1815] dark:via-[#161311] dark:to-[#221B16] border border-[#DCD3C1] dark:border-[#3D342A] text-[#1C1917] dark:text-[#F6F4EE] shadow-sm relative overflow-hidden space-y-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="space-y-2 max-w-3xl">
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span className="p-2 rounded-xl bg-[#C2410C]/10 text-[#C2410C] border border-[#C2410C]/25 dark:bg-[#C2410C]/20 dark:text-[#FB923C]">
                 <Anchor className="w-5 h-5" />
               </span>
-              <span className="px-3 py-1 rounded-full bg-emerald-950 border border-emerald-700/60 text-xs font-mono font-bold text-emerald-300">
+              <span className="px-3 py-1 rounded-full bg-[#EFE7D5] dark:bg-[#2A231C] border border-[#D8CCB5] dark:border-[#4A3E31] text-xs font-mono font-bold text-[#9A3412] dark:text-[#FDBA74]">
                 SlaveVoyages Consortium (api.slavevoyages.org)
               </span>
-              <span className="px-2.5 py-0.5 rounded-md bg-zinc-800 text-[11px] font-mono text-zinc-400">
+              <span className="px-2.5 py-0.5 rounded-md bg-[#E8DFCE] dark:bg-[#2D261F] text-[11px] font-mono text-[#78716C] dark:text-[#A8A29E]">
                 Snapshot {SLAVEVOYAGES_METADATA.version}
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-100">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-[#1C1917] dark:text-[#FAFAF9]">
               Atlantic Slave Trade Data Atlas
             </h1>
-            <p className="text-sm text-zinc-300 leading-relaxed">
+            <p className="text-sm text-[#57534E] dark:text-[#D6D3D1] leading-relaxed">
               An authoritative research repository and geospatial analytics engine documenting four centuries of forced trans-Atlantic and intra-American maritime migrations (1514–1866), grounded in surviving archival records and rigorous statistical imputation.
             </p>
           </div>
 
           {/* Epistemic Certainty Mode Switcher */}
-          <div className="shrink-0 space-y-2 bg-zinc-900/90 p-4 rounded-2xl border border-zinc-800 backdrop-blur-xs">
-            <p className="text-[11px] font-mono uppercase font-bold text-zinc-400">
+          <div className="shrink-0 space-y-2 bg-white/80 dark:bg-zinc-900/90 p-4 rounded-2xl border border-[#DCD3C1] dark:border-zinc-800 backdrop-blur-xs shadow-xs">
+            <p className="text-[11px] font-mono uppercase font-bold text-[#78716C] dark:text-zinc-400">
               Epistemic Certainty Mode
             </p>
             <EpistemicStatusBadge
@@ -187,16 +187,16 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
         </div>
 
         {/* Database Switcher: Trans-Atlantic vs Intra-American vs Consolidated */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-zinc-800/80">
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-[#DCD3C1]/80 dark:border-zinc-800/80">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-zinc-400 font-bold uppercase">Database:</span>
-            <div className="inline-flex p-1 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-medium">
+            <span className="text-xs font-mono text-[#78716C] dark:text-zinc-400 font-bold uppercase">Database:</span>
+            <div className="inline-flex p-1 rounded-xl bg-[#E8DFCE] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800 text-xs font-medium">
               <button
                 onClick={() => handleSelectDatabase('consolidated')}
                 className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                   filters.database === 'consolidated'
-                    ? 'bg-emerald-500 text-zinc-950 font-bold shadow-xs'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'bg-[#C2410C] text-white font-bold shadow-xs'
+                    : 'text-[#57534E] hover:text-[#1C1917] dark:text-zinc-400 dark:hover:text-zinc-200'
                 }`}
               >
                 Consolidated (All Trades)
@@ -205,8 +205,8 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                 onClick={() => handleSelectDatabase('transatlantic')}
                 className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                   filters.database === 'transatlantic'
-                    ? 'bg-emerald-500 text-zinc-950 font-bold shadow-xs'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'bg-[#C2410C] text-white font-bold shadow-xs'
+                    : 'text-[#57534E] hover:text-[#1C1917] dark:text-zinc-400 dark:hover:text-zinc-200'
                 }`}
               >
                 Trans-Atlantic (36,108 Voyages)
@@ -215,8 +215,8 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                 onClick={() => handleSelectDatabase('intra_american')}
                 className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                   filters.database === 'intra_american'
-                    ? 'bg-emerald-500 text-zinc-950 font-bold shadow-xs'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'bg-[#C2410C] text-white font-bold shadow-xs'
+                    : 'text-[#57534E] hover:text-[#1C1917] dark:text-zinc-400 dark:hover:text-zinc-200'
                 }`}
               >
                 Intra-American (11,400+ Voyages)
@@ -225,15 +225,15 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="text-xs font-mono text-zinc-400">
-              Current Filter View: <strong className="text-emerald-400">{filterResult.totalMatches}</strong> matching voyages
+            <div className="text-xs font-mono text-[#78716C] dark:text-zinc-400">
+              Current Filter View: <strong className="text-[#C2410C] dark:text-emerald-400">{filterResult.totalMatches}</strong> matching voyages
             </div>
             <button
               onClick={() => setIsExportOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-xs font-semibold cursor-pointer transition-colors shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-[#F5EFE1] dark:hover:bg-zinc-700 text-[#1C1917] dark:text-zinc-200 border border-[#DCD3C1] dark:border-zinc-700 text-xs font-semibold cursor-pointer transition-colors shadow-xs"
               title="Export Academic Citation & SVG"
             >
-              <Download className="w-3.5 h-3.5 text-emerald-400" />
+              <Download className="w-3.5 h-3.5 text-[#C2410C] dark:text-emerald-400" />
               <span>Export & Cite</span>
             </button>
           </div>
@@ -241,67 +241,67 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
 
         {/* Headline Statistics Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-2">
-          <div className="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-1">
-            <div className="flex items-center justify-between text-zinc-400 text-xs">
-              <span className="font-mono uppercase text-[10px]">Documented Voyages</span>
-              <Compass className="w-4 h-4 text-emerald-400" />
+          <div className="p-4 rounded-2xl bg-white/85 dark:bg-zinc-900/80 border border-[#DCD3C1] dark:border-zinc-800 space-y-1 shadow-xs">
+            <div className="flex items-center justify-between text-[#78716C] dark:text-zinc-400 text-xs">
+              <span className="font-mono uppercase text-[10px] font-bold">Documented Voyages</span>
+              <Compass className="w-4 h-4 text-[#C2410C] dark:text-emerald-400" />
             </div>
-            <p className="text-xl sm:text-2xl font-black text-zinc-100">
+            <p className="text-xl sm:text-2xl font-black text-[#1C1917] dark:text-zinc-100">
               {headline.voyagesCount.toLocaleString()}
             </p>
-            <span className="text-[10px] text-zinc-400 block font-mono">
+            <span className="text-[10px] text-[#78716C] dark:text-zinc-400 block font-mono">
               1514–1866 Registry
             </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-1">
-            <div className="flex items-center justify-between text-zinc-400 text-xs">
-              <span className="font-mono uppercase text-[10px]">Captives Embarked</span>
-              <Users className="w-4 h-4 text-amber-400" />
+          <div className="p-4 rounded-2xl bg-white/85 dark:bg-zinc-900/80 border border-[#DCD3C1] dark:border-zinc-800 space-y-1 shadow-xs">
+            <div className="flex items-center justify-between text-[#78716C] dark:text-zinc-400 text-xs">
+              <span className="font-mono uppercase text-[10px] font-bold">Captives Embarked</span>
+              <Users className="w-4 h-4 text-[#D97706] dark:text-amber-400" />
             </div>
-            <p className="text-xl sm:text-2xl font-black text-amber-400">
+            <p className="text-xl sm:text-2xl font-black text-[#B45309] dark:text-amber-400">
               {(headline.embarked / 1000000).toFixed(2)}M
             </p>
-            <span className="text-[10px] text-zinc-400 block font-mono">
+            <span className="text-[10px] text-[#78716C] dark:text-zinc-400 block font-mono">
               {filters.epistemicMode === 'observed' ? 'Observed in logs' : 'Observed + Imputed'}
             </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-1">
-            <div className="flex items-center justify-between text-zinc-400 text-xs">
-              <span className="font-mono uppercase text-[10px]">Captives Disembarked</span>
-              <Building2 className="w-4 h-4 text-emerald-400" />
+          <div className="p-4 rounded-2xl bg-white/85 dark:bg-zinc-900/80 border border-[#DCD3C1] dark:border-zinc-800 space-y-1 shadow-xs">
+            <div className="flex items-center justify-between text-[#78716C] dark:text-zinc-400 text-xs">
+              <span className="font-mono uppercase text-[10px] font-bold">Captives Disembarked</span>
+              <Building2 className="w-4 h-4 text-[#059669] dark:text-emerald-400" />
             </div>
-            <p className="text-xl sm:text-2xl font-black text-emerald-400">
+            <p className="text-xl sm:text-2xl font-black text-[#047857] dark:text-emerald-400">
               {(headline.disembarked / 1000000).toFixed(2)}M
             </p>
-            <span className="text-[10px] text-zinc-400 block font-mono">
+            <span className="text-[10px] text-[#78716C] dark:text-zinc-400 block font-mono">
               Arrived in Americas
             </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-1">
-            <div className="flex items-center justify-between text-zinc-400 text-xs">
-              <span className="font-mono uppercase text-[10px]">Shipboard Mortality</span>
-              <Skull className="w-4 h-4 text-rose-400" />
+          <div className="p-4 rounded-2xl bg-white/85 dark:bg-zinc-900/80 border border-[#DCD3C1] dark:border-zinc-800 space-y-1 shadow-xs">
+            <div className="flex items-center justify-between text-[#78716C] dark:text-zinc-400 text-xs">
+              <span className="font-mono uppercase text-[10px] font-bold">Shipboard Mortality</span>
+              <Skull className="w-4 h-4 text-[#DC2626] dark:text-rose-400" />
             </div>
-            <p className="text-xl sm:text-2xl font-black text-rose-400">
+            <p className="text-xl sm:text-2xl font-black text-[#B91C1C] dark:text-rose-400">
               {headline.mortalityRate}%
             </p>
-            <span className="text-[10px] text-rose-300/80 block font-mono">
+            <span className="text-[10px] text-[#991B1B] dark:text-rose-300/80 block font-mono">
               {(headline.livesLost / 1000000).toFixed(2)}M lost at sea
             </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-1 col-span-2 sm:col-span-1">
-            <div className="flex items-center justify-between text-zinc-400 text-xs">
-              <span className="font-mono uppercase text-[10px]">Temporal Scope</span>
-              <Calendar className="w-4 h-4 text-indigo-400" />
+          <div className="p-4 rounded-2xl bg-white/85 dark:bg-zinc-900/80 border border-[#DCD3C1] dark:border-zinc-800 space-y-1 col-span-2 sm:col-span-1 shadow-xs">
+            <div className="flex items-center justify-between text-[#78716C] dark:text-zinc-400 text-xs">
+              <span className="font-mono uppercase text-[10px] font-bold">Temporal Scope</span>
+              <Calendar className="w-4 h-4 text-[#4F46E5] dark:text-indigo-400" />
             </div>
-            <p className="text-xl sm:text-2xl font-black text-zinc-100">
+            <p className="text-xl sm:text-2xl font-black text-[#1C1917] dark:text-zinc-100">
               352 Years
             </p>
-            <span className="text-[10px] text-zinc-400 block font-mono">
+            <span className="text-[10px] text-[#78716C] dark:text-zinc-400 block font-mono">
               1514 to 1866
             </span>
           </div>
@@ -346,19 +346,19 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
       {/* TAB 1: OVERVIEW & FLOW MAP */}
       {activeSubTab === 'overview' && (
         <div className="space-y-8">
-          {/* Editorial Research Publications Callout Strip */}
+          {/* Editorial Research Publications Callout Strip (Option A: Warm & Crisp Atmospheric Styling) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-950/60 to-slate-900 border border-indigo-500/30 shadow-lg space-y-3">
+            <div className="p-5 rounded-2xl bg-gradient-to-br from-[#FAF5EC] via-[#F6ECE0] to-[#EFE2D2] dark:from-indigo-950/40 dark:to-slate-900/90 border border-[#D8C6B0] dark:border-indigo-500/30 shadow-xs hover:shadow-md transition-all space-y-3">
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-1 rounded-md bg-indigo-500/20 text-indigo-300 font-mono text-[10px] uppercase font-bold border border-indigo-500/30 flex items-center gap-1.5">
+                <span className="px-2.5 py-1 rounded-md bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 font-mono text-[10px] uppercase font-bold border border-indigo-500/25 flex items-center gap-1.5">
                   <Dna className="w-3 h-3" />
                   <span>Research Dossier</span>
                 </span>
-                <span className="text-[11px] font-mono text-indigo-400">Nature & Cell Genomics</span>
+                <span className="text-[11px] font-mono text-indigo-800 dark:text-indigo-400 font-semibold">Nature & Cell Genomics</span>
               </div>
               <div>
-                <h4 className="text-base font-extrabold text-white">Molecular & Material Legacies</h4>
-                <p className="text-xs text-slate-300 line-clamp-2 mt-1">
+                <h4 className="text-base font-extrabold text-[#1C1917] dark:text-white">Molecular & Material Legacies</h4>
+                <p className="text-xs text-[#57534E] dark:text-slate-300 line-clamp-2 mt-1 leading-relaxed">
                   Ancient genomics, sex-biased admixture asymmetry, bioarchaeology at the New York African Burial Ground, and material culture diaspora.
                 </p>
               </div>
@@ -371,7 +371,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                       setActiveSubTab('molecular');
                     }
                   }}
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md shadow-indigo-600/20"
+                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-xs"
                 >
                   <span>Read Dedicated Editorial Article</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -379,17 +379,17 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
               </div>
             </div>
 
-            <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-950/60 to-slate-900 border border-amber-500/30 shadow-lg space-y-3">
+            <div className="p-5 rounded-2xl bg-gradient-to-br from-[#FFF8EE] via-[#FDF1DE] to-[#F5E5C9] dark:from-amber-950/40 dark:to-slate-900/90 border border-[#DFCCA6] dark:border-amber-500/30 shadow-xs hover:shadow-md transition-all space-y-3">
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 font-mono text-[10px] uppercase font-bold border border-amber-500/30 flex items-center gap-1.5">
+                <span className="px-2.5 py-1 rounded-md bg-amber-500/15 text-amber-800 dark:text-amber-300 font-mono text-[10px] uppercase font-bold border border-amber-500/25 flex items-center gap-1.5">
                   <Scale className="w-3 h-3" />
                   <span>Master Report</span>
                 </span>
-                <span className="text-[11px] font-mono text-amber-400">Nunn, Tadei & UN 2026</span>
+                <span className="text-[11px] font-mono text-amber-900 dark:text-amber-400 font-semibold">Nunn, Tadei & UN 2026</span>
               </div>
               <div>
-                <h4 className="text-base font-extrabold text-white">Foundations of African Development</h4>
-                <p className="text-xs text-slate-300 line-clamp-2 mt-1">
+                <h4 className="text-base font-extrabold text-[#1C1917] dark:text-white">Foundations of African Development</h4>
+                <p className="text-xs text-[#57534E] dark:text-slate-300 line-clamp-2 mt-1 leading-relaxed">
                   Macro-geonomics, Nathan Nunn mistrust scars, Tadei trade monopsonies, and UN 2026 reparations frameworks.
                 </p>
               </div>
@@ -402,7 +402,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                       setActiveSubTab('foundations');
                     }
                   }}
-                  className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md shadow-amber-600/20"
+                  className="px-4 py-2 rounded-xl bg-[#C2410C] hover:bg-[#9A3412] text-white text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-xs"
                 >
                   <span>Read Dedicated Master Report</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -411,24 +411,26 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
             </div>
           </div>
 
-          {/* Interactive Atlantic Geodesic Flow Map */}
+          {/* Interactive Atlantic Geodesic Flow Map (Option A: Atmospheric Framing) */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-extrabold text-zinc-900 dark:text-zinc-100">
+                <h3 className="text-lg font-extrabold text-[#1C1917] dark:text-zinc-100">
                   Interactive Atlantic Geodesic Network
                 </h3>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-[#78716C] dark:text-zinc-400">
                   Visualizing African embarkation regions, American landing ports, and shipboard mortality rates across four centuries.
                 </p>
               </div>
             </div>
 
-            <AtlanticFlowMap
-              epistemicMode={filters.epistemicMode}
-              selectedRouteId={selectedRoute?.id}
-              onSelectRoute={(r) => setSelectedRoute(r)}
-            />
+            <div className="rounded-3xl border border-[#DCD3C1] dark:border-zinc-800 overflow-hidden shadow-xs bg-[#FAF6EE] dark:bg-zinc-950">
+              <AtlanticFlowMap
+                epistemicMode={filters.epistemicMode}
+                selectedRouteId={selectedRoute?.id}
+                onSelectRoute={(r) => setSelectedRoute(r)}
+              />
+            </div>
           </div>
 
           {/* Temporal Volume Chart over Centuries */}
@@ -515,56 +517,56 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
             </div>
           </div>
 
-          {/* Featured Interdisciplinary Deep-Dive Banner */}
-          <div className="p-6 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-zinc-950 border border-indigo-800/60 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-white">
+          {/* Featured Interdisciplinary Deep-Dive Banner (Option A: Atmospheric Warm & Crisp System) */}
+          <div className="p-6 rounded-3xl bg-gradient-to-br from-[#F5EFE6] via-[#EFE6D8] to-[#E4D7C3] dark:from-indigo-950 dark:via-slate-900 dark:to-zinc-950 border border-[#D5C6AC] dark:border-indigo-800/60 shadow-md text-[#1C1917] dark:text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1.5 max-w-2xl">
               <div className="flex items-center gap-2">
-                <span className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                <span className="p-1.5 rounded-lg bg-indigo-600/15 text-indigo-700 dark:text-indigo-400 border border-indigo-600/25">
                   <Dna className="w-4 h-4" />
                 </span>
-                <span className="text-xs font-mono font-bold text-indigo-300 uppercase tracking-wider">
+                <span className="text-xs font-mono font-bold text-indigo-800 dark:text-indigo-300 uppercase tracking-wider">
                   Featured Sub-Section (09)
                 </span>
               </div>
-              <h3 className="text-lg font-extrabold text-zinc-100">
+              <h3 className="text-lg font-extrabold text-[#1C1917] dark:text-zinc-100">
                 The Molecular and Material Legacies of Slavery
               </h3>
-              <p className="text-xs text-zinc-300 leading-relaxed">
+              <p className="text-xs text-[#57534E] dark:text-zinc-300 leading-relaxed">
                 Explore an interdisciplinary synthesis uniting <strong>50,000+ population genomes</strong> (IBD haplotype deconvolution), <strong>ancient DNA (Zoutsteeg c. 1660s)</strong>, <strong>98% Maroon retention</strong>, <strong>sex-biased gene flow ledgers</strong>, and <strong>bioarchaeology from the New York African Burial Ground</strong>.
               </p>
             </div>
 
             <button
               onClick={() => setActiveSubTab('molecular')}
-              className="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-indigo-600/30 shrink-0 cursor-pointer"
+              className="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-600/20 shrink-0 cursor-pointer"
             >
               <span>Explore Molecular Atlas</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Master Report Deep-Dive Banner */}
-          <div className="p-6 rounded-3xl bg-gradient-to-br from-amber-950/80 via-slate-900 to-zinc-950 border border-amber-800/60 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-white">
+          {/* Master Report Deep-Dive Banner (Option A: Atmospheric Warm & Crisp System) */}
+          <div className="p-6 rounded-3xl bg-gradient-to-br from-[#FFF7EA] via-[#FCEFD7] to-[#F3E1C0] dark:from-amber-950/80 dark:via-slate-900 dark:to-zinc-950 border border-[#E0C99E] dark:border-amber-800/60 shadow-md text-[#1C1917] dark:text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1.5 max-w-2xl">
               <div className="flex items-center gap-2">
-                <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                <span className="p-1.5 rounded-lg bg-amber-600/15 text-amber-800 dark:text-amber-400 border border-amber-600/25">
                   <Scale className="w-4 h-4" />
                 </span>
-                <span className="text-xs font-mono font-bold text-amber-300 uppercase tracking-wider">
+                <span className="text-xs font-mono font-bold text-amber-900 dark:text-amber-300 uppercase tracking-wider">
                   Master Report (Sub-Section 10)
                 </span>
               </div>
-              <h3 className="text-lg font-extrabold text-amber-100">
+              <h3 className="text-lg font-extrabold text-[#9A3412] dark:text-amber-100">
                 The Structural and Evolutionary Foundations of African Development
               </h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-[#57534E] dark:text-slate-300 leading-relaxed">
                 Comprehensive synthesis uniting <strong>Macro-Geonomics (Recent African Origin & Ashraf-Galor curve)</strong>, <strong>Nathan Nunn's 18M+ slave trade mistrust scar</strong>, <strong>Henn-Robinson pre-colonial governance (98% decentralized)</strong>, <strong>Tadei's colonial monopsony price-gap model</strong>, and the <strong>landmark March 25, 2026 UN General Assembly Slavery Resolution (123-3)</strong>.
               </p>
             </div>
 
             <button
               onClick={() => setActiveSubTab('foundations')}
-              className="px-5 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-amber-500/30 shrink-0 cursor-pointer"
+              className="px-5 py-3 rounded-2xl bg-[#C2410C] hover:bg-[#9A3412] text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-[#C2410C]/20 shrink-0 cursor-pointer"
             >
               <span>Open Master Report</span>
               <ArrowRight className="w-4 h-4" />

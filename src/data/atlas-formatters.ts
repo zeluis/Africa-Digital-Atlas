@@ -51,12 +51,34 @@ export function formatHDI(val: number | null | undefined): string {
 }
 
 export function formatHDICategory(val: number | null | undefined): { label: string; color: string } {
-  if (!val || isNaN(val)) return { label: 'Data Unavailable', color: 'text-zinc-400 bg-zinc-800/40 border-zinc-700' };
+  if (!val || isNaN(val)) return { label: 'Data Unavailable', color: 'text-zinc-600 bg-zinc-100 border-zinc-300' };
   const num = Number(val);
-  if (num >= 0.800) return { label: 'Very High Development', color: 'text-emerald-400 bg-emerald-950/40 border-emerald-800/50' };
-  if (num >= 0.700) return { label: 'High Development', color: 'text-teal-400 bg-teal-950/40 border-teal-800/50' };
-  if (num >= 0.550) return { label: 'Medium Development', color: 'text-amber-400 bg-amber-950/40 border-amber-800/50' };
-  return { label: 'Low Development', color: 'text-rose-400 bg-rose-950/40 border-rose-800/50' };
+  if (num >= 0.800) return { label: 'Very High Development', color: 'text-emerald-800 bg-emerald-50 border-emerald-200' };
+  if (num >= 0.700) return { label: 'High Development', color: 'text-teal-800 bg-teal-50 border-teal-200' };
+  if (num >= 0.550) return { label: 'Medium Development', color: 'text-amber-800 bg-amber-50 border-amber-200' };
+  return { label: 'Low Development', color: 'text-rose-800 bg-rose-50 border-rose-200' };
+}
+
+export function formatCompactOrgName(name: string | null | undefined): string {
+  if (!name) return 'World Bank/IMF';
+  const lower = name.toLowerCase();
+  if (lower.includes('economic and social affairs') || lower.includes('population division') || lower.includes('un desa')) return 'UN DESA';
+  if (lower.includes('world bank') || lower.includes('world development indicators')) return 'World Bank';
+  if (lower.includes('undp') || lower.includes('human development report')) return 'UNDP';
+  if (lower.includes('international monetary fund') || lower.includes('imf') || lower.includes('weo')) return 'IMF';
+  if (lower.includes('african development bank') || lower.includes('afdb')) return 'AfDB';
+  if (lower.includes('mo ibrahim') || lower.includes('iiag')) return 'MIF';
+  if (lower.includes('economics and peace') || lower.includes('iep') || lower.includes('gpi')) return 'IEP';
+  if (lower.includes('world health organization') || lower.includes('who')) return 'WHO';
+  if (lower.includes('unesco')) return 'UNESCO';
+  if (lower.includes('food and agriculture') || lower.includes('fao')) return 'FAO';
+  if (lower.includes('international energy agency') || lower.includes('iea')) return 'IEA';
+  if (lower.includes('african union') || lower.includes('statdata')) return 'AU Stat';
+  if (lower.includes('united nations') || lower.includes('un')) return 'UN';
+  if (name.length > 16) {
+    return name.slice(0, 14) + '…';
+  }
+  return name;
 }
 
 export function formatArea(km2: number | null | undefined): string {

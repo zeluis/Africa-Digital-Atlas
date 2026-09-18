@@ -45,46 +45,46 @@ export const REGION_META: Record<AfricanRegion, {
   'Northern Africa': {
     name: 'Northern Africa',
     shortName: 'North',
-    color: '#2563EB', // Official UN Geoscheme Blue
-    lightColor: '#60A5FA',
-    darkColor: '#1D4ED8',
-    glow: 'rgba(37, 99, 235, 0.45)',
+    color: '#1802FF', // Strict Brand Color (Pure Blue)
+    lightColor: '#4B5EFC',
+    darkColor: '#1E1B4B',
+    glow: 'rgba(24, 2, 255, 0.35)',
     desc: 'Mediterranean and Saharan economies with strategic energy corridors.'
   },
   'Western Africa': {
     name: 'Western Africa',
     shortName: 'West',
-    color: '#16A34A', // Official UN Geoscheme Green
-    lightColor: '#4ADE80',
-    darkColor: '#15803D',
-    glow: 'rgba(22, 163, 74, 0.45)',
+    color: '#00FF00', // Strict Brand Color (Neon Green)
+    lightColor: '#33FF33',
+    darkColor: '#065F46',
+    glow: 'rgba(0, 255, 0, 0.35)',
     desc: 'Dynamic demographic powerhouse led by ECOWAS and Atlantic trade hubs.'
   },
   'Central Africa': {
     name: 'Central Africa',
     shortName: 'Central',
-    color: '#C026D3', // Official UN Geoscheme Magenta/Purple
-    lightColor: '#E879F9',
-    darkColor: '#9333EA',
-    glow: 'rgba(192, 38, 211, 0.45)',
+    color: '#FF00FE', // Strict Brand Color (Magenta / Fuchsia)
+    lightColor: '#FF55FE',
+    darkColor: '#86198F',
+    glow: 'rgba(255, 0, 254, 0.35)',
     desc: 'Congo Basin ecological sanctuary and critical mineral reserves.'
   },
   'Eastern Africa': {
     name: 'Eastern Africa',
     shortName: 'East',
-    color: '#EAB308', // Official UN Geoscheme Gold/Yellow
-    lightColor: '#FDE047',
-    darkColor: '#CA8A04',
-    glow: 'rgba(234, 179, 8, 0.45)',
+    color: '#FFA500', // Strict Brand Color (Orange)
+    lightColor: '#FFB84A',
+    darkColor: '#C2410C',
+    glow: 'rgba(255, 165, 0, 0.35)',
     desc: 'Fastest growing regional integration bloc (EAC) and Indian Ocean trade.'
   },
   'Southern Africa': {
     name: 'Southern Africa',
     shortName: 'South',
-    color: '#DC2626', // Official UN Geoscheme Red
-    lightColor: '#F87171',
-    darkColor: '#B91C1C',
-    glow: 'rgba(220, 38, 38, 0.45)',
+    color: '#FF0A0A', // Strict Brand Color (Pure Red)
+    lightColor: '#FF4D4D',
+    darkColor: '#991B1B',
+    glow: 'rgba(255, 10, 10, 0.35)',
     desc: 'Advanced industrial, mining, and financial corridor centered on SADC.'
   }
 };
@@ -97,13 +97,13 @@ export const UN_GEOSCHEME_REGIONS: Record<AfricanRegion, UnGeoschemeRegionData> 
     shortName: 'North',
     memberCountries: ['DZA', 'EGY', 'LBY', 'MAR', 'SDN', 'TUN', 'ESH'],
     palette: {
-      primary: '#D97706', // Ochre / Sunbaked Sand
-      light: '#FBBF24',
-      dark: '#B45309',
-      glow: 'rgba(217, 119, 6, 0.30)',
-      bgBadge: 'bg-amber-500/10 dark:bg-amber-950/40',
-      borderBadge: 'border-amber-500/25 dark:border-amber-700/40',
-      textAccent: 'text-amber-700 dark:text-amber-400'
+      primary: '#1802FF', // Strict Brand Pure Blue
+      light: '#4B5EFC',
+      dark: '#1E1B4B',
+      glow: 'rgba(24, 2, 255, 0.30)',
+      bgBadge: 'bg-blue-500/10 dark:bg-blue-950/40',
+      borderBadge: 'border-blue-500/25 dark:border-blue-700/40',
+      textAccent: 'text-blue-700 dark:text-blue-400'
     },
     economicBlocs: ['AMU', 'COMESA', 'AfCFTA'],
     headquarters: 'Rabat / Cairo',
@@ -116,10 +116,10 @@ export const UN_GEOSCHEME_REGIONS: Record<AfricanRegion, UnGeoschemeRegionData> 
     shortName: 'West',
     memberCountries: ['BEN', 'BFA', 'CPV', 'CIV', 'GMB', 'GHA', 'GIN', 'GNB', 'LBR', 'MLI', 'MRT', 'NER', 'NGA', 'SEN', 'SLE', 'TGO'],
     palette: {
-      primary: '#059669', // Emerald / Sage
-      light: '#34D399',
-      dark: '#047857',
-      glow: 'rgba(5, 150, 105, 0.30)',
+      primary: '#00FF00', // Strict Brand Neon Green
+      light: '#33FF33',
+      dark: '#065F46',
+      glow: 'rgba(0, 255, 0, 0.30)',
       bgBadge: 'bg-emerald-500/10 dark:bg-emerald-950/40',
       borderBadge: 'border-emerald-500/25 dark:border-emerald-700/40',
       textAccent: 'text-emerald-700 dark:text-emerald-400'
@@ -135,13 +135,13 @@ export const UN_GEOSCHEME_REGIONS: Record<AfricanRegion, UnGeoschemeRegionData> 
     shortName: 'Central',
     memberCountries: ['AGO', 'CMR', 'CAF', 'TCD', 'COG', 'COD', 'GNQ', 'GAB', 'STP'],
     palette: {
-      primary: '#6366F1', // Lapis / Indigo
-      light: '#818CF8',
-      dark: '#4338CA',
-      glow: 'rgba(99, 102, 241, 0.30)',
-      bgBadge: 'bg-indigo-500/10 dark:bg-indigo-950/40',
-      borderBadge: 'border-indigo-500/25 dark:border-indigo-700/40',
-      textAccent: 'text-indigo-700 dark:text-indigo-400'
+      primary: '#FF00FE', // Strict Brand Magenta / Fuchsia
+      light: '#FF55FE',
+      dark: '#86198F',
+      glow: 'rgba(255, 0, 254, 0.30)',
+      bgBadge: 'bg-fuchsia-500/10 dark:bg-fuchsia-950/40',
+      borderBadge: 'border-fuchsia-500/25 dark:border-fuchsia-700/40',
+      textAccent: 'text-fuchsia-700 dark:text-fuchsia-400'
     },
     economicBlocs: ['ECCAS', 'CEMAC', 'AfCFTA'],
     headquarters: 'Libreville, Gabon',
@@ -154,10 +154,10 @@ export const UN_GEOSCHEME_REGIONS: Record<AfricanRegion, UnGeoschemeRegionData> 
     shortName: 'East',
     memberCountries: ['BDI', 'COM', 'DJI', 'ERI', 'ETH', 'KEN', 'MDG', 'MWI', 'MUS', 'MOZ', 'RWA', 'SYC', 'SOM', 'SSD', 'TZA', 'UGA', 'ZMB', 'ZWE'],
     palette: {
-      primary: '#EA580C', // Terracotta / Warm Orange
-      light: '#FB923C',
+      primary: '#FFA500', // Strict Brand Orange
+      light: '#FFB84A',
       dark: '#C2410C',
-      glow: 'rgba(234, 88, 12, 0.30)',
+      glow: 'rgba(255, 165, 0, 0.30)',
       bgBadge: 'bg-orange-500/10 dark:bg-orange-950/40',
       borderBadge: 'border-orange-500/25 dark:border-orange-700/40',
       textAccent: 'text-orange-700 dark:text-orange-400'
@@ -173,12 +173,12 @@ export const UN_GEOSCHEME_REGIONS: Record<AfricanRegion, UnGeoschemeRegionData> 
     shortName: 'South',
     memberCountries: ['BWA', 'SWZ', 'LSO', 'NAM', 'ZAF'],
     palette: {
-      primary: '#E11D48', // Rosewood / Coral
-      light: '#FB7185',
-      dark: '#BE123C',
-      glow: 'rgba(225, 29, 72, 0.30)',
-      bgBadge: 'bg-rose-500/10 dark:bg-rose-950/40',
-      borderBadge: 'border-rose-500/25 dark:border-rose-700/40',
+      primary: '#FF0A0A', // Strict Brand Red
+      light: '#FF4D4D',
+      dark: '#991B1B',
+      glow: 'rgba(255, 10, 10, 0.30)',
+      bgBadge: 'bg-red-500/10 dark:bg-red-950/40',
+      borderBadge: 'border-red-500/25 dark:border-red-700/40',
       textAccent: 'text-rose-700 dark:text-rose-400'
     },
     economicBlocs: ['SADC', 'SACU', 'AfCFTA'],

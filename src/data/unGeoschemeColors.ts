@@ -31,6 +31,13 @@ export interface UnGeoschemeTonalPalette {
   lightTint: string;            // Light mode soft tint
   deepTone: string;             // Rich dark tone for contrast
   glowRgba: string;             // Atmospheric glow
+
+  // Pure Regional Tonal Directional Gradient & Cartographic Border
+  gradientStart: string;        // Deep ~22% regional tint (top-left origin)
+  gradientMid: string;          // Luminous ~12% regional mid tint (center body)
+  gradientEnd: string;          // Airy ~5-6% regional wash ground (bottom-right)
+  atlasBorder: string;          // Crisp ~28% region-matched hairline border
+  ambientAura: string;          // Soft ~35% ambient radial aura
   
   // SVG Silhouette & Map Vector properties
   svgStroke: string;            // Vector stroke
@@ -70,216 +77,241 @@ export const UN_GEOSCHEME_TONAL_PALETTES: Record<AfricanRegion, UnGeoschemeTonal
   'Eastern Africa': {
     id: 'Eastern Africa',
     m49Code: '014',
-    unBaseColor: '#FFA500', // Canonical UN Base (Sunburst Orange)
+    unBaseColor: '#FFA500', // Strict Brand Orange
     displayName: 'Eastern Africa',
     shortName: 'East',
     cssVarKey: 'eastern',
-    onSolidText: '#FFFFFF',
-    warmAccent: '#FB923C',
-    lightTint: '#FFEDD5',
+    onSolidText: '#111827',
+    warmAccent: '#FFA500',
+    lightTint: '#FFF3E0',
     deepTone: '#C2410C',
-    glowRgba: 'rgba(234, 88, 12, 0.25)',
+    glowRgba: 'rgba(255, 165, 0, 0.25)',
+    gradientStart: 'rgba(255, 165, 0, 0.18)',
+    gradientMid: 'rgba(255, 165, 0, 0.09)',
+    gradientEnd: 'rgba(255, 165, 0, 0.03)',
+    atlasBorder: 'rgba(255, 165, 0, 0.28)',
+    ambientAura: 'rgba(255, 165, 0, 0.30)',
     svgStroke: '#EA580C',
     svgFillOpacity: 0.12,
     svgFillOpacityActive: 0.35,
-    svgFillRgba: 'rgba(234, 88, 12, 0.08)',
-    svgFillActiveRgba: 'rgba(234, 88, 12, 0.28)',
-    badge: {
-      bg: 'bg-orange-500/10 dark:bg-orange-500/20',
-      border: 'border-orange-500/25 dark:border-orange-400/40',
-      text: 'text-orange-900 dark:text-orange-200 font-semibold',
-      dot: 'bg-[#EA580C]'
-    },
-    pill: {
-      bg: 'bg-orange-50 dark:bg-orange-500/15',
-      border: 'border-orange-200/80 dark:border-orange-400/35',
-      text: 'text-orange-900 dark:text-orange-200 font-medium',
-      activeBg: 'bg-[#EA580C] text-white',
-      activeText: 'text-white font-bold'
-    },
-    card: {
-      borderHover: 'hover:border-orange-500/50 dark:hover:border-orange-400/60',
-      bgHover: 'hover:bg-orange-500/[0.04] dark:hover:bg-orange-500/[0.08]',
-      glow: 'shadow-orange-500/10',
-      accentText: 'text-orange-600 dark:text-orange-300'
-    },
-    button: {
-      primary: 'bg-[#EA580C] hover:bg-orange-600 text-white shadow-orange-500/20',
-      outline: 'border-orange-500/30 text-orange-700 dark:text-orange-300 hover:bg-orange-500/10'
-    },
-    gradient: 'from-[#EA580C] via-amber-500 to-orange-600'
-  },
-
-  'Central Africa': {
-    id: 'Central Africa',
-    m49Code: '017',
-    unBaseColor: '#FF00FE', // Canonical UN Base (Magenta / Fuchsia)
-    displayName: 'Central Africa (Middle Africa)',
-    shortName: 'Central',
-    cssVarKey: 'middle',
-    onSolidText: '#FFFFFF',
-    warmAccent: '#818CF8',
-    lightTint: '#E0E7FF',
-    deepTone: '#4338CA',
-    glowRgba: 'rgba(99, 102, 241, 0.25)',
-    svgStroke: '#6366F1',
-    svgFillOpacity: 0.12,
-    svgFillOpacityActive: 0.35,
-    svgFillRgba: 'rgba(99, 102, 241, 0.08)',
-    svgFillActiveRgba: 'rgba(99, 102, 241, 0.28)',
-    badge: {
-      bg: 'bg-indigo-500/10 dark:bg-indigo-500/20',
-      border: 'border-indigo-500/25 dark:border-indigo-400/40',
-      text: 'text-indigo-900 dark:text-indigo-200 font-semibold',
-      dot: 'bg-[#6366F1]'
-    },
-    pill: {
-      bg: 'bg-indigo-50 dark:bg-indigo-500/15',
-      border: 'border-indigo-200/80 dark:border-indigo-400/35',
-      text: 'text-indigo-900 dark:text-indigo-200 font-medium',
-      activeBg: 'bg-[#6366F1] text-white',
-      activeText: 'text-white font-bold'
-    },
-    card: {
-      borderHover: 'hover:border-indigo-500/50 dark:hover:border-indigo-400/60',
-      bgHover: 'hover:bg-indigo-500/[0.04] dark:hover:bg-indigo-500/[0.08]',
-      glow: 'shadow-indigo-500/10',
-      accentText: 'text-indigo-600 dark:text-indigo-300'
-    },
-    button: {
-      primary: 'bg-[#6366F1] hover:bg-indigo-600 text-white shadow-indigo-500/20',
-      outline: 'border-indigo-500/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/10'
-    },
-    gradient: 'from-[#6366F1] via-purple-500 to-indigo-600'
-  },
-
-  'Northern Africa': {
-    id: 'Northern Africa',
-    m49Code: '015',
-    unBaseColor: '#1802FF', // Canonical UN Base (Deep Cobalt Blue)
-    displayName: 'Northern Africa',
-    shortName: 'North',
-    cssVarKey: 'northern',
-    onSolidText: '#FFFFFF',
-    warmAccent: '#FBBF24',
-    lightTint: '#FEF3C7',
-    deepTone: '#B45309',
-    glowRgba: 'rgba(217, 119, 6, 0.25)',
-    svgStroke: '#D97706',
-    svgFillOpacity: 0.12,
-    svgFillOpacityActive: 0.35,
-    svgFillRgba: 'rgba(217, 119, 6, 0.08)',
-    svgFillActiveRgba: 'rgba(217, 119, 6, 0.28)',
+    svgFillRgba: 'rgba(255, 165, 0, 0.08)',
+    svgFillActiveRgba: 'rgba(255, 165, 0, 0.26)',
     badge: {
       bg: 'bg-amber-500/10 dark:bg-amber-500/20',
       border: 'border-amber-500/25 dark:border-amber-400/40',
-      text: 'text-amber-900 dark:text-amber-200 font-semibold',
-      dot: 'bg-[#D97706]'
+      text: 'text-amber-950 dark:text-amber-200 font-semibold',
+      dot: 'bg-[#FFA500]'
     },
     pill: {
       bg: 'bg-amber-50 dark:bg-amber-500/15',
       border: 'border-amber-200/80 dark:border-amber-400/35',
-      text: 'text-amber-900 dark:text-amber-200 font-medium',
-      activeBg: 'bg-[#D97706] text-white',
+      text: 'text-amber-950 dark:text-amber-200 font-medium',
+      activeBg: 'bg-[#EA580C] text-white',
       activeText: 'text-white font-bold'
     },
     card: {
       borderHover: 'hover:border-amber-500/50 dark:hover:border-amber-400/60',
       bgHover: 'hover:bg-amber-500/[0.04] dark:hover:bg-amber-500/[0.08]',
       glow: 'shadow-amber-500/10',
-      accentText: 'text-amber-600 dark:text-amber-300'
+      accentText: 'text-amber-800 dark:text-amber-300'
     },
     button: {
-      primary: 'bg-[#D97706] hover:bg-amber-600 text-white shadow-amber-500/20',
-      outline: 'border-amber-500/30 text-amber-700 dark:text-amber-300 hover:bg-amber-500/10'
+      primary: 'bg-[#EA580C] hover:bg-amber-600 text-white shadow-amber-500/20',
+      outline: 'border-amber-500/30 text-amber-900 dark:text-amber-300 hover:bg-amber-500/10'
     },
-    gradient: 'from-[#D97706] via-yellow-500 to-amber-600'
+    gradient: 'from-[#FFA500] via-amber-500 to-orange-600'
+  },
+
+  'Central Africa': {
+    id: 'Central Africa',
+    m49Code: '017',
+    unBaseColor: '#FF00FE', // Strict Brand Magenta / Fuchsia
+    displayName: 'Central Africa (Middle Africa)',
+    shortName: 'Central',
+    cssVarKey: 'middle',
+    onSolidText: '#FFFFFF',
+    warmAccent: '#FF55FE',
+    lightTint: '#FDF2F8',
+    deepTone: '#86198F',
+    glowRgba: 'rgba(255, 0, 254, 0.25)',
+    gradientStart: 'rgba(255, 0, 254, 0.16)',
+    gradientMid: 'rgba(255, 0, 254, 0.08)',
+    gradientEnd: 'rgba(255, 0, 254, 0.03)',
+    atlasBorder: 'rgba(255, 0, 254, 0.26)',
+    ambientAura: 'rgba(255, 0, 254, 0.28)',
+    svgStroke: '#D900D8',
+    svgFillOpacity: 0.12,
+    svgFillOpacityActive: 0.35,
+    svgFillRgba: 'rgba(255, 0, 254, 0.08)',
+    svgFillActiveRgba: 'rgba(255, 0, 254, 0.26)',
+    badge: {
+      bg: 'bg-fuchsia-500/10 dark:bg-fuchsia-500/20',
+      border: 'border-fuchsia-500/25 dark:border-fuchsia-400/40',
+      text: 'text-fuchsia-950 dark:text-fuchsia-200 font-semibold',
+      dot: 'bg-[#FF00FE]'
+    },
+    pill: {
+      bg: 'bg-fuchsia-50 dark:bg-fuchsia-500/15',
+      border: 'border-fuchsia-200/80 dark:border-fuchsia-400/35',
+      text: 'text-fuchsia-950 dark:text-fuchsia-200 font-medium',
+      activeBg: 'bg-[#D900D8] text-white',
+      activeText: 'text-white font-bold'
+    },
+    card: {
+      borderHover: 'hover:border-fuchsia-500/50 dark:hover:border-fuchsia-400/60',
+      bgHover: 'hover:bg-fuchsia-500/[0.04] dark:hover:bg-fuchsia-500/[0.08]',
+      glow: 'shadow-fuchsia-500/10',
+      accentText: 'text-fuchsia-800 dark:text-fuchsia-300'
+    },
+    button: {
+      primary: 'bg-[#D900D8] hover:bg-fuchsia-600 text-white shadow-fuchsia-500/20',
+      outline: 'border-fuchsia-500/30 text-fuchsia-900 dark:text-fuchsia-300 hover:bg-fuchsia-500/10'
+    },
+    gradient: 'from-[#FF00FE] via-fuchsia-500 to-purple-600'
+  },
+
+  'Northern Africa': {
+    id: 'Northern Africa',
+    m49Code: '015',
+    unBaseColor: '#1802FF', // Strict Brand Pure Blue
+    displayName: 'Northern Africa',
+    shortName: 'North',
+    cssVarKey: 'northern',
+    onSolidText: '#FFFFFF',
+    warmAccent: '#4B5EFC',
+    lightTint: '#EEF2FF',
+    deepTone: '#1E1B4B',
+    glowRgba: 'rgba(24, 2, 255, 0.25)',
+    gradientStart: 'rgba(24, 2, 255, 0.16)',
+    gradientMid: 'rgba(24, 2, 255, 0.08)',
+    gradientEnd: 'rgba(24, 2, 255, 0.03)',
+    atlasBorder: 'rgba(24, 2, 255, 0.26)',
+    ambientAura: 'rgba(24, 2, 255, 0.28)',
+    svgStroke: '#1802FF',
+    svgFillOpacity: 0.12,
+    svgFillOpacityActive: 0.35,
+    svgFillRgba: 'rgba(24, 2, 255, 0.08)',
+    svgFillActiveRgba: 'rgba(24, 2, 255, 0.26)',
+    badge: {
+      bg: 'bg-blue-600/10 dark:bg-blue-600/20',
+      border: 'border-blue-600/25 dark:border-blue-400/40',
+      text: 'text-blue-950 dark:text-blue-200 font-semibold',
+      dot: 'bg-[#1802FF]'
+    },
+    pill: {
+      bg: 'bg-blue-50 dark:bg-blue-500/15',
+      border: 'border-blue-200/80 dark:border-blue-400/35',
+      text: 'text-blue-950 dark:text-blue-200 font-medium',
+      activeBg: 'bg-[#1802FF] text-white',
+      activeText: 'text-white font-bold'
+    },
+    card: {
+      borderHover: 'hover:border-blue-600/50 dark:hover:border-blue-400/60',
+      bgHover: 'hover:bg-blue-600/[0.04] dark:hover:bg-blue-600/[0.08]',
+      glow: 'shadow-blue-600/10',
+      accentText: 'text-blue-800 dark:text-blue-300'
+    },
+    button: {
+      primary: 'bg-[#1802FF] hover:bg-blue-700 text-white shadow-blue-600/20',
+      outline: 'border-blue-600/30 text-blue-900 dark:text-blue-300 hover:bg-blue-600/10'
+    },
+    gradient: 'from-[#1802FF] via-blue-600 to-indigo-700'
   },
 
   'Southern Africa': {
     id: 'Southern Africa',
     m49Code: '018',
-    unBaseColor: '#FF0A0A', // Canonical UN Base (Red)
+    unBaseColor: '#FF0A0A', // Strict Brand Pure Red
     displayName: 'Southern Africa',
     shortName: 'South',
     cssVarKey: 'southern',
     onSolidText: '#FFFFFF',
-    warmAccent: '#FB7185',
-    lightTint: '#FFE4E6',
-    deepTone: '#BE123C',
-    glowRgba: 'rgba(225, 29, 72, 0.25)',
-    svgStroke: '#E11D48',
+    warmAccent: '#FF4D4D',
+    lightTint: '#FEF2F2',
+    deepTone: '#991B1B',
+    glowRgba: 'rgba(255, 10, 10, 0.25)',
+    gradientStart: 'rgba(255, 10, 10, 0.16)',
+    gradientMid: 'rgba(255, 10, 10, 0.08)',
+    gradientEnd: 'rgba(255, 10, 10, 0.03)',
+    atlasBorder: 'rgba(255, 10, 10, 0.26)',
+    ambientAura: 'rgba(255, 10, 10, 0.28)',
+    svgStroke: '#E00808',
     svgFillOpacity: 0.12,
     svgFillOpacityActive: 0.35,
-    svgFillRgba: 'rgba(225, 29, 72, 0.08)',
-    svgFillActiveRgba: 'rgba(225, 29, 72, 0.28)',
+    svgFillRgba: 'rgba(255, 10, 10, 0.08)',
+    svgFillActiveRgba: 'rgba(255, 10, 10, 0.26)',
     badge: {
-      bg: 'bg-rose-500/10 dark:bg-rose-500/20',
-      border: 'border-rose-500/25 dark:border-rose-400/40',
-      text: 'text-rose-900 dark:text-rose-200 font-semibold',
-      dot: 'bg-[#E11D48]'
+      bg: 'bg-red-500/10 dark:bg-red-500/20',
+      border: 'border-red-500/25 dark:border-red-400/40',
+      text: 'text-red-950 dark:text-red-200 font-semibold',
+      dot: 'bg-[#FF0A0A]'
     },
     pill: {
-      bg: 'bg-rose-50 dark:bg-rose-500/15',
-      border: 'border-rose-200/80 dark:border-rose-400/35',
-      text: 'text-rose-900 dark:text-rose-200 font-medium',
-      activeBg: 'bg-[#E11D48] text-white',
+      bg: 'bg-red-50 dark:bg-red-500/15',
+      border: 'border-red-200/80 dark:border-red-400/35',
+      text: 'text-red-950 dark:text-red-200 font-medium',
+      activeBg: 'bg-[#E00808] text-white',
       activeText: 'text-white font-bold'
     },
     card: {
-      borderHover: 'hover:border-rose-500/50 dark:hover:border-rose-400/60',
-      bgHover: 'hover:bg-rose-500/[0.04] dark:hover:bg-rose-500/[0.08]',
-      glow: 'shadow-rose-500/10',
-      accentText: 'text-rose-600 dark:text-rose-300'
+      borderHover: 'hover:border-red-500/50 dark:hover:border-red-400/60',
+      bgHover: 'hover:bg-red-500/[0.04] dark:hover:bg-red-500/[0.08]',
+      glow: 'shadow-red-500/10',
+      accentText: 'text-red-800 dark:text-red-300'
     },
     button: {
-      primary: 'bg-[#E11D48] hover:bg-rose-600 text-white shadow-rose-500/20',
-      outline: 'border-rose-500/30 text-rose-700 dark:text-rose-300 hover:bg-rose-500/10'
+      primary: 'bg-[#E00808] hover:bg-red-600 text-white shadow-red-500/20',
+      outline: 'border-red-500/30 text-red-900 dark:text-red-300 hover:bg-red-500/10'
     },
-    gradient: 'from-[#E11D48] via-rose-500 to-red-600'
+    gradient: 'from-[#FF0A0A] via-red-600 to-rose-700'
   },
 
   'Western Africa': {
     id: 'Western Africa',
     m49Code: '011',
-    unBaseColor: '#00FF00', // Canonical UN Base (Green)
+    unBaseColor: '#00FF00', // Strict Brand Neon Green
     displayName: 'Western Africa',
     shortName: 'West',
     cssVarKey: 'western',
-    onSolidText: '#FFFFFF',
-    warmAccent: '#34D399',
-    lightTint: '#D1FAE5',
-    deepTone: '#047857',
-    glowRgba: 'rgba(5, 150, 105, 0.25)',
-    svgStroke: '#059669',
+    onSolidText: '#111827',
+    warmAccent: '#22C55E',
+    lightTint: '#F0FDF4',
+    deepTone: '#065F46',
+    glowRgba: 'rgba(0, 255, 0, 0.25)',
+    gradientStart: 'rgba(0, 255, 0, 0.16)',
+    gradientMid: 'rgba(0, 255, 0, 0.08)',
+    gradientEnd: 'rgba(0, 255, 0, 0.03)',
+    atlasBorder: 'rgba(0, 255, 0, 0.26)',
+    ambientAura: 'rgba(0, 255, 0, 0.28)',
+    svgStroke: '#00C800',
     svgFillOpacity: 0.12,
     svgFillOpacityActive: 0.35,
-    svgFillRgba: 'rgba(5, 150, 105, 0.08)',
-    svgFillActiveRgba: 'rgba(5, 150, 105, 0.28)',
+    svgFillRgba: 'rgba(0, 255, 0, 0.08)',
+    svgFillActiveRgba: 'rgba(0, 255, 0, 0.26)',
     badge: {
       bg: 'bg-emerald-500/10 dark:bg-emerald-500/20',
       border: 'border-emerald-500/25 dark:border-emerald-400/40',
-      text: 'text-emerald-900 dark:text-emerald-200 font-semibold',
-      dot: 'bg-[#059669]'
+      text: 'text-emerald-950 dark:text-emerald-200 font-semibold',
+      dot: 'bg-[#00FF00]'
     },
     pill: {
       bg: 'bg-emerald-50 dark:bg-emerald-500/15',
       border: 'border-emerald-200/80 dark:border-emerald-400/35',
-      text: 'text-emerald-900 dark:text-emerald-200 font-medium',
-      activeBg: 'bg-[#059669] text-white',
+      text: 'text-emerald-950 dark:text-emerald-200 font-medium',
+      activeBg: 'bg-[#047857] text-white',
       activeText: 'text-white font-bold'
     },
     card: {
       borderHover: 'hover:border-emerald-500/50 dark:hover:border-emerald-400/60',
       bgHover: 'hover:bg-emerald-500/[0.04] dark:hover:bg-emerald-500/[0.08]',
       glow: 'shadow-emerald-500/10',
-      accentText: 'text-emerald-600 dark:text-emerald-300'
+      accentText: 'text-emerald-800 dark:text-emerald-300'
     },
     button: {
-      primary: 'bg-[#059669] hover:bg-emerald-600 text-white shadow-emerald-500/20',
-      outline: 'border-emerald-500/30 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/10'
+      primary: 'bg-[#047857] hover:bg-emerald-700 text-white shadow-emerald-500/20',
+      outline: 'border-emerald-500/30 text-emerald-900 dark:text-emerald-300 hover:bg-emerald-500/10'
     },
-    gradient: 'from-[#059669] via-teal-500 to-emerald-600'
+    gradient: 'from-[#00FF00] via-emerald-500 to-green-700'
   }
 };
 

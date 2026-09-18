@@ -1,7 +1,7 @@
 import React from 'react';
 import { UN_GEOSCHEME_REGIONS } from '../data/africaData';
 import { AfricanRegion } from '../data/types';
-import { Eye, EyeOff, Compass, RotateCcw } from 'lucide-react';
+import { Eye, EyeOff, Compass, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react';
 
 export interface InteractiveMapLegendProps {
   visibleRegions: Set<AfricanRegion>;
@@ -11,6 +11,11 @@ export interface InteractiveMapLegendProps {
   onIsolateRegion: (region: AfricanRegion) => void;
   activeHoverRegion: AfricanRegion | null;
   onHoverRegion: (region: AfricanRegion | null) => void;
+  zoomLevel?: number;
+  onZoomIn?: () => void;
+  onZoomOut?: () => void;
+  onResetZoom?: () => void;
+  onFocusRegion?: (region: AfricanRegion) => void;
   className?: string;
   embedded?: boolean;
 }
@@ -83,22 +88,31 @@ export const InteractiveMapLegend: React.FC<InteractiveMapLegendProps> = ({
   onIsolateRegion,
   activeHoverRegion,
   onHoverRegion,
+  zoomLevel,
+  onZoomIn,
+  onZoomOut,
+  onResetZoom,
+  onFocusRegion,
   className = '',
   embedded = false
 }) => {
-  const allRegions = Object.values(UN_GEOSCHEME_REGIONS);
   const allVisible = visibleRegions.size === 5;
   const isSingleIsolated = visibleRegions.size === 1;
 
   const handlePillClick = (item: SubregionPillDef) => {
     if (item.id === 'All') {
       onShowAll();
+      if (onResetZoom) onResetZoom();
     } else {
-      // If clicking already isolated region, revert to show all; otherwise isolate this region
+      // If clicking already isolated region, revert to show all & reset zoom; otherwise isolate and focus on this region
       if (visibleRegions.size === 1 && visibleRegions.has(item.id)) {
         onShowAll();
+        if (onResetZoom) onResetZoom();
       } else {
         onIsolateRegion(item.id);
+        if (onFocusRegion) {
+          onFocusRegion(item.id);
+        }
       }
     }
   };
@@ -108,28 +122,76 @@ export const InteractiveMapLegend: React.FC<InteractiveMapLegendProps> = ({
     : `rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 p-3.5 sm:p-4 shadow-xl backdrop-blur-md space-y-3 ${className}`;
 
   return (
-    <div className={containerClasses}>
-      {/* Legend Header Bar */}
-      <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800/80 pb-2.5 gap-2">
-        <div className="flex items-center gap-2">
-          <Compass className="w-4 h-4 text-emerald-500 shrink-0" />
+    <div className={containerClasses} id="unified-africa-map-control-card">
+      {/* Legend Header Bar with Info, Active Indicator, Total Nations, Zoom Controls (+/- / %) & Reset */}
+      <div className="flex items-center justify-between flex-wrap gap-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-2.5">
+        {/* Left: Compass Icon, UN Subregions, Active Status & Total Indexed Counter */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="w-6 h-6 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-500 shrink-0">
+            <Compass className="w-3.5 h-3.5" />
+          </div>
           <span className="text-xs font-bold uppercase tracking-wider text-zinc-800 dark:text-zinc-200 font-mono">
-            UN Subregions
+            UN Subregions & Focus
           </span>
           <span className="text-[10px] font-mono font-bold text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800/90 border border-zinc-200/80 dark:border-zinc-700/80 px-2 py-0.5 rounded-md">
             {allVisible ? 'All 5 Active' : `${visibleRegions.size}/5 Active`}
           </span>
+          <span className="hidden md:inline-block text-[11px] font-mono text-zinc-500 dark:text-zinc-400 pl-1 border-l border-zinc-200 dark:border-zinc-800">
+            54 Sovereign States + 4 Territories Indexed
+          </span>
         </div>
 
-        <div className="flex items-center gap-1 text-[11px]">
+        {/* Right: Interactive Zoom (+ / -), Zoom % Pill & Full Continent / Reset Actions */}
+        <div className="flex items-center gap-2 text-xs flex-wrap">
+          {/* Zoom In & Out Control Group */}
+          <div className="flex items-center rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5">
+            <button
+              type="button"
+              onClick={onZoomOut}
+              className="p-1 sm:p-1.5 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-zinc-200/80 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              title="Zoom Out (-)"
+              aria-label="Zoom Out"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
+
+            {zoomLevel !== undefined && (
+              <span className="px-1.5 sm:px-2 font-mono font-bold text-[11px] text-emerald-600 dark:text-emerald-400 min-w-[2.8rem] sm:min-w-[3.2rem] text-center select-none">
+                {Math.round(zoomLevel * 100)}%
+              </span>
+            )}
+
+            <button
+              type="button"
+              onClick={onZoomIn}
+              className="p-1 sm:p-1.5 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-zinc-200/80 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              title="Zoom In (+)"
+              aria-label="Zoom In"
+            >
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              onShowAll();
+              if (onResetZoom) onResetZoom();
+            }}
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300/80 dark:border-emerald-800/60 transition-all font-semibold cursor-pointer text-xs active:scale-95 shadow-xs"
+            title="Reset to Full Continent view and show all 54 nations"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-emerald-500" />
+            <span>Full Continent</span>
+          </button>
+
           <button
             type="button"
             onClick={allVisible ? onHideAll : onShowAll}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors font-medium cursor-pointer border border-zinc-200 dark:border-zinc-800"
-            title={allVisible ? 'Hide all subregions' : 'Reset to show all subregions'}
+            className="hidden xs:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors text-[11px] font-medium cursor-pointer border border-zinc-200 dark:border-zinc-800"
+            title={allVisible ? 'Hide all subregions' : 'Show all subregions'}
           >
-            <RotateCcw className="w-3 h-3 text-emerald-500" />
-            <span className="font-semibold">{allVisible ? 'Hide All' : 'Reset All'}</span>
+            {allVisible ? 'Hide All' : 'Show All'}
           </button>
         </div>
       </div>
@@ -166,22 +228,22 @@ export const InteractiveMapLegend: React.FC<InteractiveMapLegendProps> = ({
                       : 'bg-zinc-100/40 dark:bg-zinc-900/30 text-zinc-400 dark:text-zinc-500 border-zinc-200/50 dark:border-zinc-800/50 opacity-60 hover:opacity-100'
               }`}
             >
-              {/* Main Click Target: Filter / Isolate / Show All */}
+              {/* Main Click Target: Filter / Isolate / Zoom to Region */}
               <button
                 type="button"
                 onClick={() => handlePillClick(pill)}
-                className="flex items-center gap-2 cursor-pointer text-left"
-                title={isAll ? 'Display all 54 African nations' : `Isolate ${pill.fullName} on map`}
+                className="flex items-center gap-2 cursor-pointer text-left focus:outline-none"
+                title={isAll ? 'Display all 54 African nations & reset continental zoom' : `Focus and isolate ${pill.fullName} on map`}
               >
-                {/* Visual Color Dot */}
+                {/* Visual Color Dot Selector */}
                 <span
-                  className={`w-2.5 h-2.5 rounded-full shrink-0 transition-transform group-hover:scale-110 ${
+                  className={`w-2.5 h-2.5 rounded-full shrink-0 transition-transform group-hover:scale-125 ${
                     isVisible ? 'ring-1 ring-white/40 shadow-xs' : 'opacity-40'
                   }`}
                   style={{ backgroundColor: pill.color }}
                 />
 
-                {/* Prominent Label (All, Northern, Western, Central, Eastern, Southern) - Always 100% visible */}
+                {/* Prominent Label (All, Northern, Western, Central, Eastern, Southern) */}
                 <span className="whitespace-nowrap font-bold">
                   {pill.label}
                 </span>

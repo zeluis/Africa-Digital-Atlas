@@ -178,6 +178,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         'Southern Africa'
       ])
     );
+    handleRegionTabSelect('All');
   };
 
   const handleHideAllRegions = () => {
@@ -236,6 +237,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
   const handleIsolateRegion = (region: AfricanRegion) => {
     setVisibleRegions(new Set<AfricanRegion>([region]));
+    handleRegionTabSelect(region);
     // Also smoothly focus on that region via geometric BBox measurement if available
     const regionEl = document.getElementById(`region-group-${region.toLowerCase().replace(/\s+/g, '-')}`) as unknown as SVGGraphicsElement | null;
     if (regionEl) {
@@ -635,82 +637,28 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             </div>
           </div>
 
-          {/* Unified Integrated Region Filter Chips Bar */}
-          <div className="flex items-center justify-between flex-wrap gap-2.5 pt-0.5">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 flex items-center gap-1 pr-1.5">
-                <Compass className="w-3.5 h-3.5 text-emerald-500" /> Filter Region:
-              </span>
-              {(['All', 'Northern Africa', 'Western Africa', 'Central Africa', 'Eastern Africa', 'Southern Africa'] as (AfricanRegion | 'All')[]).map(reg => (
-                <button
-                  key={reg}
-                  onClick={() => {
-                    handleRegionTabSelect(reg);
-                    if (reg !== 'All') {
-                      handleFocusRegion(reg);
-                    } else {
-                      handleResetZoom();
-                      handleShowAllRegions();
-                    }
-                  }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                    activeRegionFilter === reg
-                      ? 'bg-zinc-900 text-zinc-100 dark:bg-zinc-100 dark:text-zinc-950 font-bold shadow-md'
-                      : 'bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800'
-                  }`}
-                >
-                  {reg}
-                </button>
-              ))}
-            </div>
-
-            <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
-              54 Sovereign States + 4 Territories Indexed
-            </span>
-          </div>
-
-          {/* Interactive Legend with Visibility Toggles */}
+          {/* Unified UN Subregions, Zoom Focus, Filter & Legend Control Card */}
           <InteractiveMapLegend
             visibleRegions={visibleRegions}
             onToggleRegion={handleToggleRegion}
-            onShowAll={handleShowAllRegions}
+            onShowAll={() => {
+              handleShowAllRegions();
+              handleResetZoom();
+            }}
             onHideAll={handleHideAllRegions}
             onIsolateRegion={handleIsolateRegion}
             activeHoverRegion={activeRegionHover}
             onHoverRegion={setActiveRegionHover}
+            zoomLevel={zoomLevel}
+            onZoomIn={() => setZoomLevel(prev => Math.min(3.8, prev + 0.25))}
+            onZoomOut={() => setZoomLevel(prev => Math.max(0.7, prev - 0.25))}
+            onResetZoom={handleResetZoom}
+            onFocusRegion={handleFocusRegion}
           />
-
-          {/* Regional Quick-Focus Bar */}
-          <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-              <span className="font-mono text-[11px] text-zinc-500 dark:text-zinc-400 font-semibold flex items-center gap-1 pr-1">
-                <Compass className="w-3 h-3 text-emerald-500" /> Zoom Focus:
-              </span>
-              {(Object.keys(REGIONAL_ZOOM_PRESETS) as AfricanRegion[]).map(r => (
-                <button
-                  key={r}
-                  onClick={() => handleFocusRegion(r)}
-                  className="px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 text-[11px] font-medium transition-all cursor-pointer whitespace-nowrap"
-                >
-                  {r.replace(' Africa', '')}
-                </button>
-              ))}
-              <button
-                onClick={handleResetZoom}
-                className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-400 text-[11px] font-bold transition-all cursor-pointer"
-              >
-                Full Continent
-              </button>
-            </div>
-
-            <div className="text-[11px] font-mono text-zinc-400">
-              Zoom: <span className="text-emerald-500 font-bold">{Math.round(zoomLevel * 100)}%</span>
-            </div>
-          </div>
         </>
       )}
 
-      {/* SVG Canvas Map Container */}
+      {/* SVG Canvas Map Container - dynamically adjusts to Africa SVG map height with 6px safe margin */}
       <div
         ref={containerRef}
         onMouseMove={(e) => {
@@ -721,8 +669,8 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         }}
         className={
           isFullBleed
-            ? "relative w-full h-full flex-1 flex items-center justify-center bg-gradient-to-b from-zinc-100 via-zinc-50 to-zinc-100 dark:from-zinc-950 dark:via-zinc-900/60 dark:to-zinc-950 overflow-hidden"
-            : "relative w-full h-[640px] sm:h-[780px] md:h-[860px] lg:h-[920px] flex items-center justify-center bg-gradient-to-b from-zinc-100 via-zinc-50 to-zinc-100 dark:from-zinc-950 dark:via-zinc-900/60 dark:to-zinc-950 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800/80 shadow-inner"
+            ? "relative w-full h-full flex-1 flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 overflow-hidden"
+            : "relative w-full flex items-center justify-center bg-gradient-to-b from-zinc-100 via-zinc-50 to-zinc-100 dark:from-zinc-950 dark:via-zinc-900/60 dark:to-zinc-950 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800/80 shadow-inner p-[6px] aspect-[890/985] max-h-[85vh] min-h-[440px]"
         }
       >
         {/* Floating Collapsible Subregion Legend Panel for Full-Bleed mode */}
@@ -751,11 +699,19 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   embedded={true}
                   visibleRegions={visibleRegions}
                   onToggleRegion={handleToggleRegion}
-                  onShowAll={handleShowAllRegions}
+                  onShowAll={() => {
+                    handleShowAllRegions();
+                    handleResetZoom();
+                  }}
                   onHideAll={handleHideAllRegions}
                   onIsolateRegion={handleIsolateRegion}
                   activeHoverRegion={activeRegionHover}
                   onHoverRegion={setActiveRegionHover}
+                  zoomLevel={zoomLevel}
+                  onZoomIn={() => setZoomLevel(prev => Math.min(3.8, prev + 0.25))}
+                  onZoomOut={() => setZoomLevel(prev => Math.max(0.7, prev - 0.25))}
+                  onResetZoom={handleResetZoom}
+                  onFocusRegion={handleFocusRegion}
                 />
               </div>
             )}
@@ -772,12 +728,12 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
         <svg
           ref={svgRef}
-          viewBox="40 45 910 990"
+          viewBox="50 55 890 990"
           width="100%"
           height="100%"
           preserveAspectRatio="xMidYMid meet"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full cursor-grab active:cursor-grabbing select-none"
+          className="w-full h-full cursor-grab active:cursor-grabbing select-none block"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -1165,41 +1121,6 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           </g>
         </svg>
 
-        {/* Floating Zoom & Reset Toolbar */}
-        <div className="absolute bottom-4 right-4 flex flex-col gap-1.5 bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-2xl shadow-2xl backdrop-blur-md z-10">
-          <button
-            onClick={() => setZoomLevel(prev => Math.min(3.8, prev + 0.3))}
-            className="p-2 rounded-xl text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-zinc-100 transition-colors cursor-pointer"
-            title="Zoom In"
-          >
-            <ZoomIn className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setZoomLevel(prev => Math.max(0.7, prev - 0.3))}
-            className="p-2 rounded-xl text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-zinc-100 transition-colors cursor-pointer"
-            title="Zoom Out"
-          >
-            <ZoomOut className="w-4 h-4" />
-          </button>
-          <button
-            onClick={handleResetZoom}
-            className="p-2 rounded-xl text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-zinc-100 transition-colors cursor-pointer"
-            title="Reset Pan & Zoom"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-          {isFullBleed && (
-            <button
-              onClick={handleDownloadPng}
-              disabled={isExporting}
-              className="p-2 rounded-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 transition-colors cursor-pointer border-t border-zinc-200 dark:border-zinc-800 pt-2"
-              title="Download Map Image (2000x2200 PNG)"
-            >
-              {isExporting ? <Loader2 className="w-4 h-4 animate-spin text-emerald-500" /> : <Download className="w-4 h-4" />}
-            </button>
-          )}
-        </div>
-
         {/* Dynamic Hover Tooltip Card */}
         {hoveredEntity && hoveredCountryData && (() => {
           const coords = getTooltipCoords();
@@ -1298,14 +1219,9 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           );
         })()}
 
-        {/* Legend Indicator Gauge (Bottom-Left) */}
-        <div className="absolute bottom-4 left-4 z-10 bg-white/90 dark:bg-zinc-950/90 border border-zinc-200 dark:border-zinc-800 p-3 rounded-2xl shadow-2xl backdrop-blur-md text-xs space-y-1.5">
-          {mapMode === 'un_geoscheme' ? (
-            <div className="flex items-center gap-2 font-mono text-[11px] text-zinc-600 dark:text-zinc-300">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-              <span>UN M49 5-Region Classification</span>
-            </div>
-          ) : (
+        {/* Legend Indicator Gauge (Bottom-Left) - Only when in Choropleth Mode */}
+        {mapMode === 'choropleth' && (
+          <div className="absolute bottom-4 left-4 z-10 bg-white/90 dark:bg-zinc-950/90 border border-zinc-200 dark:border-zinc-800 p-3 rounded-2xl shadow-2xl backdrop-blur-md text-xs space-y-1.5">
             <div className="space-y-1 font-mono">
               <div className="text-[10px] text-zinc-500 dark:text-zinc-400 font-sans uppercase font-bold tracking-wider">
                 {currentMetricDef.label} Range
@@ -1325,8 +1241,8 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">{maxVal != null ? maxVal.toLocaleString() : '100'}</span>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

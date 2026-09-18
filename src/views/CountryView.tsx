@@ -6,7 +6,7 @@ import { CountrySilhouette } from '../components/CountrySilhouette';
 import { CountryHeaderInfo } from '../components/CountryHeaderInfo';
 import { ClimateEcologySection } from '../components/ClimateEcologySection';
 import { DataSourceBadge } from '../components/DataSourceBadge';
-import { getRegionCalmColor } from '../data/unGeoschemeColors';
+import { getRegionCalmColor, getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
 import { useTranslation } from '../i18n/LanguageContext';
 import { useSavedEntities } from '../contexts/SavedEntitiesContext';
 import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
@@ -123,56 +123,70 @@ export const CountryView: React.FC<CountryViewProps> = ({
     { id: 'provenance' as TabType, label: t('tab.provenance', 'Provenance & Sources'), icon: <BookOpen className="w-4 h-4" /> },
   ];
 
+  const regionPalette = getCountryRegionTonalPalette(entity.id);
   const countryCalmBg = getRegionCalmColor(entity.region);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
-      {/* Top Country Dossier Header Card */}
-      <div className="rounded-3xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-6 md:p-8 shadow-2xl">
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6">
+      {/* Top Country Dossier Header Card with Pure Regional Tonal Directional Gradient */}
+      <div 
+        className="relative rounded-3xl p-6 md:p-8 shadow-sm overflow-hidden transition-all duration-300"
+        style={{
+          background: `linear-gradient(135deg, ${regionPalette.gradientStart} 0%, ${regionPalette.gradientMid} 48%, ${regionPalette.gradientEnd} 100%)`,
+          borderColor: regionPalette.atlasBorder,
+          borderWidth: '1px'
+        }}
+      >
+        {/* Subtle Ambient Regional Radial Glow in top-left */}
+        <div 
+          className="pointer-events-none absolute -top-28 -left-28 w-96 h-96 rounded-full blur-3xl opacity-30"
+          style={{ background: regionPalette.ambientAura }}
+        />
+
+        <div className="relative z-10 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6">
           {/* Left Side: Country Identity & Key Metrics Capsule */}
           <div className="flex-1 space-y-5">
             {/* Country Identity Block */}
             <div className="flex items-start gap-5">
-              <CountryFlag entityId={entity.id} size="xl" className="shadow-lg mt-1" />
+              <CountryFlag entityId={entity.id} size="xl" className="shadow-md mt-1" />
               <div className="space-y-1.5">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-2xl md:text-4xl font-extrabold text-zinc-100 font-display">
+                  <h1 className="text-2xl md:text-4xl font-extrabold text-zinc-900 font-display">
                     {entity.name}
                   </h1>
                   <button
                     onClick={() => toggleSaveCountry(entity.id)}
                     className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
                       isSaved
-                        ? 'bg-amber-950/60 border-amber-600/80 text-amber-400 shadow-sm'
-                        : 'bg-zinc-800/80 border-zinc-700/80 text-zinc-400 hover:text-amber-400'
+                        ? 'bg-amber-50 border-amber-300 text-amber-500 shadow-xs'
+                        : 'bg-white/90 border-zinc-200 text-zinc-400 hover:text-amber-500'
                     }`}
                     title={isSaved ? 'Remove from Saved Countries' : 'Save Country to Quick Access'}
                   >
-                    <Star className={`w-4 h-4 ${isSaved ? 'fill-amber-400 text-amber-400' : ''}`} />
+                    <Star className={`w-4 h-4 ${isSaved ? 'fill-amber-400 text-amber-500' : ''}`} />
                   </button>
-                  <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300">
+                  <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-white/95 border border-zinc-200/90 text-zinc-700">
                     {entity.id} / {entity.iso2}
                   </span>
                   <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium border ${
                     entity.sovereign 
-                      ? 'bg-emerald-950/60 border-emerald-800/60 text-emerald-400' 
-                      : 'bg-indigo-950/60 border-indigo-800/60 text-indigo-400'
+                      ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
+                      : 'bg-indigo-50 border-indigo-200 text-indigo-800'
                   }`}>
                     {entity.sovereign ? 'Sovereign AU Member' : 'Autonomous Territory'}
                   </span>
                 </div>
-                <p className="text-xs md:text-sm text-zinc-400 font-medium">
+                <p className="text-xs md:text-sm text-zinc-600 font-medium">
                   {entity.officialName}
                 </p>
                 
                 {/* Badges / Regional Blocs */}
                 <div className="flex flex-wrap items-center gap-2 pt-1">
-                  <span className="text-xs font-semibold text-emerald-400 bg-emerald-950/30 border border-emerald-800/40 px-2 py-0.5 rounded-md">
+                  <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-md border ${regionPalette.badge.bg} ${regionPalette.badge.border} ${regionPalette.badge.text}`}>
                     {entity.region}
                   </span>
                   {entity.blocs.map(bloc => (
-                    <span key={bloc} className="text-[11px] font-mono bg-zinc-900 border border-zinc-800 text-zinc-400 px-2 py-0.5 rounded-md">
+                    <span key={bloc} className="text-[11px] font-mono bg-white/95 border border-zinc-200/90 text-zinc-700 px-2 py-0.5 rounded-md">
                       {bloc}
                     </span>
                   ))}
@@ -180,27 +194,27 @@ export const CountryView: React.FC<CountryViewProps> = ({
               </div>
             </div>
 
-            {/* Quick Core Metrics Capsule */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-zinc-900/80 border border-zinc-800/80 p-3.5 rounded-2xl">
+            {/* Quick Core Metrics Capsule - Elevated Crisp White Tile */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white/95 border border-zinc-200/90 p-3.5 rounded-2xl shadow-xs">
               <div className="space-y-0.5">
-                <span className="text-[10px] uppercase font-semibold text-zinc-500">Population</span>
-                <div className="font-mono font-bold text-sm text-zinc-100">{formatPopulation(pop)}</div>
+                <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">Population</span>
+                <div className="font-mono font-bold text-sm text-zinc-900">{formatPopulation(pop)}</div>
                 <DataSourceBadge entityId={entity.id} indicatorId="SP.POP.TOTL" />
               </div>
               <div className="space-y-0.5">
-                <span className="text-[10px] uppercase font-semibold text-zinc-500">Nominal GDP</span>
-                <div className="font-mono font-bold text-sm text-cyan-400">{formatGDP(gdp)}</div>
+                <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">Nominal GDP</span>
+                <div className="font-mono font-bold text-sm text-cyan-700">{formatGDP(gdp)}</div>
                 <DataSourceBadge entityId={entity.id} indicatorId="NY.GDP.MKTP.CD" />
               </div>
               <div className="space-y-0.5">
-                <span className="text-[10px] uppercase font-semibold text-zinc-500">GDP Per Capita</span>
-                <div className="font-mono font-bold text-sm text-emerald-400">{formatCurrency(gdpPerCapita)}</div>
-                <span className="text-[10px] text-zinc-500">Calculated</span>
+                <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">GDP Per Capita</span>
+                <div className="font-mono font-bold text-sm text-emerald-700">{formatCurrency(gdpPerCapita)}</div>
+                <span className="text-[10px] text-zinc-500 font-mono">Calculated</span>
               </div>
               <div className="space-y-0.5">
-                <span className="text-[10px] uppercase font-semibold text-zinc-500">Human Dev. (HDI)</span>
-                <div className="font-mono font-bold text-sm text-amber-400">{formatHDI(hdi)}</div>
-                <span className={`text-[10px] font-sans font-medium px-1.5 py-0.2 rounded border ${hdiCat.color}`}>
+                <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">Human Dev. (HDI)</span>
+                <div className="font-mono font-bold text-sm text-amber-700">{formatHDI(hdi)}</div>
+                <span className={`text-[10px] font-sans font-semibold px-2 py-0.5 rounded-full border ${hdiCat.color}`}>
                   {hdiCat.label.split(' ')[0]}
                 </span>
               </div>
@@ -214,22 +228,22 @@ export const CountryView: React.FC<CountryViewProps> = ({
         </div>
 
         {/* Detailed Country Header Metadata: Capital, Government, Independence, UN Member, Languages, Religion, Live Time & Temperature */}
-        <div className="pt-2 border-t border-zinc-800/80">
+        <div className="pt-4 border-t border-zinc-200/80">
           <CountryHeaderInfo entityId={entity.id} />
         </div>
 
         {/* Quality Alerts Banner if applicable */}
         {qualityFlags.length > 0 && (
-          <div className="mt-6 rounded-2xl border border-amber-800/40 bg-amber-950/20 p-3.5 flex items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2.5 text-amber-300">
-              <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0" />
+          <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50/90 p-3.5 flex items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2.5 text-amber-900">
+              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
               <span>
                 <strong>Data Reconciliation Note:</strong> {qualityFlags[0].description}
               </span>
             </div>
             <button
               onClick={() => setActiveTab('provenance')}
-              className="text-amber-400 hover:text-amber-300 font-semibold underline underline-offset-2 flex-shrink-0"
+              className="text-amber-800 hover:text-amber-900 font-semibold underline underline-offset-2 flex-shrink-0 cursor-pointer"
             >
               View Provenance Audit →
             </button>
@@ -299,22 +313,22 @@ export const CountryView: React.FC<CountryViewProps> = ({
               {/* Climate Teaser Banner in Overview */}
               <div 
                 onClick={() => setActiveTab('climate')}
-                className="rounded-2xl border border-emerald-900/50 bg-gradient-to-r from-emerald-950/40 via-zinc-900/80 to-zinc-900/80 p-4 flex items-center justify-between gap-4 cursor-pointer hover:border-emerald-500/50 transition-all group"
+                className="rounded-2xl border border-emerald-200 bg-white/95 p-4 flex items-center justify-between gap-4 cursor-pointer hover:border-emerald-300 shadow-xs transition-all group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 group-hover:scale-105 transition-transform">
+                  <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 group-hover:scale-105 transition-transform">
                     <Trees className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-emerald-300 uppercase tracking-wider">
+                    <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-wider font-mono">
                       {t('tab.climate', 'Climate & Ecology Profile')}
                     </h4>
-                    <p className="text-xs text-zinc-400">
+                    <p className="text-xs text-zinc-600">
                       12-Month Cycles, Live Weather, Vulnerability Matrix & Resilience
                     </p>
                   </div>
                 </div>
-                <span className="text-xs font-semibold text-emerald-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                <span className="text-xs font-semibold text-emerald-700 group-hover:translate-x-1 transition-transform flex items-center gap-1 font-mono">
                   Explore →
                 </span>
               </div>

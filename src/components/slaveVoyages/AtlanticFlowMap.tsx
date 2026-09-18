@@ -75,8 +75,6 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
   
   // Layer toggles
   const [showContinents, setShowContinents] = useState(true);
-  const [showGraticule, setShowGraticule] = useState(true);
-  const [showTradeWinds, setShowTradeWinds] = useState(true);
   const [showMortalityColors, setShowMortalityColors] = useState(true);
   const [showPorts, setShowPorts] = useState(true);
   const [destinationFilter, setDestinationFilter] = useState<'all' | 'Brazil' | 'British Caribbean' | 'French Caribbean' | 'Spanish Americas' | 'North America'>('all');
@@ -121,24 +119,24 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
   });
 
   return (
-    <div className="relative w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-950 text-white overflow-hidden shadow-2xl select-none">
-      {/* Map Header & Controls */}
-      <div className="flex flex-wrap items-center justify-between p-4 bg-zinc-900/95 border-b border-zinc-800 gap-3">
+    <div className="relative w-full rounded-2xl border border-[#DCD3C1] dark:border-zinc-800 bg-[#FDFBF7] dark:bg-zinc-950 text-[#1C1917] dark:text-white overflow-hidden shadow-lg select-none">
+      {/* 1. Map Header & Controls (Option A: Warm & Crisp Palette) */}
+      <div className="flex flex-wrap items-center justify-between p-4 bg-[#FAF6EE] dark:bg-zinc-900/95 border-b border-[#DCD3C1] dark:border-zinc-800 gap-3">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-inner">
+          <div className="p-2.5 rounded-xl bg-[#C2410C]/10 text-[#C2410C] border border-[#C2410C]/25 dark:bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/30 shadow-xs">
             <Compass className="w-5 h-5 animate-spin-slow" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-extrabold text-sm text-zinc-100 tracking-tight flex items-center gap-2">
+              <h3 className="font-extrabold text-sm text-[#1C1917] dark:text-zinc-100 tracking-tight flex items-center gap-2">
                 <span>Interactive Atlantic Geodesic Flow Network</span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-950 border border-emerald-600/60 text-[10px] font-mono text-emerald-400 font-bold">
-                  <Sparkles className="w-3 h-3 text-emerald-400" />
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#EFE7D5] dark:bg-emerald-950 border border-[#D8CCB5] dark:border-emerald-600/60 text-[10px] font-mono text-[#9A3412] dark:text-emerald-400 font-bold">
+                  <Sparkles className="w-3 h-3 text-[#C2410C] dark:text-emerald-400" />
                   1514–1866 Canonical System
                 </span>
               </h3>
             </div>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[#78716C] dark:text-zinc-400">
               Middle Passage Geodesic Arcs • Volume-scaled bandwidth • Middle Passage mortality heatmap
             </p>
           </div>
@@ -148,10 +146,10 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setShowContinents(!showContinents)}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all border cursor-pointer flex items-center gap-1.5 ${
+            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all border cursor-pointer flex items-center gap-1.5 shadow-xs ${
               showContinents
-                ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
-                : 'bg-zinc-800/80 border-zinc-700 text-zinc-400'
+                ? 'bg-[#EFE7D5] dark:bg-emerald-500/20 border-[#C2410C]/50 dark:border-emerald-500/40 text-[#9A3412] dark:text-emerald-300'
+                : 'bg-white dark:bg-zinc-800/80 border-[#DCD3C1] dark:border-zinc-700 text-[#78716C] dark:text-zinc-400'
             }`}
             title="Toggle Continental Silhouettes"
           >
@@ -160,37 +158,11 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
           </button>
 
           <button
-            onClick={() => setShowGraticule(!showGraticule)}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all border cursor-pointer flex items-center gap-1.5 ${
-              showGraticule
-                ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300'
-                : 'bg-zinc-800/80 border-zinc-700 text-zinc-400'
-            }`}
-            title="Toggle Latitude / Longitude & Tropics Axis Grid"
-          >
-            <Navigation className="w-3.5 h-3.5" />
-            <span>Axis & Tropics: {showGraticule ? 'ON' : 'OFF'}</span>
-          </button>
-
-          <button
-            onClick={() => setShowTradeWinds(!showTradeWinds)}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all border cursor-pointer flex items-center gap-1.5 ${
-              showTradeWinds
-                ? 'bg-sky-500/20 border-sky-500/40 text-sky-300'
-                : 'bg-zinc-800/80 border-zinc-700 text-zinc-400'
-            }`}
-            title="Toggle Northeast & Southeast Trade Wind vectors"
-          >
-            <Wind className="w-3.5 h-3.5" />
-            <span>Trade Winds: {showTradeWinds ? 'ON' : 'OFF'}</span>
-          </button>
-
-          <button
             onClick={() => setShowMortalityColors(!showMortalityColors)}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all border cursor-pointer flex items-center gap-1.5 ${
+            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all border cursor-pointer flex items-center gap-1.5 shadow-xs ${
               showMortalityColors
-                ? 'bg-amber-500/20 border-amber-500/40 text-amber-300'
-                : 'bg-zinc-800/80 border-zinc-700 text-zinc-400'
+                ? 'bg-[#FEF3C7] dark:bg-amber-500/20 border-[#F59E0B] dark:border-amber-500/40 text-[#92400E] dark:text-amber-300'
+                : 'bg-white dark:bg-zinc-800/80 border-[#DCD3C1] dark:border-zinc-700 text-[#78716C] dark:text-zinc-400'
             }`}
           >
             <span>Mortality Colors: {showMortalityColors ? 'ON' : 'OFF'}</span>
@@ -198,10 +170,10 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
 
           <button
             onClick={() => setShowPorts(!showPorts)}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all border cursor-pointer flex items-center gap-1.5 ${
+            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all border cursor-pointer flex items-center gap-1.5 shadow-xs ${
               showPorts
-                ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
-                : 'bg-zinc-800/80 border-zinc-700 text-zinc-400'
+                ? 'bg-[#DCFCE7] dark:bg-emerald-500/20 border-[#10B981] dark:border-emerald-500/40 text-[#166534] dark:text-emerald-300'
+                : 'bg-white dark:bg-zinc-800/80 border-[#DCD3C1] dark:border-zinc-700 text-[#78716C] dark:text-zinc-400'
             }`}
           >
             <MapPin className="w-3.5 h-3.5" />
@@ -210,17 +182,17 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
         </div>
       </div>
 
-      {/* Destination Quick Filters Bar */}
-      <div className="flex flex-wrap items-center gap-1.5 px-4 py-2 bg-zinc-950 border-b border-zinc-800/80 text-xs font-mono">
-        <span className="text-zinc-400 mr-1 text-[11px] font-bold uppercase tracking-wider">Major Corridors:</span>
+      {/* 2. Destination Quick Filters Bar */}
+      <div className="flex flex-wrap items-center gap-1.5 px-4 py-2.5 bg-[#F5EFE1] dark:bg-zinc-950 border-b border-[#DCD3C1] dark:border-zinc-800/80 text-xs font-mono">
+        <span className="text-[#78716C] dark:text-zinc-400 mr-1 text-[11px] font-bold uppercase tracking-wider">Major Corridors:</span>
         {(['all', 'Brazil', 'British Caribbean', 'French Caribbean', 'Spanish Americas', 'North America'] as const).map(corridor => (
           <button
             key={corridor}
             onClick={() => setDestinationFilter(corridor)}
-            className={`px-2.5 py-1 rounded-md transition-all cursor-pointer text-[11px] font-bold ${
+            className={`px-3 py-1 rounded-lg transition-all cursor-pointer text-[11px] font-bold ${
               destinationFilter === corridor
-                ? 'bg-emerald-500 text-zinc-950 shadow-md font-extrabold'
-                : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800'
+                ? 'bg-[#C2410C] text-white shadow-xs font-extrabold'
+                : 'bg-white dark:bg-zinc-900 hover:bg-[#FAF6EE] dark:hover:bg-zinc-800 text-[#57534E] dark:text-zinc-300 border border-[#DCD3C1] dark:border-zinc-800'
             }`}
           >
             {corridor === 'all' ? 'All Corridors (12.5M Captives)' : corridor}
@@ -228,8 +200,8 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
         ))}
       </div>
 
-      {/* Main SVG Vector Canvas */}
-      <div className="relative w-full aspect-[16/9] min-h-[420px] max-h-[620px] bg-[#020617] flex items-center justify-center overflow-hidden">
+      {/* 3. Main SVG Vector Canvas */}
+      <div className="relative w-full aspect-[16/9] min-h-[420px] max-h-[620px] bg-[#FDFBF7] dark:bg-[#020617] flex items-center justify-center overflow-hidden">
         <svg
           id="atlantic-flow-map-svg"
           viewBox="0 0 1000 580"
@@ -237,62 +209,62 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
           preserveAspectRatio="xMidYMid meet"
         >
           <defs>
-            {/* Rich Bathymetric Ocean Gradient */}
+            {/* Rich Bathymetric Ocean Gradient - Light & Dark Modes */}
             <radialGradient id="oceanDeep" cx="48%" cy="46%" r="58%">
-              <stop offset="0%" stopColor="#082f49" stopOpacity="0.7" />
-              <stop offset="45%" stopColor="#041f2d" stopOpacity="0.85" />
-              <stop offset="100%" stopColor="#020617" stopOpacity="1" />
+              <stop offset="0%" stopColor="#F5EFE1" className="dark:[stop-color:#082f49]" stopOpacity="0.85" />
+              <stop offset="55%" stopColor="#EDE5D4" className="dark:[stop-color:#041f2d]" stopOpacity="0.95" />
+              <stop offset="100%" stopColor="#E2D9C5" className="dark:[stop-color:#020617]" stopOpacity="1" />
             </radialGradient>
 
             {/* High-Contrast Continental Landmass Gradients */}
             <linearGradient id="africaLand" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#064e3b" />
-              <stop offset="50%" stopColor="#043828" />
-              <stop offset="100%" stopColor="#022116" />
+              <stop offset="0%" stopColor="#D9CEB8" className="dark:[stop-color:#064e3b]" />
+              <stop offset="50%" stopColor="#CFC2A8" className="dark:[stop-color:#043828]" />
+              <stop offset="100%" stopColor="#C4B496" className="dark:[stop-color:#022116]" />
             </linearGradient>
 
             <linearGradient id="americasLand" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#1e3a5f" />
-              <stop offset="50%" stopColor="#15293d" />
-              <stop offset="100%" stopColor="#0b1724" />
+              <stop offset="0%" stopColor="#DDD4BF" className="dark:[stop-color:#1e3a5f]" />
+              <stop offset="50%" stopColor="#D3C7AE" className="dark:[stop-color:#15293d]" />
+              <stop offset="100%" stopColor="#C8BA9C" className="dark:[stop-color:#0b1724]" />
             </linearGradient>
 
             <linearGradient id="europeLand" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#451a03" />
-              <stop offset="50%" stopColor="#2e1405" />
-              <stop offset="100%" stopColor="#1c0b02" />
+              <stop offset="0%" stopColor="#E5DDCC" className="dark:[stop-color:#451a03]" />
+              <stop offset="50%" stopColor="#DCD2BE" className="dark:[stop-color:#2e1405]" />
+              <stop offset="100%" stopColor="#D1C4AD" className="dark:[stop-color:#1c0b02]" />
             </linearGradient>
 
             {/* Coastal Shelf Bathymetric Glow */}
             <filter id="coastGlow" x="-15%" y="-15%" width="130%" height="130%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feGaussianBlur stdDeviation="2.5" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
 
             {/* Flow Path Glow Filter */}
             <filter id="routeGlow" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feGaussianBlur stdDeviation="3.5" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
 
             {/* Port Pulse Glow Filter */}
             <filter id="portGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="2.5" result="blur" />
+              <feGaussianBlur stdDeviation="2" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
 
             {/* Pattern for Graticule minor subdivisions */}
             <pattern id="graticuleDots" width="24" height="24" patternUnits="userSpaceOnUse">
-              <circle cx="2" cy="2" r="0.75" fill="#38bdf8" opacity="0.25" />
+              <circle cx="2" cy="2" r="0.75" fill="#A89F88" className="dark:[fill:#38bdf8]" opacity="0.3" />
             </pattern>
           </defs>
 
           {/* 1. Canvas Deep Ocean Background */}
           <rect width="1000" height="580" fill="url(#oceanDeep)" />
-          <rect width="1000" height="580" fill="url(#graticuleDots)" opacity="0.5" />
+          <rect width="1000" height="580" fill="url(#graticuleDots)" opacity="0.45" />
 
           {/* 2. Nautical Portolan Rhumb Lines (Radiating from Mid-Atlantic Compass Center) */}
-          <g opacity="0.16" stroke="#38bdf8" strokeWidth="0.6">
+          <g opacity="0.22" stroke="#B8AC94" className="dark:[stroke:#38bdf8]" strokeWidth="0.65">
             {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(deg => {
               const rad = (deg * Math.PI) / 180;
               const cx = 490;
@@ -303,153 +275,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
             })}
           </g>
 
-          {/* 3. Coordinate Graticule Grid & Major Astronomical Indicators */}
-          {showGraticule && (
-            <g className="graticule-layer">
-              {/* Longitude Grid Lines */}
-              {[-100, -80, -60, -40, -20, 0, 20, 40].map(lng => {
-                const [x] = projectCoord(0, lng);
-                const isPrime = lng === 0;
-                return (
-                  <g key={`lng-${lng}`}>
-                    <line
-                      x1={x}
-                      y1="18"
-                      x2={x}
-                      y2="562"
-                      stroke={isPrime ? '#38bdf8' : '#475569'}
-                      strokeWidth={isPrime ? '2' : '0.9'}
-                      strokeDasharray={isPrime ? 'none' : '4 4'}
-                      opacity={isPrime ? '0.9' : '0.6'}
-                    />
-                    {/* Top & Bottom Longitude Labels */}
-                    <g transform={`translate(${x}, 12)`}>
-                      <rect x="-24" y="-10" width="48" height="13" rx="2" fill="#020617" stroke={isPrime ? '#38bdf8' : '#334155'} strokeWidth="0.8" opacity="0.9" />
-                      <text
-                        x="0"
-                        y="-1"
-                        textAnchor="middle"
-                        fill={isPrime ? '#38bdf8' : '#cbd5e1'}
-                        fontSize="8.5"
-                        fontFamily="monospace"
-                        fontWeight="bold"
-                      >
-                        {lng > 0 ? `${lng}°E` : lng < 0 ? `${Math.abs(lng)}°W` : '0° PRIME'}
-                      </text>
-                    </g>
-                    <g transform={`translate(${x}, 572)`}>
-                      <rect x="-24" y="-7" width="48" height="13" rx="2" fill="#020617" stroke={isPrime ? '#38bdf8' : '#334155'} strokeWidth="0.8" opacity="0.9" />
-                      <text
-                        x="0"
-                        y="2.5"
-                        textAnchor="middle"
-                        fill={isPrime ? '#38bdf8' : '#cbd5e1'}
-                        fontSize="8.5"
-                        fontFamily="monospace"
-                        fontWeight="bold"
-                      >
-                        {lng > 0 ? `${lng}°E` : lng < 0 ? `${Math.abs(lng)}°W` : '0° PRIME'}
-                      </text>
-                    </g>
-                  </g>
-                );
-              })}
 
-              {/* Latitude Grid Lines */}
-              {[50, 40, 30, 20, 10, 0, -10, -20, -30].map(lat => {
-                const [, y] = projectCoord(lat, 0);
-                const isEquator = lat === 0;
-                return (
-                  <g key={`lat-${lat}`}>
-                    <line
-                      x1="22"
-                      y1={y}
-                      x2="978"
-                      y2={y}
-                      stroke={isEquator ? '#10b981' : '#475569'}
-                      strokeWidth={isEquator ? '2.2' : '0.9'}
-                      strokeDasharray={isEquator ? 'none' : '4 4'}
-                      opacity={isEquator ? '0.95' : '0.6'}
-                    />
-                    {/* Left & Right Latitude Axis Labels */}
-                    <g transform={`translate(16, ${y})`}>
-                      <rect x="-14" y="-7" width="18" height="14" rx="2" fill="#020617" stroke={isEquator ? '#10b981' : '#334155'} strokeWidth="0.8" opacity="0.9" />
-                      <text
-                        x="-5"
-                        y="3"
-                        textAnchor="middle"
-                        fill={isEquator ? '#10b981' : '#cbd5e1'}
-                        fontSize="8.5"
-                        fontFamily="monospace"
-                        fontWeight="bold"
-                      >
-                        {lat > 0 ? `${lat}°N` : lat < 0 ? `${Math.abs(lat)}°S` : '0°'}
-                      </text>
-                    </g>
-                    <g transform={`translate(984, ${y})`}>
-                      <rect x="-4" y="-7" width="18" height="14" rx="2" fill="#020617" stroke={isEquator ? '#10b981' : '#334155'} strokeWidth="0.8" opacity="0.9" />
-                      <text
-                        x="5"
-                        y="3"
-                        textAnchor="middle"
-                        fill={isEquator ? '#10b981' : '#cbd5e1'}
-                        fontSize="8.5"
-                        fontFamily="monospace"
-                        fontWeight="bold"
-                      >
-                        {lat > 0 ? `${lat}°N` : lat < 0 ? `${Math.abs(lat)}°S` : '0°'}
-                      </text>
-                    </g>
-                  </g>
-                );
-              })}
-
-              {/* EQUATOR (0°) Prominent Badge */}
-              {(() => {
-                const [, eqY] = projectCoord(0, 0);
-                return (
-                  <g transform={`translate(430, ${eqY - 10})`}>
-                    <rect width="138" height="20" rx="4" fill="#064e3b" stroke="#10b981" strokeWidth="1.5" opacity="0.95" />
-                    <text x="69" y="14" textAnchor="middle" fill="#ecfdf5" fontSize="9" fontFamily="monospace" fontWeight="900" letterSpacing="1">
-                      ☀️ EQUATOR 0° • EQUINOX
-                    </text>
-                  </g>
-                );
-              })()}
-
-              {/* TROPIC OF CANCER (23.43°N) Line & Badge */}
-              {(() => {
-                const [, canY] = projectCoord(23.43, 0);
-                return (
-                  <g>
-                    <line x1="22" y1={canY} x2="978" y2={canY} stroke="#f59e0b" strokeWidth="1.4" strokeDasharray="6 4" opacity="0.85" />
-                    <g transform={`translate(28, ${canY - 9})`}>
-                      <rect width="185" height="17" rx="4" fill="#451a03" stroke="#f59e0b" strokeWidth="1" opacity="0.95" />
-                      <text x="92.5" y="12" textAnchor="middle" fill="#fef3c7" fontSize="8" fontFamily="monospace" fontWeight="800">
-                        ☀️ TROPIC OF CANCER 23.4°N (SOLSTICE)
-                      </text>
-                    </g>
-                  </g>
-                );
-              })()}
-
-              {/* TROPIC OF CAPRICORN (23.43°S) Line & Badge */}
-              {(() => {
-                const [, capY] = projectCoord(-23.43, 0);
-                return (
-                  <g>
-                    <line x1="22" y1={capY} x2="978" y2={capY} stroke="#f59e0b" strokeWidth="1.4" strokeDasharray="6 4" opacity="0.85" />
-                    <g transform={`translate(28, ${capY - 9})`}>
-                      <rect width="195" height="17" rx="4" fill="#451a03" stroke="#f59e0b" strokeWidth="1" opacity="0.95" />
-                      <text x="97.5" y="12" textAnchor="middle" fill="#fef3c7" fontSize="8" fontFamily="monospace" fontWeight="800">
-                        ☀️ TROPIC OF CAPRICORN 23.4°S (SOLSTICE)
-                      </text>
-                    </g>
-                  </g>
-                );
-              })()}
-            </g>
-          )}
 
           {/* 4. CLEAR CONTINENT LANDMASSES (High-Contrast Cartographic Vectors) */}
           {showContinents && (
@@ -458,10 +284,10 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
               <path
                 d={SOUTH_AMERICA_PATH}
                 fill="url(#americasLand)"
-                stroke="#38bdf8"
-                strokeWidth="2"
+                stroke="#A89B82"
+                className="dark:[stroke:#38bdf8]"
+                strokeWidth="1.8"
                 strokeLinejoin="round"
-                className="transition-colors hover:brightness-125"
                 filter="url(#coastGlow)"
               />
 
@@ -469,113 +295,115 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
               <path
                 d={NORTH_AMERICA_PATH}
                 fill="url(#americasLand)"
-                stroke="#22d3ee"
-                strokeWidth="2"
+                stroke="#A89B82"
+                className="dark:[stroke:#22d3ee]"
+                strokeWidth="1.8"
                 strokeLinejoin="round"
-                className="transition-colors hover:brightness-125"
                 filter="url(#coastGlow)"
               />
 
-              {/* CARIBBEAN ARCHIPELAGO (Cuba, Hispaniola, Jamaica, Puerto Rico, Bahamas) */}
-              <path d={CUBA_PATH} fill="#f59e0b" stroke="#fbbf24" strokeWidth="1.5" />
-              <path d={HISPANIOLA_PATH} fill="#f59e0b" stroke="#fbbf24" strokeWidth="1.5" />
-              <path d={JAMAICA_PATH} fill="#f59e0b" stroke="#fbbf24" strokeWidth="1.5" />
-              <path d={PUERTO_RICO_PATH} fill="#f59e0b" stroke="#fbbf24" strokeWidth="1.5" />
-              <path d={BAHAMAS_PATH} fill="#f59e0b" stroke="#fbbf24" strokeWidth="1.5" />
+              {/* CARIBBEAN ARCHIPELAGO */}
+              <path d={CUBA_PATH} fill="#D97706" stroke="#B45309" strokeWidth="1.2" />
+              <path d={HISPANIOLA_PATH} fill="#D97706" stroke="#B45309" strokeWidth="1.2" />
+              <path d={JAMAICA_PATH} fill="#D97706" stroke="#B45309" strokeWidth="1.2" />
+              <path d={PUERTO_RICO_PATH} fill="#D97706" stroke="#B45309" strokeWidth="1.2" />
+              <path d={BAHAMAS_PATH} fill="#D97706" stroke="#B45309" strokeWidth="1.2" />
 
-              {/* MAINLAND WESTERN EUROPE (Iberia, France, Low Countries) */}
+              {/* MAINLAND WESTERN EUROPE */}
               <path
                 d={EUROPE_MAINLAND_PATH}
                 fill="url(#europeLand)"
-                stroke="#f59e0b"
-                strokeWidth="2"
+                stroke="#B4A68C"
+                className="dark:[stroke:#f59e0b]"
+                strokeWidth="1.8"
                 strokeLinejoin="round"
                 filter="url(#coastGlow)"
               />
 
               {/* BRITISH ISLES & IRELAND */}
-              <path d={GREAT_BRITAIN_PATH} fill="url(#europeLand)" stroke="#fbbf24" strokeWidth="1.6" />
-              <path d={IRELAND_PATH} fill="url(#europeLand)" stroke="#fbbf24" strokeWidth="1.6" />
+              <path d={GREAT_BRITAIN_PATH} fill="url(#europeLand)" stroke="#B4A68C" strokeWidth="1.4" />
+              <path d={IRELAND_PATH} fill="url(#europeLand)" stroke="#B4A68C" strokeWidth="1.4" />
 
-              {/* AFRICAN CONTINENT (Detailed High-Fidelity Silhouette with Emerald Coastline) */}
+              {/* AFRICAN CONTINENT */}
               <path
                 d={AFRICA_PATH}
                 fill="url(#africaLand)"
-                stroke="#10b981"
-                strokeWidth="2.4"
+                stroke="#8C7E64"
+                strokeWidth="2.2"
                 strokeLinejoin="round"
                 filter="url(#coastGlow)"
-                className="transition-all"
+                className="transition-all dark:[stroke:#10b981]"
               />
 
               {/* MADAGASCAR */}
               <path
                 d={MADAGASCAR_PATH}
                 fill="url(#africaLand)"
-                stroke="#10b981"
-                strokeWidth="2"
+                stroke="#8C7E64"
+                className="dark:[stroke:#10b981]"
+                strokeWidth="1.8"
                 strokeLinejoin="round"
                 filter="url(#coastGlow)"
               />
 
               {/* Major Continental Topographic Typography Labels */}
-              <text x="730" y="240" fill="#ecfdf5" fontSize="20" fontFamily="serif" fontWeight="900" letterSpacing="4" opacity="0.95" className="pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+              <text x="730" y="240" fill="#1C1917" fontSize="20" fontFamily="serif" fontWeight="900" letterSpacing="4" opacity="0.9" className="pointer-events-none dark:[fill:#ecfdf5]">
                 AFRICA
               </text>
-              <text x="735" y="260" fill="#34d399" fontSize="9.5" fontFamily="monospace" fontWeight="bold" letterSpacing="2" opacity="0.95" className="pointer-events-none drop-shadow">
+              <text x="735" y="260" fill="#9A3412" fontSize="9.5" fontFamily="monospace" fontWeight="bold" letterSpacing="2" opacity="0.95" className="pointer-events-none dark:[fill:#34d399]">
                 12.5M CAPTIVES EMBARKED
               </text>
 
-              <text x="260" y="420" fill="#e0f2fe" fontSize="16" fontFamily="serif" fontWeight="900" letterSpacing="3" opacity="0.9" className="pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+              <text x="260" y="420" fill="#1C1917" fontSize="16" fontFamily="serif" fontWeight="900" letterSpacing="3" opacity="0.9" className="pointer-events-none dark:[fill:#e0f2fe]">
                 SOUTH AMERICA
               </text>
-              <text x="270" y="438" fill="#38bdf8" fontSize="9" fontFamily="monospace" fontWeight="bold" letterSpacing="1.5" opacity="0.95" className="pointer-events-none drop-shadow">
+              <text x="270" y="438" fill="#0369A1" fontSize="9" fontFamily="monospace" fontWeight="bold" letterSpacing="1.5" opacity="0.95" className="pointer-events-none dark:[fill:#38bdf8]">
                 BRAZIL (5.1M ARRIVALS)
               </text>
 
-              <text x="70" y="90" fill="#e0f2fe" fontSize="15" fontFamily="serif" fontWeight="900" letterSpacing="3" opacity="0.9" className="pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+              <text x="70" y="90" fill="#1C1917" fontSize="15" fontFamily="serif" fontWeight="900" letterSpacing="3" opacity="0.9" className="pointer-events-none dark:[fill:#e0f2fe]">
                 NORTH AMERICA
               </text>
 
-              <text x="690" y="80" fill="#fef3c7" fontSize="13" fontFamily="serif" fontWeight="900" letterSpacing="3" opacity="0.9" className="pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+              <text x="690" y="80" fill="#9A3412" fontSize="13" fontFamily="serif" fontWeight="900" letterSpacing="3" opacity="0.9" className="pointer-events-none dark:[fill:#fef3c7]">
                 EUROPE
               </text>
 
               {/* Oceanic Body Labels */}
-              <text x="410" y="140" fill="#38bdf8" fontSize="11" fontFamily="serif" fontStyle="italic" fontWeight="600" letterSpacing="4" opacity="0.55" className="pointer-events-none">
+              <text x="410" y="140" fill="#78716C" fontSize="11" fontFamily="serif" fontStyle="italic" fontWeight="600" letterSpacing="4" opacity="0.65" className="pointer-events-none dark:[fill:#38bdf8]">
                 NORTH ATLANTIC OCEAN
               </text>
-              <text x="480" y="440" fill="#38bdf8" fontSize="11" fontFamily="serif" fontStyle="italic" fontWeight="600" letterSpacing="4" opacity="0.55" className="pointer-events-none">
+              <text x="480" y="440" fill="#78716C" fontSize="11" fontFamily="serif" fontStyle="italic" fontWeight="600" letterSpacing="4" opacity="0.65" className="pointer-events-none dark:[fill:#38bdf8]">
                 SOUTH ATLANTIC OCEAN
               </text>
-              <text x="595" y="340" fill="#10b981" fontSize="9.5" fontFamily="serif" fontStyle="italic" fontWeight="600" letterSpacing="2" opacity="0.75" className="pointer-events-none">
+              <text x="595" y="340" fill="#047857" fontSize="9.5" fontFamily="serif" fontStyle="italic" fontWeight="600" letterSpacing="2" opacity="0.75" className="pointer-events-none dark:[fill:#10b981]">
                 GULF OF GUINEA
               </text>
-              <text x="175" y="270" fill="#38bdf8" fontSize="9.5" fontFamily="serif" fontStyle="italic" fontWeight="600" letterSpacing="2" opacity="0.75" className="pointer-events-none">
+              <text x="175" y="270" fill="#0369A1" fontSize="9.5" fontFamily="serif" fontStyle="italic" fontWeight="600" letterSpacing="2" opacity="0.75" className="pointer-events-none dark:[fill:#38bdf8]">
                 CARIBBEAN SEA
               </text>
             </g>
           )}
 
-          {/* 5. HISTORICAL AFRICAN EMBARKATION COASTAL ZONES (Interactive Coastline Highlights) */}
+          {/* 5. HISTORICAL AFRICAN EMBARKATION COASTAL ZONES */}
           <g className="embarkation-zones-layer">
             {EMBARKATION_ZONES.map(zone => {
               const [cx, cy] = projectCoord(zone.center[0], zone.center[1]);
               return (
                 <g key={zone.id} className="group cursor-pointer">
                   {/* Subtle glowing halo along the coast */}
-                  <circle cx={cx} cy={cy} r="18" fill={zone.color} fillOpacity="0.12" stroke={zone.color} strokeWidth="1" strokeDasharray="2 3" />
-                  <circle cx={cx} cy={cy} r="4" fill={zone.color} stroke="#020617" strokeWidth="1.5" />
+                  <circle cx={cx} cy={cy} r="18" fill={zone.color} fillOpacity="0.16" stroke={zone.color} strokeWidth="1" strokeDasharray="2 3" />
+                  <circle cx={cx} cy={cy} r="4.5" fill={zone.color} stroke="#FAF6EE" className="dark:[stroke:#020617]" strokeWidth="1.5" />
                   
                   {/* Zone text pill */}
                   <text
                     x={cx + 8}
                     y={cy - 4}
-                    fill="#ffffff"
+                    fill="#1C1917"
+                    className="dark:[fill:#ffffff]"
                     fontSize="8.5"
                     fontFamily="sans-serif"
                     fontWeight="800"
-                    className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
                   >
                     {zone.name.split(' (')[0]}
                   </text>
@@ -586,7 +414,6 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                     fontSize="7.5"
                     fontFamily="monospace"
                     fontWeight="bold"
-                    className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
                   >
                     {zone.captiveShare}
                   </text>
@@ -595,69 +422,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
             })}
           </g>
 
-          {/* 6. HISTORICAL TRADE WINDS & OCEAN CURRENTS */}
-          {showTradeWinds && (
-            <g className="trade-winds-layer">
-              {TRADE_WINDS.map(wind => {
-                const [x1, y1] = projectCoord(wind.startLat, wind.startLng);
-                const [cx, cy] = projectCoord(wind.ctrlLat, wind.ctrlLng);
-                const [x2, y2] = projectCoord(wind.endLat, wind.endLng);
-                const pathD = `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`;
 
-                return (
-                  <g
-                    key={wind.id}
-                    className="cursor-pointer transition-opacity"
-                    onMouseEnter={() => setHoveredWind(wind)}
-                    onMouseLeave={() => setHoveredWind(null)}
-                  >
-                    {/* Broad background breeze swath */}
-                    <path
-                      d={pathD}
-                      fill="none"
-                      stroke={wind.color}
-                      strokeWidth="12"
-                      strokeOpacity="0.08"
-                      strokeLinecap="round"
-                    />
-                    {/* Primary Wind Stream */}
-                    <path
-                      d={pathD}
-                      fill="none"
-                      stroke={wind.color}
-                      strokeWidth="2"
-                      strokeDasharray="6 8"
-                      strokeOpacity="0.65"
-                      strokeLinecap="round"
-                    />
-                    {/* Animated moving particles */}
-                    <path
-                      d={pathD}
-                      fill="none"
-                      stroke="#ffffff"
-                      strokeWidth="2.5"
-                      strokeDasharray="3 20"
-                      strokeOpacity="0.85"
-                      className="animate-pulse"
-                    />
-                    {/* Wind Vector Label along midpoint */}
-                    <text
-                      x={cx}
-                      y={cy - 6}
-                      textAnchor="middle"
-                      fill={wind.color}
-                      fontSize="8"
-                      fontFamily="monospace"
-                      fontWeight="bold"
-                      className="drop-shadow pointer-events-none"
-                    >
-                      {wind.name.split(' (')[0]}
-                    </text>
-                  </g>
-                );
-              })}
-            </g>
-          )}
 
           {/* 7. GEODESIC FLOW ARCS (Trans-Atlantic Captive Corridors) */}
           <g className="geodesic-flows-layer">
@@ -688,7 +453,6 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
               const baseWidth = Math.max(2.5, Math.min(16, (route.embarkedCount / 5694200) * 16));
               const volumeWidth = baseWidth * epochMultiplier;
               const strokeColor = getMortalityStroke(route.avgMortalityRate);
-              const glowColor = getMortalityGlow(route.avgMortalityRate);
 
               return (
                 <g 
@@ -704,8 +468,8 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                       d={`M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`}
                       fill="none"
                       stroke={strokeColor}
-                      strokeWidth={volumeWidth + 12}
-                      strokeOpacity="0.45"
+                      strokeWidth={volumeWidth + 10}
+                      strokeOpacity="0.4"
                       filter="url(#routeGlow)"
                     />
                   )}
@@ -716,7 +480,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                     fill="none"
                     stroke={strokeColor}
                     strokeWidth={isHovered ? volumeWidth + 3 : volumeWidth}
-                    strokeOpacity={isHovered || isSelected ? 0.95 : Math.max(0.2, 0.75 * epochMultiplier)}
+                    strokeOpacity={isHovered || isSelected ? 0.95 : Math.max(0.3, 0.8 * epochMultiplier)}
                     strokeLinecap="round"
                     className="transition-all duration-200"
                   />
@@ -728,15 +492,15 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                     stroke="#ffffff"
                     strokeWidth={Math.max(1.8, volumeWidth * 0.45)}
                     strokeDasharray="5 18"
-                    strokeOpacity={isHovered ? 1 : 0.8 * epochMultiplier}
+                    strokeOpacity={isHovered ? 1 : 0.85 * epochMultiplier}
                     className="animate-pulse"
                   />
 
                   {/* Flow Volume Marker at Midpoint */}
                   {(isHovered || isSelected || (route.embarkedCount > 1500000 && epochMultiplier > 0.5)) && (
                     <g transform={`translate(${midX}, ${midY})`} className="pointer-events-none">
-                      <rect x="-30" y="-9" width="60" height="18" rx="4" fill="#020617" stroke={strokeColor} strokeWidth="1.2" opacity="0.92" />
-                      <text x="0" y="3.5" textAnchor="middle" fill="#ffffff" fontSize="8" fontFamily="monospace" fontWeight="900">
+                      <rect x="-30" y="-9" width="60" height="18" rx="4" fill="#FAF6EE" className="dark:[fill:#020617]" stroke={strokeColor} strokeWidth="1.2" opacity="0.96" />
+                      <text x="0" y="3.5" textAnchor="middle" fill="#1C1917" className="dark:[fill:#ffffff]" fontSize="8" fontFamily="monospace" fontWeight="900">
                         {(route.embarkedCount / 1000000).toFixed(2)}M
                       </text>
                     </g>
@@ -753,13 +517,12 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                 const [x, y] = projectCoord(port.lat, port.lng);
                 const isAfrican = port.type === 'african-port';
                 const isAmerican = port.type === 'american-port';
-                const isEuropean = port.type === 'european-port';
 
                 const fillColor = isAfrican 
-                  ? '#10b981' 
+                  ? '#059669' 
                   : isAmerican 
-                    ? '#38bdf8' 
-                    : '#f59e0b';
+                    ? '#0284C7' 
+                    : '#D97706';
 
                 return (
                   <g 
@@ -776,7 +539,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                       fill="none"
                       stroke={fillColor}
                       strokeWidth="1.2"
-                      strokeOpacity="0.5"
+                      strokeOpacity="0.4"
                       className="animate-ping"
                       style={{ animationDuration: `${2.2 + (idx % 3) * 0.6}s` }}
                     />
@@ -788,7 +551,8 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                       r="5.5"
                       fill={fillColor}
                       fillOpacity="0.95"
-                      stroke="#020617"
+                      stroke="#FAF6EE"
+                      className="dark:[stroke:#020617]"
                       strokeWidth="2"
                       filter="url(#portGlow)"
                     />
@@ -798,11 +562,11 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                       x={x + (isAmerican ? -9 : 9)}
                       y={y + 3.5}
                       textAnchor={isAmerican ? 'end' : 'start'}
-                      fill="#f8fafc"
+                      fill="#1C1917"
                       fontSize="9.5"
                       fontFamily="sans-serif"
                       fontWeight="700"
-                      className="pointer-events-none drop-shadow-[0_1px_3px_rgba(0,0,0,1)]"
+                      className="pointer-events-none dark:[fill:#f8fafc]"
                     >
                       {port.name.split(' (')[0]}
                     </text>
@@ -812,100 +576,99 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
             </g>
           )}
 
-          {/* 9. ORNATE NAUTICAL COMPASS ROSE / ASTRONOMICAL POLARIS INDICATOR */}
+          {/* 9. ORNATE NAUTICAL COMPASS ROSE */}
           <g transform="translate(485, 90)" className="compass-rose-layer pointer-events-none">
             {/* Outer Degree Dial */}
-            <circle cx="0" cy="0" r="38" fill="#020617" fillOpacity="0.85" stroke="#38bdf8" strokeWidth="1.2" strokeDasharray="3 3" />
-            <circle cx="0" cy="0" r="32" fill="none" stroke="#f59e0b" strokeWidth="0.8" />
-            <circle cx="0" cy="0" r="26" fill="none" stroke="#10b981" strokeWidth="0.5" opacity="0.6" />
+            <circle cx="0" cy="0" r="38" fill="#FAF6EE" fillOpacity="0.9" stroke="#DCD3C1" className="dark:[fill:#020617] dark:[stroke:#38bdf8]" strokeWidth="1.2" strokeDasharray="3 3" />
+            <circle cx="0" cy="0" r="32" fill="none" stroke="#D97706" strokeWidth="0.8" />
+            <circle cx="0" cy="0" r="26" fill="none" stroke="#059669" strokeWidth="0.5" opacity="0.6" />
             
             {/* Cardinal Points (N, S, E, W) */}
-            <polygon points="0,-32 5,-7 0,0 -5,-7" fill="#10b981" stroke="#052e16" strokeWidth="0.5" />
-            <polygon points="0,32 5,7 0,0 -5,7" fill="#065f46" stroke="#052e16" strokeWidth="0.5" />
-            <polygon points="32,0 7,5 0,0 7,-5" fill="#0284c7" stroke="#082f49" strokeWidth="0.5" />
-            <polygon points="-32,0 -7,5 0,0 -7,-5" fill="#075985" stroke="#082f49" strokeWidth="0.5" />
+            <polygon points="0,-32 5,-7 0,0 -5,-7" fill="#C2410C" stroke="#7C2D12" strokeWidth="0.5" />
+            <polygon points="0,32 5,7 0,0 -5,7" fill="#047857" stroke="#064E3B" strokeWidth="0.5" />
+            <polygon points="32,0 7,5 0,0 7,-5" fill="#0284C7" stroke="#0C4A6E" strokeWidth="0.5" />
+            <polygon points="-32,0 -7,5 0,0 -7,-5" fill="#0369A1" stroke="#0C4A6E" strokeWidth="0.5" />
             
             {/* Intercardinal Points (NE, NW, SE, SW) */}
-            <polygon points="22,-22 6,-3 0,0 3,-6" fill="#f59e0b" />
-            <polygon points="-22,-22 -3,-6 0,0 -6,-3" fill="#b45309" />
-            <polygon points="22,22 3,6 0,0 6,3" fill="#b45309" />
-            <polygon points="-22,22 -6,3 0,0 -3,6" fill="#78350f" />
+            <polygon points="22,-22 6,-3 0,0 3,-6" fill="#D97706" />
+            <polygon points="-22,-22 -3,-6 0,0 -6,-3" fill="#B45309" />
+            <polygon points="22,22 3,6 0,0 6,3" fill="#B45309" />
+            <polygon points="-22,22 -6,3 0,0 -3,6" fill="#78350F" />
 
             {/* Center Star Hub */}
-            <circle cx="0" cy="0" r="4.5" fill="#f8fafc" stroke="#020617" strokeWidth="1.5" />
+            <circle cx="0" cy="0" r="4.5" fill="#FAF6EE" className="dark:[fill:#f8fafc]" stroke="#C2410C" strokeWidth="1.5" />
 
             {/* Polaris / North Star Indicator above North point */}
             <g transform="translate(0, -42)">
-              <circle cx="0" cy="0" r="8" fill="#fef08a" fillOpacity="0.25" className="animate-ping" style={{ animationDuration: '3s' }} />
-              {/* 8-point gold Polaris Star */}
-              <polygon points="0,-7 2,-2 7,0 2,2 0,7 -2,2 -7,0 -2,-2" fill="#fef08a" stroke="#ca8a04" strokeWidth="0.5" />
+              <circle cx="0" cy="0" r="8" fill="#FDE68A" fillOpacity="0.3" className="animate-ping" style={{ animationDuration: '3s' }} />
+              <polygon points="0,-7 2,-2 7,0 2,2 0,7 -2,2 -7,0 -2,-2" fill="#D97706" stroke="#92400E" strokeWidth="0.5" />
               <circle cx="0" cy="0" r="1.5" fill="#ffffff" />
             </g>
 
             {/* Cardinal Labels */}
-            <text x="0" y="-48" textAnchor="middle" fill="#34d399" fontSize="10" fontFamily="serif" fontWeight="900" className="drop-shadow">
+            <text x="0" y="-48" textAnchor="middle" fill="#9A3412" className="dark:[fill:#34d399]" fontSize="10" fontFamily="serif" fontWeight="900">
               N • POLARIS
             </text>
-            <text x="0" y="48" textAnchor="middle" fill="#94a3b8" fontSize="8.5" fontFamily="serif" fontWeight="800">
+            <text x="0" y="48" textAnchor="middle" fill="#78716C" className="dark:[fill:#94a3b8]" fontSize="8.5" fontFamily="serif" fontWeight="800">
               S
             </text>
-            <text x="44" y="3" textAnchor="middle" fill="#94a3b8" fontSize="8.5" fontFamily="serif" fontWeight="800">
+            <text x="44" y="3" textAnchor="middle" fill="#78716C" className="dark:[fill:#94a3b8]" fontSize="8.5" fontFamily="serif" fontWeight="800">
               E
             </text>
-            <text x="-44" y="3" textAnchor="middle" fill="#94a3b8" fontSize="8.5" fontFamily="serif" fontWeight="800">
+            <text x="-44" y="3" textAnchor="middle" fill="#78716C" className="dark:[fill:#94a3b8]" fontSize="8.5" fontFamily="serif" fontWeight="800">
               W
             </text>
           </g>
 
-          {/* 10. GRAPHICAL NAUTICAL SCALE BAR & CARTOGRAPHIC FRAME */}
+          {/* 10. GRAPHICAL NAUTICAL SCALE BAR */}
           <g transform="translate(32, 532)" className="scale-bar-layer pointer-events-none">
-            <rect width="186" height="24" rx="4" fill="#020617" stroke="#334155" strokeWidth="1.2" opacity="0.95" />
-            <line x1="15" y1="15" x2="171" y2="15" stroke="#e2e8f0" strokeWidth="2.5" />
-            <line x1="15" y1="9" x2="15" y2="18" stroke="#e2e8f0" strokeWidth="2.5" />
-            <line x1="93" y1="10" x2="93" y2="18" stroke="#e2e8f0" strokeWidth="1.8" />
-            <line x1="171" y1="9" x2="171" y2="18" stroke="#e2e8f0" strokeWidth="2.5" />
-            <text x="15" y="8" textAnchor="middle" fill="#cbd5e1" fontSize="7.5" fontFamily="monospace" fontWeight="bold">0</text>
-            <text x="93" y="8" textAnchor="middle" fill="#cbd5e1" fontSize="7.5" fontFamily="monospace" fontWeight="bold">500 NM</text>
-            <text x="171" y="8" textAnchor="middle" fill="#cbd5e1" fontSize="7.5" fontFamily="monospace" fontWeight="bold">1000 NM (1852 km)</text>
+            <rect width="186" height="24" rx="4" fill="#FAF6EE" stroke="#DCD3C1" className="dark:[fill:#020617] dark:[stroke:#334155]" strokeWidth="1.2" opacity="0.95" />
+            <line x1="15" y1="15" x2="171" y2="15" stroke="#57534E" className="dark:[stroke:#e2e8f0]" strokeWidth="2" />
+            <line x1="15" y1="9" x2="15" y2="18" stroke="#57534E" className="dark:[stroke:#e2e8f0]" strokeWidth="2" />
+            <line x1="93" y1="10" x2="93" y2="18" stroke="#57534E" className="dark:[stroke:#e2e8f0]" strokeWidth="1.5" />
+            <line x1="171" y1="9" x2="171" y2="18" stroke="#57534E" className="dark:[stroke:#e2e8f0]" strokeWidth="2" />
+            <text x="15" y="8" textAnchor="middle" fill="#57534E" className="dark:[fill:#cbd5e1]" fontSize="7.5" fontFamily="monospace" fontWeight="bold">0</text>
+            <text x="93" y="8" textAnchor="middle" fill="#57534E" className="dark:[fill:#cbd5e1]" fontSize="7.5" fontFamily="monospace" fontWeight="bold">500 NM</text>
+            <text x="171" y="8" textAnchor="middle" fill="#57534E" className="dark:[fill:#cbd5e1]" fontSize="7.5" fontFamily="monospace" fontWeight="bold">1000 NM (1852 km)</text>
           </g>
 
-          {/* Outer Map Framing Border with Corner Marks */}
-          <rect x="18" y="16" width="964" height="548" fill="none" stroke="#1e293b" strokeWidth="1.5" />
-          <rect x="22" y="20" width="956" height="540" fill="none" stroke="#0ea5e9" strokeWidth="0.6" opacity="0.4" />
+          {/* Outer Map Framing Border */}
+          <rect x="18" y="16" width="964" height="548" fill="none" stroke="#DCD3C1" className="dark:[stroke:#1e293b]" strokeWidth="1.5" />
+          <rect x="22" y="20" width="956" height="540" fill="none" stroke="#C2410C" className="dark:[stroke:#0ea5e9]" strokeWidth="0.6" opacity="0.35" />
         </svg>
 
         {/* Floating Route Inspection Tooltip Dossier */}
         {hoveredRoute && (
-          <div className="absolute bottom-4 left-4 max-w-sm p-4 rounded-xl bg-zinc-900/95 border border-zinc-700 backdrop-blur-md shadow-2xl space-y-2 pointer-events-none text-left z-20 animate-in fade-in zoom-in duration-100">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
-              <span className="font-mono text-[10px] uppercase font-bold text-emerald-400">
+          <div className="absolute bottom-4 left-4 max-w-sm p-4 rounded-2xl bg-white/95 dark:bg-zinc-900/95 border border-[#DCD3C1] dark:border-zinc-700 backdrop-blur-md shadow-2xl space-y-2 pointer-events-none text-left z-20 animate-in fade-in zoom-in duration-100">
+            <div className="flex items-center justify-between border-b border-[#DCD3C1] dark:border-zinc-800 pb-2">
+              <span className="font-mono text-[10px] uppercase font-bold text-[#C2410C] dark:text-emerald-400">
                 Peak Century: {hoveredRoute.peakCentury}
               </span>
-              <span className="px-2 py-0.5 rounded-md bg-zinc-800 text-[10px] font-mono text-zinc-300">
+              <span className="px-2 py-0.5 rounded-md bg-[#F5EFE1] dark:bg-zinc-800 text-[10px] font-mono text-[#57534E] dark:text-zinc-300">
                 {hoveredRoute.voyagesCount.toLocaleString()} documented voyages
               </span>
             </div>
 
-            <div className="flex items-center gap-2 text-sm font-extrabold text-white">
+            <div className="flex items-center gap-2 text-sm font-extrabold text-[#1C1917] dark:text-white">
               <span>{hoveredRoute.sourceRegion}</span>
-              <span className="text-emerald-400">➔</span>
+              <span className="text-[#C2410C] dark:text-emerald-400">➔</span>
               <span>{hoveredRoute.targetRegion}</span>
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-xs pt-1">
-              <div className="p-2 rounded-lg bg-zinc-950/80 border border-zinc-800">
-                <p className="text-[10px] text-zinc-400">Captives Embarked</p>
-                <p className="font-bold text-zinc-100">{hoveredRoute.embarkedCount.toLocaleString()}</p>
+              <div className="p-2 rounded-xl bg-[#FAF6EE] dark:bg-zinc-950/80 border border-[#DCD3C1] dark:border-zinc-800">
+                <p className="text-[10px] text-[#78716C] dark:text-zinc-400">Captives Embarked</p>
+                <p className="font-bold text-[#1C1917] dark:text-zinc-100">{hoveredRoute.embarkedCount.toLocaleString()}</p>
               </div>
-              <div className="p-2 rounded-lg bg-zinc-950/80 border border-zinc-800">
-                <p className="text-[10px] text-zinc-400">Middle Passage Mortality</p>
-                <p className={`font-bold ${hoveredRoute.avgMortalityRate > 15 ? 'text-rose-400' : 'text-amber-400'}`}>
+              <div className="p-2 rounded-xl bg-[#FAF6EE] dark:bg-zinc-950/80 border border-[#DCD3C1] dark:border-zinc-800">
+                <p className="text-[10px] text-[#78716C] dark:text-zinc-400">Middle Passage Mortality</p>
+                <p className={`font-bold ${hoveredRoute.avgMortalityRate > 15 ? 'text-rose-600 dark:text-rose-400' : 'text-amber-600 dark:text-amber-400'}`}>
                   {hoveredRoute.avgMortalityRate}%
                 </p>
               </div>
             </div>
 
-            <div className="text-[11px] text-zinc-400">
+            <div className="text-[11px] text-[#57534E] dark:text-zinc-400">
               <strong>Dominant National Carriers:</strong>{' '}
               {hoveredRoute.primaryCarriers.map(c => `${c.carrier} (${c.percentage}%)`).join(', ')}
             </div>
@@ -914,31 +677,31 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
 
         {/* Floating Port Inspection Tooltip */}
         {hoveredNode && !hoveredRoute && (
-          <div className="absolute top-4 right-4 p-3 rounded-xl bg-zinc-900/95 border border-zinc-700 backdrop-blur-md shadow-2xl space-y-1 pointer-events-none text-left z-20">
-            <p className="text-[10px] font-mono uppercase text-emerald-400 font-bold">{hoveredNode.region}</p>
-            <p className="font-extrabold text-sm text-white">{hoveredNode.name}</p>
-            <p className="text-xs text-zinc-300">Documented Volume: <strong className="text-emerald-300">{hoveredNode.volume}</strong></p>
+          <div className="absolute top-4 right-4 p-3 rounded-2xl bg-white/95 dark:bg-zinc-900/95 border border-[#DCD3C1] dark:border-zinc-700 backdrop-blur-md shadow-2xl space-y-1 pointer-events-none text-left z-20">
+            <p className="text-[10px] font-mono uppercase text-[#C2410C] dark:text-emerald-400 font-bold">{hoveredNode.region}</p>
+            <p className="font-extrabold text-sm text-[#1C1917] dark:text-white">{hoveredNode.name}</p>
+            <p className="text-xs text-[#57534E] dark:text-zinc-300">Documented Volume: <strong className="text-[#C2410C] dark:text-emerald-300">{hoveredNode.volume}</strong></p>
           </div>
         )}
 
         {/* Floating Trade Wind Inspection Tooltip */}
         {hoveredWind && !hoveredRoute && !hoveredNode && (
-          <div className="absolute top-4 right-4 max-w-xs p-3 rounded-xl bg-zinc-900/95 border border-sky-600/40 backdrop-blur-md shadow-2xl space-y-1 pointer-events-none text-left z-20">
-            <div className="flex items-center gap-1.5 text-sky-400 text-xs font-bold font-mono">
+          <div className="absolute top-4 right-4 max-w-xs p-3 rounded-2xl bg-white/95 dark:bg-zinc-900/95 border border-[#38BDF8] dark:border-sky-600/40 backdrop-blur-md shadow-2xl space-y-1 pointer-events-none text-left z-20">
+            <div className="flex items-center gap-1.5 text-[#0369A1] dark:text-sky-400 text-xs font-bold font-mono">
               <Wind className="w-4 h-4" />
               <span>{hoveredWind.name}</span>
             </div>
-            <p className="text-xs text-zinc-300 leading-relaxed">{hoveredWind.description}</p>
+            <p className="text-xs text-[#57534E] dark:text-zinc-300 leading-relaxed">{hoveredWind.description}</p>
           </div>
         )}
       </div>
 
-      {/* Temporal Timeline Controller / Scrubber */}
-      <div className="p-4 bg-zinc-900 border-t border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+      {/* 4. Temporal Timeline Controller / Scrubber */}
+      <div className="p-4 bg-[#FAF6EE] dark:bg-zinc-900 border-t border-[#DCD3C1] dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className="p-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold transition-all shadow-md cursor-pointer flex items-center gap-1.5 text-xs shrink-0"
+            className="p-2.5 rounded-xl bg-[#C2410C] hover:bg-[#9A3412] text-white font-bold transition-all shadow-xs cursor-pointer flex items-center gap-1.5 text-xs shrink-0"
             title={isPlaying ? 'Pause timeline animation' : 'Play timeline animation'}
           >
             {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-current" />}
@@ -950,20 +713,20 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
               setPlaybackYear(1520);
               if (onYearChange) onYearChange(1520);
             }}
-            className="p-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-all cursor-pointer text-xs shrink-0"
+            className="p-2.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-[#F5EFE1] dark:hover:bg-zinc-700 text-[#57534E] dark:text-zinc-300 border border-[#DCD3C1] dark:border-zinc-700 transition-all cursor-pointer text-xs shrink-0 shadow-xs"
             title="Reset to 1520"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
 
-          <div className="font-mono text-sm font-black text-emerald-400 bg-zinc-950 px-3 py-1.5 rounded-xl border border-zinc-800 shrink-0">
+          <div className="font-mono text-sm font-black text-[#9A3412] dark:text-emerald-400 bg-white dark:bg-zinc-950 px-3 py-1.5 rounded-xl border border-[#DCD3C1] dark:border-zinc-800 shrink-0 shadow-xs">
             Year: {playbackYear}
           </div>
         </div>
 
         {/* Interactive Scrub Slider */}
         <div className="flex-1 w-full flex items-center gap-3">
-          <span className="text-xs font-mono text-zinc-500">1514</span>
+          <span className="text-xs font-mono text-[#78716C] dark:text-zinc-500 font-bold">1514</span>
           <input
             type="range"
             min={1514}
@@ -975,24 +738,24 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
               setPlaybackYear(val);
               if (onYearChange) onYearChange(val);
             }}
-            className="w-full accent-emerald-500 h-2 bg-zinc-800 rounded-lg cursor-pointer"
+            className="w-full accent-[#C2410C] h-2 bg-[#E8DFCE] dark:bg-zinc-800 rounded-lg cursor-pointer"
           />
-          <span className="text-xs font-mono text-zinc-500">1866</span>
+          <span className="text-xs font-mono text-[#78716C] dark:text-zinc-500 font-bold">1866</span>
         </div>
 
         {/* Mortality Rate Visual Legend */}
-        <div className="flex items-center gap-4 text-[11px] font-mono text-zinc-400 shrink-0">
+        <div className="flex items-center gap-4 text-[11px] font-mono text-[#78716C] dark:text-zinc-400 shrink-0">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-            <span>&lt;12% Mortality</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
+            <span className="text-[#57534E] dark:text-zinc-400 font-semibold">&lt;12% Mortality</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-            <span>12–15%</span>
+            <span className="text-[#57534E] dark:text-zinc-400 font-semibold">12–15%</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-            <span>&gt;15% Severe</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-600" />
+            <span className="text-[#57534E] dark:text-zinc-400 font-semibold">&gt;15% Severe</span>
           </div>
         </div>
       </div>
