@@ -7,6 +7,7 @@
 
 import rawData from './africaFinalMapData.json';
 import { AfricanRegion } from './types';
+import { getCanonicalCountryColor } from './africaCanonicalColorPalette';
 
 export interface AfricaFinalAdmin1Path {
   id: string;
@@ -37,7 +38,18 @@ export interface AfricaFinalCountryPath {
   };
 }
 
-export const AFRICA_FINAL_MAP: Record<string, AfricaFinalCountryPath> = rawData as unknown as Record<string, AfricaFinalCountryPath>;
+const parsedMap = rawData as unknown as Record<string, AfricaFinalCountryPath>;
+
+// Ensure all countries in the authoritative map have their canonical colors mapped
+for (const country of Object.values(parsedMap)) {
+  const canonical = getCanonicalCountryColor(country.id) || getCanonicalCountryColor(country.name);
+  if (canonical) {
+    country.originalColor = canonical;
+  }
+}
+
+export const AFRICA_FINAL_MAP: Record<string, AfricaFinalCountryPath> = parsedMap;
 
 export const AFRICA_FINAL_VIEWBOX = "0 0 5796 5867";
 export const AFRICA_FINAL_TRANSFORM = "translate(-216.0198 -66.614)";
+

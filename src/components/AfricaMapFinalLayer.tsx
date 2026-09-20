@@ -7,6 +7,7 @@ interface AfricaMapFinalLayerProps {
   activeTooltipEntityId: string | null;
   hoveredEntityId: string | null;
   hoveredAdmin1: { id: string; name: string; countryId: string } | null;
+  selectedAdmin1?: { id: string; name: string; countryId?: string } | null;
   showAdmin1Borders: boolean;
   showGraticuleAndCompass?: boolean;
   visibleRegions: Set<AfricanRegion>;
@@ -17,6 +18,7 @@ interface AfricaMapFinalLayerProps {
   handleCountryHover: (countryId: string, event: React.MouseEvent) => void;
   handleCountryLeave: () => void;
   handleCountryClick: (countryId: string, event: React.MouseEvent) => void;
+  handleAdmin1Click?: (admin1: { id: string; name: string; countryId: string }, event: React.MouseEvent) => void;
   setHoveredAdmin1: React.Dispatch<React.SetStateAction<{ id: string; name: string; countryId: string } | null>>;
 }
 
@@ -25,6 +27,7 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
   activeTooltipEntityId,
   hoveredEntityId,
   hoveredAdmin1,
+  selectedAdmin1,
   showAdmin1Borders,
   showGraticuleAndCompass = true,
   visibleRegions,
@@ -35,48 +38,49 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
   handleCountryHover,
   handleCountryLeave,
   handleCountryClick,
+  handleAdmin1Click,
   setHoveredAdmin1,
 }) => {
   return (
     <>
-      {/* Scaled Graticule Latitude / Longitude lines with ultra-thin hairlines & Astronomical Indicators */}
+      {/* Scaled Graticule Latitude / Longitude lines extending edge-to-edge across container */}
       {showGraticuleAndCompass && (
         <g id="graticule-grid-final" className="pointer-events-none select-none">
           {/* 20°W Meridian */}
-          <line x1="450" y1="0" x2="450" y2="5867" stroke="#0284c7" strokeWidth="0.8" strokeDasharray="8 8" opacity="0.35" />
+          <line x1="450" y1="-5000" x2="450" y2="12000" stroke="#0284c7" strokeWidth="0.8" strokeDasharray="8 8" opacity="0.35" />
           <text x="450" y="180" textAnchor="middle" fill="#0284c7" fontSize="28" fontFamily="monospace" fontWeight="bold" opacity="0.8">20°W</text>
 
           {/* 0° Prime Meridian (Greenwich) */}
-          <line x1="1500" y1="0" x2="1500" y2="5867" stroke="#0284c7" strokeWidth="1.2" strokeDasharray="14 10" opacity="0.65" />
+          <line x1="1500" y1="-5000" x2="1500" y2="12000" stroke="#0284c7" strokeWidth="1.2" strokeDasharray="14 10" opacity="0.65" />
           <g transform="translate(1500, 160)">
             <rect x="-140" y="-30" width="280" height="60" rx="10" fill="#ffffff" stroke="#0284c7" strokeWidth="1.5" opacity="0.95" />
             <text x="0" y="8" textAnchor="middle" fill="#0369a1" fontSize="26" fontFamily="monospace" fontWeight="900">0° PRIME MERIDIAN</text>
           </g>
 
           {/* 20°E Meridian */}
-          <line x1="2800" y1="0" x2="2800" y2="5867" stroke="#64748b" strokeWidth="0.8" strokeDasharray="8 8" opacity="0.35" />
+          <line x1="2800" y1="-5000" x2="2800" y2="12000" stroke="#64748b" strokeWidth="0.8" strokeDasharray="8 8" opacity="0.35" />
           <text x="2800" y="180" textAnchor="middle" fill="#475569" fontSize="28" fontFamily="monospace" fontWeight="bold" opacity="0.8">20°E</text>
 
           {/* 40°E Meridian */}
-          <line x1="4100" y1="0" x2="4100" y2="5867" stroke="#64748b" strokeWidth="0.8" strokeDasharray="8 8" opacity="0.35" />
+          <line x1="4100" y1="-5000" x2="4100" y2="12000" stroke="#64748b" strokeWidth="0.8" strokeDasharray="8 8" opacity="0.35" />
           <text x="4100" y="180" textAnchor="middle" fill="#475569" fontSize="28" fontFamily="monospace" fontWeight="bold" opacity="0.8">40°E</text>
 
           {/* Tropic of Cancer 23.4° N */}
-          <line x1="0" y1="1650" x2="5796" y2="1650" stroke="#d97706" strokeWidth="1.2" strokeDasharray="14 10" opacity="0.65" />
+          <line x1="-5000" y1="1650" x2="12000" y2="1650" stroke="#d97706" strokeWidth="1.2" strokeDasharray="14 10" opacity="0.65" />
           <g transform="translate(5176, 1622)">
             <rect x="0" y="-28" width="560" height="56" rx="10" fill="#fffbeb" stroke="#d97706" strokeWidth="1.5" opacity="0.95" />
             <text x="280" y="8" textAnchor="middle" fill="#b45309" fontSize="24" fontFamily="monospace" fontWeight="900">☀️ TROPIC OF CANCER 23.4°N</text>
           </g>
 
           {/* Equator 0° */}
-          <line x1="0" y1="3280" x2="5796" y2="3280" stroke="#059669" strokeWidth="1.6" strokeDasharray="18 12" opacity="0.85" />
+          <line x1="-5000" y1="3280" x2="12000" y2="3280" stroke="#059669" strokeWidth="1.6" strokeDasharray="18 12" opacity="0.85" />
           <g transform="translate(5176, 3252)">
             <rect x="0" y="-30" width="560" height="60" rx="12" fill="#ecfdf5" stroke="#059669" strokeWidth="1.8" opacity="0.98" />
             <text x="280" y="10" textAnchor="middle" fill="#047857" fontSize="26" fontFamily="monospace" fontWeight="900">☀️ EQUATOR 0° • EQUINOX</text>
           </g>
 
           {/* Tropic of Capricorn 23.4° S */}
-          <line x1="0" y1="4800" x2="5796" y2="4800" stroke="#d97706" strokeWidth="1.2" strokeDasharray="14 10" opacity="0.65" />
+          <line x1="-5000" y1="4800" x2="12000" y2="4800" stroke="#d97706" strokeWidth="1.2" strokeDasharray="14 10" opacity="0.65" />
           <g transform="translate(5136, 4772)">
             <rect x="0" y="-28" width="600" height="56" rx="10" fill="#fffbeb" stroke="#d97706" strokeWidth="1.5" opacity="0.95" />
             <text x="300" y="8" textAnchor="middle" fill="#b45309" fontSize="24" fontFamily="monospace" fontWeight="900">☀️ TROPIC OF CAPRICORN 23.4°S</text>
@@ -170,15 +174,18 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
 
               {/* Admin-1 subdivision paths from africa-final.svg */}
               {country.admin1.map(sub => {
+                const isSubSelected = selectedAdmin1?.id === sub.id || (selectedAdmin1?.name && selectedAdmin1.name.toLowerCase() === sub.name.toLowerCase() && selectedAdmin1.countryId === country.id);
                 const isSubHovered = hoveredAdmin1?.id === sub.id;
                 return (
                   <path
                     key={sub.id}
                     id={sub.id}
                     d={sub.d}
-                    fill={isSubHovered ? '#38bdf8' : fill}
+                    fill={isSubSelected ? '#10b981' : isSubHovered ? '#38bdf8' : fill}
                     stroke={
-                      isSelected 
+                      isSubSelected
+                        ? '#ffffff'
+                        : isSelected 
                         ? '#059669' 
                         : isSubHovered
                         ? '#ffffff'
@@ -189,7 +196,9 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
                         : 'rgba(30, 41, 59, 0.15)'
                     }
                     strokeWidth={
-                      isSelected 
+                      isSubSelected
+                        ? 5
+                        : isSelected 
                         ? 4.5 
                         : isSubHovered
                         ? 3.8
@@ -210,7 +219,13 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
                       setHoveredAdmin1(null);
                       handleCountryLeave();
                     }}
-                    onClick={(e) => handleCountryClick(country.id, e)}
+                    onClick={(e) => {
+                      if (handleAdmin1Click) {
+                        handleAdmin1Click({ id: sub.id, name: sub.name, countryId: country.id }, e);
+                      } else {
+                        handleCountryClick(country.id, e);
+                      }
+                    }}
                   >
                     <title>{`${sub.name}, ${country.name} (${country.id})`}</title>
                   </path>

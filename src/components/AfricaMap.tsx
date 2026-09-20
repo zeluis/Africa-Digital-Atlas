@@ -45,8 +45,9 @@ import {
   Award,
   Zap
 } from 'lucide-react';
-import { getAdmin1ForCountry, searchAdmin1Subdivisions } from '../data/africaliaGeographyData';
+import { getAdmin1ForCountry, searchAdmin1Subdivisions, ALL_ADMIN1_SUBDIVISIONS } from '../data/africaliaGeographyData';
 import { AfricaliaAdmin1 } from '../data/types';
+import { getCanonicalCountryColor } from '../data/africaCanonicalColorPalette';
 import { AfricaMapFinalLayer } from './AfricaMapFinalLayer';
 import { AfricaUnLogo } from './AfricaUnLogo';
 
@@ -370,18 +371,66 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     setPanOffset(DEFAULT_PAN_OFFSET);
   };
 
+  // Automated Smooth Centering and Zoom-to-Fit for Country & Admin-1 Subdivisions
+  const zoomToCountry = useCallback((countryId: string) => {
+    if (isFinalMode) {
+      const country = AFRICA_FINAL_MAP[countryId];
+      if (!country || !country.bbox) return;
+      const bbox = country.bbox;
+
+      const svgViewBox = { width: 5796, height: 5867, cx: 2898, cy: 2933 };
+      const boxWidth = Math.max(120, bbox.maxX - bbox.minX);
+      const boxHeight = Math.max(120, bbox.maxY - bbox.minY);
+      const elemCenterX = (bbox.minX + bbox.maxX) / 2;
+      const elemCenterY = (bbox.minY + bbox.maxY) / 2;
+
+      const padding = 220;
+      const scaleX = (svgViewBox.width - padding * 2) / boxWidth;
+      const scaleY = (svgViewBox.height - padding * 2) / boxHeight;
+      const targetZoom = Math.max(1.3, Math.min(4.2, Math.min(scaleX, scaleY) * 0.78));
+
+      const offsetX = (svgViewBox.cx - elemCenterX) * targetZoom;
+      const offsetY = (svgViewBox.cy - elemCenterY) * targetZoom;
+
+      setZoomLevel(targetZoom);
+      setPanOffset({ x: offsetX, y: offsetY });
+    } else {
+      const country = AFRICA_SVG_MAP[countryId];
+      if (!country || !country.boundingBox) return;
+      const bbox = country.boundingBox;
+
+      const svgViewBox = { width: 890, height: 990, cx: 495, cy: 550 };
+      const boxWidth = Math.max(30, bbox.maxX - bbox.minX);
+      const boxHeight = Math.max(30, bbox.maxY - bbox.minY);
+      const elemCenterX = (bbox.minX + bbox.maxX) / 2;
+      const elemCenterY = (bbox.minY + bbox.maxY) / 2;
+
+      const padding = 50;
+      const scaleX = (svgViewBox.width - padding * 2) / boxWidth;
+      const scaleY = (svgViewBox.height - padding * 2) / boxHeight;
+      const targetZoom = Math.max(1.4, Math.min(4.2, Math.min(scaleX, scaleY) * 0.78));
+
+      const offsetX = (svgViewBox.cx - elemCenterX) * targetZoom;
+      const offsetY = (svgViewBox.cy - elemCenterY) * targetZoom;
+
+      setZoomLevel(targetZoom);
+      setPanOffset({ x: offsetX, y: offsetY });
+    }
+  }, [isFinalMode]);
+
   // Color resolver for each country
   const getCountryFill = (country: { id: string; unRegion: AfricanRegion; originalColor?: string }, isSelected: boolean, isHovered: boolean): string => {
     if (isSelected) {
       return '#10b981'; // Bright emerald highlight
     }
 
-    // 1. Authentic Final Map (from public/africa-final.svg)
+    // 1. Authentic Final Map (from public/africa-final.svg & canonical palette)
     if (isFinalMode) {
-      const authenticColor = AFRICA_FINAL_MAP[country.id]?.originalColor || country.originalColor || '#0a9bc3';
+      const canonicalColor = getCanonicalCountryColor(country.id);
+      const authenticColor = canonicalColor || AFRICA_FINAL_MAP[country.id]?.originalColor || country.originalColor || '#0a9bc3';
 
       if (mapMode === 'authentic_palette') {
-        // EXACT original colors from the SVG file. No compromises.
+        // Canonical authoritative colors from the M49 palette. No compromises.
         return authenticColor;
       }
 
@@ -515,22 +564,42 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     }
     setActiveTooltipEntityId(countryId);
     setHoveredEntityId(countryId);
+    zoomToCountry(countryId);
   };
 
   const handleAdmin1Focus = (admin1: AfricaliaAdmin1) => {
     setSelectedAdmin1(admin1);
     if (admin1.iso3) {
-      const targetEl = (
-        document.getElementById(admin1.id) ||
-        document.getElementById(`country-group-${admin1.iso3}`) ||
-        document.getElementById(`country-path-${admin1.iso3}`)
-      ) as unknown as SVGGraphicsElement | null;
-      if (targetEl) {
-        fitToElement(targetEl, { padding: 60, maxZoom: 4.5, minZoom: 0.8 });
-      }
+      zoomToCountry(admin1.iso3);
       setActiveTooltipEntityId(admin1.iso3);
       setHoveredEntityId(admin1.iso3);
+      setHoveredAdmin1({ id: admin1.id, name: admin1.name, countryId: admin1.iso3 });
     }
+  };
+
+  const handleAdmin1Click = (sub: { id: string; name: string; countryId: string }, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      setFixedTooltipCoords({ x, y });
+    }
+    const matchingAdmin1 = ALL_ADMIN1_SUBDIVISIONS.find(a => a.id === sub.id || (a.name.toLowerCase() === sub.name.toLowerCase() && a.iso3 === sub.countryId)) || {
+      id: sub.id,
+      name: sub.name,
+      level: 'admin1',
+      parent: sub.countryId,
+      iso3: sub.countryId,
+      countryName: AFRICA_FINAL_MAP[sub.countryId]?.name || sub.countryId,
+      regionName: AFRICA_FINAL_MAP[sub.countryId]?.unRegion || 'Western Africa',
+      admin1Code: sub.id
+    };
+    setSelectedAdmin1(matchingAdmin1 as AfricaliaAdmin1);
+    setHoveredAdmin1({ id: sub.id, name: sub.name, countryId: sub.countryId });
+    setActiveTooltipEntityId(sub.countryId);
+    setHoveredEntityId(sub.countryId);
+    zoomToCountry(sub.countryId);
   };
 
   const handleTooltipMouseEnter = () => {
@@ -805,21 +874,43 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <span>Graticule ({showGraticuleAndCompass ? 'ON' : 'OFF'})</span>
             </button>
 
-            {/* Subdivisions Toggle */}
+            {/* Subdivisions Toggle & Inspector Toggle */}
             {isFinalMode && (
-              <button
-                type="button"
-                onClick={() => setShowAdmin1Borders(prev => !prev)}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
-                  showAdmin1Borders
-                    ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-300'
-                    : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400'
-                }`}
-                title="Toggle Admin-1 internal subdivisions"
-              >
-                <MapPin className="w-3 h-3" />
-                <span>Admin-1 ({showAdmin1Borders ? 'ON' : 'OFF'})</span>
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setShowAdmin1Borders(prev => !prev)}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
+                    showAdmin1Borders
+                      ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-300'
+                      : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400'
+                  }`}
+                  title="Toggle Admin-1 internal subdivisions"
+                >
+                  <MapPin className="w-3 h-3" />
+                  <span>Admin-1 ({showAdmin1Borders ? 'ON' : 'OFF'})</span>
+                </button>
+
+                <button
+                  id="btn-toggle-admin1-inspector"
+                  type="button"
+                  onClick={() => setIsAdmin1DrawerOpen(prev => !prev)}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
+                    isAdmin1DrawerOpen
+                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                      : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                  }`}
+                  title="Toggle Admin-1 Subdivisions Inspector"
+                >
+                  <MapPin className="w-3 h-3" />
+                  <span>Inspector ({isAdmin1DrawerOpen ? 'OPEN' : 'CLOSED'})</span>
+                  <span className={`text-[10px] font-mono px-1 py-0.2 rounded font-bold ${
+                    isAdmin1DrawerOpen ? 'bg-emerald-700/80 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
+                  }`}>
+                    {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
+                  </span>
+                </button>
+              </div>
             )}
 
             {/* Cartography Engine Switcher */}
@@ -1001,6 +1092,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 activeTooltipEntityId={activeTooltipEntityId}
                 hoveredEntityId={hoveredEntityId}
                 hoveredAdmin1={hoveredAdmin1}
+                selectedAdmin1={selectedAdmin1}
                 showAdmin1Borders={showAdmin1Borders}
                 showGraticuleAndCompass={showGraticuleAndCompass}
                 visibleRegions={visibleRegions}
@@ -1011,44 +1103,45 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 handleCountryHover={handleCountryHover}
                 handleCountryLeave={handleCountryLeave}
                 handleCountryClick={handleCountryClick}
+                handleAdmin1Click={handleAdmin1Click}
                 setHoveredAdmin1={setHoveredAdmin1}
               />
             ) : (
               <>
-                {/* Schematic Graticule Latitude / Longitude lines */}
+                {/* Schematic Graticule Latitude / Longitude lines extending edge-to-edge */}
                 {showGraticuleAndCompass && (
                   <g id="graticule-grid-layer" className="pointer-events-none">
-                    <line x1="80" y1="55" x2="80" y2="1045" stroke="#0284c7" strokeWidth="0.6" strokeDasharray="3 3" opacity="0.4" />
+                    <line x1="80" y1="-2000" x2="80" y2="3000" stroke="#0284c7" strokeWidth="0.6" strokeDasharray="3 3" opacity="0.4" />
                     <text x="80" y="70" textAnchor="middle" fill="#0284c7" fontSize="7" fontFamily="monospace" fontWeight="bold">20°W</text>
                     
-                    <line x1="280" y1="55" x2="280" y2="1045" stroke="#0284c7" strokeWidth="1" strokeDasharray="4 2" opacity="0.6" />
+                    <line x1="280" y1="-2000" x2="280" y2="3000" stroke="#0284c7" strokeWidth="1" strokeDasharray="4 2" opacity="0.6" />
                     <g transform="translate(280, 70)">
                       <rect x="-30" y="-8" width="60" height="14" rx="3" fill="#ffffff" stroke="#0284c7" strokeWidth="0.8" opacity="0.9" />
                       <text x="0" y="2" textAnchor="middle" fill="#0369a1" fontSize="6.5" fontFamily="monospace" fontWeight="bold">0° PRIME</text>
                     </g>
 
-                    <line x1="510" y1="55" x2="510" y2="1045" stroke="#64748b" strokeWidth="0.6" strokeDasharray="3 3" opacity="0.4" />
+                    <line x1="510" y1="-2000" x2="510" y2="3000" stroke="#64748b" strokeWidth="0.6" strokeDasharray="3 3" opacity="0.4" />
                     <text x="510" y="70" textAnchor="middle" fill="#475569" fontSize="7" fontFamily="monospace" fontWeight="bold">20°E</text>
 
-                    <line x1="740" y1="55" x2="740" y2="1045" stroke="#64748b" strokeWidth="0.6" strokeDasharray="3 3" opacity="0.4" />
+                    <line x1="740" y1="-2000" x2="740" y2="3000" stroke="#64748b" strokeWidth="0.6" strokeDasharray="3 3" opacity="0.4" />
                     <text x="740" y="70" textAnchor="middle" fill="#475569" fontSize="7" fontFamily="monospace" fontWeight="bold">40°E</text>
 
                     {/* Tropic of Cancer 23.4° N */}
-                    <line x1="50" y1="240" x2="940" y2="240" stroke="#d97706" strokeWidth="1" strokeDasharray="4 3" opacity="0.7" />
+                    <line x1="-2000" y1="240" x2="3000" y2="240" stroke="#d97706" strokeWidth="1" strokeDasharray="4 3" opacity="0.7" />
                     <g transform="translate(790, 232)">
                       <rect x="0" y="-7" width="140" height="14" rx="3" fill="#fffbeb" stroke="#d97706" strokeWidth="0.8" opacity="0.95" />
                       <text x="70" y="3" textAnchor="middle" fill="#b45309" fontSize="6.5" fontFamily="monospace" fontWeight="bold">☀️ TROPIC OF CANCER 23.4°N</text>
                     </g>
 
                     {/* Equator 0° */}
-                    <line x1="50" y1="550" x2="940" y2="550" stroke="#059669" strokeWidth="1.4" strokeDasharray="6 3" opacity="0.85" />
+                    <line x1="-2000" y1="550" x2="3000" y2="550" stroke="#059669" strokeWidth="1.4" strokeDasharray="6 3" opacity="0.85" />
                     <g transform="translate(800, 542)">
                       <rect x="0" y="-7" width="130" height="14" rx="3" fill="#ecfdf5" stroke="#059669" strokeWidth="0.9" opacity="0.95" />
                       <text x="65" y="3" textAnchor="middle" fill="#047857" fontSize="7" fontFamily="monospace" fontWeight="900">☀️ EQUATOR 0° • EQUINOX</text>
                     </g>
 
                     {/* Tropic of Capricorn 23.4° S */}
-                    <line x1="50" y1="880" x2="940" y2="880" stroke="#d97706" strokeWidth="1" strokeDasharray="4 3" opacity="0.7" />
+                    <line x1="-2000" y1="880" x2="3000" y2="880" stroke="#d97706" strokeWidth="1" strokeDasharray="4 3" opacity="0.7" />
                     <g transform="translate(780, 872)">
                       <rect x="0" y="-7" width="150" height="14" rx="3" fill="#fffbeb" stroke="#d97706" strokeWidth="0.8" opacity="0.95" />
                       <text x="75" y="3" textAnchor="middle" fill="#b45309" fontSize="6.5" fontFamily="monospace" fontWeight="bold">☀️ TROPIC OF CAPRICORN 23.4°S</text>
@@ -1317,6 +1410,112 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           </g>
         </svg>
 
+        {/* Floating Admin-1 Subdivisions Inspector Drawer */}
+        {isAdmin1DrawerOpen && isFinalMode && (
+          <div
+            id="admin1-subdivision-inspector"
+            className="absolute top-4 right-4 z-20 w-80 sm:w-96 max-w-[calc(100vw-32px)] max-h-[75vh] flex flex-col rounded-2xl bg-white/95 dark:bg-zinc-950/95 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 overflow-hidden"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-3.5 py-3 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/70 dark:bg-zinc-900/50">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <div>
+                  <h4 className="font-extrabold text-xs text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
+                    Admin-1 Inspector
+                  </h4>
+                  <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium">
+                    {selectedEntityId && (AFRICA_FINAL_MAP[selectedEntityId]?.name || selectedEntityId)} • {filteredAdmin1List.length} subdivisions
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAdmin1DrawerOpen(false)}
+                className="p-1 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                title="Close Inspector"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Search Bar */}
+            <div className="p-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/40 dark:bg-zinc-950/40">
+              <div className="relative flex items-center">
+                <Search className="absolute left-2.5 w-3.5 h-3.5 text-zinc-400" />
+                <input
+                  type="text"
+                  placeholder="Search state, province, or region..."
+                  value={admin1SearchQuery}
+                  onChange={(e) => setAdmin1SearchQuery(e.target.value)}
+                  className="w-full pl-8 pr-7 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/90 dark:bg-zinc-900/90 text-xs font-medium text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                />
+                {admin1SearchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setAdmin1SearchQuery('')}
+                    className="absolute right-2 p-0.5 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Subdivisions List */}
+            <div className="flex-1 overflow-y-auto p-2 space-y-1.5 max-h-[50vh]">
+              {filteredAdmin1List.length === 0 ? (
+                <div className="p-6 text-center text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+                  No subdivisions match &ldquo;{admin1SearchQuery}&rdquo;.
+                </div>
+              ) : (
+                filteredAdmin1List.map((adm) => {
+                  const isAdmSelected = selectedAdmin1?.id === adm.id;
+                  const isAdmHovered = hoveredAdmin1?.id === adm.id;
+                  return (
+                    <div
+                      key={adm.id}
+                      onMouseEnter={() => {
+                        setHoveredAdmin1({ id: adm.id, name: adm.name, countryId: adm.iso3 });
+                        setHoveredEntityId(adm.iso3);
+                      }}
+                      onMouseLeave={() => {
+                        setHoveredAdmin1(null);
+                      }}
+                      onClick={() => handleAdmin1Focus(adm)}
+                      className={`flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer ${
+                        isAdmSelected
+                          ? 'bg-emerald-500/15 border-emerald-500 text-emerald-950 dark:text-emerald-100 shadow-xs'
+                          : isAdmHovered
+                          ? 'bg-zinc-100/90 dark:bg-zinc-900/90 border-emerald-500/40 text-zinc-900 dark:text-zinc-100'
+                          : 'bg-white/60 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <CountryFlag entityId={adm.iso3} size="xs" />
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold truncate leading-tight">{adm.name}</p>
+                          <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">
+                            {adm.countryName} ({adm.iso3})
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold">
+                          {adm.admin1Code || adm.id}
+                        </span>
+                        <div className={`p-1 rounded-lg ${isAdmSelected ? 'bg-emerald-600 text-white' : 'text-zinc-400'}`}>
+                          <Maximize2 className="w-3 h-3" />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Pinned / Hovered Country Tooltip */}
         {displayEntityId && hoveredCountryData && hoveredEntity && (
           <div
@@ -1333,6 +1532,20 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 : 'bg-white/95 dark:bg-zinc-950/95 border-zinc-200 dark:border-zinc-800'
             }`}
           >
+            {/* Admin-1 Subdivision Badge when hovered or selected */}
+            {(hoveredAdmin1 || (selectedAdmin1 && selectedAdmin1.iso3 === hoveredEntity.id)) && (
+              <div className="flex items-center justify-between gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-500/40 text-emerald-900 dark:text-emerald-200 text-xs font-semibold mb-2.5">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <MapPin className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span className="truncate font-bold text-emerald-800 dark:text-emerald-200">
+                    {hoveredAdmin1?.name || selectedAdmin1?.name}
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/80 text-emerald-700 dark:text-emerald-300 font-bold shrink-0">
+                  {selectedAdmin1?.admin1Code || 'ADMIN-1'}
+                </span>
+              </div>
+            )}
             <div className="flex items-start justify-between gap-2 mb-2.5">
               <div className="flex items-center gap-2.5">
                 <CountryFlag
