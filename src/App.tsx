@@ -48,7 +48,7 @@ const REGION_ID_TO_NAME: Record<string, AfricanRegion> = {
 function AppContent() {
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const saved = localStorage.getItem('atlas_theme');
-    return saved === 'light' ? 'light' : 'dark';
+    return saved === 'dark' ? 'dark' : 'light';
   });
 
   // Canonical Navigation Tab State (starts at 'overview')

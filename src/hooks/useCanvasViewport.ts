@@ -61,17 +61,58 @@ export function useCanvasViewport(
   }, [containerRef, fitScale, minZoom, maxZoom, pos.x, pos.y]);
 
   // Pan smoothly to specific SVG coordinates
-  const panToCoordinates = useCallback((targetX: number, targetY: number, targetZoom = 1.8) => {
+  const panToCoordinates = useCallback((targetX: number, targetY: number, targetZoom = 1.8, customOffset?: { xOffset?: number; yOffset?: number }) => {
     if (!containerRef.current) return;
     const { clientWidth: w, clientHeight: h } = containerRef.current;
     const boundedZoom = Math.min(Math.max(targetZoom, minZoom), maxZoom);
     const scale = fitScale * boundedZoom;
-    const nextX = w / 2 - targetX * scale;
-    const nextY = h / 2 - targetY * scale;
+    const targetCenterX = customOffset?.xOffset !== undefined ? (w - customOffset.xOffset) / 2 : w / 2;
+    const targetCenterY = customOffset?.yOffset !== undefined ? (h - customOffset.yOffset) / 2 : h / 2;
+    const nextX = targetCenterX - targetX * scale;
+    const nextY = targetCenterY - targetY * scale;
 
     setZoom(boundedZoom);
     setPos({ x: nextX, y: nextY });
   }, [containerRef, fitScale, minZoom, maxZoom]);
+
+  // Fit an arbitrary bounding box cleanly into the viewport with padding and optional drawer offset
+  const fitToBounds = useCallback((
+    bounds: { minX: number; minY: number; maxX: number; maxY: number },
+    options: { padding?: number; maxZoom?: number; minZoom?: number; drawerWidth?: number } = {}
+  ) => {
+    if (!containerRef.current) return;
+    const { clientWidth: w, clientHeight: h } = containerRef.current;
+    const {
+      padding = 70,
+      maxZoom: maxZ = 3.2,
+      minZoom: minZ = 0.75,
+      drawerWidth = (w > 1024 ? 380 : w > 768 ? 320 : 0)
+    } = options;
+
+    const bboxW = Math.max(bounds.maxX - bounds.minX, 40);
+    const bboxH = Math.max(bounds.maxY - bounds.minY, 40);
+    const centerX = bounds.minX + bboxW / 2;
+    const centerY = bounds.minY + bboxH / 2;
+
+    const effectiveWidth = Math.max(w - drawerWidth - padding * 2, 180);
+    const effectiveHeight = Math.max(h - padding * 2, 180);
+
+    const scaleX = effectiveWidth / bboxW;
+    const scaleY = effectiveHeight / bboxH;
+    const targetScale = Math.min(scaleX, scaleY);
+
+    const boundedZoom = Math.min(Math.max(targetScale / (fitScale || 1), minZ), maxZ);
+    const scale = fitScale * boundedZoom;
+
+    const viewportCenterX = (w - drawerWidth) / 2;
+    const viewportCenterY = h / 2;
+
+    const nextX = viewportCenterX - centerX * scale;
+    const nextY = viewportCenterY - centerY * scale;
+
+    setZoom(boundedZoom);
+    setPos({ x: nextX, y: nextY });
+  }, [containerRef, fitScale]);
 
   // Pointer Down
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
@@ -278,6 +319,7 @@ export function useCanvasViewport(
     isPinching,
     handleZoomDelta,
     panToCoordinates,
+    fitToBounds,
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,

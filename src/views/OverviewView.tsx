@@ -127,8 +127,10 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
       {/* 3. Interactive Map & Cartography Section */}
       <section aria-label="Interactive Cartography" className="cascade-item cascade-3">
-        {/* The Live Interactive Map with Unified Controls & Filters */}
+        {/* The Live Interactive Map with Unified Controls & Filters - Schematic UN Colors on Overview */}
         <AfricaMap
+          initialCartographySource="schematic"
+          mapMode="un_geoscheme"
           onSelectCountry={onSelectCountry}
           selectedRegionFilter={selectedRegionFilter}
           onSelectRegionFilter={setSelectedRegionFilter}

@@ -12,7 +12,7 @@ export const MapView: React.FC<MapViewProps> = ({
   selectedEntityId = 'NGA'
 }) => {
   const [regionFilter, setRegionFilter] = useState<AfricanRegion | 'All'>('All');
-  const [mapMode, setMapMode] = useState<MapDisplayMode>('un_geoscheme');
+  const [mapMode, setMapMode] = useState<MapDisplayMode>('authentic_palette');
   const [activeMetric, setActiveMetric] = useState<string>('NY.GDP.MKTP.CD');
 
   return (
@@ -21,6 +21,7 @@ export const MapView: React.FC<MapViewProps> = ({
       <div id="map-viewport-container" className="relative w-full h-full flex-1 flex flex-col overflow-hidden">
         <AfricaMap
           isFullBleed={true}
+          initialCartographySource="authentic_final"
           selectedEntityId={selectedEntityId}
           onSelectEntity={onSelectCountry}
           onSelectCountry={onSelectCountry}

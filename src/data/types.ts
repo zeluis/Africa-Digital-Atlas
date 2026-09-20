@@ -236,3 +236,46 @@ export interface AtlasManifest {
   lastIntegrityCheck: string;
   lastUpdated?: string;
 }
+
+export interface AfricaliaAdmin1 {
+  id: string;
+  level: 'admin1';
+  parent: string;
+  admin1Code: string;
+  name: string;
+  sourceName: string;
+  iso3?: string;
+  countryName?: string;
+  regionName?: string;
+}
+
+export interface AfricaliaCountryHierarchy {
+  id: string;
+  level: 'country';
+  m49: string;
+  iso3: string;
+  iso2: string;
+  name: string;
+  kind: 'sovereign' | 'territory' | 'unrecognized' | 'disputed';
+  regionM49: string;
+  parent: string;
+  admin1Layer?: string;
+  admin2Layer?: string;
+  admin1Count: number;
+  admin1: AfricaliaAdmin1[];
+}
+
+export interface AfricaliaRegionHierarchy {
+  m49: string;
+  name: AfricanRegion | string;
+  layer: string;
+  level: 'region';
+  countries: AfricaliaCountryHierarchy[];
+}
+
+export interface AfricaliaGeographyHierarchy {
+  schema: string;
+  root: string;
+  sources: { admin1: string; admin2: string };
+  regions: AfricaliaRegionHierarchy[];
+}

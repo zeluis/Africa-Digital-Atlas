@@ -47,6 +47,7 @@ import { WikipediaEthnicDossier } from './WikipediaEthnicDossier';
 import { RichEditorialCountryDevelopmentPanel } from './RichEditorialCountryDevelopmentPanel';
 import { getMajorLinguisticFamilies } from '../../services/wikipediaService';
 import { findWikipediaEntry, WIKIPEDIA_TABLE_ENTRIES } from '../../data/wikipediaEthnicAtlas';
+import { ALL_ADMIN1_SUBDIVISIONS } from '../../data/africaliaGeographyData';
 import { RadialTreeSkeleton } from './RadialTreeSkeleton';
 import { useCanvasViewport } from '../../hooks/useCanvasViewport';
 import type { WorkerSearchRequest, WorkerSearchResponse } from '../../workers/ethnicAtlasWorker';
@@ -319,6 +320,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     isPinching,
     handleZoomDelta,
     panToCoordinates,
+    fitToBounds,
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,
@@ -366,9 +368,13 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     };
   }, []);
 
-  // Active raw SVG markup displayed in DOM
+  // Active raw SVG markup displayed in DOM with guaranteed ID for CSS targeting
   const rawSvgToDisplay = useMemo(() => {
-    return customSvgMarkup || AUTHENTIC_ETHNIC_TREE_RAW_SVG;
+    let svg = customSvgMarkup || AUTHENTIC_ETHNIC_TREE_RAW_SVG;
+    if (svg && !svg.includes('id="africalia-master-sovereign-svg"')) {
+      svg = svg.replace('<svg ', '<svg id="africalia-master-sovereign-svg" ');
+    }
+    return svg;
   }, [customSvgMarkup]);
 
   // Selection & Inspector state
@@ -492,81 +498,125 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, [startUpperTopView]);
 
-  // Precision zoom transition to bring all country branches and nodes clearly in view
+  // Precision aggregate zoom transition to bring all country branches, nodes, labels, and contours clearly in view
   const zoomToCountryRegion = useCallback((countryName: string, entityFallbackCoords?: { x: number, y: number }) => {
     if (!containerRef.current) return;
-    const { clientWidth, clientHeight } = containerRef.current;
     
     const cleanSlug = countryName.toLowerCase()
       .replace(/^the\s+/, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/-+$/, '');
-    
-    // Possible branch and node group IDs in the sovereign SVG for this country
-    const possibleIds = [
-      `branch--country--${cleanSlug}`,
-      `branches--country--${cleanSlug}`,
-      cleanSlug === 'cabo-verde' || cleanSlug === 'cape-verde' ? 'CABO-VERDE' : '',
-      cleanSlug === 'guinea' ? 'branch--country--guinea-conacry' : '',
-      cleanSlug === 'guinea-bissau' ? 'branch--country--guinea-bissau' : '',
-      cleanSlug === 'cote-d-ivoire' || cleanSlug === 'ivory-coast' ? 'branch--country--ivory-coast' : '',
-      cleanSlug === 'dr-congo' || cleanSlug === 'democratic-republic-of-the-congo' || cleanSlug === 'drc' ? 'branch--country--drc' : '',
-      cleanSlug === 'republic-of-the-congo' || cleanSlug === 'congo' || cleanSlug === 'rc' ? 'branch--country--rc' : '',
-      cleanSlug === 'central-african-republic' || cleanSlug === 'car' ? 'branch--country--car' : '',
-      cleanSlug === 'equatorial-guinea' || cleanSlug === 'guinea-eq' ? 'branch--country--guinea-eq' : '',
-      cleanSlug === 'namibia' || cleanSlug === 'south-namibia' ? 'branch--country--south-namibia' : '',
-      cleanSlug === 'south-sudan' ? 'branches--country--nubia--south-sudan' : '',
-      `geo--country--${cleanSlug}`,
-      `node--country--${cleanSlug}`,
-      `label--country--${cleanSlug}`
-    ].filter(Boolean);
 
-    let targetElement: SVGGraphicsElement | null = null;
-    for (const id of possibleIds) {
-      const el = (document.getElementById(id) as unknown) as SVGGraphicsElement | null;
-      if (el) {
-        targetElement = el;
-        break;
-      }
-    }
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    let foundPoints = 0;
 
-    // Calculate bounding box so ALL branches, nodes, and labels of the country are in view
-    if (targetElement && typeof targetElement.getBBox === 'function') {
-      try {
-        const bbox = targetElement.getBBox();
-        if (bbox && bbox.width > 15 && bbox.height > 15) {
-          const centerX = bbox.x + bbox.width / 2;
-          const centerY = bbox.y + bbox.height / 2;
-          const paddingRatio = 0.78; // 22% generous margin around branches and nodes
-          const scaleX = (clientWidth * paddingRatio) / bbox.width;
-          const scaleY = (clientHeight * paddingRatio) / bbox.height;
-          const targetScale = Math.min(scaleX, scaleY);
-          const calculatedZoom = Math.min(Math.max(targetScale / (fitScale || 1), 0.64), 4.5);
-          
-          panToCoordinates(centerX, centerY, calculatedZoom);
-          setLiveAnnouncement(`Framed sovereign lineage nodes for ${countryName}`);
-          return;
-        }
-      } catch {
-        // Fallback
-      }
-    }
-
-    // Fallback to country conduit coordinates
+    // 1. Gather all conduit geometric coordinates from AFRICALIA_COUNTRY_CONDUITS
     const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
       c.name.toLowerCase() === countryName.toLowerCase() || 
       c.id.toLowerCase() === cleanSlug ||
-      c.countryCode.toLowerCase() === cleanSlug
+      c.countryCode.toLowerCase() === cleanSlug ||
+      (cleanSlug === 'cape-verde' && c.name.toLowerCase().includes('verde')) ||
+      (cleanSlug === 'cabo-verde' && c.name.toLowerCase().includes('verde')) ||
+      (cleanSlug === 'ivory-coast' && c.id === 'ivory-coast') ||
+      (cleanSlug === 'cote-d-ivoire' && c.id === 'ivory-coast') ||
+      (cleanSlug === 'dr-congo' && c.id === 'dr-congo') ||
+      (cleanSlug === 'drc' && c.id === 'dr-congo') ||
+      (cleanSlug === 'republic-of-the-congo' && c.id === 'republic-of-the-congo') ||
+      (cleanSlug === 'congo' && c.id === 'republic-of-the-congo')
     );
 
     if (conduit) {
-      panToCoordinates(conduit.labelX, conduit.labelY, 2.2);
-      setLiveAnnouncement(`Framed ${countryName} conduit and branches`);
-    } else if (entityFallbackCoords) {
-      panToCoordinates(entityFallbackCoords.x, entityFallbackCoords.y, 2.2);
-      setLiveAnnouncement(`Framed ${countryName} lineages`);
+      // Include country label
+      minX = Math.min(minX, conduit.labelX - 120);
+      maxX = Math.max(maxX, conduit.labelX + 120);
+      minY = Math.min(minY, conduit.labelY - 60);
+      maxY = Math.max(maxY, conduit.labelY + 60);
+
+      // Include trunk start and end
+      minX = Math.min(minX, conduit.trunkEndX - 50, conduit.trunkStartX - 50);
+      maxX = Math.max(maxX, conduit.trunkEndX + 50, conduit.trunkStartX + 50);
+      minY = Math.min(minY, conduit.trunkEndY - 50, conduit.trunkStartY - 50);
+      maxY = Math.max(maxY, conduit.trunkEndY + 50, conduit.trunkStartY + 50);
+
+      // Include all ethnic group coordinates
+      if (conduit.ethnicGroups && conduit.ethnicGroups.length > 0) {
+        conduit.ethnicGroups.forEach(eg => {
+          minX = Math.min(minX, eg.nodeX - 90);
+          maxX = Math.max(maxX, eg.nodeX + 90);
+          minY = Math.min(minY, eg.nodeY - 50);
+          maxY = Math.max(maxY, eg.nodeY + 50);
+        });
+      }
+      foundPoints += 1;
     }
-  }, [fitScale, panToCoordinates]);
+
+    // 2. Query all DOM elements belonging to this country in the active SVG for vector bounding union
+    if (containerRef.current) {
+      const slugVariants = [
+        cleanSlug,
+        cleanSlug === 'cabo-verde' ? 'cape-verde' : '',
+        cleanSlug === 'cape-verde' ? 'cabo-verde' : '',
+        cleanSlug === 'cote-d-ivoire' ? 'ivory-coast' : '',
+        cleanSlug === 'ivory-coast' ? 'cote-d-ivoire' : '',
+        cleanSlug === 'democratic-republic-of-the-congo' ? 'drc' : '',
+        cleanSlug === 'dr-congo' ? 'drc' : '',
+        cleanSlug === 'republic-of-the-congo' ? 'rc' : '',
+        cleanSlug === 'congo' ? 'rc' : '',
+        cleanSlug === 'equatorial-guinea' ? 'guine-eq' : '',
+        cleanSlug === 'guinea-bissau' ? 'guine-bissau' : '',
+        cleanSlug === 'guinea' ? 'guinea-conacry' : '',
+        cleanSlug === 'south-sudan' ? 'nubia--south-sudan' : ''
+      ].filter(Boolean);
+
+      const selectors = slugVariants.flatMap(v => [
+        `[id*="${v}" i]`,
+        `[id^="label--country--${v}"]`,
+        `[id^="branch--country--${v}"]`,
+        `[id^="branches--country--${v}"]`,
+        `[id^="branches--ethnic--country--${v}"]`,
+        `[id^="node--country--${v}"]`,
+        `[id^="nodes--ethnic--country--${v}"]`,
+        `[id^="assoc--ethnic--country--${v}"]`,
+        `[id^="geo--country--${v}"]`
+      ]).join(',');
+
+      try {
+        const elements = containerRef.current.querySelectorAll(selectors);
+        elements.forEach(node => {
+          const svgEl = node as SVGGraphicsElement;
+          if (typeof svgEl.getBBox === 'function') {
+            const b = svgEl.getBBox();
+            if (b && b.width > 2 && b.height > 2 && b.width < 3800 && b.height < 3800) {
+              minX = Math.min(minX, b.x);
+              minY = Math.min(minY, b.y);
+              maxX = Math.max(maxX, b.x + b.width);
+              maxY = Math.max(maxY, b.y + b.height);
+              foundPoints += 1;
+            }
+          }
+        });
+      } catch {
+        // querySelector error fallback
+      }
+    }
+
+    if (foundPoints > 0 && isFinite(minX) && isFinite(minY) && isFinite(maxX) && isFinite(maxY)) {
+      fitToBounds({ minX, minY, maxX, maxY }, { padding: 80, maxZoom: 3.2, minZoom: 0.75, drawerWidth: 380 });
+      setLiveAnnouncement(`Framed sovereign lineage nodes and branches for ${countryName}`);
+      return;
+    }
+
+    if (entityFallbackCoords) {
+      panToCoordinates(entityFallbackCoords.x, entityFallbackCoords.y, 2.2, { xOffset: 380 });
+      setLiveAnnouncement(`Framed ${countryName} lineages`);
+    } else if (conduit) {
+      panToCoordinates(conduit.labelX, conduit.labelY, 2.2, { xOffset: 380 });
+      setLiveAnnouncement(`Framed ${countryName} conduit and branches`);
+    }
+  }, [fitToBounds, panToCoordinates]);
 
   // Combined search dataset enriched with Wikipedia African Atlas
   // Initialize Web Worker for background search off-main-thread
@@ -658,7 +708,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     const list: { 
       id: string; 
       name: string; 
-      type: 'country' | 'ethnic' | 'region'; 
+      type: 'country' | 'ethnic' | 'region' | 'admin1'; 
       region: string; 
       country?: string; 
       languages?: string;
@@ -709,6 +759,23 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
           languages: w.languages
         });
       }
+    });
+
+    // UN M49 Level 1 Administrative Subdivisions (Admin-1)
+    ALL_ADMIN1_SUBDIVISIONS.forEach(adm => {
+      const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c =>
+        (adm.iso3 && c.id.toLowerCase() === adm.iso3.toLowerCase()) ||
+        (adm.countryName && c.name.toLowerCase() === adm.countryName.toLowerCase())
+      );
+      list.push({
+        id: adm.id,
+        name: `${adm.name} (${adm.admin1Code})`,
+        type: 'admin1',
+        region: adm.regionName || 'UN Geoscheme',
+        country: adm.countryName,
+        x: conduit?.labelX,
+        y: conduit?.labelY
+      });
     });
 
     return list;
@@ -968,51 +1035,116 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
   const paperColor = canvasBg === 'white' ? '#FFFFFF' : canvasBg === 'sepia' ? '#F4EDE2' : '#FAF7F2';
 
-  // Handle click on raw SVG elements directly with 100% fidelity
+  // Handle click on raw SVG elements directly with 100% fidelity & generous hit proximity
   const handleSvgClick = (e: React.MouseEvent) => {
     if (dragStart.current.moved) return;
 
     const target = e.target as SVGElement;
-    if (!target) return;
+    if (!target || !containerRef.current) return;
 
-    // Find the nearest identified parent with an id or text tag
+    // 1. Direct SVG element identification
     let identified = target.closest('[id]') as SVGElement | null;
     if (!identified && (target.tagName.toLowerCase() === 'text' || target.tagName.toLowerCase() === 'tspan')) {
       identified = target;
     }
 
+    let entity: SelectedEntityData | null = null;
     if (identified) {
-      const entity = resolveEntityFromSvgElement(identified.id || '', identified);
-      if (entity) {
-        // If entity doesn't have coordinates, calculate them from SVG getBBox
-        if (!entity.coords && (identified as SVGGraphicsElement).getBBox) {
-          try {
-            const bbox = (identified as SVGGraphicsElement).getBBox();
-            if (bbox && bbox.width > 0 && bbox.height > 0) {
-              entity.coords = {
-                x: bbox.x + bbox.width / 2,
-                y: bbox.y + bbox.height / 2,
-                r: Math.max(bbox.width, bbox.height) / 2 + 10
-              };
-            }
-          } catch {
-            // ignore if inside container
+      entity = resolveEntityFromSvgElement(identified.id || '', identified);
+    }
+
+    // 2. Generous proximity fallback if direct element was background or missed thin glyph outline
+    if (!entity) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const clickClientX = e.clientX - rect.left;
+      const clickClientY = e.clientY - rect.top;
+      const currentScale = fitScale * zoom;
+      const svgX = (clickClientX - pos.x) / currentScale;
+      const svgY = (clickClientY - pos.y) / currentScale;
+
+      // Check proximity to country conduits (label and trunk endpoints)
+      let closestConduit: typeof AFRICALIA_COUNTRY_CONDUITS[0] | null = null;
+      let minConduitDist = 140; // 140px generous SVG space hit radius
+      for (const c of AFRICALIA_COUNTRY_CONDUITS) {
+        const distLabel = Math.hypot(svgX - c.labelX, svgY - c.labelY);
+        const distTrunkEnd = Math.hypot(svgX - c.trunkEndX, svgY - c.trunkEndY);
+        const d = Math.min(distLabel, distTrunkEnd);
+        if (d < minConduitDist) {
+          minConduitDist = d;
+          closestConduit = c;
+        }
+      }
+
+      // Check proximity to ethnic nodes
+      let closestEthnicGroup: { name: string; conduit: typeof AFRICALIA_COUNTRY_CONDUITS[0]; x: number; y: number } | null = null;
+      let minEthnicDist = 80; // 80px generous SVG space hit radius
+      for (const c of AFRICALIA_COUNTRY_CONDUITS) {
+        for (const eg of c.ethnicGroups) {
+          const d = Math.hypot(svgX - eg.nodeX, svgY - eg.nodeY);
+          if (d < minEthnicDist) {
+            minEthnicDist = d;
+            closestEthnicGroup = { name: eg.name, conduit: c, x: eg.nodeX, y: eg.nodeY };
           }
         }
+      }
 
-        // Open the rich editorial panel
-        setSelectedEntity(entity);
+      if (closestEthnicGroup) {
+        const wiki = findWikipediaEntry(closestEthnicGroup.name);
+        entity = {
+          id: `node--ethnic--${closestEthnicGroup.name.toLowerCase().replace(/\s+/g, '-')}`,
+          name: closestEthnicGroup.name,
+          type: 'ethnic',
+          country: closestEthnicGroup.conduit.name,
+          region: closestEthnicGroup.conduit.region,
+          tastVolumeShare: closestEthnicGroup.conduit.tastVolumeShare,
+          linguisticFamily: wiki?.languages,
+          description: wiki?.extract || `Documented historical ethnic lineage for ${closestEthnicGroup.name}.`,
+          coords: { x: closestEthnicGroup.x, y: closestEthnicGroup.y, r: 14 }
+        };
+      } else if (closestConduit) {
+        entity = {
+          id: `country--${closestConduit.id}`,
+          name: closestConduit.name,
+          type: 'country',
+          country: closestConduit.name,
+          region: closestConduit.region,
+          tastVolumeShare: closestConduit.tastVolumeShare,
+          color: closestConduit.color,
+          description: `Sovereign conduit for ${closestConduit.name} carrying documented ethnic lineages.`,
+          coords: { x: closestConduit.labelX, y: closestConduit.labelY, r: 18 }
+        };
+      }
+    }
 
-        // Smooth zoom transition framing the country's branches and nodes
-        if (entity.country && entity.country !== 'African Continent') {
-          setSelectedCountry(entity.country);
-          zoomToCountryRegion(entity.country, entity.coords);
-        } else if (entity.type === 'country') {
-          setSelectedCountry(entity.name);
-          zoomToCountryRegion(entity.name, entity.coords);
-        } else if (entity.coords) {
-          panToCoordinates(entity.coords.x, entity.coords.y, 2.4);
+    if (entity) {
+      // If entity doesn't have coordinates, calculate them from SVG getBBox
+      if (!entity.coords && identified && (identified as SVGGraphicsElement).getBBox) {
+        try {
+          const bbox = (identified as SVGGraphicsElement).getBBox();
+          if (bbox && bbox.width > 0 && bbox.height > 0) {
+            entity.coords = {
+              x: bbox.x + bbox.width / 2,
+              y: bbox.y + bbox.height / 2,
+              r: Math.max(bbox.width, bbox.height) / 2 + 10
+            };
+          }
+        } catch {
+          // ignore if inside container
         }
+      }
+
+      // Open the rich editorial panel
+      setSelectedEntity(entity);
+
+      // Smooth zoom transition framing the entire country group (branches + country label + nodes)
+      if (entity.country && entity.country !== 'African Continent') {
+        setSelectedCountry(entity.country);
+        zoomToCountryRegion(entity.country, entity.coords);
+      } else if (entity.type === 'country') {
+        setSelectedCountry(entity.name);
+        zoomToCountryRegion(entity.name, entity.coords);
+      } else if (entity.coords) {
+        panToCoordinates(entity.coords.x, entity.coords.y, 2.4, { xOffset: 380 });
       }
     }
   };
@@ -1319,7 +1451,6 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                                 const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => c.name === item.name);
                                 if (conduit) {
                                   setSelectedRegion(conduit.region);
-                                  panToCoordinates(conduit.labelX, conduit.labelY, 2.2);
                                   setSelectedEntity({
                                     id: conduit.id,
                                     name: conduit.name,
@@ -1331,9 +1462,13 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                                     coords: { x: conduit.labelX, y: conduit.labelY, r: 16 }
                                   });
                                 }
+                                zoomToCountryRegion(item.name, item.x && item.y ? { x: item.x, y: item.y } : undefined);
                               } else if (item.type === 'ethnic') {
-                                if (item.x && item.y) {
-                                  panToCoordinates(item.x, item.y, 2.5);
+                                if (item.country) {
+                                  setSelectedCountry(item.country);
+                                  zoomToCountryRegion(item.country, item.x && item.y ? { x: item.x, y: item.y } : undefined);
+                                } else if (item.x && item.y) {
+                                  panToCoordinates(item.x, item.y, 2.4, { xOffset: 380 });
                                 }
                                 setSelectedEntity({
                                   id: item.id,
@@ -1342,6 +1477,22 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                                   country: item.country,
                                   region: item.region,
                                   coords: item.x && item.y ? { x: item.x, y: item.y, r: 12 } : undefined
+                                });
+                              } else if (item.type === 'admin1') {
+                                if (item.country) {
+                                  setSelectedCountry(item.country);
+                                  zoomToCountryRegion(item.country, item.x && item.y ? { x: item.x, y: item.y } : undefined);
+                                } else if (item.x && item.y) {
+                                  panToCoordinates(item.x, item.y, 2.4, { xOffset: 380 });
+                                }
+                                setSelectedEntity({
+                                  id: item.id,
+                                  name: item.name,
+                                  type: 'quant',
+                                  country: item.country,
+                                  region: item.region,
+                                  description: `First-level administrative subdivision (Admin-1) of ${item.country || 'Africa'}.`,
+                                  coords: item.x && item.y ? { x: item.x, y: item.y, r: 14 } : undefined
                                 });
                               } else {
                                 setSelectedRegion(item.name);
@@ -1419,16 +1570,17 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                           const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => c.name === countryName);
                           if (conduit) {
                             setSelectedRegion(conduit.region);
-                            panToCoordinates(conduit.labelX, conduit.labelY, 2.2);
                             setSelectedEntity({
                               id: conduit.id,
                               name: conduit.name,
                               type: 'country',
+                              country: conduit.name,
                               region: conduit.region,
                               tastVolumeShare: conduit.tastVolumeShare,
                               color: conduit.color,
                               coords: { x: conduit.labelX, y: conduit.labelY, r: 16 }
                             });
+                            zoomToCountryRegion(countryName, { x: conduit.labelX, y: conduit.labelY });
                           }
                         }
                       }}
@@ -1792,33 +1944,51 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
           {/* SVG Global Interactive Styles */}
           <style>{`
             #africalia-master-sovereign-svg text,
-            #africalia-master-sovereign-svg tspan {
-              cursor: pointer;
+            #africalia-master-sovereign-svg tspan,
+            #africalia-master-sovereign-svg [id^="label--"],
+            #africalia-master-sovereign-svg [id^="node--"],
+            #africalia-master-sovereign-svg [id^="nodes--"],
+            #africalia-master-sovereign-svg [id^="branch--"],
+            #africalia-master-sovereign-svg [id^="branches--"],
+            #africalia-master-sovereign-svg [id^="assoc--"],
+            #africalia-master-sovereign-svg [id^="geo--country--"],
+            #africalia-master-sovereign-svg ellipse,
+            #africalia-master-sovereign-svg circle {
+              cursor: pointer !important;
+              pointer-events: auto !important;
             }
-            #africalia-master-sovereign-svg [id^="label--country--"],
-            #africalia-master-sovereign-svg [id^="branch--country--"],
-            #africalia-master-sovereign-svg [id^="branches--country--"],
-            #africalia-master-sovereign-svg [id^="node--country--"] {
-              cursor: pointer;
-              transition: filter 0.25s ease, opacity 0.25s ease;
+            #africalia-master-sovereign-svg [id^="label--country--"] path {
+              cursor: pointer !important;
+              pointer-events: auto !important;
+              stroke: transparent !important;
+              stroke-width: 16px !important;
+              paint-order: stroke fill !important;
+            }
+            #africalia-master-sovereign-svg text {
+              cursor: pointer !important;
+              pointer-events: auto !important;
+              stroke: transparent !important;
+              stroke-width: 12px !important;
+              paint-order: stroke fill !important;
+            }
+            #africalia-master-sovereign-svg ellipse,
+            #africalia-master-sovereign-svg circle {
+              cursor: pointer !important;
+              pointer-events: auto !important;
+              stroke: transparent !important;
+              stroke-width: 10px !important;
+              paint-order: stroke fill !important;
             }
             #africalia-master-sovereign-svg [id^="label--country--"]:hover,
             #africalia-master-sovereign-svg [id^="branch--country--"]:hover,
             #africalia-master-sovereign-svg [id^="node--country--"]:hover {
-              filter: drop-shadow(0 0 10px rgba(230,126,72,0.95)) drop-shadow(0 0 20px rgba(230,126,72,0.6));
-            }
-            #africalia-master-sovereign-svg [id^="label--ethnic--"],
-            #africalia-master-sovereign-svg [id^="assoc--ethnic--"],
-            #africalia-master-sovereign-svg [id^="branch--ethnic--"],
-            #africalia-master-sovereign-svg [id^="node--ethnic--"] {
-              cursor: pointer;
-              transition: fill 0.2s ease, filter 0.2s ease;
+              filter: drop-shadow(0 0 12px rgba(230,126,72,0.95)) drop-shadow(0 0 24px rgba(230,126,72,0.6));
             }
             #africalia-master-sovereign-svg [id^="label--ethnic--"]:hover text,
             #africalia-master-sovereign-svg [id^="assoc--ethnic--"]:hover text,
             #africalia-master-sovereign-svg text:hover {
               fill: #E67E48 !important;
-              filter: drop-shadow(0 0 6px rgba(230,126,72,0.8));
+              filter: drop-shadow(0 0 8px rgba(230,126,72,0.85));
             }
             #africalia-master-sovereign-svg *:focus-visible {
               outline: 2.5px dashed #E67E48 !important;
@@ -1876,12 +2046,13 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             `}</style>
           )}
 
-          {/* Dynamic SVG Country Silhouette Spotlight and Tree Dimming Injection */}
+          {/* Dynamic SVG Country Silhouette Spotlight and Continent Deep Dimming */}
           {silhouetteGlowEnabled && activeGeoCountryId && (
             <style>{`
               #geo--Africa--un-geoscheme {
-                opacity: 0.45 !important;
-                transition: opacity 0.4s ease-in-out;
+                opacity: 0.12 !important;
+                filter: grayscale(90%) contrast(85%) !important;
+                transition: opacity 0.4s ease-in-out, filter 0.4s ease-in-out;
               }
               [id="${activeGeoCountryId}"] {
                 opacity: 1 !important;
@@ -1894,11 +2065,15 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                 transition: all 0.4s ease-in-out;
               }
               #TREE {
-                opacity: 0.22 !important;
+                opacity: 0.15 !important;
                 transition: opacity 0.4s ease-in-out;
               }
               ${activeCountrySlug ? `
-              [id="TREE"] [id*="${activeCountrySlug}" i] {
+              [id="TREE"] [id*="${activeCountrySlug}" i],
+              [id="LABELS"] [id*="${activeCountrySlug}" i],
+              [id*="branch--country--${activeCountrySlug}" i],
+              [id*="branches--country--${activeCountrySlug}" i],
+              [id*="label--country--${activeCountrySlug}" i] {
                 opacity: 1 !important;
                 filter: drop-shadow(0 0 8px rgba(230,126,72,0.75)) !important;
                 transition: all 0.3s ease-in-out;
@@ -1907,7 +2082,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
               ${selectedEntity?.id ? `
               [id="${selectedEntity.id}"] {
                 opacity: 1 !important;
-                filter: drop-shadow(0 0 12px #E67E48) !important;
+                filter: drop-shadow(0 0 14px #E67E48) !important;
                 transition: all 0.3s ease-in-out;
               }
               ` : ''}
@@ -1921,7 +2096,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
               height: `${VBH}px`,
               backgroundColor: paperColor
             }}
-            className="relative select-none pointer-events-auto shadow-[0_20px_100px_rgba(0,0,0,0.6)] [&>svg]:w-full [&>svg]:h-full [&>svg]:block cursor-pointer transition-colors duration-200"
+            className="relative select-none pointer-events-auto [&>svg]:w-full [&>svg]:h-full [&>svg]:block cursor-pointer transition-colors duration-200"
             dangerouslySetInnerHTML={{ __html: rawSvgToDisplay }}
             onClick={handleSvgClick}
           />
@@ -2118,7 +2293,6 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                         key={eg.name}
                         type="button"
                         onClick={() => {
-                          panToCoordinates(eg.nodeX, eg.nodeY, 2.4);
                           setSelectedEntity({
                             id: `${conduit.id}-${eg.name.toLowerCase().replace(/\s+/g, '-')}`,
                             name: eg.name,
@@ -2128,6 +2302,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                             tastVolumeShare: conduit.tastVolumeShare,
                             coords: { x: eg.nodeX, y: eg.nodeY, r: 14 }
                           });
+                          zoomToCountryRegion(conduit.name, { x: eg.nodeX, y: eg.nodeY });
                         }}
                         className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#E67E48]/10 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/30 transition-all cursor-pointer flex items-center gap-1 active:scale-95"
                         title={`Open Wikipedia Dossier for ${eg.name}`}
