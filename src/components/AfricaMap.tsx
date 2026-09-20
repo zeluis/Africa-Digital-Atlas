@@ -1047,7 +1047,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
         <svg
           ref={svgRef}
-          viewBox={isFinalMode ? AFRICA_FINAL_VIEWBOX : "50 55 890 990"}
+          viewBox={isFinalMode ? AFRICA_FINAL_VIEWBOX : "15 55 925 990"}
           width="100%"
           height="100%"
           preserveAspectRatio="xMidYMid meet"
@@ -1255,31 +1255,32 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                             onClick={(e) => handleCountryClick('CPV', e)}
                           >
                             {(isSelected || isHovered) && (
-                              <circle r="22" fill="#10b981" opacity="0.25" className="animate-ping pointer-events-none" />
+                              <circle r="22" fill="#81dc05" opacity="0.25" className="animate-ping pointer-events-none" />
                             )}
                             <circle
                               r="18"
                               fill="transparent"
-                              stroke={isSelected ? '#10b981' : isHovered ? '#38bdf8' : 'rgba(56, 189, 248, 0.7)'}
+                              stroke={isSelected ? '#059669' : isHovered ? '#10b981' : 'rgba(129, 220, 5, 0.75)'}
                               strokeWidth={isSelected ? 1.6 : 1.2}
                               strokeDasharray="3 2"
                             />
+                            {/* Positioned between Barlavento (north) and Sotavento (south), aligned left */}
                             <rect
-                              x="-10"
-                              y="-19"
-                              width="20"
-                              height="11"
+                              x="-38"
+                              y="-6"
+                              width="18"
+                              height="12"
                               rx="3"
-                              fill={isSelected ? '#10b981' : isHovered ? '#0284c7' : '#09090b'}
-                              stroke={isSelected ? '#ffffff' : isHovered ? '#38bdf8' : 'rgba(56, 189, 248, 0.8)'}
+                              fill="#81dc05"
+                              stroke={isSelected ? '#059669' : isHovered ? '#0f172a' : '#4d8a03'}
                               strokeWidth="0.8"
                             />
                             <text
-                              x="0"
-                              y="-12.5"
+                              x="-29"
+                              y="0.5"
                               textAnchor="middle"
                               dominantBaseline="middle"
-                              fill={isSelected ? '#09090b' : '#ffffff'}
+                              fill="#111827"
                               fontSize="6.5"
                               fontFamily="monospace"
                               fontWeight="900"

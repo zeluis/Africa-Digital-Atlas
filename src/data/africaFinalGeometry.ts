@@ -50,6 +50,6 @@ for (const country of Object.values(parsedMap)) {
 
 export const AFRICA_FINAL_MAP: Record<string, AfricaFinalCountryPath> = parsedMap;
 
-export const AFRICA_FINAL_VIEWBOX = "0 0 5796 5867";
+export const AFRICA_FINAL_VIEWBOX = "-240 0 6036 5867";
 export const AFRICA_FINAL_TRANSFORM = "translate(-216.0198 -66.614)";
 

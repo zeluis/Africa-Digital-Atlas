@@ -256,31 +256,32 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
                   onClick={(e) => handleCountryClick('CPV', e)}
                 >
                   {(isSelected || isHovered) && (
-                    <circle r="180" fill="#10b981" opacity="0.25" className="animate-ping pointer-events-none" />
+                    <circle r="170" fill="#81dc05" opacity="0.25" className="animate-ping pointer-events-none" />
                   )}
                   <circle
                     r="150"
                     fill="transparent"
-                    stroke={isSelected ? '#10b981' : isHovered ? '#38bdf8' : 'rgba(56, 189, 248, 0.6)'}
-                    strokeWidth={isSelected ? 10 : 6}
-                    strokeDasharray="18 14"
+                    stroke={isSelected ? '#059669' : isHovered ? '#10b981' : 'rgba(129, 220, 5, 0.75)'}
+                    strokeWidth={isSelected ? 8 : 5}
+                    strokeDasharray="16 12"
                   />
+                  {/* Positioned between Barlavento (north) and Sotavento (south), aligned left */}
                   <rect
-                    x="-70"
-                    y="-140"
-                    width="140"
-                    height="75"
+                    x="-205"
+                    y="-38"
+                    width="115"
+                    height="76"
                     rx="16"
-                    fill={isSelected ? '#10b981' : isHovered ? '#0284c7' : '#09090b'}
-                    stroke={isSelected ? '#ffffff' : isHovered ? '#38bdf8' : 'rgba(56, 189, 248, 0.8)'}
+                    fill="#81dc05"
+                    stroke={isSelected ? '#059669' : isHovered ? '#0f172a' : '#4d8a03'}
                     strokeWidth="4"
                   />
                   <text
-                    x="0"
-                    y="-92"
+                    x="-147.5"
+                    y="2"
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fill={isSelected ? '#09090b' : '#ffffff'}
+                    fill="#111827"
                     fontSize="42"
                     fontFamily="monospace"
                     fontWeight="900"
