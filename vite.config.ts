@@ -95,6 +95,44 @@ export default defineConfig(() => {
       },
       dedupe: ['react', 'react-dom'],
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('recharts') || id.includes('/d3-') || id.includes('/d3/')) {
+                return 'vendor-charts';
+              }
+              if (id.includes('lucide-react') || id.includes('@iconify')) {
+                return 'vendor-icons';
+              }
+              if (id.includes('motion')) {
+                return 'vendor-motion';
+              }
+              if (id.includes('topojson-client') || id.includes('world-atlas')) {
+                return 'vendor-geo';
+              }
+              if (id.includes('react-dom') || id.includes('/react/')) {
+                return 'vendor-framework';
+              }
+            }
+            if (id.includes('src/data/svgMaps')) {
+              return 'data-svg-schematic-maps';
+            }
+            if (id.includes('src/i18n/translations')) {
+              return 'i18n-translations';
+            }
+            if (id.includes('src/data/atlas-raw-data')) {
+              return 'data-atlas-raw';
+            }
+            if (id.includes('src/data/countrySilhouettes')) {
+              return 'data-country-silhouettes';
+            }
+          },
+        },
+      },
+      chunkSizeWarningLimit: 1200,
+    },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modifyâfile watching is disabled to prevent flickering during agent edits.

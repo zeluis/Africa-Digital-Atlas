@@ -5,7 +5,6 @@
 
 import { AfricanRegion } from './types';
 import { AFRICA_SVG_MAP, CountrySvgPath } from './svgMaps';
-import { COUNTRY_SILHOUETTES, CountrySilhouetteData } from './countrySilhouettes';
 
 export interface M49EntityMetadata {
   iso3: string;
@@ -370,6 +369,19 @@ export function getRegionalSilhouette(region: AfricanRegion): RegionalSilhouette
   return UN_REGIONAL_SILHOUETTES[region];
 }
 
+// Lightweight Shape Type classification without importing heavy geometry paths
+const ENTITY_SHAPE_TYPES: Record<string, 'continental' | 'archipelago' | 'island' | 'landlocked' | 'coastal'> = {
+  MAR: 'coastal', ESH: 'coastal', DZA: 'coastal', TUN: 'coastal', LBY: 'coastal', EGY: 'coastal', SDN: 'coastal',
+  MRT: 'coastal', SEN: 'coastal', GMB: 'coastal', GNB: 'coastal', GIN: 'coastal', SLE: 'coastal', LBR: 'coastal',
+  CIV: 'coastal', MLI: 'landlocked', BFA: 'landlocked', GHA: 'coastal', TGO: 'coastal', BEN: 'coastal',
+  NER: 'landlocked', NGA: 'coastal', CPV: 'island', TCD: 'landlocked', CMR: 'coastal', CAF: 'landlocked',
+  GNQ: 'coastal', GAB: 'coastal', COG: 'coastal', COD: 'coastal', AGO: 'coastal', STP: 'island',
+  ERI: 'coastal', DJI: 'coastal', ETH: 'landlocked', SOM: 'coastal', SSD: 'landlocked', UGA: 'landlocked',
+  KEN: 'coastal', RWA: 'landlocked', BDI: 'landlocked', TZA: 'coastal', MWI: 'landlocked', ZMB: 'landlocked',
+  MOZ: 'coastal', ZWE: 'landlocked', MDG: 'coastal', COM: 'island', SYC: 'island', MUS: 'island',
+  NAM: 'coastal', BWA: 'landlocked', ZAF: 'coastal', LSO: 'landlocked', SWZ: 'landlocked'
+};
+
 export const M49_ENTITIES: M49EntityMetadata[] = Object.values(AFRICA_SVG_MAP).map(item => ({
   iso3: item.id,
   iso2: item.iso2,
@@ -377,11 +389,11 @@ export const M49_ENTITIES: M49EntityMetadata[] = Object.values(AFRICA_SVG_MAP).m
   name: item.name,
   unRegion: item.unRegion as AfricanRegion,
   unRegionCode: UN_M49_REGIONS[item.unRegion as AfricanRegion]?.code || '000',
-  shapeType: COUNTRY_SILHOUETTES[item.id]?.shapeType || 'continental',
+  shapeType: ENTITY_SHAPE_TYPES[item.id] || 'continental',
   vertexCount: item.path.split(/[MLZ]/).length,
   simplificationMethod: 'Natural Earth 50m Vector Pipeline',
   validationStatus: 'verified',
-  viewBox: COUNTRY_SILHOUETTES[item.id]?.viewBox || '0 0 400 400',
+  viewBox: '0 0 400 400',
   pathLength: item.path.length
 }));
 

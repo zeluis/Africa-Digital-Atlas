@@ -11,8 +11,6 @@ import { OfflineIndicator } from './components/OfflineIndicator';
 import { DensityProvider } from './contexts/DensityContext';
 import { SavedEntitiesProvider } from './contexts/SavedEntitiesContext';
 import { OverviewView } from './views/OverviewView';
-import { CountryView } from './views/CountryView';
-import { RegionalView } from './views/RegionalView';
 import { AfricanRegion } from './data/types';
 import { atlas } from './data/atlas-store';
 import { lazyWithRetry, ViewErrorBoundary } from './utils/lazyWithRetry';
@@ -20,6 +18,8 @@ import { Globe, Database } from 'lucide-react';
 import { DynamicIcon } from './components/DynamicIcon';
 
 // Lazy-load heavier views with automatic chunk recovery and cache resilience for GitHub Pages
+const CountryView = lazyWithRetry(() => import('./views/CountryView').then(m => ({ default: m.CountryView })), 'CountryView');
+const RegionalView = lazyWithRetry(() => import('./views/RegionalView').then(m => ({ default: m.RegionalView })), 'RegionalView');
 const AnalyticsView = lazyWithRetry(() => import('./views/AnalyticsView').then(m => ({ default: m.AnalyticsView })), 'AnalyticsView');
 const HeritageView = lazyWithRetry(() => import('./views/HeritageView').then(m => ({ default: m.HeritageView })), 'HeritageView');
 const CompareView = lazyWithRetry(() => import('./views/CompareView').then(m => ({ default: m.CompareView })), 'CompareView');
