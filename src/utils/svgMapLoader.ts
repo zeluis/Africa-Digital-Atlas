@@ -31,18 +31,33 @@ export async function fetchAfricaFinalSvg(): Promise<string> {
   }
 
   cachedSvgPromise = (async () => {
-    try {
-      const response = await fetch('/africa-final.svg');
-      if (!response.ok) {
-        throw new Error(`Failed to load vector map asset: ${response.statusText}`);
+    // Resolve asset path respecting Vite base path (crucial for GitHub Pages /sub-path/ deployment)
+    const base = (import.meta.env?.BASE_URL || '/').replace(/\/$/, '');
+    const assetCandidates = [
+      `${base}/africa-final.svg`,
+      './africa-final.svg',
+      '/africa-final.svg'
+    ];
+
+    let lastError: Error | null = null;
+    for (const url of assetCandidates) {
+      try {
+        const response = await fetch(url);
+        if (response.ok) {
+          const text = await response.text();
+          // Ensure we actually got an SVG and not an HTML 404 fallback page
+          if (text.includes('<svg') || text.includes('xmlns="http://www.w3.org/2000/svg"')) {
+            cachedSvgText = text;
+            return text;
+          }
+        }
+      } catch (err) {
+        lastError = err instanceof Error ? err : new Error(String(err));
       }
-      const text = await response.text();
-      cachedSvgText = text;
-      return text;
-    } catch (err) {
-      cachedSvgPromise = null;
-      throw err;
     }
+
+    cachedSvgPromise = null;
+    throw lastError || new Error('Failed to load vector map asset from any known base path candidate.');
   })();
 
   return cachedSvgPromise;
