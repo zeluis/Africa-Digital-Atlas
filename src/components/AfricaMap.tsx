@@ -95,21 +95,13 @@ export const REGIONAL_BLOCS_LIST = [
 const DEFAULT_MAP_ZOOM = 1.0;
 const DEFAULT_PAN_OFFSET = { x: 0, y: 0 };
 
-// Focus coordinates & zoom transforms for African subregions
-const REGIONAL_ZOOM_PRESETS_FINAL: Record<AfricanRegion, { zoom: number; x: number; y: number }> = {
+// Focus coordinates & zoom transforms for African subregions (unified 5796x5867 coordinate space)
+const REGIONAL_ZOOM_PRESETS: Record<AfricanRegion, { zoom: number; x: number; y: number }> = {
   'Northern Africa': { zoom: 1.85, x: 360, y: 3100 },
   'Western Africa': { zoom: 1.8, x: 2260, y: 520 },
   'Central Africa': { zoom: 1.9, x: -690, y: 100 },
   'Eastern Africa': { zoom: 1.75, x: -3250, y: -930 },
   'Southern Africa': { zoom: 2.4, x: -1440, y: -5450 }
-};
-
-const REGIONAL_ZOOM_PRESETS_SCHEMATIC: Record<AfricanRegion, { zoom: number; x: number; y: number }> = {
-  'Northern Africa': { zoom: 1.85, x: 0, y: 380 },
-  'Western Africa': { zoom: 2.1, x: 380, y: 120 },
-  'Central Africa': { zoom: 2.1, x: 0, y: -80 },
-  'Eastern Africa': { zoom: 1.9, x: -360, y: -90 },
-  'Southern Africa': { zoom: 2.2, x: -90, y: -640 }
 };
 
 // Helper function to derive choropleth color scale from authentic base hex
@@ -323,18 +315,16 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     setVisibleRegions(new Set<AfricanRegion>());
   };
 
-  // Automated Smooth Bounding-Box Zoom-to-Fit for SVGs
+  // Automated Smooth Bounding-Box Zoom-to-Fit for SVGs (5796x5867 coordinate space)
   const fitToElement = useCallback((element: SVGGraphicsElement | null, options: { padding?: number; maxZoom?: number; minZoom?: number } = {}) => {
     if (!element || !svgRef.current) return;
-    const { padding = 40, maxZoom = 3.5, minZoom = 0.9 } = options;
+    const { padding = 200, maxZoom = 3.5, minZoom = 0.9 } = options;
 
     try {
       const bbox = element.getBBox();
       if (bbox.width === 0 || bbox.height === 0) return;
 
-      const svgViewBox = isFinalMode 
-        ? { width: 5796, height: 5867, cx: 2898, cy: 2933 }
-        : { width: 890, height: 990, cx: 495, cy: 550 };
+      const svgViewBox = { width: 5796, height: 5867, cx: 2898, cy: 2933 };
 
       const elemCenterX = bbox.x + bbox.width / 2;
       const elemCenterY = bbox.y + bbox.height / 2;
@@ -343,15 +333,15 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       const scaleY = (svgViewBox.height - padding * 2) / bbox.height;
       const targetZoom = Math.max(minZoom, Math.min(maxZoom, Math.min(scaleX, scaleY) * 0.85));
 
-      const offsetX = (svgViewBox.cx - elemCenterX) * (targetZoom / (isFinalMode ? 2.5 : 1));
-      const offsetY = (svgViewBox.cy - elemCenterY) * (targetZoom / (isFinalMode ? 2.5 : 1));
+      const offsetX = (svgViewBox.cx - elemCenterX) * (targetZoom / 2.5);
+      const offsetY = (svgViewBox.cy - elemCenterY) * (targetZoom / 2.5);
 
       setZoomLevel(targetZoom);
       setPanOffset({ x: offsetX, y: offsetY });
     } catch (e) {
       console.warn('Could not compute SVG bounding box for zoom', e);
     }
-  }, [isFinalMode]);
+  }, []);
 
   useEffect(() => {
     const containerEl = containerRef.current;
@@ -361,11 +351,31 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     return () => resizeObserver.disconnect();
   }, []);
 
+  // Synchronize zoom and regional centering when region selector changes from props or external events
+  useEffect(() => {
+    if (activeRegionFilter && activeRegionFilter !== 'All') {
+      const region = activeRegionFilter as AfricanRegion;
+      const preset = REGIONAL_ZOOM_PRESETS[region];
+      if (preset) {
+        setZoomLevel(preset.zoom);
+        setPanOffset({ x: preset.x, y: preset.y });
+      }
+      setVisibleRegions(new Set<AfricanRegion>([region]));
+    } else if (activeRegionFilter === 'All') {
+      setVisibleRegions(new Set<AfricanRegion>([
+        'Northern Africa',
+        'Western Africa',
+        'Central Africa',
+        'Eastern Africa',
+        'Southern Africa'
+      ]));
+    }
+  }, [activeRegionFilter]);
+
   const handleIsolateRegion = (region: AfricanRegion) => {
     setVisibleRegions(new Set<AfricanRegion>([region]));
     handleRegionTabSelect(region);
-    const presets = isFinalMode ? REGIONAL_ZOOM_PRESETS_FINAL : REGIONAL_ZOOM_PRESETS_SCHEMATIC;
-    const preset = presets[region];
+    const preset = REGIONAL_ZOOM_PRESETS[region];
     if (preset) {
       setZoomLevel(preset.zoom);
       setPanOffset({ x: preset.x, y: preset.y });
@@ -373,8 +383,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   };
 
   const handleFocusRegion = (region: AfricanRegion) => {
-    const presets = isFinalMode ? REGIONAL_ZOOM_PRESETS_FINAL : REGIONAL_ZOOM_PRESETS_SCHEMATIC;
-    const preset = presets[region];
+    const preset = REGIONAL_ZOOM_PRESETS[region];
     if (preset) {
       setZoomLevel(preset.zoom);
       setPanOffset({ x: preset.x, y: preset.y });
@@ -391,50 +400,30 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
   // Automated Smooth Centering and Zoom-to-Fit for Country & Admin-1 Subdivisions
   const zoomToCountry = useCallback((countryId: string) => {
-    if (isFinalMode) {
-      const country = AFRICA_FINAL_MAP[countryId];
-      if (!country || !country.bbox) return;
-      const bbox = country.bbox;
+    const country = AFRICA_FINAL_MAP[countryId] || AFRICA_SVG_MAP[countryId];
+    if (!country) return;
 
-      const svgViewBox = { width: 5796, height: 5867, cx: 2898, cy: 2933 };
-      const boxWidth = Math.max(120, bbox.maxX - bbox.minX);
-      const boxHeight = Math.max(120, bbox.maxY - bbox.minY);
-      const elemCenterX = (bbox.minX + bbox.maxX) / 2;
-      const elemCenterY = (bbox.minY + bbox.maxY) / 2;
+    // Use bounding box if available
+    const bbox = (country as any).bbox || (country as any).boundingBox;
+    if (!bbox) return;
 
-      const padding = 220;
-      const scaleX = (svgViewBox.width - padding * 2) / boxWidth;
-      const scaleY = (svgViewBox.height - padding * 2) / boxHeight;
-      const targetZoom = Math.max(1.3, Math.min(4.2, Math.min(scaleX, scaleY) * 0.78));
+    const svgViewBox = { width: 5796, height: 5867, cx: 2898, cy: 2933 };
+    const boxWidth = Math.max(120, bbox.maxX - bbox.minX);
+    const boxHeight = Math.max(120, bbox.maxY - bbox.minY);
+    const elemCenterX = (bbox.minX + bbox.maxX) / 2;
+    const elemCenterY = (bbox.minY + bbox.maxY) / 2;
 
-      const offsetX = (svgViewBox.cx - elemCenterX) * targetZoom;
-      const offsetY = (svgViewBox.cy - elemCenterY) * targetZoom;
+    const padding = 220;
+    const scaleX = (svgViewBox.width - padding * 2) / boxWidth;
+    const scaleY = (svgViewBox.height - padding * 2) / boxHeight;
+    const targetZoom = Math.max(1.3, Math.min(4.2, Math.min(scaleX, scaleY) * 0.78));
 
-      setZoomLevel(targetZoom);
-      setPanOffset({ x: offsetX, y: offsetY });
-    } else {
-      const country = AFRICA_SVG_MAP[countryId];
-      if (!country || !country.boundingBox) return;
-      const bbox = country.boundingBox;
+    const offsetX = (svgViewBox.cx - elemCenterX) * targetZoom;
+    const offsetY = (svgViewBox.cy - elemCenterY) * targetZoom;
 
-      const svgViewBox = { width: 890, height: 990, cx: 495, cy: 550 };
-      const boxWidth = Math.max(30, bbox.maxX - bbox.minX);
-      const boxHeight = Math.max(30, bbox.maxY - bbox.minY);
-      const elemCenterX = (bbox.minX + bbox.maxX) / 2;
-      const elemCenterY = (bbox.minY + bbox.maxY) / 2;
-
-      const padding = 50;
-      const scaleX = (svgViewBox.width - padding * 2) / boxWidth;
-      const scaleY = (svgViewBox.height - padding * 2) / boxHeight;
-      const targetZoom = Math.max(1.4, Math.min(4.2, Math.min(scaleX, scaleY) * 0.78));
-
-      const offsetX = (svgViewBox.cx - elemCenterX) * targetZoom;
-      const offsetY = (svgViewBox.cy - elemCenterY) * targetZoom;
-
-      setZoomLevel(targetZoom);
-      setPanOffset({ x: offsetX, y: offsetY });
-    }
-  }, [isFinalMode]);
+    setZoomLevel(targetZoom);
+    setPanOffset({ x: offsetX, y: offsetY });
+  }, []);
 
   // Color resolver for each country across Authentic, Choropleth, and Schematic modes
   const getCountryFill = (country: { id: string; unRegion: AfricanRegion; originalColor?: string }, isSelected: boolean, isHovered: boolean): string => {
@@ -490,7 +479,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   // Target entity for tooltip: either pinned/active or hovered
   const displayEntityId = activeTooltipEntityId || hoveredEntityId;
   const hoveredCountryData = displayEntityId 
-    ? (isFinalMode ? AFRICA_FINAL_MAP[displayEntityId] : AFRICA_SVG_MAP[displayEntityId]) 
+    ? (AFRICA_FINAL_MAP[displayEntityId] || AFRICA_SVG_MAP[displayEntityId]) 
     : null;
   const hoveredEntity = displayEntityId ? atlas.getEntity(displayEntityId) : null;
 
@@ -1028,8 +1017,9 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               id="floating-un-subregions-panel"
               className="w-auto min-w-[320px] sm:min-w-[460px] max-w-[calc(100vw-32px)] sm:max-w-2xl lg:max-w-3xl rounded-2xl bg-white/95 dark:bg-zinc-950/95 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 overflow-hidden"
             >
-              {/* Top Header with Tab Switcher & Close Control */}
-              <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-900/60">
+              {/* Top Header with Tab Switcher, Zoom Controls & Close Control on same row */}
+              <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-900/60 gap-2 flex-wrap sm:flex-nowrap">
+                {/* Left: Tab Switcher (Subregions & Admin-1) */}
                 <div className="flex items-center gap-1.5 p-0.5 rounded-xl bg-zinc-200/60 dark:bg-zinc-800/60">
                   <button
                     type="button"
@@ -1064,14 +1054,59 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   </button>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setIsNavigatorOpen(false)}
-                  className="p-1 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-                  title="Collapse Navigator"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                {/* Right: Zoom In/Out Controls, Reset Button & Close Button */}
+                <div className="flex items-center gap-1.5 ml-auto">
+                  {/* Zoom Controls */}
+                  <div className="flex items-center rounded-xl bg-zinc-200/70 dark:bg-zinc-800/80 border border-zinc-300/80 dark:border-zinc-700/80 p-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setZoomLevel(prev => Math.max(0.7, prev - 0.25))}
+                      className="p-1 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-white dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                      title="Zoom Out (-)"
+                      aria-label="Zoom Out"
+                    >
+                      <ZoomOut className="w-3.5 h-3.5" />
+                    </button>
+
+                    <span className="px-1.5 font-mono font-bold text-[11px] text-emerald-600 dark:text-emerald-400 min-w-[2.4rem] text-center select-none">
+                      {Math.round(zoomLevel * 100)}%
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => setZoomLevel(prev => Math.min(3.8, prev + 0.25))}
+                      className="p-1 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-white dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                      title="Zoom In (+)"
+                      aria-label="Zoom In"
+                    >
+                      <ZoomIn className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {/* Reset Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleShowAllRegions();
+                      handleResetZoom();
+                    }}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300/80 dark:border-emerald-800/60 transition-all font-semibold cursor-pointer text-xs active:scale-95 shadow-xs"
+                    title="Reset to Full Continent view"
+                  >
+                    <RotateCcw className="w-3 h-3 text-emerald-500" />
+                    <span>Reset</span>
+                  </button>
+
+                  {/* Close Navigator */}
+                  <button
+                    type="button"
+                    onClick={() => setIsNavigatorOpen(false)}
+                    className="p-1 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer ml-1"
+                    title="Collapse Navigator"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
 
               {/* Tab 1: Subregions Legend */}
@@ -1079,6 +1114,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 <div className="p-3.5 sm:p-4">
                   <InteractiveMapLegend
                     embedded={true}
+                    showZoomControls={false}
                     visibleRegions={visibleRegions}
                     onToggleRegion={handleToggleRegion}
                     onShowAll={() => {

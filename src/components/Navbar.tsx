@@ -10,10 +10,13 @@ import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { AfricaUnLogo } from './AfricaUnLogo';
 import { PreferencesDropdown } from './PreferencesDropdown';
 import { PWAInstallButton } from './PWAInstallButton';
+import { getPageInfo } from '../utils/navigationTitles';
+import { AfricanRegion } from '../data/types';
 import { 
   Search, 
   WifiOff,
-  Database
+  Database,
+  ArrowLeft
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -29,6 +32,9 @@ interface NavbarProps {
   onOpenApiHub?: () => void;
   onOpenOnboarding?: () => void;
   activeRegion?: string;
+  onGoBack?: () => void;
+  canGoBack?: boolean;
+  previousPageTitle?: string;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -43,13 +49,21 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleTheme,
   onOpenApiHub,
   onOpenOnboarding,
-  activeRegion
+  activeRegion,
+  onGoBack,
+  canGoBack = false,
+  previousPageTitle
 }) => {
   const { t, language, currentLanguageOption } = useTranslation();
   const isOnline = useNetworkStatus();
   const manifest = atlas.getManifest();
 
   const currentGreeting = TOP_BAR_UI_GREETINGS[language] || TOP_BAR_UI_GREETINGS['en'];
+  const activePageInfo = getPageInfo(
+    currentTab,
+    selectedEntityId,
+    activeRegion as AfricanRegion | undefined
+  );
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/90 backdrop-blur-md transition-colors duration-200">
@@ -57,12 +71,27 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
           
           {/* ========================================================= */}
-          {/* ZONE 1: PRIMARY NAVIGATION & BRAND (LEFT)                */}
-          {/* Prominent Hero SVG Logo with Stacked Editorial Title     */}
+          {/* ZONE 1: BACK BUTTON, BRAND & ACTIVE PAGE TITLE (LEFT)     */}
           {/* ========================================================= */}
-          <div className="flex items-center shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink-0">
+            {/* Back Navigation Button */}
+            <button
+              type="button"
+              onClick={onGoBack}
+              disabled={!canGoBack}
+              className={`flex items-center justify-center p-2 rounded-xl border transition-all shrink-0 cursor-pointer ${
+                canGoBack
+                  ? 'border-zinc-200/90 dark:border-zinc-800/90 bg-zinc-100/90 dark:bg-zinc-900/90 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-100 hover:border-amber-400/70 dark:hover:border-amber-600/70 active:scale-95 shadow-2xs'
+                  : 'border-zinc-200/30 dark:border-zinc-800/30 bg-zinc-50/40 dark:bg-zinc-900/20 text-zinc-300 dark:text-zinc-700 cursor-not-allowed opacity-40'
+              }`}
+              title={canGoBack ? `Go back to ${previousPageTitle || 'previous page'} (Alt + ←)` : 'No previous navigation history'}
+              aria-label={canGoBack ? `Go back to ${previousPageTitle || 'previous page'}` : 'Back navigation disabled'}
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+
             {/* Logo & Brand Identity (Standalone Masthead) */}
-            <div className="flex items-center gap-2.5 sm:gap-3 select-none">
+            <div className="flex items-center gap-2 sm:gap-2.5 select-none shrink-0">
               <div 
                 className="relative flex items-center justify-center cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 shrink-0"
                 onClick={() => onSelectTab('overview')}
@@ -87,21 +116,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                 />
               </div>
               
-              {/* Stacked Vertical Title Hierarchy: Title is second most prominent */}
-              <div className="flex flex-col justify-center leading-none">
-                {/* Africalia Title - Explicit Serif font, bold terracotta, dominant over pill */}
+              {/* Stacked Vertical Title Hierarchy: Africalia + Version Pill */}
+              <div className="hidden lg:flex flex-col justify-center leading-none">
                 <button
                   type="button"
                   onClick={() => onSelectTab('overview')}
                   style={{ fontFamily: '"Noto Serif Display", Georgia, Cambria, "Times New Roman", serif' }}
-                  className="font-extrabold text-[1.15rem] sm:text-xl tracking-tight text-amber-900 dark:text-amber-400 hover:opacity-85 transition-opacity cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded py-0.5 leading-tight"
+                  className="font-extrabold text-[1.1rem] tracking-tight text-amber-900 dark:text-amber-400 hover:opacity-85 transition-opacity cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded py-0.5 leading-tight"
                   aria-label="Africalia - Return to Primary Overview"
                   title="Return to Primary Overview"
                 >
                   Africalia
                 </button>
 
-                {/* Quiet [ ATLAS v{manifest.atlasVersion} ] Pill - delicate, understated micro-typography */}
                 <div className="flex items-center mt-0.5">
                   <button
                     type="button"
@@ -115,6 +142,30 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <span className="font-medium text-[8px] text-amber-800/70 dark:text-amber-300/70">v{manifest.atlasVersion}</span>
                   </button>
                 </div>
+              </div>
+            </div>
+
+            {/* Breadcrumb Separator Divider */}
+            <div className="h-5 w-[1px] bg-zinc-200 dark:bg-zinc-800 shrink-0 mx-0.5" />
+
+            {/* Active Page Title & Icon Indicator */}
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 max-w-[130px] xs:max-w-[170px] sm:max-w-[210px] md:max-w-[250px] lg:max-w-[310px]">
+              <div className="p-1 sm:p-1.5 rounded-lg bg-amber-500/10 dark:bg-amber-400/10 text-amber-800 dark:text-amber-400 border border-amber-500/20 dark:border-amber-400/20 shrink-0 flex items-center justify-center">
+                <activePageInfo.Icon className="w-3.5 h-3.5" />
+              </div>
+
+              <div className="flex flex-col min-w-0 justify-center">
+                <span 
+                  className="font-bold text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 truncate tracking-tight leading-tight"
+                  title={activePageInfo.fullTitle}
+                >
+                  {activePageInfo.title}
+                </span>
+                {activePageInfo.category && (
+                  <span className="hidden sm:inline font-mono text-[9.5px] text-zinc-500 dark:text-zinc-400 truncate leading-none mt-0.5">
+                    {activePageInfo.category}
+                  </span>
+                )}
               </div>
             </div>
           </div>

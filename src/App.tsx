@@ -16,6 +16,7 @@ import { atlas } from './data/atlas-store';
 import { lazyWithRetry, ViewErrorBoundary } from './utils/lazyWithRetry';
 import { Globe, Database } from 'lucide-react';
 import { DynamicIcon } from './components/DynamicIcon';
+import { getPageInfo } from './utils/navigationTitles';
 
 // Lazy-load heavier views with automatic chunk recovery and cache resilience for GitHub Pages
 const CountryView = lazyWithRetry(() => import('./views/CountryView').then(m => ({ default: m.CountryView })), 'CountryView');
@@ -84,6 +85,14 @@ function AppContent() {
   // Mobile Bottom Navigation Sheet
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
 
+  // Navigation History Stack for Top Bar Back Button & Alt+Left Shortcut
+  const [navHistory, setNavHistory] = useState<Array<{
+    tab: CanonicalNavTab;
+    entityId?: string;
+    region?: AfricanRegion;
+    indicator?: string;
+  }>>([]);
+
   // Background idle preloader for views to make navigation instantaneous
   useEffect(() => {
     const idlePreload = () => {
@@ -139,7 +148,7 @@ function AppContent() {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  // Keyboard shortcut: Cmd+K / Ctrl+K opens quick search; Cmd+B / Ctrl+B toggles navigation drawer
+  // Keyboard shortcut: Cmd+K / Ctrl+K opens quick search; Cmd+B / Ctrl+B toggles navigation drawer; Alt+Left goes back
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -154,10 +163,14 @@ function AppContent() {
           setIsMobileNavOpen(prev => !prev);
         }
       }
+      if (e.altKey && e.key === 'ArrowLeft') {
+        e.preventDefault();
+        handleGoBack();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [navHistory, currentTab, selectedEntityId, activeRegion, selectedIndicatorForAnalytics]);
 
   // Menu Toggle handler (always visible in navbar, no visible label)
   const handleToggleMenu = () => {
@@ -172,6 +185,16 @@ function AppContent() {
 
   // High-performance canonical tab navigation handler
   const handleSelectTab = (tab: CanonicalNavTab) => {
+    if (tab === currentTab) return;
+    setNavHistory(prev => [
+      ...prev.slice(-30),
+      {
+        tab: currentTab,
+        entityId: selectedEntityId,
+        region: activeRegion,
+        indicator: selectedIndicatorForAnalytics
+      }
+    ]);
     React.startTransition(() => {
       setCurrentTab(tab);
       
@@ -186,20 +209,66 @@ function AppContent() {
   };
 
   const handleSelectCountry = (id: string) => {
+    const formattedId = id.toUpperCase();
+    if (formattedId === selectedEntityId && currentTab === 'countries') return;
+    setNavHistory(prev => [
+      ...prev.slice(-30),
+      {
+        tab: currentTab,
+        entityId: selectedEntityId,
+        region: activeRegion,
+        indicator: selectedIndicatorForAnalytics
+      }
+    ]);
     React.startTransition(() => {
-      setSelectedEntityId(id.toUpperCase());
+      setSelectedEntityId(formattedId);
       setCurrentTab('countries');
     });
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   const handleSelectIndicator = (indId: string) => {
+    if (indId === selectedIndicatorForAnalytics && currentTab === 'analytics') return;
+    setNavHistory(prev => [
+      ...prev.slice(-30),
+      {
+        tab: currentTab,
+        entityId: selectedEntityId,
+        region: activeRegion,
+        indicator: selectedIndicatorForAnalytics
+      }
+    ]);
     React.startTransition(() => {
       setSelectedIndicatorForAnalytics(indId);
       setCurrentTab('analytics');
     });
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
+
+  const handleGoBack = () => {
+    if (navHistory.length > 0) {
+      const lastItem = navHistory[navHistory.length - 1];
+      setNavHistory(prev => prev.slice(0, -1));
+      React.startTransition(() => {
+        setCurrentTab(lastItem.tab);
+        if (lastItem.entityId) setSelectedEntityId(lastItem.entityId);
+        if (lastItem.region) setActiveRegion(lastItem.region);
+        if (lastItem.indicator) setSelectedIndicatorForAnalytics(lastItem.indicator);
+      });
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    } else if (currentTab !== 'overview') {
+      React.startTransition(() => {
+        setCurrentTab('overview');
+      });
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  };
+
+  const canGoBack = navHistory.length > 0 || currentTab !== 'overview';
+  const previousHistoryItem = navHistory.length > 0 ? navHistory[navHistory.length - 1] : null;
+  const previousPageTitle = previousHistoryItem
+    ? getPageInfo(previousHistoryItem.tab, previousHistoryItem.entityId, previousHistoryItem.region).shortTitle
+    : (currentTab !== 'overview' ? 'Overview' : undefined);
 
   // Check if current tab is a regional tab
   const isRegionalTab = currentTab === 'regions' || currentTab.startsWith('region-');
@@ -219,6 +288,10 @@ function AppContent() {
         onToggleTheme={toggleTheme}
         onOpenApiHub={() => setIsApiHubOpen(true)}
         onOpenOnboarding={() => setIsOnboardingOpen(true)}
+        activeRegion={activeRegion}
+        onGoBack={handleGoBack}
+        canGoBack={canGoBack}
+        previousPageTitle={previousPageTitle}
       />
 
       {/* Main Workspace Layout with Desktop Navigation Drawer & Content */}

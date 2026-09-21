@@ -18,6 +18,7 @@ export interface InteractiveMapLegendProps {
   onFocusRegion?: (region: AfricanRegion) => void;
   className?: string;
   embedded?: boolean;
+  showZoomControls?: boolean;
 }
 
 interface SubregionPillDef {
@@ -94,7 +95,8 @@ export const InteractiveMapLegend: React.FC<InteractiveMapLegendProps> = ({
   onResetZoom,
   onFocusRegion,
   className = '',
-  embedded = false
+  embedded = false,
+  showZoomControls = true
 }) => {
   const allVisible = visibleRegions.size === 5;
   const isSingleIsolated = visibleRegions.size === 1;
@@ -214,58 +216,60 @@ export const InteractiveMapLegend: React.FC<InteractiveMapLegendProps> = ({
         </div>
 
         {/* Right: Interactive Zoom (+ / -), Zoom % Pill & Reset Actions on same row */}
-        <div className="flex items-center gap-1.5 text-xs flex-wrap shrink-0 ml-auto">
-          {/* Zoom In & Out Control Group */}
-          <div className="flex items-center rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5">
+        {showZoomControls && (
+          <div className="flex items-center gap-1.5 text-xs flex-wrap shrink-0 ml-auto">
+            {/* Zoom In & Out Control Group */}
+            <div className="flex items-center rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5">
+              <button
+                type="button"
+                onClick={onZoomOut}
+                className="p-1 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-zinc-200/80 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                title="Zoom Out (-)"
+                aria-label="Zoom Out"
+              >
+                <ZoomOut className="w-3.5 h-3.5" />
+              </button>
+
+              {zoomLevel !== undefined && (
+                <span className="px-1.5 font-mono font-bold text-[11px] text-emerald-600 dark:text-emerald-400 min-w-[2.6rem] text-center select-none">
+                  {Math.round(zoomLevel * 100)}%
+                </span>
+              )}
+
+              <button
+                type="button"
+                onClick={onZoomIn}
+                className="p-1 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-zinc-200/80 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                title="Zoom In (+)"
+                aria-label="Zoom In"
+              >
+                <ZoomIn className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
             <button
               type="button"
-              onClick={onZoomOut}
-              className="p-1 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-zinc-200/80 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-              title="Zoom Out (-)"
-              aria-label="Zoom Out"
+              onClick={() => {
+                onShowAll();
+                if (onResetZoom) onResetZoom();
+              }}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300/80 dark:border-emerald-800/60 transition-all font-semibold cursor-pointer text-xs active:scale-95 shadow-xs"
+              title="Reset to Full Continent view"
             >
-              <ZoomOut className="w-3.5 h-3.5" />
+              <RotateCcw className="w-3 h-3 text-emerald-500" />
+              <span>Reset</span>
             </button>
 
-            {zoomLevel !== undefined && (
-              <span className="px-1.5 font-mono font-bold text-[11px] text-emerald-600 dark:text-emerald-400 min-w-[2.6rem] text-center select-none">
-                {Math.round(zoomLevel * 100)}%
-              </span>
-            )}
-
             <button
               type="button"
-              onClick={onZoomIn}
-              className="p-1 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-zinc-200/80 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-              title="Zoom In (+)"
-              aria-label="Zoom In"
+              onClick={allVisible ? onHideAll : onShowAll}
+              className="hidden xs:flex items-center gap-1 px-2 py-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors text-[11px] font-medium cursor-pointer border border-zinc-200 dark:border-zinc-800"
+              title={allVisible ? 'Hide all subregions' : 'Show all subregions'}
             >
-              <ZoomIn className="w-3.5 h-3.5" />
+              {allVisible ? 'Hide All' : 'Show All'}
             </button>
           </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              onShowAll();
-              if (onResetZoom) onResetZoom();
-            }}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300/80 dark:border-emerald-800/60 transition-all font-semibold cursor-pointer text-xs active:scale-95 shadow-xs"
-            title="Reset to Full Continent view"
-          >
-            <RotateCcw className="w-3 h-3 text-emerald-500" />
-            <span>Reset</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={allVisible ? onHideAll : onShowAll}
-            className="hidden xs:flex items-center gap-1 px-2 py-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors text-[11px] font-medium cursor-pointer border border-zinc-200 dark:border-zinc-800"
-            title={allVisible ? 'Hide all subregions' : 'Show all subregions'}
-          >
-            {allVisible ? 'Hide All' : 'Show All'}
-          </button>
-        </div>
+        )}
       </div>
     </div>
   );
