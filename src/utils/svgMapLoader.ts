@@ -4,8 +4,23 @@
  * completely decoupled from the JavaScript bundle.
  */
 
+import { useState, useEffect } from 'react';
+import { 
+  AFRICA_FINAL_MAP, 
+  AfricaFinalCountryPath, 
+  AfricaFinalAdmin1Path,
+  updateAfricaFinalMapWithAdmin1 
+} from '../data/africaFinalGeometry';
+
+/**
+ * Asynchronous In-Memory Cached SVG Map Loader
+ * Loads the raw public/africa-final.svg file once and extracts structured layer elements
+ * completely decoupled from the JavaScript bundle.
+ */
+
 let cachedSvgText: string | null = null;
 let cachedSvgPromise: Promise<string> | null = null;
+let parsedCountryMapCache: Record<string, AfricaFinalCountryPath> | null = null;
 
 export async function fetchAfricaFinalSvg(): Promise<string> {
   if (cachedSvgText) {
@@ -108,4 +123,115 @@ export function parseAfricaFinalSvg(svgText: string): ParsedAfricaMapData {
   };
 
   return parsedMapDataCache;
+}
+
+/**
+ * Extracts all 1,017 Admin-1 vector geometries and groups them by sovereign country ISO3.
+ * Merges with the lightweight country metadata into AFRICA_FINAL_MAP.
+ */
+export function parseAfricaFinalCountryMap(svgText: string): Record<string, AfricaFinalCountryPath> {
+  if (parsedCountryMapCache) {
+    return parsedCountryMapCache;
+  }
+
+  const admin1ByCountry: Record<string, AfricaFinalAdmin1Path[]> = {};
+  for (const iso3 of Object.keys(AFRICA_FINAL_MAP)) {
+    admin1ByCountry[iso3] = [];
+  }
+
+  // Fast DOM-based path extraction
+  if (typeof DOMParser !== 'undefined') {
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(svgText, 'image/svg+xml');
+      const admin1Els = doc.querySelectorAll('path[data-level="admin1"]');
+
+      if (admin1Els.length > 0) {
+        admin1Els.forEach((path) => {
+          const iso3 = path.getAttribute('data-iso3') || '';
+          const id = path.getAttribute('id') || '';
+          const name = path.getAttribute('data-label') || '';
+          const seq = path.getAttribute('data-admin1-seq') || '';
+          const d = path.getAttribute('d') || '';
+
+          if (iso3 && d && admin1ByCountry[iso3]) {
+            admin1ByCountry[iso3].push({ id, name, seq, d });
+          }
+        });
+      }
+    } catch {
+      // Fall through to regex parser
+    }
+  }
+
+  // Regex fallback if DOMParser is unavailable or yielded no paths
+  const firstCountryCount = Object.values(admin1ByCountry)[0]?.length || 0;
+  if (firstCountryCount === 0) {
+    const pathRegex = /<path id="([^"]+)" class="[^"]*" d="([^"]+)" transform="[^"]*" data-level="admin1" data-m49="[^"]*" data-iso3="([^"]+)" data-region-m49="[^"]*" data-admin1-seq="([^"]+)" data-label="([^"]+)"/g;
+    let match: RegExpExecArray | null;
+    while ((match = pathRegex.exec(svgText)) !== null) {
+      const [, id, d, iso3, seq, label] = match;
+      if (admin1ByCountry[iso3] && d) {
+        admin1ByCountry[iso3].push({ id, name: label, seq, d });
+      }
+    }
+  }
+
+  // Update in-memory AFRICA_FINAL_MAP so synchronous references have the paths
+  const updatedMap = updateAfricaFinalMapWithAdmin1(admin1ByCountry);
+  parsedCountryMapCache = { ...updatedMap };
+  return parsedCountryMapCache;
+}
+
+/**
+ * Asynchronously streams and parses the decoupled public/africa-final.svg asset.
+ */
+export async function loadAfricaFinalCountryMap(): Promise<Record<string, AfricaFinalCountryPath>> {
+  if (parsedCountryMapCache) {
+    return parsedCountryMapCache;
+  }
+  const svgText = await fetchAfricaFinalSvg();
+  return parseAfricaFinalCountryMap(svgText);
+}
+
+/**
+ * React hook to consume streamed Africa vector map data with loading & error states.
+ */
+export function useAfricaFinalMap() {
+  const [mapData, setMapData] = useState<Record<string, AfricaFinalCountryPath>>(parsedCountryMapCache || AFRICA_FINAL_MAP);
+  const [isLoaded, setIsLoaded] = useState<boolean>(!!parsedCountryMapCache || Object.values(AFRICA_FINAL_MAP).some(c => c.admin1 && c.admin1.length > 0));
+  const [isLoading, setIsLoading] = useState<boolean>(!isLoaded);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (parsedCountryMapCache || Object.values(AFRICA_FINAL_MAP).some(c => c.admin1 && c.admin1.length > 0)) {
+      setIsLoaded(true);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    loadAfricaFinalCountryMap()
+      .then((data) => {
+        if (isMounted) {
+          setMapData(data);
+          setIsLoaded(true);
+          setIsLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (isMounted) {
+          setError(err instanceof Error ? err : new Error(String(err)));
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  return { mapData, isLoaded, isLoading, error };
 }

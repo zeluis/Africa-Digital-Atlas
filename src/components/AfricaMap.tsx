@@ -50,6 +50,7 @@ import { AfricaliaAdmin1 } from '../data/types';
 import { getCanonicalCountryColor } from '../data/africaCanonicalColorPalette';
 import { AfricaMapFinalLayer } from './AfricaMapFinalLayer';
 import { AfricaUnLogo } from './AfricaUnLogo';
+import { useAfricaFinalMap } from '../utils/svgMapLoader';
 
 export interface AfricaMapProps {
   onSelectCountry?: (entityId: string) => void;
@@ -145,6 +146,8 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   const activeRegionFilter = selectedRegionFilter || regionFilter || 'All';
   const handleRegionTabSelect = onSelectRegionFilter || (() => {});
 
+  const { mapData: finalMapData } = useAfricaFinalMap();
+
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -174,7 +177,8 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   // Overlays toggle state (Graticule lines & Compass Rose)
   const [showGraticuleAndCompass, setShowGraticuleAndCompass] = useState<boolean>(true);
   const [showAdmin1Borders, setShowAdmin1Borders] = useState<boolean>(true);
-  const [isLegendExpanded, setIsLegendExpanded] = useState<boolean>(true);
+  const [isNavigatorOpen, setIsNavigatorOpen] = useState<boolean>(false);
+  const [navigatorTab, setNavigatorTab] = useState<'subregions' | 'admin1'>('subregions');
   const [hoveredEntityId, setHoveredEntityId] = useState<string | null>(null);
   const [hoveredAdmin1, setHoveredAdmin1] = useState<{ id: string; name: string; countryId: string } | null>(null);
   const [activeRegionHover, setActiveRegionHover] = useState<AfricanRegion | null>(null);
@@ -213,7 +217,6 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   // Admin-1 Subdivisions State & Query
   const [admin1SearchQuery, setAdmin1SearchQuery] = useState<string>('');
   const [selectedAdmin1, setSelectedAdmin1] = useState<AfricaliaAdmin1 | null>(null);
-  const [isAdmin1DrawerOpen, setIsAdmin1DrawerOpen] = useState<boolean>(true);
 
   // Available Admin-1 subdivisions for the currently selected country
   const currentCountryAdmin1 = useMemo(() => {
@@ -226,7 +229,10 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     if (admin1SearchQuery.trim()) {
       return searchAdmin1Subdivisions(admin1SearchQuery.trim());
     }
-    return currentCountryAdmin1;
+    if (currentCountryAdmin1.length > 0) {
+      return currentCountryAdmin1;
+    }
+    return ALL_ADMIN1_SUBDIVISIONS.slice(0, 80);
   }, [admin1SearchQuery, currentCountryAdmin1]);
 
   const currentMetricDef = useMemo(() => {
@@ -892,20 +898,27 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 </button>
 
                 <button
-                  id="btn-toggle-admin1-inspector"
+                  id="btn-toggle-admin1-inspector-header"
                   type="button"
-                  onClick={() => setIsAdmin1DrawerOpen(prev => !prev)}
+                  onClick={() => {
+                    if (isNavigatorOpen && navigatorTab === 'admin1') {
+                      setIsNavigatorOpen(false);
+                    } else {
+                      setIsNavigatorOpen(true);
+                      setNavigatorTab('admin1');
+                    }
+                  }}
                   className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
-                    isAdmin1DrawerOpen
+                    isNavigatorOpen && navigatorTab === 'admin1'
                       ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
                       : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                   }`}
                   title="Toggle Admin-1 Subdivisions Inspector"
                 >
                   <MapPin className="w-3 h-3" />
-                  <span>Inspector ({isAdmin1DrawerOpen ? 'OPEN' : 'CLOSED'})</span>
+                  <span>Inspector ({isNavigatorOpen && navigatorTab === 'admin1' ? 'OPEN' : 'CLOSED'})</span>
                   <span className={`text-[10px] font-mono px-1 py-0.2 rounded font-bold ${
-                    isAdmin1DrawerOpen ? 'bg-emerald-700/80 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
+                    isNavigatorOpen && navigatorTab === 'admin1' ? 'bg-emerald-700/80 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
                   }`}>
                     {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
                   </span>
@@ -1000,50 +1013,235 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             : "relative w-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner p-[6px] aspect-[890/985] max-h-[85vh] min-h-[440px]"
         }
       >
-        {/* Full-Bleed Floating Subregions Toggle Button */}
-        {isFullBleed && (
-          <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 max-w-[calc(100vw-32px)]">
+        {/* Unified Floating Explorer Pill & Integrated Navigator Panel */}
+        <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 max-w-[calc(100vw-32px)]">
+          {/* Unified Collapsed Floating Pill in top-left */}
+          <div
+            id="floating-navigator-pill"
+            className="self-start inline-flex items-center rounded-2xl bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/90 dark:border-zinc-800/90 shadow-xl backdrop-blur-md p-1 transition-all duration-200 hover:shadow-2xl"
+          >
+            {/* UN Subregions segment */}
             <button
               id="btn-toggle-un-subregions"
               type="button"
-              onClick={() => setIsLegendExpanded(prev => !prev)}
-              className="self-start px-3.5 py-2 rounded-xl bg-white/95 dark:bg-zinc-900/95 border border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-800 dark:text-zinc-200 shadow-xl backdrop-blur-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all flex items-center gap-2 cursor-pointer"
-              title="Toggle Subregions Panel"
+              onClick={() => {
+                if (isNavigatorOpen && navigatorTab === 'subregions') {
+                  setIsNavigatorOpen(false);
+                } else {
+                  setIsNavigatorOpen(true);
+                  setNavigatorTab('subregions');
+                }
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                isNavigatorOpen && navigatorTab === 'subregions'
+                  ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold shadow-xs'
+                  : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+              }`}
+              title="Toggle UN Subregions Panel"
             >
-              <Layers className="w-4 h-4 text-emerald-600 shrink-0" />
+              <Layers className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span className="font-bold">UN Subregions</span>
               <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
                 {visibleRegions.size}/5
               </span>
             </button>
 
-            {isLegendExpanded && (
-              <div 
-                id="floating-un-subregions-panel"
-                className="w-auto min-w-[300px] sm:min-w-[460px] max-w-[calc(100vw-32px)] sm:max-w-2xl lg:max-w-3xl p-3.5 sm:p-4 rounded-2xl bg-white/95 dark:bg-zinc-950/95 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
-              >
-                <InteractiveMapLegend
-                  embedded={true}
-                  visibleRegions={visibleRegions}
-                  onToggleRegion={handleToggleRegion}
-                  onShowAll={() => {
-                    handleShowAllRegions();
-                    handleResetZoom();
-                  }}
-                  onHideAll={handleHideAllRegions}
-                  onIsolateRegion={handleIsolateRegion}
-                  activeHoverRegion={activeRegionHover}
-                  onHoverRegion={setActiveRegionHover}
-                  zoomLevel={zoomLevel}
-                  onZoomIn={() => setZoomLevel(prev => Math.min(3.8, prev + 0.25))}
-                  onZoomOut={() => setZoomLevel(prev => Math.max(0.7, prev - 0.25))}
-                  onResetZoom={handleResetZoom}
-                  onFocusRegion={handleFocusRegion}
-                />
-              </div>
-            )}
+            {/* Clean Divider */}
+            <div className="w-px h-5 bg-zinc-200 dark:bg-zinc-700 mx-1" />
+
+            {/* Admin-1 Inspector segment */}
+            <button
+              id="btn-toggle-admin1-inspector"
+              type="button"
+              onClick={() => {
+                if (isNavigatorOpen && navigatorTab === 'admin1') {
+                  setIsNavigatorOpen(false);
+                } else {
+                  setIsNavigatorOpen(true);
+                  setNavigatorTab('admin1');
+                }
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                isNavigatorOpen && navigatorTab === 'admin1'
+                  ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold shadow-xs'
+                  : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+              }`}
+              title="Toggle Admin-1 Subdivisions Inspector"
+            >
+              <MapPin className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span className="font-bold">Admin-1</span>
+              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
+                {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
+              </span>
+            </button>
           </div>
-        )}
+
+          {/* Sleek & Sophisticated Expanded Navigator Panel */}
+          {isNavigatorOpen && (
+            <div
+              id="floating-un-subregions-panel"
+              className="w-auto min-w-[320px] sm:min-w-[460px] max-w-[calc(100vw-32px)] sm:max-w-2xl lg:max-w-3xl rounded-2xl bg-white/95 dark:bg-zinc-950/95 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 overflow-hidden"
+            >
+              {/* Top Header with Tab Switcher & Close Control */}
+              <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-900/60">
+                <div className="flex items-center gap-1.5 p-0.5 rounded-xl bg-zinc-200/60 dark:bg-zinc-800/60">
+                  <button
+                    type="button"
+                    onClick={() => setNavigatorTab('subregions')}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      navigatorTab === 'subregions'
+                        ? 'bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-xs'
+                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                    }`}
+                  >
+                    <Layers className="w-3.5 h-3.5" />
+                    <span>Subregions</span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-bold">
+                      {visibleRegions.size}/5
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setNavigatorTab('admin1')}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      navigatorTab === 'admin1'
+                        ? 'bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-xs'
+                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                    }`}
+                  >
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>Admin-1</span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-bold">
+                      {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
+                    </span>
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsNavigatorOpen(false)}
+                  className="p-1 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                  title="Collapse Navigator"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Tab 1: Subregions Legend */}
+              {navigatorTab === 'subregions' && (
+                <div className="p-3.5 sm:p-4">
+                  <InteractiveMapLegend
+                    embedded={true}
+                    visibleRegions={visibleRegions}
+                    onToggleRegion={handleToggleRegion}
+                    onShowAll={() => {
+                      handleShowAllRegions();
+                      handleResetZoom();
+                    }}
+                    onHideAll={handleHideAllRegions}
+                    onIsolateRegion={handleIsolateRegion}
+                    activeHoverRegion={activeRegionHover}
+                    onHoverRegion={setActiveRegionHover}
+                    zoomLevel={zoomLevel}
+                    onZoomIn={() => setZoomLevel(prev => Math.min(3.8, prev + 0.25))}
+                    onZoomOut={() => setZoomLevel(prev => Math.max(0.7, prev - 0.25))}
+                    onResetZoom={handleResetZoom}
+                    onFocusRegion={handleFocusRegion}
+                  />
+                </div>
+              )}
+
+              {/* Tab 2: Admin-1 Subdivisions Inspector */}
+              {navigatorTab === 'admin1' && (
+                <div id="admin1-subdivision-inspector" className="flex flex-col">
+                  {/* Search Bar & Subheader */}
+                  <div className="p-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/40 dark:bg-zinc-950/40">
+                    <div className="relative flex items-center mb-1.5">
+                      <Search className="absolute left-2.5 w-3.5 h-3.5 text-zinc-400" />
+                      <input
+                        type="text"
+                        placeholder="Search state, province, or region..."
+                        value={admin1SearchQuery}
+                        onChange={(e) => setAdmin1SearchQuery(e.target.value)}
+                        className="w-full pl-8 pr-7 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/90 dark:bg-zinc-900/90 text-xs font-medium text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                      />
+                      {admin1SearchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setAdmin1SearchQuery('')}
+                          className="absolute right-2 p-0.5 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 px-1">
+                      <span>
+                        {selectedEntityId ? (AFRICA_FINAL_MAP[selectedEntityId]?.name || selectedEntityId) : 'All African Territories'}
+                      </span>
+                      <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                        {filteredAdmin1List.length} subdivision{filteredAdmin1List.length === 1 ? '' : 's'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Subdivisions List */}
+                  <div className="overflow-y-auto p-2 space-y-1.5 max-h-[50vh]">
+                    {filteredAdmin1List.length === 0 ? (
+                      <div className="p-6 text-center text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+                        No subdivisions match &ldquo;{admin1SearchQuery}&rdquo;.
+                      </div>
+                    ) : (
+                      filteredAdmin1List.map((adm) => {
+                        const isAdmSelected = selectedAdmin1?.id === adm.id;
+                        const isAdmHovered = hoveredAdmin1?.id === adm.id;
+                        return (
+                          <div
+                            key={adm.id}
+                            onMouseEnter={() => {
+                              setHoveredAdmin1({ id: adm.id, name: adm.name, countryId: adm.iso3 });
+                              setHoveredEntityId(adm.iso3);
+                            }}
+                            onMouseLeave={() => {
+                              setHoveredAdmin1(null);
+                            }}
+                            onClick={() => handleAdmin1Focus(adm)}
+                            className={`flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer ${
+                              isAdmSelected
+                                ? 'bg-emerald-500/15 border-emerald-500 text-emerald-950 dark:text-emerald-100 shadow-xs'
+                                : isAdmHovered
+                                ? 'bg-zinc-100/90 dark:bg-zinc-900/90 border-emerald-500/40 text-zinc-900 dark:text-zinc-100'
+                                : 'bg-white/60 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <CountryFlag entityId={adm.iso3} size="xs" />
+                              <div className="min-w-0">
+                                <p className="text-xs font-bold truncate leading-tight">{adm.name}</p>
+                                <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">
+                                  {adm.countryName} ({adm.iso3})
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold">
+                                {adm.admin1Code || adm.id}
+                              </span>
+                              <div className={`p-1 rounded-lg ${isAdmSelected ? 'bg-emerald-600 text-white' : 'text-zinc-400'}`}>
+                                <Maximize2 className="w-3 h-3" />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         <svg
           ref={svgRef}
@@ -1088,6 +1286,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           >
             {isFinalMode ? (
               <AfricaMapFinalLayer
+                mapData={finalMapData}
                 selectedEntityId={selectedEntityId}
                 activeTooltipEntityId={activeTooltipEntityId}
                 hoveredEntityId={hoveredEntityId}
@@ -1410,112 +1609,6 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             )}
           </g>
         </svg>
-
-        {/* Floating Admin-1 Subdivisions Inspector Drawer */}
-        {isAdmin1DrawerOpen && isFinalMode && (
-          <div
-            id="admin1-subdivision-inspector"
-            className="absolute top-4 right-4 z-20 w-80 sm:w-96 max-w-[calc(100vw-32px)] max-h-[75vh] flex flex-col rounded-2xl bg-white/95 dark:bg-zinc-950/95 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 overflow-hidden"
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between px-3.5 py-3 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/70 dark:bg-zinc-900/50">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <div>
-                  <h4 className="font-extrabold text-xs text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
-                    Admin-1 Inspector
-                  </h4>
-                  <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium">
-                    {selectedEntityId && (AFRICA_FINAL_MAP[selectedEntityId]?.name || selectedEntityId)} • {filteredAdmin1List.length} subdivisions
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsAdmin1DrawerOpen(false)}
-                className="p-1 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-                title="Close Inspector"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Search Bar */}
-            <div className="p-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/40 dark:bg-zinc-950/40">
-              <div className="relative flex items-center">
-                <Search className="absolute left-2.5 w-3.5 h-3.5 text-zinc-400" />
-                <input
-                  type="text"
-                  placeholder="Search state, province, or region..."
-                  value={admin1SearchQuery}
-                  onChange={(e) => setAdmin1SearchQuery(e.target.value)}
-                  className="w-full pl-8 pr-7 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/90 dark:bg-zinc-900/90 text-xs font-medium text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
-                />
-                {admin1SearchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setAdmin1SearchQuery('')}
-                    className="absolute right-2 p-0.5 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Subdivisions List */}
-            <div className="flex-1 overflow-y-auto p-2 space-y-1.5 max-h-[50vh]">
-              {filteredAdmin1List.length === 0 ? (
-                <div className="p-6 text-center text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-                  No subdivisions match &ldquo;{admin1SearchQuery}&rdquo;.
-                </div>
-              ) : (
-                filteredAdmin1List.map((adm) => {
-                  const isAdmSelected = selectedAdmin1?.id === adm.id;
-                  const isAdmHovered = hoveredAdmin1?.id === adm.id;
-                  return (
-                    <div
-                      key={adm.id}
-                      onMouseEnter={() => {
-                        setHoveredAdmin1({ id: adm.id, name: adm.name, countryId: adm.iso3 });
-                        setHoveredEntityId(adm.iso3);
-                      }}
-                      onMouseLeave={() => {
-                        setHoveredAdmin1(null);
-                      }}
-                      onClick={() => handleAdmin1Focus(adm)}
-                      className={`flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer ${
-                        isAdmSelected
-                          ? 'bg-emerald-500/15 border-emerald-500 text-emerald-950 dark:text-emerald-100 shadow-xs'
-                          : isAdmHovered
-                          ? 'bg-zinc-100/90 dark:bg-zinc-900/90 border-emerald-500/40 text-zinc-900 dark:text-zinc-100'
-                          : 'bg-white/60 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <CountryFlag entityId={adm.iso3} size="xs" />
-                        <div className="min-w-0">
-                          <p className="text-xs font-bold truncate leading-tight">{adm.name}</p>
-                          <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">
-                            {adm.countryName} ({adm.iso3})
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold">
-                          {adm.admin1Code || adm.id}
-                        </span>
-                        <div className={`p-1 rounded-lg ${isAdmSelected ? 'bg-emerald-600 text-white' : 'text-zinc-400'}`}>
-                          <Maximize2 className="w-3 h-3" />
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
-        )}
 
         {/* Pinned / Hovered Country Tooltip */}
         {displayEntityId && hoveredCountryData && hoveredEntity && (

@@ -1,0 +1,1313 @@
+{
+  "ZAF": {
+    "id": "ZAF",
+    "groupId": "M49_710_ISO3_ZAF_ADM1",
+    "m49": "710",
+    "unRegion": "Southern Africa",
+    "name": "South Africa",
+    "originalClass": "cls-3",
+    "originalColor": "#ec4924",
+    "area": 1185118,
+    "bbox": {
+      "minX": 3077,
+      "minY": 4901,
+      "maxX": 4226,
+      "maxY": 5932,
+      "width": 1149,
+      "height": 1031
+    },
+    "centroid": {
+      "x": 3769,
+      "y": 5371
+    },
+    "admin1": []
+  },
+  "NAM": {
+    "id": "NAM",
+    "groupId": "M49_516_ISO3_NAM_ADM1",
+    "m49": "516",
+    "unRegion": "Southern Africa",
+    "name": "Namibia",
+    "originalClass": "cls-4",
+    "originalColor": "#ef8363",
+    "area": 934484,
+    "bbox": {
+      "minX": 2768,
+      "minY": 4480,
+      "maxX": 3726,
+      "maxY": 5456,
+      "width": 958,
+      "height": 976
+    },
+    "centroid": {
+      "x": 3198,
+      "y": 4891
+    },
+    "admin1": []
+  },
+  "LSO": {
+    "id": "LSO",
+    "groupId": "M49_426_ISO3_LSO_ADM1",
+    "m49": "426",
+    "unRegion": "Southern Africa",
+    "name": "Lesotho",
+    "originalClass": "cls-5",
+    "originalColor": "#f2a589",
+    "area": 28839,
+    "bbox": {
+      "minX": 3801,
+      "minY": 5424,
+      "maxX": 3971,
+      "maxY": 5594,
+      "width": 170,
+      "height": 170
+    },
+    "centroid": {
+      "x": 3884,
+      "y": 5507
+    },
+    "admin1": []
+  },
+  "SWZ": {
+    "id": "SWZ",
+    "groupId": "M49_748_ISO3_SWZ_ADM1",
+    "m49": "748",
+    "unRegion": "Southern Africa",
+    "name": "Eswatini",
+    "originalClass": "cls-6",
+    "originalColor": "#fbddd2",
+    "area": 11993,
+    "bbox": {
+      "minX": 4080,
+      "minY": 5194,
+      "maxX": 4173,
+      "maxY": 5323,
+      "width": 93,
+      "height": 128
+    },
+    "centroid": {
+      "x": 4127,
+      "y": 5262
+    },
+    "admin1": []
+  },
+  "BWA": {
+    "id": "BWA",
+    "groupId": "M49_072_ISO3_BWA_ADM1",
+    "m49": "072",
+    "unRegion": "Southern Africa",
+    "name": "Botswana",
+    "originalClass": "cls-7",
+    "originalColor": "#ef6e5d",
+    "area": 492246,
+    "bbox": {
+      "minX": 3335,
+      "minY": 4548,
+      "maxX": 4000,
+      "maxY": 5288,
+      "width": 665,
+      "height": 740
+    },
+    "centroid": {
+      "x": 3685,
+      "y": 4925
+    },
+    "admin1": []
+  },
+  "STP": {
+    "id": "STP",
+    "groupId": "M49_678_ISO3_STP_ADM1",
+    "m49": "678",
+    "unRegion": "Central Africa",
+    "name": "São Tomé and Príncipe",
+    "originalClass": "cls-8",
+    "originalColor": "#a94f97",
+    "area": 9771,
+    "bbox": {
+      "minX": 2403,
+      "minY": 2964,
+      "maxX": 2475,
+      "maxY": 3100,
+      "width": 72,
+      "height": 136
+    },
+    "centroid": {
+      "x": 2050,
+      "y": 3630
+    },
+    "admin1": []
+  },
+  "GAB": {
+    "id": "GAB",
+    "groupId": "M49_266_ISO3_GAB_ADM1",
+    "m49": "266",
+    "unRegion": "Central Africa",
+    "name": "Gabon",
+    "originalClass": "cls-9",
+    "originalColor": "#dab8d4",
+    "area": 211528,
+    "bbox": {
+      "minX": 2564,
+      "minY": 2914,
+      "maxX": 2980,
+      "maxY": 3422,
+      "width": 416,
+      "height": 509
+    },
+    "centroid": {
+      "x": 2773,
+      "y": 3159
+    },
+    "admin1": []
+  },
+  "GNQ": {
+    "id": "GNQ",
+    "groupId": "M49_226_ISO3_GNQ_ADM1",
+    "m49": "226",
+    "unRegion": "Central Africa",
+    "name": "Equatorial Guinea",
+    "originalClass": "cls-10",
+    "originalColor": "#ecd8e9",
+    "area": 175214,
+    "bbox": {
+      "minX": 2342,
+      "minY": 2796,
+      "maxX": 2752,
+      "maxY": 3222,
+      "width": 411,
+      "height": 427
+    },
+    "centroid": {
+      "x": 2607,
+      "y": 2981
+    },
+    "admin1": []
+  },
+  "COD": {
+    "id": "COD",
+    "groupId": "M49_180_ISO3_COD_ADM1",
+    "m49": "180",
+    "unRegion": "Central Africa",
+    "name": "DR Congo",
+    "originalClass": "cls-11",
+    "originalColor": "#0a9bc3",
+    "area": 2093684,
+    "bbox": {
+      "minX": 2814,
+      "minY": 2665,
+      "maxX": 4183,
+      "maxY": 4195,
+      "width": 1369,
+      "height": 1529
+    },
+    "centroid": {
+      "x": 3573,
+      "y": 3386
+    },
+    "admin1": []
+  },
+  "COG": {
+    "id": "COG",
+    "groupId": "M49_178_ISO3_COG_ADM1",
+    "m49": "178",
+    "unRegion": "Central Africa",
+    "name": "Congo",
+    "originalClass": "cls-14",
+    "originalColor": "#e3c8df",
+    "area": 383110,
+    "bbox": {
+      "minX": 2736,
+      "minY": 2801,
+      "maxX": 3276,
+      "maxY": 3510,
+      "width": 540,
+      "height": 709
+    },
+    "centroid": {
+      "x": 2995,
+      "y": 3216
+    },
+    "admin1": []
+  },
+  "TCD": {
+    "id": "TCD",
+    "groupId": "M49_148_ISO3_TCD_ADM1",
+    "m49": "148",
+    "unRegion": "Central Africa",
+    "name": "Chad",
+    "originalClass": "cls-15",
+    "originalColor": "#0a9bc3",
+    "area": 969286,
+    "bbox": {
+      "minX": 2895,
+      "minY": 1197,
+      "maxX": 3641,
+      "maxY": 2496,
+      "width": 746,
+      "height": 1300
+    },
+    "centroid": {
+      "x": 3244,
+      "y": 1997
+    },
+    "admin1": []
+  },
+  "CAF": {
+    "id": "CAF",
+    "groupId": "M49_140_ISO3_CAF_ADM1",
+    "m49": "140",
+    "unRegion": "Central Africa",
+    "name": "Central African Republic",
+    "originalClass": "cls-17",
+    "originalColor": "#d9b7d4",
+    "area": 664435,
+    "bbox": {
+      "minX": 2970,
+      "minY": 2208,
+      "maxX": 3902,
+      "maxY": 2921,
+      "width": 933,
+      "height": 712
+    },
+    "centroid": {
+      "x": 3368,
+      "y": 2575
+    },
+    "admin1": []
+  },
+  "CMR": {
+    "id": "CMR",
+    "groupId": "M49_120_ISO3_CMR_ADM1",
+    "m49": "120",
+    "unRegion": "Central Africa",
+    "name": "Cameroon",
+    "originalClass": "cls-18",
+    "originalColor": "#d2aacc",
+    "area": 513671,
+    "bbox": {
+      "minX": 2549,
+      "minY": 2039,
+      "maxX": 3102,
+      "maxY": 2968,
+      "width": 553,
+      "height": 929
+    },
+    "centroid": {
+      "x": 2817,
+      "y": 2582
+    },
+    "admin1": []
+  },
+  "AGO": {
+    "id": "AGO",
+    "groupId": "M49_024_ISO3_AGO_ADM1",
+    "m49": "024",
+    "unRegion": "Central Africa",
+    "name": "Angola",
+    "originalClass": "cls-8",
+    "originalColor": "#a94f97",
+    "area": 984097,
+    "bbox": {
+      "minX": 2766,
+      "minY": 3459,
+      "maxX": 3654,
+      "maxY": 4568,
+      "width": 888,
+      "height": 1109
+    },
+    "centroid": {
+      "x": 3159,
+      "y": 4018
+    },
+    "admin1": []
+  },
+  "ESH": {
+    "id": "ESH",
+    "groupId": "M49_732_ISO3_ESH_ADM1",
+    "m49": "732",
+    "unRegion": "Northern Africa",
+    "name": "Western Sahara",
+    "originalClass": "cls-19",
+    "originalColor": "#b1dadd",
+    "area": 337588,
+    "bbox": {
+      "minX": 735,
+      "minY": 854,
+      "maxX": 1338,
+      "maxY": 1415,
+      "width": 602,
+      "height": 560
+    },
+    "centroid": {
+      "x": 1059,
+      "y": 1120
+    },
+    "admin1": []
+  },
+  "TUN": {
+    "id": "TUN",
+    "groupId": "M49_788_ISO3_TUN_ADM1",
+    "m49": "788",
+    "unRegion": "Northern Africa",
+    "name": "Tunisia",
+    "originalClass": "cls-20",
+    "originalColor": "#b7dcda",
+    "area": 162877,
+    "bbox": {
+      "minX": 2447,
+      "minY": 68,
+      "maxX": 2729,
+      "maxY": 646,
+      "width": 282,
+      "height": 578
+    },
+    "centroid": {
+      "x": 2595,
+      "y": 296
+    },
+    "admin1": []
+  },
+  "SDN": {
+    "id": "SDN",
+    "groupId": "M49_729_ISO3_SDN_ADM1",
+    "m49": "729",
+    "unRegion": "Northern Africa",
+    "name": "Sudan",
+    "originalClass": "cls-21",
+    "originalColor": "#0a9bc3",
+    "area": 1295081,
+    "bbox": {
+      "minX": 3493,
+      "minY": 1296,
+      "maxX": 4669,
+      "maxY": 2397,
+      "width": 1176,
+      "height": 1101
+    },
+    "centroid": {
+      "x": 4116,
+      "y": 1891
+    },
+    "admin1": []
+  },
+  "MAR": {
+    "id": "MAR",
+    "groupId": "M49_504_ISO3_MAR_ADM1",
+    "m49": "504",
+    "unRegion": "Northern Africa",
+    "name": "Morocco",
+    "originalClass": "cls-23",
+    "originalColor": "#4068ad",
+    "area": 1327862,
+    "bbox": {
+      "minX": 743,
+      "minY": 183,
+      "maxX": 1869,
+      "maxY": 1361,
+      "width": 1126,
+      "height": 1179
+    },
+    "centroid": {
+      "x": 1356,
+      "y": 677
+    },
+    "admin1": []
+  },
+  "LBY": {
+    "id": "LBY",
+    "groupId": "M49_434_ISO3_LBY_ADM1",
+    "m49": "434",
+    "unRegion": "Northern Africa",
+    "name": "Libya",
+    "originalClass": "cls-23",
+    "originalColor": "#4068ad",
+    "area": 1247112,
+    "bbox": {
+      "minX": 2579,
+      "minY": 406,
+      "maxX": 3700,
+      "maxY": 1518,
+      "width": 1121,
+      "height": 1112
+    },
+    "centroid": {
+      "x": 3112,
+      "y": 835
+    },
+    "admin1": []
+  },
+  "EGY": {
+    "id": "EGY",
+    "groupId": "M49_818_ISO3_EGY_ADM1",
+    "m49": "818",
+    "unRegion": "Northern Africa",
+    "name": "Egypt",
+    "originalClass": "cls-24",
+    "originalColor": "#1f4395",
+    "area": 700039,
+    "bbox": {
+      "minX": 3639,
+      "minY": 530,
+      "maxX": 4530,
+      "maxY": 1315,
+      "width": 891,
+      "height": 785
+    },
+    "centroid": {
+      "x": 4110,
+      "y": 835
+    },
+    "admin1": []
+  },
+  "DZA": {
+    "id": "DZA",
+    "groupId": "M49_012_ISO3_DZA_ADM1",
+    "m49": "012",
+    "unRegion": "Northern Africa",
+    "name": "Algeria",
+    "originalClass": "cls-25",
+    "originalColor": "#63c0d3",
+    "area": 2120834,
+    "bbox": {
+      "minX": 1337,
+      "minY": 89,
+      "maxX": 2778,
+      "maxY": 1561,
+      "width": 1441,
+      "height": 1472
+    },
+    "centroid": {
+      "x": 2121,
+      "y": 553
+    },
+    "admin1": []
+  },
+  "ZWE": {
+    "id": "ZWE",
+    "groupId": "M49_716_ISO3_ZWE_ADM1",
+    "m49": "716",
+    "unRegion": "Eastern Africa",
+    "name": "Zimbabwe",
+    "originalClass": "cls-26",
+    "originalColor": "#dfb715",
+    "area": 305247,
+    "bbox": {
+      "minX": 3723,
+      "minY": 4372,
+      "maxX": 4277,
+      "maxY": 4923,
+      "width": 554,
+      "height": 551
+    },
+    "centroid": {
+      "x": 4046,
+      "y": 4621
+    },
+    "admin1": []
+  },
+  "ZMB": {
+    "id": "ZMB",
+    "groupId": "M49_894_ISO3_ZMB_ADM1",
+    "m49": "894",
+    "unRegion": "Eastern Africa",
+    "name": "Zambia",
+    "originalClass": "cls-27",
+    "originalColor": "#fcd214",
+    "area": 675547,
+    "bbox": {
+      "minX": 3499,
+      "minY": 3771,
+      "maxX": 4343,
+      "maxY": 4571,
+      "width": 845,
+      "height": 800
+    },
+    "centroid": {
+      "x": 3959,
+      "y": 4171
+    },
+    "admin1": []
+  },
+  "TZA": {
+    "id": "TZA",
+    "groupId": "M49_834_ISO3_TZA_ADM1",
+    "m49": "834",
+    "unRegion": "Eastern Africa",
+    "name": "Tanzania",
+    "originalClass": "cls-28",
+    "originalColor": "#edd017",
+    "area": 667785,
+    "bbox": {
+      "minX": 4063,
+      "minY": 3183,
+      "maxX": 4827,
+      "maxY": 4056,
+      "width": 765,
+      "height": 873
+    },
+    "centroid": {
+      "x": 4442,
+      "y": 3594
+    },
+    "admin1": []
+  },
+  "UGA": {
+    "id": "UGA",
+    "groupId": "M49_800_ISO3_UGA_ADM1",
+    "m49": "800",
+    "unRegion": "Eastern Africa",
+    "name": "Uganda",
+    "originalClass": "cls-27",
+    "originalColor": "#fcd214",
+    "area": 181074,
+    "bbox": {
+      "minX": 4059,
+      "minY": 2759,
+      "maxX": 4450,
+      "maxY": 3222,
+      "width": 391,
+      "height": 463
+    },
+    "centroid": {
+      "x": 4253,
+      "y": 3003
+    },
+    "admin1": []
+  },
+  "SSD": {
+    "id": "SSD",
+    "groupId": "M49_728_ISO3_SSD_ADM1",
+    "m49": "728",
+    "unRegion": "Eastern Africa",
+    "name": "South Sudan",
+    "originalClass": "cls-1",
+    "originalColor": "#0a9bc3",
+    "area": 602390,
+    "bbox": {
+      "minX": 3664,
+      "minY": 2110,
+      "maxX": 4514,
+      "maxY": 2819,
+      "width": 849,
+      "height": 709
+    },
+    "centroid": {
+      "x": 4089,
+      "y": 2491
+    },
+    "admin1": []
+  },
+  "SOM": {
+    "id": "SOM",
+    "groupId": "M49_706_ISO3_SOM_ADM1",
+    "m49": "706",
+    "unRegion": "Eastern Africa",
+    "name": "Somalia",
+    "originalClass": "cls-27",
+    "originalColor": "#fcd214",
+    "area": 815415,
+    "bbox": {
+      "minX": 4877,
+      "minY": 2128,
+      "maxX": 5610,
+      "maxY": 3240,
+      "width": 733,
+      "height": 1112
+    },
+    "centroid": {
+      "x": 5254,
+      "y": 2669
+    },
+    "admin1": []
+  },
+  "SYC": {
+    "id": "SYC",
+    "groupId": "M49_690_ISO3_SYC_ADM1",
+    "m49": "690",
+    "unRegion": "Eastern Africa",
+    "name": "Seychelles",
+    "originalClass": "cls-1",
+    "originalColor": "#0a9bc3",
+    "area": 234,
+    "bbox": {
+      "minX": 5241,
+      "minY": 3860,
+      "maxX": 5264,
+      "maxY": 3871,
+      "width": 23,
+      "height": 10
+    },
+    "centroid": {
+      "x": 5740,
+      "y": 3720
+    },
+    "admin1": []
+  },
+  "RWA": {
+    "id": "RWA",
+    "groupId": "M49_646_ISO3_RWA_ADM1",
+    "m49": "646",
+    "unRegion": "Eastern Africa",
+    "name": "Rwanda",
+    "originalClass": "cls-31",
+    "originalColor": "#f4a40e",
+    "area": 20977,
+    "bbox": {
+      "minX": 4009,
+      "minY": 3188,
+      "maxX": 4155,
+      "maxY": 3332,
+      "width": 146,
+      "height": 144
+    },
+    "centroid": {
+      "x": 4080,
+      "y": 3263
+    },
+    "admin1": []
+  },
+  "MOZ": {
+    "id": "MOZ",
+    "groupId": "M49_508_ISO3_MOZ_ADM1",
+    "m49": "508",
+    "unRegion": "Eastern Africa",
+    "name": "Mozambique",
+    "originalClass": "cls-32",
+    "originalColor": "#f9cf7d",
+    "area": 1005826,
+    "bbox": {
+      "minX": 4086,
+      "minY": 3953,
+      "maxX": 4842,
+      "maxY": 5283,
+      "width": 756,
+      "height": 1330
+    },
+    "centroid": {
+      "x": 4440,
+      "y": 4590
+    },
+    "admin1": []
+  },
+  "MUS": {
+    "id": "MUS",
+    "groupId": "M49_480_ISO3_MUS_ADM1",
+    "m49": "480",
+    "unRegion": "Eastern Africa",
+    "name": "Mauritius",
+    "originalClass": "cls-27",
+    "originalColor": "#fcd214",
+    "area": 1578,
+    "bbox": {
+      "minX": 5975,
+      "minY": 4726,
+      "maxX": 6011,
+      "maxY": 4770,
+      "width": 36,
+      "height": 44
+    },
+    "centroid": {
+      "x": 5740,
+      "y": 4690
+    },
+    "admin1": []
+  },
+  "MWI": {
+    "id": "MWI",
+    "groupId": "M49_454_ISO3_MWI_ADM1",
+    "m49": "454",
+    "unRegion": "Eastern Africa",
+    "name": "Malawi",
+    "originalClass": "cls-1",
+    "originalColor": "#0a9bc3",
+    "area": 142695,
+    "bbox": {
+      "minX": 4264,
+      "minY": 3865,
+      "maxX": 4490,
+      "maxY": 4495,
+      "width": 226,
+      "height": 630
+    },
+    "centroid": {
+      "x": 4377,
+      "y": 4192
+    },
+    "admin1": []
+  },
+  "MDG": {
+    "id": "MDG",
+    "groupId": "M49_450_ISO3_MDG_ADM1",
+    "m49": "450",
+    "unRegion": "Eastern Africa",
+    "name": "Madagascar",
+    "originalClass": "cls-27",
+    "originalColor": "#fcd214",
+    "area": 612692,
+    "bbox": {
+      "minX": 4973,
+      "minY": 4073,
+      "maxX": 5525,
+      "maxY": 5183,
+      "width": 552,
+      "height": 1110
+    },
+    "centroid": {
+      "x": 5255,
+      "y": 4622
+    },
+    "admin1": []
+  },
+  "KEN": {
+    "id": "KEN",
+    "groupId": "M49_404_ISO3_KEN_ADM1",
+    "m49": "404",
+    "unRegion": "Eastern Africa",
+    "name": "Kenya",
+    "originalClass": "cls-31",
+    "originalColor": "#f4a40e",
+    "area": 448270,
+    "bbox": {
+      "minX": 4371,
+      "minY": 2694,
+      "maxX": 4940,
+      "maxY": 3481,
+      "width": 569,
+      "height": 788
+    },
+    "centroid": {
+      "x": 4620,
+      "y": 3103
+    },
+    "admin1": []
+  },
+  "ETH": {
+    "id": "ETH",
+    "groupId": "M49_231_ISO3_ETH_ADM1",
+    "m49": "231",
+    "unRegion": "Eastern Africa",
+    "name": "Ethiopia",
+    "originalClass": "cls-33",
+    "originalColor": "#f2df5a",
+    "area": 999931,
+    "bbox": {
+      "minX": 4299,
+      "minY": 1893,
+      "maxX": 5371,
+      "maxY": 2826,
+      "width": 1072,
+      "height": 933
+    },
+    "centroid": {
+      "x": 4748,
+      "y": 2369
+    },
+    "admin1": []
+  },
+  "ERI": {
+    "id": "ERI",
+    "groupId": "M49_232_ISO3_ERI_ADM1",
+    "m49": "232",
+    "unRegion": "Eastern Africa",
+    "name": "Eritrea",
+    "originalClass": "cls-27",
+    "originalColor": "#fcd214",
+    "area": 220214,
+    "bbox": {
+      "minX": 4526,
+      "minY": 1644,
+      "maxX": 5011,
+      "maxY": 2098,
+      "width": 485,
+      "height": 454
+    },
+    "centroid": {
+      "x": 4748,
+      "y": 1879
+    },
+    "admin1": []
+  },
+  "DJI": {
+    "id": "DJI",
+    "groupId": "M49_262_ISO3_DJI_ADM1",
+    "m49": "262",
+    "unRegion": "Eastern Africa",
+    "name": "Djibouti",
+    "originalClass": "cls-34",
+    "originalColor": "#f6ab1c",
+    "area": 16957,
+    "bbox": {
+      "minX": 4917,
+      "minY": 2070,
+      "maxX": 5034,
+      "maxY": 2214,
+      "width": 117,
+      "height": 145
+    },
+    "centroid": {
+      "x": 4980,
+      "y": 2146
+    },
+    "admin1": []
+  },
+  "COM": {
+    "id": "COM",
+    "groupId": "M49_174_ISO3_COM_ADM1",
+    "m49": "174",
+    "unRegion": "Eastern Africa",
+    "name": "Comoros",
+    "originalClass": "cls-27",
+    "originalColor": "#fcd214",
+    "area": 7634,
+    "bbox": {
+      "minX": 5021,
+      "minY": 4026,
+      "maxX": 5113,
+      "maxY": 4109,
+      "width": 92,
+      "height": 83
+    },
+    "centroid": {
+      "x": 5380,
+      "y": 4120
+    },
+    "admin1": []
+  },
+  "BDI": {
+    "id": "BDI",
+    "groupId": "M49_108_ISO3_BDI_ADM1",
+    "m49": "108",
+    "unRegion": "Eastern Africa",
+    "name": "Burundi",
+    "originalClass": "cls-26",
+    "originalColor": "#dfb715",
+    "area": 23211,
+    "bbox": {
+      "minX": 4018,
+      "minY": 3290,
+      "maxX": 4150,
+      "maxY": 3465,
+      "width": 132,
+      "height": 176
+    },
+    "centroid": {
+      "x": 4086,
+      "y": 3369
+    },
+    "admin1": []
+  },
+  "TGO": {
+    "id": "TGO",
+    "groupId": "M49_768_ISO3_TGO_ADM1",
+    "m49": "768",
+    "unRegion": "Western Africa",
+    "name": "Togo",
+    "originalClass": "cls-35",
+    "originalColor": "#54b476",
+    "area": 57071,
+    "bbox": {
+      "minX": 1927,
+      "minY": 2197,
+      "maxX": 2067,
+      "maxY": 2607,
+      "width": 139,
+      "height": 409
+    },
+    "centroid": {
+      "x": 1995,
+      "y": 2400
+    },
+    "admin1": []
+  },
+  "SLE": {
+    "id": "SLE",
+    "groupId": "M49_694_ISO3_SLE_ADM1",
+    "m49": "694",
+    "unRegion": "Western Africa",
+    "name": "Sierra Leone",
+    "originalClass": "cls-36",
+    "originalColor": "#3bad3f",
+    "area": 53589,
+    "bbox": {
+      "minX": 988,
+      "minY": 2290,
+      "maxX": 1204,
+      "maxY": 2539,
+      "width": 215,
+      "height": 249
+    },
+    "centroid": {
+      "x": 1090,
+      "y": 2415
+    },
+    "admin1": []
+  },
+  "SEN": {
+    "id": "SEN",
+    "groupId": "M49_686_ISO3_SEN_ADM1",
+    "m49": "686",
+    "unRegion": "Western Africa",
+    "name": "Senegal",
+    "originalClass": "cls-37",
+    "originalColor": "#59b339",
+    "area": 155210,
+    "bbox": {
+      "minX": 693,
+      "minY": 1746,
+      "maxX": 1128,
+      "maxY": 2102,
+      "width": 435,
+      "height": 356
+    },
+    "centroid": {
+      "x": 920,
+      "y": 1910
+    },
+    "admin1": []
+  },
+  "NGA": {
+    "id": "NGA",
+    "groupId": "M49_566_ISO3_NGA_ADM1",
+    "m49": "566",
+    "unRegion": "Western Africa",
+    "name": "Nigeria",
+    "originalClass": "cls-38",
+    "originalColor": "#5cb33f",
+    "area": 667375,
+    "bbox": {
+      "minX": 2130,
+      "minY": 1974,
+      "maxX": 2985,
+      "maxY": 2755,
+      "width": 855,
+      "height": 781
+    },
+    "centroid": {
+      "x": 2520,
+      "y": 2390
+    },
+    "admin1": []
+  },
+  "NER": {
+    "id": "NER",
+    "groupId": "M49_562_ISO3_NER_ADM1",
+    "m49": "562",
+    "unRegion": "Western Africa",
+    "name": "Niger",
+    "originalClass": "cls-39",
+    "originalColor": "#58b239",
+    "area": 1070417,
+    "bbox": {
+      "minX": 1950,
+      "minY": 1191,
+      "maxX": 3064,
+      "maxY": 2152,
+      "width": 1114,
+      "height": 961
+    },
+    "centroid": {
+      "x": 2480,
+      "y": 1750
+    },
+    "admin1": []
+  },
+  "MRT": {
+    "id": "MRT",
+    "groupId": "M49_478_ISO3_MRT_ADM1",
+    "m49": "478",
+    "unRegion": "Western Africa",
+    "name": "Mauritania",
+    "originalClass": "cls-40",
+    "originalColor": "#7fbc43",
+    "area": 882564,
+    "bbox": {
+      "minX": 737,
+      "minY": 885,
+      "maxX": 1602,
+      "maxY": 1905,
+      "width": 865,
+      "height": 1020
+    },
+    "centroid": {
+      "x": 1120,
+      "y": 1500
+    },
+    "admin1": []
+  },
+  "MLI": {
+    "id": "MLI",
+    "groupId": "M49_466_ISO3_MLI_ADM1",
+    "m49": "466",
+    "unRegion": "Western Africa",
+    "name": "Mali",
+    "originalClass": "cls-41",
+    "originalColor": "#99c332",
+    "area": 1414268,
+    "bbox": {
+      "minX": 1068,
+      "minY": 1071,
+      "maxX": 2239,
+      "maxY": 2278,
+      "width": 1171,
+      "height": 1207
+    },
+    "centroid": {
+      "x": 1580,
+      "y": 1790
+    },
+    "admin1": []
+  },
+  "LBR": {
+    "id": "LBR",
+    "groupId": "M49_430_ISO3_LBR_ADM1",
+    "m49": "430",
+    "unRegion": "Western Africa",
+    "name": "Liberia",
+    "originalClass": "cls-42",
+    "originalColor": "#88b62c",
+    "area": 100245,
+    "bbox": {
+      "minX": 1118,
+      "minY": 2406,
+      "maxX": 1410,
+      "maxY": 2749,
+      "width": 292,
+      "height": 343
+    },
+    "centroid": {
+      "x": 1265,
+      "y": 2580
+    },
+    "admin1": []
+  },
+  "GNB": {
+    "id": "GNB",
+    "groupId": "M49_624_ISO3_GNB_ADM1",
+    "m49": "624",
+    "unRegion": "Western Africa",
+    "name": "Guinea-Bissau",
+    "originalClass": "cls-43",
+    "originalColor": "#44ae3b",
+    "area": 31162,
+    "bbox": {
+      "minX": 747,
+      "minY": 2072,
+      "maxX": 966,
+      "maxY": 2214,
+      "width": 219,
+      "height": 142
+    },
+    "centroid": {
+      "x": 855,
+      "y": 2140
+    },
+    "admin1": []
+  },
+  "GIN": {
+    "id": "GIN",
+    "groupId": "M49_324_ISO3_GIN_ADM1",
+    "m49": "324",
+    "unRegion": "Western Africa",
+    "name": "Guinea",
+    "originalClass": "cls-44",
+    "originalColor": "#67b755",
+    "area": 235456,
+    "bbox": {
+      "minX": 863,
+      "minY": 2072,
+      "maxX": 1391,
+      "maxY": 2518,
+      "width": 528,
+      "height": 446
+    },
+    "centroid": {
+      "x": 1130,
+      "y": 2270
+    },
+    "admin1": []
+  },
+  "GHA": {
+    "id": "GHA",
+    "groupId": "M49_288_ISO3_GHA_ADM1",
+    "m49": "288",
+    "unRegion": "Western Africa",
+    "name": "Ghana",
+    "originalClass": "cls-45",
+    "originalColor": "#7ebb31",
+    "area": 166420,
+    "bbox": {
+      "minX": 1705,
+      "minY": 2195,
+      "maxX": 2024,
+      "maxY": 2717,
+      "width": 319,
+      "height": 522
+    },
+    "centroid": {
+      "x": 1865,
+      "y": 2460
+    },
+    "admin1": []
+  },
+  "GMB": {
+    "id": "GMB",
+    "groupId": "M49_270_ISO3_GMB_ADM1",
+    "m49": "270",
+    "unRegion": "Western Africa",
+    "name": "Gambia",
+    "originalClass": "cls-46",
+    "originalColor": "#207a3d",
+    "area": 13149,
+    "bbox": {
+      "minX": 741,
+      "minY": 1979,
+      "maxX": 955,
+      "maxY": 2041,
+      "width": 214,
+      "height": 61
+    },
+    "centroid": {
+      "x": 845,
+      "y": 2010
+    },
+    "admin1": []
+  },
+  "CIV": {
+    "id": "CIV",
+    "groupId": "M49_384_ISO3_CIV_ADM1",
+    "m49": "384",
+    "unRegion": "Western Africa",
+    "name": "Côte d'Ivoire",
+    "originalClass": "cls-47",
+    "originalColor": "#0a9bc3",
+    "area": 226155,
+    "bbox": {
+      "minX": 1322,
+      "minY": 2233,
+      "maxX": 1760,
+      "maxY": 2749,
+      "width": 438,
+      "height": 517
+    },
+    "centroid": {
+      "x": 1540,
+      "y": 2490
+    },
+    "admin1": []
+  },
+  "CPV": {
+    "id": "CPV",
+    "groupId": "M49_132_ISO3_CPV_ADM1",
+    "m49": "132",
+    "unRegion": "Western Africa",
+    "name": "Cabo Verde",
+    "originalClass": "cls-50",
+    "originalColor": "#67b534",
+    "area": 38617,
+    "bbox": {
+      "minX": 217,
+      "minY": 1707,
+      "maxX": 411,
+      "maxY": 1906,
+      "width": 194,
+      "height": 199
+    },
+    "centroid": {
+      "x": 315,
+      "y": 1820
+    },
+    "admin1": []
+  },
+  "BFA": {
+    "id": "BFA",
+    "groupId": "M49_854_ISO3_BFA_ADM1",
+    "m49": "854",
+    "unRegion": "Western Africa",
+    "name": "Burkina Faso",
+    "originalClass": "cls-51",
+    "originalColor": "#b9cf24",
+    "area": 261088,
+    "bbox": {
+      "minX": 1545,
+      "minY": 1877,
+      "maxX": 2109,
+      "maxY": 2339,
+      "width": 565,
+      "height": 462
+    },
+    "centroid": {
+      "x": 1820,
+      "y": 2120
+    },
+    "admin1": []
+  },
+  "BEN": {
+    "id": "BEN",
+    "groupId": "M49_204_ISO3_BEN_ADM1",
+    "m49": "204",
+    "unRegion": "Western Africa",
+    "name": "Benin",
+    "originalClass": "cls-52",
+    "originalColor": "#93c248",
+    "area": 110435,
+    "bbox": {
+      "minX": 1993,
+      "minY": 2095,
+      "maxX": 2213,
+      "maxY": 2597,
+      "width": 220,
+      "height": 503
+    },
+    "centroid": {
+      "x": 2100,
+      "y": 2360
+    },
+    "admin1": []
+  },
+  "SHN": {
+    "id": "SHN",
+    "groupId": "M49_654_ISO3_SHN_ADM1",
+    "m49": "654",
+    "unRegion": "Western Africa",
+    "name": "Saint Helena",
+    "originalClass": "cls-53",
+    "originalColor": "#b164a3",
+    "area": 417031,
+    "bbox": {
+      "minX": 908,
+      "minY": 3743,
+      "maxX": 1538,
+      "maxY": 4404,
+      "width": 631,
+      "height": 661
+    },
+    "centroid": {
+      "x": 1200,
+      "y": 4380
+    },
+    "admin1": []
+  },
+  "XSL": {
+    "id": "XSL",
+    "groupId": "M49_900_ISO3_XSL_Somaliland",
+    "m49": "900",
+    "unRegion": "Eastern Africa",
+    "name": "Somaliland",
+    "originalClass": "cls-1",
+    "originalColor": "#0a9bc3",
+    "area": 770810,
+    "bbox": {
+      "minX": 4984,
+      "minY": 2168,
+      "maxX": 5436,
+      "maxY": 3871,
+      "width": 453,
+      "height": 1703
+    },
+    "centroid": {
+      "x": 5020,
+      "y": 2280
+    },
+    "admin1": []
+  }
+}

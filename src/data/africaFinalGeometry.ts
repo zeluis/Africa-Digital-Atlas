@@ -5,7 +5,7 @@
  * Native coordinate system: viewBox "0 0 5796 5867" with transform "translate(-216.0198 -66.614)"
  */
 
-import rawData from './africaFinalMapData.json';
+import rawData from './africaFinalCountryMeta.json';
 import { AfricanRegion } from './types';
 import { getCanonicalCountryColor } from './africaCanonicalColorPalette';
 
@@ -52,4 +52,17 @@ export const AFRICA_FINAL_MAP: Record<string, AfricaFinalCountryPath> = parsedMa
 
 export const AFRICA_FINAL_VIEWBOX = "-240 0 6036 5867";
 export const AFRICA_FINAL_TRANSFORM = "translate(-216.0198 -66.614)";
+
+/**
+ * Dynamically injects streamed Admin-1 paths from public/africa-final.svg
+ * into the in-memory country map.
+ */
+export function updateAfricaFinalMapWithAdmin1(admin1ByCountry: Record<string, AfricaFinalAdmin1Path[]>): Record<string, AfricaFinalCountryPath> {
+  for (const [iso3, paths] of Object.entries(admin1ByCountry)) {
+    if (AFRICA_FINAL_MAP[iso3]) {
+      AFRICA_FINAL_MAP[iso3].admin1 = paths;
+    }
+  }
+  return AFRICA_FINAL_MAP;
+}
 
