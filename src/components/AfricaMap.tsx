@@ -203,6 +203,18 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
+  const handleSelectMode = (mode: 'authentic' | 'choropleth' | 'schematic') => {
+    if (mode === 'authentic') {
+      setCartographySource('authentic_final');
+      setMapMode('authentic_palette');
+    } else if (mode === 'choropleth') {
+      setMapMode('choropleth');
+    } else if (mode === 'schematic') {
+      setCartographySource('schematic');
+      setMapMode('un_geoscheme');
+    }
+  };
+
   const handleToggleCartography = (source: 'authentic_final' | 'schematic') => {
     setCartographySource(source);
     setZoomLevel(DEFAULT_MAP_ZOOM);
@@ -424,45 +436,14 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     }
   }, [isFinalMode]);
 
-  // Color resolver for each country
+  // Color resolver for each country across Authentic, Choropleth, and Schematic modes
   const getCountryFill = (country: { id: string; unRegion: AfricanRegion; originalColor?: string }, isSelected: boolean, isHovered: boolean): string => {
     if (isSelected) {
       return '#10b981'; // Bright emerald highlight
     }
 
-    // 1. Authentic Final Map (from public/africa-final.svg & canonical palette)
-    if (isFinalMode) {
-      const canonicalColor = getCanonicalCountryColor(country.id);
-      const authenticColor = canonicalColor || AFRICA_FINAL_MAP[country.id]?.originalColor || country.originalColor || '#0a9bc3';
-
-      if (mapMode === 'authentic_palette') {
-        // Canonical authoritative colors from the M49 palette. No compromises.
-        return authenticColor;
-      }
-
-      if (mapMode === 'un_geoscheme') {
-        // Fallback to authentic color when on final map, or UN if requested
-        return authenticColor;
-      }
-
-      // Choropleth Metric Mode with Custom Derived Palette based on authentic colors
-      const val = metricValues[country.id];
-      if (val === undefined || isNaN(val)) {
-        return '#cbd5e1';
-      }
-
-      const norm = Math.max(0, Math.min(1, (val - minVal) / (maxVal - minVal || 1)));
-
-      if (isHovered) {
-        return '#0284c7';
-      }
-
-      // Derived Color Scale Interpolation from original SVG color
-      return deriveChoroplethTone(authenticColor, norm, currentMetricDef.color);
-    }
-
-    // 2. Schematic Map Mode (Overview Page): UN Colors Only!
-    if (mapMode === 'un_geoscheme' || mapMode === 'authentic_palette') {
+    // 1. Schematic Mode or UN Geoscheme Mode: Official UN Geoscheme regional colors
+    if (cartographySource === 'schematic' || mapMode === 'un_geoscheme') {
       const regionData = UN_GEOSCHEME_REGIONS[country.unRegion];
       const baseColor = regionData ? regionData.palette.primary : '#10b981';
 
@@ -477,36 +458,28 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       return baseColor;
     }
 
-    // Schematic Choropleth Metric Mode
-    const val = metricValues[country.id];
-    if (val === undefined || isNaN(val)) {
-      return '#3f3f46';
+    // 2. Choropleth Metric Mode
+    if (mapMode === 'choropleth') {
+      const canonicalColor = getCanonicalCountryColor(country.id);
+      const authenticColor = canonicalColor || AFRICA_FINAL_MAP[country.id]?.originalColor || country.originalColor || '#0a9bc3';
+
+      const val = metricValues[country.id];
+      if (val === undefined || isNaN(val)) {
+        return '#cbd5e1';
+      }
+
+      const norm = Math.max(0, Math.min(1, (val - minVal) / (maxVal - minVal || 1)));
+
+      if (isHovered) {
+        return '#0284c7';
+      }
+
+      return deriveChoroplethTone(authenticColor, norm, currentMetricDef.color);
     }
 
-    const norm = Math.max(0, Math.min(1, (val - minVal) / (maxVal - minVal || 1)));
-
-    if (isHovered) {
-      return '#38bdf8';
-    }
-
-    switch (currentMetricDef.color) {
-      case 'cyan':
-        return `rgba(6, 182, 212, ${0.3 + norm * 0.7})`;
-      case 'indigo':
-        return `rgba(99, 102, 241, ${0.3 + norm * 0.7})`;
-      case 'amber':
-        return `rgba(245, 158, 11, ${0.3 + norm * 0.7})`;
-      case 'yellow':
-        return `rgba(234, 179, 8, ${0.3 + norm * 0.7})`;
-      case 'purple':
-        return `rgba(168, 85, 247, ${0.3 + norm * 0.7})`;
-      case 'rose':
-        return `rgba(244, 63, 94, ${0.3 + norm * 0.7})`;
-      case 'teal':
-        return `rgba(20, 184, 166, ${0.3 + norm * 0.7})`;
-      default:
-        return `rgba(16, 185, 129, ${0.3 + norm * 0.7})`;
-    }
+    // 3. Authentic Final Map (Canonical authoritative vector colors)
+    const canonicalColor = getCanonicalCountryColor(country.id);
+    return canonicalColor || AFRICA_FINAL_MAP[country.id]?.originalColor || country.originalColor || '#0a9bc3';
   };
 
   const [activeTooltipEntityId, setActiveTooltipEntityId] = useState<string | null>(null);
@@ -783,48 +756,48 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
           {/* Controls & Quick Actions Toolbar */}
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            {/* Mode Switcher */}
+            {/* Unified Mode Switcher: Authentic | Choropleth | Schematic */}
             <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl">
-              {isFinalMode ? (
-                <button
-                  type="button"
-                  onClick={() => setMapMode('authentic_palette')}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                    mapMode === 'authentic_palette'
-                      ? 'bg-emerald-600 text-white shadow-xs font-bold'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-                  }`}
-                  title="Authoritative original colors"
-                >
-                  <Sparkles className="w-3 h-3" />
-                  <span>Authentic</span>
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setMapMode('un_geoscheme')}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                    mapMode === 'un_geoscheme'
-                      ? 'bg-emerald-600 text-white shadow-xs font-bold'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-                  }`}
-                >
-                  <Compass className="w-3 h-3" />
-                  <span>Geoscheme</span>
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => handleSelectMode('authentic')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                  mapMode === 'authentic_palette' && cartographySource === 'authentic_final'
+                    ? 'bg-emerald-600 text-white shadow-xs font-bold'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+                title="Authoritative original colors"
+              >
+                <Sparkles className="w-3 h-3" />
+                <span>Authentic</span>
+              </button>
 
               <button
                 type="button"
-                onClick={() => setMapMode('choropleth')}
+                onClick={() => handleSelectMode('choropleth')}
                 className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
                   mapMode === 'choropleth'
                     ? 'bg-cyan-600 text-white shadow-xs font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                 }`}
+                title="Socio-economic metric choropleth"
               >
                 <Layers className="w-3 h-3" />
                 <span>Choropleth</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSelectMode('schematic')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                  cartographySource === 'schematic' || mapMode === 'un_geoscheme'
+                    ? 'bg-amber-600 text-white shadow-xs font-bold'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+                title="UN Geoscheme regional macro grouping"
+              >
+                <Compass className="w-3 h-3" />
+                <span>Schematic</span>
               </button>
             </div>
 
@@ -926,34 +899,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               </div>
             )}
 
-            {/* Cartography Engine Switcher */}
-            <div className="flex items-center gap-0.5 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl text-xs">
-              <button
-                type="button"
-                onClick={() => handleToggleCartography('authentic_final')}
-                className={`flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                  cartographySource === 'authentic_final'
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-                }`}
-                title="Authoritative vector geometry"
-              >
-                <Sparkles className="w-3 h-3" />
-                <span>Authentic</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleToggleCartography('schematic')}
-                className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                  cartographySource === 'schematic'
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-                }`}
-                title="Schematic country polygons"
-              >
-                Schematic
-              </button>
-            </div>
+
 
             {/* Export PNG Button */}
             <button
@@ -1245,7 +1191,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
         <svg
           ref={svgRef}
-          viewBox={isFinalMode ? AFRICA_FINAL_VIEWBOX : "15 55 925 990"}
+          viewBox={AFRICA_FINAL_VIEWBOX}
           width="100%"
           height="100%"
           preserveAspectRatio="xMidYMid meet"
@@ -1280,19 +1226,18 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             id="africa-map-viewport"
             transform={`translate(${panOffset.x}, ${panOffset.y}) scale(${zoomLevel})`}
             style={{
-              transformOrigin: isFinalMode ? '2898px 2933px' : '495px 550px',
+              transformOrigin: '2898px 2933px',
               transition: isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)'
             }}
           >
-            {isFinalMode ? (
-              <AfricaMapFinalLayer
+            <AfricaMapFinalLayer
                 mapData={finalMapData}
                 selectedEntityId={selectedEntityId}
                 activeTooltipEntityId={activeTooltipEntityId}
                 hoveredEntityId={hoveredEntityId}
                 hoveredAdmin1={hoveredAdmin1}
                 selectedAdmin1={selectedAdmin1}
-                showAdmin1Borders={showAdmin1Borders}
+                showAdmin1Borders={cartographySource === 'schematic' ? false : showAdmin1Borders}
                 showGraticuleAndCompass={showGraticuleAndCompass}
                 visibleRegions={visibleRegions}
                 activeRegionFilter={activeRegionFilter}
@@ -1305,308 +1250,6 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 handleAdmin1Click={handleAdmin1Click}
                 setHoveredAdmin1={setHoveredAdmin1}
               />
-            ) : (
-              <>
-                {/* Schematic Graticule Latitude / Longitude lines extending edge-to-edge */}
-                {showGraticuleAndCompass && (
-                  <g id="graticule-grid-layer" className="pointer-events-none">
-                    <line x1="80" y1="-2000" x2="80" y2="3000" stroke="#0284c7" strokeWidth="0.6" strokeDasharray="3 3" opacity="0.4" />
-                    <text x="80" y="70" textAnchor="middle" fill="#0284c7" fontSize="7" fontFamily="monospace" fontWeight="bold">20°W</text>
-                    
-                    <line x1="280" y1="-2000" x2="280" y2="3000" stroke="#0284c7" strokeWidth="1" strokeDasharray="4 2" opacity="0.6" />
-                    <g transform="translate(280, 70)">
-                      <rect x="-30" y="-8" width="60" height="14" rx="3" fill="#ffffff" stroke="#0284c7" strokeWidth="0.8" opacity="0.9" />
-                      <text x="0" y="2" textAnchor="middle" fill="#0369a1" fontSize="6.5" fontFamily="monospace" fontWeight="bold">0° PRIME</text>
-                    </g>
-
-                    <line x1="510" y1="-2000" x2="510" y2="3000" stroke="#64748b" strokeWidth="0.6" strokeDasharray="3 3" opacity="0.4" />
-                    <text x="510" y="70" textAnchor="middle" fill="#475569" fontSize="7" fontFamily="monospace" fontWeight="bold">20°E</text>
-
-                    <line x1="740" y1="-2000" x2="740" y2="3000" stroke="#64748b" strokeWidth="0.6" strokeDasharray="3 3" opacity="0.4" />
-                    <text x="740" y="70" textAnchor="middle" fill="#475569" fontSize="7" fontFamily="monospace" fontWeight="bold">40°E</text>
-
-                    {/* Tropic of Cancer 23.4° N */}
-                    <line x1="-2000" y1="240" x2="3000" y2="240" stroke="#d97706" strokeWidth="1" strokeDasharray="4 3" opacity="0.7" />
-                    <g transform="translate(790, 232)">
-                      <rect x="0" y="-7" width="140" height="14" rx="3" fill="#fffbeb" stroke="#d97706" strokeWidth="0.8" opacity="0.95" />
-                      <text x="70" y="3" textAnchor="middle" fill="#b45309" fontSize="6.5" fontFamily="monospace" fontWeight="bold">☀️ TROPIC OF CANCER 23.4°N</text>
-                    </g>
-
-                    {/* Equator 0° */}
-                    <line x1="-2000" y1="550" x2="3000" y2="550" stroke="#059669" strokeWidth="1.4" strokeDasharray="6 3" opacity="0.85" />
-                    <g transform="translate(800, 542)">
-                      <rect x="0" y="-7" width="130" height="14" rx="3" fill="#ecfdf5" stroke="#059669" strokeWidth="0.9" opacity="0.95" />
-                      <text x="65" y="3" textAnchor="middle" fill="#047857" fontSize="7" fontFamily="monospace" fontWeight="900">☀️ EQUATOR 0° • EQUINOX</text>
-                    </g>
-
-                    {/* Tropic of Capricorn 23.4° S */}
-                    <line x1="-2000" y1="880" x2="3000" y2="880" stroke="#d97706" strokeWidth="1" strokeDasharray="4 3" opacity="0.7" />
-                    <g transform="translate(780, 872)">
-                      <rect x="0" y="-7" width="150" height="14" rx="3" fill="#fffbeb" stroke="#d97706" strokeWidth="0.8" opacity="0.95" />
-                      <text x="75" y="3" textAnchor="middle" fill="#b45309" fontSize="6.5" fontFamily="monospace" fontWeight="bold">☀️ TROPIC OF CAPRICORN 23.4°S</text>
-                    </g>
-                  </g>
-                )}
-
-                {/* Compass Rose for schematic */}
-                {showGraticuleAndCompass && (
-                  <g transform="translate(190, 715)" className="pointer-events-none select-none">
-                    <circle cx="0" cy="0" r="44" fill="#ffffff" fillOpacity="0.95" stroke="#0284c7" strokeWidth="0.8" strokeOpacity="0.6" />
-                    <circle cx="0" cy="0" r="38" fill="none" stroke="#94a3b8" strokeWidth="0.4" strokeDasharray="1 2" opacity="0.8" />
-                    <polygon points="0,-32 5,-7 0,0" fill="#059669" />
-                    <polygon points="0,-32 -5,-7 0,0" fill="#047857" />
-                    <polygon points="0,32 5,7 0,0" fill="#64748b" />
-                    <polygon points="0,32 -5,7 0,0" fill="#475569" />
-                    <polygon points="32,0 7,5 0,0" fill="#0284c7" />
-                    <polygon points="32,0 7,-5 0,0" fill="#0369a1" />
-                    <polygon points="-32,0 -7,5 0,0" fill="#0284c7" />
-                    <polygon points="-32,0 -7,-5 0,0" fill="#0369a1" />
-                    <circle cx="0" cy="0" r="5" fill="#ffffff" stroke="#d97706" strokeWidth="1" />
-                    <text x="0" y="-38" textAnchor="middle" dominantBaseline="central" fill="#047857" fontSize="9" fontFamily="serif" fontWeight="900">N</text>
-                    <text x="0" y="42" textAnchor="middle" dominantBaseline="central" fill="#334155" fontSize="8" fontFamily="serif" fontWeight="bold">S</text>
-                    <text x="40" y="0" textAnchor="middle" dominantBaseline="central" fill="#334155" fontSize="8" fontFamily="serif" fontWeight="bold">E</text>
-                    <text x="-40" y="0" textAnchor="middle" dominantBaseline="central" fill="#334155" fontSize="8" fontFamily="serif" fontWeight="bold">W</text>
-                  </g>
-                )}
-
-                {/* Surrounding Context */}
-                <g id="surrounding-countries-layer" className="opacity-40 pointer-events-none">
-                  {BACKGROUND_SURROUNDING_PATHS.map((p, idx) => (
-                    <path
-                      key={`surround-bg-${idx}`}
-                      d={p.d}
-                      fill="#94a3b8"
-                      stroke="#64748b"
-                      strokeWidth={0.5}
-                      strokeLinejoin="round"
-                    />
-                  ))}
-                  {BACKGROUND_SURROUNDING_CIRCLES.map((c, idx) => (
-                    <circle
-                      key={`surround-circle-${idx}`}
-                      cx={c.cx}
-                      cy={c.cy}
-                      r={c.r}
-                      fill="#94a3b8"
-                    />
-                  ))}
-                </g>
-
-                {/* Schematic Country Vector Paths */}
-                <g id="africa-countries-layer">
-                  {Object.values(AFRICA_SVG_MAP).map(country => {
-                    const isSelected = selectedEntityId === country.id || activeTooltipEntityId === country.id;
-                    const isHovered = hoveredEntityId === country.id;
-                    const isRegionVisible = visibleRegions.has(country.unRegion);
-                    const isRegionFiltered = activeRegionFilter !== 'All' && country.unRegion !== activeRegionFilter;
-                    const isBlocFiltered = !!blocMemberSet && !blocMemberSet.has(country.id);
-                    
-                    const isDimmed = !isRegionVisible || isRegionFiltered || isBlocFiltered;
-                    const fill = getCountryFill(country, isSelected, isHovered);
-
-                    return (
-                      <g 
-                        key={country.id}
-                        id={`schematic-country-group-${country.id}`}
-                        style={{
-                          opacity: isDimmed ? 0.08 : 1,
-                          transition: 'opacity 0.25s ease, fill 0.2s ease'
-                        }}
-                        className={isDimmed ? 'pointer-events-none' : ''}
-                      >
-                        <path
-                          id={`country-path-${country.id}`}
-                          d={country.path}
-                          fill={fill}
-                          stroke={isSelected ? '#059669' : isHovered ? '#0f172a' : '#475569'}
-                          strokeWidth={isSelected ? 3 : isHovered ? 2 : 0.8}
-                          strokeLinejoin="round"
-                          strokeLinecap="round"
-                          className="cursor-pointer"
-                          onMouseEnter={(e) => handleCountryHover(country.id, e)}
-                          onMouseLeave={handleCountryLeave}
-                          onClick={(e) => handleCountryClick(country.id, e)}
-                        >
-                          <title>{`${country.name} (${country.id})`}</title>
-                        </path>
-
-                        {/* Generous Target Hit Area for Small Island States */}
-                        {['CPV', 'STP', 'SYC', 'MUS', 'COM'].includes(country.id) && country.centroid && (
-                          <circle
-                            cx={country.centroid.x}
-                            cy={country.centroid.y}
-                            r={country.id === 'CPV' ? 24 : 16}
-                            fill="transparent"
-                            className="cursor-pointer"
-                            onMouseEnter={(e) => handleCountryHover(country.id, e)}
-                            onMouseLeave={handleCountryLeave}
-                            onClick={(e) => handleCountryClick(country.id, e)}
-                          />
-                        )}
-
-                        {/* Dedicated Cabo Verde Oceanic Locator Beacon for Schematic */}
-                        {country.id === 'CPV' && country.centroid && (
-                          <g 
-                            transform={`translate(${country.centroid.x}, ${country.centroid.y})`}
-                            className="cursor-pointer"
-                            onMouseEnter={(e) => handleCountryHover('CPV', e)}
-                            onMouseLeave={handleCountryLeave}
-                            onClick={(e) => handleCountryClick('CPV', e)}
-                          >
-                            {(isSelected || isHovered) && (
-                              <circle r="22" fill="#81dc05" opacity="0.25" className="animate-ping pointer-events-none" />
-                            )}
-                            <circle
-                              r="18"
-                              fill="transparent"
-                              stroke={isSelected ? '#059669' : isHovered ? '#10b981' : 'rgba(129, 220, 5, 0.75)'}
-                              strokeWidth={isSelected ? 1.6 : 1.2}
-                              strokeDasharray="3 2"
-                            />
-                            {/* Positioned between Barlavento (north) and Sotavento (south), aligned left */}
-                            <rect
-                              x="-38"
-                              y="-6"
-                              width="18"
-                              height="12"
-                              rx="3"
-                              fill="#81dc05"
-                              stroke={isSelected ? '#059669' : isHovered ? '#0f172a' : '#4d8a03'}
-                              strokeWidth="0.8"
-                            />
-                            <text
-                              x="-29"
-                              y="0.5"
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                              fill="#111827"
-                              fontSize="6.5"
-                              fontFamily="monospace"
-                              fontWeight="900"
-                              className="pointer-events-none"
-                            >
-                              CV
-                            </text>
-                          </g>
-                        )}
-                      </g>
-                    );
-                  })}
-                </g>
-
-                {/* Schematic Country Centroid Labels Layer */}
-                <g id="africa-labels-layer-schematic" className="pointer-events-none select-none">
-                  {Object.values(AFRICA_SVG_MAP).map(country => {
-                    const isRegionVisible = visibleRegions.has(country.unRegion);
-                    const isRegionFiltered = activeRegionFilter !== 'All' && country.unRegion !== activeRegionFilter;
-                    const isBlocFiltered = !!blocMemberSet && !blocMemberSet.has(country.id);
-                    if (!isRegionVisible || isRegionFiltered || isBlocFiltered) return null;
-                    if (!country.centroid || country.id === 'CPV') return null;
-
-                    const isSelected = selectedEntityId === country.id || activeTooltipEntityId === country.id;
-                    const isHovered = hoveredEntityId === country.id;
-
-                    const bbox = country.boundingBox;
-                    const boxWidth = bbox ? (bbox.maxX - bbox.minX) : 0;
-                    const boxHeight = bbox ? (bbox.maxY - bbox.minY) : 0;
-                    const area = boxWidth * boxHeight;
-
-                    const isHuge = area > 16000;
-                    const isLarge = area > 4500 && !isHuge;
-                    const isMedium = area > 1000 && !isLarge && !isHuge;
-                    const isSmall = !isMedium && !isLarge && !isHuge;
-
-                    // Always show large & medium, or small when hovered/selected or area > 350
-                    if (isSmall && !isSelected && !isHovered && area < 350) return null;
-
-                    let fontSize = 5;
-                    let strokeWidth = "1.5px";
-                    if (isHuge) {
-                      fontSize = 9.5;
-                      strokeWidth = "2.8px";
-                    } else if (isLarge) {
-                      fontSize = 7.5;
-                      strokeWidth = "2.2px";
-                    } else if (isMedium) {
-                      fontSize = 6.2;
-                      strokeWidth = "1.8px";
-                    } else {
-                      fontSize = 5.2;
-                      strokeWidth = "1.5px";
-                    }
-
-                    let displayName = country.id;
-                    if (isHuge || isLarge) {
-                      const nameOverrides: Record<string, string> = {
-                        'COD': 'D.R. CONGO',
-                        'COG': 'CONGO',
-                        'CAF': 'C.A.R.',
-                        'TZA': 'TANZANIA',
-                        'CIV': "CÔTE D'IVOIRE",
-                        'GNQ': 'EQ. GUINEA',
-                        'SWZ': 'ESWATINI',
-                        'ZAF': 'SOUTH AFRICA',
-                        'SSD': 'S. SUDAN',
-                        'MDG': 'MADAGASCAR',
-                        'MOZ': 'MOZAMBIQUE',
-                        'MRT': 'MAURITANIA',
-                        'ETH': 'ETHIOPIA',
-                        'NGA': 'NIGERIA',
-                        'DZA': 'ALGERIA',
-                        'LBY': 'LIBYA',
-                        'SDN': 'SUDAN',
-                        'EGY': 'EGYPT',
-                        'AGO': 'ANGOLA',
-                        'NAM': 'NAMIBIA',
-                        'BWA': 'BOTSWANA',
-                        'ZMB': 'ZAMBIA',
-                        'MLI': 'MALI',
-                        'NER': 'NIGER',
-                        'TCD': 'CHAD',
-                        'SOM': 'SOMALIA',
-                        'KEN': 'KENYA',
-                        'MAR': 'MOROCCO',
-                        'CMR': 'CAMEROON',
-                        'GAB': 'GABON',
-                        'GHA': 'GHANA',
-                        'GIN': 'GUINEA',
-                        'SEN': 'SENEGAL',
-                        'ZWE': 'ZIMBABWE',
-                        'BFA': 'BURKINA FASO',
-                        'ESH': 'W. SAHARA'
-                      };
-                      displayName = nameOverrides[country.id] || country.name.toUpperCase();
-                    } else if (isMedium && (isSelected || isHovered)) {
-                      displayName = country.name.toUpperCase();
-                    }
-
-                    return (
-                      <g key={`schematic-label-${country.id}`}>
-                        <text
-                          x={country.centroid.x}
-                          y={country.centroid.y}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          fill={isSelected ? '#059669' : isHovered ? '#0f172a' : '#1e293b'}
-                          fontSize={fontSize}
-                          fontFamily="sans-serif"
-                          fontWeight="900"
-                          letterSpacing={isHuge ? "0.08em" : "0.05em"}
-                          paintOrder="stroke fill"
-                          stroke="#ffffff"
-                          strokeWidth={strokeWidth}
-                          strokeLinejoin="round"
-                          strokeLinecap="round"
-                          opacity={isSelected || isHovered ? 1 : 0.92}
-                        >
-                          {displayName}
-                        </text>
-                      </g>
-                    );
-                  })}
-                </g>
-              </>
-            )}
           </g>
         </svg>
 

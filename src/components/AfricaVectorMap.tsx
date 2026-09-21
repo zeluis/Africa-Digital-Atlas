@@ -4,9 +4,7 @@ import { UNRegionName, LiveCountryData } from '../data/types';
 import {
   AFRICA_SVG_MAP,
   AFRICA_REGIONS_VIEWBOX,
-  AFRICA_UN_REGIONS_STRUCTURED,
-  BACKGROUND_SURROUNDING_PATHS,
-  BACKGROUND_SURROUNDING_CIRCLES
+  AFRICA_UN_REGIONS_STRUCTURED
 } from '../data/svgMaps';
 import {
   UN_REGIONS,
@@ -17,6 +15,7 @@ import {
   formatCurrency,
   parseNumberString
 } from '../data/africaData';
+import { useAfricaFinalMap } from '../utils/svgMapLoader';
 
 interface AfricaVectorMapProps {
   onSelectRegion: (region: UNRegionName) => void;
@@ -34,6 +33,7 @@ export const AfricaVectorMap: React.FC<AfricaVectorMapProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
+  const { mapData } = useAfricaFinalMap();
 
   const isInteractingWithTooltipRef = useRef<boolean>(false);
   const [pinnedRegion, setPinnedRegion] = useState<UNRegionName | null>(null);
@@ -155,13 +155,12 @@ export const AfricaVectorMap: React.FC<AfricaVectorMapProps> = ({
     <div
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      onMouseLeave={handleRegionLeave}
-      className="w-full rounded-3xl border border-zinc-200 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-950/90 p-5 sm:p-7 shadow-2xl relative overflow-hidden group/map select-none transition-colors"
+      className="relative w-full rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 p-6 shadow-xl backdrop-blur-sm select-none"
     >
-      {/* Header Info */}
-      <div className="flex items-center justify-between mb-3 text-xs font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-        <div className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+      {/* Visual Header */}
+      <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3 mb-4 text-xs font-mono font-bold text-zinc-500 dark:text-zinc-400">
+        <div className="flex items-center gap-2">
+          <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
           <span>Official UN M49 Classification</span>
         </div>
         <span className="text-emerald-600 dark:text-emerald-400 transition-colors duration-200">
@@ -170,7 +169,7 @@ export const AfricaVectorMap: React.FC<AfricaVectorMapProps> = ({
       </div>
 
       {/* Official Vector Map with W3C Compliant Pure JSX SVG */}
-      <div className="relative aspect-[1000/1100] w-full max-w-2xl mx-auto flex items-center justify-center">
+      <div className="relative aspect-[1000/1000] w-full max-w-2xl mx-auto flex items-center justify-center">
         <svg
           viewBox={AFRICA_REGIONS_VIEWBOX}
           width="100%"
@@ -181,30 +180,6 @@ export const AfricaVectorMap: React.FC<AfricaVectorMapProps> = ({
           role="region"
           aria-label="Official UN M49 Geographic Classification Vector Map of Africa"
         >
-          {/* Surrounding Geographic Context (Europe/Middle East) */}
-          <g className="opacity-40 dark:opacity-20 pointer-events-none">
-            {BACKGROUND_SURROUNDING_PATHS.map((p, idx) => (
-              <path
-                key={`surround-path-${idx}`}
-                d={p.d}
-                fill="#CFC8BA"
-                fillOpacity={0.35}
-                stroke="#EAE3D7"
-                strokeWidth={0.5}
-              />
-            ))}
-            {BACKGROUND_SURROUNDING_CIRCLES.map((c, idx) => (
-              <circle
-                key={`surround-circle-${idx}`}
-                cx={c.cx}
-                cy={c.cy}
-                r={c.r}
-                fill="#CFC8BA"
-                fillOpacity={0.35}
-              />
-            ))}
-          </g>
-
           {/* 5 UN M49 African Subregions */}
           {UN_REGIONS.map(regName => {
             const regStructure = AFRICA_UN_REGIONS_STRUCTURED[regName];
@@ -212,7 +187,7 @@ export const AfricaVectorMap: React.FC<AfricaVectorMapProps> = ({
             const isHovered = hoveredRegion === regName;
             const activeColor = meta.color;
             const opacity = hoveredRegion ? (isHovered ? 1 : 0.42) : 0.88;
-            const strokeWidth = isHovered ? 1.5 : 0.75;
+            const strokeWidth = isHovered ? 10 : 4;
             const strokeColor = '#FFFFFF';
 
             return (
@@ -229,8 +204,8 @@ export const AfricaVectorMap: React.FC<AfricaVectorMapProps> = ({
                   if (containerRef.current) {
                     const rect = containerRef.current.getBoundingClientRect();
                     setTooltipPos({
-                      x: (regStructure.labelX / 1000) * rect.width,
-                      y: (regStructure.labelY / 1100) * rect.height
+                      x: (regStructure.labelX / 6036) * rect.width,
+                      y: (regStructure.labelY / 5867) * rect.height
                     });
                   }
                   handleRegionHover(regName);
@@ -246,32 +221,43 @@ export const AfricaVectorMap: React.FC<AfricaVectorMapProps> = ({
               >
                 {/* Member Country SVG Paths */}
                 {regStructure.countryIds.map(iso3 => {
-                  const countryPath = AFRICA_SVG_MAP[iso3];
-                  if (!countryPath) return null;
+                  const item = mapData[iso3] || AFRICA_SVG_MAP[iso3];
+                  if (!item) return null;
+
+                  const adminPaths = (item as any).admin1;
+                  if (adminPaths && adminPaths.length > 0) {
+                    return (
+                      <g key={iso3}>
+                        {adminPaths.map((adm: any) => (
+                          <path
+                            key={adm.id}
+                            d={adm.d}
+                            fill={activeColor}
+                            fillOpacity={opacity}
+                            stroke={strokeColor}
+                            strokeWidth={strokeWidth}
+                            strokeLinejoin="round"
+                            className="transition-all duration-200"
+                          />
+                        ))}
+                      </g>
+                    );
+                  }
+
+                  const pathStr = (item as any).path;
+                  if (!pathStr) return null;
 
                   return (
-                    <g key={iso3}>
-                      <path
-                        d={countryPath.path}
-                        fill={activeColor}
-                        fillOpacity={opacity}
-                        stroke={strokeColor}
-                        strokeWidth={strokeWidth}
-                        strokeLinejoin="round"
-                        className="transition-all duration-200"
-                      />
-                      {countryPath.islands && countryPath.islands.map((isl, islIdx) => (
-                        <path
-                          key={`${iso3}-island-${islIdx}`}
-                          d={isl}
-                          fill={activeColor}
-                          fillOpacity={opacity}
-                          stroke={strokeColor}
-                          strokeWidth={strokeWidth}
-                          strokeLinejoin="round"
-                        />
-                      ))}
-                    </g>
+                    <path
+                      key={iso3}
+                      d={pathStr}
+                      fill={activeColor}
+                      fillOpacity={opacity}
+                      stroke={strokeColor}
+                      strokeWidth={strokeWidth}
+                      strokeLinejoin="round"
+                      className="transition-all duration-200"
+                    />
                   );
                 })}
 
@@ -296,25 +282,25 @@ export const AfricaVectorMap: React.FC<AfricaVectorMapProps> = ({
                   className="pointer-events-none"
                 >
                   <rect
-                    x={-((meta.shortName.length * 9) + 16) / 2}
-                    y={-14}
-                    width={(meta.shortName.length * 9) + 16}
-                    height={28}
-                    rx={14}
+                    x={-((meta.shortName.length * 55) + 120) / 2}
+                    y={-80}
+                    width={(meta.shortName.length * 55) + 120}
+                    height={160}
+                    rx={80}
                     fill="#18181b"
-                    fillOpacity={isHovered ? 0.95 : 0.75}
+                    fillOpacity={isHovered ? 0.95 : 0.8}
                     stroke="#FFFFFF"
-                    strokeWidth="1.5"
+                    strokeWidth={10}
                     className="transition-all duration-200"
                   />
                   <text
-                    y={4}
+                    y={25}
                     fill="#FFFFFF"
-                    fontSize="13"
+                    fontSize="75"
                     fontWeight="bold"
                     fontFamily="sans-serif"
                     textAnchor="middle"
-                    className="select-none tracking-wide"
+                    className="select-none tracking-wider"
                   >
                     {meta.shortName}
                   </text>
@@ -360,35 +346,40 @@ export const AfricaVectorMap: React.FC<AfricaVectorMapProps> = ({
                     </span>
                   </div>
 
-                  {/* Key Metrics */}
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                      <span className="text-[10px] font-bold uppercase text-zinc-400 block">
-                        Population
-                      </span>
-                      <span className="font-semibold text-zinc-200">
+                  {/* Metrics grid */}
+                  <div className="grid grid-cols-2 gap-2 text-xs py-1">
+                    <div className="bg-zinc-800/60 p-2 rounded-xl border border-zinc-700/50">
+                      <div className="text-[10px] text-zinc-400 font-mono">Total Population</div>
+                      <div className="font-mono font-bold text-zinc-100 text-sm mt-0.5">
                         {formatCompactNumber(stats.pop)}
-                      </span>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-[10px] font-bold uppercase text-zinc-400 block">
-                        GDP
-                      </span>
-                      <span className="font-semibold text-zinc-200">
+
+                    <div className="bg-zinc-800/60 p-2 rounded-xl border border-zinc-700/50">
+                      <div className="text-[10px] text-zinc-400 font-mono">Combined GDP</div>
+                      <div className="font-mono font-bold text-emerald-400 text-sm mt-0.5">
                         {formatCurrency(stats.gdp)}
-                      </span>
-                    </div>
-                    <div className="col-span-2 pt-1 border-t border-zinc-800">
-                      <span className="text-[10px] text-zinc-400 line-clamp-1">
-                        Largest Economy: <strong className="text-zinc-200">{stats.largest}</strong>
-                      </span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Micro CTA footer */}
-                  <div className="text-[10px] font-medium text-emerald-400 pt-1 flex items-center justify-between">
-                    <span>Click to explore region</span>
-                    <span>→</span>
+                  {/* Detail footer */}
+                  <div className="text-[11px] text-zinc-400 space-y-1 border-t border-zinc-800 pt-2 font-mono">
+                    <div className="flex justify-between">
+                      <span className="text-zinc-500">Anchor Economy:</span>
+                      <span className="font-bold text-zinc-200">{stats.largest}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-zinc-500">Climate Zone:</span>
+                      <span className="text-zinc-300 truncate max-w-[130px]">{stats.climate}</span>
+                    </div>
+                  </div>
+
+                  {/* Tap CTA */}
+                  <div className="pt-1 text-center">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
+                      Explore Region Dossier →
+                    </span>
                   </div>
                 </div>
               </div>
@@ -396,26 +387,6 @@ export const AfricaVectorMap: React.FC<AfricaVectorMapProps> = ({
           })()}
         </AnimatePresence>
       </div>
-
-      {/* Mini Legend Row */}
-      <div className="mt-4 flex flex-wrap items-center justify-center gap-2 pt-3 border-t border-zinc-200 dark:border-zinc-800/80">
-        {UN_REGIONS.map(r => (
-          <button
-            key={r}
-            onClick={() => onSelectRegion(r)}
-            onMouseEnter={() => onHoverRegion(r)}
-            onMouseLeave={() => onHoverRegion(null)}
-            className="flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all cursor-pointer"
-          >
-            <span
-              className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: REGION_META[r].color }}
-            />
-            <span>{REGION_META[r].shortName}</span>
-          </button>
-        ))}
-      </div>
     </div>
   );
 };
-

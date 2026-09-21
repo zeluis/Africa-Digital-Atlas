@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { AFRICA_SVG_MAP, AFRICA_UN_REGIONS_STRUCTURED } from '../data/svgMaps';
+import { AFRICA_SVG_MAP, AFRICA_UN_REGIONS_STRUCTURED, AFRICA_REGIONS_VIEWBOX } from '../data/svgMaps';
 import { UN_REGIONS, REGION_META } from '../data/africaData';
 import { AfricanRegion } from '../data/types';
+import { useAfricaFinalMap } from '../utils/svgMapLoader';
 
 export interface AfricaUnLogoProps {
   className?: string;
@@ -21,27 +22,19 @@ export interface AfricaUnLogoProps {
   strokeWidth?: number;
   glow?: boolean;
   showIslands?: boolean;
-  children?: React.ReactNode; // For embedding SVG overlays (routes, beacons, trade lines)
+  children?: React.ReactNode;
 }
 
 /**
- * Universal Africa Continental Silhouette & UN Geoscheme Vector Component
+ * Universal Africa Continental Silhouette & UN Geoscheme Vector Logo
  * 
- * Accurately renders the 54 sovereign African states + Western Sahara + islands
- * with official UN Geoscheme M49 regional boundaries & colors:
- * - Northern Africa: Blue (#2563EB)
- * - Western Africa: Green (#16A34A)
- * - Central Africa: Magenta (#C026D3)
- * - Eastern Africa: Yellow/Gold (#EAB308)
- * - Southern Africa: Red (#DC2626)
- *
- * Highly performant, infinitely scalable, and reusable everywhere from tiny 16px icons
- * to massive 800px display posters and interactive dashboards with SVG overlays.
+ * Renders the clean, unified African continent with official UN Geoscheme regional colors.
+ * Subdivisions are omitted to keep the logo clean, crisp, and contained across all viewports.
  */
 export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({ 
-  className = "w-10 h-10",
+  className = "w-9 h-9",
   size,
-  viewBox = "85 68 862 954",
+  viewBox,
   activeRegion,
   highlightedRegions,
   highlightedCountries,
@@ -52,15 +45,16 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
   singleColor,
   fillColor,
   fillOpacity,
-  strokeColor = '#FFFFFF',
-  strokeWidth,
+  strokeColor,
+  strokeWidth = 0,
   glow = false,
   showIslands = true,
   children
 }) => {
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
+  const { mapData } = useAfricaFinalMap();
 
-  // Normalize activeRegion (e.g. 'region-western' -> 'Western Africa')
+  // Normalize activeRegion
   const resolvedActive = React.useMemo(() => {
     if (!activeRegion) return null;
     const str = String(activeRegion);
@@ -72,18 +66,26 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
     return null;
   }, [activeRegion]);
 
-  const defaultStrokeWidth = strokeWidth !== undefined ? strokeWidth : (variant === 'outline' ? 1.5 : 0.8);
+  // Ensure viewBox always uses the unified coordinate space
+  const resolvedViewBox = React.useMemo(() => {
+    if (!viewBox || viewBox.includes('970') || viewBox.includes('1040') || viewBox.includes('400')) {
+      return AFRICA_REGIONS_VIEWBOX;
+    }
+    return viewBox;
+  }, [viewBox]);
+
+  const effectiveStrokeWidth = strokeWidth !== undefined ? strokeWidth : (variant === 'outline' ? 8 : 0);
 
   return (
     <div 
-      className={`relative inline-flex items-center justify-center shrink-0 ${className} ${interactive ? 'group/un-logo cursor-pointer' : ''}`}
-      style={size ? { width: size, height: size } : undefined}
+      className={`relative inline-flex items-center justify-center shrink-0 overflow-hidden ${className} ${interactive ? 'group/un-logo cursor-pointer' : ''}`}
+      style={size ? { width: size, height: size, maxWidth: size, maxHeight: size } : undefined}
     >
       <svg
-        viewBox={viewBox}
+        viewBox={resolvedViewBox}
         xmlns="http://www.w3.org/2000/svg"
         preserveAspectRatio="xMidYMid meet"
-        className={`w-full h-full max-h-full max-w-full overflow-visible transition-transform duration-200 ease-out ${
+        className={`w-full h-full max-w-full max-h-full block transition-transform duration-200 ease-out ${
           interactive ? 'hover:scale-105 active:scale-95 cursor-pointer' : ''
         }`}
         aria-label="African Continent UN Geoscheme Silhouette"
@@ -92,7 +94,7 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
         <defs>
           {glow && (
             <filter id="africaContinentalGlow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feGaussianBlur stdDeviation="30" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
           )}
@@ -105,7 +107,7 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
             
             // Resolve fill color and opacity based on variant
             let color = meta.color;
-            let effectiveFillOpacity = fillOpacity !== undefined ? fillOpacity : (variant === 'warm-tonal' ? 0.6 : 1);
+            let effectiveFillOpacity = fillOpacity !== undefined ? fillOpacity : (variant === 'warm-tonal' ? 0.75 : 1);
 
             if (fillColor) {
               color = fillColor;
@@ -116,7 +118,7 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
             } else if (variant === 'outline') {
               color = 'transparent';
             } else if (variant === 'warm-tonal') {
-              color = '#D97706'; // Warm tonal amber/ochre
+              color = '#D97706';
             }
             
             const isHovered = hoveredRegion === regionName;
@@ -124,7 +126,6 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
             const isHighlightedRegion = highlightedRegions?.includes(regionName);
             const hasFocusState = Boolean(hoveredRegion || resolvedActive || (highlightedRegions && highlightedRegions.length > 0));
             
-            // Opacity logic: if there is focus state, illuminate target and soften others
             const isFocal = isHovered || isScopeActive || isHighlightedRegion;
             const opacity = hasFocusState ? (isFocal ? 1 : 0.35) : 1;
 
@@ -143,8 +144,8 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
                 }}
               >
                 {region.countryIds.map((iso3) => {
-                  const country = AFRICA_SVG_MAP[iso3];
-                  if (!country) return null;
+                  const item = mapData[iso3] || AFRICA_SVG_MAP[iso3];
+                  if (!item) return null;
 
                   const isCountryHighlighted = highlightedCountries?.includes(iso3);
                   const countryFill = isCountryHighlighted 
@@ -152,21 +153,29 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
                     : (customColorMap?.[iso3] || color);
 
                   const resolvedFill = variant === 'outline' ? 'transparent' : countryFill;
+                  const adminPaths = (item as any).admin1;
+
+                  // Merge all internal paths for a clean country shape without subdivision strokes in logo
+                  const combinedPath = adminPaths && adminPaths.length > 0
+                    ? adminPaths.map((adm: any) => adm.d).join(' ')
+                    : (item as any).path;
+
+                  if (!combinedPath) return null;
 
                   return (
                     <path
                       key={iso3}
-                      d={country.path}
+                      d={combinedPath}
                       fill={resolvedFill}
                       fillOpacity={resolvedFill !== 'transparent' ? effectiveFillOpacity : undefined}
-                      stroke={strokeColor || 'currentColor'}
-                      strokeWidth={isCountryHighlighted || isFocal ? defaultStrokeWidth * 1.5 : defaultStrokeWidth}
+                      stroke={strokeColor || (effectiveStrokeWidth > 0 ? '#FFFFFF' : 'none')}
+                      strokeWidth={effectiveStrokeWidth}
                       strokeLinejoin="round"
                     />
                   );
                 })}
 
-                {/* Island representations for sovereign island nations */}
+                {/* Sovereign island indicators */}
                 {showIslands && region.islandCircles?.map((isl, idx) => {
                   const circleFill = variant === 'outline' ? 'transparent' : color;
                   return (
@@ -174,11 +183,11 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
                       key={`logo-circle-${regionName}-${idx}`}
                       cx={isl.cx}
                       cy={isl.cy}
-                      r={Math.max(isl.r * 1.3, 7.5)}
+                      r={Math.max(isl.r * 1.5, 30)}
                       fill={circleFill}
                       fillOpacity={circleFill !== 'transparent' ? effectiveFillOpacity : undefined}
-                      stroke={strokeColor || 'currentColor'}
-                      strokeWidth={isFocal ? defaultStrokeWidth * 1.5 : defaultStrokeWidth}
+                      stroke={strokeColor || (effectiveStrokeWidth > 0 ? '#FFFFFF' : 'none')}
+                      strokeWidth={effectiveStrokeWidth}
                     />
                   );
                 })}
@@ -186,19 +195,10 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
             );
           })}
 
-          {/* Child SVG Overlays (Routes, City Hub Beacons, Trade Arrows) rendered in same coordinate matrix */}
+          {/* Child SVG Overlays */}
           {children}
         </g>
       </svg>
-
-      {/* Mini Floating Tooltip on Logo Hover */}
-      {interactive && hoveredRegion && (
-        <div 
-          className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-md bg-zinc-950/95 text-white text-[11px] font-mono whitespace-nowrap pointer-events-none shadow-xl border border-emerald-500/50 z-50 animate-in fade-in zoom-in duration-100"
-        >
-          {hoveredRegion}
-        </div>
-      )}
     </div>
   );
 };

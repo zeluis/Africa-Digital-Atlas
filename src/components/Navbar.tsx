@@ -64,14 +64,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Logo & Brand Identity (Standalone Masthead) */}
             <div className="flex items-center gap-2.5 sm:gap-3 select-none">
               <div 
-                className="relative flex items-center justify-center cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 py-0.5 shrink-0"
+                className="relative flex items-center justify-center cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 shrink-0"
                 onClick={() => onSelectTab('overview')}
                 title="Africalia Continental Atlas - Return to Primary Overview"
               >
                 <AfricaUnLogo 
-                  className="shrink-0 drop-shadow-[0_2px_8px_rgba(217,119,6,0.22)] dark:drop-shadow-[0_2px_10px_rgba(251,191,36,0.25)]" 
-                  viewBox="65 55 885 970"
-                  size={54}
+                  className="shrink-0 drop-shadow-[0_1px_4px_rgba(217,119,6,0.2)] dark:drop-shadow-[0_1px_6px_rgba(251,191,36,0.2)]" 
+                  size={36}
                   activeRegion={activeRegion}
                   onSelectRegion={(reg) => {
                     const regTabMap: Record<string, CanonicalNavTab> = {
