@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { atlas } from '../data/atlas-store';
 import { AfricanRegion, AtlasEntity } from '../data/types';
 import { 
@@ -43,7 +44,12 @@ import {
   DollarSign,
   Users,
   Award,
-  Zap
+  Zap,
+  FileCode,
+  Settings2,
+  ChevronDown,
+  SlidersHorizontal,
+  FileImage
 } from 'lucide-react';
 import { getAdmin1ForCountry, searchAdmin1Subdivisions, ALL_ADMIN1_SUBDIVISIONS } from '../data/africaliaGeographyData';
 import { AfricaliaAdmin1 } from '../data/types';
@@ -149,14 +155,20 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
   // Mode defaults to 'authentic_palette' in final mode or 'un_geoscheme' in schematic mode
   const [internalMapMode, setInternalMapMode] = useState<MapDisplayMode>(
-    initialCartographySource === 'authentic_final' ? 'authentic_palette' : 'un_geoscheme'
+    externalMapMode || (initialCartographySource === 'authentic_final' ? 'authentic_palette' : 'un_geoscheme')
   );
   const mapMode = externalMapMode !== undefined ? externalMapMode : internalMapMode;
-  const setMapMode = onMapModeChange || setInternalMapMode;
+  const setMapMode = (newMode: MapDisplayMode) => {
+    setInternalMapMode(newMode);
+    onMapModeChange?.(newMode);
+  };
 
   const [internalMetric, setInternalMetric] = useState<string>('NY.GDP.MKTP.CD');
   const activeMetric = externalMetric !== undefined ? externalMetric : internalMetric;
-  const setActiveMetric = onActiveMetricChange || setInternalMetric;
+  const setActiveMetric = (newMetric: string) => {
+    setInternalMetric(newMetric);
+    onActiveMetricChange?.(newMetric);
+  };
 
   // Regional Blocs filter
   const [selectedBlocId, setSelectedBlocId] = useState<string>('ALL');
@@ -169,14 +181,34 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   // Overlays toggle state (Graticule lines & Compass Rose)
   const [showGraticuleAndCompass, setShowGraticuleAndCompass] = useState<boolean>(true);
   const [showAdmin1Borders, setShowAdmin1Borders] = useState<boolean>(true);
-  const [isNavigatorOpen, setIsNavigatorOpen] = useState<boolean>(false);
-  const [navigatorTab, setNavigatorTab] = useState<'subregions' | 'admin1'>('subregions');
+  const [isAdmin1InspectorOpen, setIsAdmin1InspectorOpen] = useState<boolean>(false);
   const [hoveredEntityId, setHoveredEntityId] = useState<string | null>(null);
   const [hoveredAdmin1, setHoveredAdmin1] = useState<{ id: string; name: string; countryId: string } | null>(null);
   const [activeRegionHover, setActiveRegionHover] = useState<AfricanRegion | null>(null);
   const [cursorPos, setCursorPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [exportSuccess, setExportSuccess] = useState<boolean>(false);
+  const [isExportingSvg, setIsExportingSvg] = useState<boolean>(false);
+  const [exportSvgSuccess, setExportSvgSuccess] = useState<boolean>(false);
+  const [isExportMenuOpen, setIsExportMenuOpen] = useState<boolean>(false);
+  const [exportBg, setExportBg] = useState<'white' | 'dark' | 'transparent'>('white');
+  const [exportIncludeWatermark, setExportIncludeWatermark] = useState<boolean>(true);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close export menu on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(event.target as Node)) {
+        setIsExportMenuOpen(false);
+      }
+    }
+    if (isExportMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isExportMenuOpen]);
 
   // Region visibility state for interactive legend
   const [visibleRegions, setVisibleRegions] = useState<Set<AfricanRegion>>(
@@ -200,6 +232,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       setCartographySource('authentic_final');
       setMapMode('authentic_palette');
     } else if (mode === 'choropleth') {
+      setCartographySource('authentic_final');
       setMapMode('choropleth');
     } else if (mode === 'schematic') {
       setCartographySource('schematic');
@@ -431,23 +464,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       return '#10b981'; // Bright emerald highlight
     }
 
-    // 1. Schematic Mode or UN Geoscheme Mode: Official UN Geoscheme regional colors
-    if (cartographySource === 'schematic' || mapMode === 'un_geoscheme') {
-      const regionData = UN_GEOSCHEME_REGIONS[country.unRegion];
-      const baseColor = regionData ? regionData.palette.primary : '#10b981';
-
-      if (activeRegionHover && country.unRegion === activeRegionHover) {
-        return regionData?.palette?.light || '#34d399';
-      }
-
-      if (isHovered) {
-        return regionData ? regionData.palette.light : '#6ee7b7';
-      }
-
-      return baseColor;
-    }
-
-    // 2. Choropleth Metric Mode
+    // 1. Choropleth Metric Mode
     if (mapMode === 'choropleth') {
       const canonicalColor = getCanonicalCountryColor(country.id);
       const authenticColor = canonicalColor || AFRICA_FINAL_MAP[country.id]?.originalColor || country.originalColor || '#0a9bc3';
@@ -464,6 +481,22 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       }
 
       return deriveChoroplethTone(authenticColor, norm, currentMetricDef.color);
+    }
+
+    // 2. Schematic Mode / UN Geoscheme Regional Grouping
+    if (mapMode === 'un_geoscheme' || (cartographySource === 'schematic' && mapMode !== 'authentic_palette')) {
+      const regionData = UN_GEOSCHEME_REGIONS[country.unRegion];
+      const baseColor = regionData ? regionData.palette.primary : '#10b981';
+
+      if (activeRegionHover && country.unRegion === activeRegionHover) {
+        return regionData?.palette?.light || '#34d399';
+      }
+
+      if (isHovered) {
+        return regionData ? regionData.palette.light : '#6ee7b7';
+      }
+
+      return baseColor;
     }
 
     // 3. Authentic Final Map (Canonical authoritative vector colors)
@@ -646,10 +679,53 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     setIsDragging(false);
   };
 
+  // Touch pan & pinch zoom handlers for mobile devices
+  const touchStartRef = useRef<{ x: number; y: number; dist?: number }>({ x: 0, y: 0 });
+
+  const handleTouchStart = (e: React.TouchEvent<SVGSVGElement>) => {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      touchStartRef.current = { x: touch.clientX - panOffset.x, y: touch.clientY - panOffset.y };
+      setIsDragging(true);
+    } else if (e.touches.length === 2) {
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      const dist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+      touchStartRef.current = {
+        x: (t1.clientX + t2.clientX) / 2 - panOffset.x,
+        y: (t1.clientY + t2.clientY) / 2 - panOffset.y,
+        dist
+      };
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<SVGSVGElement>) => {
+    if (e.touches.length === 1 && isDragging) {
+      const touch = e.touches[0];
+      setPanOffset({
+        x: touch.clientX - touchStartRef.current.x,
+        y: touch.clientY - touchStartRef.current.y
+      });
+    } else if (e.touches.length === 2 && touchStartRef.current.dist) {
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      const dist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+      const ratio = dist / touchStartRef.current.dist;
+      setZoomLevel(prev => Math.max(0.7, Math.min(4.2, prev * (1 + (ratio - 1) * 0.1))));
+      touchStartRef.current.dist = dist;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
   // High-Resolution PNG Export Handler
-  const handleDownloadPng = async () => {
+  const handleDownloadPng = async (customBg?: 'white' | 'dark' | 'transparent') => {
     const svgEl = svgRef.current;
     if (!svgEl) return;
+
+    const bgChoice = customBg || exportBg;
 
     setIsExporting(true);
     try {
@@ -672,17 +748,27 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         const ctx = canvas.getContext('2d');
 
         if (ctx) {
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          if (bgChoice === 'dark') {
+            ctx.fillStyle = '#09090b';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          } else if (bgChoice === 'white') {
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          } else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+
           ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-          ctx.fillStyle = '#047857';
-          ctx.font = 'bold 24px monospace';
-          ctx.fillText('AFRICA DATA ATLAS • AUTHENTIC CARTOGRAPHY', 40, canvas.height - 40);
+          if (exportIncludeWatermark) {
+            ctx.fillStyle = bgChoice === 'dark' ? '#10b981' : '#047857';
+            ctx.font = 'bold 24px monospace';
+            ctx.fillText('AFRICA DATA ATLAS • AUTHENTIC CARTOGRAPHY', 40, canvas.height - 40);
 
-          ctx.fillStyle = '#64748b';
-          ctx.font = '16px monospace';
-          ctx.fillText(`Exported ${new Date().toISOString().split('T')[0]} • 54 Sovereign African Nations & Territories`, 40, canvas.height - 18);
+            ctx.fillStyle = bgChoice === 'dark' ? '#a1a1aa' : '#64748b';
+            ctx.font = '16px monospace';
+            ctx.fillText(`Exported ${new Date().toISOString().split('T')[0]} • 54 Sovereign African Nations & Territories`, 40, canvas.height - 18);
+          }
 
           const pngUrl = canvas.toDataURL('image/png');
           const link = document.createElement('a');
@@ -705,6 +791,86 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     }
   };
 
+  // High-Precision Scalable SVG Export Handler
+  const handleDownloadSvg = async (customOptions?: {
+    bg?: 'white' | 'dark' | 'transparent';
+    includeWatermark?: boolean;
+  }) => {
+    const svgEl = svgRef.current;
+    if (!svgEl) return;
+
+    const bgChoice = customOptions?.bg || exportBg;
+    const withWatermark = customOptions?.includeWatermark !== undefined ? customOptions.includeWatermark : exportIncludeWatermark;
+
+    setIsExportingSvg(true);
+    try {
+      // Deep clone SVG element so we can manipulate attributes safely
+      const clonedSvg = svgEl.cloneNode(true) as SVGSVGElement;
+
+      clonedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      clonedSvg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+      clonedSvg.setAttribute('version', '1.1');
+
+      // Add background rect if solid
+      if (bgChoice !== 'transparent') {
+        const bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        bgRect.setAttribute('x', '-10000');
+        bgRect.setAttribute('y', '-10000');
+        bgRect.setAttribute('width', '40000');
+        bgRect.setAttribute('height', '40000');
+        bgRect.setAttribute('fill', bgChoice === 'dark' ? '#09090b' : '#ffffff');
+        clonedSvg.insertBefore(bgRect, clonedSvg.firstChild);
+      }
+
+      // Add watermark if requested
+      if (withWatermark) {
+        const textGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        textGroup.setAttribute('id', 'atlas-export-metadata');
+
+        const titleText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        titleText.setAttribute('x', '160');
+        titleText.setAttribute('y', '5680');
+        titleText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+        titleText.setAttribute('font-size', '72');
+        titleText.setAttribute('font-weight', 'bold');
+        titleText.setAttribute('fill', bgChoice === 'dark' ? '#10b981' : '#047857');
+        titleText.textContent = 'AFRICA DATA ATLAS • AUTHENTIC VECTOR CARTOGRAPHY';
+
+        const subtitleText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        subtitleText.setAttribute('x', '160');
+        subtitleText.setAttribute('y', '5760');
+        subtitleText.setAttribute('font-family', 'monospace');
+        subtitleText.setAttribute('font-size', '44');
+        subtitleText.setAttribute('fill', bgChoice === 'dark' ? '#a1a1aa' : '#64748b');
+        subtitleText.textContent = `Exported ${new Date().toISOString().split('T')[0]} • Mode: ${mapMode.toUpperCase()} • 54 Sovereign African Nations & Territories`;
+
+        textGroup.appendChild(titleText);
+        textGroup.appendChild(subtitleText);
+        clonedSvg.appendChild(textGroup);
+      }
+
+      const serializer = new XMLSerializer();
+      let svgString = serializer.serializeToString(clonedSvg);
+
+      const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+      const blobURL = URL.createObjectURL(svgBlob);
+      const link = document.createElement('a');
+      link.download = `africa_data_atlas_${mapMode}_${new Date().toISOString().split('T')[0]}.svg`;
+      link.href = blobURL;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobURL);
+
+      setExportSvgSuccess(true);
+      setTimeout(() => setExportSvgSuccess(false), 3000);
+      setIsExportingSvg(false);
+    } catch (err) {
+      console.error('Failed to export map SVG', err);
+      setIsExportingSvg(false);
+    }
+  };
+
   return (
     <div
       className={
@@ -714,10 +880,11 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       }
     >
       {/* Unified Map Header & Controls Bar */}
-      <div id="unified-africa-map-control-card" className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-3 sm:p-4 shadow-sm backdrop-blur-md space-y-3">
-        {/* Top Header Row: Muted Logo Icon, Map Title & Primary Tools */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80">
-          <div className="flex items-center gap-3">
+      <div id="unified-africa-map-control-card" className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-3 sm:p-4 shadow-sm backdrop-blur-md space-y-2.5">
+        {/* Top Header Row: Branding, Stable Tool Groups, Mode Switcher, and Export */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-2 border-b border-zinc-200/80 dark:border-zinc-800/80">
+          {/* Left: Branding & Map Metadata */}
+          <div className="flex items-center gap-3 shrink-0">
             <AfricaUnLogo
               variant="warm-tonal"
               fillOpacity={0.65}
@@ -743,20 +910,27 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             </div>
           </div>
 
-          {/* Controls & Quick Actions Toolbar */}
+          {/* Right: Stable Toolbar Group (Zero Layout Shift) */}
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            {/* Unified Mode Switcher: Authentic | Choropleth | Schematic */}
-            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl">
+            {/* Unified Mode Switcher Segmented Pill */}
+            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl relative">
               <button
                 type="button"
                 onClick={() => handleSelectMode('authentic')}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                  mapMode === 'authentic_palette' && cartographySource === 'authentic_final'
-                    ? 'bg-emerald-600 text-white shadow-xs font-bold'
+                className={`relative px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
+                  mapMode === 'authentic_palette'
+                    ? 'text-white font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                 }`}
-                title="Authoritative original colors"
+                title="Authoritative original colors extracted from vector atlas"
               >
+                {mapMode === 'authentic_palette' && (
+                  <motion.div
+                    layoutId="activeMapModeHighlight"
+                    className="absolute inset-0 bg-emerald-600 rounded-lg shadow-xs -z-10"
+                    transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                  />
+                )}
                 <Sparkles className="w-3 h-3" />
                 <span>Authentic</span>
               </button>
@@ -764,13 +938,20 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <button
                 type="button"
                 onClick={() => handleSelectMode('choropleth')}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                className={`relative px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
                   mapMode === 'choropleth'
-                    ? 'bg-cyan-600 text-white shadow-xs font-bold'
+                    ? 'text-white font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                 }`}
-                title="Socio-economic metric choropleth"
+                title="Socio-economic indicator choropleth"
               >
+                {mapMode === 'choropleth' && (
+                  <motion.div
+                    layoutId="activeMapModeHighlight"
+                    className="absolute inset-0 bg-cyan-600 rounded-lg shadow-xs -z-10"
+                    transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                  />
+                )}
                 <Layers className="w-3 h-3" />
                 <span>Choropleth</span>
               </button>
@@ -778,13 +959,20 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <button
                 type="button"
                 onClick={() => handleSelectMode('schematic')}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                  cartographySource === 'schematic' || mapMode === 'un_geoscheme'
-                    ? 'bg-amber-600 text-white shadow-xs font-bold'
+                className={`relative px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
+                  mapMode === 'un_geoscheme'
+                    ? 'text-white font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                 }`}
                 title="UN Geoscheme regional macro grouping"
               >
+                {mapMode === 'un_geoscheme' && (
+                  <motion.div
+                    layoutId="activeMapModeHighlight"
+                    className="absolute inset-0 bg-amber-600 rounded-lg shadow-xs -z-10"
+                    transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                  />
+                )}
                 <Compass className="w-3 h-3" />
                 <span>Schematic</span>
               </button>
@@ -806,26 +994,6 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 ))}
               </select>
             </div>
-
-            {/* Choropleth Metric Selector */}
-            {mapMode === 'choropleth' && (
-              <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl overflow-x-auto max-w-full">
-                {CHOROPLETH_METRICS.slice(0, 5).map(m => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => setActiveMetric(m.id)}
-                    className={`px-2 py-0.5 rounded-lg text-[11px] font-medium transition-all cursor-pointer whitespace-nowrap ${
-                      activeMetric === m.id
-                        ? 'bg-cyan-600 text-white font-bold'
-                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-                    }`}
-                  >
-                    {m.label}
-                  </button>
-                ))}
-              </div>
-            )}
 
             {/* Graticule & Compass Toggle */}
             <button
@@ -862,53 +1030,86 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 <button
                   id="btn-toggle-admin1-inspector-header"
                   type="button"
-                  onClick={() => {
-                    if (isNavigatorOpen && navigatorTab === 'admin1') {
-                      setIsNavigatorOpen(false);
-                    } else {
-                      setIsNavigatorOpen(true);
-                      setNavigatorTab('admin1');
-                    }
-                  }}
+                  onClick={() => setIsAdmin1InspectorOpen(prev => !prev)}
                   className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
-                    isNavigatorOpen && navigatorTab === 'admin1'
+                    isAdmin1InspectorOpen
                       ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
                       : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                   }`}
                   title="Toggle Admin-1 Subdivisions Inspector"
                 >
                   <MapPin className="w-3 h-3" />
-                  <span>Inspector ({isNavigatorOpen && navigatorTab === 'admin1' ? 'OPEN' : 'CLOSED'})</span>
+                  <span>Inspector ({isAdmin1InspectorOpen ? 'OPEN' : 'CLOSED'})</span>
                   <span className={`text-[10px] font-mono px-1 py-0.2 rounded font-bold ${
-                    isNavigatorOpen && navigatorTab === 'admin1' ? 'bg-emerald-700/80 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
+                    isAdmin1InspectorOpen ? 'bg-emerald-700/80 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
                   }`}>
                     {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
                   </span>
                 </button>
               </div>
             )}
-
-
-
-            {/* Export PNG Button */}
-            <button
-              type="button"
-              onClick={handleDownloadPng}
-              disabled={isExporting}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 text-xs font-semibold transition-all shadow-xs cursor-pointer disabled:opacity-50"
-              title="Download Map as PNG"
-            >
-              {isExporting ? (
-                <Loader2 className="w-3 h-3 animate-spin text-emerald-500" />
-              ) : exportSuccess ? (
-                <Check className="w-3 h-3 text-emerald-500" />
-              ) : (
-                <Download className="w-3 h-3 text-emerald-500" />
-              )}
-              <span>{isExporting ? 'Exporting...' : exportSuccess ? 'Saved' : 'PNG'}</span>
-            </button>
           </div>
         </div>
+
+        {/* Dedicated Sliding Context Tray: Choropleth Indicator Selector & Dynamic Scale */}
+        <AnimatePresence>
+          {mapMode === 'choropleth' && (
+            <motion.div
+              key="choropleth-sliding-tray"
+              initial={{ height: 0, opacity: 0, y: -6 }}
+              animate={{ height: 'auto', opacity: 1, y: 0 }}
+              exit={{ height: 0, opacity: 0, y: -6 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden"
+            >
+              <div className="pt-1 pb-0.5">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 bg-cyan-500/5 dark:bg-cyan-950/20 p-2 sm:p-2.5 rounded-xl border border-cyan-500/20 dark:border-cyan-800/30">
+                  {/* Metric Pills */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
+                    <span className="text-[11px] font-bold text-cyan-800 dark:text-cyan-300 shrink-0 mr-1 flex items-center gap-1">
+                      <Layers className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                      Indicator:
+                    </span>
+                    {CHOROPLETH_METRICS.map(m => {
+                      const IconComp = m.icon;
+                      const isSelected = activeMetric === m.id;
+                      return (
+                        <button
+                          key={m.id}
+                          type="button"
+                          onClick={() => setActiveMetric(m.id)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                            isSelected
+                              ? 'bg-cyan-600 text-white shadow-xs font-bold ring-2 ring-cyan-500/30'
+                              : 'bg-white dark:bg-zinc-900/80 text-zinc-700 dark:text-zinc-300 hover:bg-cyan-50 dark:hover:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-800'
+                          }`}
+                        >
+                          <IconComp className={`w-3 h-3 ${isSelected ? 'text-white' : 'text-cyan-600 dark:text-cyan-400'}`} />
+                          <span>{m.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Live Dynamic Legend Ramp */}
+                  <div className="flex items-center gap-2 shrink-0 text-[11px] text-zinc-600 dark:text-zinc-400 pl-1">
+                    <span className="text-[10px] font-medium text-zinc-400">Low</span>
+                    <div
+                      className="h-2.5 w-24 sm:w-28 rounded-full border border-cyan-300/60 dark:border-cyan-700/60 shadow-inner"
+                      style={{
+                        background: `linear-gradient(to right, #ecfeff, #06b6d4, #0891b2, #0e7490)`
+                      }}
+                    />
+                    <span className="text-[10px] font-medium text-zinc-400">High</span>
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-100 dark:bg-cyan-900/60 text-cyan-800 dark:text-cyan-200 border border-cyan-300/60 dark:border-cyan-700/60">
+                      {currentMetricDef.unit}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Integrated Subregion Pills & Zoom Controls Row */}
         {!isFullBleed && (
@@ -929,6 +1130,149 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             onZoomOut={() => setZoomLevel(prev => Math.max(0.7, prev - 0.25))}
             onResetZoom={handleResetZoom}
             onFocusRegion={handleFocusRegion}
+            exportControls={
+              <div className="relative" ref={exportMenuRef}>
+                <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl shadow-xs">
+                  {/* PNG Export Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadPng()}
+                    disabled={isExporting}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-white dark:hover:bg-zinc-800 transition-all cursor-pointer disabled:opacity-50"
+                    title="Quick download as High-Res PNG (2x Raster)"
+                  >
+                    {isExporting ? (
+                      <Loader2 className="w-3 h-3 animate-spin text-emerald-500" />
+                    ) : exportSuccess ? (
+                      <Check className="w-3 h-3 text-emerald-500" />
+                    ) : (
+                      <FileImage className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                    )}
+                    <span>{isExporting ? 'Saving...' : exportSuccess ? 'Saved' : 'PNG'}</span>
+                  </button>
+
+                  {/* SVG Export Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadSvg()}
+                    disabled={isExportingSvg}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-white dark:hover:bg-zinc-800 transition-all cursor-pointer disabled:opacity-50 border-l border-zinc-200/80 dark:border-zinc-800 pl-2"
+                    title="Quick download as Scalable Vector Graphic (SVG)"
+                  >
+                    {isExportingSvg ? (
+                      <Loader2 className="w-3 h-3 animate-spin text-cyan-500" />
+                    ) : exportSvgSuccess ? (
+                      <Check className="w-3 h-3 text-cyan-500" />
+                    ) : (
+                      <FileCode className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                    )}
+                    <span>{isExportingSvg ? 'Saving...' : exportSvgSuccess ? 'Saved' : 'SVG'}</span>
+                  </button>
+
+                  {/* Export Options Dropdown Button */}
+                  <button
+                    type="button"
+                    onClick={() => setIsExportMenuOpen(prev => !prev)}
+                    className={`px-1.5 py-1 rounded-lg text-xs transition-all cursor-pointer ml-0.5 ${
+                      isExportMenuOpen
+                        ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white'
+                        : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                    }`}
+                    title="Configure Export Options (Background, Watermark, Quality)"
+                    aria-label="Export options"
+                  >
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isExportMenuOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                </div>
+
+                {/* Export Options Popover Menu */}
+                <AnimatePresence>
+                  {isExportMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 6, scale: 0.96 }}
+                      transition={{ duration: 0.15, ease: 'easeOut' }}
+                      className="absolute right-0 top-full mt-2 w-72 p-3 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800 z-50 text-xs space-y-3"
+                    >
+                      <div className="flex items-center justify-between pb-2 border-b border-zinc-100 dark:border-zinc-800">
+                        <div className="flex items-center gap-1.5 font-bold text-zinc-900 dark:text-zinc-100">
+                          <SlidersHorizontal className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                          <span>Export Options</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setIsExportMenuOpen(false)}
+                          className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      {/* Background Selector */}
+                      <div>
+                        <span className="block text-[11px] font-semibold text-zinc-500 mb-1.5">Canvas Background:</span>
+                        <div className="grid grid-cols-3 gap-1">
+                          {(['white', 'dark', 'transparent'] as const).map(bg => (
+                            <button
+                              key={bg}
+                              type="button"
+                              onClick={() => setExportBg(bg)}
+                              className={`py-1 px-2 rounded-lg text-[11px] font-medium border text-center capitalize transition-all cursor-pointer ${
+                                exportBg === bg
+                                  ? 'bg-emerald-500/10 border-emerald-500 text-emerald-700 dark:text-emerald-300 font-bold'
+                                  : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800'
+                              }`}
+                            >
+                              {bg}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Watermark Toggle */}
+                      <label className="flex items-center justify-between gap-2 py-1 cursor-pointer select-none">
+                        <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-300">
+                          Include Title & Watermark
+                        </span>
+                        <input
+                          type="checkbox"
+                          checked={exportIncludeWatermark}
+                          onChange={(e) => setExportIncludeWatermark(e.target.checked)}
+                          className="w-4 h-4 rounded text-emerald-600 border-zinc-300 focus:ring-emerald-500 cursor-pointer"
+                        />
+                      </label>
+
+                      {/* Actions */}
+                      <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleDownloadPng();
+                            setIsExportMenuOpen(false);
+                          }}
+                          className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs cursor-pointer"
+                        >
+                          <FileImage className="w-3.5 h-3.5" />
+                          <span>PNG (2x)</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleDownloadSvg();
+                            setIsExportMenuOpen(false);
+                          }}
+                          className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-semibold shadow-xs cursor-pointer"
+                        >
+                          <FileCode className="w-3.5 h-3.5" />
+                          <span>SVG Vector</span>
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            }
           />
         )}
       </div>
@@ -948,279 +1292,143 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             : "relative w-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner p-[6px] aspect-[890/985] max-h-[85vh] min-h-[440px]"
         }
       >
-        {/* Unified Floating Explorer Pill & Integrated Navigator Panel */}
+        {/* Floating Admin-1 Subdivisions Inspector */}
         <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 max-w-[calc(100vw-32px)]">
-          {/* Unified Collapsed Floating Pill in top-left */}
+          {/* Collapsed Floating Pill in top-left */}
           <div
-            id="floating-navigator-pill"
+            id="floating-admin1-inspector-pill"
             className="self-start inline-flex items-center rounded-2xl bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/90 dark:border-zinc-800/90 shadow-xl backdrop-blur-md p-1 transition-all duration-200 hover:shadow-2xl"
           >
-            {/* UN Subregions segment */}
-            <button
-              id="btn-toggle-un-subregions"
-              type="button"
-              onClick={() => {
-                if (isNavigatorOpen && navigatorTab === 'subregions') {
-                  setIsNavigatorOpen(false);
-                } else {
-                  setIsNavigatorOpen(true);
-                  setNavigatorTab('subregions');
-                }
-              }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                isNavigatorOpen && navigatorTab === 'subregions'
-                  ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold shadow-xs'
-                  : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
-              }`}
-              title="Toggle UN Subregions Panel"
-            >
-              <Layers className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span className="font-bold">UN Subregions</span>
-              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
-                {visibleRegions.size}/5
-              </span>
-            </button>
-
-            {/* Clean Divider */}
-            <div className="w-px h-5 bg-zinc-200 dark:bg-zinc-700 mx-1" />
-
-            {/* Admin-1 Inspector segment */}
             <button
               id="btn-toggle-admin1-inspector"
               type="button"
-              onClick={() => {
-                if (isNavigatorOpen && navigatorTab === 'admin1') {
-                  setIsNavigatorOpen(false);
-                } else {
-                  setIsNavigatorOpen(true);
-                  setNavigatorTab('admin1');
-                }
-              }}
+              onClick={() => setIsAdmin1InspectorOpen(prev => !prev)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                isNavigatorOpen && navigatorTab === 'admin1'
+                isAdmin1InspectorOpen
                   ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold shadow-xs'
                   : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
               }`}
               title="Toggle Admin-1 Subdivisions Inspector"
             >
               <MapPin className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span className="font-bold">Admin-1</span>
+              <span className="font-bold">Admin-1 Inspector</span>
               <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
                 {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
               </span>
             </button>
           </div>
 
-          {/* Sleek & Sophisticated Expanded Navigator Panel */}
-          {isNavigatorOpen && (
+          {/* Expanded Admin-1 Subdivisions Panel */}
+          {isAdmin1InspectorOpen && (
             <div
-              id="floating-un-subregions-panel"
-              className="w-auto min-w-[320px] sm:min-w-[460px] max-w-[calc(100vw-32px)] sm:max-w-2xl lg:max-w-3xl rounded-2xl bg-white/95 dark:bg-zinc-950/95 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 overflow-hidden"
+              id="floating-admin1-inspector-panel"
+              className="w-auto min-w-[320px] sm:min-w-[420px] max-w-[calc(100vw-32px)] sm:max-w-lg rounded-2xl bg-white/95 dark:bg-zinc-950/95 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 overflow-hidden"
             >
-              {/* Top Header with Tab Switcher, Zoom Controls & Close Control on same row */}
-              <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-900/60 gap-2 flex-wrap sm:flex-nowrap">
-                {/* Left: Tab Switcher (Subregions & Admin-1) */}
-                <div className="flex items-center gap-1.5 p-0.5 rounded-xl bg-zinc-200/60 dark:bg-zinc-800/60">
-                  <button
-                    type="button"
-                    onClick={() => setNavigatorTab('subregions')}
-                    className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      navigatorTab === 'subregions'
-                        ? 'bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-xs'
-                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-                    }`}
-                  >
-                    <Layers className="w-3.5 h-3.5" />
-                    <span>Subregions</span>
-                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-bold">
-                      {visibleRegions.size}/5
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setNavigatorTab('admin1')}
-                    className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      navigatorTab === 'admin1'
-                        ? 'bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-xs'
-                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-                    }`}
-                  >
-                    <MapPin className="w-3.5 h-3.5" />
-                    <span>Admin-1</span>
-                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-bold">
-                      {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
-                    </span>
-                  </button>
+              {/* Header with Title, Count & Close Control */}
+              <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-900/60 gap-2">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span className="font-bold text-xs text-zinc-900 dark:text-zinc-100">Admin-1 Subdivisions</span>
+                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300/60 dark:border-emerald-700/60">
+                    {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
+                  </span>
                 </div>
 
-                {/* Right: Zoom In/Out Controls, Reset Button & Close Button */}
-                <div className="flex items-center gap-1.5 ml-auto">
-                  {/* Zoom Controls */}
-                  <div className="flex items-center rounded-xl bg-zinc-200/70 dark:bg-zinc-800/80 border border-zinc-300/80 dark:border-zinc-700/80 p-0.5">
-                    <button
-                      type="button"
-                      onClick={() => setZoomLevel(prev => Math.max(0.7, prev - 0.25))}
-                      className="p-1 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-white dark:hover:bg-zinc-700 transition-colors cursor-pointer"
-                      title="Zoom Out (-)"
-                      aria-label="Zoom Out"
-                    >
-                      <ZoomOut className="w-3.5 h-3.5" />
-                    </button>
-
-                    <span className="px-1.5 font-mono font-bold text-[11px] text-emerald-600 dark:text-emerald-400 min-w-[2.4rem] text-center select-none">
-                      {Math.round(zoomLevel * 100)}%
-                    </span>
-
-                    <button
-                      type="button"
-                      onClick={() => setZoomLevel(prev => Math.min(3.8, prev + 0.25))}
-                      className="p-1 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-white dark:hover:bg-zinc-700 transition-colors cursor-pointer"
-                      title="Zoom In (+)"
-                      aria-label="Zoom In"
-                    >
-                      <ZoomIn className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-
-                  {/* Reset Button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleShowAllRegions();
-                      handleResetZoom();
-                    }}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300/80 dark:border-emerald-800/60 transition-all font-semibold cursor-pointer text-xs active:scale-95 shadow-xs"
-                    title="Reset to Full Continent view"
-                  >
-                    <RotateCcw className="w-3 h-3 text-emerald-500" />
-                    <span>Reset</span>
-                  </button>
-
-                  {/* Close Navigator */}
-                  <button
-                    type="button"
-                    onClick={() => setIsNavigatorOpen(false)}
-                    className="p-1 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer ml-1"
-                    title="Collapse Navigator"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsAdmin1InspectorOpen(false)}
+                  className="p-1 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                  title="Close Inspector"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
 
-              {/* Tab 1: Subregions Legend */}
-              {navigatorTab === 'subregions' && (
-                <div className="p-3.5 sm:p-4">
-                  <InteractiveMapLegend
-                    embedded={true}
-                    showZoomControls={false}
-                    visibleRegions={visibleRegions}
-                    onToggleRegion={handleToggleRegion}
-                    onShowAll={() => {
-                      handleShowAllRegions();
-                      handleResetZoom();
-                    }}
-                    onHideAll={handleHideAllRegions}
-                    onIsolateRegion={handleIsolateRegion}
-                    activeHoverRegion={activeRegionHover}
-                    onHoverRegion={setActiveRegionHover}
-                    zoomLevel={zoomLevel}
-                    onZoomIn={() => setZoomLevel(prev => Math.min(3.8, prev + 0.25))}
-                    onZoomOut={() => setZoomLevel(prev => Math.max(0.7, prev - 0.25))}
-                    onResetZoom={handleResetZoom}
-                    onFocusRegion={handleFocusRegion}
-                  />
-                </div>
-              )}
-
-              {/* Tab 2: Admin-1 Subdivisions Inspector */}
-              {navigatorTab === 'admin1' && (
-                <div id="admin1-subdivision-inspector" className="flex flex-col">
-                  {/* Search Bar & Subheader */}
-                  <div className="p-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/40 dark:bg-zinc-950/40">
-                    <div className="relative flex items-center mb-1.5">
-                      <Search className="absolute left-2.5 w-3.5 h-3.5 text-zinc-400" />
-                      <input
-                        type="text"
-                        placeholder="Search state, province, or region..."
-                        value={admin1SearchQuery}
-                        onChange={(e) => setAdmin1SearchQuery(e.target.value)}
-                        className="w-full pl-8 pr-7 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/90 dark:bg-zinc-900/90 text-xs font-medium text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
-                      />
-                      {admin1SearchQuery && (
-                        <button
-                          type="button"
-                          onClick={() => setAdmin1SearchQuery('')}
-                          className="absolute right-2 p-0.5 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-                    <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 px-1">
-                      <span>
-                        {selectedEntityId ? (AFRICA_FINAL_MAP[selectedEntityId]?.name || selectedEntityId) : 'All African Territories'}
-                      </span>
-                      <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                        {filteredAdmin1List.length} subdivision{filteredAdmin1List.length === 1 ? '' : 's'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Subdivisions List */}
-                  <div className="overflow-y-auto p-2 space-y-1.5 max-h-[50vh]">
-                    {filteredAdmin1List.length === 0 ? (
-                      <div className="p-6 text-center text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-                        No subdivisions match &ldquo;{admin1SearchQuery}&rdquo;.
-                      </div>
-                    ) : (
-                      filteredAdmin1List.map((adm) => {
-                        const isAdmSelected = selectedAdmin1?.id === adm.id;
-                        const isAdmHovered = hoveredAdmin1?.id === adm.id;
-                        return (
-                          <div
-                            key={adm.id}
-                            onMouseEnter={() => {
-                              setHoveredAdmin1({ id: adm.id, name: adm.name, countryId: adm.iso3 });
-                              setHoveredEntityId(adm.iso3);
-                            }}
-                            onMouseLeave={() => {
-                              setHoveredAdmin1(null);
-                            }}
-                            onClick={() => handleAdmin1Focus(adm)}
-                            className={`flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer ${
-                              isAdmSelected
-                                ? 'bg-emerald-500/15 border-emerald-500 text-emerald-950 dark:text-emerald-100 shadow-xs'
-                                : isAdmHovered
-                                ? 'bg-zinc-100/90 dark:bg-zinc-900/90 border-emerald-500/40 text-zinc-900 dark:text-zinc-100'
-                                : 'bg-white/60 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2 min-w-0">
-                              <CountryFlag entityId={adm.iso3} size="xs" />
-                              <div className="min-w-0">
-                                <p className="text-xs font-bold truncate leading-tight">{adm.name}</p>
-                                <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">
-                                  {adm.countryName} ({adm.iso3})
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold">
-                                {adm.admin1Code || adm.id}
-                              </span>
-                              <div className={`p-1 rounded-lg ${isAdmSelected ? 'bg-emerald-600 text-white' : 'text-zinc-400'}`}>
-                                <Maximize2 className="w-3 h-3" />
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })
+              {/* Admin-1 Subdivisions Inspector */}
+              <div id="admin1-subdivision-inspector" className="flex flex-col">
+                {/* Search Bar & Subheader */}
+                <div className="p-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/40 dark:bg-zinc-950/40">
+                  <div className="relative flex items-center mb-1.5">
+                    <Search className="absolute left-2.5 w-3.5 h-3.5 text-zinc-400" />
+                    <input
+                      type="text"
+                      placeholder="Search state, province, or region..."
+                      value={admin1SearchQuery}
+                      onChange={(e) => setAdmin1SearchQuery(e.target.value)}
+                      className="w-full pl-8 pr-7 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/90 dark:bg-zinc-900/90 text-xs font-medium text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                    />
+                    {admin1SearchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setAdmin1SearchQuery('')}
+                        className="absolute right-2 p-0.5 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
                     )}
                   </div>
+                  <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 px-1">
+                    <span>
+                      {selectedEntityId ? (AFRICA_FINAL_MAP[selectedEntityId]?.name || selectedEntityId) : 'All African Territories'}
+                    </span>
+                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                      {filteredAdmin1List.length} subdivision{filteredAdmin1List.length === 1 ? '' : 's'}
+                    </span>
+                  </div>
                 </div>
-              )}
+
+                {/* Subdivisions List */}
+                <div className="overflow-y-auto p-2 space-y-1.5 max-h-[50vh]">
+                  {filteredAdmin1List.length === 0 ? (
+                    <div className="p-6 text-center text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+                      No subdivisions match &ldquo;{admin1SearchQuery}&rdquo;.
+                    </div>
+                  ) : (
+                    filteredAdmin1List.map((adm) => {
+                      const isAdmSelected = selectedAdmin1?.id === adm.id;
+                      const isAdmHovered = hoveredAdmin1?.id === adm.id;
+                      return (
+                        <div
+                          key={adm.id}
+                          onMouseEnter={() => {
+                            setHoveredAdmin1({ id: adm.id, name: adm.name, countryId: adm.iso3 });
+                            setHoveredEntityId(adm.iso3);
+                          }}
+                          onMouseLeave={() => {
+                            setHoveredAdmin1(null);
+                          }}
+                          onClick={() => handleAdmin1Focus(adm)}
+                          className={`flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer ${
+                            isAdmSelected
+                              ? 'bg-emerald-500/15 border-emerald-500 text-emerald-950 dark:text-emerald-100 shadow-xs'
+                              : isAdmHovered
+                              ? 'bg-zinc-100/90 dark:bg-zinc-900/90 border-emerald-500/40 text-zinc-900 dark:text-zinc-100'
+                              : 'bg-white/60 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <CountryFlag entityId={adm.iso3} size="xs" />
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold truncate leading-tight">{adm.name}</p>
+                              <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">
+                                {adm.countryName} ({adm.iso3})
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold">
+                              {adm.admin1Code || adm.id}
+                            </span>
+                            <div className={`p-1 rounded-lg ${isAdmSelected ? 'bg-emerald-600 text-white' : 'text-zinc-400'}`}>
+                              <Maximize2 className="w-3 h-3" />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -1232,11 +1440,17 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           height="100%"
           preserveAspectRatio="xMidYMid meet"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full cursor-grab active:cursor-grabbing select-none block"
+          role="region"
+          aria-label="Interactive Map of the African Continent"
+          className="w-full h-full cursor-grab active:cursor-grabbing select-none block touch-none"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
         >
           <defs>
             <radialGradient id="oceanGlow" cx="50%" cy="50%" r="65%">
@@ -1257,12 +1471,14 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             className="cursor-grab active:cursor-grabbing"
           />
 
-          {/* Zoomable & Pannable Layer */}
+          {/* Zoomable & Pannable Layer with GPU optimization */}
           <g
             id="africa-map-viewport"
             transform={`translate(${panOffset.x}, ${panOffset.y}) scale(${zoomLevel})`}
             style={{
               transformOrigin: '2898px 2933px',
+              contain: 'paint',
+              willChange: isDragging ? 'transform' : 'auto',
               transition: isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)'
             }}
           >

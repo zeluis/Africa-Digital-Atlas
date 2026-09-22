@@ -259,7 +259,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
             className="w-full h-full max-h-[540px] drop-shadow-[0_8px_24px_rgba(0,0,0,0.08)] select-none transition-all duration-700"
             interactive={false}
             glow={false}
-            viewBox="0 0 1000 1040"
+            viewBox="-240 0 6036 5867"
             strokeColor="#ffffff"
             strokeWidth={1}
             customColorMap={currentColorMap}
@@ -296,441 +296,458 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
             {theme === 'history' && (
               <g className="animate-in fade-in duration-500">
                 {/* 1. SENEGAL TO CABO VERDE AND EXTENDED TRANSATLANTIC STREAM */}
-                {/* Senegal (148, 327) to Cabo Verde (83, 318) */}
+                {/* Senegal (720, 1920) to Cabo Verde (315, 1820) */}
                 <path
-                  d="M 148,327 C 122,324 102,320 83,318"
+                  d="M 720,1920 C 580,1880 440,1850 315,1820"
                   fill="none"
                   stroke="#d48b50"
-                  strokeWidth="4.5"
-                  strokeDasharray="7,4"
+                  strokeWidth="24"
+                  strokeDasharray="45,25"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="44;0" dur="2s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="280;0" dur="2.2s" repeatCount="indefinite" />
                 </path>
-                {/* Cabo Verde (83, 318) Outward past SVG bounds into the Atlantic */}
+                {/* Cabo Verde (315, 1820) Outward past SVG bounds into the Atlantic (-600, 1650) */}
                 <path
-                  d="M 83,318 C 30,314 -40,305 -130,290"
+                  d="M 315,1820 C 100,1800 -200,1750 -600,1650"
                   fill="none"
                   stroke="#c4895c"
-                  strokeWidth="4"
-                  strokeDasharray="7,5"
+                  strokeWidth="22"
+                  strokeDasharray="45,30"
                   opacity="0.9"
                 >
-                  <animate attributeName="stroke-dashoffset" values="48;0" dur="2.4s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="300;0" dur="2.6s" repeatCount="indefinite" />
                 </path>
                 {/* Senegal -> Cabo Verde -> Atlantic Traveling Photons */}
-                <circle r="4.5" fill="#fef08a" stroke="#b85c38" strokeWidth="1.5">
-                  <animateMotion path="M 148,327 C 122,324 102,320 83,318" dur="2s" repeatCount="indefinite" />
+                <circle r="26" fill="#fef08a" stroke="#b85c38" strokeWidth="8">
+                  <animateMotion path="M 720,1920 C 580,1880 440,1850 315,1820" dur="2.2s" repeatCount="indefinite" />
                 </circle>
-                <circle r="4" fill="#fef08a" stroke="#c4895c" strokeWidth="1.5">
-                  <animateMotion path="M 83,318 C 30,314 -40,305 -130,290" dur="2.6s" repeatCount="indefinite" />
+                <circle r="24" fill="#fef08a" stroke="#c4895c" strokeWidth="8">
+                  <animateMotion path="M 315,1820 C 100,1800 -200,1750 -600,1650" dur="2.8s" repeatCount="indefinite" />
                 </circle>
 
-                {/* 2. TWO VERY PROMINENT VECTOR STREAMS WITH WIDE BASES ANCHORED ON COUNTRIES */}
+                {/* 2. PROMINENT VECTOR STREAMS ANCHORED ON TAST HISTORICAL PROVENANCE REGIONS */}
                 {/* 2A. WIDE BASE TRANSLUCENT UNDERGLOW AURA */}
-                {/* Western Africa Coast Base Underglow Aura */}
                 <path
-                  d="M 170,475 C 240,540 260,570 200,600 L 200,610 C 320,590 390,560 438,538 Z"
+                  d="M 1000,2420 C 1400,2900 1700,3200 1350,3350 L 750,3550 C 1500,3800 2200,3500 2520,2720 Z"
                   fill="url(#prominentStreamGrad)"
-                  opacity="0.22"
+                  opacity="0.18"
                 />
-                {/* Central Africa Coast Base Underglow Aura */}
                 <path
-                  d="M 462,558 C 360,580 280,590 200,600 L 200,610 C 340,650 420,680 496,720 Z"
+                  d="M 2650,3200 C 2200,3400 1800,3550 1350,3700 L 750,3550 C 1800,4200 2400,4300 2860,4040 Z"
                   fill="url(#prominentStreamGrad)"
-                  opacity="0.22"
+                  opacity="0.18"
                 />
 
-                {/* 2B. WESTERN AFRICA TRIBUTARIES (Anchored directly on actual country geometries) */}
-                {/* Tributary 1: Windward Coast / Sierra Leone (170, 475) -> Trunk Confluence (200, 600) */}
+                {/* 2B. WESTERN AFRICA TRIBUTARIES */}
+                {/* Tributary 1: Windward Coast / Sierra Leone (1000, 2420) -> Confluence (1350, 3350) */}
                 <path
-                  d="M 170,475 C 180,530 185,570 200,600"
+                  d="M 1000,2420 C 1100,2700 1250,3000 1350,3350"
                   fill="none"
                   stroke="url(#prominentStreamGrad)"
-                  strokeWidth="5.5"
-                  strokeDasharray="9,5"
+                  strokeWidth="28"
+                  strokeDasharray="50,28"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="56;0" dur="2.2s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="312;0" dur="2.2s" repeatCount="indefinite" />
                 </path>
-                {/* Tributary 2: Ghana / Gold Coast / Elmina (304, 528) -> Trunk Confluence (200, 600) */}
+                {/* Tributary 2: Ghana / Gold Coast / Elmina (1850, 2690) -> Confluence (1350, 3350) */}
                 <path
-                  d="M 304,528 C 275,560 240,585 200,600"
+                  d="M 1850,2690 C 1700,2900 1500,3150 1350,3350"
                   fill="none"
                   stroke="url(#prominentStreamGrad)"
-                  strokeWidth="7"
-                  strokeDasharray="10,5"
+                  strokeWidth="34"
+                  strokeDasharray="55,28"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="60;0" dur="1.8s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="332;0" dur="1.9s" repeatCount="indefinite" />
                 </path>
-                {/* Tributary 3: Benin / Bight of Benin / Ouidah (353, 519) -> Trunk Confluence (200, 600) */}
+                {/* Tributary 3: Benin / Bight of Benin / Ouidah (2110, 2580) -> Confluence (1350, 3350) */}
                 <path
-                  d="M 353,519 C 310,560 255,585 200,600"
+                  d="M 2110,2580 C 1900,2850 1600,3150 1350,3350"
                   fill="none"
                   stroke="url(#prominentStreamGrad)"
-                  strokeWidth="7.5"
-                  strokeDasharray="10,5"
+                  strokeWidth="36"
+                  strokeDasharray="55,28"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="60;0" dur="2s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="332;0" dur="2s" repeatCount="indefinite" />
                 </path>
-                {/* Tributary 4: Nigeria / Bight of Biafra / Bonny / Calabar (438, 538) -> Trunk Confluence (200, 600) */}
+                {/* Tributary 4: Nigeria / Bight of Biafra / Bonny & Calabar (2520, 2720) -> Confluence (1350, 3350) */}
                 <path
-                  d="M 438,538 C 360,575 275,590 200,600"
+                  d="M 2520,2720 C 2150,2950 1750,3200 1350,3350"
                   fill="none"
                   stroke="url(#prominentStreamGrad)"
-                  strokeWidth="7"
-                  strokeDasharray="9,5"
+                  strokeWidth="36"
+                  strokeDasharray="52,28"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="56;0" dur="2.2s" repeatCount="indefinite" />
-                </path>
-
-                {/* 2C. CENTRAL AFRICA TRIBUTARIES (Anchored directly on actual country geometries) */}
-                {/* Tributary 1: Cameroon / Bimbia (462, 558) -> Trunk Confluence (200, 600) */}
-                <path
-                  d="M 462,558 C 375,580 285,590 200,600"
-                  fill="none"
-                  stroke="url(#prominentStreamGrad)"
-                  strokeWidth="6"
-                  strokeDasharray="9,5"
-                  strokeLinecap="round"
-                >
-                  <animate attributeName="stroke-dashoffset" values="56;0" dur="2.1s" repeatCount="indefinite" />
-                </path>
-                {/* Tributary 2: Gabon / Loango Coast (458, 612) -> Trunk Confluence (200, 600) */}
-                <path
-                  d="M 458,612 C 370,612 280,605 200,600"
-                  fill="none"
-                  stroke="url(#prominentStreamGrad)"
-                  strokeWidth="7"
-                  strokeDasharray="10,5"
-                  strokeLinecap="round"
-                >
-                  <animate attributeName="stroke-dashoffset" values="60;0" dur="1.9s" repeatCount="indefinite" />
-                </path>
-                {/* Tributary 3: Angola / Luanda (492, 665) -> Trunk Confluence (200, 600) */}
-                <path
-                  d="M 492,665 C 390,645 290,618 200,600"
-                  fill="none"
-                  stroke="url(#prominentStreamGrad)"
-                  strokeWidth="7.5"
-                  strokeDasharray="10,5"
-                  strokeLinecap="round"
-                >
-                  <animate attributeName="stroke-dashoffset" values="60;0" dur="2s" repeatCount="indefinite" />
-                </path>
-                {/* Tributary 4: Angola / Benguela (496, 720) -> Trunk Confluence (200, 600) */}
-                <path
-                  d="M 496,720 C 395,695 295,642 200,600"
-                  fill="none"
-                  stroke="url(#prominentStreamGrad)"
-                  strokeWidth="6"
-                  strokeDasharray="9,5"
-                  strokeLinecap="round"
-                >
-                  <animate attributeName="stroke-dashoffset" values="56;0" dur="2.3s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="320;0" dur="2.2s" repeatCount="indefinite" />
                 </path>
 
-                {/* 2D. JOINED TRUNK (Confluence from (200, 600) to Bifurcation (90, 625)) */}
-                {/* Base Glow Trunk */}
+                {/* 2C. CENTRAL AFRICA TRIBUTARIES */}
+                {/* Tributary 5: Cameroon / Bimbia (2650, 2800) -> Confluence (1350, 3350) */}
                 <path
-                  d="M 200,600 L 90,625"
+                  d="M 2650,2800 C 2250,3050 1800,3250 1350,3350"
                   fill="none"
                   stroke="url(#prominentStreamGrad)"
-                  strokeWidth="13"
+                  strokeWidth="30"
+                  strokeDasharray="50,28"
+                  strokeLinecap="round"
+                >
+                  <animate attributeName="stroke-dashoffset" values="312;0" dur="2.1s" repeatCount="indefinite" />
+                </path>
+                {/* Tributary 6: Gabon & Congo / Loango Coast (2650, 3200) -> Confluence (1350, 3700) */}
+                <path
+                  d="M 2650,3200 C 2200,3350 1700,3500 1350,3700"
+                  fill="none"
+                  stroke="url(#prominentStreamGrad)"
+                  strokeWidth="36"
+                  strokeDasharray="55,28"
+                  strokeLinecap="round"
+                >
+                  <animate attributeName="stroke-dashoffset" values="332;0" dur="1.9s" repeatCount="indefinite" />
+                </path>
+                {/* Tributary 7: Angola / Luanda (2850, 3700) -> Confluence (1350, 3700) */}
+                <path
+                  d="M 2850,3700 C 2350,3700 1800,3700 1350,3700"
+                  fill="none"
+                  stroke="url(#prominentStreamGrad)"
+                  strokeWidth="38"
+                  strokeDasharray="55,28"
+                  strokeLinecap="round"
+                >
+                  <animate attributeName="stroke-dashoffset" values="332;0" dur="2s" repeatCount="indefinite" />
+                </path>
+                {/* Tributary 8: Angola / Benguela (2860, 4040) -> Confluence (1350, 3700) */}
+                <path
+                  d="M 2860,4040 C 2350,3950 1800,3850 1350,3700"
+                  fill="none"
+                  stroke="url(#prominentStreamGrad)"
+                  strokeWidth="32"
+                  strokeDasharray="50,28"
+                  strokeLinecap="round"
+                >
+                  <animate attributeName="stroke-dashoffset" values="312;0" dur="2.3s" repeatCount="indefinite" />
+                </path>
+
+                {/* 2D. CONFLUENCE TO MAIN ATLANTIC ARTERY */}
+                <path
+                  d="M 1350,3350 L 750,3550"
+                  fill="none"
+                  stroke="url(#prominentStreamGrad)"
+                  strokeWidth="58"
                   strokeLinecap="round"
                 />
-                {/* High-energy Core Pulse */}
                 <path
-                  d="M 200,600 L 90,625"
+                  d="M 1350,3700 L 750,3550"
+                  fill="none"
+                  stroke="url(#prominentStreamGrad)"
+                  strokeWidth="58"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M 1350,3350 L 750,3550"
                   fill="none"
                   stroke="#fef08a"
-                  strokeWidth="5"
-                  strokeDasharray="10,5"
+                  strokeWidth="20"
+                  strokeDasharray="50,25"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="60;0" dur="1.1s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="300;0" dur="1.1s" repeatCount="indefinite" />
                 </path>
-                {/* Confluence & Bifurcation Junction Nodes */}
-                <circle cx="200" cy="600" r="9" fill="#b85c38" stroke="#fef08a" strokeWidth="2.5" />
-                <circle cx="90" cy="625" r="9.5" fill="#b85c38" stroke="#fef08a" strokeWidth="2.5" />
-
-                {/* 2E. BIFURCATION BRANCH 1: WIDER TOWARDS BRAZIL & SOUTH AMERICA (Extends past SVG bounds) */}
                 <path
-                  d="M 90,625 C 20,670 -60,715 -160,760"
-                  fill="none"
-                  stroke="url(#prominentStreamGrad)"
-                  strokeWidth="10"
-                  strokeDasharray="12,6"
-                  strokeLinecap="round"
-                >
-                  <animate attributeName="stroke-dashoffset" values="72;0" dur="2s" repeatCount="indefinite" />
-                </path>
-                {/* Inner Accelerated Energy Flow */}
-                <path
-                  d="M 90,625 C 20,670 -60,715 -160,760"
+                  d="M 1350,3700 L 750,3550"
                   fill="none"
                   stroke="#fef08a"
-                  strokeWidth="4"
-                  strokeDasharray="6,12"
+                  strokeWidth="20"
+                  strokeDasharray="50,25"
+                  strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="54;0" dur="1.5s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="300;0" dur="1.1s" repeatCount="indefinite" />
                 </path>
-                {/* Traveling Beacons to South America */}
-                <circle r="6" fill="#fef08a" stroke="#b85c38" strokeWidth="2">
-                  <animateMotion path="M 200,600 L 90,625 C 20,670 -60,715 -160,760" dur="3s" repeatCount="indefinite" />
+
+                {/* Confluence Junction Nodes */}
+                <circle cx="1350" cy="3350" r="48" fill="#b85c38" stroke="#fef08a" strokeWidth="12" />
+                <circle cx="1350" cy="3700" r="48" fill="#b85c38" stroke="#fef08a" strokeWidth="12" />
+                <circle cx="750" cy="3550" r="54" fill="#b85c38" stroke="#fef08a" strokeWidth="14" />
+
+                {/* 2E. TRANSATLANTIC CORRIDOR 1: TOWARDS BRAZIL / SOUTH AMERICA */}
+                <path
+                  d="M 750,3550 C 350,3800 -150,4100 -700,4400"
+                  fill="none"
+                  stroke="url(#prominentStreamGrad)"
+                  strokeWidth="52"
+                  strokeDasharray="65,35"
+                  strokeLinecap="round"
+                >
+                  <animate attributeName="stroke-dashoffset" values="400;0" dur="2s" repeatCount="indefinite" />
+                </path>
+                <path
+                  d="M 750,3550 C 350,3800 -150,4100 -700,4400"
+                  fill="none"
+                  stroke="#fef08a"
+                  strokeWidth="18"
+                  strokeDasharray="35,65"
+                >
+                  <animate attributeName="stroke-dashoffset" values="300;0" dur="1.5s" repeatCount="indefinite" />
+                </path>
+                <circle r="30" fill="#fef08a" stroke="#b85c38" strokeWidth="10">
+                  <animateMotion path="M 1350,3700 L 750,3550 C 350,3800 -150,4100 -700,4400" dur="3.2s" repeatCount="indefinite" />
                 </circle>
 
-                {/* 2F. BIFURCATION BRANCH 2: THINNER TOWARDS CARIBBEAN & NORTH AMERICA (Extends past SVG bounds) */}
+                {/* 2F. TRANSATLANTIC CORRIDOR 2: TOWARDS CARIBBEAN & NORTH AMERICA */}
                 <path
-                  d="M 90,625 C 10,540 -50,470 -150,420"
+                  d="M 750,3550 C 300,3050 -100,2600 -650,2300"
                   fill="none"
                   stroke="url(#prominentStreamGrad)"
-                  strokeWidth="6"
-                  strokeDasharray="9,5"
+                  strokeWidth="36"
+                  strokeDasharray="50,28"
                   strokeLinecap="round"
                   opacity="0.95"
                 >
-                  <animate attributeName="stroke-dashoffset" values="56;0" dur="2.2s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="312;0" dur="2.2s" repeatCount="indefinite" />
                 </path>
-                {/* Traveling Beacons to Caribbean/North America */}
-                <circle r="5" fill="#fed7aa" stroke="#b85c38" strokeWidth="2">
-                  <animateMotion path="M 200,600 L 90,625 C 10,540 -50,470 -150,420" dur="3.4s" repeatCount="indefinite" />
+                <circle r="26" fill="#fed7aa" stroke="#b85c38" strokeWidth="9">
+                  <animateMotion path="M 1350,3350 L 750,3550 C 300,3050 -100,2600 -650,2300" dur="3.4s" repeatCount="indefinite" />
                 </circle>
 
-                {/* 3. COASTAL CONNECTION STREAM: BETWEEN NIGERIA AND SENEGAL */}
+                {/* 3. COASTAL CONDUIT: BETWEEN SENEGAMBIA AND GULF OF GUINEA */}
                 <path
-                  d="M 438,538 C 350,560 260,535 200,475 C 170,430 150,370 148,327"
+                  d="M 720,1920 C 850,2150 950,2300 1000,2420 C 1400,2550 1700,2650 1850,2690"
                   fill="none"
                   stroke="url(#prominentStreamGrad)"
-                  strokeWidth="5.5"
-                  strokeDasharray="11,6"
+                  strokeWidth="28"
+                  strokeDasharray="55,30"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="68;0" dur="2.4s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="340;0" dur="2.5s" repeatCount="indefinite" />
                 </path>
-                {/* Traveling Beacon along Nigeria-Senegal Vector */}
-                <circle r="5" fill="#fef08a" stroke="#b85c38" strokeWidth="2">
-                  <animateMotion path="M 438,538 C 350,560 260,535 200,475 C 170,430 150,370 148,327" dur="3.5s" repeatCount="indefinite" />
+                <circle r="24" fill="#fef08a" stroke="#b85c38" strokeWidth="8">
+                  <animateMotion path="M 720,1920 C 850,2150 950,2300 1000,2420 C 1400,2550 1700,2650 1850,2690" dur="3.8s" repeatCount="indefinite" />
                 </circle>
 
-                {/* 4. COASTAL CONNECTION STREAM: BETWEEN ANGOLA AND CAMEROON */}
+                {/* 4. COASTAL CONDUIT: BETWEEN ANGOLA AND CAMEROON */}
                 <path
-                  d="M 492,665 C 475,615 465,585 462,558"
+                  d="M 2850,3700 C 2750,3400 2700,3100 2650,2800"
                   fill="none"
                   stroke="url(#prominentStreamGrad)"
-                  strokeWidth="5.5"
-                  strokeDasharray="10,5"
+                  strokeWidth="28"
+                  strokeDasharray="50,25"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="60;0" dur="1.8s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="300;0" dur="1.9s" repeatCount="indefinite" />
                 </path>
-                {/* Traveling Beacon along Angola-Cameroon Vector */}
-                <circle r="5" fill="#fef08a" stroke="#b85c38" strokeWidth="2">
-                  <animateMotion path="M 492,665 C 475,615 465,585 462,558" dur="2.2s" repeatCount="indefinite" />
+                <circle r="24" fill="#fef08a" stroke="#b85c38" strokeWidth="8">
+                  <animateMotion path="M 2850,3700 C 2750,3400 2700,3100 2650,2800" dur="2.4s" repeatCount="indefinite" />
                 </circle>
 
-                {/* 5. MOZAMBIQUE AND MADAGASCAR ANCHORED & CONNECTED STREAM (Extends into South Atlantic) */}
-                {/* Madagascar (850, 780) -> Mozambique (725, 785) -> Southern Cape (470, 960) -> South Atlantic (-140, 840) */}
+                {/* 5. MOZAMBIQUE AND MADAGASCAR STREAM (Around Cape of Good Hope into Atlantic) */}
                 <path
-                  d="M 850,780 C 790,800 760,795 725,785 C 640,935 540,965 470,960 C 300,940 120,880 -140,840"
+                  d="M 5255,4622 C 4950,4400 4850,4300 4760,4250 C 4550,4450 4480,4550 4440,4590 C 4300,5200 3800,5750 3300,5800 C 2200,5850 800,5500 -400,5000"
                   fill="none"
                   stroke="url(#mozambiqueStreamGrad)"
-                  strokeWidth="6"
-                  strokeDasharray="11,6"
+                  strokeWidth="32"
+                  strokeDasharray="60,30"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="80;0" dur="3.8s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="400;0" dur="4.2s" repeatCount="indefinite" />
                 </path>
-                {/* Madagascar & Mozambique Traveling Photons */}
-                <circle r="5.5" fill="#fef08a" stroke="#c45d3e" strokeWidth="2">
-                  <animateMotion path="M 850,780 C 790,800 760,795 725,785 C 640,935 540,965 470,960 C 300,940 120,880 -140,840" dur="5.5s" repeatCount="indefinite" />
+                <circle r="28" fill="#fef08a" stroke="#c45d3e" strokeWidth="9">
+                  <animateMotion path="M 5255,4622 C 4950,4400 4850,4300 4760,4250 C 4550,4450 4480,4550 4440,4590 C 4300,5200 3800,5750 3300,5800 C 2200,5850 800,5500 -400,5000" dur="6s" repeatCount="indefinite" />
                 </circle>
 
-                {/* 6. EXPANDING BOLD RADAR PULSES, ANCHOR NODES & HIGH-CONTRAST LABELS */}
-                {/* Cabo Verde (83, 318) */}
-                <circle cx="83" cy="318" r="18" fill="none" stroke="#c4895c" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="7;26" dur="2.2s" repeatCount="indefinite" />
+                {/* 6. RADAR PULSES, ANCHOR NODES & LABELS ON CONTINENTAL EMBARKATION BASINS */}
+                {/* Cabo Verde (315, 1820) */}
+                <circle cx="315" cy="1820" r="100" fill="none" stroke="#c4895c" strokeWidth="12" opacity="0.85">
+                  <animate attributeName="r" values="35;130" dur="2.2s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.95;0" dur="2.2s" repeatCount="indefinite" />
                 </circle>
-                <circle cx="83" cy="318" r="8.5" fill="#c4895c" stroke="#ffffff" strokeWidth="2.5" />
-                <text x="96" y="314" fill="#1c1917" fontSize="16" fontWeight="800" fontFamily="sans-serif">
+                <circle cx="315" cy="1820" r="44" fill="#c4895c" stroke="#ffffff" strokeWidth="12" />
+                <text x="380" y="1800" fill="#1c1917" fontSize="88" fontWeight="800" fontFamily="sans-serif">
                   Cabo Verde
                 </text>
 
-                {/* Gorée / Senegal (148, 327) */}
-                <circle cx="148" cy="327" r="20" fill="none" stroke="#b87446" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="8;28" dur="2s" repeatCount="indefinite" />
+                {/* Gorée / Senegal (720, 1920) */}
+                <circle cx="720" cy="1920" r="110" fill="none" stroke="#b87446" strokeWidth="12" opacity="0.85">
+                  <animate attributeName="r" values="40;140" dur="2s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.95;0" dur="2s" repeatCount="indefinite" />
                 </circle>
-                <circle cx="148" cy="327" r="9.5" fill="#b87446" stroke="#ffffff" strokeWidth="2.5" />
-                <text x="162" y="322" fill="#1c1917" fontSize="17" fontWeight="800" fontFamily="sans-serif">
-                  Gorée (Senegal)
+                <circle cx="720" cy="1920" r="48" fill="#b87446" stroke="#ffffff" strokeWidth="12" />
+                <text x="790" y="1900" fill="#1c1917" fontSize="90" fontWeight="800" fontFamily="sans-serif">
+                  Gorée (Senegambia)
                 </text>
 
-                {/* Elmina / Ghana (304, 528) & Ouidah / Benin (353, 519) */}
-                <circle cx="304" cy="528" r="20" fill="none" stroke="#9e4c56" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="8;28" dur="2.2s" repeatCount="indefinite" />
+                {/* Sierra Leone (1000, 2420) */}
+                <circle cx="1000" cy="2420" r="95" fill="none" stroke="#b85c38" strokeWidth="11" opacity="0.85">
+                  <animate attributeName="r" values="35;125" dur="2.3s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" values="0.95;0" dur="2.3s" repeatCount="indefinite" />
+                </circle>
+                <circle cx="1000" cy="2420" r="42" fill="#b85c38" stroke="#ffffff" strokeWidth="11" />
+                <text x="1070" y="2430" fill="#1c1917" fontSize="82" fontWeight="800" fontFamily="sans-serif">
+                  Sierra Leone
+                </text>
+
+                {/* Elmina & Cape Coast / Ghana (1850, 2690) */}
+                <circle cx="1850" cy="2690" r="110" fill="none" stroke="#9e4c56" strokeWidth="12" opacity="0.85">
+                  <animate attributeName="r" values="40;140" dur="2.2s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.95;0" dur="2.2s" repeatCount="indefinite" />
                 </circle>
-                <circle cx="304" cy="528" r="9.5" fill="#9e4c56" stroke="#ffffff" strokeWidth="2.5" />
-                <circle cx="353" cy="519" r="8.5" fill="#b85c38" stroke="#ffffff" strokeWidth="2.5" />
-                <text x="210" y="560" fill="#1c1917" fontSize="16" fontWeight="800" fontFamily="sans-serif">
-                  Elmina & Ouidah
+                <circle cx="1850" cy="2690" r="48" fill="#9e4c56" stroke="#ffffff" strokeWidth="12" />
+                <text x="1480" y="2820" fill="#1c1917" fontSize="85" fontWeight="800" fontFamily="sans-serif">
+                  Gold Coast (Elmina)
                 </text>
 
-                {/* Bonny / Calabar (Nigeria) (438, 538) */}
-                <circle cx="438" cy="538" r="20" fill="none" stroke="#b87446" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="8;28" dur="2.4s" repeatCount="indefinite" />
+                {/* Ouidah / Benin (2110, 2580) */}
+                <circle cx="2110" cy="2580" r="44" fill="#b85c38" stroke="#ffffff" strokeWidth="11" />
+                <text x="2170" y="2550" fill="#1c1917" fontSize="82" fontWeight="800" fontFamily="sans-serif">
+                  Bight of Benin (Ouidah)
+                </text>
+
+                {/* Bonny & Calabar / Nigeria (2520, 2720) */}
+                <circle cx="2520" cy="2720" r="110" fill="none" stroke="#b87446" strokeWidth="12" opacity="0.85">
+                  <animate attributeName="r" values="40;140" dur="2.4s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.95;0" dur="2.4s" repeatCount="indefinite" />
                 </circle>
-                <circle cx="438" cy="538" r="9.5" fill="#b87446" stroke="#ffffff" strokeWidth="2.5" />
-                <text x="452" y="534" fill="#1c1917" fontSize="16" fontWeight="800" fontFamily="sans-serif">
-                  Nigeria (Biafra)
+                <circle cx="2520" cy="2720" r="48" fill="#b87446" stroke="#ffffff" strokeWidth="12" />
+                <text x="2590" y="2680" fill="#1c1917" fontSize="88" fontWeight="800" fontFamily="sans-serif">
+                  Biafra (Bonny & Calabar)
                 </text>
 
-                {/* Cameroon / Bimbia (462, 558) */}
-                <circle cx="462" cy="558" r="18" fill="none" stroke="#e07a5f" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="7;24" dur="2s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.95;0" dur="2s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="462" cy="558" r="8.5" fill="#e07a5f" stroke="#ffffff" strokeWidth="2.5" />
-                <text x="478" y="565" fill="#1c1917" fontSize="16" fontWeight="800" fontFamily="sans-serif">
-                  Cameroon
-                </text>
+                {/* Cameroon / Bimbia (2650, 2800) */}
+                <circle cx="2650" cy="2800" r="42" fill="#e07a5f" stroke="#ffffff" strokeWidth="11" />
 
-                {/* Luanda (Angola) (492, 665) */}
-                <circle cx="492" cy="665" r="20" fill="none" stroke="#c4895c" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="8;28" dur="2.6s" repeatCount="indefinite" />
+                {/* Luanda & Benguela / Angola (2850, 3700) & (2860, 4040) */}
+                <circle cx="2850" cy="3700" r="110" fill="none" stroke="#c4895c" strokeWidth="12" opacity="0.85">
+                  <animate attributeName="r" values="40;140" dur="2.6s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.95;0" dur="2.6s" repeatCount="indefinite" />
                 </circle>
-                <circle cx="492" cy="665" r="9.5" fill="#c4895c" stroke="#ffffff" strokeWidth="2.5" />
-                <text x="510" y="670" fill="#1c1917" fontSize="17" fontWeight="800" fontFamily="sans-serif">
-                  Angola (Luanda)
+                <circle cx="2850" cy="3700" r="50" fill="#c4895c" stroke="#ffffff" strokeWidth="13" />
+                <circle cx="2860" cy="4040" r="44" fill="#c4895c" stroke="#ffffff" strokeWidth="11" />
+                <text x="2940" y="3740" fill="#1c1917" fontSize="92" fontWeight="800" fontFamily="sans-serif">
+                  Angola (Luanda & Benguela)
                 </text>
 
-                {/* Mozambique Node (725, 785) */}
-                <circle cx="725" cy="785" r="20" fill="none" stroke="#c45d3e" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="8;28" dur="2.4s" repeatCount="indefinite" />
+                {/* Mozambique (4760, 4250) */}
+                <circle cx="4760" cy="4250" r="105" fill="none" stroke="#c45d3e" strokeWidth="12" opacity="0.85">
+                  <animate attributeName="r" values="35;135" dur="2.4s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.95;0" dur="2.4s" repeatCount="indefinite" />
                 </circle>
-                <circle cx="725" cy="785" r="9.5" fill="#c45d3e" stroke="#ffffff" strokeWidth="2.5" />
-                <text x="610" y="785" fill="#1c1917" fontSize="17" fontWeight="800" fontFamily="sans-serif">
+                <circle cx="4760" cy="4250" r="46" fill="#c45d3e" stroke="#ffffff" strokeWidth="12" />
+                <text x="3950" y="4230" fill="#1c1917" fontSize="88" fontWeight="800" fontFamily="sans-serif">
                   Mozambique
                 </text>
 
-                {/* Madagascar Node (850, 780) */}
-                <circle cx="850" cy="780" r="20" fill="none" stroke="#c45d3e" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="8;28" dur="2.2s" repeatCount="indefinite" />
+                {/* Madagascar (5255, 4622) */}
+                <circle cx="5255" cy="4622" r="105" fill="none" stroke="#c45d3e" strokeWidth="12" opacity="0.85">
+                  <animate attributeName="r" values="35;135" dur="2.2s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.95;0" dur="2.2s" repeatCount="indefinite" />
                 </circle>
-                <circle cx="850" cy="780" r="9.5" fill="#c45d3e" stroke="#ffffff" strokeWidth="2.5" />
-                <text x="868" y="795" fill="#1c1917" fontSize="17" fontWeight="800" fontFamily="sans-serif">
+                <circle cx="5255" cy="4622" r="46" fill="#c45d3e" stroke="#ffffff" strokeWidth="12" />
+                <text x="4950" y="4820" fill="#1c1917" fontSize="88" fontWeight="800" fontFamily="sans-serif">
                   Madagascar
                 </text>
               </g>
             )}
 
             {/* ========================================================================= */}
-            {/* THEME 2: AFCFTA MULTILATERAL CORRIDORS (2X THICKER ON CONTINENT)          */}
+            {/* THEME 2: AFCFTA MULTILATERAL CORRIDORS                                     */}
             {/* ========================================================================= */}
             {theme === 'economy' && (
               <g className="animate-in fade-in duration-500">
-                {/* 2x Thicker Multilateral High-Contrast UN Geoscheme Trade Arteries */}
-                {/* Lagos (Western Africa #059669) <-> Nairobi (Eastern Africa #d97706) <-> Cairo (Northern Africa #2563eb) */}
+                {/* Multilateral High-Contrast UN Geoscheme Trade Arteries */}
+                {/* Lagos (2250, 2600) <-> Nairobi (4540, 3250) <-> Cairo (4130, 720) */}
                 <path
-                  d="M 369,521 L 730,620 L 600,180 Z"
+                  d="M 2250,2600 L 4540,3250 L 4130,720 Z"
                   fill="none"
                   stroke="#059669"
-                  strokeWidth="8"
-                  strokeDasharray="14,8"
+                  strokeWidth="42"
+                  strokeDasharray="70,38"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="88;0" dur="2.8s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="432;0" dur="2.8s" repeatCount="indefinite" />
                 </path>
                 {/* Glowing Inner Core */}
                 <path
-                  d="M 369,521 L 730,620 L 600,180 Z"
+                  d="M 2250,2600 L 4540,3250 L 4130,720 Z"
                   fill="none"
                   stroke="#fef08a"
-                  strokeWidth="3.5"
-                  strokeDasharray="8,14"
+                  strokeWidth="18"
+                  strokeDasharray="40,70"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="88;0" dur="2.2s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="440;0" dur="2.2s" repeatCount="indefinite" />
                 </path>
 
-                {/* Nairobi (Eastern Africa #d97706) <-> Johannesburg (Southern Africa #dc2626) <-> Lagos (#059669) */}
+                {/* Nairobi (4540, 3250) <-> Johannesburg (3770, 5200) <-> Lagos (2250, 2600) */}
                 <path
-                  d="M 730,620 L 580,890 L 369,521"
+                  d="M 4540,3250 L 3770,5200 L 2250,2600"
                   fill="none"
                   stroke="#d97706"
-                  strokeWidth="8"
-                  strokeDasharray="14,8"
+                  strokeWidth="42"
+                  strokeDasharray="70,38"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="88;0" dur="2.8s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="432;0" dur="2.8s" repeatCount="indefinite" />
                 </path>
                 {/* Glowing Inner Core */}
                 <path
-                  d="M 730,620 L 580,890 L 369,521"
+                  d="M 4540,3250 L 3770,5200 L 2250,2600"
                   fill="none"
                   stroke="#6ee7b7"
-                  strokeWidth="3.5"
-                  strokeDasharray="8,14"
+                  strokeWidth="18"
+                  strokeDasharray="40,70"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="88;0" dur="2.2s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="440;0" dur="2.2s" repeatCount="indefinite" />
                 </path>
 
                 {/* Traveling Energy Photons along Trade Corridors */}
-                <circle r="6" fill="#fef08a" stroke="#047857" strokeWidth="2.5">
-                  <animateMotion path="M 369,521 L 730,620 L 600,180 Z" dur="4.2s" repeatCount="indefinite" />
+                <circle r="32" fill="#fef08a" stroke="#047857" strokeWidth="12">
+                  <animateMotion path="M 2250,2600 L 4540,3250 L 4130,720 Z" dur="4.2s" repeatCount="indefinite" />
                 </circle>
-                <circle r="6" fill="#fde68a" stroke="#b45309" strokeWidth="2.5">
-                  <animateMotion path="M 730,620 L 580,890 L 369,521" dur="4.2s" repeatCount="indefinite" />
+                <circle r="32" fill="#fde68a" stroke="#b45309" strokeWidth="12">
+                  <animateMotion path="M 4540,3250 L 3770,5200 L 2250,2600" dur="4.2s" repeatCount="indefinite" />
                 </circle>
 
-                {/* Economic Hub Beacons & Radar Pulses (Increased size & contrast) */}
-                {/* Lagos (Western Africa UN Green) */}
-                <circle cx="369" cy="521" r="22" fill="none" stroke="#059669" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="8;30" dur="2.2s" repeatCount="indefinite" />
+                {/* Economic Hub Beacons & Radar Pulses */}
+                {/* Lagos Hub (2250, 2600) */}
+                <circle cx="2250" cy="2600" r="110" fill="none" stroke="#059669" strokeWidth="13" opacity="0.85">
+                  <animate attributeName="r" values="40;150" dur="2.2s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.95;0" dur="2.2s" repeatCount="indefinite" />
                 </circle>
-                <circle cx="369" cy="521" r="10" fill="#059669" stroke="#ffffff" strokeWidth="3" />
-                <text x="385" y="526" fill="#0f172a" fontSize="18" fontWeight="800" fontFamily="sans-serif">
+                <circle cx="2250" cy="2600" r="52" fill="#059669" stroke="#ffffff" strokeWidth="15" />
+                <text x="1450" y="2630" fill="#0f172a" fontSize="96" fontWeight="800" fontFamily="sans-serif">
                   Lagos Hub
                 </text>
 
-                {/* Nairobi (Eastern Africa UN Amber) */}
-                <circle cx="730" cy="620" r="22" fill="none" stroke="#d97706" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="8;30" dur="2.4s" repeatCount="indefinite" />
+                {/* Nairobi Hub (4540, 3250) */}
+                <circle cx="4540" cy="3250" r="110" fill="none" stroke="#d97706" strokeWidth="13" opacity="0.85">
+                  <animate attributeName="r" values="40;150" dur="2.4s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.95;0" dur="2.4s" repeatCount="indefinite" />
                 </circle>
-                <circle cx="730" cy="620" r="10" fill="#d97706" stroke="#ffffff" strokeWidth="3" />
-                <text x="748" y="626" fill="#0f172a" fontSize="18" fontWeight="800" fontFamily="sans-serif">
+                <circle cx="4540" cy="3250" r="52" fill="#d97706" stroke="#ffffff" strokeWidth="15" />
+                <text x="4640" y="3280" fill="#0f172a" fontSize="96" fontWeight="800" fontFamily="sans-serif">
                   Nairobi Hub
                 </text>
 
-                {/* Cairo (Northern Africa UN Blue) */}
-                <circle cx="600" cy="180" r="22" fill="none" stroke="#2563eb" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="8;30" dur="2s" repeatCount="indefinite" />
+                {/* Cairo Hub (4130, 720) */}
+                <circle cx="4130" cy="720" r="110" fill="none" stroke="#2563eb" strokeWidth="13" opacity="0.85">
+                  <animate attributeName="r" values="40;150" dur="2s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.95;0" dur="2s" repeatCount="indefinite" />
                 </circle>
-                <circle cx="600" cy="180" r="10" fill="#2563eb" stroke="#ffffff" strokeWidth="3" />
-                <text x="618" y="186" fill="#0f172a" fontSize="18" fontWeight="800" fontFamily="sans-serif">
+                <circle cx="4130" cy="720" r="52" fill="#2563eb" stroke="#ffffff" strokeWidth="15" />
+                <text x="4240" y="750" fill="#0f172a" fontSize="96" fontWeight="800" fontFamily="sans-serif">
                   Cairo Hub
                 </text>
 
-                {/* Johannesburg (Southern Africa UN Terracotta Red) */}
-                <circle cx="580" cy="890" r="22" fill="none" stroke="#dc2626" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="8;30" dur="2.5s" repeatCount="indefinite" />
+                {/* Johannesburg (3770, 5200) */}
+                <circle cx="3770" cy="5200" r="110" fill="none" stroke="#dc2626" strokeWidth="13" opacity="0.85">
+                  <animate attributeName="r" values="40;150" dur="2.5s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.95;0" dur="2.5s" repeatCount="indefinite" />
                 </circle>
-                <circle cx="580" cy="890" r="10" fill="#dc2626" stroke="#ffffff" strokeWidth="3" />
-                <text x="598" y="896" fill="#0f172a" fontSize="18" fontWeight="800" fontFamily="sans-serif">
+                <circle cx="3770" cy="5200" r="52" fill="#dc2626" stroke="#ffffff" strokeWidth="15" />
+                <text x="3880" y="5230" fill="#0f172a" fontSize="96" fontWeight="800" fontFamily="sans-serif">
                   Johannesburg
                 </text>
               </g>
@@ -741,125 +758,125 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
             {/* ========================================================================= */}
             {theme === 'future' && (
               <g className="animate-in fade-in duration-500">
-                {/* 2x Thicker 4IR Innovation Network Arches across UN Geoschemes */}
-                {/* Yaba/Lagos (#059669) -> Kigali Tech (#7c3aed) */}
+                {/* 4IR Innovation Network Arches across UN Geoschemes */}
+                {/* Yaba/Lagos (2250, 2600) -> Kigali Tech (4080, 3260) */}
                 <path
-                  d="M 369,521 Q 520,545 680,625"
+                  d="M 2250,2600 Q 3150,2850 4080,3260"
                   fill="none"
                   stroke="#7c3aed"
-                  strokeWidth="8"
-                  strokeDasharray="14,8"
+                  strokeWidth="40"
+                  strokeDasharray="70,38"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="88;0" dur="2.2s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="432;0" dur="2.2s" repeatCount="indefinite" />
                 </path>
                 {/* Glowing Core */}
                 <path
-                  d="M 369,521 Q 520,545 680,625"
+                  d="M 2250,2600 Q 3150,2850 4080,3260"
                   fill="none"
                   stroke="#c4b5fd"
-                  strokeWidth="3.5"
-                  strokeDasharray="8,14"
+                  strokeWidth="18"
+                  strokeDasharray="40,70"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="88;0" dur="1.8s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="440;0" dur="1.8s" repeatCount="indefinite" />
                 </path>
 
-                {/* Kigali Tech (#7c3aed) -> Cape Tech Hub (#e11d48) */}
+                {/* Kigali Tech (4080, 3260) -> Cape Tech Hub (3200, 5750) */}
                 <path
-                  d="M 680,625 Q 635,795 550,940"
+                  d="M 4080,3260 Q 3950,4500 3200,5750"
                   fill="none"
                   stroke="#e11d48"
-                  strokeWidth="8"
-                  strokeDasharray="14,8"
+                  strokeWidth="40"
+                  strokeDasharray="70,38"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="88;0" dur="2.4s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="432;0" dur="2.4s" repeatCount="indefinite" />
                 </path>
                 {/* Glowing Core */}
                 <path
-                  d="M 680,625 Q 635,795 550,940"
+                  d="M 4080,3260 Q 3950,4500 3200,5750"
                   fill="none"
                   stroke="#fecdd3"
-                  strokeWidth="3.5"
-                  strokeDasharray="8,14"
+                  strokeWidth="18"
+                  strokeDasharray="40,70"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="88;0" dur="2s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="440;0" dur="2s" repeatCount="indefinite" />
                 </path>
 
-                {/* Yaba/Lagos (#059669) -> Cairo AI (#2563eb) */}
+                {/* Yaba/Lagos (2250, 2600) -> Cairo AI (4130, 720) */}
                 <path
-                  d="M 369,521 Q 480,320 600,180"
+                  d="M 2250,2600 Q 3100,1500 4130,720"
                   fill="none"
                   stroke="#2563eb"
-                  strokeWidth="8"
-                  strokeDasharray="14,8"
+                  strokeWidth="40"
+                  strokeDasharray="70,38"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="88;0" dur="2.2s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="432;0" dur="2.2s" repeatCount="indefinite" />
                 </path>
                 {/* Glowing Core */}
                 <path
-                  d="M 369,521 Q 480,320 600,180"
+                  d="M 2250,2600 Q 3100,1500 4130,720"
                   fill="none"
                   stroke="#93c5fd"
-                  strokeWidth="3.5"
-                  strokeDasharray="8,14"
+                  strokeWidth="18"
+                  strokeDasharray="40,70"
                   strokeLinecap="round"
                 >
-                  <animate attributeName="stroke-dashoffset" values="88;0" dur="1.8s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-dashoffset" values="440;0" dur="1.8s" repeatCount="indefinite" />
                 </path>
 
                 {/* Traveling High-Speed Data Packets */}
-                <circle r="5.5" fill="#fef08a" stroke="#7c3aed" strokeWidth="2.5">
-                  <animateMotion path="M 369,521 Q 520,545 680,625" dur="2s" repeatCount="indefinite" />
+                <circle r="30" fill="#fef08a" stroke="#7c3aed" strokeWidth="12">
+                  <animateMotion path="M 2250,2600 Q 3150,2850 4080,3260" dur="2s" repeatCount="indefinite" />
                 </circle>
-                <circle r="5.5" fill="#fef08a" stroke="#e11d48" strokeWidth="2.5">
-                  <animateMotion path="M 680,625 Q 635,795 550,940" dur="2.4s" repeatCount="indefinite" />
+                <circle r="30" fill="#fef08a" stroke="#e11d48" strokeWidth="12">
+                  <animateMotion path="M 4080,3260 Q 3950,4500 3200,5750" dur="2.4s" repeatCount="indefinite" />
                 </circle>
-                <circle r="5.5" fill="#fef08a" stroke="#2563eb" strokeWidth="2.5">
-                  <animateMotion path="M 369,521 Q 480,320 600,180" dur="2.2s" repeatCount="indefinite" />
+                <circle r="30" fill="#fef08a" stroke="#2563eb" strokeWidth="12">
+                  <animateMotion path="M 2250,2600 Q 3100,1500 4130,720" dur="2.2s" repeatCount="indefinite" />
                 </circle>
 
-                {/* Innovation Nodes & Pulsing Waves (Increased size & contrast) */}
-                {/* Kigali Tech (Central/Eastern UN Purple/Violet) */}
-                <circle cx="680" cy="625" r="22" fill="none" stroke="#7c3aed" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="8;30" dur="2s" repeatCount="indefinite" />
+                {/* Innovation Nodes & Pulsing Waves */}
+                {/* Kigali Tech (4080, 3260) */}
+                <circle cx="4080" cy="3260" r="110" fill="none" stroke="#7c3aed" strokeWidth="13" opacity="0.85">
+                  <animate attributeName="r" values="40;150" dur="2s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.95;0" dur="2s" repeatCount="indefinite" />
                 </circle>
-                <circle cx="680" cy="625" r="10" fill="#7c3aed" stroke="#ffffff" strokeWidth="3" />
-                <text x="698" y="622" fill="#0f172a" fontSize="18" fontWeight="800" fontFamily="sans-serif">
+                <circle cx="4080" cy="3260" r="52" fill="#7c3aed" stroke="#ffffff" strokeWidth="15" />
+                <text x="4190" y="3250" fill="#0f172a" fontSize="96" fontWeight="800" fontFamily="sans-serif">
                   Kigali Tech
                 </text>
 
-                {/* Yaba FinTech (Western UN Green) */}
-                <circle cx="369" cy="521" r="22" fill="none" stroke="#059669" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="8;30" dur="2.2s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.95;0" dur="2.2s" repeatCount="indefinite" />
+                {/* Yaba FinTech (2250, 2600) */}
+                <circle cx="2250" cy="2600" r="110" fill="none" stroke="#059669" strokeWidth="13" opacity="0.85">
+                  <animate attributeName="r" values="40;150" dur="2s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" values="0.95;0" dur="2s" repeatCount="indefinite" />
                 </circle>
-                <circle cx="369" cy="521" r="10" fill="#059669" stroke="#ffffff" strokeWidth="3" />
-                <text x="260" y="515" fill="#0f172a" fontSize="18" fontWeight="800" fontFamily="sans-serif">
+                <circle cx="2250" cy="2600" r="52" fill="#059669" stroke="#ffffff" strokeWidth="15" />
+                <text x="1450" y="2580" fill="#0f172a" fontSize="96" fontWeight="800" fontFamily="sans-serif">
                   Yaba FinTech
                 </text>
 
-                {/* Cape Tech Hub (Southern UN Crimson) */}
-                <circle cx="550" cy="940" r="22" fill="none" stroke="#e11d48" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="8;30" dur="2.4s" repeatCount="indefinite" />
+                {/* Cape Tech Hub (3200, 5750) */}
+                <circle cx="3200" cy="5750" r="110" fill="none" stroke="#e11d48" strokeWidth="13" opacity="0.85">
+                  <animate attributeName="r" values="40;150" dur="2.4s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.95;0" dur="2.4s" repeatCount="indefinite" />
                 </circle>
-                <circle cx="550" cy="940" r="10" fill="#e11d48" stroke="#ffffff" strokeWidth="3" />
-                <text x="420" y="965" fill="#0f172a" fontSize="18" fontWeight="800" fontFamily="sans-serif">
+                <circle cx="3200" cy="5750" r="52" fill="#e11d48" stroke="#ffffff" strokeWidth="15" />
+                <text x="2380" y="5830" fill="#0f172a" fontSize="96" fontWeight="800" fontFamily="sans-serif">
                   Cape Tech Hub
                 </text>
 
-                {/* Cairo AI Hub (Northern UN Blue) */}
-                <circle cx="600" cy="180" r="22" fill="none" stroke="#2563eb" strokeWidth="2.5" opacity="0.85">
-                  <animate attributeName="r" values="8;30" dur="2s" repeatCount="indefinite" />
+                {/* Cairo AI Hub (4130, 720) */}
+                <circle cx="4130" cy="720" r="110" fill="none" stroke="#2563eb" strokeWidth="13" opacity="0.85">
+                  <animate attributeName="r" values="40;150" dur="2s" repeatCount="indefinite" />
                   <animate attributeName="opacity" values="0.95;0" dur="2s" repeatCount="indefinite" />
                 </circle>
-                <circle cx="600" cy="180" r="10" fill="#2563eb" stroke="#ffffff" strokeWidth="3" />
-                <text x="618" y="186" fill="#0f172a" fontSize="18" fontWeight="800" fontFamily="sans-serif">
+                <circle cx="4130" cy="720" r="52" fill="#2563eb" stroke="#ffffff" strokeWidth="15" />
+                <text x="4240" y="750" fill="#0f172a" fontSize="96" fontWeight="800" fontFamily="sans-serif">
                   Cairo AI Hub
                 </text>
               </g>

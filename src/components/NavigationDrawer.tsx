@@ -79,6 +79,7 @@ export type CanonicalNavTab = MainNavId | RegionNavId | SecondaryNavId;
 
 interface NavigationDrawerProps {
   currentTab: CanonicalNavTab;
+  activeRegion?: AfricanRegion;
   onSelectTab: (tab: CanonicalNavTab) => void;
   isDesktopOpen: boolean;
   onToggleDesktop?: () => void;
@@ -155,6 +156,7 @@ const getActiveSubmenuFromTab = (tab: CanonicalNavTab): SubmenuKey | null => {
 
 export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   currentTab,
+  activeRegion,
   onSelectTab,
   isDesktopOpen,
   onToggleDesktop,
@@ -897,7 +899,9 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 const isRegionTab = item.id.startsWith('region-');
                 const regionName = isRegionTab ? REGION_ID_TO_NAME[item.id as RegionNavId] : undefined;
                 const regionTonal = regionName ? getRegionTonalPalette(regionName) : undefined;
-                const isActive = currentTab === item.id;
+                const isRegionalTab = currentTab === 'regions' || currentTab.startsWith('region-');
+                const isMatchingActiveRegion = Boolean(activeRegion && regionName && regionName === activeRegion);
+                const isActive = currentTab === item.id || (isRegionalTab && isMatchingActiveRegion);
 
                 return (
                   <button

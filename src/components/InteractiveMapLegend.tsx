@@ -1,7 +1,7 @@
 import React from 'react';
 import { UN_GEOSCHEME_REGIONS } from '../data/africaData';
 import { AfricanRegion } from '../data/types';
-import { Eye, EyeOff, Compass, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react';
+import { Eye, EyeOff, Compass, RotateCcw, ZoomIn, ZoomOut, Layers } from 'lucide-react';
 
 export interface InteractiveMapLegendProps {
   visibleRegions: Set<AfricanRegion>;
@@ -19,6 +19,7 @@ export interface InteractiveMapLegendProps {
   className?: string;
   embedded?: boolean;
   showZoomControls?: boolean;
+  exportControls?: React.ReactNode;
 }
 
 interface SubregionPillDef {
@@ -96,7 +97,8 @@ export const InteractiveMapLegend: React.FC<InteractiveMapLegendProps> = ({
   onFocusRegion,
   className = '',
   embedded = false,
-  showZoomControls = true
+  showZoomControls = true,
+  exportControls
 }) => {
   const allVisible = visibleRegions.size === 5;
   const isSingleIsolated = visibleRegions.size === 1;
@@ -129,6 +131,15 @@ export const InteractiveMapLegend: React.FC<InteractiveMapLegendProps> = ({
       <div className="flex flex-wrap items-center justify-between gap-2">
         {/* Left / Center: Subregion Filter Pills Bar */}
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          {/* Leading UN Subregions Title and Badge */}
+          <div className="flex items-center gap-1.5 mr-1 py-1 px-2 rounded-xl bg-zinc-100/90 dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800 text-xs font-bold text-zinc-800 dark:text-zinc-200 select-none">
+            <Layers className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span>UN Subregions</span>
+            <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
+              {visibleRegions.size}/5
+            </span>
+          </div>
+
           {SUBREGION_PILL_DEFS.map(pill => {
             const isAll = pill.id === 'All';
             const regionId = pill.id as AfricanRegion;
@@ -259,6 +270,9 @@ export const InteractiveMapLegend: React.FC<InteractiveMapLegendProps> = ({
               <RotateCcw className="w-3 h-3 text-emerald-500" />
               <span>Reset</span>
             </button>
+
+            {/* Injected PNG/SVG Export Controls right after Reset button */}
+            {exportControls}
 
             <button
               type="button"

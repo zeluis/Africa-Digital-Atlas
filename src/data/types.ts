@@ -95,6 +95,34 @@ export interface QualityFlag {
   resolution?: string;
 }
 
+export interface CartographicCountryEntity {
+  id: string; // ISO3
+  name: string;
+  unRegion?: AfricanRegion;
+  region?: AfricanRegion;
+  originalColor?: string;
+  originalClass?: string;
+  bbox?: {
+    minX: number;
+    minY: number;
+    maxX: number;
+    maxY: number;
+  };
+  boundingBox?: {
+    minX: number;
+    minY: number;
+    maxX: number;
+    maxY: number;
+  };
+  centroid?: {
+    x: number;
+    y: number;
+  };
+  capital?: string;
+  area?: number;
+  landAreaKm2?: number;
+}
+
 export interface AtlasEntity {
   id: string; // ISO3 e.g., 'DZA', 'NGA', 'ZAF'
   iso2: string; // e.g., 'DZ', 'NG', 'ZA'

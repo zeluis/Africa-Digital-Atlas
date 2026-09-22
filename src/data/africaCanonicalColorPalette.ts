@@ -87,7 +87,8 @@ export const CANONICAL_LABEL_TO_ISO3: Record<string, string> = {
   "Zambia": "ZMB",
   "Zimbabwe": "ZWE",
   "Abyei": "QSY",
-  "Somaliland": "SOM_SL"
+  "Somaliland": "XSL",
+  "Somaliland (SOM_SL)": "XSL"
 };
 
 // Additional country aliases
@@ -155,6 +156,7 @@ export const ISO3_ALIASES: Record<string, string> = {
   "ZWE": "#f8de5e",
   "QSY": "#ffff00",
   "QS": "#ffff00",
+  "XSL": "#fff626",
   "SOM_SL": "#fff626",
   "XS": "#fff626"
 };

@@ -163,13 +163,16 @@ export function parseAfricaFinalCountryMap(svgText: string): Record<string, Afri
 
       if (admin1Els.length > 0) {
         admin1Els.forEach((path) => {
-          const iso3 = path.getAttribute('data-iso3') || '';
+          const iso3 = (path.getAttribute('data-iso3') || '').toUpperCase().trim();
           const id = path.getAttribute('id') || '';
           const name = path.getAttribute('data-label') || '';
           const seq = path.getAttribute('data-admin1-seq') || '';
           const d = path.getAttribute('d') || '';
 
-          if (iso3 && d && admin1ByCountry[iso3]) {
+          if (iso3 && d) {
+            if (!admin1ByCountry[iso3]) {
+              admin1ByCountry[iso3] = [];
+            }
             admin1ByCountry[iso3].push({ id, name, seq, d });
           }
         });
@@ -180,13 +183,17 @@ export function parseAfricaFinalCountryMap(svgText: string): Record<string, Afri
   }
 
   // Regex fallback if DOMParser is unavailable or yielded no paths
-  const firstCountryCount = Object.values(admin1ByCountry)[0]?.length || 0;
-  if (firstCountryCount === 0) {
+  const totalExtractedCount = Object.values(admin1ByCountry).reduce((acc, curr) => acc + curr.length, 0);
+  if (totalExtractedCount === 0) {
     const pathRegex = /<path id="([^"]+)" class="[^"]*" d="([^"]+)" transform="[^"]*" data-level="admin1" data-m49="[^"]*" data-iso3="([^"]+)" data-region-m49="[^"]*" data-admin1-seq="([^"]+)" data-label="([^"]+)"/g;
     let match: RegExpExecArray | null;
     while ((match = pathRegex.exec(svgText)) !== null) {
-      const [, id, d, iso3, seq, label] = match;
-      if (admin1ByCountry[iso3] && d) {
+      const [, id, d, rawIso3, seq, label] = match;
+      const iso3 = (rawIso3 || '').toUpperCase().trim();
+      if (iso3 && d) {
+        if (!admin1ByCountry[iso3]) {
+          admin1ByCountry[iso3] = [];
+        }
         admin1ByCountry[iso3].push({ id, name: label, seq, d });
       }
     }
@@ -209,19 +216,35 @@ export async function loadAfricaFinalCountryMap(): Promise<Record<string, Africa
   return parseAfricaFinalCountryMap(svgText);
 }
 
+// Eagerly trigger background loading of map data in browser environments
+if (typeof window !== 'undefined') {
+  loadAfricaFinalCountryMap().catch((err) => {
+    console.warn('Background vector map preloading deferred:', err);
+  });
+}
+
+function checkIsMapLoaded(): boolean {
+  if (parsedCountryMapCache) return true;
+  const loadedCount = Object.values(AFRICA_FINAL_MAP).filter(c => c.admin1 && c.admin1.length > 0).length;
+  return loadedCount >= 50;
+}
+
 /**
  * React hook to consume streamed Africa vector map data with loading & error states.
  */
 export function useAfricaFinalMap() {
   const [mapData, setMapData] = useState<Record<string, AfricaFinalCountryPath>>(parsedCountryMapCache || AFRICA_FINAL_MAP);
-  const [isLoaded, setIsLoaded] = useState<boolean>(!!parsedCountryMapCache || Object.values(AFRICA_FINAL_MAP).some(c => c.admin1 && c.admin1.length > 0));
-  const [isLoading, setIsLoading] = useState<boolean>(!isLoaded);
+  const [isLoaded, setIsLoaded] = useState<boolean>(checkIsMapLoaded);
+  const [isLoading, setIsLoading] = useState<boolean>(() => !checkIsMapLoaded());
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     let isMounted = true;
 
-    if (parsedCountryMapCache || Object.values(AFRICA_FINAL_MAP).some(c => c.admin1 && c.admin1.length > 0)) {
+    if (checkIsMapLoaded()) {
+      if (parsedCountryMapCache && mapData !== parsedCountryMapCache) {
+        setMapData(parsedCountryMapCache);
+      }
       setIsLoaded(true);
       setIsLoading(false);
       return;

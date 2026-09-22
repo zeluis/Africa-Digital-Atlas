@@ -46,19 +46,17 @@ export function useCanvasViewport(
   const handleZoomDelta = useCallback((factor: number) => {
     if (!containerRef.current) return;
     const { clientWidth: w, clientHeight: h } = containerRef.current;
-    setZoom(prev => {
-      const next = Math.min(Math.max(prev * factor, minZoom), maxZoom);
-      const currentScale = fitScale * prev;
-      const nextScale = fitScale * next;
-      const currentCenterSvgX = (w / 2 - pos.x) / currentScale;
-      const currentCenterSvgY = (h / 2 - pos.y) / currentScale;
-      setPos({
-        x: w / 2 - currentCenterSvgX * nextScale,
-        y: h / 2 - currentCenterSvgY * nextScale
-      });
-      return next;
+    const next = Math.min(Math.max(zoom * factor, minZoom), maxZoom);
+    const currentScale = fitScale * zoom;
+    const nextScale = fitScale * next;
+    const currentCenterSvgX = (w / 2 - pos.x) / currentScale;
+    const currentCenterSvgY = (h / 2 - pos.y) / currentScale;
+    setZoom(next);
+    setPos({
+      x: w / 2 - currentCenterSvgX * nextScale,
+      y: h / 2 - currentCenterSvgY * nextScale
     });
-  }, [containerRef, fitScale, minZoom, maxZoom, pos.x, pos.y]);
+  }, [containerRef, fitScale, minZoom, maxZoom, pos.x, pos.y, zoom]);
 
   // Pan smoothly to specific SVG coordinates
   const panToCoordinates = useCallback((targetX: number, targetY: number, targetZoom = 1.8, customOffset?: { xOffset?: number; yOffset?: number }) => {

@@ -66,9 +66,13 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
     return null;
   }, [activeRegion]);
 
-  // Ensure viewBox always uses the unified coordinate space
+  // Ensure viewBox always uses the unified coordinate space or valid custom bounding boxes
   const resolvedViewBox = React.useMemo(() => {
-    if (!viewBox || viewBox.includes('970') || viewBox.includes('1040') || viewBox.includes('400')) {
+    if (!viewBox) {
+      return AFRICA_REGIONS_VIEWBOX;
+    }
+    const trimmed = viewBox.trim();
+    if (trimmed === '0 0 400 400' || trimmed === '0 0 970 1040') {
       return AFRICA_REGIONS_VIEWBOX;
     }
     return viewBox;
@@ -78,7 +82,7 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
 
   return (
     <div 
-      className={`relative inline-flex items-center justify-center shrink-0 overflow-hidden ${className} ${interactive ? 'group/un-logo cursor-pointer' : ''}`}
+      className={`relative inline-flex items-center justify-center shrink-0 ${className} ${interactive ? 'group/un-logo cursor-pointer' : ''}`}
       style={size ? { width: size, height: size, maxWidth: size, maxHeight: size } : undefined}
     >
       <svg

@@ -305,7 +305,8 @@ export const COUNTRIES_DATA: Record<string, {
   CPV: { id: 'CPV', name: 'Cabo Verde', pop: '0.59M', gdp: '$2.6B', capital: 'Praia', region: 'Western Africa' },
   STP: { id: 'STP', name: 'São Tomé and Príncipe', pop: '0.23M', gdp: '$0.54B', capital: 'São Tomé', region: 'Central Africa' },
   SYC: { id: 'SYC', name: 'Seychelles', pop: '0.10M', gdp: '$2.1B', capital: 'Victoria', region: 'Eastern Africa' },
-  ESH: { id: 'ESH', name: 'Western Sahara', pop: '0.58M', gdp: '$0.9B', capital: 'Laayoune', region: 'Northern Africa' }
+  ESH: { id: 'ESH', name: 'Western Sahara', pop: '0.58M', gdp: '$0.9B', capital: 'Laayoune', region: 'Northern Africa' },
+  XSL: { id: 'XSL', name: 'Somaliland', pop: '5.7M', gdp: '$3.4B', capital: 'Hargeisa', region: 'Eastern Africa' }
 };
 
 /**

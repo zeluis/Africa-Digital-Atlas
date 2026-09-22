@@ -5,6 +5,7 @@ import { AfricanRegion, RegionalBloc, UNRegionName } from '../data/types';
 import { CountryFlag } from '../components/CountryFlag';
 import { AfricaVectorMap } from '../components/AfricaVectorMap';
 import { RegionalSilhouette } from '../components/RegionalSilhouette';
+import { RegionalLivingCanvas } from '../components/regional/RegionalLivingCanvas';
 import { OrganizationLogo } from '../components/OrganizationLogo';
 import { UN_M49_REGIONS, UN_M49_NUMERIC_CODES } from '../data/svgGeographySystem';
 import { getRegionTonalPalette } from '../data/unGeoschemeColors';
@@ -58,6 +59,7 @@ import { getRegionCalmColor } from '../data/unGeoschemeColors';
 interface RegionalViewProps {
   onSelectCountry: (entityId: string) => void;
   initialRegion?: AfricanRegion;
+  onSelectRegion?: (region: AfricanRegion) => void;
 }
 
 type RegionalTabMode = 'region-dossier' | 'matrix';
@@ -76,7 +78,8 @@ type RegionSectionId =
 
 export const RegionalView: React.FC<RegionalViewProps> = ({
   onSelectCountry,
-  initialRegion = 'Western Africa'
+  initialRegion = 'Western Africa',
+  onSelectRegion
 }) => {
   const [viewMode, setViewMode] = useState<RegionalTabMode>('region-dossier');
   const [selectedRegion, setSelectedRegion] = useState<AfricanRegion>(initialRegion);
@@ -84,6 +87,12 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
   const [hoveredMapRegion, setHoveredMapRegion] = useState<UNRegionName | null>(null);
   const [selectedBloc, setSelectedBloc] = useState<RegionalBloc>('ECOWAS');
   const [matrixSubTab, setMatrixSubTab] = useState<'regions' | 'blocs'>('regions');
+
+  const handleRegionChange = (reg: AfricanRegion) => {
+    setSelectedRegion(reg);
+    setViewMode('region-dossier');
+    onSelectRegion?.(reg);
+  };
 
   useEffect(() => {
     if (initialRegion) {
@@ -194,8 +203,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                   key={reg}
                   id={`btn-region-${reg.toLowerCase().replace(/\s+/g, '-')}`}
                   onClick={() => {
-                    setSelectedRegion(reg);
-                    setViewMode('region-dossier');
+                    handleRegionChange(reg);
                   }}
                   className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl text-xs font-semibold transition-all cursor-pointer border ${
                     isSelected
@@ -408,6 +416,12 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                   </div>
                 ))}
               </div>
+
+              {/* Master Regional Living Atlas Stage (Hardware-Accelerated 60 FPS Vector Canvas) */}
+              <RegionalLivingCanvas
+                region={selectedRegion}
+                onSelectCountry={onSelectCountry}
+              />
 
               {/* Member Nations Grid */}
               <div 
@@ -1159,8 +1173,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                           <td className="py-3.5 px-4 text-right">
                             <button
                               onClick={() => {
-                                setSelectedRegion(r.region);
-                                setViewMode('region-dossier');
+                                handleRegionChange(r.region);
                               }}
                               className="px-3 py-1 rounded-xl bg-white/80 dark:bg-zinc-800 hover:bg-emerald-500 hover:text-zinc-950 dark:hover:bg-emerald-500 dark:hover:text-zinc-950 text-xs font-semibold transition-all cursor-pointer shadow-xs border border-zinc-200/60 dark:border-zinc-700/60"
                             >

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   BookOpen, 
   ExternalLink, 
@@ -9,10 +9,15 @@ import {
   Flame, 
   X, 
   Compass, 
-  Sparkles,
-  ShieldCheck,
-  ChevronRight,
-  Volume2
+  Sparkles, 
+  ShieldCheck, 
+  ChevronRight, 
+  ChevronLeft, 
+  ChevronDown, 
+  ChevronUp, 
+  Volume2,
+  Minimize2,
+  Maximize2
 } from 'lucide-react';
 import { WikipediaEthnicEntry } from '../../data/wikipediaEthnicAtlas';
 import { getEthnicDossier, parseLanguageChain } from '../../services/wikipediaService';
@@ -27,6 +32,11 @@ interface WikipediaEthnicDossierProps {
   tastVolumeShare?: number;
   cohortLabel?: string;
   cohortColor?: string;
+  siblingEthnicGroups?: Array<{ name: string; nodeX: number; nodeY: number }>;
+  currentEthnicIndex?: number;
+  onSelectEthnicIndex?: (index: number) => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
   onClose: () => void;
   onFocusCoordinates?: () => void;
   onSelectLinguisticFamily?: (family: string) => void;
@@ -44,6 +54,11 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
   tastVolumeShare,
   cohortLabel,
   cohortColor,
+  siblingEthnicGroups = [],
+  currentEthnicIndex = 0,
+  onSelectEthnicIndex,
+  isCollapsed = false,
+  onToggleCollapse,
   onClose,
   onFocusCoordinates,
   onSelectLinguisticFamily,
@@ -76,6 +91,96 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
   }, [ethnicName, language]);
 
   const languageChain = dossier ? parseLanguageChain(dossier.languages) : [];
+  const totalSiblings = siblingEthnicGroups.length;
+  const hasPagination = totalSiblings > 1 && onSelectEthnicIndex !== undefined;
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!hasPagination) return;
+    const prevIdx = (currentEthnicIndex - 1 + totalSiblings) % totalSiblings;
+    onSelectEthnicIndex!(prevIdx);
+  };
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!hasPagination) return;
+    const nextIdx = (currentEthnicIndex + 1) % totalSiblings;
+    onSelectEthnicIndex!(nextIdx);
+  };
+
+  // If collapsed, render sleek floating status capsule
+  if (isCollapsed) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -16, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -16, scale: 0.95 }}
+        className="absolute top-4 right-4 sm:right-6 z-30 flex items-center gap-2 p-1.5 pr-3 rounded-full bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_12px_40px_rgba(0,0,0,0.25)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.6)] backdrop-blur-md no-drag"
+        id="wikipedia-ethnic-dossier-collapsed"
+      >
+        <button
+          type="button"
+          onClick={onToggleCollapse}
+          className="flex items-center gap-2 pl-2 text-left cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          <div className="w-7 h-7 rounded-full bg-[#E67E48]/20 text-[#B8571A] dark:text-[#FFA573] grid place-items-center">
+            <BookOpen className="w-3.5 h-3.5" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xs font-bold text-[#2B241E] dark:text-[#F5EFE6] leading-tight flex items-center gap-1.5">
+              {ethnicName}
+              {countryName && <span className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492] font-normal">({countryName})</span>}
+            </span>
+            {hasPagination && (
+              <span className="text-[9px] font-mono text-[#E67E48] font-semibold">
+                Lineage {currentEthnicIndex + 1} of {totalSiblings}
+              </span>
+            )}
+          </div>
+        </button>
+
+        {hasPagination && (
+          <div className="flex items-center gap-1 pl-1 border-l border-[#E5DDD0] dark:border-[#38322B]">
+            <button
+              type="button"
+              onClick={handlePrev}
+              className="p-1 rounded-full text-[#7D6B5A] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+              title="Previous ethnic lineage in country"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={handleNext}
+              className="p-1 rounded-full text-[#7D6B5A] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+              title="Next ethnic lineage in country"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
+        <div className="flex items-center gap-1 pl-1 border-l border-[#E5DDD0] dark:border-[#38322B]">
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            className="p-1.5 rounded-full text-[#7D6B5A] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+            title="Expand dossier panel"
+          >
+            <Maximize2 className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 rounded-full text-[#7D6B5A] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+            title="Close dossier"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.aside 
@@ -88,36 +193,77 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
       id="wikipedia-ethnic-dossier"
       aria-label={`Encyclopedic dossier for ${ethnicName}`}
     >
-      {/* 1. Header Bar */}
+      {/* 1. Header Bar with Linear Traversal & Collapse */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#E5DDD0] dark:border-[#38322B] bg-[#F4EDE2]/50 dark:bg-[#161412]/50">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-xl bg-[#E67E48]/15 border border-[#E67E48]/30 text-[#B8571A] dark:text-[#FFA573] grid place-items-center">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-7 h-7 rounded-xl bg-[#E67E48]/15 border border-[#E67E48]/30 text-[#B8571A] dark:text-[#FFA573] grid place-items-center shrink-0">
             <BookOpen className="w-4 h-4" />
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <h2 className="text-xs font-bold text-[#2B241E] dark:text-[#F5EFE6] leading-tight">
+              <h2 className="text-xs font-bold text-[#2B241E] dark:text-[#F5EFE6] leading-tight truncate">
                 Wikipedia Cultural Dossier
               </h2>
-              <span className="inline-flex items-center px-1.5 py-0.2 text-[9px] font-semibold rounded-full bg-[#1A73E8]/15 text-[#1A73E8] dark:text-[#8AB4F8] border border-[#1A73E8]/30">
+              <span className="inline-flex items-center px-1.5 py-0.2 text-[9px] font-semibold rounded-full bg-[#1A73E8]/15 text-[#1A73E8] dark:text-[#8AB4F8] border border-[#1A73E8]/30 shrink-0">
                 <ShieldCheck className="w-2.5 h-2.5 mr-0.5" />
                 Verified
               </span>
             </div>
-            <p className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">
-              Archival Ethno-Historical Monograph
+            <p className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492] truncate">
+              {countryName ? `${countryName} Lineage Corpus` : 'Ethno-Historical Monograph'}
             </p>
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={onClose}
-          className="w-7 h-7 rounded-full flex items-center justify-center text-[#7D6B5A] hover:text-[#2B241E] dark:hover:text-[#F5EFE6] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
-          aria-label="Close dossier"
-        >
-          <X className="w-4 h-4" />
-        </button>
+        {/* Header Controls: Prev/Next pagination, Minimize, Close */}
+        <div className="flex items-center gap-1 shrink-0">
+          {hasPagination && (
+            <div className="flex items-center gap-1 bg-[#E67E48]/10 dark:bg-[#E67E48]/15 border border-[#E67E48]/25 rounded-full px-1.5 py-0.5 mr-1">
+              <button
+                type="button"
+                onClick={handlePrev}
+                className="w-5 h-5 rounded-full flex items-center justify-center text-[#B8571A] dark:text-[#FFA573] hover:bg-[#E67E48]/20 transition-colors cursor-pointer"
+                title="Previous lineage in country"
+                aria-label="Previous ethnic lineage"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              <span className="text-[10px] font-mono font-bold text-[#B8571A] dark:text-[#FFA573] px-0.5 select-none">
+                {currentEthnicIndex + 1}/{totalSiblings}
+              </span>
+              <button
+                type="button"
+                onClick={handleNext}
+                className="w-5 h-5 rounded-full flex items-center justify-center text-[#B8571A] dark:text-[#FFA573] hover:bg-[#E67E48]/20 transition-colors cursor-pointer"
+                title="Next lineage in country"
+                aria-label="Next ethnic lineage"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
+          {onToggleCollapse && (
+            <button
+              type="button"
+              onClick={onToggleCollapse}
+              className="w-7 h-7 rounded-full flex items-center justify-center text-[#7D6B5A] hover:text-[#2B241E] dark:hover:text-[#F5EFE6] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+              title="Collapse to floating ribbon"
+              aria-label="Collapse dossier"
+            >
+              <ChevronDown className="w-4 h-4" />
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-7 h-7 rounded-full flex items-center justify-center text-[#7D6B5A] hover:text-[#2B241E] dark:hover:text-[#F5EFE6] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+            aria-label="Close dossier"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* 2. Scrollable Body */}

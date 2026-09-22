@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Navbar } from './components/Navbar';
 import { NavigationDrawer, CanonicalNavTab } from './components/NavigationDrawer';
@@ -46,20 +46,55 @@ const REGION_ID_TO_NAME: Record<string, AfricanRegion> = {
   'region-southern': 'Southern Africa'
 };
 
+const parseUrlHash = (): { tab: CanonicalNavTab; entityId?: string; region?: AfricanRegion; indicator?: string } => {
+  if (typeof window === 'undefined') return { tab: 'overview' };
+  const hash = window.location.hash.replace(/^#\/?/, '').trim();
+  if (!hash) return { tab: 'overview' };
+
+  if (hash.startsWith('countries/') || hash.startsWith('country/')) {
+    const parts = hash.split('/');
+    const code = (parts[1] || 'NGA').toUpperCase();
+    return { tab: 'countries', entityId: code };
+  }
+
+  if (hash.startsWith('regions/') || hash.startsWith('region/')) {
+    const rawRegion = decodeURIComponent(hash.replace(/^(regions|region)\//, ''));
+    if (['Northern Africa', 'Western Africa', 'Central Africa', 'Eastern Africa', 'Southern Africa'].includes(rawRegion)) {
+      return { tab: 'regions', region: rawRegion as AfricanRegion };
+    }
+    return { tab: 'regions' };
+  }
+
+  if (hash.startsWith('region-')) {
+    const mapped = REGION_ID_TO_NAME[hash];
+    return { tab: hash as CanonicalNavTab, region: mapped };
+  }
+
+  if (hash.startsWith('analytics')) {
+    const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+    const ind = params.get('ind') || 'NY.GDP.MKTP.CD';
+    return { tab: 'analytics', indicator: ind };
+  }
+
+  return { tab: hash as CanonicalNavTab };
+};
+
 function AppContent() {
+  const initialRoute = useMemo(() => parseUrlHash(), []);
+
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const saved = localStorage.getItem('atlas_theme');
     return saved === 'dark' ? 'dark' : 'light';
   });
 
-  // Canonical Navigation Tab State (starts at 'overview')
-  const [currentTab, setCurrentTab] = useState<CanonicalNavTab>('overview');
+  // Canonical Navigation Tab State (starts at URL route or 'overview')
+  const [currentTab, setCurrentTab] = useState<CanonicalNavTab>(initialRoute.tab || 'overview');
   
-  // Active selected country (Nigeria as default initial)
-  const [selectedEntityId, setSelectedEntityId] = useState<string>('NGA');
+  // Active selected country
+  const [selectedEntityId, setSelectedEntityId] = useState<string>(initialRoute.entityId || 'NGA');
   
   // Deep-linked region for RegionalView
-  const [activeRegion, setActiveRegion] = useState<AfricanRegion | undefined>(undefined);
+  const [activeRegion, setActiveRegion] = useState<AfricanRegion | undefined>(initialRoute.region);
   
   // Search modal state
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
@@ -77,7 +112,7 @@ function AppContent() {
   });
   
   // Analytics selected indicator
-  const [selectedIndicatorForAnalytics, setSelectedIndicatorForAnalytics] = useState<string>('NY.GDP.MKTP.CD');
+  const [selectedIndicatorForAnalytics, setSelectedIndicatorForAnalytics] = useState<string>(initialRoute.indicator || 'NY.GDP.MKTP.CD');
 
   // Desktop Drawer starts open by default. It remains open on nav clicks; only Menu toggles it.
   const [isDesktopDrawerOpen, setIsDesktopDrawerOpen] = useState<boolean>(true);
@@ -143,6 +178,39 @@ function AppContent() {
     }
     localStorage.setItem('atlas_theme', theme);
   }, [theme]);
+
+  // Synchronize active app state with URL hash for seamless bookmarking & deep linking
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    let targetHash = currentTab as string;
+    if (currentTab === 'countries' && selectedEntityId) {
+      targetHash = `countries/${selectedEntityId}`;
+    } else if (currentTab === 'regions' && activeRegion) {
+      targetHash = `regions/${encodeURIComponent(activeRegion)}`;
+    } else if (currentTab === 'analytics' && selectedIndicatorForAnalytics) {
+      targetHash = `analytics?ind=${encodeURIComponent(selectedIndicatorForAnalytics)}`;
+    }
+
+    const currentHash = window.location.hash.replace(/^#\/?/, '').trim();
+    if (currentHash !== targetHash) {
+      window.history.replaceState(null, '', `#${targetHash}`);
+    }
+  }, [currentTab, selectedEntityId, activeRegion, selectedIndicatorForAnalytics]);
+
+  // Listen to browser hash navigation (Back/Forward buttons & external hash links)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const parsed = parseUrlHash();
+      React.startTransition(() => {
+        setCurrentTab(parsed.tab);
+        if (parsed.entityId) setSelectedEntityId(parsed.entityId);
+        if (parsed.region) setActiveRegion(parsed.region);
+        if (parsed.indicator) setSelectedIndicatorForAnalytics(parsed.indicator);
+      });
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   const toggleTheme = () => {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
@@ -321,6 +389,7 @@ function AppContent() {
         {/* Desktop Navigation Drawer (Starts open, 272px width, doesn't close on tab clicks) + Mobile Bottom Sheet */}
         <NavigationDrawer
           currentTab={currentTab}
+          activeRegion={activeRegion}
           onSelectTab={handleSelectTab}
           isDesktopOpen={isDesktopDrawerOpen}
           onToggleDesktop={handleToggleMenu}
@@ -387,6 +456,7 @@ function AppContent() {
                     <RegionalView
                       onSelectCountry={handleSelectCountry}
                       initialRegion={activeRegion}
+                      onSelectRegion={setActiveRegion}
                     />
                   )}
 

@@ -62,7 +62,8 @@ export const UN_M49_NUMERIC_CODES: Record<string, string> = {
   MOZ: '508', NAM: '516', NER: '562', NGA: '566', RWA: '646',
   STP: '678', SEN: '686', SYC: '690', SLE: '694', SOM: '706',
   ZAF: '710', SSD: '728', SDN: '729', TZA: '834', TGO: '768',
-  TUN: '788', UGA: '800', ESH: '732', ZMB: '894', ZWE: '716'
+  TUN: '788', UGA: '800', ESH: '732', ZMB: '894', ZWE: '716',
+  XSL: '900'
 };
 
 // Authoritative UN M49 Regional Silhouettes
@@ -255,6 +256,7 @@ export const UN_REGIONAL_SILHOUETTES: Record<AfricanRegion, RegionalSilhouetteDa
       "DJI",
       "ETH",
       "SOM",
+      "XSL",
       "SSD",
       "UGA",
       "KEN",
@@ -379,7 +381,8 @@ const ENTITY_SHAPE_TYPES: Record<string, 'continental' | 'archipelago' | 'island
   ERI: 'coastal', DJI: 'coastal', ETH: 'landlocked', SOM: 'coastal', SSD: 'landlocked', UGA: 'landlocked',
   KEN: 'coastal', RWA: 'landlocked', BDI: 'landlocked', TZA: 'coastal', MWI: 'landlocked', ZMB: 'landlocked',
   MOZ: 'coastal', ZWE: 'landlocked', MDG: 'coastal', COM: 'island', SYC: 'island', MUS: 'island',
-  NAM: 'coastal', BWA: 'landlocked', ZAF: 'coastal', LSO: 'landlocked', SWZ: 'landlocked'
+  NAM: 'coastal', BWA: 'landlocked', ZAF: 'coastal', LSO: 'landlocked', SWZ: 'landlocked',
+  XSL: 'coastal'
 };
 
 export const M49_ENTITIES: M49EntityMetadata[] = Object.values(AFRICA_SVG_MAP).map(item => ({

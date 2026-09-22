@@ -83,7 +83,7 @@ export const AFRICA_UN_REGIONS_STRUCTURED: Record<'Northern Africa' | 'Western A
     "region": "Eastern Africa",
     "name": "Eastern Africa",
     "countryIds": [
-      "ERI", "DJI", "ETH", "SOM", "SSD", "UGA", "KEN", "RWA", "BDI", "TZA",
+      "ERI", "DJI", "ETH", "SOM", "XSL", "SSD", "UGA", "KEN", "RWA", "BDI", "TZA",
       "MWI", "ZMB", "MOZ", "ZWE", "MDG", "COM", "SYC", "MUS"
     ],
     "islandCircles": [

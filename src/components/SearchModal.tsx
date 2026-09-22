@@ -24,6 +24,8 @@ interface SearchModalProps {
   onSelectIndicator: (indicatorId: string) => void;
 }
 
+type SearchCategory = 'all' | 'countries' | 'indicators' | 'heritage';
+
 type SearchItemType = 
   | { type: 'entity'; data: AtlasEntity }
   | { type: 'indicator'; data: IndicatorDefinition }
@@ -36,6 +38,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   onSelectIndicator
 }) => {
   const [query, setQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<SearchCategory>('all');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const { recentSearches, addRecentSearch, clearRecentSearches, isCountrySaved, toggleSaveCountry } = useSavedEntities();
@@ -46,6 +49,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       setSelectedIndex(0);
     } else {
       setQuery('');
+      setSelectedCategory('all');
     }
   }, [isOpen]);
 
@@ -62,6 +66,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
   // Matched Entities with scoring
   const matchedEntities = useMemo<AtlasEntity[]>(() => {
+    if (selectedCategory !== 'all' && selectedCategory !== 'countries') return [];
     if (q === '') return atlas.getAllEntities().slice(0, 6);
     return atlas.getAllEntities()
       .map(e => {
@@ -77,13 +82,14 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       })
       .filter(item => item.score > 0)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 7)
+      .slice(0, 8)
       .map(item => item.entity);
-  }, [q]);
+  }, [q, selectedCategory]);
 
   // Matched Indicators with scoring
   const matchedIndicators = useMemo<IndicatorDefinition[]>(() => {
-    if (q === '') return atlas.getAllIndicators().slice(0, 4);
+    if (selectedCategory !== 'all' && selectedCategory !== 'indicators') return [];
+    if (q === '') return atlas.getAllIndicators().slice(0, 5);
     return atlas.getAllIndicators()
       .map(ind => {
         let score = 0;
@@ -97,13 +103,14 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       })
       .filter(item => item.score > 0)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 5)
+      .slice(0, 6)
       .map(item => item.indicator);
-  }, [q]);
+  }, [q, selectedCategory]);
 
   // Matched Heritage Sites
   const matchedHeritage = useMemo<HeritageSite[]>(() => {
-    if (q === '') return [];
+    if (selectedCategory !== 'all' && selectedCategory !== 'heritage') return [];
+    if (q === '') return atlas.getHeritageSites().slice(0, 3);
     return atlas.getHeritageSites()
       .map(site => {
         let score = 0;
@@ -116,9 +123,9 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       })
       .filter(item => item.score > 0)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 4)
+      .slice(0, 5)
       .map(item => item.site);
-  }, [q]);
+  }, [q, selectedCategory]);
 
   // Flatten items for keyboard navigation
   const flattenedItems = useMemo<SearchItemType[]>(() => {
@@ -132,7 +139,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   // Reset selected index when results change
   useEffect(() => {
     setSelectedIndex(0);
-  }, [q]);
+  }, [q, selectedCategory]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -210,6 +217,73 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           </span>
         </div>
 
+        {/* Category Filter Pills Bar */}
+        <div className="flex items-center gap-1.5 px-5 py-2.5 bg-zinc-50/50 dark:bg-zinc-900/30 border-b border-zinc-200 dark:border-zinc-800/80 overflow-x-auto no-scrollbar">
+          <button
+            type="button"
+            onClick={() => setSelectedCategory('all')}
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+              selectedCategory === 'all'
+                ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-xs'
+                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+            }`}
+          >
+            <Sparkles className="w-3 h-3" />
+            <span>All Categories</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedCategory('countries')}
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+              selectedCategory === 'countries'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+            }`}
+          >
+            <Globe className="w-3 h-3" />
+            <span>Nations</span>
+            {matchedEntities.length > 0 && (
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 dark:bg-white/20">
+                {matchedEntities.length}
+              </span>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedCategory('indicators')}
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+              selectedCategory === 'indicators'
+                ? 'bg-cyan-600 text-white shadow-xs'
+                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+            }`}
+          >
+            <TrendingUp className="w-3 h-3" />
+            <span>Indicators</span>
+            {matchedIndicators.length > 0 && (
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 dark:bg-white/20">
+                {matchedIndicators.length}
+              </span>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedCategory('heritage')}
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+              selectedCategory === 'heritage'
+                ? 'bg-amber-600 text-white shadow-xs'
+                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+            }`}
+          >
+            <Landmark className="w-3 h-3" />
+            <span>UNESCO Heritage</span>
+            {matchedHeritage.length > 0 && (
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 dark:bg-white/20">
+                {matchedHeritage.length}
+              </span>
+            )}
+          </button>
+        </div>
+
         {/* Recent Searches Header Chips */}
         {recentSearches.length > 0 && q === '' && (
           <div className="px-5 py-2.5 bg-zinc-100/60 dark:bg-zinc-900/40 border-b border-zinc-200 dark:border-zinc-800/80 flex items-center justify-between">
@@ -263,14 +337,25 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                       <div className="flex items-center gap-3">
                         <CountryFlag entityId={entity.id} size="md" />
                         <div>
+                          <div className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 flex items-center gap-1">
+                            <span>Africa</span>
+                            <span>›</span>
+                            <span>{entity.region}</span>
+                            <span>›</span>
+                            <span className="font-semibold text-emerald-600 dark:text-emerald-400">{entity.name}</span>
+                          </div>
                           <div className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                             {entity.name}
                             <span className="text-[10px] font-mono text-zinc-500 font-normal">[{entity.id}]</span>
                           </div>
                           <div className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
                             <span>Cap: <strong>{entity.capital}</strong></span>
-                            <span>•</span>
-                            <span>{entity.region}</span>
+                            {entity.officialName && entity.officialName !== entity.name && (
+                              <>
+                                <span>•</span>
+                                <span className="italic truncate max-w-xs">{entity.officialName}</span>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -317,6 +402,11 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                       }`}
                     >
                       <div className="pr-4">
+                        <div className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 flex items-center gap-1 mb-0.5">
+                          <span>Data Atlas</span>
+                          <span>›</span>
+                          <span className="text-cyan-600 dark:text-cyan-400 font-semibold">{ind.domain}</span>
+                        </div>
                         <div className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                           {ind.name}
                           <span className="rounded-md bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-[10px] font-mono px-2 py-0.5">
@@ -364,6 +454,11 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                           <Landmark className="w-4 h-4" />
                         </div>
                         <div>
+                          <div className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 flex items-center gap-1 mb-0.5">
+                            <span>UNESCO World Heritage</span>
+                            <span>›</span>
+                            <span className="text-amber-600 dark:text-amber-400 font-semibold">{country?.name || 'Africa'}</span>
+                          </div>
                           <div className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
                             {site.name}
                           </div>

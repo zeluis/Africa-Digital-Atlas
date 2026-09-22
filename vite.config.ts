@@ -119,6 +119,21 @@ export default defineConfig(() => {
             if (id.includes('src/data/svgMaps')) {
               return 'data-svg-schematic-maps';
             }
+            if (id.includes('src/data/slaveVoyages')) {
+              return 'data-slave-voyages';
+            }
+            if (id.includes('src/data/molecularLegacies')) {
+              return 'data-molecular-legacies';
+            }
+            if (id.includes('src/data/reportsData')) {
+              return 'data-research-reports';
+            }
+            if (id.includes('src/data/africanDevelopment') || id.includes('src/data/countryHistoricalDevelopment')) {
+              return 'data-african-development';
+            }
+            if (id.includes('src/data/ethnicTree') || id.includes('src/data/authenticEthnicTreeSvg') || id.includes('src/data/africaliaMasterTreeData')) {
+              return 'data-ethnic-tree';
+            }
             if (id.includes('src/i18n/translations')) {
               return 'i18n-translations';
             }

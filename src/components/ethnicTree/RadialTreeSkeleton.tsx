@@ -1,322 +1,396 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { Dna, Sparkles, Compass } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Compass, Sparkles, GitBranch } from 'lucide-react';
+
+interface BranchGeometry {
+  name: string;
+  main: string;
+  sub1: string;
+  sub2: string;
+  nodes: { x: number; y: number; r: number; colorType: 'primary' | 'secondary' | 'tertiary' }[];
+}
+
+const TAST_BRANCHES: BranchGeometry[] = [
+  {
+    name: "Senegambia",
+    main: "M 500 500 C 550.8 372.3, 603.6 237.1, 600.9 123.3",
+    sub1: "M 562.6 266.4 Q 597.2 223.7, 647.5 161.5",
+    sub2: "M 562.6 266.4 Q 554.8 217.1, 543.0 143.0",
+    nodes: [
+      { x: 600.9, y: 123.3, r: 4.5, colorType: "primary" },
+      { x: 647.5, y: 161.5, r: 3.5, colorType: "secondary" },
+      { x: 543.0, y: 143.0, r: 3.2, colorType: "tertiary" }
+    ]
+  },
+  {
+    name: "Sierra Leone",
+    main: "M 500 500 C 438.3 377.2, 373.9 247.1, 366.6 133.5",
+    sub1: "M 417.3 272.8 Q 421.1 217.9, 426.7 138.1",
+    sub2: "M 417.3 272.8 Q 382.6 236.8, 330.5 182.9",
+    nodes: [
+      { x: 366.6, y: 133.5, r: 4.5, colorType: "primary" },
+      { x: 426.7, y: 138.1, r: 3.5, colorType: "secondary" },
+      { x: 330.5, y: 182.9, r: 3.2, colorType: "tertiary" }
+    ]
+  },
+  {
+    name: "Windward Coast",
+    main: "M 500 500 C 397.4 408.6, 288.3 312.7, 180.5 276.3",
+    sub1: "M 301.9 361.3 Q 273.6 314.2, 232.4 245.6",
+    sub2: "M 301.9 361.3 Q 252.8 351.8, 179.2 337.5",
+    nodes: [
+      { x: 180.5, y: 276.3, r: 4.5, colorType: "primary" },
+      { x: 232.4, y: 245.6, r: 3.5, colorType: "secondary" },
+      { x: 179.2, y: 337.5, r: 3.2, colorType: "tertiary" }
+    ]
+  },
+  {
+    name: "Gold Coast",
+    main: "M 500 500 C 365.4 527.8, 223.1 556.4, 111.5 534.0",
+    sub1: "M 259.1 521.1 Q 207.1 503.2, 131.5 477.1",
+    sub2: "M 259.1 521.1 Q 215.4 545.3, 149.8 581.7",
+    nodes: [
+      { x: 111.5, y: 534.0, r: 4.5, colorType: "primary" },
+      { x: 131.5, y: 477.1, r: 3.5, colorType: "secondary" },
+      { x: 149.8, y: 581.7, r: 3.2, colorType: "tertiary" }
+    ]
+  },
+  {
+    name: "Bight of Benin",
+    main: "M 500 500 C 392.2 585.2, 278.8 675.9, 224.2 775.8",
+    sub1: "M 329.0 671.0 Q 277.7 690.7, 203.0 719.4",
+    sub2: "M 329.0 671.0 Q 311.1 717.7, 284.2 787.7",
+    nodes: [
+      { x: 224.2, y: 775.8, r: 4.5, colorType: "primary" },
+      { x: 203.0, y: 719.4, r: 3.5, colorType: "secondary" },
+      { x: 284.2, y: 787.7, r: 3.2, colorType: "tertiary" }
+    ]
+  },
+  {
+    name: "Bight of Biafra",
+    main: "M 500 500 C 516.0 636.5, 532.0 780.8, 500.0 890.0",
+    sub1: "M 500.0 741.8 Q 477.6 792.0, 445.1 865.1",
+    sub2: "M 500.0 741.8 Q 520.3 787.5, 550.8 856.0",
+    nodes: [
+      { x: 500.0, y: 890.0, r: 4.5, colorType: "primary" },
+      { x: 445.1, y: 865.1, r: 3.5, colorType: "secondary" },
+      { x: 550.8, y: 856.0, r: 3.2, colorType: "tertiary" }
+    ]
+  },
+  {
+    name: "West-Central Africa",
+    main: "M 500 500 C 585.2 607.8, 675.9 721.2, 775.8 775.8",
+    sub1: "M 671.0 671.0 Q 690.7 722.3, 719.4 797.0",
+    sub2: "M 671.0 671.0 Q 717.7 688.9, 787.7 715.8",
+    nodes: [
+      { x: 775.8, y: 775.8, r: 4.5, colorType: "primary" },
+      { x: 719.4, y: 797.0, r: 3.5, colorType: "secondary" },
+      { x: 787.7, y: 715.8, r: 3.2, colorType: "tertiary" }
+    ]
+  },
+  {
+    name: "Southeast Africa",
+    main: "M 500 500 C 622.8 438.3, 752.9 373.9, 866.5 366.6",
+    sub1: "M 727.2 417.3 Q 782.1 421.1, 861.9 426.7",
+    sub2: "M 727.2 417.3 Q 763.2 382.6, 817.1 330.5",
+    nodes: [
+      { x: 866.5, y: 366.6, r: 4.5, colorType: "primary" },
+      { x: 861.9, y: 426.7, r: 3.5, colorType: "secondary" },
+      { x: 817.1, y: 330.5, r: 3.2, colorType: "tertiary" }
+    ]
+  }
+];
+
+const CRUCIBLE_ELLIPSES = [
+  { rx: 420, ry: 240, strokeWidth: 1.0, dash: "6 4", opacity: 0.35, delay: 0.05 },
+  { rx: 310, ry: 175, strokeWidth: 1.1, dash: "4 3", opacity: 0.45, delay: 0.15 },
+  { rx: 200, ry: 110, strokeWidth: 1.2, dash: "5 3", opacity: 0.55, delay: 0.25 },
+  { rx: 100, ry: 55,  strokeWidth: 1.3, dash: "3 2", opacity: 0.65, delay: 0.35 }
+];
+
+const TELEMETRY_PHASES = [
+  "Mapping 8 Transatlantic Provenance Basins…",
+  "Tracing Ancestral Lineage Conduits…",
+  "Projecting Sovereign Ethnic Canopy…"
+];
 
 interface RadialTreeSkeletonProps {
   title?: string;
   subtitle?: string;
   className?: string;
   phaseText?: string;
+  canvasBg?: 'parchment' | 'white' | 'sepia';
 }
 
 export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
-  title = "Synthesizing Sovereign Ethnic Tree of Life",
-  subtitle = "Projecting 36,000+ transatlantic lineages, linguistic phyla & ancestral roots...",
+  title = "Tracing Ancestral Lineages & Crucible Conduits",
+  subtitle = "Connecting 8 Transatlantic Provenance Basins & Sovereign Ethnic Roots",
   className = "",
-  phaseText = "Calibrating Sovereign Coordinate Mesh"
+  canvasBg = 'parchment'
 }) => {
-  // Generate multi-tiered concentric orbits scaling outwards to fill container boundaries
-  const rings = [90, 160, 230, 305, 380, 455, 530, 605];
-  const rays = Array.from({ length: 36 }).map((_, i) => (i * 360) / 36);
-  
-  // High-density orbital nodes spanning across 3 outer perimeter tiers
-  const outerDotsTier1 = Array.from({ length: 48 }).map((_, i) => {
-    const angle = ((i * 360) / 48) * (Math.PI / 180);
-    const r = 380;
-    return {
-      x: 650 + r * Math.cos(angle),
-      y: 650 + r * Math.sin(angle),
-      key: `t1-${i}`
-    };
-  });
+  const [phaseIndex, setPhaseIndex] = useState(0);
 
-  const outerDotsTier2 = Array.from({ length: 72 }).map((_, i) => {
-    const angle = ((i * 360) / 72 + 2.5) * (Math.PI / 180);
-    const r = 530;
-    return {
-      x: 650 + r * Math.cos(angle),
-      y: 650 + r * Math.sin(angle),
-      key: `t2-${i}`
-    };
-  });
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPhaseIndex(prev => (prev + 1) % TELEMETRY_PHASES.length);
+    }, 1200);
+    return () => clearInterval(interval);
+  }, []);
 
-  const outerDotsTier3 = Array.from({ length: 96 }).map((_, i) => {
-    const angle = ((i * 360) / 96 + 1.25) * (Math.PI / 180);
-    const r = 605;
-    return {
-      x: 650 + r * Math.cos(angle),
-      y: 650 + r * Math.sin(angle),
-      key: `t3-${i}`
-    };
-  });
+  const bgToneClass =
+    canvasBg === 'white'
+      ? 'bg-[#FFFFFF] dark:bg-[#12100E]'
+      : canvasBg === 'sepia'
+      ? 'bg-[#F4EDE2] dark:bg-[#181512]'
+      : 'bg-[#FAF7F2] dark:bg-[#161412]';
 
   return (
-    <div 
-      className={`relative w-full h-full min-h-full flex-1 flex flex-col items-center justify-center overflow-hidden bg-[#161412] select-none ${className}`}
+    <div
+      className={`relative w-full h-full min-h-full flex-1 flex flex-col items-center justify-center overflow-hidden select-none transition-colors duration-300 ${bgToneClass} ${className}`}
       aria-busy="true"
-      aria-label="Loading Radial Ethnic Tree of Life"
+      aria-label="Loading Sovereign Ethnic Tree"
     >
-      {/* Dynamic Background Chromatic Grid & Ambient Sovereign Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(#ea580c_1.2px,transparent_1.2px)] [background-size:32px_32px] opacity-20 pointer-events-none" />
-      
-      {/* Deep Continental Multi-Hued Ambient Bloom filling all edges */}
-      <div className="absolute w-[90vw] max-w-[1200px] h-[90vh] max-h-[1200px] rounded-full bg-gradient-to-tr from-amber-600/15 via-orange-600/18 to-emerald-600/15 blur-[160px] pointer-events-none animate-pulse" />
-      <div className="absolute w-[65vw] max-w-[750px] h-[65vh] max-h-[750px] rounded-full bg-radial from-[#e67e48]/25 to-transparent blur-[110px] pointer-events-none" />
+      {/* Delicate Archival Grid Texture (Hairline dots, 0 GPU reflow) */}
+      <div className="absolute inset-0 bg-[radial-gradient(#C86D3B_1px,transparent_1px)] dark:bg-[radial-gradient(#EA580C_1px,transparent_1px)] [background-size:36px_36px] opacity-[0.08] dark:opacity-[0.12] pointer-events-none" />
 
-      {/* SVG Geometric Radial Tree Shimmer Vector - Fully extends to fill maximum width and height */}
-      <div className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none overflow-hidden p-2 sm:p-6 md:p-10">
+      {/* Warm Ambient Continental Glow */}
+      <div className="absolute w-[80vw] max-w-[850px] h-[80vw] max-h-[850px] rounded-full bg-gradient-to-tr from-[#C86D3B]/10 via-[#D97706]/10 to-[#059669]/08 dark:from-[#EA580C]/16 dark:via-[#F59E0B]/14 dark:to-[#10B981]/10 blur-[130px] pointer-events-none" />
+
+      {/* SVG Canvas for Crucible Ellipses and Dendritic Canopy Branches */}
+      <div className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none overflow-hidden p-4 sm:p-8">
         <svg
-          viewBox="0 0 1300 1300"
-          className="w-full h-full max-w-full max-h-full object-contain drop-shadow-[0_0_45px_rgba(234,88,12,0.35)]"
+          viewBox="0 0 1000 1000"
+          className="w-full h-full max-w-full max-h-full object-contain"
           preserveAspectRatio="xMidYMid meet"
         >
-          <defs>
-            <linearGradient id="radialSkeletonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.85" />
-              <stop offset="45%" stopColor="#ea580c" stopOpacity="0.5" />
-              <stop offset="75%" stopColor="#e67e48" stopOpacity="0.75" />
-              <stop offset="100%" stopColor="#10b981" stopOpacity="0.85" />
-            </linearGradient>
+          {/* Subtle Outer Boundary Ring */}
+          <circle
+            cx="500"
+            cy="500"
+            r="440"
+            fill="none"
+            className="stroke-[#C86D3B]/20 dark:stroke-[#F59E0B]/25"
+            strokeWidth="0.8"
+            strokeDasharray="2 6"
+          />
 
-            <linearGradient id="beamGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#fbbf24" stopOpacity="1" />
-              <stop offset="50%" stopColor="#ea580c" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="#e67e48" stopOpacity="0" />
-            </linearGradient>
-
-            <linearGradient id="beamCounterGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#10b981" stopOpacity="0.8" />
-              <stop offset="60%" stopColor="#059669" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#047857" stopOpacity="0" />
-            </linearGradient>
-
-            <filter id="skeletonGlow" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="5" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-          </defs>
-
-          {/* Concentric Cohort Orbit Rings extending all the way out */}
-          {rings.map((r, index) => (
-            <circle
-              key={r}
-              cx="650"
-              cy="650"
-              r={r}
-              fill="none"
-              stroke="#fb923c"
-              strokeWidth={index === 0 ? "3" : index > 4 ? "1.6" : "1.2"}
-              strokeDasharray={index % 2 === 0 ? "8 6" : "4 4"}
-              opacity={0.25 + (index * 0.08)}
-            >
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                from={index % 2 === 0 ? "0 650 650" : "360 650 650"}
-                to={index % 2 === 0 ? "360 650 650" : "0 650 650"}
-                dur={`${48 - index * 4}s`}
-                repeatCount="indefinite"
+          {/* 1. RECURSIVE CRUCIBLE RESONANCE: Tilted nested ellipses */}
+          <g transform="rotate(-24 500 500)">
+            {CRUCIBLE_ELLIPSES.map((e, idx) => (
+              <motion.ellipse
+                key={`crucible-${idx}`}
+                cx="500"
+                cy="500"
+                rx={e.rx}
+                ry={e.ry}
+                fill="none"
+                className="stroke-[#C86D3B] dark:stroke-[#F59E0B]"
+                strokeWidth={e.strokeWidth}
+                strokeDasharray={e.dash}
+                initial={{ opacity: 0, scale: 0.88 }}
+                animate={{
+                  opacity: [e.opacity * 0.4, e.opacity, e.opacity * 0.4],
+                  scale: [0.96, 1.02, 0.96]
+                }}
+                transition={{
+                  duration: 3.2,
+                  delay: e.delay,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
               />
-            </circle>
-          ))}
-
-          {/* Radial Branching Sovereign Rays (36 Full Rays) */}
-          {rays.map((deg, i) => {
-            const rad = (deg * Math.PI) / 180;
-            const x1 = 650 + 90 * Math.cos(rad);
-            const y1 = 650 + 90 * Math.sin(rad);
-            const x2 = 650 + 605 * Math.cos(rad);
-            const y2 = 650 + 605 * Math.sin(rad);
-            return (
-              <line
-                key={i}
-                x1={x1}
-                y1={y1}
-                x2={x2}
-                y2={y2}
-                stroke="url(#radialSkeletonGrad)"
-                strokeWidth={i % 6 === 0 ? "2.5" : i % 3 === 0 ? "1.6" : "1"}
-                opacity={i % 3 === 0 ? "0.65" : "0.32"}
-              />
-            );
-          })}
-
-          {/* Outer Leaf Nodes Shimmer Tier 1 (Inner Leaf Layer) */}
-          {outerDotsTier1.map((d) => (
-            <circle
-              key={d.key}
-              cx={d.x}
-              cy={d.y}
-              r={Number(d.key.slice(3)) % 3 === 0 ? 5.5 : 3.8}
-              fill={Number(d.key.slice(3)) % 2 === 0 ? "#fcd34d" : "#fb923c"}
-              opacity="0.85"
-              filter="url(#skeletonGlow)"
-            >
-              <animate
-                attributeName="r"
-                values="3;6;3"
-                dur={`${2.2 + (Number(d.key.slice(3)) % 4) * 0.4}s`}
-                repeatCount="indefinite"
-              />
-              <animate
-                attributeName="opacity"
-                values="0.35;0.95;0.35"
-                dur={`${2.2 + (Number(d.key.slice(3)) % 3) * 0.6}s`}
-                repeatCount="indefinite"
-              />
-            </circle>
-          ))}
-
-          {/* Outer Leaf Nodes Shimmer Tier 2 (Intermediate Canopy Layer) */}
-          {outerDotsTier2.map((d) => (
-            <circle
-              key={d.key}
-              cx={d.x}
-              cy={d.y}
-              r={Number(d.key.slice(3)) % 4 === 0 ? 5 : 3.2}
-              fill={Number(d.key.slice(3)) % 3 === 0 ? "#10b981" : "#f59e0b"}
-              opacity="0.75"
-              filter="url(#skeletonGlow)"
-            >
-              <animate
-                attributeName="r"
-                values="2.5;5;2.5"
-                dur={`${2.6 + (Number(d.key.slice(3)) % 5) * 0.3}s`}
-                repeatCount="indefinite"
-              />
-              <animate
-                attributeName="opacity"
-                values="0.25;0.85;0.25"
-                dur={`${2.4 + (Number(d.key.slice(3)) % 4) * 0.5}s`}
-                repeatCount="indefinite"
-              />
-            </circle>
-          ))}
-
-          {/* Outer Leaf Nodes Shimmer Tier 3 (Farthest Continental Orbit Layer) */}
-          {outerDotsTier3.map((d) => (
-            <circle
-              key={d.key}
-              cx={d.x}
-              cy={d.y}
-              r={Number(d.key.slice(3)) % 5 === 0 ? 5 : 2.8}
-              fill={Number(d.key.slice(3)) % 2 === 0 ? "#e67e48" : "#fbbf24"}
-              opacity="0.7"
-              filter="url(#skeletonGlow)"
-            >
-              <animate
-                attributeName="r"
-                values="2;4.5;2"
-                dur={`${3 + (Number(d.key.slice(3)) % 4) * 0.3}s`}
-                repeatCount="indefinite"
-              />
-              <animate
-                attributeName="opacity"
-                values="0.2;0.8;0.2"
-                dur={`${2.8 + (Number(d.key.slice(3)) % 3) * 0.4}s`}
-                repeatCount="indefinite"
-              />
-            </circle>
-          ))}
-
-          {/* Dual Sweeping Radar Scanner Lines */}
-          <g transform="translate(650, 650)">
-            {/* Primary Golden-Amber Clockwise Sweeper */}
-            <line
-              x1="0"
-              y1="0"
-              x2="605"
-              y2="0"
-              stroke="url(#beamGrad)"
-              strokeWidth="4"
-              filter="url(#skeletonGlow)"
-            >
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                from="0"
-                to="360"
-                dur="4.5s"
-                repeatCount="indefinite"
-              />
-            </line>
-
-            {/* Counter Emerald Clockwise Sweeper for Depth */}
-            <line
-              x1="0"
-              y1="0"
-              x2="530"
-              y2="0"
-              stroke="url(#beamCounterGrad)"
-              strokeWidth="2.5"
-              filter="url(#skeletonGlow)"
-            >
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                from="180"
-                to="540"
-                dur="7s"
-                repeatCount="indefinite"
-              />
-            </line>
+            ))}
           </g>
 
-          {/* Central Continental Epicenter Core */}
-          <circle
-            cx="650"
-            cy="650"
-            r="60"
-            fill="#ea580c"
-            fillOpacity="0.25"
-            stroke="#f59e0b"
-            strokeWidth="3.5"
-            filter="url(#skeletonGlow)"
-          >
-            <animate
-              attributeName="r"
-              values="54;66;54"
-              dur="3s"
-              repeatCount="indefinite"
+          {/* 2. DENDRITIC LINEAGE TREE: 8 TAST Provenance Bezier branches */}
+          {TAST_BRANCHES.map((b, i) => (
+            <g key={`branch-${b.name}`}>
+              {/* Primary Trunk Path */}
+              <motion.path
+                d={b.main}
+                fill="none"
+                className="stroke-[#8C532B] dark:stroke-[#F97316]"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 0.75 }}
+                transition={{
+                  duration: 1.1,
+                  delay: 0.08 + i * 0.07,
+                  ease: [0.16, 1, 0.3, 1]
+                }}
+              />
+
+              {/* Sub-Branch 1 */}
+              <motion.path
+                d={b.sub1}
+                fill="none"
+                className="stroke-[#C86D3B]/70 dark:stroke-[#FBBF24]/75"
+                strokeWidth="1.1"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 0.65 }}
+                transition={{
+                  duration: 0.9,
+                  delay: 0.25 + i * 0.07,
+                  ease: [0.16, 1, 0.3, 1]
+                }}
+              />
+
+              {/* Sub-Branch 2 */}
+              <motion.path
+                d={b.sub2}
+                fill="none"
+                className="stroke-[#C86D3B]/70 dark:stroke-[#FBBF24]/75"
+                strokeWidth="1.0"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 0.65 }}
+                transition={{
+                  duration: 0.9,
+                  delay: 0.32 + i * 0.07,
+                  ease: [0.16, 1, 0.3, 1]
+                }}
+              />
+
+              {/* Canopy Leaf Nodes (Ethnic Lineage Pearls) */}
+              {b.nodes.map((node, nodeIdx) => {
+                const fillClass =
+                  node.colorType === 'primary'
+                    ? 'fill-[#C86D3B] dark:fill-[#F59E0B]'
+                    : node.colorType === 'secondary'
+                    ? 'fill-[#D97706] dark:fill-[#FBBF24]'
+                    : 'fill-[#059669] dark:fill-[#10B981]';
+
+                return (
+                  <motion.circle
+                    key={`node-${b.name}-${nodeIdx}`}
+                    cx={node.x}
+                    cy={node.y}
+                    r={node.r}
+                    className={`${fillClass} drop-shadow-xs`}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{
+                      scale: [0, 1.25, 1],
+                      opacity: [0, 0.95, 0.8]
+                    }}
+                    transition={{
+                      duration: 0.7,
+                      delay: 0.45 + i * 0.07 + nodeIdx * 0.1,
+                      ease: "easeOut"
+                    }}
+                  />
+                );
+              })}
+            </g>
+          ))}
+
+          {/* 3. CONTINENTAL ROOT (Central Ancestral Nexus) */}
+          <g>
+            {/* Pulsing Core Aura */}
+            <motion.circle
+              cx="500"
+              cy="500"
+              r="34"
+              className="fill-[#C86D3B]/15 dark:fill-[#F59E0B]/20"
+              animate={{
+                scale: [0.9, 1.2, 0.9],
+                opacity: [0.4, 0.85, 0.4]
+              }}
+              transition={{
+                duration: 2.8,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
             />
-          </circle>
-          <circle cx="650" cy="650" r="28" fill="#fbbf24" opacity="0.9" />
-          <circle cx="650" cy="650" r="12" fill="#ffffff" />
+            {/* Outer Anchor Ring */}
+            <circle
+              cx="500"
+              cy="500"
+              r="18"
+              fill="none"
+              className="stroke-[#8C532B] dark:stroke-[#F59E0B]"
+              strokeWidth="2"
+            />
+            {/* Inner Continental Pearl */}
+            <circle
+              cx="500"
+              cy="500"
+              r="8"
+              className="fill-[#C86D3B] dark:fill-[#FCD34D]"
+            />
+            <circle
+              cx="500"
+              cy="500"
+              r="3"
+              fill="#FFFFFF"
+            />
+          </g>
         </svg>
       </div>
 
-      {/* Central Floating Overlay Badge */}
-      <div className="relative z-20 flex flex-col items-center justify-center pointer-events-none p-4 text-center">
+      {/* Floating Status Pill (Sovereign Crucible & Canopy Metadata) */}
+      <div className="relative z-20 flex flex-col items-center justify-center pointer-events-none p-4 text-center max-w-md">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 8 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-          className="px-5 py-3 rounded-2xl bg-[#1f0b03]/90 border border-[#ea580c]/60 shadow-[0_12px_40px_rgba(234,88,12,0.35)] backdrop-blur-md max-w-sm space-y-1.5"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
+          className="px-4 py-2 rounded-full bg-[#FAF7F2]/90 dark:bg-[#1E1B18]/90 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_8px_30px_rgba(75,55,35,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] backdrop-blur-md flex items-center gap-2.5"
         >
-          <div className="flex items-center justify-center gap-2 text-amber-300 font-bold text-xs uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin" style={{ animationDuration: '4s' }} />
-            <span>Radial Cartography Engine</span>
-            <Dna className="w-3.5 h-3.5 text-orange-400" />
+          <div className="flex items-center gap-1.5 text-xs font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6] tracking-wide">
+            <GitBranch className="w-3.5 h-3.5 text-[#C86D3B] dark:text-[#F59E0B]" />
+            <span>Africalia</span>
+            <span className="text-[#7D6B5A] dark:text-[#B5A492] font-normal font-sans text-[11px]">
+              · Sovereign Lineage Tree
+            </span>
           </div>
-          <div className="text-[11px] font-mono text-amber-100/90 font-medium">
-            {phaseText}
+          <div className="w-[1px] h-3 bg-[#E5DDD0] dark:bg-[#38322B]" />
+          <div className="flex items-center gap-1.5 text-[11px] font-medium text-[#C86D3B] dark:text-[#F59E0B]">
+            <Sparkles className="w-3 h-3 animate-spin text-[#D97706]" style={{ animationDuration: '4s' }} />
+            <span className="tabular-nums">8 Basins</span>
           </div>
         </motion.div>
       </div>
 
-      {/* Bottom Status Card - Positioned Elegantly over the extended Geometry */}
-      <div className="relative z-20 mt-6 sm:mt-8 flex flex-col items-center gap-2 px-4 text-center max-w-lg">
-        <h3 className="text-sm sm:text-base font-serif font-black text-amber-100 flex items-center gap-2 drop-shadow-md">
-          <Compass className="w-4 h-4 text-amber-400 animate-spin" style={{ animationDuration: '6s' }} />
+      {/* Bottom Editorial Narrative & Staggered Micro-Telemetry */}
+      <div className="relative z-20 mt-4 sm:mt-6 flex flex-col items-center gap-2 px-4 text-center max-w-lg">
+        <h3 className="text-sm sm:text-base font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6] flex items-center gap-2 tracking-tight">
+          <Compass className="w-4 h-4 text-[#C86D3B] dark:text-[#F59E0B]" />
           <span>{title}</span>
         </h3>
-        <p className="text-xs text-amber-200/85 leading-relaxed font-light drop-shadow-xs">
+        <p className="text-xs text-[#7D6B5A] dark:text-[#B5A492] leading-relaxed font-normal">
           {subtitle}
         </p>
 
-        {/* Shimmer Bar */}
-        <div className="w-52 sm:w-72 h-1.5 rounded-full bg-stone-800/90 overflow-hidden mt-1.5 border border-amber-500/25 shadow-inner">
-          <div className="h-full bg-gradient-to-r from-amber-500 via-orange-400 to-emerald-400 rounded-full animate-indeterminate" />
+        {/* Dynamic Micro-Telemetry Phase Text */}
+        <div className="h-5 flex items-center justify-center overflow-hidden mt-1">
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={phaseIndex}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.25 }}
+              className="text-[11px] font-mono text-[#C86D3B] dark:text-[#FBBF24] font-medium tracking-wide"
+            >
+              {TELEMETRY_PHASES[phaseIndex]}
+            </motion.span>
+          </AnimatePresence>
+        </div>
+
+        {/* Hairline Terracotta Progress Track */}
+        <div className="w-48 sm:w-64 h-[2px] rounded-full bg-[#E5DDD0] dark:bg-[#38322B] overflow-hidden mt-1 shadow-inner relative">
+          <motion.div
+            className="absolute top-0 bottom-0 w-24 rounded-full bg-gradient-to-r from-[#C86D3B] via-[#D97706] to-[#059669]"
+            animate={{
+              x: [-100, 260]
+            }}
+            transition={{
+              duration: 1.4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
         </div>
       </div>
     </div>

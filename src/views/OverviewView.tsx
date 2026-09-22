@@ -6,7 +6,7 @@ import {
   getIndicatorRankings 
 } from '../data/atlas-selectors';
 import { AfricanRegion, AtlasEntity } from '../data/types';
-import { AfricaMap } from '../components/AfricaMap';
+import { AfricaMap, MapDisplayMode } from '../components/AfricaMap';
 import { CountryFlag } from '../components/CountryFlag';
 import { 
   EditorialCard, 
@@ -49,6 +49,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   onNavigateTab
 }) => {
   const [selectedRegionFilter, setSelectedRegionFilter] = useState<AfricanRegion | 'All'>('All');
+  const [mapMode, setMapMode] = useState<MapDisplayMode>('un_geoscheme');
+  const [activeMetric, setActiveMetric] = useState<string>('NY.GDP.MKTP.CD');
   const continental = getContinentalSummary();
   const regionalSummaries = getRegionalSummaries();
   const topEconomies = getIndicatorRankings('NY.GDP.MKTP.CD', 6);
@@ -130,7 +132,10 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         {/* The Live Interactive Map with Unified Controls & Filters - Schematic UN Colors on Overview */}
         <AfricaMap
           initialCartographySource="schematic"
-          mapMode="un_geoscheme"
+          mapMode={mapMode}
+          onMapModeChange={setMapMode}
+          activeMetric={activeMetric}
+          onActiveMetricChange={setActiveMetric}
           onSelectCountry={onSelectCountry}
           selectedRegionFilter={selectedRegionFilter}
           onSelectRegionFilter={setSelectedRegionFilter}
