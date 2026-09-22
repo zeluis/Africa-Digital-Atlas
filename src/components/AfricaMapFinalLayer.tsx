@@ -2,6 +2,9 @@ import React from 'react';
 import { AFRICA_FINAL_MAP, AFRICA_FINAL_TRANSFORM, AfricaFinalCountryPath } from '../data/africaFinalGeometry';
 import { useAfricaFinalMap } from '../utils/svgMapLoader';
 import { AfricanRegion } from '../data/types';
+import { AKP_INFRASTRUCTURE_POINTS, AKP_PROTECTED_AREAS, AkpInfrastructurePoint, AkpProtectedArea, AkpCategory } from '../data/akpDatasets';
+import { ThematicOverlaysLayer } from './ThematicOverlaysLayer';
+import { ThematicPath, ThematicPulseNode, ThematicAreaAura } from '../data/akpThematicOverlays';
 
 export interface AfricaMapFinalLayerProps {
   mapData?: Record<string, AfricaFinalCountryPath>;
@@ -12,6 +15,15 @@ export interface AfricaMapFinalLayerProps {
   selectedAdmin1?: { id: string; name: string; countryId?: string } | null;
   showAdmin1Borders: boolean;
   showGraticuleAndCompass?: boolean;
+  showPowerPlants?: boolean;
+  showProtectedAreas?: boolean;
+  showThematicOverlays?: boolean;
+  activeThematicTheme?: AkpCategory;
+  hoveredThematicItem?: ThematicPulseNode | ThematicPath | ThematicAreaAura | null;
+  onHoverThematicItem?: (item: ThematicPulseNode | ThematicPath | ThematicAreaAura | null, event?: React.MouseEvent) => void;
+  onClickThematicItem?: (item: ThematicPulseNode | ThematicPath | ThematicAreaAura, event?: React.MouseEvent) => void;
+  hoveredAkpNode?: AkpInfrastructurePoint | AkpProtectedArea | null;
+  onHoverAkpNode?: (node: AkpInfrastructurePoint | AkpProtectedArea | null, event?: React.MouseEvent) => void;
   visibleRegions: Set<AfricanRegion>;
   activeRegionFilter: string;
   activeBlocFilter?: string | null;
@@ -33,6 +45,15 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
   selectedAdmin1,
   showAdmin1Borders,
   showGraticuleAndCompass = true,
+  showPowerPlants = false,
+  showProtectedAreas = false,
+  showThematicOverlays = true,
+  activeThematicTheme = 'all',
+  hoveredThematicItem,
+  onHoverThematicItem,
+  onClickThematicItem,
+  hoveredAkpNode,
+  onHoverAkpNode,
   visibleRegions,
   activeRegionFilter,
   activeBlocFilter,
@@ -410,6 +431,191 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
           );
         })}
       </g>
+
+      {/* European Commission AKP / BIOPAMA Protected Areas & UNESCO Biospheres Layer */}
+      {showProtectedAreas && (
+        <g id="akp-protected-areas-layer" className="transition-opacity duration-300 pointer-events-auto">
+          {AKP_PROTECTED_AREAS.map((reserve) => {
+            const isHovered = hoveredAkpNode?.id === reserve.id;
+            const reserveLabel = reserve.name.length > 22 ? reserve.name.substring(0, 20) + '…' : reserve.name;
+            const pillWidth = Math.max(300, reserveLabel.length * 24 + 80);
+
+            return (
+              <g
+                key={`akp-reserve-${reserve.id}`}
+                transform={`translate(${reserve.x}, ${reserve.y})`}
+                className="cursor-pointer group"
+                onMouseEnter={(e) => {
+                  e.stopPropagation();
+                  onHoverAkpNode?.(reserve, e);
+                }}
+                onMouseLeave={(e) => {
+                  e.stopPropagation();
+                  onHoverAkpNode?.(null);
+                }}
+              >
+                {/* Generous Hitbox */}
+                <circle cx="0" cy="0" r="120" fill="transparent" />
+
+                {/* Glowing Radar Halo */}
+                <circle
+                  cx="0"
+                  cy="0"
+                  r={isHovered ? "56" : "36"}
+                  fill="#10b981"
+                  fillOpacity={isHovered ? "0.45" : "0.22"}
+                  stroke="#059669"
+                  strokeWidth="3.5"
+                  strokeDasharray="6 4"
+                  className="transition-all duration-200"
+                />
+                {/* Core Marker */}
+                <circle
+                  cx="0"
+                  cy="0"
+                  r={isHovered ? "26" : "18"}
+                  fill="#059669"
+                  stroke="#ffffff"
+                  strokeWidth="4.5"
+                  className="transition-all duration-200 shadow-xl"
+                />
+                {/* Clean Tree Vector Icon Path */}
+                <path
+                  d="M0 -10 L7 0 L3 0 L8 8 L-8 8 L-3 0 L-7 0 Z M-1.5 8 L-1.5 12 L1.5 12 L1.5 8 Z"
+                  fill="#ffffff"
+                  transform="scale(1.1)"
+                />
+                {/* Crisp Pill Label */}
+                <g transform="translate(0, 68)" className="pointer-events-none">
+                  <rect
+                    x={-pillWidth / 2}
+                    y="-26"
+                    width={pillWidth}
+                    height="52"
+                    rx="26"
+                    fill="#064e3b"
+                    fillOpacity="0.96"
+                    stroke="#34d399"
+                    strokeWidth="3"
+                  />
+                  <text
+                    x="0"
+                    y="10"
+                    textAnchor="middle"
+                    fill="#ffffff"
+                    fontSize="34"
+                    fontFamily="sans-serif"
+                    fontWeight="800"
+                    letterSpacing="0.02em"
+                  >
+                    🌿 {reserveLabel}
+                  </text>
+                </g>
+              </g>
+            );
+          })}
+        </g>
+      )}
+
+      {/* European Commission AKP Clean Energy Infrastructure & Major Dams Layer */}
+      {showPowerPlants && (
+        <g id="akp-power-plants-layer" className="transition-opacity duration-300 pointer-events-auto">
+          {AKP_INFRASTRUCTURE_POINTS.map((plant) => {
+            const isHovered = hoveredAkpNode?.id === plant.id;
+            const isSolar = plant.type === 'solar';
+            const isWind = plant.type === 'wind';
+            const isGeo = plant.type === 'geothermal';
+            const markerBg = isSolar ? '#f59e0b' : isWind ? '#0284c7' : isGeo ? '#dc2626' : '#0891b2';
+            const ringColor = isSolar ? '#fbbf24' : isWind ? '#38bdf8' : isGeo ? '#f87171' : '#22d3ee';
+            const capText = `⚡ ${plant.capacity}`;
+            const pillWidth = Math.max(260, capText.length * 24 + 60);
+
+            return (
+              <g
+                key={`akp-power-${plant.id}`}
+                transform={`translate(${plant.x}, ${plant.y})`}
+                className="cursor-pointer group"
+                onMouseEnter={(e) => {
+                  e.stopPropagation();
+                  onHoverAkpNode?.(plant, e);
+                }}
+                onMouseLeave={(e) => {
+                  e.stopPropagation();
+                  onHoverAkpNode?.(null);
+                }}
+              >
+                {/* Generous Hitbox */}
+                <circle cx="0" cy="0" r="120" fill="transparent" />
+
+                {/* Kinetic Pulse Ring */}
+                <circle
+                  cx="0"
+                  cy="0"
+                  r={isHovered ? "58" : "38"}
+                  fill={markerBg}
+                  fillOpacity={isHovered ? "0.45" : "0.22"}
+                  stroke={ringColor}
+                  strokeWidth="3.5"
+                  strokeDasharray="6 4"
+                  className="transition-all duration-200"
+                />
+                {/* Core Power Node */}
+                <circle
+                  cx="0"
+                  cy="0"
+                  r={isHovered ? "26" : "18"}
+                  fill={markerBg}
+                  stroke="#ffffff"
+                  strokeWidth="4.5"
+                  className="transition-all duration-200 shadow-xl"
+                />
+                {/* Lightning Bolt Glyph */}
+                <path
+                  d="M1 -10 L-7 1 L0 1 L-1 10 L7 -1 L0 -1 Z"
+                  fill="#ffffff"
+                  transform="scale(1.1)"
+                />
+                {/* Capacity Label Tag */}
+                <g transform="translate(0, -60)" className="pointer-events-none">
+                  <rect
+                    x={-pillWidth / 2}
+                    y="-26"
+                    width={pillWidth}
+                    height="52"
+                    rx="26"
+                    fill="#0f172a"
+                    fillOpacity="0.96"
+                    stroke={ringColor}
+                    strokeWidth="3"
+                  />
+                  <text
+                    x="0"
+                    y="10"
+                    textAnchor="middle"
+                    fill="#ffffff"
+                    fontSize="34"
+                    fontFamily="monospace"
+                    fontWeight="900"
+                    letterSpacing="0.02em"
+                  >
+                    {capText}
+                  </text>
+                </g>
+              </g>
+            );
+          })}
+        </g>
+      )}
+
+      {/* Dynamic Animated Overlays for AKP Thematic Groupings */}
+      {showThematicOverlays && (
+        <ThematicOverlaysLayer
+          activeThematicTheme={activeThematicTheme}
+          hoveredThematicItem={hoveredThematicItem}
+          onHoverThematicItem={onHoverThematicItem}
+          onClickThematicItem={onClickThematicItem}
+        />
+      )}
     </>
   );
 };
