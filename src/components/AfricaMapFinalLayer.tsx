@@ -3,8 +3,7 @@ import { AFRICA_FINAL_MAP, AFRICA_FINAL_TRANSFORM, AfricaFinalCountryPath } from
 import { useAfricaFinalMap } from '../utils/svgMapLoader';
 import { AfricanRegion } from '../data/types';
 import { AKP_INFRASTRUCTURE_POINTS, AKP_PROTECTED_AREAS, AkpInfrastructurePoint, AkpProtectedArea, AkpCategory } from '../data/akpDatasets';
-import { ThematicOverlaysLayer } from './ThematicOverlaysLayer';
-import { ThematicPath, ThematicPulseNode, ThematicAreaAura } from '../data/akpThematicOverlays';
+import { ThematicOverlaysLayer, AnyThematicItem, LayerVisibilityState } from './ThematicOverlaysLayer';
 
 export interface AfricaMapFinalLayerProps {
   mapData?: Record<string, AfricaFinalCountryPath>;
@@ -19,9 +18,10 @@ export interface AfricaMapFinalLayerProps {
   showProtectedAreas?: boolean;
   showThematicOverlays?: boolean;
   activeThematicTheme?: AkpCategory;
-  hoveredThematicItem?: ThematicPulseNode | ThematicPath | ThematicAreaAura | null;
-  onHoverThematicItem?: (item: ThematicPulseNode | ThematicPath | ThematicAreaAura | null, event?: React.MouseEvent) => void;
-  onClickThematicItem?: (item: ThematicPulseNode | ThematicPath | ThematicAreaAura, event?: React.MouseEvent) => void;
+  layerVisibility?: Partial<LayerVisibilityState>;
+  hoveredThematicItem?: AnyThematicItem | null;
+  onHoverThematicItem?: (item: AnyThematicItem | null, event?: React.MouseEvent) => void;
+  onClickThematicItem?: (item: AnyThematicItem, event?: React.MouseEvent) => void;
   hoveredAkpNode?: AkpInfrastructurePoint | AkpProtectedArea | null;
   onHoverAkpNode?: (node: AkpInfrastructurePoint | AkpProtectedArea | null, event?: React.MouseEvent) => void;
   visibleRegions: Set<AfricanRegion>;
@@ -49,6 +49,7 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
   showProtectedAreas = false,
   showThematicOverlays = true,
   activeThematicTheme = 'all',
+  layerVisibility,
   hoveredThematicItem,
   onHoverThematicItem,
   onClickThematicItem,
@@ -611,6 +612,7 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
       {showThematicOverlays && (
         <ThematicOverlaysLayer
           activeThematicTheme={activeThematicTheme}
+          layerVisibility={layerVisibility}
           hoveredThematicItem={hoveredThematicItem}
           onHoverThematicItem={onHoverThematicItem}
           onClickThematicItem={onClickThematicItem}

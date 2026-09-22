@@ -65,6 +65,18 @@ import { getCanonicalCountryColor } from '../data/africaCanonicalColorPalette';
 import { AfricaMapFinalLayer } from './AfricaMapFinalLayer';
 import { AfricaUnLogo } from './AfricaUnLogo';
 import { useAfricaFinalMap } from '../utils/svgMapLoader';
+import { ThematicLayerDeck } from './ThematicLayerDeck';
+import { AkpCatalogueModal } from './AkpCatalogueModal';
+import {
+  ThematicOverlaysLayer,
+  AnyThematicItem,
+  LayerVisibilityState,
+  DEFAULT_LAYER_VISIBILITY
+} from './ThematicOverlaysLayer';
+import { SubseaCablePath, CableLandingStation } from '../data/akpTelecomCables';
+import { ConflictBeacon, CONFLICT_CATEGORY_CONFIG } from '../data/akpConflictSecurity';
+import { SocialInfrastructureFacility } from '../data/akpSocialInfrastructure';
+import { HeritageSanctuarySite } from '../data/akpCulturalReserves';
 import {
   AKP_CHOROPLETH_METRICS,
   AKP_CATEGORIES,
@@ -198,9 +210,149 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   const [showProtectedAreas, setShowProtectedAreas] = useState<boolean>(false);
   const [showThematicOverlays, setShowThematicOverlays] = useState<boolean>(true);
   const [activeAkpCategory, setActiveAkpCategory] = useState<AkpCategory>('all');
-  const [hoveredThematicItem, setHoveredThematicItem] = useState<ThematicPulseNode | ThematicPath | ThematicAreaAura | null>(null);
-  const [selectedThematicItem, setSelectedThematicItem] = useState<ThematicPulseNode | ThematicPath | ThematicAreaAura | null>(null);
+  const [layerVisibility, setLayerVisibility] = useState<LayerVisibilityState>(DEFAULT_LAYER_VISIBILITY);
+  const [isCatalogueModalOpen, setIsCatalogueModalOpen] = useState<boolean>(false);
+  const [hoveredThematicItem, setHoveredThematicItem] = useState<AnyThematicItem | null>(null);
+  const [selectedThematicItem, setSelectedThematicItem] = useState<AnyThematicItem | null>(null);
   const [hoveredAkpNode, setHoveredAkpNode] = useState<AkpInfrastructurePoint | AkpProtectedArea | null>(null);
+
+  const handleToggleLayer = (key: keyof LayerVisibilityState) => {
+    setLayerVisibility(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
+  const handleSetAllLayers = (enabled: boolean) => {
+    setLayerVisibility({
+      subseaCables: enabled,
+      landingStations: enabled,
+      conflictBeacons: enabled,
+      hospitals: enabled,
+      schools: enabled,
+      culturalHeritage: enabled,
+      naturalSanctuaries: enabled,
+      powerCorridors: enabled,
+      growthNodes: enabled,
+      areaAuras: enabled
+    });
+  };
+
+  // Unified inspector helper for all rich thematic layers
+  const getThematicItemDisplay = (item: AnyThematicItem) => {
+    if ('fatalities12M' in item) {
+      const conf = item as ConflictBeacon;
+      return {
+        badge: `${CONFLICT_CATEGORY_CONFIG[conf.category]?.badge || '⚔️ Security'} [${conf.intensity.toUpperCase()}]`,
+        category: 'Peace & Security (ACLED)',
+        name: conf.name,
+        subtitle: `${conf.countryName} • ${conf.categoryLabel}`,
+        description: conf.description,
+        stats: [
+          { label: 'Conflict Intensity', value: conf.intensity.toUpperCase() },
+          { label: 'Fatalities (12M)', value: `${conf.fatalities12M.toLocaleString()} Reported` },
+          { label: 'Event Count (12M)', value: `${conf.eventCount12M} Armed Events` },
+          { label: 'Key Actors', value: conf.actorsInvolved.join(', ') },
+          { label: 'Humanitarian Impact', value: conf.humanitarianImpact },
+          ...(conf.peaceMission ? [{ label: 'Peacekeeping Mission', value: conf.peaceMission }] : [])
+        ],
+        source: conf.source,
+        accentColor: conf.color
+      };
+    }
+
+    if ('designCapacityTbps' in item) {
+      const cable = item as SubseaCablePath;
+      return {
+        badge: `🌐 Subsea Cable (${cable.designCapacityTbps} Tbps)`,
+        category: 'Telecommunications & Cloud Optics',
+        name: cable.name,
+        subtitle: `${cable.lengthKm.toLocaleString()} km System • Live Operational Route`,
+        description: cable.description,
+        stats: cable.stats,
+        source: cable.source,
+        accentColor: cable.color
+      };
+    }
+
+    if ('cablesConnected' in item) {
+      const station = item as CableLandingStation;
+      return {
+        badge: '🌐 Oceanic Landing Hub',
+        category: 'Telecommunications Gateway',
+        name: `${station.city} Cable Landing Station`,
+        subtitle: `${station.countryIso3} • ${station.totalBandwidthTbps} Tbps Bandwidth Capacity`,
+        description: station.description,
+        stats: [
+          { label: 'Bandwidth', value: `${station.totalBandwidthTbps} Tbps` },
+          { label: 'Subsea Systems', value: station.cablesConnected.join(', ') },
+          { label: 'Status', value: station.status },
+          { label: 'Key Operator', value: station.operator }
+        ],
+        source: 'TeleGeography Submarine Cable Map / ITU',
+        accentColor: '#00f0ff'
+      };
+    }
+
+    if ('capacityValue' in item) {
+      const fac = item as SocialInfrastructureFacility;
+      const isHosp = fac.type === 'hospital';
+      return {
+        badge: isHosp ? '🏥 Quaternary Referral Center' : '🎓 Academic Mega-Campus',
+        category: isHosp ? 'Healthcare & Clinical Tertiary' : 'Higher Education & Research Hub',
+        name: fac.name,
+        subtitle: `${fac.city}, ${fac.countryName} • ${fac.specialization}`,
+        description: fac.description,
+        stats: fac.stats,
+        source: fac.source,
+        accentColor: fac.color
+      };
+    }
+
+    if ('unescoCriteria' in item) {
+      const site = item as HeritageSanctuarySite;
+      return {
+        badge: site.badge,
+        category: site.type === 'cultural' ? 'UNESCO Cultural Monument' : 'Biosphere Reserve & Sanctuary',
+        name: site.name,
+        subtitle: `${site.countryName} • Inscribed ${site.inscriptionYear}`,
+        description: site.description,
+        stats: [
+          ...(site.areaKm2 ? [{ label: 'Protected Area', value: site.areaKm2 }] : []),
+          { label: 'UNESCO Criteria', value: site.unescoCriteria },
+          ...site.stats
+        ],
+        source: site.source,
+        accentColor: site.color
+      };
+    }
+
+    if ('badge' in item && 'subtitle' in item) {
+      const node = item as ThematicPulseNode;
+      return {
+        badge: node.badge,
+        category: node.category.replace('_', ' ').toUpperCase(),
+        name: node.name,
+        subtitle: node.subtitle,
+        description: node.description,
+        stats: node.stats,
+        source: node.source,
+        accentColor: node.color
+      };
+    }
+
+    const path = item as (ThematicPath | ThematicAreaAura);
+    return {
+      badge: '🛣️ Continental Infrastructure Artery',
+      category: path.category.replace('_', ' ').toUpperCase(),
+      name: path.name,
+      subtitle: undefined,
+      description: path.description,
+      stats: path.stats,
+      source: path.source,
+      accentColor: 'color' in path ? path.color : path.strokeColor
+    };
+  };
   const [isAdmin1InspectorOpen, setIsAdmin1InspectorOpen] = useState<boolean>(false);
   const [hoveredEntityId, setHoveredEntityId] = useState<string | null>(null);
   const [hoveredAdmin1, setHoveredAdmin1] = useState<{ id: string; name: string; countryId: string } | null>(null);
@@ -1411,6 +1563,20 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             : "relative w-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner p-[6px] aspect-[890/985] max-h-[85vh] min-h-[440px]"
         }
       >
+        {/* Top-Right Floating Overlays & Layer Deck Controls */}
+        <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+          <ThematicLayerDeck
+            layerVisibility={layerVisibility}
+            onToggleLayer={handleToggleLayer}
+            onSetAllLayers={handleSetAllLayers}
+            onOpenCatalogueModal={() => setIsCatalogueModalOpen(true)}
+            showPowerPlants={showPowerPlants}
+            onTogglePowerPlants={() => setShowPowerPlants(prev => !prev)}
+            showProtectedAreas={showProtectedAreas}
+            onToggleProtectedAreas={() => setShowProtectedAreas(prev => !prev)}
+          />
+        </div>
+
         {/* Floating Admin-1 Subdivisions Inspector */}
         <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 max-w-[calc(100vw-32px)]">
           {/* Collapsed Floating Pill in top-left */}
@@ -1614,6 +1780,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 showProtectedAreas={showProtectedAreas}
                 showThematicOverlays={showThematicOverlays}
                 activeThematicTheme={activeAkpCategory}
+                layerVisibility={layerVisibility}
                 hoveredThematicItem={hoveredThematicItem}
                 onHoverThematicItem={(item) => setHoveredThematicItem(item)}
                 onClickThematicItem={(item) => setSelectedThematicItem(item)}
@@ -1633,116 +1800,137 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           </g>
         </svg>
 
-        {/* Rich Interactive Floating Hover Card for AKP Thematic Corridors & Nodes */}
-        {hoveredThematicItem && !selectedThematicItem && (
-          <div
-            style={{
-              left: `${Math.min(window.innerWidth - 360, Math.max(20, cursorPos.x + 18))}px`,
-              top: `${Math.max(20, Math.min(window.innerHeight - 340, cursorPos.y - 140))}px`,
-            }}
-            className="absolute z-40 pointer-events-none w-80 p-4 rounded-2xl bg-zinc-950/95 text-white border border-cyan-500/60 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
-          >
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="text-[10px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                {'badge' in hoveredThematicItem ? (hoveredThematicItem as ThematicPulseNode).badge : '🛣️ Continental Corridor'}
-              </span>
-              <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase">
-                {hoveredThematicItem.category.replace('_', ' ')}
-              </span>
-            </div>
-
-            <h4 className="font-bold text-sm text-zinc-100 leading-snug mb-1">
-              {hoveredThematicItem.name}
-            </h4>
-
-            {'subtitle' in hoveredThematicItem && (
-              <p className="text-[11px] text-cyan-400 font-semibold mb-2">
-                {(hoveredThematicItem as ThematicPulseNode).subtitle}
-              </p>
-            )}
-
-            <div className="space-y-1.5 text-xs text-zinc-300 my-2">
-              {hoveredThematicItem.stats.map((st, idx) => (
-                <div key={idx} className="flex justify-between items-center text-[11px]">
-                  <span className="text-zinc-400">{st.label}:</span>
-                  <span className="font-mono font-bold text-zinc-100">{st.value}</span>
-                </div>
-              ))}
-            </div>
-
-            <p className="text-[11px] text-zinc-300 line-clamp-2 my-2 leading-relaxed">
-              {hoveredThematicItem.description}
-            </p>
-
-            <div className="mt-2.5 pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] text-zinc-400 font-medium">
-              <span className="truncate mr-2">{hoveredThematicItem.source}</span>
-              <span className="text-cyan-400 font-semibold shrink-0">Click to Inspect</span>
-            </div>
-          </div>
-        )}
-
-        {/* Pinned Thematic Item Detail Panel / Drawer */}
-        <AnimatePresence>
-          {selectedThematicItem && (
-            <motion.div
-              initial={{ opacity: 0, y: 30, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 30, scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-              className="absolute bottom-6 left-6 right-6 sm:left-auto sm:right-6 sm:w-96 z-50 p-5 rounded-2xl bg-zinc-950/98 text-white border border-cyan-500/60 shadow-2xl backdrop-blur-2xl"
+        {/* Rich Interactive Floating Hover Card for All Thematic Overlays & Beacons (Editorial Theme) */}
+        {hoveredThematicItem && !selectedThematicItem && (() => {
+          const info = getThematicItemDisplay(hoveredThematicItem);
+          return (
+            <div
+              style={{
+                left: `${Math.min(window.innerWidth - 380, Math.max(20, cursorPos.x + 18))}px`,
+                top: `${Math.max(20, Math.min(window.innerHeight - 360, cursorPos.y - 140))}px`,
+              }}
+              className="absolute z-40 pointer-events-none w-84 p-4 rounded-2xl bg-white/98 dark:bg-zinc-950/98 text-zinc-900 dark:text-zinc-100 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
             >
-              <div className="flex items-center justify-between gap-2 mb-2.5">
-                <span className="text-[11px] font-mono uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full bg-cyan-500/25 text-cyan-300 border border-cyan-500/40">
-                  {'badge' in selectedThematicItem ? (selectedThematicItem as ThematicPulseNode).badge : '🛣️ Continental Infrastructure Artery'}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setSelectedThematicItem(null)}
-                  className="p-1 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
-                  title="Close Inspector"
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <span
+                  className="text-[10px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full border"
+                  style={{
+                    backgroundColor: `${info.accentColor}18`,
+                    color: info.accentColor,
+                    borderColor: `${info.accentColor}40`
+                  }}
                 >
-                  <X className="w-4 h-4" />
-                </button>
+                  {info.badge}
+                </span>
+                <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 font-bold uppercase truncate max-w-[120px]">
+                  {info.category}
+                </span>
               </div>
 
-              <h3 className="font-bold text-base text-zinc-100 leading-snug mb-1">
-                {selectedThematicItem.name}
-              </h3>
+              <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 leading-snug mb-1">
+                {info.name}
+              </h4>
 
-              {'subtitle' in selectedThematicItem && (
-                <p className="text-xs text-cyan-400 font-semibold mb-3">
-                  {(selectedThematicItem as ThematicPulseNode).subtitle}
+              {info.subtitle && (
+                <p className="text-[11px] font-semibold mb-2" style={{ color: info.accentColor }}>
+                  {info.subtitle}
                 </p>
               )}
 
-              <p className="text-xs text-zinc-300 leading-relaxed mb-4">
-                {selectedThematicItem.description}
-              </p>
-
-              <div className="grid grid-cols-2 gap-2 bg-zinc-900/80 p-3 rounded-xl border border-zinc-800 mb-3.5">
-                {selectedThematicItem.stats.map((st, idx) => (
-                  <div key={idx} className="flex flex-col">
-                    <span className="text-[10px] text-zinc-400">{st.label}</span>
-                    <span className="text-xs font-mono font-bold text-cyan-300">{st.value}</span>
+              <div className="space-y-1.5 text-xs text-zinc-700 dark:text-zinc-300 my-2">
+                {info.stats.slice(0, 4).map((st, idx) => (
+                  <div key={idx} className="flex justify-between items-center text-[11px]">
+                    <span className="text-zinc-500 dark:text-zinc-400">{st.label}:</span>
+                    <span className="font-mono font-bold text-zinc-900 dark:text-zinc-100">{st.value}</span>
                   </div>
                 ))}
               </div>
 
-              <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[11px] text-zinc-400">
-                <div className="flex flex-col">
-                  <span className="text-[9px] text-zinc-500 uppercase tracking-wider">Source Citation</span>
-                  <span className="text-[10px] font-medium text-zinc-300 truncate max-w-[200px]">{selectedThematicItem.source}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedThematicItem(null)}
-                  className="px-3 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
-                >
-                  Dismiss
-                </button>
+              <p className="text-[11px] text-zinc-600 dark:text-zinc-400 line-clamp-2 my-2 leading-relaxed">
+                {info.description}
+              </p>
+
+              <div className="mt-2.5 pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[10px] text-zinc-500 dark:text-zinc-400 font-medium">
+                <span className="truncate mr-2">{info.source}</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">Click to Inspect</span>
               </div>
-            </motion.div>
-          )}
+            </div>
+          );
+        })()}
+
+        {/* Unified Top-Docked Inspector Drawer (Slide-Over Card with Full Tactical Telemetry) */}
+        <AnimatePresence>
+          {selectedThematicItem && (() => {
+            const info = getThematicItemDisplay(selectedThematicItem);
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: -24, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -24, scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+                className="absolute top-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-[420px] max-w-[calc(100vw-32px)] z-50 p-5 rounded-2xl bg-white/98 dark:bg-zinc-950/98 text-zinc-900 dark:text-zinc-100 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl backdrop-blur-2xl"
+              >
+                <div className="flex items-center justify-between gap-2 mb-2.5">
+                  <span
+                    className="text-[11px] font-mono uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full border"
+                    style={{
+                      backgroundColor: `${info.accentColor}18`,
+                      color: info.accentColor,
+                      borderColor: `${info.accentColor}40`
+                    }}
+                  >
+                    {info.badge}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedThematicItem(null)}
+                    className="p-1 rounded-full text-zinc-400 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                    title="Close Inspector"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <h3 className="font-extrabold text-base text-zinc-900 dark:text-zinc-100 leading-snug mb-1">
+                  {info.name}
+                </h3>
+
+                {info.subtitle && (
+                  <p className="text-xs font-semibold mb-2.5" style={{ color: info.accentColor }}>
+                    {info.subtitle}
+                  </p>
+                )}
+
+                <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed mb-3.5">
+                  {info.description}
+                </p>
+
+                {/* Tactical Telemetry & Quantitative Metrics */}
+                <div className="grid grid-cols-2 gap-2 bg-zinc-50 dark:bg-zinc-900/80 p-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 mb-3.5">
+                  {info.stats.map((st, idx) => (
+                    <div key={idx} className="flex flex-col">
+                      <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium">{st.label}</span>
+                      <span className="text-xs font-mono font-bold text-zinc-900 dark:text-zinc-100">{st.value}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-2.5 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400">
+                  <div className="flex flex-col min-w-0 pr-2">
+                    <span className="text-[9px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">Authoritative Source</span>
+                    <span className="text-[10px] font-medium text-zinc-700 dark:text-zinc-300 truncate">{info.source}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedThematicItem(null)}
+                    className="px-3.5 py-1.5 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer shrink-0"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </motion.div>
+            );
+          })()}
         </AnimatePresence>
 
         {/* Interactive Hover Card for AKP Infrastructure & Protected Reserves */}
@@ -1752,55 +1940,55 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               left: `${Math.min(window.innerWidth - 320, Math.max(20, cursorPos.x + 18))}px`,
               top: `${Math.max(20, Math.min(window.innerHeight - 280, cursorPos.y - 120))}px`,
             }}
-            className="absolute z-40 pointer-events-none w-72 p-3.5 rounded-2xl bg-zinc-950/95 text-white border border-cyan-500/40 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
+            className="absolute z-40 pointer-events-none w-72 p-3.5 rounded-2xl bg-white/98 dark:bg-zinc-950/98 text-zinc-900 dark:text-zinc-100 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
           >
             <div className="flex items-center justify-between gap-2 mb-1.5">
-              <span className="text-[10px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+              <span className="text-[10px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/60">
                 {'capacity' in hoveredAkpNode ? '⚡ Clean Energy Asset' : '🌿 Protected Biosphere'}
               </span>
-              <span className="text-[10px] font-mono text-zinc-400 font-bold">
+              <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 font-bold">
                 {hoveredAkpNode.countryIso3}
               </span>
             </div>
-            <h4 className="font-bold text-sm text-zinc-100 leading-snug mb-1">
+            <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 leading-snug mb-1">
               {hoveredAkpNode.name}
             </h4>
-            <div className="space-y-1 text-xs text-zinc-300">
+            <div className="space-y-1 text-xs text-zinc-600 dark:text-zinc-300">
               {'capacity' in hoveredAkpNode ? (
                 <>
                   <div className="flex justify-between">
-                    <span className="text-zinc-400 text-[11px]">Type / Tech:</span>
-                    <span className="font-semibold capitalize text-amber-300">{(hoveredAkpNode as AkpInfrastructurePoint).type}</span>
+                    <span className="text-zinc-500 dark:text-zinc-400 text-[11px]">Type / Tech:</span>
+                    <span className="font-semibold capitalize text-amber-700 dark:text-amber-300">{(hoveredAkpNode as AkpInfrastructurePoint).type}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-400 text-[11px]">Total Capacity:</span>
-                    <span className="font-mono font-bold text-cyan-300">{(hoveredAkpNode as AkpInfrastructurePoint).capacity}</span>
+                    <span className="text-zinc-500 dark:text-zinc-400 text-[11px]">Total Capacity:</span>
+                    <span className="font-mono font-bold text-zinc-900 dark:text-zinc-100">{(hoveredAkpNode as AkpInfrastructurePoint).capacity}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-400 text-[11px]">Commissioned:</span>
-                    <span className="font-medium text-zinc-300">{(hoveredAkpNode as AkpInfrastructurePoint).commissioned}</span>
+                    <span className="text-zinc-500 dark:text-zinc-400 text-[11px]">Commissioned:</span>
+                    <span className="font-medium text-zinc-700 dark:text-zinc-300">{(hoveredAkpNode as AkpInfrastructurePoint).commissioned}</span>
                   </div>
                 </>
               ) : (
                 <>
                   <div className="flex justify-between">
-                    <span className="text-zinc-400 text-[11px]">Designation:</span>
-                    <span className="font-semibold text-emerald-300">{(hoveredAkpNode as AkpProtectedArea).designation}</span>
+                    <span className="text-zinc-500 dark:text-zinc-400 text-[11px]">Designation:</span>
+                    <span className="font-semibold text-emerald-700 dark:text-emerald-300">{(hoveredAkpNode as AkpProtectedArea).designation}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-400 text-[11px]">Protected Area:</span>
-                    <span className="font-mono font-bold text-teal-300">{(hoveredAkpNode as AkpProtectedArea).areaKm2}</span>
+                    <span className="text-zinc-500 dark:text-zinc-400 text-[11px]">Protected Area:</span>
+                    <span className="font-mono font-bold text-zinc-900 dark:text-zinc-100">{(hoveredAkpNode as AkpProtectedArea).areaKm2}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-400 text-[11px]">Classification:</span>
-                    <span className="font-medium text-zinc-300">{(hoveredAkpNode as AkpProtectedArea).category}</span>
+                    <span className="text-zinc-500 dark:text-zinc-400 text-[11px]">Classification:</span>
+                    <span className="font-medium text-zinc-700 dark:text-zinc-300">{(hoveredAkpNode as AkpProtectedArea).category}</span>
                   </div>
                 </>
               )}
             </div>
-            <div className="mt-2 pt-1.5 border-t border-zinc-800 flex items-center justify-between text-[10px] text-zinc-400 font-medium">
+            <div className="mt-2 pt-1.5 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[10px] text-zinc-500 dark:text-zinc-400 font-medium">
               <span>European Commission JRC / BIOPAMA</span>
-              <span className="text-cyan-400 font-semibold">AKP Source</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">AKP Source</span>
             </div>
           </div>
         )}
@@ -1911,6 +2099,21 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           </div>
         )}
       </div>
+
+      {/* European Commission AKP 241-Dataset Catalogue Browser Modal */}
+      <AkpCatalogueModal
+        isOpen={isCatalogueModalOpen}
+        onClose={() => setIsCatalogueModalOpen(false)}
+        onSelectMetric={(metricId) => {
+          if (onActiveMetricChange) {
+            onActiveMetricChange(metricId);
+          } else {
+            setInternalMetric(metricId);
+          }
+          handleSelectMode('choropleth');
+        }}
+        currentChoroplethMetricId={activeMetric}
+      />
     </div>
   );
 };
