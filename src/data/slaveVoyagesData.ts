@@ -825,6 +825,392 @@ export const CANONICAL_VOYAGES: CanonicalVoyage[] = [
       retrievedAt: '2026-08-27',
       epistemicStatus: 'Observed'
     }
+  },
+  {
+    id: 'sv-013',
+    voyageNumber: 1013,
+    database: 'transatlantic',
+    vessel: {
+      name: 'San Juan Bautista (Pioneer Iberian Nau)',
+      rig: 'Nau / Galleon',
+      tonnage: 210,
+      tonnageType: 'Spanish Toneladas',
+      constructionPlace: 'Seville, Spain',
+      owner: 'Cosme Rodriguez de Espinosa',
+      captain: 'Alonso de Mendoza'
+    },
+    dates: {
+      departureYear: 1569,
+      departureDate: '1569-02-14',
+      embarkationDate: '1569-05-20',
+      disembarkationDate: '1569-08-11',
+      middlePassageDays: 83
+    },
+    carrier: {
+      nationality: 'Spain / Uruguay',
+      flag: '🇪🇸',
+      flagIso2: 'ES'
+    },
+    itinerary: {
+      portOfDeparture: { name: 'Seville (Sanlúcar)', region: 'Europe / Atlantic Islands', country: 'Spain', lat: 37.3891, lng: -5.9845 },
+      principalPlaceOfSlavePurchase: { name: 'Santiago (Cape Verde)', region: 'Senegambia', country: 'Cabo Verde', lat: 14.9330, lng: -23.5133 },
+      principalPlaceOfSlaveLanding: { name: 'Veracruz', region: 'Spanish Mainland', country: 'Mexico', lat: 19.1738, lng: -96.1342 },
+      portOfArrival: { name: 'Veracruz', region: 'Spanish Mainland', country: 'Mexico', lat: 19.1738, lng: -96.1342 }
+    },
+    enslaved: {
+      embarkedObserved: 240,
+      embarkedImputed: 240,
+      disembarkedObserved: 182,
+      disembarkedImputed: 182,
+      mortalityObserved: 58,
+      mortalityRateImputed: 24.17,
+      maleRatio: 72.0,
+      femaleRatio: 28.0,
+      childRatio: 8.0,
+      adultRatio: 92.0,
+      isImputed: false,
+      imputedVariables: []
+    },
+    resistance: {
+      hasRebellion: false
+    },
+    outcomes: {
+      fateOfCaptives: 'Transported overland to Puebla and silver mines of Zacatecas',
+      fateOfVessel: 'Returned to Havana, then Cadiz',
+      africanResistanceFlag: false,
+      slaveTradeAbolitionPeriod: 'Pre-1808 Legal'
+    },
+    provenance: {
+      slaveVoyagesId: 46101,
+      datasetVersion: '2024.1',
+      sourceCitations: ['Archivo General de Indias (Seville), Contratación, legajo 2875, fol. 12v.'],
+      sourceDocumentUrl: 'https://api.slavevoyages.org/voyages/46101',
+      archiveReference: 'AGI-CONTRATACION-2875',
+      retrievedAt: '2026-08-27',
+      epistemicStatus: 'Observed'
+    }
+  },
+  {
+    id: 'sv-014',
+    voyageNumber: 1014,
+    database: 'transatlantic',
+    vessel: {
+      name: 'De Witte Leeuw (White Lion)',
+      rig: 'Armed Fluyt / Privateer',
+      tonnage: 160,
+      tonnageType: 'Dutch Lasten',
+      constructionPlace: 'Zeeland, Netherlands',
+      owner: 'Dutch Privateering Syndicate',
+      captain: 'John Colyn Jope'
+    },
+    dates: {
+      departureYear: 1619,
+      departureDate: '1619-03-02',
+      embarkationDate: '1619-07-15',
+      disembarkationDate: '1619-08-20',
+      middlePassageDays: 60
+    },
+    carrier: {
+      nationality: 'Netherlands',
+      flag: '🇳🇱',
+      flagIso2: 'NL'
+    },
+    itinerary: {
+      portOfDeparture: { name: 'Flushing (Vlissingen)', region: 'Europe / Atlantic Islands', country: 'Netherlands', lat: 51.4425, lng: 3.5736 },
+      principalPlaceOfSlavePurchase: { name: 'Intercepted São João Bautista off Campeche', region: 'West Central Africa (Origin)', country: 'Angola', lat: -8.8390, lng: 13.2894 },
+      principalPlaceOfSlaveLanding: { name: 'Point Comfort (Jamestown)', region: 'North America', country: 'United States', lat: 37.0000, lng: -76.3000 },
+      portOfArrival: { name: 'Point Comfort (Jamestown)', region: 'North America', country: 'United States', lat: 37.0000, lng: -76.3000 }
+    },
+    enslaved: {
+      embarkedObserved: 35,
+      embarkedImputed: 35,
+      disembarkedObserved: 20,
+      disembarkedImputed: 20,
+      mortalityObserved: 15,
+      mortalityRateImputed: 42.86,
+      maleRatio: 60.0,
+      femaleRatio: 40.0,
+      childRatio: 10.0,
+      adultRatio: 90.0,
+      isImputed: false,
+      imputedVariables: []
+    },
+    resistance: {
+      hasRebellion: false
+    },
+    outcomes: {
+      fateOfCaptives: 'Traded for victuals in Virginia colony; founding generation of Black Virginians (Angelo, John Gowen)',
+      fateOfVessel: 'Departed Chesapeake for England',
+      africanResistanceFlag: false,
+      slaveTradeAbolitionPeriod: 'Pre-1808 Legal'
+    },
+    provenance: {
+      slaveVoyagesId: 46210,
+      datasetVersion: '2024.1',
+      sourceCitations: ['The National Archives (UK), High Court of Admiralty, HCA 13/43, Letter of John Pory (1619).'],
+      sourceDocumentUrl: 'https://api.slavevoyages.org/voyages/46210',
+      archiveReference: 'TNA-HCA-13-43',
+      retrievedAt: '2026-08-27',
+      epistemicStatus: 'Observed'
+    }
+  },
+  {
+    id: 'sv-015',
+    voyageNumber: 1015,
+    database: 'transatlantic',
+    vessel: {
+      name: 'The Clare (Historic Shipboard Insurrection)',
+      rig: 'Brigantine',
+      tonnage: 120,
+      tonnageType: 'English Measured Tons',
+      constructionPlace: 'Newport, Rhode Island',
+      owner: 'Rhode Island Merchant Syndicate',
+      captain: 'Captain Murrey'
+    },
+    dates: {
+      departureYear: 1729,
+      departureDate: '1729-09-12',
+      embarkationDate: '1730-01-08',
+      disembarkationDate: '1730-02-14',
+      middlePassageDays: 37
+    },
+    carrier: {
+      nationality: 'Great Britain',
+      flag: '🇬🇧',
+      flagIso2: 'GB'
+    },
+    itinerary: {
+      portOfDeparture: { name: 'Newport', region: 'North America', country: 'United States', lat: 41.4901, lng: -71.3128 },
+      principalPlaceOfSlavePurchase: { name: 'Cape Coast Castle', region: 'Gold Coast', country: 'Ghana', lat: 5.1053, lng: -1.2417 },
+      principalPlaceOfSlaveLanding: { name: 'Self-Navigated Shore Landing (Gold Coast)', region: 'Gold Coast', country: 'Ghana', lat: 5.2000, lng: -1.1000 },
+      portOfArrival: { name: 'Self-Navigated Shore Landing (Gold Coast)', region: 'Gold Coast', country: 'Ghana', lat: 5.2000, lng: -1.1000 }
+    },
+    enslaved: {
+      embarkedObserved: 130,
+      embarkedImputed: 130,
+      disembarkedObserved: 128,
+      disembarkedImputed: 128,
+      mortalityObserved: 2,
+      mortalityRateImputed: 1.54,
+      maleRatio: 75.0,
+      femaleRatio: 25.0,
+      childRatio: 5.0,
+      adultRatio: 95.0,
+      isImputed: false,
+      imputedVariables: []
+    },
+    resistance: {
+      hasRebellion: true,
+      rebellionStage: 'African Coast',
+      description: 'Captives overpowered crew, forced sailors into longboat, navigated ship ashore, and freed themselves'
+    },
+    outcomes: {
+      fateOfCaptives: 'Successful self-emancipation; captives returned to coastal interior',
+      fateOfVessel: 'Driven ashore and dismantled by liberated Africans',
+      africanResistanceFlag: true,
+      slaveTradeAbolitionPeriod: 'Pre-1808 Legal'
+    },
+    provenance: {
+      slaveVoyagesId: 46305,
+      datasetVersion: '2024.1',
+      sourceCitations: ['The Boston Gazette, October 19, 1730; Public Records Office (London), CO 388/29.'],
+      sourceDocumentUrl: 'https://api.slavevoyages.org/voyages/46305',
+      archiveReference: 'TNA-CO-388-29',
+      retrievedAt: '2026-08-27',
+      epistemicStatus: 'Observed'
+    }
+  },
+  {
+    id: 'sv-016',
+    voyageNumber: 1016,
+    database: 'transatlantic',
+    vessel: {
+      name: 'La Diligente (Nantes Slave Ship)',
+      rig: 'Three-Masted Frigate',
+      tonnage: 340,
+      tonnageType: 'French Tonneaux',
+      constructionPlace: 'Nantes, France',
+      owner: 'Guillaume Grou & Associés',
+      captain: 'Pierre-Jean Devalois'
+    },
+    dates: {
+      departureYear: 1754,
+      departureDate: '1754-04-18',
+      embarkationDate: '1754-08-22',
+      disembarkationDate: '1754-11-10',
+      middlePassageDays: 80
+    },
+    carrier: {
+      nationality: 'France',
+      flag: '🇫🇷',
+      flagIso2: 'FR'
+    },
+    itinerary: {
+      portOfDeparture: { name: 'Nantes', region: 'Europe / Atlantic Islands', country: 'France', lat: 47.2184, lng: -1.5536 },
+      principalPlaceOfSlavePurchase: { name: 'Ouidah (Whydah)', region: 'Bight of Benin', country: 'Benin', lat: 6.3639, lng: 2.0853 },
+      principalPlaceOfSlaveLanding: { name: 'Cap-Français (Cap-Haïtien)', region: 'Caribbean', country: 'Haiti', lat: 19.7595, lng: -72.2008 },
+      portOfArrival: { name: 'Cap-Français', region: 'Caribbean', country: 'Haiti', lat: 19.7595, lng: -72.2008 }
+    },
+    enslaved: {
+      embarkedObserved: 485,
+      embarkedImputed: 485,
+      disembarkedObserved: 412,
+      disembarkedImputed: 412,
+      mortalityObserved: 73,
+      mortalityRateImputed: 15.05,
+      maleRatio: 65.0,
+      femaleRatio: 35.0,
+      childRatio: 16.0,
+      adultRatio: 84.0,
+      isImputed: false,
+      imputedVariables: []
+    },
+    resistance: {
+      hasRebellion: false
+    },
+    outcomes: {
+      fateOfCaptives: 'Sold to Saint-Domingue northern plain sugar plantations',
+      fateOfVessel: 'Returned to Nantes with 420 hogsheads of raw brown sugar and indigo',
+      africanResistanceFlag: false,
+      slaveTradeAbolitionPeriod: 'Pre-1808 Legal'
+    },
+    provenance: {
+      slaveVoyagesId: 46412,
+      datasetVersion: '2024.1',
+      sourceCitations: ['Archives Départementales de la Loire-Atlantique (Nantes), B 4582, Journal de bord de La Diligente.'],
+      sourceDocumentUrl: 'https://api.slavevoyages.org/voyages/46412',
+      archiveReference: 'ADLA-B-4582',
+      retrievedAt: '2026-08-27',
+      epistemicStatus: 'Observed'
+    }
+  },
+  {
+    id: 'sv-017',
+    voyageNumber: 1017,
+    database: 'transatlantic',
+    vessel: {
+      name: 'Veloz Pasajera (Armed Slaver Intercepted by HMS Primrose)',
+      rig: '24-Gun Armed Corvette',
+      tonnage: 410,
+      tonnageType: 'Spanish Toneladas',
+      constructionPlace: 'Cadiz, Spain',
+      owner: 'Joaquín Gómez & Havana Syndicate',
+      captain: 'José Antonio de la Vega'
+    },
+    dates: {
+      departureYear: 1830,
+      departureDate: '1830-04-10',
+      embarkationDate: '1830-08-01',
+      disembarkationDate: '1830-09-07',
+      middlePassageDays: 37
+    },
+    carrier: {
+      nationality: 'Spain / Uruguay',
+      flag: '🇪🇸',
+      flagIso2: 'ES'
+    },
+    itinerary: {
+      portOfDeparture: { name: 'Havana', region: 'Caribbean', country: 'Cuba', lat: 23.1136, lng: -82.3666 },
+      principalPlaceOfSlavePurchase: { name: 'Bonny River', region: 'Bight of Biafra', country: 'Nigeria', lat: 4.4536, lng: 7.1667 },
+      principalPlaceOfSlaveLanding: { name: 'Freetown (Liberated by Royal Navy)', region: 'Sierra Leone', country: 'Sierra Leone', lat: 8.4657, lng: -13.2317 },
+      portOfArrival: { name: 'Freetown', region: 'Sierra Leone', country: 'Sierra Leone', lat: 8.4657, lng: -13.2317 }
+    },
+    enslaved: {
+      embarkedObserved: 555,
+      embarkedImputed: 555,
+      disembarkedObserved: 508,
+      disembarkedImputed: 508,
+      mortalityObserved: 47,
+      mortalityRateImputed: 8.47,
+      maleRatio: 68.0,
+      femaleRatio: 32.0,
+      childRatio: 28.0,
+      adultRatio: 72.0,
+      isImputed: false,
+      imputedVariables: []
+    },
+    resistance: {
+      hasRebellion: false
+    },
+    outcomes: {
+      fateOfCaptives: 'Adjudicated by Anglo-Spanish Mixed Commission Court in Freetown; all 508 survivors emancipated as Recaptives',
+      fateOfVessel: 'Captured after pitched naval gun battle with HMS Primrose (46 crew casualties); condemned and broken up',
+      africanResistanceFlag: false,
+      slaveTradeAbolitionPeriod: 'Suppression Era'
+    },
+    provenance: {
+      slaveVoyagesId: 46520,
+      datasetVersion: '2024.1',
+      sourceCitations: ['British and Foreign State Papers (1830–1831), Class A, Correspondence with the British Commissioners at Sierra Leone.'],
+      sourceDocumentUrl: 'https://api.slavevoyages.org/voyages/46520',
+      archiveReference: 'TNA-FO-84-112',
+      retrievedAt: '2026-08-27',
+      epistemicStatus: 'Observed'
+    }
+  },
+  {
+    id: 'sv-018',
+    voyageNumber: 1018,
+    database: 'transatlantic',
+    vessel: {
+      name: 'The Wanderer (Clandestine Georgia Slaver)',
+      rig: 'Luxury Schooner / Clipper',
+      tonnage: 235,
+      tonnageType: 'US Registered Tons',
+      constructionPlace: 'Setauket, New York (New York Yacht Club)',
+      owner: 'Charles Augustus Lafayette Lamar',
+      captain: 'John Egbert Farnum'
+    },
+    dates: {
+      departureYear: 1858,
+      departureDate: '1858-07-04',
+      embarkationDate: '1858-10-18',
+      disembarkationDate: '1858-11-28',
+      middlePassageDays: 41
+    },
+    carrier: {
+      nationality: 'United States',
+      flag: '🇺🇸',
+      flagIso2: 'US'
+    },
+    itinerary: {
+      portOfDeparture: { name: 'Port Jefferson, NY', region: 'North America', country: 'United States', lat: 40.9465, lng: -73.0690 },
+      principalPlaceOfSlavePurchase: { name: 'Congo River (Ponta da Lenha)', region: 'West Central Africa', country: 'Angola / DRC', lat: -6.0000, lng: 12.5000 },
+      principalPlaceOfSlaveLanding: { name: 'Jekyll Island', region: 'North America', country: 'United States', lat: 31.0664, lng: -81.4243 },
+      portOfArrival: { name: 'Jekyll Island', region: 'North America', country: 'United States', lat: 31.0664, lng: -81.4243 }
+    },
+    enslaved: {
+      embarkedObserved: 487,
+      embarkedImputed: 487,
+      disembarkedObserved: 409,
+      disembarkedImputed: 409,
+      mortalityObserved: 78,
+      mortalityRateImputed: 16.02,
+      maleRatio: 65.0,
+      femaleRatio: 35.0,
+      childRatio: 45.0,
+      adultRatio: 55.0,
+      isImputed: false,
+      imputedVariables: []
+    },
+    resistance: {
+      hasRebellion: false
+    },
+    outcomes: {
+      fateOfCaptives: 'Clandestinely dispersed to rice plantations in South Carolina, Georgia, and Alabama (including Cilac-kô / Ward Lee)',
+      fateOfVessel: 'Seized by US federal authorities in Savannah; jury refused to convict conspirators due to southern nullification',
+      africanResistanceFlag: false,
+      slaveTradeAbolitionPeriod: 'Post-1808 Illicit'
+    },
+    provenance: {
+      slaveVoyagesId: 46618,
+      datasetVersion: '2024.1',
+      sourceCitations: ['US National Archives, Records of District Courts of the US, Admiralty Case Files (Savannah, 1858–1859).'],
+      sourceDocumentUrl: 'https://api.slavevoyages.org/voyages/46618',
+      archiveReference: 'NARA-RG-21-SAV',
+      retrievedAt: '2026-08-27',
+      epistemicStatus: 'Observed'
+    }
   }
 ];
 

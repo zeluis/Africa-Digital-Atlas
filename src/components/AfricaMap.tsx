@@ -63,6 +63,7 @@ import { getAdmin1ForCountry, searchAdmin1Subdivisions, ALL_ADMIN1_SUBDIVISIONS 
 import { AfricaliaAdmin1 } from '../data/types';
 import { getCanonicalCountryColor } from '../data/africaCanonicalColorPalette';
 import { AfricaMapFinalLayer } from './AfricaMapFinalLayer';
+import { UnifiedInspectorDrawer } from './UnifiedInspectorDrawer';
 import { AfricaUnLogo } from './AfricaUnLogo';
 import { useAfricaFinalMap } from '../utils/svgMapLoader';
 import { ThematicLayerDeck } from './ThematicLayerDeck';
@@ -1993,8 +1994,26 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           </div>
         )}
 
-        {/* Pinned / Hovered Country Tooltip */}
-        {displayEntityId && hoveredCountryData && hoveredEntity && !hoveredAkpNode && !hoveredThematicItem && !selectedThematicItem && (
+        {/* Top-Docked Unified Tactical Inspector Drawer (Parchment / Editorial Light Theme) */}
+        {activeTooltipEntityId && (
+          <UnifiedInspectorDrawer
+            entityId={activeTooltipEntityId}
+            isOpen={true}
+            onClose={() => {
+              setActiveTooltipEntityId(null);
+              setFixedTooltipCoords(null);
+            }}
+            onOpenDossier={(id) => {
+              handleSelectCountry(id);
+              setActiveTooltipEntityId(null);
+            }}
+            selectedAdmin1={selectedAdmin1}
+            hoveredAdmin1={hoveredAdmin1}
+          />
+        )}
+
+        {/* Lightweight Floating Preview Card for Unpinned Hover State */}
+        {!activeTooltipEntityId && displayEntityId && hoveredCountryData && hoveredEntity && !hoveredAkpNode && !hoveredThematicItem && !selectedThematicItem && (
           <div
             id="pinned-country-tooltip"
             style={{
@@ -2003,11 +2022,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             }}
             onMouseEnter={handleTooltipMouseEnter}
             onMouseLeave={handleTooltipMouseLeave}
-            className={`absolute z-30 pointer-events-auto w-80 p-4 rounded-2xl border shadow-2xl backdrop-blur-xl transition-all duration-150 animate-in fade-in zoom-in-95 ${
-              activeTooltipEntityId
-                ? 'bg-white/98 dark:bg-zinc-950/98 border-emerald-500/80 ring-2 ring-emerald-500/30'
-                : 'bg-white/95 dark:bg-zinc-950/95 border-zinc-200 dark:border-zinc-800'
-            }`}
+            className="absolute z-30 pointer-events-auto w-80 p-4 rounded-2xl border shadow-2xl backdrop-blur-xl transition-all duration-150 animate-in fade-in zoom-in-95 bg-white/95 dark:bg-zinc-950/95 border-zinc-200 dark:border-zinc-800"
           >
             {/* Admin-1 Subdivision Badge when hovered or selected */}
             {(hoveredAdmin1 || (selectedAdmin1 && selectedAdmin1.iso3 === hoveredEntity.id)) && (
@@ -2045,16 +2060,6 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   </div>
                 </div>
               </div>
-
-              {activeTooltipEntityId && (
-                <button
-                  onClick={handleDismissTooltip}
-                  className="p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer"
-                  title="Close Pinned Tooltip"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
             </div>
 
             {/* Quick Metrics Grid */}
@@ -2093,7 +2098,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               }}
               className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <span>Open Country Dossier</span>
+              <span>Inspect Country Details</span>
               <Sparkles className="w-3.5 h-3.5 text-white/80" />
             </button>
           </div>

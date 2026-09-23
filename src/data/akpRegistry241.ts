@@ -26,7 +26,7 @@ export const AKP_PILLARS_META = [
     id: 'demographics',
     label: 'Demographics, Health & Society',
     shortLabel: 'Demographics & Health',
-    subtext: 'Society & Vital Metrics',
+    subtext: 'Society & Vitals',
     count: 48,
     color: '#6366f1',
     icon: 'Users'
@@ -35,7 +35,7 @@ export const AKP_PILLARS_META = [
     id: 'energy_infra',
     label: 'Energy, Infrastructure & Telecom',
     shortLabel: 'Energy & Telecom',
-    subtext: 'Power, Grid & Fiber',
+    subtext: 'Power & Infrastructure',
     count: 52,
     color: '#06b6d4',
     icon: 'Zap'
@@ -44,7 +44,7 @@ export const AKP_PILLARS_META = [
     id: 'environment',
     label: 'Environment, Climate & Biodiversity',
     shortLabel: 'Climate & Nature',
-    subtext: 'Protected Biospheres',
+    subtext: 'Biospheres & Ecology',
     count: 58,
     color: '#10b981',
     icon: 'Trees'
@@ -53,7 +53,7 @@ export const AKP_PILLARS_META = [
     id: 'agriculture',
     label: 'Agriculture, Food Systems & Water',
     shortLabel: 'Agriculture & Water',
-    subtext: 'Crops, Livestock & Yield',
+    subtext: 'Crops & Food Systems',
     count: 45,
     color: '#f59e0b',
     icon: 'Wheat'
@@ -62,7 +62,7 @@ export const AKP_PILLARS_META = [
     id: 'economic',
     label: 'Economy, Trade & Governance',
     shortLabel: 'Economy & Trade',
-    subtext: 'Tariffs, GDP & Fiscal',
+    subtext: 'Trade & Governance',
     count: 38,
     color: '#a855f7',
     icon: 'DollarSign'

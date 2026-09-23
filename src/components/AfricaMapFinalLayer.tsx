@@ -407,6 +407,38 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
             displayName = nameOverrides[country.id] || country.name.toUpperCase();
           }
 
+          if (isSmall && (isSelected || isHovered)) {
+            const badgeW = displayName.length * 18 + 24;
+            return (
+              <g key={`final-label-${country.id}`} transform={`translate(${country.centroid.x}, ${country.centroid.y})`}>
+                <rect
+                  x={-badgeW / 2}
+                  y="-18"
+                  width={badgeW}
+                  height="36"
+                  rx="10"
+                  fill="#ffffff"
+                  stroke={isSelected ? '#059669' : '#0f172a'}
+                  strokeWidth="3"
+                  className="shadow-sm"
+                />
+                <text
+                  x="0"
+                  y="2"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill={isSelected ? '#059669' : '#0f172a'}
+                  fontSize="18"
+                  fontFamily="sans-serif"
+                  fontWeight="900"
+                  letterSpacing="0.05em"
+                >
+                  {displayName}
+                </text>
+              </g>
+            );
+          }
+
           return (
             <g key={`final-label-${country.id}`}>
               <text
@@ -414,17 +446,17 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
                 y={country.centroid.y}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fill={isSelected ? '#059669' : isHovered ? '#0f172a' : '#1e293b'}
+                fill={isSelected ? '#047857' : isHovered ? '#0f172a' : '#1e293b'}
                 fontSize={fontSize}
                 fontFamily="sans-serif"
                 fontWeight="900"
-                letterSpacing="0.07em"
+                letterSpacing="0.06em"
                 paintOrder="stroke fill"
                 stroke="#ffffff"
-                strokeWidth={isHuge ? "10px" : "7px"}
+                strokeWidth={isHuge ? "8px" : "6px"}
                 strokeLinejoin="round"
                 strokeLinecap="round"
-                opacity={isSelected || isHovered ? 1 : 0.9}
+                opacity={isSelected || isHovered ? 1 : 0.88}
               >
                 {displayName}
               </text>

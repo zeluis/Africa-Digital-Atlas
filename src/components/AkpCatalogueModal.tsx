@@ -13,7 +13,8 @@ import {
   Wheat,
   DollarSign,
   CheckCircle2,
-  Check
+  Check,
+  ExternalLink
 } from 'lucide-react';
 import { AKP_REGISTRY_241_DATASETS, AKP_PILLARS_META, AkpDatasetRecord } from '../data/akpRegistry241';
 
@@ -107,14 +108,27 @@ export const AkpCatalogueModal: React.FC<AkpCatalogueModalProps> = ({
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-2 rounded-xl bg-white/80 dark:bg-zinc-800/80 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-700 flex-shrink-0"
-            title="Close Catalogue"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <a
+              href="https://africa-knowledge-platform.ec.europa.eu/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/80 dark:bg-zinc-800/80 hover:bg-amber-50 dark:hover:bg-amber-950/40 text-amber-800 dark:text-amber-300 hover:text-amber-900 border border-amber-300/80 dark:border-amber-700/60 text-xs font-semibold transition-colors shadow-2xs"
+              title="Open Official EC Africa Knowledge Platform Portal"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>EC AKP Portal</span>
+            </a>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-2 rounded-xl bg-white/80 dark:bg-zinc-800/80 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-700 flex-shrink-0"
+              title="Close Catalogue"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Search & Thematic Selectors Deck (Never Cropped, Responsive Grid) */}
@@ -160,19 +174,19 @@ export const AkpCatalogueModal: React.FC<AkpCatalogueModalProps> = ({
           </div>
 
           {/* All 6 Thematic Pillar Selector Cards (Full Width, Fully Visible, Never Cropped) */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-2.5 w-full">
             {/* 1. All 241 Datasets Card */}
             <button
               type="button"
               onClick={() => setSelectedPillar('all')}
-              className={`flex flex-col justify-between p-2.5 rounded-2xl border text-left transition-all cursor-pointer select-none group relative ${
+              className={`flex flex-col justify-between min-h-[74px] p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer select-none group relative ${
                 selectedPillar === 'all'
                   ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 border-zinc-900 dark:border-zinc-100 shadow-md ring-2 ring-zinc-900/15 dark:ring-zinc-100/20'
                   : 'bg-white dark:bg-zinc-900/90 text-zinc-700 dark:text-zinc-300 border-zinc-200/90 dark:border-zinc-800/90 hover:border-zinc-400 dark:hover:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 shadow-xs'
               }`}
-              title="All 241 European Commission datasets"
+              title="All 241 European Commission datasets (Master Registry)"
             >
-              <div className="flex items-center justify-between gap-1 mb-1">
+              <div className="flex items-center justify-between gap-1 mb-1.5">
                 <div
                   className={`w-6 h-6 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105 ${
                     selectedPillar === 'all'
@@ -193,9 +207,9 @@ export const AkpCatalogueModal: React.FC<AkpCatalogueModalProps> = ({
                 </span>
               </div>
               <div>
-                <div className="text-xs font-bold leading-tight truncate">All Datasets</div>
+                <div className="text-[11px] sm:text-xs font-bold leading-tight">All Datasets</div>
                 <div
-                  className={`text-[10px] truncate ${
+                  className={`text-[10px] leading-tight mt-0.5 ${
                     selectedPillar === 'all' ? 'text-zinc-300 dark:text-zinc-600' : 'text-zinc-500 dark:text-zinc-400'
                   }`}
                 >
@@ -216,16 +230,16 @@ export const AkpCatalogueModal: React.FC<AkpCatalogueModalProps> = ({
                   key={meta.id}
                   type="button"
                   onClick={() => setSelectedPillar(meta.id)}
-                  className={`flex flex-col justify-between p-2.5 rounded-2xl border text-left transition-all cursor-pointer select-none group relative ${
+                  className={`flex flex-col justify-between min-h-[74px] p-2.5 sm:p-3 rounded-2xl border text-left transition-all cursor-pointer select-none group relative ${
                     active
                       ? 'bg-amber-600 text-white border-amber-600 shadow-md ring-2 ring-amber-600/20'
                       : 'bg-white dark:bg-zinc-900/90 text-zinc-700 dark:text-zinc-300 border-zinc-200/90 dark:border-zinc-800/90 hover:border-amber-400/70 dark:hover:border-amber-600/70 hover:bg-amber-50/30 dark:hover:bg-amber-950/20 shadow-xs'
                   }`}
                   title={`${meta.label} (${meta.count} datasets)`}
                 >
-                  <div className="flex items-center justify-between gap-1 mb-1">
+                  <div className="flex items-center justify-between gap-1 mb-1.5">
                     <div
-                      className={`w-6 h-6 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105`}
+                      className="w-6 h-6 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105"
                       style={{
                         backgroundColor: active ? 'rgba(255,255,255,0.2)' : `${meta.color}15`,
                         color: active ? '#ffffff' : meta.color
@@ -244,11 +258,11 @@ export const AkpCatalogueModal: React.FC<AkpCatalogueModalProps> = ({
                     </span>
                   </div>
                   <div>
-                    <div className="text-xs font-bold leading-tight truncate">
+                    <div className="text-[11px] sm:text-xs font-bold leading-tight">
                       {meta.shortLabel}
                     </div>
                     <div
-                      className={`text-[10px] truncate ${
+                      className={`text-[10px] leading-tight mt-0.5 ${
                         active ? 'text-amber-100' : 'text-zinc-500 dark:text-zinc-400'
                       }`}
                     >

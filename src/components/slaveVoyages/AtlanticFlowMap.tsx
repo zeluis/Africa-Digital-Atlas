@@ -6,8 +6,6 @@ import {
 } from 'lucide-react';
 import {
   projectCoord,
-  AFRICA_PATH,
-  MADAGASCAR_PATH,
   SOUTH_AMERICA_PATH,
   NORTH_AMERICA_PATH,
   CUBA_PATH,
@@ -15,13 +13,18 @@ import {
   JAMAICA_PATH,
   PUERTO_RICO_PATH,
   BAHAMAS_PATH,
+  LESSER_ANTILLES_PATH,
   EUROPE_MAINLAND_PATH,
   GREAT_BRITAIN_PATH,
   IRELAND_PATH,
+  BALEARIC_PATH,
+  SARDINIA_CORSICA_PATH,
+  SICILY_PATH,
   EMBARKATION_ZONES,
   TRADE_WINDS,
   TradeWindVector
 } from './atlanticMapGeometry';
+import { AfricaVectorContinent } from '../common/AfricaVectorContinent';
 
 interface AtlanticFlowMapProps {
   epistemicMode: EpistemicMode;
@@ -117,6 +120,8 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
     if (destinationFilter === 'all') return true;
     return r.targetRegion.toLowerCase().includes(destinationFilter.toLowerCase());
   });
+
+  const selectedRoute = REGIONAL_ROUTE_FLOWS.find(r => r.id === selectedRouteId) || hoveredRoute;
 
   return (
     <div className="relative w-full rounded-2xl border border-[#DCD3C1] dark:border-zinc-800 bg-[#FDFBF7] dark:bg-zinc-950 text-[#1C1917] dark:text-white overflow-hidden shadow-lg select-none">
@@ -302,14 +307,15 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                 filter="url(#coastGlow)"
               />
 
-              {/* CARIBBEAN ARCHIPELAGO */}
+              {/* CARIBBEAN ARCHIPELAGO & ISLAND CHAINS */}
               <path d={CUBA_PATH} fill="#D97706" stroke="#B45309" strokeWidth="1.2" />
               <path d={HISPANIOLA_PATH} fill="#D97706" stroke="#B45309" strokeWidth="1.2" />
               <path d={JAMAICA_PATH} fill="#D97706" stroke="#B45309" strokeWidth="1.2" />
               <path d={PUERTO_RICO_PATH} fill="#D97706" stroke="#B45309" strokeWidth="1.2" />
               <path d={BAHAMAS_PATH} fill="#D97706" stroke="#B45309" strokeWidth="1.2" />
+              <path d={LESSER_ANTILLES_PATH} fill="#D97706" stroke="#B45309" strokeWidth="1.0" />
 
-              {/* MAINLAND WESTERN EUROPE */}
+              {/* MAINLAND WESTERN EUROPE (Calibrated strictly north of 36°N) */}
               <path
                 d={EUROPE_MAINLAND_PATH}
                 fill="url(#europeLand)"
@@ -324,99 +330,307 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
               <path d={GREAT_BRITAIN_PATH} fill="url(#europeLand)" stroke="#B4A68C" strokeWidth="1.4" />
               <path d={IRELAND_PATH} fill="url(#europeLand)" stroke="#B4A68C" strokeWidth="1.4" />
 
-              {/* AFRICAN CONTINENT */}
-              <path
-                d={AFRICA_PATH}
-                fill="url(#africaLand)"
-                stroke="#8C7E64"
-                strokeWidth="2.2"
-                strokeLinejoin="round"
-                filter="url(#coastGlow)"
-                className="transition-all dark:[stroke:#10b981]"
+              {/* MEDITERRANEAN ISLANDS */}
+              <path d={BALEARIC_PATH} fill="url(#europeLand)" stroke="#B4A68C" strokeWidth="1.0" />
+              <path d={SARDINIA_CORSICA_PATH} fill="url(#europeLand)" stroke="#B4A68C" strokeWidth="1.0" />
+              <path d={SICILY_PATH} fill="url(#europeLand)" stroke="#B4A68C" strokeWidth="1.0" />
+
+              {/* AUTHORITATIVE AFRICAN CONTINENT (5,796 × 5,867 Native Precision)
+                  Geographically calibrated to Lat -34.8° to +37.35°, Lon -17.5° to +51.3°
+                  Preserves the open Strait of Gibraltar with zero European landmass collision. */}
+              <AfricaVectorContinent
+                x="555"
+                y="136"
+                width="421"
+                height="406"
+                mode="embarkation_zones"
+                theme="embarkation"
+                strokeWidth={1.2}
+                activeRegion={selectedRoute?.sourceRegion || hoveredRoute?.sourceRegion || null}
+                onRegionClick={(region) => {
+                  const match = REGIONAL_ROUTE_FLOWS.find(r => 
+                    r.sourceRegion.toLowerCase().includes(region.toLowerCase()) || 
+                    region.toLowerCase().includes(r.sourceRegion.toLowerCase())
+                  );
+                  if (match && onSelectRoute) {
+                    onSelectRoute(match);
+                  }
+                }}
               />
 
-              {/* MADAGASCAR */}
-              <path
-                d={MADAGASCAR_PATH}
-                fill="url(#africaLand)"
-                stroke="#8C7E64"
-                className="dark:[stroke:#10b981]"
-                strokeWidth="1.8"
-                strokeLinejoin="round"
-                filter="url(#coastGlow)"
-              />
+              {/* Major Continental Topographic Typography Labels with Contrast Halos */}
+              <g className="continental-labels pointer-events-none" style={{ paintOrder: 'stroke fill' }}>
+                {/* AFRICA */}
+                <text 
+                  x="745" 
+                  y="210" 
+                  fill="#1C1917" 
+                  stroke="#FAF6EE" 
+                  strokeWidth="3.5px" 
+                  strokeLinejoin="round"
+                  fontSize="19" 
+                  fontFamily="serif" 
+                  fontWeight="900" 
+                  letterSpacing="4" 
+                  className="dark:[fill:#ecfdf5] dark:[stroke:#020617]"
+                >
+                  AFRICA
+                </text>
+                <text 
+                  x="745" 
+                  y="226" 
+                  fill="#9A3412" 
+                  stroke="#FAF6EE" 
+                  strokeWidth="2.5px" 
+                  strokeLinejoin="round"
+                  fontSize="9" 
+                  fontFamily="monospace" 
+                  fontWeight="bold" 
+                  letterSpacing="1.5" 
+                  className="dark:[fill:#34d399] dark:[stroke:#020617]"
+                >
+                  12.5M CAPTIVES EMBARKED
+                </text>
 
-              {/* Major Continental Topographic Typography Labels */}
-              <text x="730" y="240" fill="#1C1917" fontSize="20" fontFamily="serif" fontWeight="900" letterSpacing="4" opacity="0.9" className="pointer-events-none dark:[fill:#ecfdf5]">
-                AFRICA
-              </text>
-              <text x="735" y="260" fill="#9A3412" fontSize="9.5" fontFamily="monospace" fontWeight="bold" letterSpacing="2" opacity="0.95" className="pointer-events-none dark:[fill:#34d399]">
-                12.5M CAPTIVES EMBARKED
-              </text>
+                {/* SOUTH AMERICA */}
+                <text 
+                  x="215" 
+                  y="415" 
+                  fill="#1C1917" 
+                  stroke="#FAF6EE" 
+                  strokeWidth="3.5px" 
+                  strokeLinejoin="round"
+                  fontSize="16" 
+                  fontFamily="serif" 
+                  fontWeight="900" 
+                  letterSpacing="3" 
+                  className="dark:[fill:#e0f2fe] dark:[stroke:#020617]"
+                >
+                  SOUTH AMERICA
+                </text>
+                <text 
+                  x="215" 
+                  y="431" 
+                  fill="#0369A1" 
+                  stroke="#FAF6EE" 
+                  strokeWidth="2.5px" 
+                  strokeLinejoin="round"
+                  fontSize="8.5" 
+                  fontFamily="monospace" 
+                  fontWeight="bold" 
+                  letterSpacing="1.2" 
+                  className="dark:[fill:#38bdf8] dark:[stroke:#020617]"
+                >
+                  BRAZIL (5.1M ARRIVALS)
+                </text>
 
-              <text x="260" y="420" fill="#1C1917" fontSize="16" fontFamily="serif" fontWeight="900" letterSpacing="3" opacity="0.9" className="pointer-events-none dark:[fill:#e0f2fe]">
-                SOUTH AMERICA
-              </text>
-              <text x="270" y="438" fill="#0369A1" fontSize="9" fontFamily="monospace" fontWeight="bold" letterSpacing="1.5" opacity="0.95" className="pointer-events-none dark:[fill:#38bdf8]">
-                BRAZIL (5.1M ARRIVALS)
-              </text>
+                {/* NORTH AMERICA */}
+                <text 
+                  x="95" 
+                  y="105" 
+                  fill="#1C1917" 
+                  stroke="#FAF6EE" 
+                  strokeWidth="3.5px" 
+                  strokeLinejoin="round"
+                  fontSize="15" 
+                  fontFamily="serif" 
+                  fontWeight="900" 
+                  letterSpacing="3" 
+                  className="dark:[fill:#e0f2fe] dark:[stroke:#020617]"
+                >
+                  NORTH AMERICA
+                </text>
+                <text 
+                  x="95" 
+                  y="120" 
+                  fill="#0369A1" 
+                  stroke="#FAF6EE" 
+                  strokeWidth="2.5px" 
+                  strokeLinejoin="round"
+                  fontSize="8" 
+                  fontFamily="monospace" 
+                  fontWeight="bold" 
+                  letterSpacing="1" 
+                  className="dark:[fill:#38bdf8] dark:[stroke:#020617]"
+                >
+                  389K DIRECT ARRIVALS
+                </text>
 
-              <text x="70" y="90" fill="#1C1917" fontSize="15" fontFamily="serif" fontWeight="900" letterSpacing="3" opacity="0.9" className="pointer-events-none dark:[fill:#e0f2fe]">
-                NORTH AMERICA
-              </text>
+                {/* EUROPE */}
+                <text 
+                  x="660" 
+                  y="55" 
+                  fill="#9A3412" 
+                  stroke="#FAF6EE" 
+                  strokeWidth="3px" 
+                  strokeLinejoin="round"
+                  fontSize="13" 
+                  fontFamily="serif" 
+                  fontWeight="900" 
+                  letterSpacing="3" 
+                  className="dark:[fill:#fef3c7] dark:[stroke:#020617]"
+                >
+                  EUROPE
+                </text>
+                <text 
+                  x="660" 
+                  y="68" 
+                  fill="#78716C" 
+                  stroke="#FAF6EE" 
+                  strokeWidth="2px" 
+                  strokeLinejoin="round"
+                  fontSize="7.5" 
+                  fontFamily="monospace" 
+                  fontWeight="bold" 
+                  letterSpacing="1" 
+                  className="dark:[fill:#cbd5e1] dark:[stroke:#020617]"
+                >
+                  METROPOLITAN CARRIERS
+                </text>
 
-              <text x="690" y="80" fill="#9A3412" fontSize="13" fontFamily="serif" fontWeight="900" letterSpacing="3" opacity="0.9" className="pointer-events-none dark:[fill:#fef3c7]">
-                EUROPE
-              </text>
-
-              {/* Oceanic Body Labels */}
-              <text x="410" y="140" fill="#78716C" fontSize="11" fontFamily="serif" fontStyle="italic" fontWeight="600" letterSpacing="4" opacity="0.65" className="pointer-events-none dark:[fill:#38bdf8]">
-                NORTH ATLANTIC OCEAN
-              </text>
-              <text x="480" y="440" fill="#78716C" fontSize="11" fontFamily="serif" fontStyle="italic" fontWeight="600" letterSpacing="4" opacity="0.65" className="pointer-events-none dark:[fill:#38bdf8]">
-                SOUTH ATLANTIC OCEAN
-              </text>
-              <text x="595" y="340" fill="#047857" fontSize="9.5" fontFamily="serif" fontStyle="italic" fontWeight="600" letterSpacing="2" opacity="0.75" className="pointer-events-none dark:[fill:#10b981]">
-                GULF OF GUINEA
-              </text>
-              <text x="175" y="270" fill="#0369A1" fontSize="9.5" fontFamily="serif" fontStyle="italic" fontWeight="600" letterSpacing="2" opacity="0.75" className="pointer-events-none dark:[fill:#38bdf8]">
-                CARIBBEAN SEA
-              </text>
+                {/* Oceanic Body Labels */}
+                <text 
+                  x="390" 
+                  y="160" 
+                  fill="#78716C" 
+                  stroke="#FAF6EE" 
+                  strokeWidth="3px" 
+                  strokeLinejoin="round"
+                  fontSize="11" 
+                  fontFamily="serif" 
+                  fontStyle="italic" 
+                  fontWeight="600" 
+                  letterSpacing="4" 
+                  className="dark:[fill:#38bdf8] dark:[stroke:#020617]"
+                >
+                  NORTH ATLANTIC OCEAN
+                </text>
+                <text 
+                  x="460" 
+                  y="450" 
+                  fill="#78716C" 
+                  stroke="#FAF6EE" 
+                  strokeWidth="3px" 
+                  strokeLinejoin="round"
+                  fontSize="11" 
+                  fontFamily="serif" 
+                  fontStyle="italic" 
+                  fontWeight="600" 
+                  letterSpacing="4" 
+                  className="dark:[fill:#38bdf8] dark:[stroke:#020617]"
+                >
+                  SOUTH ATLANTIC OCEAN
+                </text>
+                <text 
+                  x="610" 
+                  y="340" 
+                  fill="#047857" 
+                  stroke="#FAF6EE" 
+                  strokeWidth="2.5px" 
+                  strokeLinejoin="round"
+                  fontSize="9.5" 
+                  fontFamily="serif" 
+                  fontStyle="italic" 
+                  fontWeight="600" 
+                  letterSpacing="2" 
+                  className="dark:[fill:#10b981] dark:[stroke:#020617]"
+                >
+                  GULF OF GUINEA
+                </text>
+                <text 
+                  x="185" 
+                  y="295" 
+                  fill="#0369A1" 
+                  stroke="#FAF6EE" 
+                  strokeWidth="2.5px" 
+                  strokeLinejoin="round"
+                  fontSize="9.5" 
+                  fontFamily="serif" 
+                  fontStyle="italic" 
+                  fontWeight="600" 
+                  letterSpacing="2" 
+                  className="dark:[fill:#38bdf8] dark:[stroke:#020617]"
+                >
+                  CARIBBEAN SEA
+                </text>
+              </g>
             </g>
           )}
 
           {/* 5. HISTORICAL AFRICAN EMBARKATION COASTAL ZONES */}
-          <g className="embarkation-zones-layer">
-            {EMBARKATION_ZONES.map(zone => {
+          <g className="embarkation-zones-layer pointer-events-auto">
+            {EMBARKATION_ZONES.map((zone, zIdx) => {
               const [cx, cy] = projectCoord(zone.center[0], zone.center[1]);
+              // Calculate smart badge positioning offset along the coastline to eliminate overlapping
+              let badgeOffsetX = 8;
+              let badgeOffsetY = -10;
+              if (zone.id === 'senegambia') {
+                badgeOffsetX = -75;
+                badgeOffsetY = -4;
+              } else if (zone.id === 'sierra_leone') {
+                badgeOffsetX = -78;
+                badgeOffsetY = 6;
+              } else if (zone.id === 'gold_coast') {
+                badgeOffsetX = -25;
+                badgeOffsetY = 14;
+              } else if (zone.id === 'bight_of_benin') {
+                badgeOffsetX = -15;
+                badgeOffsetY = -24;
+              } else if (zone.id === 'bight_of_biafra') {
+                badgeOffsetX = 8;
+                badgeOffsetY = 12;
+              } else if (zone.id === 'west_central_africa') {
+                badgeOffsetX = -88;
+                badgeOffsetY = -2;
+              } else if (zone.id === 'southeast_africa') {
+                badgeOffsetX = 10;
+                badgeOffsetY = 2;
+              }
+
+              const badgeWidth = zone.name.split(' (')[0].length * 5.2 + 14;
+
               return (
                 <g key={zone.id} className="group cursor-pointer">
                   {/* Subtle glowing halo along the coast */}
-                  <circle cx={cx} cy={cy} r="18" fill={zone.color} fillOpacity="0.16" stroke={zone.color} strokeWidth="1" strokeDasharray="2 3" />
-                  <circle cx={cx} cy={cy} r="4.5" fill={zone.color} stroke="#FAF6EE" className="dark:[stroke:#020617]" strokeWidth="1.5" />
+                  <circle cx={cx} cy={cy} r="14" fill={zone.color} fillOpacity="0.16" stroke={zone.color} strokeWidth="1" strokeDasharray="2 3" />
+                  <circle cx={cx} cy={cy} r="4" fill={zone.color} stroke="#FAF6EE" className="dark:[stroke:#020617]" strokeWidth="1.5" />
                   
-                  {/* Zone text pill */}
-                  <text
-                    x={cx + 8}
-                    y={cy - 4}
-                    fill="#1C1917"
-                    className="dark:[fill:#ffffff]"
-                    fontSize="8.5"
-                    fontFamily="sans-serif"
-                    fontWeight="800"
-                  >
-                    {zone.name.split(' (')[0]}
-                  </text>
-                  <text
-                    x={cx + 8}
-                    y={cy + 6}
-                    fill={zone.color}
-                    fontSize="7.5"
-                    fontFamily="monospace"
-                    fontWeight="bold"
-                  >
-                    {zone.captiveShare}
-                  </text>
+                  {/* Contrast Badge Pill */}
+                  <g transform={`translate(${cx + badgeOffsetX}, ${cy + badgeOffsetY})`}>
+                    <rect 
+                      x="0" 
+                      y="0" 
+                      width={badgeWidth} 
+                      height="20" 
+                      rx="4" 
+                      fill="#FAF6EE" 
+                      className="dark:[fill:#090d16]" 
+                      stroke={zone.color} 
+                      strokeWidth="1" 
+                      opacity="0.95" 
+                    />
+                    <text
+                      x="6"
+                      y="9.5"
+                      fill="#1C1917"
+                      className="dark:[fill:#ffffff]"
+                      fontSize="7.5"
+                      fontFamily="sans-serif"
+                      fontWeight="800"
+                    >
+                      {zone.name.split(' (')[0]}
+                    </text>
+                    <text
+                      x="6"
+                      y="16.5"
+                      fill={zone.color}
+                      fontSize="6.5"
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                    >
+                      {zone.captiveShare.split(' (')[0]}
+                    </text>
+                  </g>
                 </g>
               );
             })}
@@ -485,14 +699,14 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                     className="transition-all duration-200"
                   />
 
-                  {/* High-speed Directional Flow Particles (Westward movement towards Americas) */}
+                  {/* Subtle Directional Flow Streamline (Westward movement towards Americas) */}
                   <path
                     d={`M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`}
                     fill="none"
                     stroke="#ffffff"
-                    strokeWidth={Math.max(1.8, volumeWidth * 0.45)}
-                    strokeDasharray="5 18"
-                    strokeOpacity={isHovered ? 1 : 0.85 * epochMultiplier}
+                    strokeWidth={Math.min(2.5, Math.max(1.2, volumeWidth * 0.35))}
+                    strokeDasharray="4 14"
+                    strokeOpacity={isHovered ? 0.9 : 0.65 * epochMultiplier}
                     className="animate-pulse"
                   />
 
@@ -531,18 +745,28 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                     onMouseEnter={() => setHoveredNode(port)}
                     onMouseLeave={() => setHoveredNode(null)}
                   >
-                    {/* Radiating Beacon Ring */}
+                    {/* Native Radial Beacon Ring (Anchored strictly to cx, cy, avoiding global CSS transform offsets) */}
                     <circle
                       cx={x}
                       cy={y}
-                      r="10"
+                      r="5.5"
                       fill="none"
                       stroke={fillColor}
                       strokeWidth="1.2"
-                      strokeOpacity="0.4"
-                      className="animate-ping"
-                      style={{ animationDuration: `${2.2 + (idx % 3) * 0.6}s` }}
-                    />
+                    >
+                      <animate
+                        attributeName="r"
+                        values="5.5;10.5;5.5"
+                        dur={`${2.4 + (idx % 3) * 0.6}s`}
+                        repeatCount="indefinite"
+                      />
+                      <animate
+                        attributeName="stroke-opacity"
+                        values="0.7;0;0.7"
+                        dur={`${2.4 + (idx % 3) * 0.6}s`}
+                        repeatCount="indefinite"
+                      />
+                    </circle>
 
                     {/* Solid Port Node Circle */}
                     <circle
@@ -557,16 +781,20 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                       filter="url(#portGlow)"
                     />
 
-                    {/* Readable Coastal Port Label */}
+                    {/* Readable Coastal Port Label with Contrast Halo */}
                     <text
                       x={x + (isAmerican ? -9 : 9)}
                       y={y + 3.5}
                       textAnchor={isAmerican ? 'end' : 'start'}
                       fill="#1C1917"
-                      fontSize="9.5"
+                      stroke="#FAF6EE"
+                      strokeWidth="3px"
+                      strokeLinejoin="round"
+                      fontSize="9"
                       fontFamily="sans-serif"
                       fontWeight="700"
-                      className="pointer-events-none dark:[fill:#f8fafc]"
+                      className="pointer-events-none dark:[fill:#f8fafc] dark:[stroke:#020617]"
+                      style={{ paintOrder: 'stroke fill' }}
                     >
                       {port.name.split(' (')[0]}
                     </text>
@@ -600,7 +828,10 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
 
             {/* Polaris / North Star Indicator above North point */}
             <g transform="translate(0, -42)">
-              <circle cx="0" cy="0" r="8" fill="#FDE68A" fillOpacity="0.3" className="animate-ping" style={{ animationDuration: '3s' }} />
+              <circle cx="0" cy="0" r="4" fill="#FDE68A" fillOpacity="0.4">
+                <animate attributeName="r" values="3.5;7.5;3.5" dur="3s" repeatCount="indefinite" />
+                <animate attributeName="fill-opacity" values="0.6;0.1;0.6" dur="3s" repeatCount="indefinite" />
+              </circle>
               <polygon points="0,-7 2,-2 7,0 2,2 0,7 -2,2 -7,0 -2,-2" fill="#D97706" stroke="#92400E" strokeWidth="0.5" />
               <circle cx="0" cy="0" r="1.5" fill="#ffffff" />
             </g>

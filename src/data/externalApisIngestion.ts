@@ -41,7 +41,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     organization: 'World Bank Group / Brookings Institution',
     category: 'Governance & Rights',
     apiUrl: 'https://api.worldbank.org/v2/country/{iso3}/indicator/{indicator}?format=json',
-    docUrl: 'https://info.worldbank.org/governance/wgi/',
+    docUrl: 'https://databank.worldbank.org/source/worldwide-governance-indicators',
     format: 'REST / JSON',
     authType: 'Public Open Access',
     rateLimit: '300 req/min',
@@ -249,7 +249,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     organization: 'World Bank Group (IDA)',
     category: 'Governance & Rights',
     apiUrl: 'https://api.worldbank.org/v2/sources/11/country/{iso3}?format=json',
-    docUrl: 'https://ida.worldbank.org/en/financing/resource-management/cpia',
+    docUrl: 'https://www.worldbank.org/en/data/datatopics/cpia',
     format: 'REST / JSON',
     authType: 'Public Open Access',
     rateLimit: '300 req/min',
@@ -1692,6 +1692,24 @@ export interface LiveApiTestResult {
 export async function testLiveApiConnection(connectorId: string, countryIso3 = 'GHA'): Promise<LiveApiTestResult> {
   const connector = EXTERNAL_API_CONNECTORS.find(c => c.id === connectorId);
   const startTime = performance.now();
+
+  // 1. Try server-side proxy endpoint first to bypass browser CORS constraints
+  try {
+    const serverRes = await fetch('/api/ingest/test-connector', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ connectorId, countryIso3 }),
+      signal: AbortSignal.timeout(4500)
+    });
+    if (serverRes.ok) {
+      const serverResult: LiveApiTestResult = await serverRes.json();
+      if (serverResult && serverResult.connectorId) {
+        return serverResult;
+      }
+    }
+  } catch {
+    // Fall through to client direct check or resilient fallback
+  }
 
   let targetUrl = '';
   if (connectorId === 'wgi' || connectorId === 'wb_gender' || connectorId === 'wb_ids' || connectorId === 'wb_cpia') {

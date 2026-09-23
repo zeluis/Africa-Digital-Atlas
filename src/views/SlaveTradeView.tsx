@@ -31,6 +31,8 @@ import { QueryBuilderPanel } from '../components/slaveVoyages/QueryBuilderPanel'
 import { MolecularLegaciesView } from '../components/slaveVoyages/MolecularLegaciesView';
 import { AfricanDevelopmentMasterReportView } from './AfricanDevelopmentMasterReportView';
 import { AcademicExportModal } from '../components/AcademicExportModal';
+import { AfricanPortsMap } from '../components/slaveVoyages/AfricanPortsMap';
+import { SlaveVoyagesEssaysViewer } from '../components/slaveVoyages/SlaveVoyagesEssaysViewer';
 import { 
   Anchor, 
   Compass, 
@@ -57,12 +59,15 @@ import {
   ArrowRight,
   Sparkles,
   Scale,
-  Download
+  Download,
+  Castle
 } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 
 export type SlaveTradeSubTab = 
   | 'overview'
+  | 'ports'
+  | 'essays'
   | 'voyages'
   | 'routes'
   | 'people'
@@ -186,59 +191,6 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
           </div>
         </div>
 
-        {/* Database Switcher: Trans-Atlantic vs Intra-American vs Consolidated */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-[#DCD3C1]/80 dark:border-zinc-800/80">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-[#78716C] dark:text-zinc-400 font-bold uppercase">Database:</span>
-            <div className="inline-flex p-1 rounded-xl bg-[#E8DFCE] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800 text-xs font-medium">
-              <button
-                onClick={() => handleSelectDatabase('consolidated')}
-                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  filters.database === 'consolidated'
-                    ? 'bg-[#C2410C] text-white font-bold shadow-xs'
-                    : 'text-[#57534E] hover:text-[#1C1917] dark:text-zinc-400 dark:hover:text-zinc-200'
-                }`}
-              >
-                Consolidated (All Trades)
-              </button>
-              <button
-                onClick={() => handleSelectDatabase('transatlantic')}
-                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  filters.database === 'transatlantic'
-                    ? 'bg-[#C2410C] text-white font-bold shadow-xs'
-                    : 'text-[#57534E] hover:text-[#1C1917] dark:text-zinc-400 dark:hover:text-zinc-200'
-                }`}
-              >
-                Trans-Atlantic (36,108 Voyages)
-              </button>
-              <button
-                onClick={() => handleSelectDatabase('intra_american')}
-                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                  filters.database === 'intra_american'
-                    ? 'bg-[#C2410C] text-white font-bold shadow-xs'
-                    : 'text-[#57534E] hover:text-[#1C1917] dark:text-zinc-400 dark:hover:text-zinc-200'
-                }`}
-              >
-                Intra-American (11,400+ Voyages)
-              </button>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="text-xs font-mono text-[#78716C] dark:text-zinc-400">
-              Current Filter View: <strong className="text-[#C2410C] dark:text-emerald-400">{filterResult.totalMatches}</strong> matching voyages
-            </div>
-            <button
-              onClick={() => setIsExportOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-[#F5EFE1] dark:hover:bg-zinc-700 text-[#1C1917] dark:text-zinc-200 border border-[#DCD3C1] dark:border-zinc-700 text-xs font-semibold cursor-pointer transition-colors shadow-xs"
-              title="Export Academic Citation & SVG"
-            >
-              <Download className="w-3.5 h-3.5 text-[#C2410C] dark:text-emerald-400" />
-              <span>Export & Cite</span>
-            </button>
-          </div>
-        </div>
-
         {/* Headline Statistics Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-2">
           <div className="p-4 rounded-2xl bg-white/85 dark:bg-zinc-900/80 border border-[#DCD3C1] dark:border-zinc-800 space-y-1 shadow-xs">
@@ -312,15 +264,17 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
       <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-zinc-200 dark:border-zinc-800">
         {[
           { id: 'overview', label: '01 — Overview & Flow Map', icon: Globe },
-          { id: 'voyages', label: '02 — Explore Voyages', icon: Compass },
-          { id: 'routes', label: '03 — Geographic Routes', icon: Layers },
-          { id: 'people', label: '04 — African Origins & Names', icon: Users },
-          { id: 'enslavers', label: '05 — Enslavers & Networks', icon: Building2 },
-          { id: 'analytics', label: '06 — Comparative Analytics', icon: BarChart3 },
-          { id: 'query', label: '07 — Query Builder & Citations', icon: SlidersHorizontal },
-          { id: 'methodology', label: '08 — Provenance & Methodology', icon: BookOpen },
-          { id: 'molecular', label: '09 — Molecular & Material Legacies', icon: Dna },
-          { id: 'foundations', label: '10 — Foundations of African Development (Master Report)', icon: Scale }
+          { id: 'ports', label: '02 — African Forts & Enclaves Map', icon: Castle },
+          { id: 'essays', label: '03 — Introduction Essays & Scholarship', icon: BookOpen },
+          { id: 'voyages', label: '04 — Explore Voyages', icon: Compass },
+          { id: 'routes', label: '05 — Geographic Routes', icon: Layers },
+          { id: 'people', label: '06 — African Origins & Names', icon: Users },
+          { id: 'enslavers', label: '07 — Enslavers & Networks', icon: Building2 },
+          { id: 'analytics', label: '08 — Comparative Analytics', icon: BarChart3 },
+          { id: 'query', label: '09 — Query Builder & Citations', icon: SlidersHorizontal },
+          { id: 'methodology', label: '10 — Provenance & Methodology', icon: BookOpen },
+          { id: 'molecular', label: '11 — Molecular & Material Legacies', icon: Dna },
+          { id: 'foundations', label: '12 — Foundations of African Development (Master Report)', icon: Scale }
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeSubTab === tab.id;
@@ -346,71 +300,6 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
       {/* TAB 1: OVERVIEW & FLOW MAP */}
       {activeSubTab === 'overview' && (
         <div className="space-y-8">
-          {/* Editorial Research Publications Callout Strip (Option A: Warm & Crisp Atmospheric Styling) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-5 rounded-2xl bg-gradient-to-br from-[#FAF5EC] via-[#F6ECE0] to-[#EFE2D2] dark:from-indigo-950/40 dark:to-slate-900/90 border border-[#D8C6B0] dark:border-indigo-500/30 shadow-xs hover:shadow-md transition-all space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-1 rounded-md bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 font-mono text-[10px] uppercase font-bold border border-indigo-500/25 flex items-center gap-1.5">
-                  <Dna className="w-3 h-3" />
-                  <span>Research Dossier</span>
-                </span>
-                <span className="text-[11px] font-mono text-indigo-800 dark:text-indigo-400 font-semibold">Nature & Cell Genomics</span>
-              </div>
-              <div>
-                <h4 className="text-base font-extrabold text-[#1C1917] dark:text-white">Molecular & Material Legacies</h4>
-                <p className="text-xs text-[#57534E] dark:text-slate-300 line-clamp-2 mt-1 leading-relaxed">
-                  Ancient genomics, sex-biased admixture asymmetry, bioarchaeology at the New York African Burial Ground, and material culture diaspora.
-                </p>
-              </div>
-              <div className="pt-2">
-                <button
-                  onClick={() => {
-                    if (onNavigateToMolecular) {
-                      onNavigateToMolecular();
-                    } else {
-                      setActiveSubTab('molecular');
-                    }
-                  }}
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-xs"
-                >
-                  <span>Read Dedicated Editorial Article</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-gradient-to-br from-[#FFF8EE] via-[#FDF1DE] to-[#F5E5C9] dark:from-amber-950/40 dark:to-slate-900/90 border border-[#DFCCA6] dark:border-amber-500/30 shadow-xs hover:shadow-md transition-all space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-1 rounded-md bg-amber-500/15 text-amber-800 dark:text-amber-300 font-mono text-[10px] uppercase font-bold border border-amber-500/25 flex items-center gap-1.5">
-                  <Scale className="w-3 h-3" />
-                  <span>Master Report</span>
-                </span>
-                <span className="text-[11px] font-mono text-amber-900 dark:text-amber-400 font-semibold">Nunn, Tadei & UN 2026</span>
-              </div>
-              <div>
-                <h4 className="text-base font-extrabold text-[#1C1917] dark:text-white">Foundations of African Development</h4>
-                <p className="text-xs text-[#57534E] dark:text-slate-300 line-clamp-2 mt-1 leading-relaxed">
-                  Macro-geonomics, Nathan Nunn mistrust scars, Tadei trade monopsonies, and UN 2026 reparations frameworks.
-                </p>
-              </div>
-              <div className="pt-2">
-                <button
-                  onClick={() => {
-                    if (onNavigateToFoundations) {
-                      onNavigateToFoundations();
-                    } else {
-                      setActiveSubTab('foundations');
-                    }
-                  }}
-                  className="px-4 py-2 rounded-xl bg-[#C2410C] hover:bg-[#9A3412] text-white text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-xs"
-                >
-                  <span>Read Dedicated Master Report</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* Interactive Atlantic Geodesic Flow Map (Option A: Atmospheric Framing) */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -537,7 +426,13 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
             </div>
 
             <button
-              onClick={() => setActiveSubTab('molecular')}
+              onClick={() => {
+                if (onNavigateToMolecular) {
+                  onNavigateToMolecular();
+                } else {
+                  setActiveSubTab('molecular');
+                }
+              }}
               className="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-600/20 shrink-0 cursor-pointer"
             >
               <span>Explore Molecular Atlas</span>
@@ -565,7 +460,13 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
             </div>
 
             <button
-              onClick={() => setActiveSubTab('foundations')}
+              onClick={() => {
+                if (onNavigateToFoundations) {
+                  onNavigateToFoundations();
+                } else {
+                  setActiveSubTab('foundations');
+                }
+              }}
               className="px-5 py-3 rounded-2xl bg-[#C2410C] hover:bg-[#9A3412] text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-[#C2410C]/20 shrink-0 cursor-pointer"
             >
               <span>Open Master Report</span>
@@ -575,7 +476,21 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
         </div>
       )}
 
-      {/* TAB 2: EXPLORE VOYAGES */}
+      {/* TAB 02: AFRICAN EMBARKATION PORTS & FORTS MAP */}
+      {activeSubTab === 'ports' && (
+        <div className="space-y-6">
+          <AfricanPortsMap />
+        </div>
+      )}
+
+      {/* TAB 03: INTRODUCTION ESSAYS & SCHOLARSHIP */}
+      {activeSubTab === 'essays' && (
+        <div className="space-y-6">
+          <SlaveVoyagesEssaysViewer />
+        </div>
+      )}
+
+      {/* TAB 04: EXPLORE VOYAGES */}
       {activeSubTab === 'voyages' && (
         <div className="space-y-6">
           {/* Multi-Parameter Filters Toolbar */}
@@ -593,6 +508,59 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
               >
                 Reset Filters
               </button>
+            </div>
+
+            {/* Unified Database Selectors & Academic Export Engine */}
+            <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-[#F5EFE6] dark:bg-zinc-950 border border-[#DCD3C1] dark:border-zinc-800">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-mono text-[#78716C] dark:text-zinc-400 font-bold uppercase">Database:</span>
+                <div className="inline-flex p-1 rounded-xl bg-[#E8DFCE] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800 text-xs font-medium">
+                  <button
+                    onClick={() => handleSelectDatabase('consolidated')}
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                      filters.database === 'consolidated'
+                        ? 'bg-[#C2410C] text-white font-bold shadow-xs'
+                        : 'text-[#57534E] hover:text-[#1C1917] dark:text-zinc-400 dark:hover:text-zinc-200'
+                    }`}
+                  >
+                    Consolidated (All Trades)
+                  </button>
+                  <button
+                    onClick={() => handleSelectDatabase('transatlantic')}
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                      filters.database === 'transatlantic'
+                        ? 'bg-[#C2410C] text-white font-bold shadow-xs'
+                        : 'text-[#57534E] hover:text-[#1C1917] dark:text-zinc-400 dark:hover:text-zinc-200'
+                    }`}
+                  >
+                    Trans-Atlantic (36,108 Voyages)
+                  </button>
+                  <button
+                    onClick={() => handleSelectDatabase('intra_american')}
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                      filters.database === 'intra_american'
+                        ? 'bg-[#C2410C] text-white font-bold shadow-xs'
+                        : 'text-[#57534E] hover:text-[#1C1917] dark:text-zinc-400 dark:hover:text-zinc-200'
+                    }`}
+                  >
+                    Intra-American (11,400+ Voyages)
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="text-xs font-mono text-[#78716C] dark:text-zinc-400">
+                  Matches: <strong className="text-[#C2410C] dark:text-emerald-400">{filterResult.totalMatches.toLocaleString()}</strong> voyages
+                </div>
+                <button
+                  onClick={() => setIsExportOpen(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-[#F5EFE1] dark:hover:bg-zinc-700 text-[#1C1917] dark:text-zinc-200 border border-[#DCD3C1] dark:border-zinc-700 text-xs font-semibold cursor-pointer transition-colors shadow-xs"
+                  title="Export Academic Citation & SVG"
+                >
+                  <Download className="w-3.5 h-3.5 text-[#C2410C] dark:text-emerald-400" />
+                  <span>Export & Cite</span>
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
