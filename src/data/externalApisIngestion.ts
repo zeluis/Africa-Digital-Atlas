@@ -273,6 +273,22 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     coverageSummary: 'High-resolution CMIP6 climate anomaly pathways, historical precipitation variability, ND-GAIN vulnerability indices, and renewable capacity shares.',
     sampleEndpoint: 'https://climateknowledgeportal.worldbank.org/api/data/v1/cru-x0.5/climatology/tas/1991-2020/country/{iso3}',
     indicatorsProvided: ['WB.CLIM.TEMP.ANOM', 'WB.CLIM.PRECIP.VAR', 'WB.CLIM.VULN.NDGAIN', 'WB.CLIM.RENEW.CAP']
+  },
+  {
+    id: 'ec_jrc_akp',
+    name: 'Africa Knowledge Platform (AKP 241 Datasets)',
+    acronym: 'EC JRC AKP',
+    organization: 'European Commission JRC & African Union',
+    category: 'Trade & Competitiveness',
+    apiUrl: 'https://africa-knowledge-platform.ec.europa.eu/api/v1/datasets',
+    docUrl: 'https://africa-knowledge-platform.ec.europa.eu/',
+    format: 'OpenData CSV/JSON',
+    authType: 'Public Open Access',
+    rateLimit: '250 req/min',
+    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    coverageSummary: 'European Commission JRC Master Registry of 241 spatial and statistical datasets spanning 5 thematic pillars: Demographics & Health, Energy & Telecom, Environment & Climate, Agriculture & Water, and Macroeconomics across all 54 African states.',
+    sampleEndpoint: 'https://africa-knowledge-platform.ec.europa.eu/api/v1/datasets/AKP-241/summary',
+    indicatorsProvided: ['AKP.DEMO.POP', 'AKP.ENER.GRID', 'AKP.ENV.BIODIV', 'AKP.AGRI.CROP', 'AKP.ECON.TRADE']
   }
 ];
 

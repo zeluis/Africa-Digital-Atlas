@@ -163,6 +163,20 @@ export const ORG_METADATA: Record<string, {
     wikimediaUrl: 'https://commons.wikimedia.org/wiki/File:Flag_of_COMESA.svg',
     brandColor: '#006600',
     publicDomainStatus: 'Regional Economic Community Emblem'
+  },
+  EC_JRC_AKP: {
+    name: 'European Commission JRC - Africa Knowledge Platform',
+    acronym: 'EC JRC AKP',
+    wikimediaUrl: 'https://africa-knowledge-platform.ec.europa.eu/',
+    brandColor: '#003399',
+    publicDomainStatus: 'Official EU / AU Open Data Portal'
+  },
+  AKP: {
+    name: 'European Commission JRC - Africa Knowledge Platform',
+    acronym: 'EC JRC AKP',
+    wikimediaUrl: 'https://africa-knowledge-platform.ec.europa.eu/',
+    brandColor: '#003399',
+    publicDomainStatus: 'Official EU / AU Open Data Portal'
   }
 };
 
@@ -444,6 +458,18 @@ export const OrganizationLogo: React.FC<OrganizationLogoProps> = ({
             <rect width="100" height="100" rx="20" fill={variant === 'color' ? '#006600' : 'transparent'} />
             <circle cx="50" cy="50" r="34" stroke={variant === 'color' ? '#FFCC00' : 'currentColor'} strokeWidth="3" />
             <text x="50" y="55" textAnchor="middle" fill={variant === 'color' ? '#FFFFFF' : 'currentColor'} fontSize="10" fontWeight="bold">COMESA</text>
+          </svg>
+        );
+
+      case 'EC_JRC_AKP':
+      case 'AKP':
+      case 'JRC':
+        return (
+          <svg viewBox="0 0 100 100" className="w-full h-full" fill="none">
+            <rect width="100" height="100" rx="20" fill={variant === 'color' ? '#003399' : 'transparent'} />
+            <circle cx="50" cy="50" r="36" fill={variant === 'color' ? '#006633' : 'transparent'} stroke={variant === 'color' ? '#FFCC00' : 'currentColor'} strokeWidth="2.5" />
+            <path d="M43 32 C49 31 59 32 63 37 C65 40 59 44 61 48 C64 51 69 54 64 60 C61 64 56 72 53 78 C50 75 48 68 46 64 C41 60 37 56 39 50 C41 46 35 42 36 38 Z" fill={variant === 'color' ? '#FFCC00' : 'currentColor'} />
+            <text x="50" y="88" textAnchor="middle" fill={variant === 'color' ? '#FFFFFF' : 'currentColor'} fontSize="11" fontFamily="sans-serif" fontWeight="bold">AKP</text>
           </svg>
         );
 

@@ -12,6 +12,7 @@ import {
 } from '../utils/exportUtils';
 import { ExternalApiConnector, LiveApiTestResult } from '../data/externalApisIngestion';
 import { OrganizationLogo } from '../components/OrganizationLogo';
+import { AkpCatalogueModal } from '../components/AkpCatalogueModal';
 import { 
   Database, 
   ShieldCheck, 
@@ -41,6 +42,7 @@ export const ProvenanceQualityView: React.FC = () => {
   const [cacheInfo, setCacheInfo] = useState(getCacheStatus());
   const [testingApiId, setTestingApiId] = useState<string | null>(null);
   const [apiTestResults, setApiTestResults] = useState<Record<string, LiveApiTestResult>>({});
+  const [isAkpModalOpen, setIsAkpModalOpen] = useState(false);
 
   const manifest = atlas.getManifest();
   const sources = atlas.getAllSources();
@@ -346,18 +348,18 @@ export const ProvenanceQualityView: React.FC = () => {
         </div>
       </div>
 
-      {/* Multilateral APIs & Ingestion Feeds (16 Connected Sources) */}
+      {/* Multilateral APIs & Ingestion Feeds (17 Connected Sources) */}
       <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 space-y-6 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-5">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700/60 text-xs font-mono font-semibold text-amber-700 dark:text-amber-300 mb-2">
-              <Globe2 className="w-3.5 h-3.5" /> 16 Multilateral & Specialized Data Feeds
+              <Globe2 className="w-3.5 h-3.5" /> {apiConnectors.length} Multilateral & Specialized Data Feeds
             </div>
             <h2 className="text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-100">
               International Statistical API Connectors
             </h2>
             <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-              Live ingest feeds from FH_FIW, WGI, UNESCO, GHO, PIP, IDS, UN Comtrade, IMF WEO, WB CPIA, and WB Climate.
+              Live ingest feeds from EC JRC AKP (241 Datasets), FH_FIW, WGI, UNESCO, GHO, PIP, IDS, UN Comtrade, IMF WEO, WB CPIA, and WB Climate.
             </p>
           </div>
           <span className="px-3 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800/60 text-xs font-mono font-bold">
@@ -395,14 +397,25 @@ export const ProvenanceQualityView: React.FC = () => {
                 </div>
 
                 <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800/60 flex items-center justify-between gap-2">
-                  <a
-                    href={connector.docUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[11px] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-1"
-                  >
-                    <ExternalLink className="w-3 h-3" /> Docs
-                  </a>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={connector.docUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-1"
+                    >
+                      <ExternalLink className="w-3 h-3" /> Docs
+                    </a>
+
+                    {connector.id === 'ec_jrc_akp' && (
+                      <button
+                        onClick={() => setIsAkpModalOpen(true)}
+                        className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800/60 hover:opacity-90 transition-opacity flex items-center gap-1 cursor-pointer"
+                      >
+                        <Database className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400" /> Browse 241
+                      </button>
+                    )}
+                  </div>
 
                   <button
                     onClick={() => handleTestApiConnector(connector.id)}
@@ -563,6 +576,8 @@ export const ProvenanceQualityView: React.FC = () => {
           </table>
         </div>
       </div>
+
+      <AkpCatalogueModal isOpen={isAkpModalOpen} onClose={() => setIsAkpModalOpen(false)} />
     </div>
   );
 };
