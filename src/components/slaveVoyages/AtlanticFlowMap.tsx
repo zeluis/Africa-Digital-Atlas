@@ -22,7 +22,10 @@ import {
   SICILY_PATH,
   EMBARKATION_ZONES,
   TRADE_WINDS,
-  TradeWindVector
+  TradeWindVector,
+  HISTORIC_RIVERS,
+  HISTORIC_INTERNAL_BOUNDARIES,
+  INTERNATIONAL_BORDERS_PATH
 } from './atlanticMapGeometry';
 import { AfricaVectorContinent } from '../common/AfricaVectorContinent';
 
@@ -252,7 +255,15 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
 
-            {/* Port Pulse Glow Filter */}
+            {/* GPU-Optimized Hardware-Sampled Photon Halo Texture (Eliminates CPU Gaussian Blur overhead) */}
+            <radialGradient id="photonGlowGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
+              <stop offset="30%" stopColor="#FBBF24" stopOpacity="0.9" />
+              <stop offset="65%" stopColor="#F59E0B" stopOpacity="0.35" />
+              <stop offset="100%" stopColor="#F59E0B" stopOpacity="0" />
+            </radialGradient>
+
+            {/* Port Pulse Glow Filter (Only evaluated on single hovered port) */}
             <filter id="portGlow" x="-50%" y="-50%" width="200%" height="200%">
               <feGaussianBlur stdDeviation="2" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
@@ -334,6 +345,50 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
               <path d={BALEARIC_PATH} fill="url(#europeLand)" stroke="#B4A68C" strokeWidth="1.0" />
               <path d={SARDINIA_CORSICA_PATH} fill="url(#europeLand)" stroke="#B4A68C" strokeWidth="1.0" />
               <path d={SICILY_PATH} fill="url(#europeLand)" stroke="#B4A68C" strokeWidth="1.0" />
+
+              {/* INTERNATIONAL BORDERS (Delicate hairline boundaries on Europe & Americas) */}
+              <path
+                d={INTERNATIONAL_BORDERS_PATH}
+                fill="none"
+                stroke="#A89B82"
+                strokeWidth="0.75"
+                strokeDasharray="2 3"
+                strokeOpacity="0.45"
+                className="dark:[stroke:#475569]"
+                pointerEvents="none"
+              />
+
+              {/* HISTORICAL REGIONAL / COLONIAL INTERNAL BOUNDARIES */}
+              <g className="historic-boundaries-layer pointer-events-none">
+                {HISTORIC_INTERNAL_BOUNDARIES.map(b => (
+                  <path
+                    key={b.id}
+                    d={b.path}
+                    fill="none"
+                    stroke="#8C827A"
+                    strokeWidth="0.85"
+                    strokeDasharray="2.5 3.5"
+                    strokeOpacity="0.55"
+                    className="dark:[stroke:#94a3b8]"
+                  />
+                ))}
+              </g>
+
+              {/* HISTORICAL CONTINENTAL NAVIGATIONAL RIVERS (Mississippi, Amazon, Tagus, Loire, Thames, Rhine) */}
+              <g className="historic-rivers-layer pointer-events-none">
+                {HISTORIC_RIVERS.map(river => (
+                  <path
+                    key={river.id}
+                    d={river.path}
+                    fill="none"
+                    stroke="#0284C7"
+                    strokeWidth="1.1"
+                    strokeOpacity="0.6"
+                    strokeLinecap="round"
+                    className="dark:[stroke:#38bdf8]"
+                  />
+                ))}
+              </g>
 
               {/* AUTHORITATIVE AFRICAN CONTINENT (5,796 × 5,867 Native Precision)
                   Geographically calibrated to Lat -34.8° to +37.35°, Lon -17.5° to +51.3°
@@ -640,7 +695,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
 
           {/* 7. GEODESIC FLOW ARCS (Trans-Atlantic Captive Corridors) */}
           <g className="geodesic-flows-layer">
-            {filteredRoutes.map((route) => {
+            {filteredRoutes.map((route, rIdx) => {
               const [x1, y1] = projectCoord(route.sourceCoords[0], route.sourceCoords[1]);
               const [x2, y2] = projectCoord(route.targetCoords[0], route.targetCoords[1]);
 
@@ -699,16 +754,32 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                     className="transition-all duration-200"
                   />
 
-                  {/* Subtle Directional Flow Streamline (Westward movement towards Americas) */}
-                  <path
-                    d={`M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`}
-                    fill="none"
-                    stroke="#ffffff"
-                    strokeWidth={Math.min(2.5, Math.max(1.2, volumeWidth * 0.35))}
-                    strokeDasharray="4 14"
-                    strokeOpacity={isHovered ? 0.9 : 0.65 * epochMultiplier}
-                    className="animate-pulse"
-                  />
+                  {/* Luminous Westward Trans-Atlantic Voyage Photons (GPU hardware texture accelerated) */}
+                  <g className="pointer-events-none">
+                    {/* Primary Luminous Photon */}
+                    <g>
+                      <circle cx="0" cy="0" r={isHovered ? "6.8" : "5.0"} fill="url(#photonGlowGradient)" />
+                      <circle cx="0" cy="0" r={isHovered ? "2.4" : "1.8"} fill="#FFFFFF" />
+                      <animateMotion
+                        path={`M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`}
+                        dur={`${4.2 + (rIdx % 4) * 0.7}s`}
+                        repeatCount="indefinite"
+                      />
+                    </g>
+                    {/* Secondary Staggered Photon on Active/High-Volume Routes */}
+                    {(route.embarkedCount > 400000 || isHovered) && (
+                      <g>
+                        <circle cx="0" cy="0" r={isHovered ? "5.4" : "4.0"} fill="url(#photonGlowGradient)" />
+                        <circle cx="0" cy="0" r={isHovered ? "2.0" : "1.5"} fill="#FFFFFF" />
+                        <animateMotion
+                          path={`M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`}
+                          dur={`${4.2 + (rIdx % 4) * 0.7}s`}
+                          begin={`${(4.2 + (rIdx % 4) * 0.7) / 2}s`}
+                          repeatCount="indefinite"
+                        />
+                      </g>
+                    )}
+                  </g>
 
                   {/* Flow Volume Marker at Midpoint */}
                   {(isHovered || isSelected || (route.embarkedCount > 1500000 && epochMultiplier > 0.5)) && (
@@ -731,6 +802,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                 const [x, y] = projectCoord(port.lat, port.lng);
                 const isAfrican = port.type === 'african-port';
                 const isAmerican = port.type === 'american-port';
+                const isPortHovered = hoveredNode?.name === port.name;
 
                 const fillColor = isAfrican 
                   ? '#059669' 
@@ -738,35 +810,56 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                     ? '#0284C7' 
                     : '#D97706';
 
+                const portDisplayName = port.name.split(' (')[0];
+                const pillWidth = Math.max(50, portDisplayName.length * 6.0 + 16);
+                const isWest = isAmerican;
+                const pillX = isWest ? x - pillWidth - 10 : x + 10;
+                const pillY = y - 9;
+
                 return (
                   <g 
                     key={`port-${idx}`}
-                    className="cursor-pointer transition-transform hover:scale-125"
+                    className="cursor-pointer transition-transform hover:scale-110"
                     onMouseEnter={() => setHoveredNode(port)}
                     onMouseLeave={() => setHoveredNode(null)}
                   >
-                    {/* Native Radial Beacon Ring (Anchored strictly to cx, cy, avoiding global CSS transform offsets) */}
-                    <circle
-                      cx={x}
-                      cy={y}
-                      r="5.5"
-                      fill="none"
-                      stroke={fillColor}
-                      strokeWidth="1.2"
-                    >
-                      <animate
-                        attributeName="r"
-                        values="5.5;10.5;5.5"
-                        dur={`${2.4 + (idx % 3) * 0.6}s`}
-                        repeatCount="indefinite"
+                    {/* Pulsating Beacon Ring: Pulsates until hovered over */}
+                    {!isPortHovered && (
+                      <circle
+                        cx={x}
+                        cy={y}
+                        r="5.5"
+                        fill="none"
+                        stroke={fillColor}
+                        strokeWidth="1.3"
+                      >
+                        <animate
+                          attributeName="r"
+                          values="5.5;13;5.5"
+                          dur={`${2.2 + (idx % 3) * 0.5}s`}
+                          repeatCount="indefinite"
+                        />
+                        <animate
+                          attributeName="stroke-opacity"
+                          values="0.85;0;0.85"
+                          dur={`${2.2 + (idx % 3) * 0.5}s`}
+                          repeatCount="indefinite"
+                        />
+                      </circle>
+                    )}
+
+                    {/* Prominent Steady Focus Ring when hovered over */}
+                    {isPortHovered && (
+                      <circle
+                        cx={x}
+                        cy={y}
+                        r="9"
+                        fill="none"
+                        stroke={fillColor}
+                        strokeWidth="2.5"
+                        filter="url(#portGlow)"
                       />
-                      <animate
-                        attributeName="stroke-opacity"
-                        values="0.7;0;0.7"
-                        dur={`${2.4 + (idx % 3) * 0.6}s`}
-                        repeatCount="indefinite"
-                      />
-                    </circle>
+                    )}
 
                     {/* Solid Port Node Circle */}
                     <circle
@@ -781,23 +874,34 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                       filter="url(#portGlow)"
                     />
 
-                    {/* Readable Coastal Port Label with Contrast Halo */}
-                    <text
-                      x={x + (isAmerican ? -9 : 9)}
-                      y={y + 3.5}
-                      textAnchor={isAmerican ? 'end' : 'start'}
-                      fill="#1C1917"
-                      stroke="#FAF6EE"
-                      strokeWidth="3px"
-                      strokeLinejoin="round"
-                      fontSize="9"
-                      fontFamily="sans-serif"
-                      fontWeight="700"
-                      className="pointer-events-none dark:[fill:#f8fafc] dark:[stroke:#020617]"
-                      style={{ paintOrder: 'stroke fill' }}
-                    >
-                      {port.name.split(' (')[0]}
-                    </text>
+                    {/* Readable Coastal Port Label Contrast Pill */}
+                    <g className="pointer-events-none">
+                      <rect
+                        x={pillX}
+                        y={pillY}
+                        width={pillWidth}
+                        height="18"
+                        rx="4"
+                        fill="#FAF6EE"
+                        className="dark:[fill:#090d16]"
+                        stroke={fillColor}
+                        strokeWidth={isPortHovered ? "1.6" : "0.9"}
+                        strokeOpacity={isPortHovered ? "1" : "0.75"}
+                        opacity="0.94"
+                      />
+                      <text
+                        x={pillX + pillWidth / 2}
+                        y={pillY + 12.5}
+                        textAnchor="middle"
+                        fill="#1C1917"
+                        fontSize="8.5"
+                        fontFamily="sans-serif"
+                        fontWeight="700"
+                        className="dark:[fill:#f8fafc]"
+                      >
+                        {portDisplayName}
+                      </text>
+                    </g>
                   </g>
                 );
               })}
