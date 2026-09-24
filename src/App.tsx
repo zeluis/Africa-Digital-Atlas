@@ -29,6 +29,7 @@ const MapView = lazyWithRetry(() => import('./views/MapView').then(m => ({ defau
 const LanguagesView = lazyWithRetry(() => import('./views/LanguagesView').then(m => ({ default: m.LanguagesView })), 'LanguagesView');
 const ExploreView = lazyWithRetry(() => import('./views/ExploreView').then(m => ({ default: m.ExploreView })), 'ExploreView');
 const SlaveTradeView = lazyWithRetry(() => import('./views/SlaveTradeView').then(m => ({ default: m.SlaveTradeView })), 'SlaveTradeView');
+const IconographyView = lazyWithRetry(() => import('./views/IconographyView').then(m => ({ default: m.IconographyView })), 'IconographyView');
 const MolecularLegaciesArticleView = lazyWithRetry(() => import('./views/MolecularLegaciesArticleView').then(m => ({ default: m.MolecularLegaciesArticleView })), 'MolecularLegaciesArticleView');
 const AfricanDevelopmentMasterReportView = lazyWithRetry(() => import('./views/AfricanDevelopmentMasterReportView').then(m => ({ default: m.AfricanDevelopmentMasterReportView })), 'AfricanDevelopmentMasterReportView');
 const ThematicPillarsView = lazyWithRetry(() => import('./views/ThematicPillarsView').then(m => ({ default: m.ThematicPillarsView })), 'ThematicPillarsView');
@@ -435,7 +436,12 @@ function AppContent() {
                     <SlaveTradeView 
                       onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
                       onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
+                      onNavigateToIconography={() => handleSelectTab('iconography')}
                     />
+                  )}
+
+                  {currentTab === 'iconography' && (
+                    <IconographyView />
                   )}
 
                   {currentTab === 'molecular-legacies' && (

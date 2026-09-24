@@ -33,6 +33,8 @@ import { AfricanDevelopmentMasterReportView } from './AfricanDevelopmentMasterRe
 import { AcademicExportModal } from '../components/AcademicExportModal';
 import { AfricanPortsMap } from '../components/slaveVoyages/AfricanPortsMap';
 import { SlaveVoyagesEssaysViewer } from '../components/slaveVoyages/SlaveVoyagesEssaysViewer';
+import { StorytellingGallery } from '../components/slaveVoyages/StorytellingGallery';
+import { SlaveTradeIconography } from '../components/slaveVoyages/SlaveTradeIconography';
 import { 
   Anchor, 
   Compass, 
@@ -60,7 +62,8 @@ import {
   Sparkles,
   Scale,
   Download,
-  Castle
+  Castle,
+  Image as ImageIcon
 } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 
@@ -76,16 +79,19 @@ export type SlaveTradeSubTab =
   | 'query'
   | 'methodology'
   | 'molecular'
-  | 'foundations';
+  | 'foundations'
+  | 'iconography';
 
 export interface SlaveTradeViewProps {
   onNavigateToMolecular?: () => void;
   onNavigateToFoundations?: () => void;
+  onNavigateToIconography?: () => void;
 }
 
 export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
   onNavigateToMolecular,
-  onNavigateToFoundations
+  onNavigateToFoundations,
+  onNavigateToIconography
 }) => {
   const [activeSubTab, setActiveSubTab] = useState<SlaveTradeSubTab>('overview');
   const [filters, setFilters] = useState<VoyageFilterState>(DEFAULT_FILTERS);
@@ -94,6 +100,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
   const [peopleSearch, setPeopleSearch] = useState('');
   const [enslaverSearch, setEnslaverSearch] = useState('');
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [activeEssayId, setActiveEssayId] = useState<string>('essay-global-magnitude');
 
   // Filtered dataset
   const filterResult = useMemo(() => {
@@ -274,14 +281,21 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
           { id: 'query', label: '09 — Query Builder & Citations', icon: SlidersHorizontal },
           { id: 'methodology', label: '10 — Provenance & Methodology', icon: BookOpen },
           { id: 'molecular', label: '11 — Molecular & Material Legacies', icon: Dna },
-          { id: 'foundations', label: '12 — Foundations of African Development (Master Report)', icon: Scale }
+          { id: 'foundations', label: '12 — Foundations of African Development (Master Report)', icon: Scale },
+          { id: 'iconography', label: '13 — Historical Iconography Archive', icon: ImageIcon }
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeSubTab === tab.id;
           return (
             <button
               key={tab.id}
-              onClick={() => setActiveSubTab(tab.id as SlaveTradeSubTab)}
+              onClick={() => {
+                if (tab.id === 'iconography' && onNavigateToIconography) {
+                  onNavigateToIconography();
+                } else {
+                  setActiveSubTab(tab.id as SlaveTradeSubTab);
+                }
+              }}
               className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                 isActive
                   ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-md scale-102'
@@ -485,8 +499,23 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
 
       {/* TAB 03: INTRODUCTION ESSAYS & SCHOLARSHIP */}
       {activeSubTab === 'essays' && (
-        <div className="space-y-6">
-          <SlaveVoyagesEssaysViewer />
+        <div className="space-y-12">
+          <StorytellingGallery 
+            onSelectVoyage={(voyage) => setSelectedVoyage(voyage)}
+            onSelectEssay={(essayId) => {
+              setActiveEssayId(essayId);
+              const element = document.getElementById('academic-essay-reader');
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+          />
+          <div id="academic-essay-reader" className="pt-4">
+            <SlaveVoyagesEssaysViewer 
+              activeEssayId={activeEssayId}
+              onSelectEssay={(id) => setActiveEssayId(id)}
+            />
+          </div>
         </div>
       )}
 
@@ -1088,6 +1117,11 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
       {/* TAB 10: FOUNDATIONS OF AFRICAN DEVELOPMENT (MASTER REPORT) */}
       {activeSubTab === 'foundations' && (
         <AfricanDevelopmentMasterReportView />
+      )}
+
+      {/* TAB 11: HISTORICAL ICONOGRAPHY ARCHIVE */}
+      {activeSubTab === 'iconography' && (
+        <SlaveTradeIconography />
       )}
 
       {/* Voyage Dossier Modal */}

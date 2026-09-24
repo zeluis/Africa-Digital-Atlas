@@ -41,6 +41,7 @@ export type MainNavId =
   | 'slave-trade'
   | 'molecular-legacies'
   | 'african-development-foundations'
+  | 'iconography'
   | 'pillars'
   | 'blocs'
   | 'regions'
@@ -147,11 +148,77 @@ const REGION_ID_TO_NAME: Record<RegionNavId, AfricanRegion> = {
 
 const getActiveSubmenuFromTab = (tab: CanonicalNavTab): SubmenuKey | null => {
   if (tab === 'explore' || tab === 'pillars' || tab === 'blocs' || tab === 'heritage') return 'explore';
-  if (tab === 'slave-trade' || tab === 'molecular-legacies' || tab === 'african-development-foundations' || tab === 'ethnic-tree') return 'history';
+  if (tab === 'slave-trade' || tab === 'molecular-legacies' || tab === 'african-development-foundations' || tab === 'ethnic-tree' || tab === 'iconography') return 'history';
   if (tab === 'research-directory' || (typeof tab === 'string' && tab.startsWith('report-'))) return 'reports';
   if (tab === 'regions' || tab === 'languages') return 'regions';
   if (tab === 'analytics' || tab === 'map') return 'analytics';
   return null;
+};
+
+const getSelectedLinkColor = (tab: CanonicalNavTab, activeRegion?: AfricanRegion): { thumb: string; hover: string } => {
+  // 1. UN Geoscheme Regional Links (Exact regional palette active color)
+  if (tab === 'region-northern' || (tab === 'regions' && activeRegion === 'Northern Africa')) {
+    return { thumb: '#2563EB', hover: '#1D4ED8' }; // Northern Africa Blue
+  }
+  if (tab === 'region-western' || (tab === 'regions' && activeRegion === 'Western Africa')) {
+    return { thumb: '#16A34A', hover: '#15803D' }; // Western Africa Green
+  }
+  if (tab === 'region-central' || (tab === 'regions' && activeRegion === 'Central Africa')) {
+    return { thumb: '#C026D3', hover: '#A21CAF' }; // Central Africa Magenta
+  }
+  if (tab === 'region-eastern' || (tab === 'regions' && activeRegion === 'Eastern Africa')) {
+    return { thumb: '#EAB308', hover: '#CA8A04' }; // Eastern Africa Gold
+  }
+  if (tab === 'region-southern' || (tab === 'regions' && activeRegion === 'Southern Africa')) {
+    return { thumb: '#DC2626', hover: '#B91C1C' }; // Southern Africa Red
+  }
+
+  // 2. Overview (Emerald active indicator)
+  if (tab === 'overview') {
+    return { thumb: '#10B981', hover: '#059669' }; // Emerald
+  }
+
+  // 3. Explore Group (Nations, Pillars, Blocs, Heritage - Blue active indicator)
+  if (tab === 'explore' || tab === 'pillars' || tab === 'blocs' || tab === 'heritage') {
+    return { thumb: '#3B82F6', hover: '#2563EB' }; // Blue
+  }
+
+  // 4. History Group (Voyages, Genetics, Foundations, Ethnic Tree, Iconography - Amber active indicator)
+  if (
+    tab === 'slave-trade' || 
+    tab === 'molecular-legacies' || 
+    tab === 'african-development-foundations' || 
+    tab === 'ethnic-tree' || 
+    tab === 'iconography'
+  ) {
+    return { thumb: '#F59E0B', hover: '#D97706' }; // Amber
+  }
+
+  // 5. Reports Group
+  if (tab === 'research-directory') {
+    return { thumb: '#6366F1', hover: '#4F46E5' }; // Indigo
+  }
+  if (typeof tab === 'string' && tab.startsWith('report-')) {
+    return { thumb: '#F59E0B', hover: '#D97706' }; // Amber
+  }
+
+  // 6. Regions Group (Matrix, Languages - Purple active indicator)
+  if (tab === 'regions' || tab === 'languages') {
+    return { thumb: '#A855F7', hover: '#9333EA' }; // Purple
+  }
+
+  // 7. Analytics Group (Benchmarks, Continental Map - Emerald active indicator)
+  if (tab === 'analytics' || tab === 'map') {
+    return { thumb: '#10B981', hover: '#059669' }; // Emerald
+  }
+
+  // 8. Auxiliary Links (Compare, Pipeline - Emerald active indicator)
+  if (tab === 'compare' || tab === 'provenance') {
+    return { thumb: '#10B981', hover: '#059669' }; // Emerald
+  }
+
+  // Default fallback
+  return { thumb: '#F59E0B', hover: '#D97706' };
 };
 
 export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
@@ -176,7 +243,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     currentTab === 'slave-trade' || 
     currentTab === 'molecular-legacies' || 
     currentTab === 'african-development-foundations' || 
-    currentTab === 'ethnic-tree';
+    currentTab === 'ethnic-tree' ||
+    currentTab === 'iconography';
   const isReportsGroupActive = 
     currentTab === 'research-directory' || 
     (typeof currentTab === 'string' && currentTab.startsWith('report-'));
@@ -311,7 +379,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     { id: 'slave-trade', label: 'Voyages', icon: Anchor, badge: 'Voyages Flow' },
     { id: 'molecular-legacies', label: 'Genetics', icon: Dna, badge: 'Monograph' },
     { id: 'african-development-foundations', label: 'Foundations', icon: 'fluent-mdl2:knowledge-article', badge: 'Treatise' },
-    { id: 'ethnic-tree', label: 'Ethnic Tree', icon: 'mdi:family-tree', badge: 'Transatlantic' }
+    { id: 'ethnic-tree', label: 'Ethnic Tree', icon: 'mdi:family-tree', badge: 'Transatlantic' },
+    { id: 'iconography', label: 'Iconography', icon: 'lucide:image', badge: 'Visual Archive' }
   ];
 
   // Submenu items for Regions (Ultra-Minimal style)
@@ -1046,6 +1115,10 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     );
   };
 
+  const selectedScrollbarColor = React.useMemo(() => {
+    return getSelectedLinkColor(currentTab, activeRegion);
+  }, [currentTab, activeRegion]);
+
   return (
     <>
       {/* 1. DESKTOP DRAWER */}
@@ -1053,6 +1126,10 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
         id="desktop-navigation-drawer"
         onMouseEnter={() => setIsDrawerHovered(true)}
         onMouseLeave={() => setIsDrawerHovered(false)}
+        style={{
+          '--drawer-scrollbar-thumb': selectedScrollbarColor.thumb,
+          '--drawer-scrollbar-thumb-hover': selectedScrollbarColor.hover,
+        } as React.CSSProperties}
         className={`hidden lg:flex flex-col shrink-0 sticky top-16 h-[calc(100vh-4rem)] border-r border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl z-30 transition-all duration-300 ease-out overflow-y-auto overflow-x-hidden drawer-cozy-scrollbar ${
           !isDesktopOpen
             ? 'w-0 p-0 border-r-0 overflow-hidden'
@@ -1082,6 +1159,10 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ duration: 0.25, ease: MD3_STANDARD_EASE }}
+              style={{
+                '--drawer-scrollbar-thumb': selectedScrollbarColor.thumb,
+                '--drawer-scrollbar-thumb-hover': selectedScrollbarColor.hover,
+              } as React.CSSProperties}
               className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 z-50 p-5 overflow-y-auto drawer-cozy-scrollbar lg:hidden flex flex-col justify-between shadow-2xl"
             >
               <div className="flex items-center justify-between pb-4 mb-4 border-b border-zinc-100 dark:border-zinc-800">

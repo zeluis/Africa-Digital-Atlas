@@ -18,8 +18,25 @@ import {
 } from 'lucide-react';
 import { SLAVEVOYAGES_ESSAYS, SlaveVoyagesEssay } from '../../data/slaveVoyagesEssays';
 
-export const SlaveVoyagesEssaysViewer: React.FC = () => {
-  const [selectedEssayId, setSelectedEssayId] = useState<string>(SLAVEVOYAGES_ESSAYS[0].id);
+interface SlaveVoyagesEssaysViewerProps {
+  activeEssayId?: string;
+  onSelectEssay?: (id: string) => void;
+}
+
+export const SlaveVoyagesEssaysViewer: React.FC<SlaveVoyagesEssaysViewerProps> = ({
+  activeEssayId,
+  onSelectEssay
+}) => {
+  const [localSelectedEssayId, setLocalSelectedEssayId] = useState<string>(SLAVEVOYAGES_ESSAYS[0].id);
+
+  const selectedEssayId = activeEssayId !== undefined ? activeEssayId : localSelectedEssayId;
+  const setSelectedEssayId = (id: string) => {
+    if (onSelectEssay) {
+      onSelectEssay(id);
+    } else {
+      setLocalSelectedEssayId(id);
+    }
+  };
 
   const activeEssay = SLAVEVOYAGES_ESSAYS.find(e => e.id === selectedEssayId) || SLAVEVOYAGES_ESSAYS[0];
 

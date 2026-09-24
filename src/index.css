@@ -479,10 +479,11 @@
   overflow: hidden;
 }
 
-/* Cozy Tonal Slim Scrollbar for Scholarly Drawer */
+/* Cozy Tonal Slim Scrollbar for Scholarly Drawer - Dynamic Link Active State Color Sync */
 .drawer-cozy-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(196, 122, 68, 0.45) transparent;
+  scrollbar-color: var(--drawer-scrollbar-thumb, #F59E0B) transparent;
+  transition: scrollbar-color 0.3s ease;
 }
 .drawer-cozy-scrollbar::-webkit-scrollbar {
   width: 5px;
@@ -493,21 +494,21 @@
   margin: 6px 0;
 }
 .drawer-cozy-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(196, 122, 68, 0.4);
+  background: var(--drawer-scrollbar-thumb, #F59E0B);
   border-radius: 9999px;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.3s ease;
 }
 .drawer-cozy-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(196, 122, 68, 0.75);
+  background: var(--drawer-scrollbar-thumb-hover, #D97706);
 }
 .dark .drawer-cozy-scrollbar {
-  scrollbar-color: rgba(224, 150, 96, 0.4) transparent;
+  scrollbar-color: var(--drawer-scrollbar-thumb, #F59E0B) transparent;
 }
 .dark .drawer-cozy-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(224, 150, 96, 0.35);
+  background: var(--drawer-scrollbar-thumb, #F59E0B);
 }
 .dark .drawer-cozy-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(224, 150, 96, 0.7);
+  background: var(--drawer-scrollbar-thumb-hover, #D97706);
 }
 
 /* =========================================================================
