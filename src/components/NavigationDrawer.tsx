@@ -380,7 +380,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     { id: 'molecular-legacies', label: 'Genetics', icon: Dna, badge: 'Monograph' },
     { id: 'african-development-foundations', label: 'Foundations', icon: 'fluent-mdl2:knowledge-article', badge: 'Treatise' },
     { id: 'ethnic-tree', label: 'Ethnic Tree', icon: 'mdi:family-tree', badge: 'Transatlantic' },
-    { id: 'iconography', label: 'Iconography', icon: 'lucide:image', badge: 'Visual Archive' }
+    { id: 'iconography', label: 'Iconography', icon: 'lucide:book-image', badge: 'Visual Archive' }
   ];
 
   // Submenu items for Regions (Ultra-Minimal style)

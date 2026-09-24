@@ -574,6 +574,7 @@ function AppContent() {
         onClose={() => setIsSearchOpen(false)}
         onSelectCountry={handleSelectCountry}
         onSelectIndicator={handleSelectIndicator}
+        onSelectTab={handleSelectTab}
       />
 
       {/* Multilateral Data APIs & Ingestion Hub Modal */}

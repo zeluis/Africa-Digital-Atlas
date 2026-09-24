@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { BookOpen, Sparkles, Image as ImageIcon, RefreshCw, Calendar, Tag } from 'lucide-react';
 import { SLAVE_TRADE_ILLUSTRATIONS, SlaveTradeIllustration } from '../data/slaveTradeIllustrations';
 import { SlaveTradeIconography } from '../components/slaveVoyages/SlaveTradeIconography';
+import { ArchivalLoupeModal } from '../components/slaveVoyages/ArchivalLoupeModal';
 
 // Curated selection of visually striking, high-detail plates
 const HERO_IMAGE_CANDIDATES = [17, 18, 19, 20, 731, 732, 735, 788, 789, 790, 831, 835, 1021, 1028, 1032, 1042];
@@ -32,6 +33,7 @@ const getCandidateState = (excludeId?: number): HeroState => {
 
 export const IconographyView: React.FC = () => {
   const [heroState, setHeroState] = useState<HeroState>(() => getCandidateState());
+  const [inspectedIllustration, setInspectedIllustration] = useState<SlaveTradeIllustration | null>(null);
 
   const rotateHeroImage = useCallback(() => {
     setHeroState(prev => getCandidateState(prev.id));
@@ -120,20 +122,30 @@ export const IconographyView: React.FC = () => {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="w-72 bg-[#FAF8F5]/90 dark:bg-stone-900/90 backdrop-blur-md p-4 rounded-2xl border border-stone-300/80 dark:border-stone-700/80 shadow-md space-y-3"
+              onClick={() => {
+                if (heroState.illustration) {
+                  setInspectedIllustration(heroState.illustration);
+                }
+              }}
+              className="w-72 bg-[#FAF8F5]/90 dark:bg-stone-900/90 backdrop-blur-md p-4 rounded-2xl border border-stone-300/80 dark:border-stone-700/80 shadow-md space-y-3 cursor-pointer hover:border-amber-500/50 hover:shadow-lg transition-all group"
             >
               <div className="relative aspect-4/3 rounded-xl overflow-hidden border border-stone-200 dark:border-stone-800 bg-stone-100 dark:bg-stone-950">
                 <img 
                   src={heroState.url} 
                   alt={heroState.title}
-                  className="w-full h-full object-cover grayscale contrast-110 hover:grayscale-0 transition-all duration-500"
+                  className="w-full h-full object-cover grayscale contrast-110 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
                 />
                 <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-stone-900/80 text-amber-400 text-[9px] font-mono font-bold">
                   SI-OB-{heroState.id}
                 </div>
+                <div className="absolute inset-0 bg-amber-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <span className="px-2.5 py-1 rounded-lg bg-stone-900/90 text-amber-300 font-mono text-[10px] font-bold shadow-md">
+                    Inspect in Loupe 🔍
+                  </span>
+                </div>
               </div>
               <div className="space-y-1">
-                <p className="text-xs font-serif font-bold text-stone-900 dark:text-stone-100 line-clamp-2 leading-snug">
+                <p className="text-xs font-serif font-bold text-stone-900 dark:text-stone-100 line-clamp-2 leading-snug group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
                   {heroState.title}
                 </p>
                 <div className="flex items-center justify-between text-[10px] font-mono text-stone-500 dark:text-stone-400 pt-1 border-t border-stone-200/80 dark:border-stone-800/80">
@@ -156,6 +168,12 @@ export const IconographyView: React.FC = () => {
       <div className="px-1">
         <SlaveTradeIconography />
       </div>
+
+      {/* Loupe Modal for Hero Card Click */}
+      <ArchivalLoupeModal
+        illustration={inspectedIllustration}
+        onClose={() => setInspectedIllustration(null)}
+      />
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { atlas } from '../data/atlas-store';
 import { AtlasEntity, IndicatorDefinition, HeritageSite } from '../data/types';
+import { SLAVE_TRADE_ILLUSTRATIONS, SlaveTradeIllustration } from '../data/slaveTradeIllustrations';
 import { CountryFlag } from './CountryFlag';
 import { useSavedEntities } from '../contexts/SavedEntitiesContext';
 import { 
@@ -14,7 +15,9 @@ import {
   Clock,
   Star,
   Layers,
-  Sparkles
+  Sparkles,
+  BookOpen,
+  Image as ImageIcon
 } from 'lucide-react';
 
 interface SearchModalProps {
@@ -22,20 +25,23 @@ interface SearchModalProps {
   onClose: () => void;
   onSelectCountry: (entityId: string) => void;
   onSelectIndicator: (indicatorId: string) => void;
+  onSelectTab?: (tab: string) => void;
 }
 
-type SearchCategory = 'all' | 'countries' | 'indicators' | 'heritage';
+type SearchCategory = 'all' | 'countries' | 'indicators' | 'heritage' | 'iconography';
 
 type SearchItemType = 
   | { type: 'entity'; data: AtlasEntity }
   | { type: 'indicator'; data: IndicatorDefinition }
-  | { type: 'heritage'; data: HeritageSite };
+  | { type: 'heritage'; data: HeritageSite }
+  | { type: 'iconography'; data: SlaveTradeIllustration };
 
 export const SearchModal: React.FC<SearchModalProps> = ({
   isOpen,
   onClose,
   onSelectCountry,
-  onSelectIndicator
+  onSelectIndicator,
+  onSelectTab
 }) => {
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<SearchCategory>('all');
@@ -127,14 +133,39 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       .map(item => item.site);
   }, [q, selectedCategory]);
 
+  // Matched Archival Iconography Plates
+  const matchedIconography = useMemo<SlaveTradeIllustration[]>(() => {
+    if (selectedCategory !== 'all' && selectedCategory !== 'iconography') return [];
+    if (q === '') return SLAVE_TRADE_ILLUSTRATIONS.slice(0, 4);
+    return SLAVE_TRADE_ILLUSTRATIONS
+      .map(ill => {
+        let score = 0;
+        const researchersMatch = ill.researchers.some(r => r.toLowerCase().includes(q)) ? 40 : 0;
+        const collectionMatch = ill.collectionNames.some(c => c.toLowerCase().includes(q)) ? 50 : 0;
+        score = Math.max(
+          scoreMatch(ill.title, q) * 1.4,
+          scoreMatch(ill.regId, q) * 2,
+          scoreMatch(ill.source, q) * 0.9,
+          researchersMatch,
+          collectionMatch
+        );
+        return { ill, score };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 6)
+      .map(item => item.ill);
+  }, [q, selectedCategory]);
+
   // Flatten items for keyboard navigation
   const flattenedItems = useMemo<SearchItemType[]>(() => {
     const list: SearchItemType[] = [];
     matchedEntities.forEach(data => list.push({ type: 'entity', data }));
     matchedIndicators.forEach(data => list.push({ type: 'indicator', data }));
     matchedHeritage.forEach(data => list.push({ type: 'heritage', data }));
+    matchedIconography.forEach(data => list.push({ type: 'iconography', data }));
     return list;
-  }, [matchedEntities, matchedIndicators, matchedHeritage]);
+  }, [matchedEntities, matchedIndicators, matchedHeritage, matchedIconography]);
 
   // Reset selected index when results change
   useEffect(() => {
@@ -178,6 +209,12 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     } else if (item.type === 'heritage') {
       addRecentSearch(item.data.name);
       onSelectCountry(item.data.entityId);
+      onClose();
+    } else if (item.type === 'iconography') {
+      addRecentSearch(item.data.title);
+      if (onSelectTab) {
+        onSelectTab('iconography');
+      }
       onClose();
     }
   };
@@ -279,6 +316,23 @@ export const SearchModal: React.FC<SearchModalProps> = ({
             {matchedHeritage.length > 0 && (
               <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 dark:bg-white/20">
                 {matchedHeritage.length}
+              </span>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedCategory('iconography')}
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+              selectedCategory === 'iconography'
+                ? 'bg-amber-800 text-white shadow-xs'
+                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+            }`}
+          >
+            <BookOpen className="w-3 h-3" />
+            <span>Archival Plates</span>
+            {matchedIconography.length > 0 && (
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 dark:bg-white/20">
+                {matchedIconography.length}
               </span>
             )}
           </button>
@@ -477,11 +531,69 @@ export const SearchModal: React.FC<SearchModalProps> = ({
             </div>
           )}
 
-          {matchedEntities.length === 0 && matchedIndicators.length === 0 && matchedHeritage.length === 0 && (
+          {/* Archival Iconography Section */}
+          {matchedIconography.length > 0 && (
+            <div>
+              <div className="text-[11px] font-mono font-bold tracking-wider uppercase text-zinc-500 px-2 mb-2 flex items-center gap-1.5">
+                <BookOpen className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" /> Historical Iconography &amp; Plates ({matchedIconography.length})
+              </div>
+              <div className="space-y-1">
+                {matchedIconography.map(ill => {
+                  const globalIdx = flattenedItems.findIndex(x => x.type === 'iconography' && x.data.objectId === ill.objectId);
+                  const isSelected = globalIdx === selectedIndex;
+
+                  return (
+                    <div
+                      key={ill.objectId}
+                      onClick={() => handleExecuteSelection({ type: 'iconography', data: ill })}
+                      className={`w-full flex items-center justify-between p-2.5 rounded-2xl transition-all text-left cursor-pointer ${
+                        isSelected 
+                          ? 'bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700/80 shadow-xs' 
+                          : 'hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-transparent'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0 pr-2">
+                        <div className="w-10 h-10 rounded-xl bg-stone-200 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 overflow-hidden shrink-0 flex items-center justify-center">
+                          {ill.imageUrls?.[0] ? (
+                            <img
+                              src={ill.imageUrls[0]}
+                              alt={ill.title}
+                              className="w-full h-full object-cover grayscale contrast-125"
+                              referrerPolicy="no-referrer"
+                            />
+                          ) : (
+                            <ImageIcon className="w-4 h-4 text-stone-400" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 flex items-center gap-1 mb-0.5">
+                            <span className="font-bold text-amber-800 dark:text-amber-400">Plate {ill.regId}</span>
+                            <span>•</span>
+                            <span className="truncate">{ill.date || 'Historical Scan'}</span>
+                          </div>
+                          <div className="font-bold text-sm text-zinc-900 dark:text-zinc-100 truncate">
+                            {ill.title}
+                          </div>
+                          <div className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
+                            {ill.collectionNames?.join(', ') || ill.source}
+                          </div>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60 px-2 py-0.5 rounded shrink-0">
+                        View Plate
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {matchedEntities.length === 0 && matchedIndicators.length === 0 && matchedHeritage.length === 0 && matchedIconography.length === 0 && (
             <div className="py-12 text-center text-zinc-500">
               <Search className="w-8 h-8 mx-auto mb-2 opacity-40 text-zinc-400" />
               <p className="text-sm font-semibold">No records found matching "{query}"</p>
-              <p className="text-xs text-zinc-400 mt-1">Try searching by country name, ISO code (e.g. NGA, DZA, ZAF), capital, or indicator (e.g. GDP, Population).</p>
+              <p className="text-xs text-zinc-400 mt-1">Try searching by country name, ISO code (e.g. NGA, DZA, ZAF), indicator, or archival plate (e.g. Brookes, Stowage, Map).</p>
             </div>
           )}
         </div>

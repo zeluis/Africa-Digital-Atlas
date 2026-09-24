@@ -16,6 +16,7 @@ import {
   Info
 } from 'lucide-react';
 import { SLAVE_TRADE_ILLUSTRATIONS, SlaveTradeIllustration } from '../../data/slaveTradeIllustrations';
+import { ArchivalLoupeModal } from './ArchivalLoupeModal';
 
 export const SlaveTradeIconography: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -413,149 +414,11 @@ export const SlaveTradeIconography: React.FC = () => {
         </div>
       )}
 
-      {/* High-Fidelity Scholars Detail Drawer / Modal Overlay */}
-      {activeIllustration && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 text-left">
-            
-            {/* Close Cross */}
-            <button
-              onClick={() => setActiveIllustration(null)}
-              className="absolute right-5 top-5 p-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-900 border border-stone-200 dark:border-stone-800 transition-colors text-stone-500 hover:text-stone-900 cursor-pointer z-10"
-              aria-label="Close details"
-            >
-              <span>✕</span>
-            </button>
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 overflow-hidden rounded-3xl">
-              {/* Left Column: Edge-to-Edge High-Res Image View */}
-              <div className="lg:col-span-6 bg-stone-100 dark:bg-stone-900 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-stone-200 dark:border-stone-800/80 min-h-[420px] lg:min-h-[550px] overflow-hidden rounded-t-3xl lg:rounded-tr-none lg:rounded-l-3xl">
-                {/* Full Extent Image Container */}
-                <div className="flex-1 relative w-full flex items-center justify-center bg-stone-150/40 dark:bg-stone-950/40">
-                  <img
-                    src={activeIllustration.imageUrls[0]}
-                    alt={activeIllustration.title}
-                    className="w-full h-full max-h-[500px] lg:max-h-none object-contain select-none"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                {/* Docked Bottom Caption Bar */}
-                <div className="py-3.5 px-4 bg-stone-200/40 dark:bg-stone-900/80 border-t border-stone-250 dark:border-stone-800/60 backdrop-blur-md">
-                  <p className="text-[10px] text-stone-500 dark:text-stone-400 text-center font-mono leading-relaxed">
-                    Scholarly Archival Scan Identifier: {activeIllustration.regId} · {activeIllustration.identifier || 'N/A'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Right Column: In-depth Academic Metadata & Citations */}
-              <div className="lg:col-span-6 p-6 md:p-8 flex flex-col justify-between space-y-6">
-                <div className="space-y-4">
-                  {/* Category Headers */}
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    {activeIllustration.collectionNames.map((name) => (
-                      <span
-                        key={name}
-                        className="text-[9px] font-sans font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 px-2 py-0.5 rounded-md border border-amber-200/40"
-                      >
-                        {name}
-                      </span>
-                    ))}
-                  </div>
-
-                  <h3 className="text-xl md:text-2xl font-serif font-black text-stone-900 dark:text-stone-100 leading-snug tracking-tight">
-                    {activeIllustration.title}
-                  </h3>
-
-                  {/* Progressive Metadata Rows */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 text-xs leading-relaxed">
-                    {activeIllustration.date && (
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase font-bold">Historical Date</span>
-                        <p className="font-serif font-semibold text-stone-800 dark:text-stone-200">{activeIllustration.date}</p>
-                      </div>
-                    )}
-                    {activeIllustration.language && (
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase font-bold">Source Language</span>
-                        <p className="font-sans font-semibold text-stone-800 dark:text-stone-200 flex items-center gap-1.5">
-                          <Languages className="w-3.5 h-3.5 text-stone-400" />
-                          <span>{activeIllustration.language}</span>
-                        </p>
-                      </div>
-                    )}
-                    {activeIllustration.spatialCoverage && activeIllustration.spatialCoverage.length > 0 && (
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase font-bold">Spatial Geography</span>
-                        <p className="font-sans font-semibold text-stone-800 dark:text-stone-200 flex items-center gap-1.5">
-                          <MapPin className="w-3.5 h-3.5 text-stone-400" />
-                          <span>{activeIllustration.spatialCoverage.join(', ')}</span>
-                        </p>
-                      </div>
-                    )}
-                    {activeIllustration.researchers && activeIllustration.researchers.length > 0 && (
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase font-bold">Verifying Historians</span>
-                        <p className="font-sans font-semibold text-stone-800 dark:text-stone-200 flex items-center gap-1.5">
-                          <User className="w-3.5 h-3.5 text-stone-400" />
-                          <span>{activeIllustration.researchers[0]} et al.</span>
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Primary Bibliographical Source */}
-                  <div className="p-4 rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-200/50 dark:border-stone-800 space-y-1">
-                    <span className="text-[10px] font-mono text-stone-400 uppercase font-bold flex items-center gap-1">
-                      <Info className="w-3.5 h-3.5 text-amber-700 dark:text-amber-500" />
-                      <span>Authoritative Bibliographical Source</span>
-                    </span>
-                    <p className="text-xs font-serif italic text-stone-700 dark:text-stone-300 leading-relaxed">
-                      {activeIllustration.source}
-                    </p>
-                    {activeIllustration.reproducedIn && (
-                      <p className="text-[10px] font-sans text-stone-400 dark:text-stone-500 mt-2 pt-2 border-t border-stone-200/40 dark:border-stone-800">
-                        <strong>Reproduced In:</strong> {activeIllustration.reproducedIn}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Academic Download Actions */}
-                <div className="pt-6 border-t border-stone-200 dark:border-stone-800 flex flex-col sm:flex-row gap-3">
-                  {/* High-Res TIFF Download */}
-                  {activeIllustration.externalAssetLinks && activeIllustration.externalAssetLinks[0] && (
-                    <a
-                      href={activeIllustration.externalAssetLinks[0].url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-between px-4 py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-sans font-bold transition-all shadow-md shadow-amber-600/10 cursor-pointer"
-                    >
-                      <span className="flex items-center gap-2">
-                        <Download className="w-4 h-4" />
-                        <span>Download High-Res Archive TIF</span>
-                      </span>
-                      <span>{`(~40MB)`}</span>
-                    </a>
-                  )}
-
-                  {/* View Enlarge */}
-                  {activeIllustration.externalAssetLinks && activeIllustration.externalAssetLinks[1] && (
-                    <a
-                      href={activeIllustration.externalAssetLinks[1].url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-stone-200 dark:border-stone-800 text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-900 text-xs font-sans font-bold transition-all cursor-pointer"
-                    >
-                      <ExternalLink className="w-4 h-4 text-stone-400" />
-                      <span>Enlarge Original Scan</span>
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Archival Deep Zoom & Citation Loupe Modal */}
+      <ArchivalLoupeModal
+        illustration={activeIllustration}
+        onClose={() => setActiveIllustration(null)}
+      />
     </div>
   );
 };
