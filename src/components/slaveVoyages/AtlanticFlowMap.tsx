@@ -85,6 +85,10 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
   const [showPorts, setShowPorts] = useState(true);
   const [destinationFilter, setDestinationFilter] = useState<'all' | 'Brazil' | 'British Caribbean' | 'French Caribbean' | 'Spanish Americas' | 'North America'>('all');
 
+  // Seasonal meteorological states
+  const [selectedSeason, setSelectedSeason] = useState<'summer' | 'autumn' | 'winter' | 'spring'>('summer');
+  const [showTradeWinds, setShowTradeWinds] = useState(true);
+
   // Playback timer loop
   useEffect(() => {
     let timer: any;
@@ -208,14 +212,17 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
         ))}
       </div>
 
-      {/* 3. Main SVG Vector Canvas */}
-      <div className="relative w-full aspect-[16/9] min-h-[420px] max-h-[620px] bg-[#FDFBF7] dark:bg-[#020617] flex items-center justify-center overflow-hidden">
-        <svg
-          id="atlantic-flow-map-svg"
-          viewBox="0 0 1000 580"
-          className="w-full h-full object-contain"
-          preserveAspectRatio="xMidYMid meet"
-        >
+      {/* 3. Main Split Workspace: Map + Seasonal Sidebar (Responsive CSS Grid) */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 border-b border-[#DCD3C1] dark:border-zinc-800">
+        
+        {/* Map Canvas (9 of 12 columns on desktop) */}
+        <div className="xl:col-span-9 relative w-full aspect-[16/9] min-h-[420px] max-h-[620px] bg-[#FDFBF7] dark:bg-[#020617] flex items-center justify-center overflow-hidden">
+          <svg
+            id="atlantic-flow-map-svg"
+            viewBox="0 0 1000 580"
+            className="w-full h-full object-contain"
+            preserveAspectRatio="xMidYMid meet"
+          >
           <defs>
             {/* Rich Bathymetric Ocean Gradient - Light & Dark Modes */}
             <radialGradient id="oceanDeep" cx="48%" cy="46%" r="58%">
@@ -612,6 +619,51 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
             </g>
           )}
 
+          {/* 4.5 HISTORICAL METEOROLOGICAL FORCE LINES (Trade Winds & Ocean Currents) */}
+          {showTradeWinds && (
+            <g className="meteorological-winds-layer pointer-events-none">
+              {TRADE_WINDS.map((wind) => {
+                const [sx, sy] = projectCoord(wind.startLat, wind.startLng);
+                const [cx, cy] = projectCoord(wind.ctrlLat, wind.ctrlLng);
+                const [ex, ey] = projectCoord(wind.endLat, wind.endLng);
+                const pathD = `M ${sx} ${sy} Q ${cx} ${cy} ${ex} ${ey}`;
+                
+                // Scale wind speed animation duration based on selectedSeason
+                const windSpeedMultipliers = {
+                  summer: 1.0,
+                  autumn: 0.55,
+                  winter: 1.55,
+                  spring: 0.95
+                };
+                const windMultiplier = windSpeedMultipliers[selectedSeason];
+                const windDuration = 9.0 / windMultiplier;
+
+                return (
+                  <g key={wind.id} className="opacity-60 transition-opacity duration-500">
+                    {/* Trade Wind Vector Arc */}
+                    <path
+                      d={pathD}
+                      fill="none"
+                      stroke={wind.color}
+                      strokeWidth="1.5"
+                      strokeDasharray="4 6"
+                      opacity="0.65"
+                    />
+                    
+                    {/* Animated Wind Particle */}
+                    <circle cx="0" cy="0" r="3.5" fill={wind.color}>
+                      <animateMotion
+                        path={pathD}
+                        dur={`${windDuration}s`}
+                        repeatCount="indefinite"
+                      />
+                    </circle>
+                  </g>
+                );
+              })}
+            </g>
+          )}
+
           {/* 5. HISTORICAL AFRICAN EMBARKATION COASTAL ZONES */}
           <g className="embarkation-zones-layer pointer-events-auto">
             {EMBARKATION_ZONES.map((zone, zIdx) => {
@@ -723,6 +775,17 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
               const volumeWidth = baseWidth * epochMultiplier;
               const strokeColor = getMortalityStroke(route.avgMortalityRate);
 
+              // Scale crossing speed based on selectedSeason (Seasonal Route Animator)
+              const seasonDurationMultipliers = {
+                summer: 1.0,
+                autumn: 1.3,
+                winter: 0.8,
+                spring: 1.15
+              };
+              const seasonMult = seasonDurationMultipliers[selectedSeason];
+              const baseDur = 4.2 + (rIdx % 4) * 0.7;
+              const animatedDur = baseDur * seasonMult;
+
               return (
                 <g 
                   key={route.id}
@@ -762,7 +825,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                       <circle cx="0" cy="0" r={isHovered ? "2.4" : "1.8"} fill="#FFFFFF" />
                       <animateMotion
                         path={`M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`}
-                        dur={`${4.2 + (rIdx % 4) * 0.7}s`}
+                        dur={`${animatedDur}s`}
                         repeatCount="indefinite"
                       />
                     </g>
@@ -773,8 +836,8 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                         <circle cx="0" cy="0" r={isHovered ? "2.0" : "1.5"} fill="#FFFFFF" />
                         <animateMotion
                           path={`M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`}
-                          dur={`${4.2 + (rIdx % 4) * 0.7}s`}
-                          begin={`${(4.2 + (rIdx % 4) * 0.7) / 2}s`}
+                          dur={`${animatedDur}s`}
+                          begin={`${animatedDur / 2}s`}
                           repeatCount="indefinite"
                         />
                       </g>
@@ -1030,6 +1093,185 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
           </div>
         )}
       </div>
+
+      {/* Seasonal Animator Sidebar (3 of 12 columns on desktop) */}
+      <div className="xl:col-span-3 p-4 bg-[#FAF6EE] dark:bg-zinc-900/95 border-t xl:border-t-0 xl:border-l border-[#DCD3C1] dark:border-zinc-800 space-y-4 text-left overflow-y-auto max-h-[620px] scrollbar-thin">
+        <div className="flex items-center gap-2 border-b border-[#DCD3C1] dark:border-zinc-800 pb-2">
+          <Wind className="w-5 h-5 text-[#C2410C]" />
+          <div>
+            <h4 className="font-extrabold text-xs text-[#1C1917] dark:text-zinc-100 uppercase tracking-wider">
+              Route Seasonality Simulator
+            </h4>
+            <p className="text-[10px] text-[#78716C] dark:text-zinc-400">
+              Simulate meteorological forces on Middle Passage transits
+            </p>
+          </div>
+        </div>
+
+        {/* Interactive Season Picker */}
+        <div className="space-y-1.5">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#78716C] dark:text-zinc-400">
+            Select Departure Season:
+          </span>
+          <div className="grid grid-cols-2 gap-1.5 text-xs font-semibold">
+            {[
+              { id: 'summer', label: 'Summer ☀️', desc: 'Jun–Aug' },
+              { id: 'autumn', label: 'Autumn 🍂', desc: 'Sept–Nov' },
+              { id: 'winter', label: 'Winter ❄️', desc: 'Dec–Feb' },
+              { id: 'spring', label: 'Spring 🌱', desc: 'Mar–May' }
+            ].map(season => (
+              <button
+                key={season.id}
+                onClick={() => setSelectedSeason(season.id as any)}
+                className={`p-2 rounded-xl text-left border transition-all cursor-pointer ${
+                  selectedSeason === season.id
+                    ? 'bg-amber-100 dark:bg-amber-950/40 border-amber-500 text-amber-900 dark:text-amber-200'
+                    : 'bg-white dark:bg-zinc-800 border-[#DCD3C1] dark:border-zinc-700 hover:bg-[#FAF6EE] dark:hover:bg-zinc-750 text-[#1C1917] dark:text-white'
+                }`}
+              >
+                <p className="font-bold text-[11px]">{season.label}</p>
+                <p className="text-[9px] text-[#78716C] dark:text-zinc-400 font-mono">{season.desc}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Wind Layer Toggle */}
+        <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-zinc-950 border border-[#DCD3C1] dark:border-zinc-800">
+          <span className="text-xs font-mono font-semibold text-[#57534E] dark:text-zinc-300">
+            Overlay Trade Winds
+          </span>
+          <button
+            onClick={() => setShowTradeWinds(!showTradeWinds)}
+            className={`px-2 py-1 rounded-md text-[10px] font-mono font-bold border transition-all cursor-pointer ${
+              showTradeWinds
+                ? 'bg-[#DCFCE7] dark:bg-emerald-950 border-emerald-500 text-emerald-800 dark:text-emerald-300'
+                : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-zinc-500'
+            }`}
+          >
+            {showTradeWinds ? 'ON' : 'OFF'}
+          </button>
+        </div>
+
+        {/* Seasonal Simulation Feedback */}
+        <div className="p-3 rounded-2xl bg-white dark:bg-zinc-950 border border-[#DCD3C1] dark:border-zinc-800 space-y-2.5">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#78716C] dark:text-zinc-400">
+            Active Meteorological State:
+          </span>
+          
+          <div className="space-y-1">
+            <p className="text-xs font-extrabold text-[#1C1917] dark:text-zinc-200">
+              {selectedSeason === 'summer' && "Steady Northeast Trade Winds"}
+              {selectedSeason === 'autumn' && "Doldrums & Hurricane Season"}
+              {selectedSeason === 'winter' && "Accelerated Winter Northeast Trades"}
+              {selectedSeason === 'spring' && "Moderate Equinoctial Winds"}
+            </p>
+            <p className="text-[10.5px] text-[#57534E] dark:text-zinc-400 leading-relaxed">
+              {selectedSeason === 'summer' && "High-humidity trade winds power stable westward drifts, with warm temperature profiles elevating disease risk in holding spaces."}
+              {selectedSeason === 'autumn' && "Frequent windless calms (doldrums) stall ships in the horse latitudes for weeks, while severe tropical hurricanes threaten catastrophic loss."}
+              {selectedSeason === 'winter' && "Powerful, cold, persistent trade winds accelerate transit speeds significantly, drastically lowering days spent at sea."}
+              {selectedSeason === 'spring' && "Winds are steady but mild; standard current flows present moderate navigation windows across both Hemispheres."}
+            </p>
+          </div>
+
+          <div className="pt-2 border-t border-[#DCD3C1] dark:border-zinc-800 grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <p className="text-[9px] text-[#78716C] dark:text-zinc-500 font-mono uppercase">Wind Speed</p>
+              <p className="font-extrabold text-amber-600">
+                {selectedSeason === 'summer' && "1.0x (Standard)"}
+                {selectedSeason === 'autumn' && "0.55x (Calms)"}
+                {selectedSeason === 'winter' && "1.55x (Strong)"}
+                {selectedSeason === 'spring' && "0.95x (Moderate)"}
+              </p>
+            </div>
+            <div>
+              <p className="text-[9px] text-[#78716C] dark:text-zinc-500 font-mono uppercase">Holding Temp</p>
+              <p className="font-extrabold text-rose-600">
+                {selectedSeason === 'summer' && "Very Hot (31°C)"}
+                {selectedSeason === 'autumn' && "Extreme Heat (34°C)"}
+                {selectedSeason === 'winter' && "Cooler (24°C)"}
+                {selectedSeason === 'spring' && "Warm (28°C)"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Voyage Path Simulation Matrix */}
+        <div className="p-3 rounded-2xl bg-[#FAF6EE] dark:bg-zinc-950 border border-[#DCD3C1] dark:border-zinc-800 space-y-3">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#78716C] dark:text-zinc-400 flex items-center gap-1">
+            <Navigation className="w-3.5 h-3.5" />
+            <span>Simulated Voyage Dossier</span>
+          </span>
+
+          {selectedRoute ? (
+            <div className="space-y-3">
+              <div className="text-xs font-bold text-[#1C1917] dark:text-zinc-200">
+                {selectedRoute.sourceRegion} ➔ {selectedRoute.targetRegion}
+              </div>
+
+              {/* Duration comparison */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-[11px] font-medium text-[#78716C] dark:text-zinc-400">
+                  <span>Simulated Transit:</span>
+                  <span className="font-bold text-[#1C1917] dark:text-zinc-200">
+                    {Math.round(62 * (
+                      selectedSeason === 'summer' ? 1.0 :
+                      selectedSeason === 'autumn' ? 1.3 :
+                      selectedSeason === 'winter' ? 0.8 : 1.15
+                    ))} Days
+                  </span>
+                </div>
+                <div className="w-full bg-[#E8DFCE] dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      selectedSeason === 'winter' ? 'bg-emerald-500' :
+                      selectedSeason === 'autumn' ? 'bg-rose-500' : 'bg-amber-500'
+                    }`}
+                    style={{ 
+                      width: `${
+                        selectedSeason === 'winter' ? '40%' :
+                        selectedSeason === 'autumn' ? '95%' : '65%'
+                      }` 
+                    }}
+                  />
+                </div>
+                <p className="text-[9px] text-right text-[#78716C] dark:text-zinc-500 italic">
+                  {selectedSeason === 'winter' && "Fast winter transit reduces risk"}
+                  {selectedSeason === 'autumn' && "Trapped in calms; severe rations crisis"}
+                  {selectedSeason === 'summer' && "Standard summer middle passage duration"}
+                  {selectedSeason === 'spring' && "Typical spring navigation time"}
+                </p>
+              </div>
+
+              {/* Mortality Rate Gradient */}
+              <div className="p-2 rounded-xl bg-[#FDFBF7] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800 text-xs">
+                <p className="text-[9px] text-[#78716C] dark:text-zinc-500 font-mono uppercase">Expected Mortality Gradient</p>
+                <div className="flex items-baseline gap-1.5 mt-1">
+                  <span className={`text-lg font-black ${
+                    selectedSeason === 'winter' ? 'text-emerald-600' :
+                    selectedSeason === 'autumn' ? 'text-rose-600' : 'text-amber-600'
+                  }`}>
+                    {(selectedRoute.avgMortalityRate + (
+                      selectedSeason === 'summer' ? 0.5 :
+                      selectedSeason === 'autumn' ? 4.0 :
+                      selectedSeason === 'winter' ? -1.8 : 1.0
+                    )).toFixed(1)}%
+                  </span>
+                  <span className="text-[10px] text-[#78716C] dark:text-zinc-500">
+                    (Baseline: {selectedRoute.avgMortalityRate}%)
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p className="text-[11px] text-[#78716C] dark:text-zinc-500 italic">
+              Hover or click any transatlantic flow arc to inspect simulated crossing durations and mortality gradients under the active meteorological forces.
+            </p>
+          )}
+        </div>
+      </div>
+
+    </div> {/* Close the split grid container! */}
 
       {/* 4. Temporal Timeline Controller / Scrubber */}
       <div className="p-4 bg-[#FAF6EE] dark:bg-zinc-900 border-t border-[#DCD3C1] dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">

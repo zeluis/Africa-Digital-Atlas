@@ -5,6 +5,7 @@ import { NavigationDrawer, CanonicalNavTab } from './components/NavigationDrawer
 import { SearchModal } from './components/SearchModal';
 import { MultiSourceApiHubModal } from './components/MultiSourceApiHubModal';
 import { OnboardingModal } from './components/OnboardingModal';
+import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { MainContentSkeleton } from './components/MainContentSkeleton';
 import { Footer } from './components/Footer';
 import { OfflineIndicator } from './components/OfflineIndicator';
@@ -102,6 +103,9 @@ function AppContent() {
   
   // Multilateral Data APIs & Ingestion Hub modal state
   const [isApiHubOpen, setIsApiHubOpen] = useState<boolean>(false);
+
+  // Keyboard Shortcuts cheat sheet modal state
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
 
   // 3-Screen Curated Orientation & Historical Context Consent Modal (Auto-open for new users)
   const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(() => {
@@ -217,12 +221,16 @@ function AppContent() {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  // Keyboard shortcut: Cmd+K / Ctrl+K opens quick search; Cmd+B / Ctrl+B toggles navigation drawer; Alt+Left goes back
+  // Keyboard shortcuts: Cmd+K / Ctrl+K search, Cmd+B / Ctrl+B drawer, Alt+Left back, '?' shortcuts modal, 1-5 regions, 0 overview
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      const isInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable || target.tagName === 'SELECT');
+
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         setIsSearchOpen(prev => !prev);
+        return;
       }
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
         e.preventDefault();
@@ -231,10 +239,68 @@ function AppContent() {
         } else {
           setIsMobileNavOpen(prev => !prev);
         }
+        return;
       }
       if (e.altKey && e.key === 'ArrowLeft') {
         e.preventDefault();
         handleGoBack();
+        return;
+      }
+
+      if (!isInput) {
+        // Toggle Shortcuts Modal on '?'
+        if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+          e.preventDefault();
+          setIsShortcutsOpen(prev => !prev);
+          return;
+        }
+
+        // Quick UN Region jumps: 1 - 5, 0 for Continental Overview
+        if (!e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey) {
+          if (e.key === '1') {
+            e.preventDefault();
+            handleSelectTab('region-northern');
+          } else if (e.key === '2') {
+            e.preventDefault();
+            handleSelectTab('region-western');
+          } else if (e.key === '3') {
+            e.preventDefault();
+            handleSelectTab('region-central');
+          } else if (e.key === '4') {
+            e.preventDefault();
+            handleSelectTab('region-eastern');
+          } else if (e.key === '5') {
+            e.preventDefault();
+            handleSelectTab('region-southern');
+          } else if (e.key === '0') {
+            e.preventDefault();
+            handleSelectTab('overview');
+          } else if (e.key === 'd' || e.key === 'D') {
+            e.preventDefault();
+            toggleTheme();
+          }
+        }
+
+        // Analytical Views: Shift + Key
+        if (e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey) {
+          const upper = e.key.toUpperCase();
+          if (upper === 'O') {
+            e.preventDefault();
+            handleSelectTab('overview');
+          } else if (upper === 'M') {
+            e.preventDefault();
+            handleSelectTab('map');
+          } else if (upper === 'C') {
+            e.preventDefault();
+            handleSelectTab('compare');
+          } else if (upper === 'A') {
+            e.preventDefault();
+            handleSelectTab('analytics');
+          } else if (upper === 'V') {
+            e.preventDefault();
+            handleSelectTab('iconography');
+          }
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -357,6 +423,7 @@ function AppContent() {
         onToggleTheme={toggleTheme}
         onOpenApiHub={() => setIsApiHubOpen(true)}
         onOpenOnboarding={() => setIsOnboardingOpen(true)}
+        onOpenShortcuts={() => setIsShortcutsOpen(true)}
         activeRegion={activeRegion}
         onGoBack={handleGoBack}
         canGoBack={canGoBack}
@@ -592,6 +659,14 @@ function AppContent() {
           setIsOnboardingOpen(false);
           handleSelectTab(targetTab);
         }}
+      />
+
+      {/* Global Keyboard Shortcuts Helper Cheat Sheet Modal */}
+      <KeyboardShortcutsModal
+        isOpen={isShortcutsOpen}
+        onClose={() => setIsShortcutsOpen(false)}
+        onNavigateTab={(tab) => handleSelectTab(tab as CanonicalNavTab)}
+        onToggleTheme={toggleTheme}
       />
 
       {/* Structured Credibility Footer (Hidden on map view for edge-to-edge cartographic full-screen) */}

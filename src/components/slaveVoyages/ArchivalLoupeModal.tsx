@@ -18,7 +18,8 @@ import {
   X,
   Maximize2,
   Minimize2,
-  RotateCcw
+  RotateCcw,
+  FileText
 } from 'lucide-react';
 import { SlaveTradeIllustration } from '../../data/slaveTradeIllustrations';
 
@@ -128,27 +129,27 @@ export const ArchivalLoupeModal: React.FC<ArchivalLoupeModalProps> = ({
     const year = illustration.date ? illustration.date.replace(/[^0-9]/g, '').slice(0, 4) || 'n.d.' : 'n.d.';
     const authors = illustration.researchers && illustration.researchers.length > 0
       ? illustration.researchers.join(', ')
-      : 'Transatlantic Slave Trade Visual Archive';
+      : 'Handler, Jerome & Tuite, Michael';
     const title = illustration.title;
     const source = illustration.source;
     const regId = illustration.regId;
     const accessDate = 'September 2026';
-    const url = `https://si.regeneratedidentities.org/project/DataFiles/SI-OB-${illustration.objectId}`;
+    const url = illustration.slaveryImagesPage || `http://www.slaveryimages.org/s/slaveryimages/item/${illustration.objectId}`;
 
     switch (style) {
       case 'chicago':
-        return `${authors}. "${title}." ${source} (${illustration.date || 'c. 18th century'}). Historical engraving, Plate ID: ${regId}. Africa Data Atlas & Transatlantic Iconography Database, accessed ${accessDate}, ${url}.`;
+        return `${authors}. "${title}." ${source} (${illustration.date || 'n.d.'}). Historical engraving, Plate ID: ${regId}. Slavery Images: A Visual Record of the African Slave Trade, accessed ${accessDate}, ${url}.`;
       case 'apa':
-        return `${authors} (${year}). ${title} [Historical engraving/plate ${regId}]. In ${source}. Retrieved ${accessDate}, from ${url}`;
+        return `${authors} (${year}). ${title} [Historical plate ${regId}]. In ${source}. Retrieved ${accessDate}, from Slavery Images Database: ${url}`;
       case 'harvard':
         return `${authors} (${year}) '${title}', Plate ${regId}. In ${source}. Available at: ${url} (Accessed: ${accessDate}).`;
       case 'bibtex':
-        return `@misc{iconography_${illustration.objectId},
+        return `@misc{slaveryimages_${illustration.objectId},
   author = {${authors}},
   title = {${title}},
   year = {${year}},
-  howpublished = {Africa Data Atlas Archival Registry},
-  note = {Plate ID: ${regId}, Source: ${source}},
+  howpublished = {Slavery Images: A Visual Record of the African Slave Trade},
+  note = {Plate ID: ${regId}, Identifier: ${illustration.identifier || regId}},
   url = {${url}}
 }`;
       default:
@@ -369,6 +370,19 @@ export const ArchivalLoupeModal: React.FC<ArchivalLoupeModalProps> = ({
                 )}
               </div>
 
+              {/* Archival Description & Curatorial Analysis */}
+              {illustration.description && (
+                <div className="p-4.5 rounded-2xl bg-amber-500/8 dark:bg-amber-950/25 border border-amber-500/20 space-y-2">
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Archival Description &amp; Historical Context</span>
+                  </div>
+                  <p className="text-xs sm:text-[13px] font-serif leading-relaxed text-stone-800 dark:text-stone-200">
+                    {illustration.description}
+                  </p>
+                </div>
+              )}
+
               {/* Verified Metadata Matrix */}
               <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-[#FAF8F5] dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 text-xs">
                 {illustration.date && (
@@ -389,6 +403,31 @@ export const ArchivalLoupeModal: React.FC<ArchivalLoupeModalProps> = ({
                     <p className="font-semibold text-stone-900 dark:text-stone-100">{illustration.language}</p>
                   </div>
                 )}
+                {illustration.identifier && (
+                  <div className="space-y-0.5">
+                    <span className="text-[10px] font-mono text-stone-400 uppercase font-bold flex items-center gap-1">
+                      <Info className="w-3 h-3 text-amber-700 dark:text-amber-400" />
+                      Archive Identifier
+                    </span>
+                    <p className="font-mono font-semibold text-amber-900 dark:text-amber-400">{illustration.identifier}</p>
+                  </div>
+                )}
+                {illustration.slaveryImagesPage && (
+                  <div className="space-y-0.5">
+                    <span className="text-[10px] font-mono text-stone-400 uppercase font-bold flex items-center gap-1">
+                      <ExternalLink className="w-3 h-3 text-amber-700 dark:text-amber-400" />
+                      Canonical Record
+                    </span>
+                    <a 
+                      href={illustration.slaveryImagesPage} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-amber-800 dark:text-amber-400 hover:underline font-mono font-semibold text-[11px] truncate block"
+                    >
+                      Item #{illustration.objectId} (slaveryimages.org) ↗
+                    </a>
+                  </div>
+                )}
                 {illustration.spatialCoverage && illustration.spatialCoverage.length > 0 && (
                   <div className="col-span-2 space-y-0.5 pt-1 border-t border-stone-200/60 dark:border-stone-800/60">
                     <span className="text-[10px] font-mono text-stone-400 uppercase font-bold flex items-center gap-1">
@@ -396,6 +435,15 @@ export const ArchivalLoupeModal: React.FC<ArchivalLoupeModalProps> = ({
                       Spatial Coverage
                     </span>
                     <p className="font-semibold text-stone-900 dark:text-stone-100">{illustration.spatialCoverage.join(', ')}</p>
+                  </div>
+                )}
+                {illustration.reproducedIn && (
+                  <div className="col-span-2 space-y-0.5 pt-1 border-t border-stone-200/60 dark:border-stone-800/60">
+                    <span className="text-[10px] font-mono text-stone-400 uppercase font-bold flex items-center gap-1">
+                      <BookOpen className="w-3 h-3 text-amber-700 dark:text-amber-400" />
+                      Reproduced In
+                    </span>
+                    <p className="font-serif italic text-stone-800 dark:text-stone-200 text-[11px] leading-relaxed">{illustration.reproducedIn}</p>
                   </div>
                 )}
                 {illustration.researchers && illustration.researchers.length > 0 && (
@@ -474,27 +522,50 @@ export const ArchivalLoupeModal: React.FC<ArchivalLoupeModalProps> = ({
 
             {/* External High-Resolution Download & Repository Links */}
             <div className="pt-4 border-t border-stone-200 dark:border-stone-800 flex flex-col sm:flex-row gap-2.5 shrink-0">
-              {illustration.externalAssetLinks && illustration.externalAssetLinks[0] && (
+              {illustration.slaveryImagesPage && (
+                <a
+                  href={illustration.slaveryImagesPage}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white dark:bg-amber-700 dark:hover:bg-amber-600 text-xs font-bold font-sans transition-all cursor-pointer shadow-xs"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 text-amber-200" />
+                  <span>Slavery Images Record #{illustration.objectId}</span>
+                </a>
+              )}
+
+              {illustration.downloadUrl ? (
+                <a
+                  href={illustration.downloadUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white dark:bg-stone-100 dark:hover:bg-stone-200 dark:text-stone-900 text-xs font-bold font-sans transition-all cursor-pointer"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download TIFF (~40MB)</span>
+                </a>
+              ) : illustration.externalAssetLinks && illustration.externalAssetLinks[0] && (
                 <a
                   href={illustration.externalAssetLinks[0].url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white dark:bg-stone-100 dark:hover:bg-stone-200 dark:text-stone-900 text-xs font-bold font-sans transition-all cursor-pointer"
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white dark:bg-stone-100 dark:hover:bg-stone-200 dark:text-stone-900 text-xs font-bold font-sans transition-all cursor-pointer"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span>Full-Res TIFF Archive (~40MB)</span>
+                  <span>Archival File</span>
                 </a>
               )}
 
-              {illustration.externalAssetLinks && illustration.externalAssetLinks[1] && (
+              {illustration.imageUrls && illustration.imageUrls[0] && (
                 <a
-                  href={illustration.externalAssetLinks[1].url}
+                  href={illustration.imageUrls[0]}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-900 text-stone-700 dark:text-stone-300 text-xs font-bold font-sans transition-all cursor-pointer"
                 >
                   <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
-                  <span>Direct Link</span>
+                  <span>Direct Image</span>
                 </a>
               )}
             </div>

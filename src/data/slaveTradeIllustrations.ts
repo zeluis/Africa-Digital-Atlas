@@ -1,3 +1,5 @@
+import recordsWithDescriptionsData from './records-with-descriptions.json';
+
 export interface SlaveTradeIllustration {
   objectId: number;
   sourceFile: string;
@@ -13,6 +15,10 @@ export interface SlaveTradeIllustration {
   researchers: string[];
   identifier: string;
   imageUrls: string[];
+  description?: string;
+  descriptionPresentInArchive?: boolean;
+  slaveryImagesPage?: string;
+  downloadUrl?: string;
   externalAssetLinks?: Array<{ url: string; text: string; download: boolean }>;
   backgroundImagePath?: string;
   backgroundImageUrl?: string;
@@ -804,26 +810,134 @@ function getCategoryForObjectId(id: number): { cardId: number; cardTitle: string
   }
 }
 
-// Programmatic generation to guarantee all 1,220+ images from Slavery Images are accessible
+interface RawRecordItem {
+  id: number;
+  regId: string;
+  metadata: {
+    title: string;
+    date?: string;
+    source: string;
+    language?: string;
+    itemSets?: string[];
+    spatialCoverage?: string[];
+    reproducedIn?: string;
+    researchers?: string[];
+    identifier?: string;
+    collectionIds?: number[];
+    collectionNames?: string[];
+    coordinates?: number[];
+  };
+  description?: string;
+  descriptionPresentInArchive?: boolean;
+  links?: {
+    slaveryImagesPage?: string;
+    image?: string;
+    download?: string;
+  };
+  provenance?: {
+    sourceFile?: string;
+    sourceSha256?: string;
+    descriptionSource?: string;
+  };
+}
+
+// Programmatic generation to guarantee all images with authentic archive descriptions are accessible
 const generateAllIllustrations = (): SlaveTradeIllustration[] => {
   const result: SlaveTradeIllustration[] = [];
+  const rawRecords = (recordsWithDescriptionsData as unknown as { records: RawRecordItem[] }).records || [];
   
-  for (let id = 1; id <= 1220; id++) {
-    // 1. Check if the objectId exists in BASE hand-curated list
+  const recordsMap = new Map<number, RawRecordItem>();
+  rawRecords.forEach(rec => {
+    if (rec && typeof rec.id === 'number') {
+      recordsMap.set(rec.id, rec);
+    }
+  });
+
+  const maxId = Math.max(1220, ...rawRecords.map(r => r.id || 0));
+  
+  for (let id = 1; id <= maxId; id++) {
+    // 1. Check if the objectId exists in the full archival description dataset
+    const archiveRecord = recordsMap.get(id);
+    if (archiveRecord) {
+      const regId = archiveRecord.regId || `SI-OB-${id}`;
+      const imgUrl = archiveRecord.links?.image || `https://si.regeneratedidentities.org/project/DataFiles/SI-OB-${id}/${id}-4.jpg`;
+      const downloadTif = archiveRecord.links?.download || `https://si.regeneratedidentities.org/project/DataFiles/SI-OB-${id}/${id}-1.tif`;
+      
+      const externalAssetLinks: Array<{ url: string; text: string; download: boolean }> = [];
+      if (downloadTif) {
+        externalAssetLinks.push({
+          url: downloadTif,
+          text: `${regId}_Archive_Scan.tif`,
+          download: true
+        });
+      }
+      if (imgUrl) {
+        externalAssetLinks.push({
+          url: imgUrl,
+          text: "Enlarge High-Res Scan",
+          download: false
+        });
+      }
+      if (archiveRecord.links?.slaveryImagesPage) {
+        externalAssetLinks.push({
+          url: archiveRecord.links.slaveryImagesPage,
+          text: "Slavery Images Database Canonical Record",
+          download: false
+        });
+      }
+
+      const collectionNames = archiveRecord.metadata.collectionNames && archiveRecord.metadata.collectionNames.length > 0
+        ? archiveRecord.metadata.collectionNames
+        : [getCategoryForObjectId(id).cardTitle];
+
+      const collectionIds = archiveRecord.metadata.collectionIds && archiveRecord.metadata.collectionIds.length > 0
+        ? archiveRecord.metadata.collectionIds
+        : [getCategoryForObjectId(id).cardId];
+
+      result.push({
+        objectId: id,
+        sourceFile: archiveRecord.provenance?.sourceFile || `image-result-objectid=${id}.php.html`,
+        sourceSha256: archiveRecord.provenance?.sourceSha256 || "",
+        title: archiveRecord.metadata.title || `Archival Plate ${regId}`,
+        regId: regId,
+        date: archiveRecord.metadata.date || undefined,
+        source: archiveRecord.metadata.source || `Slavery Images: A Visual Record of the African Slave Trade, item ${id}`,
+        language: archiveRecord.metadata.language || "English",
+        itemSets: archiveRecord.metadata.itemSets || collectionNames,
+        spatialCoverage: archiveRecord.metadata.spatialCoverage || [],
+        reproducedIn: archiveRecord.metadata.reproducedIn,
+        researchers: archiveRecord.metadata.researchers || ["Jerome Handler", "Michael Tuite", "Henry B. Lovejoy"],
+        identifier: archiveRecord.metadata.identifier || regId,
+        imageUrls: [imgUrl],
+        description: archiveRecord.description,
+        descriptionPresentInArchive: archiveRecord.descriptionPresentInArchive,
+        slaveryImagesPage: archiveRecord.links?.slaveryImagesPage,
+        downloadUrl: downloadTif,
+        externalAssetLinks,
+        backgroundImagePath: `DataFiles/SI-OB-${id}/${id}-4.jpg`,
+        backgroundImageUrl: imgUrl,
+        coordinates: archiveRecord.metadata.coordinates || [],
+        collectionIds,
+        collectionNames
+      });
+      continue;
+    }
+
+    // 2. Check if the objectId exists in BASE hand-curated list
     const baseMatch = BASE_SLAVE_TRADE_ILLUSTRATIONS.find(b => b.objectId === id);
     if (baseMatch) {
       result.push(baseMatch);
       continue;
     }
     
-    // 2. Check if the objectId exists in EXTENDED curated list
+    // 3. Check if the objectId exists in EXTENDED curated list
     const extMatch = EXTENDED_ILLUSTRATION_RECORDS.find(rec => rec.objectId === id);
     if (extMatch) {
       result.push(mapCompactToFullIllustration(extMatch));
       continue;
     }
     
-    // 3. Programmatic entry with correct URLs for complete coverage
+    // 4. Programmatic entry with fallback URLs for complete coverage
     const category = getCategoryForObjectId(id);
     const largeUrl = `https://si.regeneratedidentities.org/project/DataFiles/SI-OB-${id}/${id}-4.jpg`;
     

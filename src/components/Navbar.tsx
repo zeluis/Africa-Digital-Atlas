@@ -16,7 +16,8 @@ import {
   Search, 
   WifiOff,
   Database,
-  ArrowLeft
+  ArrowLeft,
+  Keyboard
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -31,6 +32,7 @@ interface NavbarProps {
   onToggleTheme?: () => void;
   onOpenApiHub?: () => void;
   onOpenOnboarding?: () => void;
+  onOpenShortcuts?: () => void;
   activeRegion?: string;
   onGoBack?: () => void;
   canGoBack?: boolean;
@@ -49,6 +51,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleTheme,
   onOpenApiHub,
   onOpenOnboarding,
+  onOpenShortcuts,
   activeRegion,
   onGoBack,
   canGoBack = false,
@@ -242,6 +245,26 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* PWA In-App Install Button */}
             <PWAInstallButton className="hidden sm:flex" />
+
+            {/* Keyboard Shortcuts Helper Trigger (?) */}
+            {onOpenShortcuts && (
+              <JapandiTooltip
+                title="Keyboard Shortcuts Guide"
+                content="Desktop power navigation: press '?' anywhere to open hotkey map, 1-5 for UN regions, + / - for zoom."
+                regionalAccent="#6366f1"
+              >
+                <button
+                  type="button"
+                  onClick={onOpenShortcuts}
+                  className="hidden md:flex items-center gap-1 px-2 py-1.5 rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-zinc-100/80 dark:bg-zinc-900/80 hover:bg-zinc-200/70 dark:hover:bg-zinc-800 text-[11px] font-mono font-bold text-zinc-700 dark:text-zinc-300 shadow-xs cursor-pointer select-none transition-colors"
+                  title="Keyboard Shortcuts Cheat Sheet (Press ?)"
+                  aria-label="Open keyboard shortcuts cheat sheet"
+                >
+                  <Keyboard className="w-3.5 h-3.5 text-zinc-500" />
+                  <kbd className="text-[10px] font-mono bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 px-1 rounded shadow-2xs">?</kbd>
+                </button>
+              </JapandiTooltip>
+            )}
 
             {/* Semantic Language Group: Language Selector Pill + Voice Welcome Button */}
             <div className="flex items-center rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-zinc-100/80 dark:bg-zinc-900/80 p-0.5">

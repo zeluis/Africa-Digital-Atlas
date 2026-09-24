@@ -82,6 +82,20 @@ export default defineConfig(() => {
                 },
               },
             },
+            {
+              urlPattern: /^https:\/\/si\.regeneratedidentities\.org\/.*/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'archival-iconography-cache',
+                expiration: {
+                  maxEntries: 200,
+                  maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
           ],
         },
         devOptions: {
@@ -121,6 +135,9 @@ export default defineConfig(() => {
             }
             if (id.includes('src/data/slaveVoyages')) {
               return 'data-slave-voyages';
+            }
+            if (id.includes('src/data/slaveTradeIllustrations')) {
+              return 'data-slave-trade-illustrations';
             }
             if (id.includes('src/data/molecularLegacies')) {
               return 'data-molecular-legacies';

@@ -68,6 +68,7 @@ export const SlaveTradeIconography: React.FC = () => {
         item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.source.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.regId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.description ? item.description.toLowerCase().includes(searchTerm.toLowerCase()) : false) ||
         item.researchers.some(r => r.toLowerCase().includes(searchTerm.toLowerCase()));
 
       const matchesCollection = 

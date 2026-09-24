@@ -68,6 +68,7 @@ import { AfricaUnLogo } from './AfricaUnLogo';
 import { useAfricaFinalMap } from '../utils/svgMapLoader';
 import { ThematicLayerDeck } from './ThematicLayerDeck';
 import { AkpCatalogueModal } from './AkpCatalogueModal';
+import { BivariateMapTray, BIVARIATE_PRESETS, BIVARIATE_MATRIX_COLORS } from './BivariateMapTray';
 import {
   ThematicOverlaysLayer,
   AnyThematicItem,
@@ -110,7 +111,7 @@ export interface AfricaMapProps {
   initialCartographySource?: 'authentic_final' | 'schematic';
 }
 
-export type MapDisplayMode = 'authentic_palette' | 'un_geoscheme' | 'choropleth';
+export type MapDisplayMode = 'authentic_palette' | 'un_geoscheme' | 'choropleth' | 'bivariate';
 
 export const CHOROPLETH_METRICS = AKP_CHOROPLETH_METRICS;
 
@@ -203,6 +204,68 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     const blocDef = REGIONAL_BLOCS_LIST.find(b => b.id === selectedBlocId);
     return blocDef && blocDef.members ? new Set(blocDef.members) : null;
   }, [selectedBlocId]);
+
+  // Bivariate 2D Choropleth State & Multi-Indicator Cross-Analysis
+  const [selectedBivariatePresetId, setSelectedBivariatePresetId] = useState<string>('gdp_vs_renewables');
+  const [hoveredBivariateCell, setHoveredBivariateCell] = useState<{ x: number; y: number } | null>(null);
+
+  const activeBivariatePreset = useMemo(() => {
+    return BIVARIATE_PRESETS.find(p => p.id === selectedBivariatePresetId) || BIVARIATE_PRESETS[0];
+  }, [selectedBivariatePresetId]);
+
+  const bivariateData = useMemo(() => {
+    const entities = atlas.getAllEntities();
+    const valuesX: Record<string, number> = {};
+    const valuesY: Record<string, number> = {};
+    const arrX: number[] = [];
+    const arrY: number[] = [];
+
+    for (const e of entities) {
+      let vx = atlas.getIndicatorValue(e.id, activeBivariatePreset.varX);
+      let vy = atlas.getIndicatorValue(e.id, activeBivariatePreset.varY);
+      if (vx !== null && !isNaN(vx)) {
+        valuesX[e.id] = vx;
+        arrX.push(vx);
+      }
+      if (vy !== null && !isNaN(vy)) {
+        valuesY[e.id] = vy;
+        arrY.push(vy);
+      }
+    }
+
+    arrX.sort((a, b) => a - b);
+    arrY.sort((a, b) => a - b);
+
+    const tX1 = arrX[Math.floor(arrX.length / 3)] ?? 0;
+    const tX2 = arrX[Math.floor((arrX.length * 2) / 3)] ?? 0;
+    const tY1 = arrY[Math.floor(arrY.length / 3)] ?? 0;
+    const tY2 = arrY[Math.floor((arrY.length * 2) / 3)] ?? 0;
+
+    const countryCoords: Record<string, { x: number; y: number; valX: number; valY: number }> = {};
+    const cellCounts: number[][] = [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0]
+    ];
+
+    for (const e of entities) {
+      const vx = valuesX[e.id] ?? arrX[0] ?? 0;
+      const vy = valuesY[e.id] ?? arrY[0] ?? 0;
+
+      let x = 0;
+      if (vx > tX2) x = 2;
+      else if (vx > tX1) x = 1;
+
+      let y = 0;
+      if (vy > tY2) y = 2;
+      else if (vy > tY1) y = 1;
+
+      countryCoords[e.id] = { x, y, valX: vx, valY: vy };
+      cellCounts[y][x]++;
+    }
+
+    return { valuesX, valuesY, tX1, tX2, tY1, tY2, countryCoords, cellCounts };
+  }, [activeBivariatePreset]);
 
   // Overlays toggle state (Graticule lines & Compass Rose, AKP Infrastructure & Biospheres)
   const [showGraticuleAndCompass, setShowGraticuleAndCompass] = useState<boolean>(true);
@@ -400,7 +463,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  const handleSelectMode = (mode: 'authentic' | 'choropleth' | 'schematic') => {
+  const handleSelectMode = (mode: 'authentic' | 'choropleth' | 'schematic' | 'bivariate') => {
     if (mode === 'authentic') {
       setCartographySource('authentic_final');
       setMapMode('authentic_palette');
@@ -410,6 +473,9 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     } else if (mode === 'schematic') {
       setCartographySource('schematic');
       setMapMode('un_geoscheme');
+    } else if (mode === 'bivariate') {
+      setCartographySource('authentic_final');
+      setMapMode('bivariate');
     }
   };
 
@@ -662,6 +728,26 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         Boolean((currentMetricDef as any).reverseScale)
       );
       return metricColorResult.color;
+    }
+
+    // 1b. Bivariate 2D Choropleth Mode
+    if (mapMode === 'bivariate') {
+      const coord = bivariateData.countryCoords[country.id];
+      if (!coord) return '#cbd5e1';
+
+      if (hoveredBivariateCell) {
+        if (coord.x === hoveredBivariateCell.x && coord.y === hoveredBivariateCell.y) {
+          return '#f59e0b'; // Amber spotlight for matched quadrant
+        } else {
+          return '#d1d5db'; // Dim out non-matched countries
+        }
+      }
+
+      if (isHovered) {
+        return '#f59e0b';
+      }
+
+      return BIVARIATE_MATRIX_COLORS[coord.y]?.[coord.x] || '#a5add3';
     }
 
     // 2. Schematic Mode / UN Geoscheme Regional Grouping
@@ -1139,6 +1225,27 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
               <button
                 type="button"
+                onClick={() => handleSelectMode('bivariate')}
+                className={`relative px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
+                  mapMode === 'bivariate'
+                    ? 'text-white font-bold'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+                title="Bivariate 2D choropleth (cross-analyze two indicators simultaneously)"
+              >
+                {mapMode === 'bivariate' && (
+                  <motion.div
+                    layoutId="activeMapModeHighlight"
+                    className="absolute inset-0 bg-purple-600 rounded-lg shadow-xs -z-10"
+                    transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                  />
+                )}
+                <Grid className="w-3 h-3" />
+                <span>Bivariate</span>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => handleSelectMode('schematic')}
                 className={`relative px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
                   mapMode === 'un_geoscheme'
@@ -1380,6 +1487,17 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 </div>
               </div>
             </motion.div>
+          )}
+
+          {mapMode === 'bivariate' && (
+            <BivariateMapTray
+              key="bivariate-sliding-tray"
+              activePresetId={selectedBivariatePresetId}
+              onSelectPreset={(id) => setSelectedBivariatePresetId(id)}
+              hoveredCell={hoveredBivariateCell}
+              onHoverCell={(cell) => setHoveredBivariateCell(cell)}
+              cellCounts={bivariateData.cellCounts}
+            />
           )}
         </AnimatePresence>
 
@@ -2089,6 +2207,24 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 </span>
               </div>
             </div>
+
+            {/* Bivariate Quadrant Positioning if active */}
+            {mapMode === 'bivariate' && bivariateData.countryCoords[hoveredEntity.id] && (() => {
+              const coord = bivariateData.countryCoords[hoveredEntity.id];
+              const xTier = coord.x === 0 ? 'Low' : coord.x === 1 ? 'Mid' : 'High';
+              const yTier = coord.y === 0 ? 'Low' : coord.y === 1 ? 'Mid' : 'High';
+              return (
+                <div className="flex items-center justify-between text-xs px-2.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/70 border border-purple-200 dark:border-purple-800/80 mb-2.5">
+                  <div className="flex items-center gap-1.5">
+                    <Grid className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                    <span className="font-semibold text-purple-900 dark:text-purple-200 text-[11px]">Bivariate:</span>
+                  </div>
+                  <span className="font-mono font-bold text-purple-700 dark:text-purple-300 text-[11px]">
+                    {activeBivariatePreset.labelX} [{xTier}] × {activeBivariatePreset.labelY} [{yTier}]
+                  </span>
+                </div>
+              );
+            })()}
 
             {/* CTA Button to Open Full Country Dossier */}
             <button

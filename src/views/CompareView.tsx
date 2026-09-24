@@ -13,6 +13,7 @@ import {
 } from '../data/atlas-formatters';
 import { GitCompare, Plus, X, ArrowRight, ShieldCheck, Check, Layers, Crosshair, Ship } from 'lucide-react';
 import { getCountryHistoricalDevelopmentDossier } from '../data/countryHistoricalDevelopmentData';
+import { MultiCountryRadarMatrix } from '../components/MultiCountryRadarMatrix';
 
 interface CompareViewProps {
   onSelectCountry: (entityId: string) => void;
@@ -210,6 +211,12 @@ export const CompareView: React.FC<CompareViewProps> = ({
           </div>
         </div>
       )}
+
+      {/* Multi-Country 8-Pillar Radar Matrix */}
+      <MultiCountryRadarMatrix
+        countries={countries}
+        onSelectCountry={onSelectCountry}
+      />
 
       {/* Comparison Grid Matrix Table */}
       <div 
