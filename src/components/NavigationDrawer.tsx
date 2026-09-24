@@ -42,6 +42,7 @@ export type MainNavId =
   | 'molecular-legacies'
   | 'african-development-foundations'
   | 'iconography'
+  | 'archival-cartography'
   | 'pillars'
   | 'blocs'
   | 'regions'
@@ -148,7 +149,14 @@ const REGION_ID_TO_NAME: Record<RegionNavId, AfricanRegion> = {
 
 const getActiveSubmenuFromTab = (tab: CanonicalNavTab): SubmenuKey | null => {
   if (tab === 'explore' || tab === 'pillars' || tab === 'blocs' || tab === 'heritage') return 'explore';
-  if (tab === 'slave-trade' || tab === 'molecular-legacies' || tab === 'african-development-foundations' || tab === 'ethnic-tree' || tab === 'iconography') return 'history';
+  if (
+    tab === 'slave-trade' || 
+    tab === 'molecular-legacies' || 
+    tab === 'african-development-foundations' || 
+    tab === 'ethnic-tree' || 
+    tab === 'iconography' ||
+    tab === 'archival-cartography'
+  ) return 'history';
   if (tab === 'research-directory' || (typeof tab === 'string' && tab.startsWith('report-'))) return 'reports';
   if (tab === 'regions' || tab === 'languages') return 'regions';
   if (tab === 'analytics' || tab === 'map') return 'analytics';
@@ -183,13 +191,14 @@ const getSelectedLinkColor = (tab: CanonicalNavTab, activeRegion?: AfricanRegion
     return { thumb: '#3B82F6', hover: '#2563EB' }; // Blue
   }
 
-  // 4. History Group (Voyages, Genetics, Foundations, Ethnic Tree, Iconography - Amber active indicator)
+  // 4. History Group (Voyages, Genetics, Foundations, Ethnic Tree, Iconography, Cartography - Amber active indicator)
   if (
     tab === 'slave-trade' || 
     tab === 'molecular-legacies' || 
     tab === 'african-development-foundations' || 
     tab === 'ethnic-tree' || 
-    tab === 'iconography'
+    tab === 'iconography' ||
+    tab === 'archival-cartography'
   ) {
     return { thumb: '#F59E0B', hover: '#D97706' }; // Amber
   }
@@ -244,7 +253,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     currentTab === 'molecular-legacies' || 
     currentTab === 'african-development-foundations' || 
     currentTab === 'ethnic-tree' ||
-    currentTab === 'iconography';
+    currentTab === 'iconography' ||
+    currentTab === 'archival-cartography';
   const isReportsGroupActive = 
     currentTab === 'research-directory' || 
     (typeof currentTab === 'string' && currentTab.startsWith('report-'));
@@ -380,7 +390,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     { id: 'molecular-legacies', label: 'Genetics', icon: Dna, badge: 'Monograph' },
     { id: 'african-development-foundations', label: 'Foundations', icon: 'fluent-mdl2:knowledge-article', badge: 'Treatise' },
     { id: 'ethnic-tree', label: 'Ethnic Tree', icon: 'mdi:family-tree', badge: 'Transatlantic' },
-    { id: 'iconography', label: 'Iconography', icon: 'lucide:book-image', badge: 'Visual Archive' }
+    { id: 'iconography', label: 'Iconography', icon: 'lucide:book-image', badge: 'Visual Archive' },
+    { id: 'archival-cartography', label: 'Cartography', icon: MapIcon, badge: '16th–19th C. GIS' }
   ];
 
   // Submenu items for Regions (Ultra-Minimal style)

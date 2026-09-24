@@ -14,7 +14,8 @@ import {
   Compass, 
   HelpCircle, 
   Eye,
-  Info
+  Info,
+  ArrowLeftRight
 } from 'lucide-react';
 import { SLAVE_TRADE_ILLUSTRATIONS, SlaveTradeIllustration } from '../data/slaveTradeIllustrations';
 import { SlaveTradeIconography } from '../components/slaveVoyages/SlaveTradeIconography';

@@ -31,6 +31,7 @@ const LanguagesView = lazyWithRetry(() => import('./views/LanguagesView').then(m
 const ExploreView = lazyWithRetry(() => import('./views/ExploreView').then(m => ({ default: m.ExploreView })), 'ExploreView');
 const SlaveTradeView = lazyWithRetry(() => import('./views/SlaveTradeView').then(m => ({ default: m.SlaveTradeView })), 'SlaveTradeView');
 const IconographyView = lazyWithRetry(() => import('./views/IconographyView').then(m => ({ default: m.IconographyView })), 'IconographyView');
+const ArchivalCartographyView = lazyWithRetry(() => import('./views/ArchivalCartographyView').then(m => ({ default: m.ArchivalCartographyView })), 'ArchivalCartographyView');
 const MolecularLegaciesArticleView = lazyWithRetry(() => import('./views/MolecularLegaciesArticleView').then(m => ({ default: m.MolecularLegaciesArticleView })), 'MolecularLegaciesArticleView');
 const AfricanDevelopmentMasterReportView = lazyWithRetry(() => import('./views/AfricanDevelopmentMasterReportView').then(m => ({ default: m.AfricanDevelopmentMasterReportView })), 'AfricanDevelopmentMasterReportView');
 const ThematicPillarsView = lazyWithRetry(() => import('./views/ThematicPillarsView').then(m => ({ default: m.ThematicPillarsView })), 'ThematicPillarsView');
@@ -76,6 +77,10 @@ const parseUrlHash = (): { tab: CanonicalNavTab; entityId?: string; region?: Afr
     const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
     const ind = params.get('ind') || 'NY.GDP.MKTP.CD';
     return { tab: 'analytics', indicator: ind };
+  }
+
+  if (hash === 'cartography' || hash === 'archival-cartography') {
+    return { tab: 'archival-cartography' };
   }
 
   return { tab: hash as CanonicalNavTab };
@@ -504,11 +509,16 @@ function AppContent() {
                       onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
                       onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
                       onNavigateToIconography={() => handleSelectTab('iconography')}
+                      onNavigateToCartography={() => handleSelectTab('archival-cartography')}
                     />
                   )}
 
                   {currentTab === 'iconography' && (
                     <IconographyView />
+                  )}
+
+                  {currentTab === 'archival-cartography' && (
+                    <ArchivalCartographyView />
                   )}
 
                   {currentTab === 'molecular-legacies' && (

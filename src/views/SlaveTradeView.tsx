@@ -80,18 +80,21 @@ export type SlaveTradeSubTab =
   | 'methodology'
   | 'molecular'
   | 'foundations'
-  | 'iconography';
+  | 'iconography'
+  | 'cartography';
 
 export interface SlaveTradeViewProps {
   onNavigateToMolecular?: () => void;
   onNavigateToFoundations?: () => void;
   onNavigateToIconography?: () => void;
+  onNavigateToCartography?: () => void;
 }
 
 export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
   onNavigateToMolecular,
   onNavigateToFoundations,
-  onNavigateToIconography
+  onNavigateToIconography,
+  onNavigateToCartography
 }) => {
   const [activeSubTab, setActiveSubTab] = useState<SlaveTradeSubTab>('overview');
   const [filters, setFilters] = useState<VoyageFilterState>(DEFAULT_FILTERS);
@@ -282,7 +285,8 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
           { id: 'methodology', label: '10 — Provenance & Methodology', icon: BookOpen },
           { id: 'molecular', label: '11 — Molecular & Material Legacies', icon: Dna },
           { id: 'foundations', label: '12 — Foundations of African Development (Master Report)', icon: Scale },
-          { id: 'iconography', label: '13 — Historical Iconography Archive', icon: ImageIcon }
+          { id: 'iconography', label: '13 — Historical Iconography Archive', icon: ImageIcon },
+          { id: 'cartography', label: '14 — Archival Cartography & Currents GIS', icon: Compass }
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeSubTab === tab.id;
@@ -292,6 +296,8 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
               onClick={() => {
                 if (tab.id === 'iconography' && onNavigateToIconography) {
                   onNavigateToIconography();
+                } else if (tab.id === 'cartography' && onNavigateToCartography) {
+                  onNavigateToCartography();
                 } else {
                   setActiveSubTab(tab.id as SlaveTradeSubTab);
                 }

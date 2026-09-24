@@ -138,6 +138,24 @@ export function getPageInfo(
         Icon: Anchor
       };
 
+    case 'iconography':
+      return {
+        title: 'Archival Iconography',
+        shortTitle: 'Iconography',
+        fullTitle: 'Transatlantic & Pan-African Archival Iconography (1,220+ Plates)',
+        category: 'Historical Archives',
+        Icon: BookOpen
+      };
+
+    case 'archival-cartography':
+      return {
+        title: 'Archival Cartography',
+        shortTitle: 'Cartography',
+        fullTitle: 'Archival Cartography & Seasonal Maritime Streamlines (16th–19th C.)',
+        category: 'Historical Cartography GIS',
+        Icon: MapIcon
+      };
+
     case 'molecular-legacies':
       return {
         title: 'Molecular Legacies',

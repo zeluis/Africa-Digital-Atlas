@@ -19,7 +19,8 @@ import {
   Maximize2,
   Minimize2,
   RotateCcw,
-  FileText
+  FileText,
+  Compass
 } from 'lucide-react';
 import { SlaveTradeIllustration } from '../../data/slaveTradeIllustrations';
 
@@ -467,6 +468,33 @@ export const ArchivalLoupeModal: React.FC<ArchivalLoupeModalProps> = ({
                   {illustration.source}
                 </p>
               </div>
+
+              {/* Cartographic GIS Cross-link CTA if plate is map or nautical chart */}
+              {(illustration.title.toLowerCase().includes('map') || 
+                illustration.title.toLowerCase().includes('carte') || 
+                illustration.title.toLowerCase().includes('chart') ||
+                illustration.collectionNames.some(c => c.toLowerCase().includes('map'))) && (
+                <button
+                  onClick={() => {
+                    onClose();
+                    window.location.hash = '#archival-cartography';
+                  }}
+                  className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white transition-all shadow-sm cursor-pointer group text-left"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2 rounded-xl bg-white/15">
+                      <Compass className="w-4 h-4 text-amber-200" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-serif font-bold">Open in Archival Cartography GIS</h4>
+                      <p className="text-[10px] font-mono text-amber-100/90">Split-curtain comparison &amp; hydrodynamic flow vectors</p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-mono font-bold px-2 py-1 rounded-lg bg-black/20 group-hover:translate-x-0.5 transition-transform">
+                    GIS →
+                  </span>
+                </button>
+              )}
 
               {/* Scholarly Citation Generator Hub */}
               <div className="p-4 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 space-y-3">
