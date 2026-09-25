@@ -64,7 +64,7 @@ export const SemanticReportRenderer: React.FC<SemanticReportRendererProps> = ({
 
   // Split paragraphs if pure text
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`space-y-4 editorial-reading-lane font-reading text-pretty hyphens-auto text-[15px] sm:text-[16px] leading-[1.82] text-stone-800 dark:text-stone-200 ${className}`}>
       {parts.map((part, idx) => {
         if (part.type === 'text') {
           // Render text with line breaks
@@ -73,9 +73,9 @@ export const SemanticReportRenderer: React.FC<SemanticReportRendererProps> = ({
             return (
               <React.Fragment key={idx}>
                 {paragraphs.map((para, pIdx) => (
-                  <span key={pIdx} className="block mt-3 first:mt-0">
+                  <p key={pIdx} className="mt-4 first:mt-0 leading-[1.82] text-pretty">
                     {para}
-                  </span>
+                  </p>
                 ))}
               </React.Fragment>
             );
@@ -86,7 +86,7 @@ export const SemanticReportRenderer: React.FC<SemanticReportRendererProps> = ({
         const cit = part.citId ? citationMap.get(part.citId) : undefined;
 
         return (
-          <span key={idx} translate="no" className="notranslate relative inline-flex items-center group mx-1 select-none">
+          <span key={idx} translate="no" className="notranslate relative inline-flex items-center group mx-1 select-none align-baseline">
             <button
               type="button"
               onClick={() => {
@@ -102,11 +102,11 @@ export const SemanticReportRenderer: React.FC<SemanticReportRendererProps> = ({
                   }
                 }
               }}
-              className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[11px] font-mono font-medium bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300 border border-amber-300/80 dark:border-amber-700/60 hover:bg-amber-200 dark:hover:bg-amber-900 transition-all cursor-pointer shadow-2xs"
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-mono font-bold font-tabular bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300 border border-amber-300/80 dark:border-amber-700/60 hover:bg-amber-200 dark:hover:bg-amber-900 transition-all cursor-pointer shadow-2xs"
               title={cit ? `${cit.authors} (${cit.year}): ${cit.title}` : `Citation: ${part.label}`}
             >
               <BookOpen className="w-2.5 h-2.5 text-amber-600 dark:text-amber-400" />
-              <span>{part.label || 'REF'}</span>
+              <span className="tracking-tight">{part.label || 'REF'}</span>
             </button>
 
             {/* Hover preview tooltip */}

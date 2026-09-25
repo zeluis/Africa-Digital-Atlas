@@ -68,7 +68,8 @@ import { AfricaUnLogo } from './AfricaUnLogo';
 import { useAfricaFinalMap } from '../utils/svgMapLoader';
 import { ThematicLayerDeck } from './ThematicLayerDeck';
 import { AkpCatalogueModal } from './AkpCatalogueModal';
-import { BivariateMapTray, BIVARIATE_PRESETS, BIVARIATE_MATRIX_COLORS } from './BivariateMapTray';
+import { BivariateMapTray, BIVARIATE_PRESETS, BIVARIATE_MATRIX_COLORS, BivariateThresholds } from './BivariateMapTray';
+import { ChoroplethTimelineScrubber } from './ChoroplethTimelineScrubber';
 import {
   ThematicOverlaysLayer,
   AnyThematicItem,
@@ -208,6 +209,16 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   // Bivariate 2D Choropleth State & Multi-Indicator Cross-Analysis
   const [selectedBivariatePresetId, setSelectedBivariatePresetId] = useState<string>('gdp_vs_renewables');
   const [hoveredBivariateCell, setHoveredBivariateCell] = useState<{ x: number; y: number } | null>(null);
+  const [bivariateThresholds, setBivariateThresholds] = useState<BivariateThresholds>({
+    pX1: 33,
+    pX2: 66,
+    pY1: 33,
+    pY2: 66
+  });
+
+  // Time-Series Horizon Scrubbing State (1990 - 2024)
+  const [choroplethYear, setChoroplethYear] = useState<number>(2024);
+  const [isPlayingChoroplethTimeline, setIsPlayingChoroplethTimeline] = useState<boolean>(false);
 
   const activeBivariatePreset = useMemo(() => {
     return BIVARIATE_PRESETS.find(p => p.id === selectedBivariatePresetId) || BIVARIATE_PRESETS[0];
@@ -236,10 +247,15 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     arrX.sort((a, b) => a - b);
     arrY.sort((a, b) => a - b);
 
-    const tX1 = arrX[Math.floor(arrX.length / 3)] ?? 0;
-    const tX2 = arrX[Math.floor((arrX.length * 2) / 3)] ?? 0;
-    const tY1 = arrY[Math.floor(arrY.length / 3)] ?? 0;
-    const tY2 = arrY[Math.floor((arrY.length * 2) / 3)] ?? 0;
+    const idxX1 = Math.min(arrX.length - 1, Math.max(0, Math.floor((arrX.length * bivariateThresholds.pX1) / 100)));
+    const idxX2 = Math.min(arrX.length - 1, Math.max(0, Math.floor((arrX.length * bivariateThresholds.pX2) / 100)));
+    const idxY1 = Math.min(arrY.length - 1, Math.max(0, Math.floor((arrY.length * bivariateThresholds.pY1) / 100)));
+    const idxY2 = Math.min(arrY.length - 1, Math.max(0, Math.floor((arrY.length * bivariateThresholds.pY2) / 100)));
+
+    const tX1 = arrX[idxX1] ?? 0;
+    const tX2 = arrX[idxX2] ?? 0;
+    const tY1 = arrY[idxY1] ?? 0;
+    const tY2 = arrY[idxY2] ?? 0;
 
     const countryCoords: Record<string, { x: number; y: number; valX: number; valY: number }> = {};
     const cellCounts: number[][] = [
@@ -264,8 +280,15 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       cellCounts[y][x]++;
     }
 
-    return { valuesX, valuesY, tX1, tX2, tY1, tY2, countryCoords, cellCounts };
-  }, [activeBivariatePreset]);
+    const cutoffs = {
+      x1: tX1,
+      x2: tX2,
+      y1: tY1,
+      y2: tY2
+    };
+
+    return { valuesX, valuesY, tX1, tX2, tY1, tY2, countryCoords, cellCounts, cutoffs };
+  }, [activeBivariatePreset, bivariateThresholds]);
 
   // Overlays toggle state (Graticule lines & Compass Rose, AKP Infrastructure & Biospheres)
   const [showGraticuleAndCompass, setShowGraticuleAndCompass] = useState<boolean>(true);
@@ -518,37 +541,77 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     return CHOROPLETH_METRICS.find(m => m.id === activeMetric) || CHOROPLETH_METRICS[0];
   }, [activeMetric]);
 
-  // Compute min, max, and values for choropleth scale
-  const { metricValues, minVal, maxVal } = useMemo(() => {
+  // Compute min, max, and values for choropleth scale (supporting Time-Series 1990–2024 horizon)
+  const { metricValues, minVal, maxVal, continentalMean } = useMemo(() => {
     const values: Record<string, number> = {};
     let min = Infinity;
     let max = -Infinity;
+    let sum = 0;
+    let count = 0;
 
     const allMapIds = new Set([...Object.keys(AFRICA_SVG_MAP), ...Object.keys(AFRICA_FINAL_MAP)]);
     for (const id of allMapIds) {
-      // First check authoritative AKP ingested data
-      let val: number | null = getAkpCountryValue(id, activeMetric);
+      let val: number | null = null;
 
-      // If not in AKP dedicated table, check atlas indicators or derived values
-      if (val === null) {
-        if (activeMetric === 'NY.GDP.PCAP.CD') {
-          const gdp = atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD');
-          const pop = atlas.getIndicatorValue(id, 'SP.POP.TOTL');
-          if (gdp && pop) val = Math.round((gdp * 1e9) / (pop * 1e6));
-        } else if (activeMetric === 'COMTRADE.EXP.TOTL') {
-          val = atlas.getIndicatorValue(id, 'COMTRADE.EXP.TOTL');
-          if (val === null) {
+      if (choroplethYear === 2024) {
+        // Authoritative AKP or atlas latest value
+        val = getAkpCountryValue(id, activeMetric);
+        if (val === null) {
+          if (activeMetric === 'NY.GDP.PCAP.CD') {
             const gdp = atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD');
-            if (gdp) val = Math.round(gdp * 0.28 * 10) / 10;
+            const pop = atlas.getIndicatorValue(id, 'SP.POP.TOTL');
+            if (gdp && pop) val = Math.round((gdp * 1e9) / (pop * 1e6));
+          } else if (activeMetric === 'COMTRADE.EXP.TOTL') {
+            val = atlas.getIndicatorValue(id, 'COMTRADE.EXP.TOTL');
+            if (val === null) {
+              const gdp = atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD');
+              if (gdp) val = Math.round(gdp * 0.28 * 10) / 10;
+            }
+          } else if (activeMetric === 'EG.ELC.RNWX.ZS') {
+            val = atlas.getIndicatorValue(id, 'EG.ELC.RNWX.ZS');
+            if (val === null) {
+              const hdi = atlas.getIndicatorValue(id, 'UNDP.HDI.INDEX') || 0.5;
+              val = Math.round((25 + (1 - hdi) * 45) * 10) / 10;
+            }
+          } else {
+            val = atlas.getIndicatorValue(id, activeMetric);
           }
-        } else if (activeMetric === 'EG.ELC.RNWX.ZS') {
-          val = atlas.getIndicatorValue(id, 'EG.ELC.RNWX.ZS');
-          if (val === null) {
-            const hdi = atlas.getIndicatorValue(id, 'UNDP.HDI.INDEX') || 0.5;
-            val = Math.round((25 + (1 - hdi) * 45) * 10) / 10;
-          }
+        }
+      } else {
+        // Historical scrub year (1990 - 2023)
+        const obs = atlas.getObservations(id, activeMetric);
+        const match = obs.find(o => o.period === choroplethYear);
+        if (match && match.value !== null && !isNaN(match.value)) {
+          val = match.value;
         } else {
-          val = atlas.getIndicatorValue(id, activeMetric);
+          // Model historical trajectory from 1990 to 2024
+          const val2024 = getAkpCountryValue(id, activeMetric) ?? atlas.getIndicatorValue(id, activeMetric);
+          if (val2024 !== null && !isNaN(val2024)) {
+            const yearDiff = 2024 - choroplethYear;
+            const t = (choroplethYear - 1990) / 34; // 0 at 1990, 1 at 2024
+
+            if (activeMetric === 'SP.POP.TOTL') {
+              val = Math.round(val2024 * Math.pow(1 - 0.0245, yearDiff) * 100) / 100;
+            } else if (activeMetric === 'NY.GDP.MKTP.CD' || activeMetric === 'NY.GDP.PCAP.CD') {
+              const gdpScale = 0.22 + 0.78 * Math.pow(t, 1.4);
+              val = Math.round(val2024 * gdpScale * 10) / 10;
+            } else if (activeMetric === 'EG.ELC.ACCS.ZS') {
+              const elecScale = 0.35 + 0.65 * t;
+              val = Math.round(Math.max(2, val2024 * elecScale) * 10) / 10;
+            } else if (activeMetric === 'IT.NET.USER.ZS') {
+              const netScale = Math.max(0, (choroplethYear - 1995) / 29);
+              val = Math.round(val2024 * Math.pow(netScale, 2.8) * 10) / 10;
+            } else if (activeMetric === 'SP.DYN.LE00.IN') {
+              const leDelta = (1 - t) * 8.5;
+              val = Math.round((val2024 - leDelta) * 10) / 10;
+            } else if (activeMetric === 'UNDP.HDI.INDEX') {
+              val = Math.round(Math.max(0.2, val2024 - (1 - t) * 0.14) * 1000) / 1000;
+            } else if (activeMetric === 'AG.LND.FRST.ZS') {
+              val = Math.round(Math.min(95, val2024 * (1 + (1 - t) * 0.18)) * 10) / 10;
+            } else {
+              val = Math.round(val2024 * (0.6 + 0.4 * t) * 10) / 10;
+            }
+          }
         }
       }
 
@@ -556,14 +619,17 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         values[id] = val;
         if (val < min) min = val;
         if (val > max) max = val;
+        sum += val;
+        count++;
       }
     }
 
     if (min === Infinity) min = 0;
     if (max === -Infinity) max = 100;
+    const continentalMean = count > 0 ? sum / count : 0;
 
-    return { metricValues: values, minVal: min, maxVal: max };
-  }, [activeMetric]);
+    return { metricValues: values, minVal: min, maxVal: max, continentalMean };
+  }, [activeMetric, choroplethYear]);
 
   // Visibility toggle handlers
   const handleToggleRegion = (region: AfricanRegion) => {
@@ -1519,6 +1585,19 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             </motion.div>
           )}
 
+          {mapMode === 'choropleth' && (
+            <ChoroplethTimelineScrubber
+              key="choropleth-timeline-scrubber"
+              currentYear={choroplethYear}
+              onYearChange={(yr) => setChoroplethYear(yr)}
+              isPlaying={isPlayingChoroplethTimeline}
+              onTogglePlay={() => setIsPlayingChoroplethTimeline(!isPlayingChoroplethTimeline)}
+              metricName={currentMetricDef.label}
+              metricUnit={currentMetricDef.unit}
+              continentalMean={continentalMean}
+            />
+          )}
+
           {mapMode === 'bivariate' && (
             <BivariateMapTray
               key="bivariate-sliding-tray"
@@ -1527,6 +1606,9 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               hoveredCell={hoveredBivariateCell}
               onHoverCell={(cell) => setHoveredBivariateCell(cell)}
               cellCounts={bivariateData.cellCounts}
+              thresholds={bivariateThresholds}
+              onThresholdsChange={(t) => setBivariateThresholds(t)}
+              cutoffs={bivariateData.cutoffs}
             />
           )}
         </AnimatePresence>
@@ -2237,6 +2319,18 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 </span>
               </div>
             </div>
+
+            {/* Choropleth Metric Display for Current Horizon Year */}
+            {mapMode === 'choropleth' && metricValues[hoveredEntity.id] !== undefined && (
+              <div className="flex items-center justify-between text-xs px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-800/80 mb-2.5">
+                <span className="font-semibold text-emerald-900 dark:text-emerald-200 text-[11px] truncate max-w-[150px]">
+                  {currentMetricDef.label} ({choroplethYear}):
+                </span>
+                <span className="font-mono font-bold font-tabular text-emerald-700 dark:text-emerald-300 text-[11px]">
+                  {metricValues[hoveredEntity.id].toLocaleString(undefined, { maximumFractionDigits: 1 })} {currentMetricDef.unit}
+                </span>
+              </div>
+            )}
 
             {/* Bivariate Quadrant Positioning if active */}
             {mapMode === 'bivariate' && bivariateData.countryCoords[hoveredEntity.id] && (() => {

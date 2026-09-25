@@ -163,19 +163,19 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
     return hex;
   }, [borderVibrancy, hoveredEntity, selectedEntity]);
 
-  // Layer opacity mapping: Vibrant/Authentic defaults to full 1.0 (no dimming)
+  // Layer opacity mapping: Vibrant/Authentic defaults to 0.9 (90% opacity)
   const getLayerOpacity = useCallback((vibrancy: BorderVibrancy) => {
     switch (vibrancy) {
       case 'vibrant':
-        return 1.0; // Full 100% opacity - zero dimming
+        return 0.9; // Full 90% opacity
       case 'balanced':
         return 0.85; // Soft 85% opacity
       case 'subdued':
         return 0.50; // 50% opacity
       case 'contrast':
-        return 1.0; // 100% opacity
+        return 0.9; // 90% opacity
       default:
-        return 1.0;
+        return 0.9;
     }
   }, []);
 
@@ -250,7 +250,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                 onChange={e => setOpacityLevel(Number(e.target.value))}
                 className="w-24 sm:w-32 accent-amber-600 cursor-pointer"
               />
-              <span className="w-9 text-right font-bold text-amber-700 dark:text-amber-400">{Math.round(opacityLevel)}%</span>
+              <span className="w-9 text-right font-bold font-mono font-tabular text-amber-700 dark:text-amber-400">{Math.round(opacityLevel)}%</span>
             </div>
           )}
 
@@ -380,7 +380,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                 className="w-full h-full select-none"
                 preserveAspectRatio="xMidYMid meet"
               >
-                <g key={`side-by-side-vibrancy-${borderVibrancy}`} transform={AFRICA_FINAL_TRANSFORM} opacity={getLayerOpacity(borderVibrancy)}>
+                <g key={`side-by-side-vibrancy-${borderVibrancy}`} opacity={0.9}>
                   <AfricaMapFinalLayer
                     mapData={mapData}
                     selectedEntityId={null}
@@ -393,7 +393,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                     showPowerPlants={false}
                     showProtectedAreas={false}
                     visibleRegions={new Set(['Northern Africa', 'Western Africa', 'Central Africa', 'Eastern Africa', 'Southern Africa'])}
-                    activeRegionFilter="all"
+                    activeRegionFilter="All"
                     getCountryFill={getCountryFill}
                     handleCountryHover={() => {}}
                     handleCountryLeave={() => {}}
@@ -432,8 +432,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                   >
                     <g
                       key={`curtain-vibrancy-${borderVibrancy}`}
-                      transform={AFRICA_FINAL_TRANSFORM}
-                      opacity={getLayerOpacity(borderVibrancy)}
+                      opacity={0.9}
                     >
                       <AfricaMapFinalLayer
                         mapData={mapData}
@@ -447,7 +446,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                         showPowerPlants={false}
                         showProtectedAreas={false}
                         visibleRegions={new Set(['Northern Africa', 'Western Africa', 'Central Africa', 'Eastern Africa', 'Southern Africa'])}
-                        activeRegionFilter="all"
+                        activeRegionFilter="All"
                         getCountryFill={getCountryFill}
                         handleCountryHover={() => {}}
                         handleCountryLeave={() => {}}
@@ -613,7 +612,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                                 textAnchor="middle"
                                 dominantBaseline="middle"
                                 fill="#ffffff"
-                                fontFamily="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+                                fontFamily="'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif"
                                 fontSize="72"
                                 fontWeight="900"
                                 letterSpacing="1"
@@ -649,7 +648,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
               </div>
 
               {/* Position Tag Pill */}
-              <div className="absolute top-4 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-stone-900/95 text-amber-300 text-[10px] font-mono font-bold border border-amber-500/50 shadow-md pointer-events-none">
+              <div className="absolute top-4 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-stone-900/95 text-amber-300 text-[10px] font-mono font-bold font-tabular border border-amber-500/50 shadow-md pointer-events-none">
                 {Math.round(curtainPosition)}%
               </div>
             </div>

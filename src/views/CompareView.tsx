@@ -11,14 +11,27 @@ import {
   formatHDI, 
   formatArea 
 } from '../data/atlas-formatters';
-import { GitCompare, Plus, X, ArrowRight, ShieldCheck, Check, Layers, Crosshair, Ship } from 'lucide-react';
+import { GitCompare, Plus, X, ArrowRight, ShieldCheck, Check, Layers, Crosshair, Ship, DollarSign, FileText } from 'lucide-react';
 import { getCountryHistoricalDevelopmentDossier } from '../data/countryHistoricalDevelopmentData';
 import { MultiCountryRadarMatrix } from '../components/MultiCountryRadarMatrix';
+import { CountryFactsheetModal } from '../components/CountryFactsheetModal';
 
 interface CompareViewProps {
   onSelectCountry: (entityId: string) => void;
   initialCountries?: string[];
 }
+
+const PPP_PRICE_LEVEL_FACTORS: Record<string, number> = {
+  EGY: 4.55, NGA: 5.40, ZAF: 2.38, DZA: 2.63, ETH: 2.48, MAR: 2.58,
+  KEN: 2.95, AGO: 2.72, GHA: 3.08, TZA: 2.70, CIV: 2.45, COD: 2.20,
+  UGA: 3.10, CMR: 2.35, TUN: 2.85, SEN: 2.60, ZWE: 2.15, ZMB: 2.80,
+  MOZ: 2.65, MDG: 3.25, SDN: 3.80, MLI: 2.90, BFA: 3.05, BEN: 2.80,
+  GIN: 2.95, TCD: 2.75, NER: 3.10, RWA: 3.00, MWI: 3.40, SOM: 2.90,
+  BWA: 2.30, GAB: 1.85, MUS: 1.95, NAM: 2.10, GNQ: 1.75, MRT: 2.85,
+  SWZ: 2.40, LSO: 2.60, TGO: 2.90, SLE: 3.35, LBR: 2.80, CPV: 2.10,
+  BDI: 3.15, DJI: 1.90, ERI: 2.90, GMB: 3.20, GNB: 2.95, COM: 2.60,
+  STP: 2.30, SYC: 1.65, SSD: 2.40, CAF: 2.70, COG: 2.10, LBY: 2.30
+};
 
 export const CompareView: React.FC<CompareViewProps> = ({
   onSelectCountry,
@@ -26,6 +39,10 @@ export const CompareView: React.FC<CompareViewProps> = ({
 }) => {
   const [selectedIds, setSelectedIds] = useState<string[]>(initialCountries);
   const [showSilhouettes, setShowSilhouettes] = useState(true);
+  const [valuationMode, setValuationMode] = useState<'nominal' | 'ppp'>('nominal');
+  const [normalizationScale, setNormalizationScale] = useState<'aggregate' | 'perCapita'>('aggregate');
+  const [factsheetCountryId, setFactsheetCountryId] = useState<string | null>(null);
+
   const allEntities = atlas.getAllEntities();
 
   const handleAddCountry = (id: string) => {
@@ -45,37 +62,97 @@ export const CompareView: React.FC<CompareViewProps> = ({
   // Metrics definitions for the comparison table
   const metricGroups = [
     {
-      group: 'Macroeconomic & Financial',
+      group: 'Macroeconomic & Monetary Architecture',
       items: [
-        { label: 'Nominal GDP (2024)', format: (id: string) => formatGDP(atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD') || 0 },
-        { label: 'GDP per Capita', format: (id: string) => {
-          const gdp = atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD');
-          const pop = atlas.getIndicatorValue(id, 'SP.POP.TOTL');
-          return gdp && pop ? formatCurrency(Math.round((gdp * 1e9) / (pop * 1e6))) : '—';
-        }, isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => {
-          const gdp = atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD');
-          const pop = atlas.getIndicatorValue(id, 'SP.POP.TOTL');
-          return gdp && pop ? (gdp * 1e9) / (pop * 1e6) : 0;
-        }},
+        { 
+          label: valuationMode === 'ppp' ? 'GDP (PPP Int\'l $, 2024)' : 'Nominal GDP (USD, 2024)', 
+          format: (id: string) => {
+            const nominal = atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD') || 0;
+            if (valuationMode === 'ppp') {
+              const factor = PPP_PRICE_LEVEL_FACTORS[id] || 2.6;
+              return `${formatGDP(nominal * factor)} (PPP)`;
+            }
+            return formatGDP(nominal);
+          }, 
+          isLeader: (values: number[]) => Math.max(...values), 
+          getValue: (id: string) => {
+            const nominal = atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD') || 0;
+            return valuationMode === 'ppp' ? nominal * (PPP_PRICE_LEVEL_FACTORS[id] || 2.6) : nominal;
+          } 
+        },
+        { 
+          label: valuationMode === 'ppp' ? 'GDP per Capita (PPP Int\'l $)' : 'GDP per Capita (Nominal USD)', 
+          format: (id: string) => {
+            const gdp = atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD') || 0;
+            const pop = atlas.getIndicatorValue(id, 'SP.POP.TOTL') || 0;
+            if (pop === 0 || gdp === 0) return '—';
+            const multiplier = valuationMode === 'ppp' ? (PPP_PRICE_LEVEL_FACTORS[id] || 2.6) : 1;
+            const perCap = Math.round((gdp * multiplier * 1e9) / (pop * 1e6));
+            return `${formatCurrency(perCap)}${valuationMode === 'ppp' ? ' (PPP)' : ''}`;
+          }, 
+          isLeader: (values: number[]) => Math.max(...values), 
+          getValue: (id: string) => {
+            const gdp = atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD') || 0;
+            const pop = atlas.getIndicatorValue(id, 'SP.POP.TOTL') || 0;
+            if (pop === 0 || gdp === 0) return 0;
+            const multiplier = valuationMode === 'ppp' ? (PPP_PRICE_LEVEL_FACTORS[id] || 2.6) : 1;
+            return (gdp * multiplier * 1e9) / (pop * 1e6);
+          }
+        },
+        {
+          label: 'Purchasing Power Multiplier (ICP)',
+          format: (id: string) => `${(PPP_PRICE_LEVEL_FACTORS[id] || 2.6).toFixed(2)}× local purchasing power`,
+          isLeader: (values: number[]) => Math.max(...values),
+          getValue: (id: string) => PPP_PRICE_LEVEL_FACTORS[id] || 2.6
+        },
         { label: 'Real GDP Growth Rate', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'NY.GDP.MKTP.KD.ZG')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'NY.GDP.MKTP.KD.ZG') || 0 },
         { label: 'Inflation Rate (CPI)', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'FP.CPI.TOTL.ZG')), isLeader: (values: number[]) => Math.min(...values.filter(v => v > 0)), getValue: (id: string) => atlas.getIndicatorValue(id, 'FP.CPI.TOTL.ZG') || 0 },
         { label: 'Govt Debt to GDP %', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'GC.DOD.TOTL.GD.ZS')), isLeader: (values: number[]) => Math.min(...values.filter(v => v > 0)), getValue: (id: string) => atlas.getIndicatorValue(id, 'GC.DOD.TOTL.GD.ZS') || 0 },
       ]
     },
     {
-      group: 'Demographics & Social Development',
+      group: 'Demographics, Human Capital & Quality of Life',
       items: [
-        { label: 'Total Population', format: (id: string) => formatPopulation(atlas.getIndicatorValue(id, 'SP.POP.TOTL')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'SP.POP.TOTL') || 0 },
+        { 
+          label: normalizationScale === 'perCapita' ? 'Population Share of Africa %' : 'Total National Population', 
+          format: (id: string) => {
+            const p = atlas.getIndicatorValue(id, 'SP.POP.TOTL') || 0;
+            if (normalizationScale === 'perCapita') {
+              return `${((p / 1450) * 100).toFixed(2)}% of Africa`;
+            }
+            return formatPopulation(p);
+          }, 
+          isLeader: (values: number[]) => Math.max(...values), 
+          getValue: (id: string) => atlas.getIndicatorValue(id, 'SP.POP.TOTL') || 0 
+        },
         { label: 'Human Development (HDI)', format: (id: string) => formatHDI(atlas.getIndicatorValue(id, 'UNDP.HDI.INDEX')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'UNDP.HDI.INDEX') || 0 },
-        { label: 'Life Expectancy', format: (id: string) => `${(atlas.getIndicatorValue(id, 'SP.DYN.LE00.IN') || 0).toFixed(1)} yrs`, isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'SP.DYN.LE00.IN') || 0 },
+        { label: 'Life Expectancy at Birth', format: (id: string) => `${(atlas.getIndicatorValue(id, 'SP.DYN.LE00.IN') || 0).toFixed(1)} yrs`, isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'SP.DYN.LE00.IN') || 0 },
         { label: 'Adult Literacy Rate', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'SE.ADT.LITR.ZS')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'SE.ADT.LITR.ZS') || 0 },
-        { label: 'Urban Population %', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'SP.URB.TOTL.IN.ZS')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'SP.URB.TOTL.IN.ZS') || 0 },
+        { label: 'Urban Population Share', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'SP.URB.TOTL.IN.ZS')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'SP.URB.TOTL.IN.ZS') || 0 },
+        { 
+          label: 'CO2 Emissions (Metric Tons / Person)', 
+          format: (id: string) => `${(atlas.getIndicatorValue(id, 'EN.ATM.CO2E.PC') || 0.6).toFixed(2)} MT/capita`, 
+          isLeader: (values: number[]) => Math.min(...values.filter(v => v > 0)), 
+          getValue: (id: string) => atlas.getIndicatorValue(id, 'EN.ATM.CO2E.PC') || 0.6 
+        },
       ]
     },
     {
       group: 'Geography & Vector Morphology',
       items: [
-        { label: 'Land Area (km²)', format: (id: string) => formatArea(atlas.getEntity(id)?.landAreaKm2), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getEntity(id)?.landAreaKm2 || 0 },
+        { 
+          label: normalizationScale === 'perCapita' ? 'Land Area per Inhabitant' : 'Total Land Area (km²)', 
+          format: (id: string) => {
+            const area = atlas.getEntity(id)?.landAreaKm2 || 0;
+            const p = atlas.getIndicatorValue(id, 'SP.POP.TOTL') || 1;
+            if (normalizationScale === 'perCapita') {
+              return `${((area / (p * 1e6)) * 1000).toFixed(2)} km² / 1k people`;
+            }
+            return formatArea(area);
+          }, 
+          isLeader: (values: number[]) => Math.max(...values), 
+          getValue: (id: string) => atlas.getEntity(id)?.landAreaKm2 || 0 
+        },
         { label: 'UN M49 Numeric ID', format: (id: string) => UN_M49_NUMERIC_CODES[id] || '—', isLeader: () => 0, getValue: (id: string) => Number(UN_M49_NUMERIC_CODES[id]) || 0 },
         { label: 'Shape Topology', format: (id: string) => getEntityGeographyMetadata(id)?.shapeType.toUpperCase() || 'CONTINENTAL', isLeader: () => 0, getValue: () => 0 },
         { label: 'UNESCO Heritage Sites', format: (id: string) => `${atlas.getHeritageSites(id).length} Sites`, isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getHeritageSites(id).length },
@@ -218,6 +295,85 @@ export const CompareView: React.FC<CompareViewProps> = ({
         onSelectCountry={onSelectCountry}
       />
 
+      {/* Interactive Switchers Row: Valuation (Nominal vs PPP) and Scale (Aggregate vs Per-Capita) */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white dark:bg-zinc-900/90 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+        {/* Valuation Switcher */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-mono font-bold text-zinc-500 uppercase flex items-center gap-1">
+            <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
+            Currency &amp; Valuation:
+          </span>
+          <div className="flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1 border border-zinc-200 dark:border-zinc-700">
+            <button
+              type="button"
+              onClick={() => setValuationMode('nominal')}
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                valuationMode === 'nominal'
+                  ? 'bg-white dark:bg-zinc-950 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+              }`}
+            >
+              Nominal USD ($)
+            </button>
+            <button
+              type="button"
+              onClick={() => setValuationMode('ppp')}
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                valuationMode === 'ppp'
+                  ? 'bg-purple-600 text-white shadow-xs'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-purple-600'
+              }`}
+            >
+              PPP Int'l $ (World Bank ICP)
+            </button>
+          </div>
+        </div>
+
+        {/* Normalization Scale Switcher */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-mono font-bold text-zinc-500 uppercase">Aggregation Scale:</span>
+          <div className="flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1 border border-zinc-200 dark:border-zinc-700">
+            <button
+              type="button"
+              onClick={() => setNormalizationScale('aggregate')}
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                normalizationScale === 'aggregate'
+                  ? 'bg-white dark:bg-zinc-950 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+              }`}
+            >
+              National Aggregate
+            </button>
+            <button
+              type="button"
+              onClick={() => setNormalizationScale('perCapita')}
+              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                normalizationScale === 'perCapita'
+                  ? 'bg-white dark:bg-zinc-950 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+              }`}
+            >
+              Per-Capita Normalized
+            </button>
+          </div>
+        </div>
+
+        {/* Dynamic Context Explanation Banner */}
+        <div className="w-full pt-2 border-t border-zinc-100 dark:border-zinc-800 text-[11px] font-mono flex items-center justify-between text-zinc-500 dark:text-zinc-400">
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span>
+              {valuationMode === 'ppp' 
+                ? 'PPP Mode: Macro values adjusted via World Bank ICP 2021/2024 price level parity multipliers (reflects real domestic consumer & capital purchasing volume).'
+                : 'Nominal USD Mode: Values converted using official market exchange rates.'}
+            </span>
+          </div>
+          <span className="hidden md:inline text-[10px] text-zinc-400">
+            {normalizationScale === 'perCapita' ? 'Normalized per capita / per 1k residents' : 'Absolute national totals'}
+          </span>
+        </div>
+      </div>
+
       {/* Comparison Grid Matrix Table */}
       <div 
         className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-md overflow-hidden transition-colors"
@@ -226,7 +382,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
         {/* Table Header with Country Dossiers */}
         <div className="grid border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950" style={{ gridTemplateColumns: `240px repeat(${countries.length}, 1fr)` }}>
           <div className="p-4 md:p-6 flex items-end font-bold text-xs text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-            Indicators & Metrics
+            Indicators &amp; Metrics
           </div>
 
           {countries.map(country => (
@@ -255,14 +411,21 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+              <div className="mt-4 pt-3 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-1 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => setFactsheetCountryId(country.id)}
+                  className="inline-flex items-center gap-1 text-[11px] font-bold font-mono text-purple-600 dark:text-purple-400 hover:underline cursor-pointer"
+                  title="Open printable 1-page executive factsheet brief"
+                >
+                  <FileText className="w-3 h-3" /> 1-Page Brief
+                </button>
                 <button
                   onClick={() => onSelectCountry(country.id)}
                   className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
                 >
                   Full Dossier <ArrowRight className="w-3 h-3" />
                 </button>
-                <span className="text-[10px] font-mono text-zinc-500">M49: {UN_M49_NUMERIC_CODES[country.id] || '—'}</span>
               </div>
             </div>
           ))}
@@ -298,7 +461,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                         return (
                           <div
                             key={country.id}
-                            className={`p-3.5 md:px-6 md:py-4 border-l border-zinc-200 dark:border-zinc-800 font-mono text-xs md:text-sm flex items-center justify-between ${
+                            className={`p-3.5 md:px-6 md:py-4 border-l border-zinc-200 dark:border-zinc-800 font-mono font-tabular tabular-nums text-xs md:text-sm flex items-center justify-between ${
                               isLeading ? 'font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20' : 'text-zinc-800 dark:text-zinc-200'
                             }`}
                           >
@@ -319,6 +482,15 @@ export const CompareView: React.FC<CompareViewProps> = ({
           ))}
         </div>
       </div>
+
+      {/* 1-Page Printable Country Factsheet Modal */}
+      {factsheetCountryId && (
+        <CountryFactsheetModal
+          entityId={factsheetCountryId}
+          isOpen={true}
+          onClose={() => setFactsheetCountryId(null)}
+        />
+      )}
     </div>
   );
 };

@@ -49,8 +49,11 @@ import {
   Sparkles,
   BookOpen,
   Trees,
-  Star
+  Star,
+  FileText,
+  Printer
 } from 'lucide-react';
+import { CountryFactsheetModal } from '../components/CountryFactsheetModal';
 
 interface CountryViewProps {
   entityId: string;
@@ -67,6 +70,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
   const { t } = useTranslation();
   const { isCountrySaved, toggleSaveCountry } = useSavedEntities();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const [showFactsheet, setShowFactsheet] = useState<boolean>(false);
   
   const entity = atlas.getEntity(entityId) || atlas.getEntity('NGA')!;
   const isSaved = isCountrySaved(entity.id);
@@ -175,6 +179,16 @@ export const CountryView: React.FC<CountryViewProps> = ({
                   }`}>
                     {entity.sovereign ? 'Sovereign AU Member' : 'Autonomous Territory'}
                   </span>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowFactsheet(true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/95 border border-zinc-200/90 hover:border-emerald-300 text-zinc-700 hover:text-emerald-700 text-xs font-semibold shadow-xs transition-all cursor-pointer"
+                    title="Export 1-Page Executive Factsheet Brief (Printable PDF / SVG / HTML)"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>1-Page Factsheet</span>
+                  </button>
                 </div>
                 <p className="text-xs md:text-sm text-zinc-600 font-medium">
                   {entity.officialName}
@@ -915,6 +929,13 @@ export const CountryView: React.FC<CountryViewProps> = ({
           </div>
         )}
       </div>
+
+      {/* 1-Page Printable Executive Country Factsheet Modal */}
+      <CountryFactsheetModal
+        entityId={entity.id}
+        isOpen={showFactsheet}
+        onClose={() => setShowFactsheet(false)}
+      />
     </div>
   );
 };

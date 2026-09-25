@@ -165,7 +165,7 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
           const isSelected = selectedEntityId === country.id || activeTooltipEntityId === country.id;
           const isHovered = hoveredEntityId === country.id;
           const isRegionVisible = visibleRegions.has(country.unRegion);
-          const isRegionFiltered = activeRegionFilter !== 'All' && country.unRegion !== activeRegionFilter;
+          const isRegionFiltered = Boolean(activeRegionFilter && activeRegionFilter.toLowerCase() !== 'all' && country.unRegion !== activeRegionFilter);
           const isBlocFiltered = !!blocMemberSet && !blocMemberSet.has(country.id);
           
           const isDimmed = !isRegionVisible || isRegionFiltered || isBlocFiltered;
@@ -340,7 +340,7 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
       <g id="africa-labels-layer-final" transform={AFRICA_FINAL_TRANSFORM} className="pointer-events-none select-none">
         {Object.values(finalMap).map(country => {
           const isRegionVisible = visibleRegions.has(country.unRegion);
-          const isRegionFiltered = activeRegionFilter !== 'All' && country.unRegion !== activeRegionFilter;
+          const isRegionFiltered = Boolean(activeRegionFilter && activeRegionFilter.toLowerCase() !== 'all' && country.unRegion !== activeRegionFilter);
           const isBlocFiltered = !!blocMemberSet && !blocMemberSet.has(country.id);
           if (!isRegionVisible || isRegionFiltered || isBlocFiltered) return null;
           if (!country.centroid || country.id === 'CPV') return null;
@@ -448,15 +448,16 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
                 dominantBaseline="middle"
                 fill={isSelected ? '#047857' : isHovered ? '#0f172a' : '#1e293b'}
                 fontSize={fontSize}
-                fontFamily="sans-serif"
+                fontFamily="'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
                 fontWeight="900"
-                letterSpacing="0.06em"
+                letterSpacing={isHuge ? "0.14em" : isLarge ? "0.09em" : "0.05em"}
                 paintOrder="stroke fill"
                 stroke="#ffffff"
-                strokeWidth={isHuge ? "8px" : "6px"}
+                strokeWidth={isHuge ? "8px" : isLarge ? "6.5px" : "5px"}
                 strokeLinejoin="round"
                 strokeLinecap="round"
                 opacity={isSelected || isHovered ? 1 : 0.88}
+                className="cartographic-label select-none"
               >
                 {displayName}
               </text>

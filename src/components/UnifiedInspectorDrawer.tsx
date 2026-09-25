@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AtlasEntity, AfricanRegion } from '../data/types';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from './CountryFlag';
 import { formatPopulation, formatGDP, formatHDI } from '../data/atlas-formatters';
 import { AfricaliaAdmin1 } from '../data/types';
+import { CountryFactsheetModal } from './CountryFactsheetModal';
 import {
   X,
   Sparkles,
@@ -20,7 +21,8 @@ import {
   ShieldCheck,
   Building2,
   Clock,
-  Compass
+  Compass,
+  FileText
 } from 'lucide-react';
 
 export interface UnifiedInspectorDrawerProps {
@@ -40,6 +42,8 @@ export const UnifiedInspectorDrawer: React.FC<UnifiedInspectorDrawerProps> = ({
   selectedAdmin1,
   hoveredAdmin1
 }) => {
+  const [showFactsheet, setShowFactsheet] = useState(false);
+
   // Listen for Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -198,42 +202,42 @@ export const UnifiedInspectorDrawer: React.FC<UnifiedInspectorDrawerProps> = ({
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
               <div>
                 <span className="text-[10px] text-stone-500 dark:text-stone-400 block font-medium">Population</span>
-                <span className="font-bold font-mono text-stone-950 dark:text-stone-50">
+                <span className="font-bold font-mono font-tabular tabular-nums text-stone-950 dark:text-stone-50">
                   {formatPopulation(population)}
                 </span>
               </div>
 
               <div>
                 <span className="text-[10px] text-stone-500 dark:text-stone-400 block font-medium">Nominal GDP</span>
-                <span className="font-bold font-mono text-stone-950 dark:text-stone-50">
+                <span className="font-bold font-mono font-tabular tabular-nums text-stone-950 dark:text-stone-50">
                   {formatGDP(gdp)}
                 </span>
               </div>
 
               <div>
                 <span className="text-[10px] text-stone-500 dark:text-stone-400 block font-medium">GDP Per Capita</span>
-                <span className="font-bold font-mono text-stone-950 dark:text-stone-50">
+                <span className="font-bold font-mono font-tabular tabular-nums text-stone-950 dark:text-stone-50">
                   {gdpPerCapita > 0 ? `$${gdpPerCapita.toLocaleString()}` : 'N/A'}
                 </span>
               </div>
 
               <div>
                 <span className="text-[10px] text-stone-500 dark:text-stone-400 block font-medium">Life Expectancy</span>
-                <span className="font-bold font-mono text-stone-950 dark:text-stone-50">
+                <span className="font-bold font-mono font-tabular tabular-nums text-stone-950 dark:text-stone-50">
                   {lifeExp ? `${lifeExp} yrs` : '64.2 yrs'}
                 </span>
               </div>
 
               <div>
                 <span className="text-[10px] text-stone-500 dark:text-stone-400 block font-medium">HDI Score</span>
-                <span className="font-bold font-mono text-stone-950 dark:text-stone-50">
+                <span className="font-bold font-mono font-tabular tabular-nums text-stone-950 dark:text-stone-50">
                   {formatHDI(hdi)}
                 </span>
               </div>
 
               <div>
                 <span className="text-[10px] text-stone-500 dark:text-stone-400 block font-medium">World Heritage</span>
-                <span className="font-bold font-mono text-stone-950 dark:text-stone-50">
+                <span className="font-bold font-mono font-tabular tabular-nums text-stone-950 dark:text-stone-50">
                   {heritageSites} {heritageSites === 1 ? 'Site' : 'Sites'}
                 </span>
               </div>
@@ -267,12 +271,29 @@ export const UnifiedInspectorDrawer: React.FC<UnifiedInspectorDrawerProps> = ({
 
           <button
             type="button"
+            onClick={() => setShowFactsheet(true)}
+            className="py-2.5 px-3 rounded-xl bg-purple-100 hover:bg-purple-200 dark:bg-purple-950/80 text-purple-900 dark:text-purple-300 font-bold text-xs border border-purple-300 dark:border-purple-800 transition-all flex items-center gap-1.5 cursor-pointer"
+            title="Print or export 1-page executive factsheet brief"
+          >
+            <FileText className="w-3.5 h-3.5 text-purple-600" />
+            <span className="hidden sm:inline">1-Page Brief</span>
+          </button>
+
+          <button
+            type="button"
             onClick={onClose}
             className="py-2.5 px-3 rounded-xl bg-stone-200/80 hover:bg-stone-300/80 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 font-semibold text-xs transition-colors cursor-pointer"
           >
             Dismiss
           </button>
         </div>
+
+        {/* 1-Page Executive Factsheet Modal */}
+        <CountryFactsheetModal
+          entityId={entity.id}
+          isOpen={showFactsheet}
+          onClose={() => setShowFactsheet(false)}
+        />
       </motion.aside>
     </AnimatePresence>
   );

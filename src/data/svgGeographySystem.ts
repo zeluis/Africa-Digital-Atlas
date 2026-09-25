@@ -19,6 +19,7 @@ export interface M49EntityMetadata {
   validationStatus: 'verified' | 'provisional';
   viewBox: string;
   pathLength: number;
+  memberBlocs?: string[];
 }
 
 export interface RegionalSilhouetteData {
