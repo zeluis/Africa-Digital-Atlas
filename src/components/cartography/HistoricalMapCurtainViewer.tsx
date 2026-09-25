@@ -491,8 +491,29 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                         const isHovered = hoveredEntity?.id === entity.id;
                         const cleanName = entity.name.split('(')[0].trim();
                         const textWidth = Math.max(460, cleanName.length * 52 + 180);
-                        const isLabelBelow = entity.id === 'ashanti-empire';
-                        const labelOffsetY = isLabelBelow ? 175 : -175;
+                        
+                        // Custom label offsets per entity to prevent label overlaps (especially Dahomey & Benin) while keeping circle beacons accurately anchored
+                        let labelOffsetX = 0;
+                        let labelOffsetY = -190;
+                        if (entity.id === 'dahomey-kingdom') {
+                          labelOffsetX = 20;
+                          labelOffsetY = -200;
+                        } else if (entity.id === 'benin-kingdom') {
+                          labelOffsetX = 220;
+                          labelOffsetY = 190;
+                        } else if (entity.id === 'ashanti-empire') {
+                          labelOffsetX = -560;
+                          labelOffsetY = 0;
+                        } else if (entity.id === 'oyo-empire') {
+                          labelOffsetX = 460;
+                          labelOffsetY = 2;
+                        } else if (entity.id === 'mali-empire') {
+                          labelOffsetX = -120;
+                          labelOffsetY = -190;
+                        } else if (entity.id === 'kongo-kingdom') {
+                          labelOffsetX = -100;
+                          labelOffsetY = 200;
+                        }
 
                         return (
                           <g
@@ -507,64 +528,66 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                             onMouseEnter={() => setHoveredEntity(entity)}
                             onMouseLeave={() => setHoveredEntity(null)}
                           >
-                            {/* Continuously Radiating Pulsating Radar Wave 1 */}
-                            <circle cx="0" cy="0" r="100" fill={entity.color}>
-                              <animate
-                                attributeName="r"
-                                values="90;480"
-                                dur="2.6s"
-                                repeatCount="indefinite"
-                              />
-                              <animate
-                                attributeName="opacity"
-                                values={isSelected || isHovered ? "0.85;0;0" : "0.55;0;0"}
-                                dur="2.6s"
-                                repeatCount="indefinite"
-                              />
-                            </circle>
+                            {/* Continuously Radiating Pulsating Radar Wave & Rings (ONLY displayed on hover or when clicked / selected) */}
+                            {(isSelected || isHovered) && (
+                              <>
+                                <circle cx="0" cy="0" r="100" fill={entity.color}>
+                                  <animate
+                                    attributeName="r"
+                                    values="90;480"
+                                    dur="2.6s"
+                                    repeatCount="indefinite"
+                                  />
+                                  <animate
+                                    attributeName="opacity"
+                                    values="0.85;0;0"
+                                    dur="2.6s"
+                                    repeatCount="indefinite"
+                                  />
+                                </circle>
 
-                            {/* Continuously Radiating Pulsating Radar Wave 2 (Shifted Phase) */}
-                            <circle cx="0" cy="0" r="100" fill={entity.color}>
-                              <animate
-                                attributeName="r"
-                                values="90;480"
-                                dur="2.6s"
-                                begin="1.3s"
-                                repeatCount="indefinite"
-                              />
-                              <animate
-                                attributeName="opacity"
-                                values={isSelected || isHovered ? "0.85;0;0" : "0.55;0;0"}
-                                dur="2.6s"
-                                begin="1.3s"
-                                repeatCount="indefinite"
-                              />
-                            </circle>
+                                <circle cx="0" cy="0" r="100" fill={entity.color}>
+                                  <animate
+                                    attributeName="r"
+                                    values="90;480"
+                                    dur="2.6s"
+                                    begin="1.3s"
+                                    repeatCount="indefinite"
+                                  />
+                                  <animate
+                                    attributeName="opacity"
+                                    values="0.85;0;0"
+                                    dur="2.6s"
+                                    begin="1.3s"
+                                    repeatCount="indefinite"
+                                  />
+                                </circle>
 
-                            {/* Concentric Pulsating Ring */}
-                            <circle
-                              cx="0"
-                              cy="0"
-                              r={isSelected || isHovered ? 170 : 130}
-                              fill="none"
-                              stroke={entity.color}
-                              strokeWidth={isSelected || isHovered ? "20" : "14"}
-                              strokeDasharray="28,14"
-                              opacity={isSelected || isHovered ? 1 : 0.85}
-                            >
-                              <animate
-                                attributeName="r"
-                                values="120;175;120"
-                                dur="2s"
-                                repeatCount="indefinite"
-                              />
-                              <animate
-                                attributeName="opacity"
-                                values="0.9;0.5;0.9"
-                                dur="2s"
-                                repeatCount="indefinite"
-                              />
-                            </circle>
+                                <circle
+                                  cx="0"
+                                  cy="0"
+                                  r="170"
+                                  fill="none"
+                                  stroke={entity.color}
+                                  strokeWidth="20"
+                                  strokeDasharray="28,14"
+                                  opacity="1"
+                                >
+                                  <animate
+                                    attributeName="r"
+                                    values="120;175;120"
+                                    dur="2s"
+                                    repeatCount="indefinite"
+                                  />
+                                  <animate
+                                    attributeName="opacity"
+                                    values="0.9;0.5;0.9"
+                                    dur="2s"
+                                    repeatCount="indefinite"
+                                  />
+                                </circle>
+                              </>
+                            )}
 
                             {/* Solid Inner Jewel Core with Thick White Rim */}
                             <circle
@@ -580,8 +603,8 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                             {/* Core Center White Dot */}
                             <circle cx="0" cy="0" r="26" fill="#ffffff" />
 
-                            {/* Extra-Large High-Contrast Floating Pill Label ALWAYS on TOP of both panels */}
-                            <g transform={`translate(0, ${labelOffsetY})`}>
+                            {/* Extra-Large High-Contrast Floating Pill Label ALWAYS on TOP of both panels with zero overlap offsets */}
+                            <g transform={`translate(${labelOffsetX}, ${labelOffsetY})`}>
                               {/* Background Aura Pill Glow */}
                               <rect
                                 x={-textWidth / 2 - 16}

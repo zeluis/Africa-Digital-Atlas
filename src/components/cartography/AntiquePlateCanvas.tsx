@@ -16,13 +16,22 @@ export const AntiquePlateCanvas: React.FC<AntiquePlateCanvasProps> = ({
   const [imageIdx, setImageIdx] = useState<number>(0);
   const [hasFailedAll, setHasFailedAll] = useState<boolean>(false);
 
-  // Build candidate URL list with local asset priority
-  const urls: string[] = [
+  // Build candidate URL list with local asset priority and BASE_URL support for GitHub Pages
+  const rawUrls: string[] = [
     isThumbnail ? plate.thumbnailUrl : plate.imageUrl,
     plate.imageUrl,
     plate.thumbnailUrl,
     ...(plate.fallbackUrls || [])
   ].filter(Boolean);
+
+  const urls: string[] = rawUrls.map(url => {
+    if (url.startsWith('/') && !url.startsWith(import.meta.env.BASE_URL)) {
+      const base = import.meta.env.BASE_URL || '/';
+      const cleanBase = base.endsWith('/') ? base : `${base}/`;
+      return `${cleanBase}${url.slice(1)}`;
+    }
+    return url;
+  });
 
   useEffect(() => {
     setImageIdx(0);
