@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HistoricalMapPlate } from '../../data/archivalCartographyData';
+import { resolveAssetPath } from '../../utils/assetPath';
 import { Compass, Sparkles, AlertCircle } from 'lucide-react';
 
 interface AntiquePlateCanvasProps {
@@ -24,14 +25,7 @@ export const AntiquePlateCanvas: React.FC<AntiquePlateCanvasProps> = ({
     ...(plate.fallbackUrls || [])
   ].filter(Boolean);
 
-  const urls: string[] = rawUrls.map(url => {
-    if (url.startsWith('/') && !url.startsWith(import.meta.env.BASE_URL)) {
-      const base = import.meta.env.BASE_URL || '/';
-      const cleanBase = base.endsWith('/') ? base : `${base}/`;
-      return `${cleanBase}${url.slice(1)}`;
-    }
-    return url;
-  });
+  const urls: string[] = rawUrls.map(url => resolveAssetPath(url));
 
   useEffect(() => {
     setImageIdx(0);

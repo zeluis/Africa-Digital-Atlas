@@ -70,68 +70,30 @@ export interface SeasonalWindRegime {
 
 export const HISTORICAL_MAP_PLATES: HistoricalMapPlate[] = [
   {
-    id: 'danville-1749',
-    title: "Afrique Publiée sous les Auspices de Monseigneur le Duc d'Orléans",
-    cartographer: "Jean-Baptiste Bourguignon d'Anville",
-    year: "1749",
-    century: "18th Century (Enlightenment)",
+    id: 'ortelius-1570',
+    title: "Africae Tabula Nova",
+    cartographer: "Abraham Ortelius",
+    year: "1570",
+    century: "16th Century (Renaissance)",
     region: "Pan-African Continental",
-    imageUrl: "/cartography/danville-1749.jpg",
+    imageUrl: "/cartography/ortelius-1570.jpg",
     fallbackUrls: [
-      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b53053165w/f1/full/1600,/0/native.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/7/79/Afrique_-_publi%C3%A9e_sous_les_auspices_de_Monseigneur_le_Duc_d%27Orl%C3%A9ans..._par_le_Sr_d%27Anville_%3B_grav%C3%A9_par_Guill%27Delahaye_-_btv1b53053165w.jpg"
+      "https://upload.wikimedia.org/wikipedia/commons/3/32/Ortelius_Africae_Tabula_Nova_1570.jpg",
+      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b550058301/f1/full/1600,/0/native.jpg"
     ],
-    thumbnailUrl: "/cartography/danville-1749.jpg",
-    source: "Jean-Baptiste Bourguignon d'Anville, Paris (1749). Hand-colored copperplate engraving.",
-    institution: "Bibliothèque nationale de France / Geographicus Rare Maps Collection",
-    description: "A landmark in scientific cartography. D'Anville famously excised mythical geographic features (such as the speculative Lake Ptolemy and imaginary Central African mountain ranges), leaving uncharted interior zones blank ('terra incognita') while meticulously detailing the maritime coasts.",
-    historicalSignificance: "Initiated modern empirical cartography of Africa by refusing to fill inland voids with speculative kingdoms or mythical creatures.",
+    thumbnailUrl: "/cartography/ortelius-1570.jpg",
+    source: "Abraham Ortelius, Theatrum Orbis Terrarum, Antwerp (1570). Copperplate engraving with hand coloring.",
+    institution: "University of Amsterdam Special Collections / Bibliothèque nationale de France",
+    description: "One of the most influential maps of Africa from the 16th century, published in the first modern atlas. Features ornate strapwork cartouches, sea monsters, and early depictions of the interior lakes feeding the Nile.",
+    historicalSignificance: "Established the standard Renaissance depiction of the entire African continent based on Portuguese maritime discoveries and classical Ptolemaic geography.",
     toponymsToObserve: [
-      "Guinée Septentrionale & Méridionale",
-      "Royaume de Juda (Whydah / Dahomey)",
-      "Côte de l'Or (Gold Coast)",
-      "Côte des Dents (Ivory Coast)",
-      "Côte des Esclaves (Slave Coast)",
-      "Royaume de Congo",
-      "Nigritie / Soudan"
-    ],
-    homographyBounds: {
-      north: 37.5,
-      south: -35.2,
-      west: -20.5,
-      east: 52.0
-    },
-    svgOverlayTransform: {
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0
-    }
-  },
-  {
-    id: 'blaeu-1644',
-    title: "Africae nova descriptio (New Description of Africa)",
-    cartographer: "Willem Janszoon Blaeu",
-    year: "1644",
-    century: "17th Century (Golden Age of Dutch Cartography)",
-    region: "Pan-African Continental & Atlantic Rim",
-    imageUrl: "/cartography/blaeu-1644.jpg",
-    fallbackUrls: [
-      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b8468537z/f1/full/1600,/0/native.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/d/d5/Blaeu_Africae_Nova_Descriptio_1617_UTA.jpg"
-    ],
-    thumbnailUrl: "/cartography/blaeu-1644.jpg",
-    source: "Willem Blaeu, Theatrum Orbis Terrarum, Amsterdam (1644). Copperplate with original hand wash.",
-    institution: "University of Amsterdam Special Collections / Library of Congress",
-    description: "One of the most famous and visually ornate baroque maps of Africa. Decorated with side panels depicting indigenous African peoples in regional dress and top border vignettes of nine major ports (Alexandria, Algiers, Cairo, Mina, Mozambique, etc.).",
-    historicalSignificance: "Illustrates 17th-century European geographic understanding prior to the interior exploration era, detailing coastal trading forts from Senegambia to the Cape of Good Hope.",
-    toponymsToObserve: [
-      "Barbaria (Maghreb)",
-      "Biafara Regnum",
-      "Monomotapa Regnum (Great Zimbabwe)",
-      "Zanguebar (Swahili Coast)",
-      "Caput Bonae Spei (Cape of Good Hope)",
-      "Congo Regnum",
-      "Aethiopia Superior & Inferior"
+      "Aegyptus",
+      "Barbaria",
+      "Nigritie",
+      "Abissinia",
+      "Congo",
+      "Monomotapa",
+      "Caput Bonae Spei"
     ],
     homographyBounds: {
       north: 38.0,
@@ -139,11 +101,106 @@ export const HISTORICAL_MAP_PLATES: HistoricalMapPlate[] = [
       west: -22.0,
       east: 54.0
     },
-    svgOverlayTransform: {
-      scale: 1.04,
-      offsetX: 2,
-      offsetY: 0
-    }
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'mercator-1595',
+    title: "Africa ex magna orbis terrae descriptione",
+    cartographer: "Gerardus Mercator",
+    year: "1595",
+    century: "16th Century (Flemish Cartography)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/mercator-1595.jpg",
+    fallbackUrls: [
+      "https://upload.wikimedia.org/wikipedia/commons/e/ec/1595_Mercator_Map_of_Africa_-_Geographiae_tabulae_antiquae_et_novae.jpg",
+      "https://tile.loc.gov/image-services/iiif/service:g3800:g3800:ct003305/full/pct:100/0/default.jpg"
+    ],
+    thumbnailUrl: "/cartography/mercator-1595.jpg",
+    source: "Gerardus Mercator, Geographiae tabulae antiquae et novae, Duisburg (1595).",
+    institution: "Library of Congress Geography and Map Division / Wikimedia Commons",
+    description: "Published posthumously in Mercator's atlas, this masterwork presents the entire African continent with graceful calligraphy and detailed inland river systems derived from Portuguese and Arabic itineraries.",
+    historicalSignificance: "Refined the geographic contour of southern Africa and the horn of Africa during the late Renaissance.",
+    toponymsToObserve: [
+      "Africa Interior",
+      "Regnum Aegypti",
+      "Nubia",
+      "Monomotapa",
+      "Congo Regnum"
+    ],
+    homographyBounds: {
+      north: 37.5,
+      south: -35.5,
+      west: -21.5,
+      east: 53.0
+    },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'speed-1626',
+    title: "Africa Described with the Atire of the Inhabitants",
+    cartographer: "John Speed",
+    year: "1626",
+    century: "17th Century (English Cartography)",
+    region: "Pan-African Continental & Maritime Rim",
+    imageUrl: "/cartography/speed-1626.jpg",
+    fallbackUrls: [
+      "https://upload.wikimedia.org/wikipedia/commons/4/46/Africa_Described_with_the_Atire_of_the_Inhabitants_-_John_Speed_1626.jpg",
+      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b8469315n/f1/full/1600,/0/native.jpg"
+    ],
+    thumbnailUrl: "/cartography/speed-1626.jpg",
+    source: "John Speed, London (1626). Published by George Humble. Hand-colored engraved map with costumed figures.",
+    institution: "Cambridge University Library / Gallica BNF",
+    description: "Celebrated for its decorative side borders displaying historical costume studies of African inhabitants and top border city views (Algiers, Cairo, Tunis, etc.).",
+    historicalSignificance: "Brought fine English cartographic publishing to bear on continental African geography, widely circulated throughout the British Isles.",
+    toponymsToObserve: [
+      "Barbary",
+      "Biledulgerid",
+      "Zaara Deserta",
+      "Negroland",
+      "Abissinia",
+      "Congo",
+      "Monomotapa"
+    ],
+    homographyBounds: {
+      north: 38.0,
+      south: -36.0,
+      west: -22.0,
+      east: 54.0
+    },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'blaeu-1644',
+    title: "Africae nova descriptio",
+    cartographer: "Willem Janszoon Blaeu",
+    year: "1644",
+    century: "17th Century (Golden Age of Dutch Cartography)",
+    region: "Pan-African Continental & Atlantic Rim",
+    imageUrl: "/cartography/blaeu-1644.jpg",
+    fallbackUrls: [
+      "https://upload.wikimedia.org/wikipedia/commons/d/d5/Blaeu_Africae_Nova_Descriptio_1617_UTA.jpg",
+      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b8468537z/f1/full/1600,/0/native.jpg"
+    ],
+    thumbnailUrl: "/cartography/blaeu-1644.jpg",
+    source: "Willem Blaeu, Theatrum Orbis Terrarum, Amsterdam (1644). Copperplate with original hand wash.",
+    institution: "University of Amsterdam Special Collections / Library of Congress",
+    description: "One of the most famous and visually ornate baroque maps of Africa. Decorated with side panels depicting indigenous African peoples in regional dress and top border vignettes of nine major ports.",
+    historicalSignificance: "Illustrates 17th-century European geographic understanding prior to the interior exploration era, detailing coastal trading forts from Senegambia to the Cape of Good Hope.",
+    toponymsToObserve: [
+      "Barbaria",
+      "Biafara Regnum",
+      "Monomotapa Regnum",
+      "Zanguebar",
+      "Caput Bonae Spei",
+      "Congo Regnum"
+    ],
+    homographyBounds: {
+      north: 38.0,
+      south: -36.0,
+      west: -22.0,
+      east: 54.0
+    },
+    svgOverlayTransform: { scale: 1.04, offsetX: 2, offsetY: 0 }
   },
   {
     id: 'sanson-1656',
@@ -154,21 +211,20 @@ export const HISTORICAL_MAP_PLATES: HistoricalMapPlate[] = [
     region: "Pan-African & Atlantic Maritime Corridors",
     imageUrl: "/cartography/sanson-1656.jpg",
     fallbackUrls: [
-      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b8468494n/f1/full/1600,/0/native.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/2/2d/Afrique._Par_le_Sur._Sanson_d%27Abbeville%2C_Geographe_du_Roy._Avec_privilege_pour_vingtans._A_Paris_chez_l%27Autheur._1656._A._%28IA_dr_afrique-par-le-sur-sanson-dabbeville-geographe-du-roy-avec-privilege-p-11575005%29.jpg"
+      "https://upload.wikimedia.org/wikipedia/commons/2/2d/Afrique._Par_le_Sur._Sanson_d%27Abbeville%2C_Geographe_du_Roy._Avec_privilege_pour_vingtans._A_Paris_chez_l%27Autheur._1656._A._%28IA_dr_afrique-par-le-sur-sanson-dabbeville-geographe-du-roy-avec-privilege-p-11575005%29.jpg",
+      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b8468494n/f1/full/1600,/0/native.jpg"
     ],
     thumbnailUrl: "/cartography/sanson-1656.jpg",
     source: "Nicolas Sanson, Geographer to the King of France, Paris (1656).",
     institution: "Bibliothèque nationale de France, Département Cartes et Plans",
     description: "Published under the patronage of Louis XIV, this map highlights the political units and trans-Saharan trading routes recognized by French royal geographers in the mid-17th century.",
-    historicalSignificance: "Demonstrates early French mapping of West African river basins (Senegal and Gambia rivers) and their connection to Atlantic commerce.",
+    historicalSignificance: "Demonstrates early French mapping of West African river basins and their connection to Atlantic commerce.",
     toponymsToObserve: [
-      "Royaume de Tombut (Timbuktu)",
+      "Royaume de Tombut",
       "Royaume de Benin",
       "Guinée Proprement Dite",
-      "Borno Regnum (Kanem-Bornu)",
-      "Abissinie (Ethiopia)",
-      "Costa d'Ambra"
+      "Borno Regnum",
+      "Abissinie"
     ],
     homographyBounds: {
       north: 37.0,
@@ -176,37 +232,66 @@ export const HISTORICAL_MAP_PLATES: HistoricalMapPlate[] = [
       west: -21.0,
       east: 53.0
     },
-    svgOverlayTransform: {
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0
-    }
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
   },
   {
-    id: 'bonne-1780',
-    title: "Carte de l'Afrique Divisée en ses Principaux Etats",
-    cartographer: "Rigobert Bonne (Ingénieur-Hydrographe de la Marine)",
-    year: "1780",
-    century: "18th Century (French Enlightenment)",
+    id: 'dewit-1670',
+    title: "Totius Africae Accurata Tabula",
+    cartographer: "Frederik de Wit",
+    year: "1670",
+    century: "17th Century (Dutch Cartography)",
     region: "Pan-African Continental",
-    imageUrl: "/cartography/bonne-1780.jpg",
+    imageUrl: "/cartography/dewit-1670.jpg",
     fallbackUrls: [
-      "/cartography/danville-1749.jpg",
-      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b530275597/f1/full/1600,/0/native.jpg"
+      "https://upload.wikimedia.org/wikipedia/commons/e/ec/1670_Frederik_de_Wit_Map_of_Africa_-_Geographicus_-_Africa-dewit-1670.jpg",
+      "https://www.geographicus.com/P/AntiqueMap/Africa-dewit-1670"
     ],
-    thumbnailUrl: "/cartography/bonne-1780.jpg",
-    source: "Rigobert Bonne, Atlas Encyclopédique, Paris (1780). Copperplate engraving with hand coloring.",
-    institution: "Dépôt de la Marine / Bibliothèque nationale de France",
-    description: "An authoritative late 18th-century Enlightenment map of the entire African continent by the Royal Hydrographer to the King of France. Characterized by scientific coastal trigonometrical accuracy, crisp French toponyms, and precise delineations of regional kingdoms.",
-    historicalSignificance: "Represents the culmination of 18th-century continental copperplate cartography prior to the 19th-century colonial scramble, accurately charting major maritime capes, coastal kingdoms, and trans-Saharan corridors.",
+    thumbnailUrl: "/cartography/dewit-1670.jpg",
+    source: "Frederik de Wit, Amsterdam (1670). Finely engraved copperplate with original hand coloring.",
+    institution: "Geographicus Rare Maps / Amsterdam University Library",
+    description: "A striking Dutch golden age map featuring magnificent baroque cartouches, native wildlife illustrations in the interior, and meticulous coastal hydrography.",
+    historicalSignificance: "Exemplifies the peak of Amsterdam commercial map publishing, synthesizing Spanish, Portuguese, and Dutch logs into a unified continental plate.",
     toponymsToObserve: [
-      "Barbarie & Royaumes de Fez et Maroc",
-      "Nigritie & Haute Guinée",
-      "Côte d'Or & Côte des Esclaves",
-      "Royaumes de Benin, Juda et d'Ardres",
-      "Royaume de Congo & Angola",
-      "Aethiopie / Nubie / Abyssinie",
-      "Monomotapa & Terres des Cafres"
+      "Aegyptus",
+      "Barbaria",
+      "Nigritia",
+      "Guineae Pars",
+      "Congo",
+      "Monomotapa",
+      "Cafraria"
+    ],
+    homographyBounds: {
+      north: 37.8,
+      south: -35.8,
+      west: -21.8,
+      east: 53.5
+    },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'coronelli-1690',
+    title: "Africa Antica e Moderna",
+    cartographer: "Vincenzo Coronelli",
+    year: "1690",
+    century: "17th/18th Century (Venetian Cartography)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/coronelli-1690.jpg",
+    fallbackUrls: [
+      "https://upload.wikimedia.org/wikipedia/commons/1/1e/1690_Coronelli_Map_of_Africa_-_Geographicus_-_Africa-coronelli-1690.jpg",
+      "https://www.geographicus.com/P/AntiqueMap/Africa-coronelli-1690"
+    ],
+    thumbnailUrl: "/cartography/coronelli-1690.jpg",
+    source: "Vincenzo Coronelli, Cosmografo della Serenissima Repubblica di Venezia, Venice (1690).",
+    institution: "Biblioteca Nazionale Marciana / Geographicus",
+    description: "Created by the renowned Franciscan cosmographer and globe-maker to Louis XIV and the Venetian Republic. Combines monumental baroque cartouche work with scholarly geographic annotations.",
+    historicalSignificance: "Represents Venetian mastery of hydrographic compilation at the close of the 17th century.",
+    toponymsToObserve: [
+      "Africa Propria",
+      "Biledulgerid",
+      "Nigritia",
+      "Abissinia",
+      "Zanguebar",
+      "Congo"
     ],
     homographyBounds: {
       north: 37.5,
@@ -214,11 +299,105 @@ export const HISTORICAL_MAP_PLATES: HistoricalMapPlate[] = [
       west: -21.0,
       east: 53.0
     },
-    svgOverlayTransform: {
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0
-    }
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'delisle-1700',
+    title: "L'Afrique Dressée sur les Observations de Mrs. de l'Academie Royale des Sciences",
+    cartographer: "Guillaume De L'Isle",
+    year: "1700",
+    century: "18th Century (Scientific Cartography)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/delisle-1700.jpg",
+    fallbackUrls: [
+      "https://upload.wikimedia.org/wikipedia/commons/9/98/1700_Delisle_Map_of_Africa_-_Geographicus_-_Africa-delisle-1700.jpg",
+      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b53053165w/f1/full/1600,/0/native.jpg"
+    ],
+    thumbnailUrl: "/cartography/delisle-1700.jpg",
+    source: "Guillaume De L'Isle, Paris (1700). The foundational scientific map of the Enlightenment.",
+    institution: "Bibliothèque nationale de France / David Rumsey Map Collection",
+    description: "De L'Isle discarded traditional Ptolemaic errors that had persisted for centuries, relying strictly on astronomical observations and traveler accounts vetted by the Royal Academy of Sciences.",
+    historicalSignificance: "Marked the scientific revolution in cartography, setting a new standard of empirical accuracy across Europe.",
+    toponymsToObserve: [
+      "Biledulgerid",
+      "Soudan",
+      "Guinée",
+      "Ethiopie",
+      "Congo",
+      "Monomotapa"
+    ],
+    homographyBounds: {
+      north: 37.5,
+      south: -35.2,
+      west: -20.5,
+      east: 52.0
+    },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'danville-1749',
+    title: "Afrique Publiée sous les Auspices de Monseigneur le Duc d'Orléans",
+    cartographer: "Jean-Baptiste Bourguignon d'Anville",
+    year: "1749",
+    century: "18th Century (Enlightenment)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/danville-1749.jpg",
+    fallbackUrls: [
+      "https://upload.wikimedia.org/wikipedia/commons/7/79/Afrique_-_publi%C3%A9e_sous_les_auspices_de_Monseigneur_le_Duc_d%27Orl%C3%A9ans..._par_le_Sr_d%27Anville_%3B_grav%C3%A9_par_Guill%27Delahaye_-_btv1b53053165w.jpg",
+      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b53053165w/f1/full/1600,/0/native.jpg"
+    ],
+    thumbnailUrl: "/cartography/danville-1749.jpg",
+    source: "Jean-Baptiste Bourguignon d'Anville, Paris (1749). Hand-colored copperplate engraving.",
+    institution: "Bibliothèque nationale de France / Geographicus Rare Maps Collection",
+    description: "A landmark in scientific cartography. D'Anville famously excised speculative mythical geographic features, leaving uncharted interior zones blank ('terra incognita') while meticulously detailing coasts.",
+    historicalSignificance: "Initiated modern empirical cartography of Africa by refusing to fill inland voids with speculative kingdoms or mythical creatures.",
+    toponymsToObserve: [
+      "Guinée Septentrionale & Méridionale",
+      "Royaume de Juda",
+      "Côte de l'Or",
+      "Côte des Esclaves",
+      "Royaume de Congo"
+    ],
+    homographyBounds: {
+      north: 37.5,
+      south: -35.2,
+      west: -20.5,
+      east: 52.0
+    },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'bonne-1780',
+    title: "Carte de l'Afrique Divisée en ses Principaux Etats",
+    cartographer: "Rigobert Bonne",
+    year: "1780",
+    century: "18th Century (French Enlightenment)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/bonne-1780.jpg",
+    fallbackUrls: [
+      "https://upload.wikimedia.org/wikipedia/commons/1/1b/1780_Bonne_Map_of_Africa_-_Geographicus_-_Africa-bonne-1780.jpg",
+      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b530275597/f1/full/1600,/0/native.jpg"
+    ],
+    thumbnailUrl: "/cartography/bonne-1780.jpg",
+    source: "Rigobert Bonne, Atlas Encyclopédique, Paris (1780). Copperplate engraving with hand coloring.",
+    institution: "Dépôt de la Marine / Bibliothèque nationale de France",
+    description: "An authoritative late 18th-century Enlightenment map of the entire African continent by the Royal Hydrographer to the King of France.",
+    historicalSignificance: "Represents the culmination of 18th-century continental copperplate cartography prior to the 19th-century colonial scramble.",
+    toponymsToObserve: [
+      "Barbarie",
+      "Nigritie",
+      "Haute Guinée",
+      "Côte d'Or",
+      "Congo",
+      "Abyssinie"
+    ],
+    homographyBounds: {
+      north: 37.5,
+      south: -35.0,
+      west: -21.0,
+      east: 53.0
+    },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
   }
 ];
 

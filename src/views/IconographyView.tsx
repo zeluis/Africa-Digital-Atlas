@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   BookOpen, 
@@ -7,25 +7,40 @@ import {
   RefreshCw, 
   Calendar, 
   Tag, 
-  Sliders, 
-  MapPin, 
-  Layers, 
-  Download, 
-  Compass, 
-  HelpCircle, 
+  Upload, 
   Eye,
-  Info,
-  ArrowLeftRight
+  FileArchive,
+  PlusCircle,
+  CheckCircle2,
+  Database
 } from 'lucide-react';
 import { SLAVE_TRADE_ILLUSTRATIONS, SlaveTradeIllustration } from '../data/slaveTradeIllustrations';
+import { CASTAS_ARCHIVE_ITEMS } from '../data/castasArchive';
 import { SlaveTradeIconography } from '../components/slaveVoyages/SlaveTradeIconography';
 import { ArchivalLoupeModal } from '../components/slaveVoyages/ArchivalLoupeModal';
-import { HISTORICAL_MAP_PLATES, HistoricalMapPlate } from '../data/archivalCartographyData';
-import { HistoricalMapCurtainViewer } from '../components/cartography/HistoricalMapCurtainViewer';
-import { AntiquePlateCanvas } from '../components/cartography/AntiquePlateCanvas';
+import { ArchivalImageViewer } from '../components/common/ArchivalImageViewer';
 
 // Curated selection of visually striking, high-detail plates
 const HERO_IMAGE_CANDIDATES = [17, 18, 19, 20, 731, 732, 735, 788, 789, 790, 831, 835, 1021, 1028, 1032, 1042];
+
+// Converted Castas archive items for the ingestion gallery
+const castasIllustrations: SlaveTradeIllustration[] = CASTAS_ARCHIVE_ITEMS.map((item, idx) => ({
+  objectId: 9000 + idx,
+  sourceFile: `castas-${item.id}.html`,
+  sourceSha256: `castas-sha256-${idx}`,
+  regId: `C-${idx + 1}`,
+  identifier: item.id,
+  title: item.title,
+  date: item.date,
+  source: `${item.creator} • Preserved at ${item.institution}`,
+  imageUrls: [item.imageUrl],
+  collectionNames: [item.category],
+  collectionIds: [999],
+  itemSets: ['Castas & Colonial Visual Archive'],
+  researchers: [item.creator, item.institution],
+  description: `${item.description}\n\nHistorical Significance: ${item.historicalSignificance}`,
+  slaveryImagesPage: ''
+}));
 
 interface HeroState {
   illustration: SlaveTradeIllustration | undefined;
@@ -50,17 +65,16 @@ const getCandidateState = (excludeId?: number): HeroState => {
   };
 };
 
-
-
 export const IconographyView: React.FC = () => {
   const [heroState, setHeroState] = useState<HeroState>(() => getCandidateState());
   const [inspectedIllustration, setInspectedIllustration] = useState<SlaveTradeIllustration | null>(null);
   
-  // Navigation tabs state
-  const [activeTab, setActiveTab] = useState<'registry' | 'cartography'>('registry');
+  // Navigation tabs state ('registry' vs 'ingestion' skeleton)
+  const [activeTab, setActiveTab] = useState<'registry' | 'ingestion'>('registry');
 
-  // Selected plate for HistoricalMapCurtainViewer
-  const [selectedPlate, setSelectedPlate] = useState<HistoricalMapPlate>(HISTORICAL_MAP_PLATES[0]);
+  // Ingestion skeleton state (auto-populated with Castas archive items)
+  const [isIngestedDemoActive, setIsIngestedDemoActive] = useState<boolean>(true);
+  const [activeCastasItem, setActiveCastasItem] = useState<SlaveTradeIllustration>(castasIllustrations[0]);
 
   const rotateHeroImage = useCallback(() => {
     setHeroState(prev => getCandidateState(prev.id));
@@ -72,8 +86,6 @@ export const IconographyView: React.FC = () => {
     }, 14000);
     return () => clearInterval(interval);
   }, [rotateHeroImage]);
-
-
 
   return (
     <div className="space-y-8 pb-16">
@@ -204,16 +216,16 @@ export const IconographyView: React.FC = () => {
         </button>
 
         <button
-          onClick={() => setActiveTab('cartography')}
+          onClick={() => setActiveTab('ingestion')}
           className={`px-4 py-2 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-2 ${
-            activeTab === 'cartography'
+            activeTab === 'ingestion'
               ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-sm'
               : 'text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-900'
           }`}
         >
-          <Compass className="w-4 h-4 text-amber-600" />
+          <Upload className="w-4 h-4 text-amber-600" />
           <span className="relative">
-            Georeferenced Historical Maps
+            Castas &amp; Colonial Archive Ingestion ({CASTAS_ARCHIVE_ITEMS.length} Plates)
           </span>
         </button>
       </div>
@@ -224,60 +236,89 @@ export const IconographyView: React.FC = () => {
           <SlaveTradeIconography />
         </div>
       ) : (
-        /* Georeferenced Historical Cartography Opacity Curtain & Split View Workspace using HistoricalMapCurtainViewer */
-        <div className="space-y-6 animate-in fade-in duration-300">
-          {/* Plate Selector Carousel */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-            {HISTORICAL_MAP_PLATES.map(plate => {
-              const isSelected = selectedPlate.id === plate.id;
-              return (
-                <button
-                  key={plate.id}
-                  onClick={() => setSelectedPlate(plate)}
-                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between group ${
-                    isSelected
-                      ? 'bg-amber-500/10 border-amber-500/60 shadow-md ring-1 ring-amber-500/40'
-                      : 'bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700'
-                  }`}
-                >
-                  <div className="space-y-2.5">
-                    <div className="relative aspect-16/10 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-950 border border-stone-200 dark:border-stone-800">
-                      <AntiquePlateCanvas
-                        plate={plate}
-                        isThumbnail={true}
-                        className="w-full h-full group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute top-1.5 right-1.5 z-10 px-2 py-0.5 rounded-md bg-stone-900/90 text-amber-300 font-mono text-[9px] font-bold border border-amber-500/30">
-                        {plate.year}
+        /* Populated Subsection with Castas Archive Items & Embedded Viewer */
+        <div className="space-y-6 animate-in fade-in duration-300 text-left">
+          <div className="p-8 rounded-3xl bg-[#FAF8F5] dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm space-y-6">
+            <div className="max-w-2xl space-y-2">
+              <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-amber-800 dark:text-amber-400">
+                Custom Ingested Archive Workspace
+              </span>
+              <h3 className="text-2xl font-serif font-bold text-stone-900 dark:text-stone-100">
+                Castas &amp; Colonial Archive Collections
+              </h3>
+              <p className="text-xs sm:text-sm font-serif text-stone-600 dark:text-stone-400 leading-relaxed">
+                This subsection is populated with real plates from the Castas and colonial visual archives. Select any plate below to inspect it in the full edge-to-edge immersive viewer featuring deep-zoom, rotation, contrast scrutiny, and academic citation generation.
+              </p>
+            </div>
+
+            {/* Castas Archive Quick Selector Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {castasIllustrations.map(item => {
+                const isSelected = activeCastasItem.objectId === item.objectId;
+                const thumb = item.imageUrls?.[0] || '';
+                return (
+                  <button
+                    key={item.objectId}
+                    onClick={() => setActiveCastasItem(item)}
+                    className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between group ${
+                      isSelected
+                        ? 'bg-amber-500/10 border-amber-500/60 shadow-md ring-1 ring-amber-500/40'
+                        : 'bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700'
+                    }`}
+                  >
+                    <div className="space-y-2">
+                      <div className="relative aspect-4/3 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
+                        <img src={thumb} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <div className="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded bg-stone-900/90 text-amber-300 font-mono text-[9px] font-bold">
+                          {item.regId}
+                        </div>
                       </div>
-                    </div>
-
-                    <div>
                       <h4 className="font-serif font-bold text-xs text-stone-900 dark:text-stone-100 line-clamp-1 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
-                        {plate.title}
+                        {item.title}
                       </h4>
-                      <p className="text-[11px] font-mono text-stone-500 dark:text-stone-400 truncate">
-                        {plate.cartographer}
-                      </p>
                     </div>
-                  </div>
+                  </button>
+                );
+              })}
+            </div>
 
-                  <span className="text-[10px] font-mono text-amber-700 dark:text-amber-400 mt-2 flex items-center gap-1 font-semibold">
-                    <span>{isSelected ? 'Loaded in Viewport' : 'Inspect Plate'}</span>
+            {/* Embedded Fully Blown Archival Image Viewer Preview */}
+            <div className="space-y-4 pt-2">
+              <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <Database className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+                  <span className="font-serif font-bold text-sm text-stone-900 dark:text-stone-100">
+                    Immersive Viewer Workspace: {activeCastasItem.title}
                   </span>
-                </button>
-              );
-            })}
-          </div>
+                </div>
 
-          {/* Historical Map Curtain Viewer Component */}
-          <HistoricalMapCurtainViewer selectedPlate={selectedPlate} />
+                <button
+                  onClick={() => setInspectedIllustration(activeCastasItem)}
+                  className="px-4 py-2 rounded-xl bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-xs font-mono font-bold hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-2 shadow-sm"
+                >
+                  <Eye className="w-4 h-4" />
+                  <span>Open Fullscreen Modal</span>
+                </button>
+              </div>
+
+              <div className="h-[560px] rounded-2xl overflow-hidden border border-stone-200 dark:border-stone-800 shadow-md">
+                <ArchivalImageViewer
+                  illustration={activeCastasItem}
+                  illustrationsList={castasIllustrations}
+                  onSelectIllustration={item => setActiveCastasItem(item)}
+                  mode="embedded"
+                  showThumbnails={true}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Loupe Modal for Hero Card Click */}
+      {/* Loupe / Modal Viewer */}
       <ArchivalLoupeModal
         illustration={inspectedIllustration}
+        illustrationsList={castasIllustrations}
         onClose={() => setInspectedIllustration(null)}
       />
     </div>

@@ -84,7 +84,7 @@ export const ArchivalCartographyView: React.FC = () => {
           <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-stone-600 dark:text-stone-400 pt-1">
             <span className="flex items-center gap-1.5">
               <MapIcon className="w-4 h-4 text-amber-800 dark:text-amber-400" />
-              <span>4 Curated Full-Continent Master Plates</span>
+              <span>10 Curated Full-Continent Master Plates</span>
             </span>
             <span>•</span>
             <span className="flex items-center gap-1.5">
@@ -151,7 +151,7 @@ export const ArchivalCartographyView: React.FC = () => {
       {activeTab === 'curtain' && (
         <div className="space-y-6">
           {/* Plate Selector Carousel */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
             {HISTORICAL_MAP_PLATES.map(plate => {
               const isSelected = selectedPlate.id === plate.id;
               return (
