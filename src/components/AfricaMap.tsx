@@ -111,7 +111,7 @@ export interface AfricaMapProps {
   initialCartographySource?: 'authentic_final' | 'schematic';
 }
 
-export type MapDisplayMode = 'authentic_palette' | 'un_geoscheme' | 'choropleth' | 'bivariate';
+export type MapDisplayMode = 'authentic_palette' | 'un_geoscheme' | 'choropleth' | 'bivariate' | 'antique_parchment';
 
 export const CHOROPLETH_METRICS = AKP_CHOROPLETH_METRICS;
 
@@ -463,10 +463,13 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  const handleSelectMode = (mode: 'authentic' | 'choropleth' | 'schematic' | 'bivariate') => {
+  const handleSelectMode = (mode: 'authentic' | 'choropleth' | 'schematic' | 'bivariate' | 'antique') => {
     if (mode === 'authentic') {
       setCartographySource('authentic_final');
       setMapMode('authentic_palette');
+    } else if (mode === 'antique') {
+      setCartographySource('authentic_final');
+      setMapMode('antique_parchment');
     } else if (mode === 'choropleth') {
       setCartographySource('authentic_final');
       setMapMode('choropleth');
@@ -767,6 +770,12 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     }
 
     // 3. Authentic Final Map (Canonical authoritative vector colors)
+    if (mapMode === 'antique_parchment') {
+      const canonicalColor = getCanonicalCountryColor(country.id);
+      if (isHovered || isSelected) return '#b45309';
+      return canonicalColor || '#EFE4CD';
+    }
+
     const canonicalColor = getCanonicalCountryColor(country.id);
     return canonicalColor || AFRICA_FINAL_MAP[country.id]?.originalColor || country.originalColor || '#0a9bc3';
   };
@@ -1200,6 +1209,27 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 )}
                 <Sparkles className="w-3 h-3" />
                 <span>Authentic</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSelectMode('antique')}
+                className={`relative px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
+                  mapMode === 'antique_parchment'
+                    ? 'text-white font-bold'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+                title="Antique Parchment Cartography Map (in the vein of Historical Map Plates)"
+              >
+                {mapMode === 'antique_parchment' && (
+                  <motion.div
+                    layoutId="activeMapModeHighlight"
+                    className="absolute inset-0 bg-amber-800 rounded-lg shadow-xs -z-10"
+                    transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                  />
+                )}
+                <Compass className="w-3 h-3 text-amber-500" />
+                <span>Antique Map</span>
               </button>
 
               <button
@@ -1858,8 +1888,8 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         >
           <defs>
             <radialGradient id="oceanGlow" cx="50%" cy="50%" r="65%">
-              <stop offset="0%" stopColor="#f8fafc" stopOpacity="1" />
-              <stop offset="100%" stopColor="#f1f5f9" stopOpacity="1" />
+              <stop offset="0%" stopColor={mapMode === 'antique_parchment' ? '#F9F5EB' : '#f8fafc'} stopOpacity="1" />
+              <stop offset="100%" stopColor={mapMode === 'antique_parchment' ? '#EFE5D3' : '#f1f5f9'} stopOpacity="1" />
             </radialGradient>
           </defs>
 
