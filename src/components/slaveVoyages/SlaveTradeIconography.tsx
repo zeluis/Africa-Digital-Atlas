@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   Search, 
   Filter, 
@@ -13,17 +14,60 @@ import {
   List, 
   HelpCircle,
   Eye,
-  Info
+  Info,
+  ChevronDown,
+  ChevronUp,
+  Tag,
+  Check,
+  X,
+  Sparkles,
+  SlidersHorizontal
 } from 'lucide-react';
 import { SLAVE_TRADE_ILLUSTRATIONS, SlaveTradeIllustration } from '../../data/slaveTradeIllustrations';
 import { ArchivalLoupeModal } from './ArchivalLoupeModal';
+import { DynamicIcon } from '../DynamicIcon';
 
-export const SlaveTradeIconography: React.FC = () => {
+interface SlaveTradeIconographyProps {
+  activeTab?: 'registry' | 'ingestion';
+  onTabChange?: (tab: 'registry' | 'ingestion') => void;
+  castasCount?: number;
+}
+
+export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
+  activeTab = 'registry',
+  onTabChange,
+  castasCount = 32
+}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCollection, setSelectedCollection] = useState<string>('all');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [activeIllustration, setActiveIllustration] = useState<SlaveTradeIllustration | null>(null);
+  
+  // Collapsible unified theme selector state
+  const [isThemePanelOpen, setIsThemePanelOpen] = useState(false);
+  const [themeSearchQuery, setThemeSearchQuery] = useState('');
+  const themePanelRef = useRef<HTMLDivElement>(null);
+
+  // Close theme panel on click outside or Escape
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (themePanelRef.current && !themePanelRef.current.contains(e.target as Node)) {
+        setIsThemePanelOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsThemePanelOpen(false);
+    };
+    if (isThemePanelOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isThemePanelOpen]);
   
   // High-performance visible pagination state
   const [visibleCount, setVisibleCount] = useState(24);
@@ -60,6 +104,13 @@ export const SlaveTradeIconography: React.FC = () => {
     });
     return counts;
   }, []);
+
+  // Filtered collections for theme search within the selector panel
+  const filteredCollections = useMemo(() => {
+    if (!themeSearchQuery.trim()) return collections;
+    const q = themeSearchQuery.toLowerCase();
+    return collections.filter(c => c.toLowerCase().includes(q));
+  }, [collections, themeSearchQuery]);
 
   // Filtered dataset
   const filteredIllustrations = useMemo(() => {
@@ -183,33 +234,28 @@ export const SlaveTradeIconography: React.FC = () => {
           </div>
         </div>
 
-        {/* Row 2: SLEEK HISTORICAL CATEGORIES SELECTOR PANEL */}
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
-              <Filter className="w-3.5 h-3.5 text-stone-400" />
-              <span>Historical Theme Categories</span>
-            </span>
-            {selectedCollection !== 'all' && (
-              <button
-                onClick={() => setSelectedCollection('all')}
-                className="text-[10px] font-mono font-bold text-amber-700 hover:text-amber-800 dark:text-amber-500 dark:hover:text-amber-400 transition-colors cursor-pointer"
-              >
-                Reset Theme [All]
-              </button>
-            )}
-          </div>
-          
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-stone-300 dark:scrollbar-thumb-stone-800 snap-x">
-            {/* All Categories Button */}
+        {/* Row 2: THEME CATEGORIES & INTEGRATED SEGMENTED CONTROL */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 relative z-40" ref={themePanelRef}>
+          {/* Left: Collapsible Historical Theme Categories */}
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {/* All Historical Categories Button */}
             <button
-              onClick={() => setSelectedCollection('all')}
-              className={`snap-center px-4 py-2 rounded-xl text-xs font-sans font-bold flex items-center gap-2.5 transition-all cursor-pointer whitespace-nowrap group shrink-0 border ${
+              onClick={() => {
+                setSelectedCollection('all');
+                setIsThemePanelOpen(false);
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-sans font-bold flex items-center gap-2.5 transition-all cursor-pointer whitespace-nowrap group shrink-0 border ${
                 selectedCollection === 'all'
                   ? 'bg-amber-800 text-white border-amber-800 shadow-xs'
                   : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-50 dark:hover:bg-stone-850 border-stone-200 dark:border-stone-800'
               }`}
             >
+              <DynamicIcon 
+                icon="fluent-mdl2:picture-center" 
+                className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                  selectedCollection === 'all' ? 'text-amber-200' : 'text-amber-700 dark:text-amber-400'
+                }`} 
+              />
               <span>All Historical Categories</span>
               <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono font-black ${
                 selectedCollection === 'all'
@@ -220,32 +266,207 @@ export const SlaveTradeIconography: React.FC = () => {
               </span>
             </button>
 
-            {/* Custom Category Pills */}
-            {collections.map(name => {
-              const count = categoryCounts[name] || 0;
-              const isSelected = selectedCollection === name;
-              return (
-                <button
-                  key={name}
-                  onClick={() => setSelectedCollection(name)}
-                  className={`snap-center px-4 py-2 rounded-xl text-xs font-sans font-medium flex items-center gap-2.5 transition-all cursor-pointer whitespace-nowrap group shrink-0 border ${
-                    isSelected
-                      ? 'bg-amber-800 text-white font-bold border-amber-800 shadow-xs'
-                      : 'bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-50 dark:hover:bg-stone-850 border-stone-200 dark:border-stone-800'
-                  }`}
-                >
-                  <span>{name}</span>
-                  <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono font-black ${
-                    isSelected
-                      ? 'bg-amber-900 text-amber-100'
-                      : 'bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 group-hover:bg-stone-200/85 dark:group-hover:bg-stone-700/85'
-                  }`}>
-                    {count}
+            {/* Sleek Collapsed Pill (Expands with Smooth & Snappy Motion) */}
+            <button
+              onClick={() => setIsThemePanelOpen(prev => !prev)}
+              className={`px-4 py-2 rounded-xl text-xs font-sans font-bold flex items-center gap-2.5 transition-all cursor-pointer whitespace-nowrap group shrink-0 border shadow-xs ${
+                selectedCollection !== 'all'
+                  ? 'bg-amber-900 text-amber-50 border-amber-700 dark:bg-amber-500 dark:text-stone-950 dark:border-amber-400'
+                  : isThemePanelOpen
+                    ? 'bg-stone-200 dark:bg-stone-800 text-stone-900 dark:text-stone-100 border-stone-300 dark:border-stone-700 ring-2 ring-amber-500/20'
+                    : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-50 dark:hover:bg-stone-850 border-stone-200 dark:border-stone-800'
+              }`}
+              title="Browse and select specific historical theme categories"
+            >
+              <SlidersHorizontal className={`w-3.5 h-3.5 transition-transform duration-300 ${isThemePanelOpen ? 'rotate-90 text-amber-400' : 'text-amber-600 dark:text-amber-400'}`} />
+              
+              <span className="flex items-center gap-1.5">
+                {selectedCollection === 'all' ? (
+                  <span>Browse Historical Themes</span>
+                ) : (
+                  <span className="font-bold flex items-center gap-1">
+                    <span className="text-[10px] uppercase font-mono tracking-wider opacity-75">Theme:</span>
+                    <span className="max-w-[180px] sm:max-w-[240px] truncate">{selectedCollection}</span>
                   </span>
-                </button>
-              );
-            })}
+                )}
+              </span>
+
+              <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono font-black ${
+                selectedCollection !== 'all'
+                  ? 'bg-amber-950/80 text-amber-200 dark:bg-stone-900 dark:text-amber-300'
+                  : 'bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 group-hover:bg-stone-200/85 dark:group-hover:bg-stone-700/85'
+              }`}>
+                {selectedCollection === 'all' ? `${collections.length} Themes` : `${categoryCounts[selectedCollection] || 0} Plates`}
+              </span>
+
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isThemePanelOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {/* Quick Clear Theme Pill */}
+            {selectedCollection !== 'all' && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedCollection('all');
+                }}
+                className="px-2.5 py-2 rounded-xl bg-stone-200/70 hover:bg-stone-300/80 dark:bg-stone-800/70 dark:hover:bg-stone-700 text-[11px] font-mono font-semibold text-stone-600 hover:text-stone-900 dark:text-stone-300 dark:hover:text-stone-100 transition-colors flex items-center gap-1.5 cursor-pointer border border-stone-300/70 dark:border-stone-700/70"
+                title="Reset to all historical categories"
+              >
+                <X className="w-3 h-3 text-stone-500" />
+                <span>Reset Theme</span>
+              </button>
+            )}
           </div>
+
+          {/* Right: Integrated Segmented Control */}
+          <div className="inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner self-start lg:self-auto">
+            <button
+              onClick={() => onTabChange?.('registry')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                activeTab === 'registry'
+                  ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-sm'
+                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
+              }`}
+            >
+              <DynamicIcon 
+                icon="fluent-mdl2:picture-tile" 
+                className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                  activeTab === 'registry' ? 'text-amber-400 dark:text-amber-600' : 'text-stone-500 dark:text-stone-400'
+                }`} 
+              />
+              <span>Archival Plates Grid</span>
+              <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold ${
+                activeTab === 'registry'
+                  ? 'bg-stone-800 text-amber-300 dark:bg-stone-200 dark:text-stone-900'
+                  : 'bg-stone-200/80 dark:bg-stone-800 text-stone-600 dark:text-stone-400'
+              }`}>
+                {SLAVE_TRADE_ILLUSTRATIONS.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => onTabChange?.('ingestion')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                activeTab === 'ingestion'
+                  ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-sm'
+                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
+              }`}
+            >
+              <DynamicIcon 
+                icon="lucide:gallery-thumbnails" 
+                className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                  activeTab === 'ingestion' ? 'text-amber-400 dark:text-amber-600' : 'text-amber-600 dark:text-amber-400'
+                }`} 
+              />
+              <span>Castas &amp; Colonial Archive</span>
+              <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold ${
+                activeTab === 'ingestion'
+                  ? 'bg-stone-800 text-amber-300 dark:bg-stone-200 dark:text-stone-900'
+                  : 'bg-stone-200/80 dark:bg-stone-800 text-stone-600 dark:text-stone-400'
+              }`}>
+                {castasCount} Plates
+              </span>
+            </button>
+          </div>
+
+          {/* Smooth & Snappy Expanding Sophisticated Selector Panel */}
+          <AnimatePresence>
+            {isThemePanelOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, scale: 0.985 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.985 }}
+                transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+                className="absolute left-0 right-0 sm:right-auto sm:w-[580px] lg:w-[680px] mt-2.5 z-50 p-4 sm:p-5 rounded-2xl bg-[#FAF8F5]/98 dark:bg-stone-950/98 backdrop-blur-xl border border-stone-300/90 dark:border-stone-700/90 shadow-2xl space-y-3.5"
+              >
+                {/* Panel Top Header */}
+                <div className="flex items-center justify-between pb-2 border-b border-stone-200 dark:border-stone-800/80">
+                  <div className="flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+                    <h4 className="text-xs font-mono uppercase font-bold tracking-wider text-stone-900 dark:text-stone-100">
+                      Select Historical Archival Theme ({collections.length} Curated Topics)
+                    </h4>
+                  </div>
+                  <button
+                    onClick={() => setIsThemePanelOpen(false)}
+                    className="p-1 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Filter within themes search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400" />
+                  <input
+                    type="text"
+                    value={themeSearchQuery}
+                    onChange={(e) => setThemeSearchQuery(e.target.value)}
+                    placeholder="Search or filter theme categories..."
+                    className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 text-xs font-sans focus:outline-none focus:ring-2 focus:ring-amber-500/35 transition-all"
+                  />
+                  {themeSearchQuery && (
+                    <button
+                      onClick={() => setThemeSearchQuery('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 p-0.5"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Themes Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[340px] overflow-y-auto p-1 scrollbar-thin scrollbar-thumb-stone-300 dark:scrollbar-thumb-stone-800">
+                  {filteredCollections.map(name => {
+                    const count = categoryCounts[name] || 0;
+                    const isSelected = selectedCollection === name;
+                    return (
+                      <button
+                        key={name}
+                        onClick={() => {
+                          setSelectedCollection(name);
+                          setIsThemePanelOpen(false);
+                          setThemeSearchQuery('');
+                        }}
+                        className={`p-2.5 rounded-xl text-left text-xs font-sans transition-all cursor-pointer flex items-center justify-between border ${
+                          isSelected
+                            ? 'bg-amber-900 text-amber-50 dark:bg-amber-500 dark:text-stone-950 font-bold border-amber-800 dark:border-amber-400 shadow-xs'
+                            : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 hover:bg-amber-50/60 dark:hover:bg-amber-950/20 hover:border-amber-400/50 border-stone-200 dark:border-stone-800'
+                        }`}
+                      >
+                        <span className="truncate pr-2">{name}</span>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold ${
+                            isSelected
+                              ? 'bg-amber-950 text-amber-200 dark:bg-stone-900 dark:text-amber-300'
+                              : 'bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400'
+                          }`}>
+                            {count}
+                          </span>
+                          {isSelected && <Check className="w-3.5 h-3.5" />}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Panel Footer */}
+                <div className="flex items-center justify-between pt-2 border-t border-stone-200 dark:border-stone-800/80 text-[11px] font-mono text-stone-500">
+                  <span>Click any theme to filter the gallery</span>
+                  <button
+                    onClick={() => {
+                      setSelectedCollection('all');
+                      setIsThemePanelOpen(false);
+                      setThemeSearchQuery('');
+                    }}
+                    className="text-amber-800 hover:text-amber-900 dark:text-amber-400 font-bold cursor-pointer"
+                  >
+                    Reset to All Categories
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 

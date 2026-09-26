@@ -686,13 +686,33 @@ html[dir="rtl"] .font-mono {
   display: inline-block;
 }
 
+/* Skip Navigation Link for Accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #18181b;
+  color: #fafafa;
+  padding: 8px 16px;
+  z-index: 100;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 0 0 8px 0;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
 /* =========================================================================
-   Print Factsheet Optimization (@media print)
+   Print Factsheet & Archival Optimization (@media print)
    ========================================================================= */
 @media print {
   @page {
     size: A4 portrait;
-    margin: 10mm;
+    margin: 12mm;
   }
   body {
     background: #ffffff !important;
@@ -700,12 +720,12 @@ html[dir="rtl"] .font-mono {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  /* Hide standard web app navigations and backdrops */
-  nav, header, footer, .no-print {
+  /* Hide interactive web chrome and floating drawers */
+  nav, header, footer, .no-print, [role="dialog"], button, .filmstrip-tray {
     display: none !important;
   }
-  /* Ensure factsheet displays cleanly across full width without modal frame */
-  #printable-country-factsheet {
+  /* Ensure clean printing of archival dossiers and reports */
+  #printable-country-factsheet, .printable-dossier, main {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;

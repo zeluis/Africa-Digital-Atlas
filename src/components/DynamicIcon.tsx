@@ -20,11 +20,22 @@ import {
   Layers,
   Compass,
   BarChart2,
+  BarChart3,
   Sparkles,
   TreePine,
   Search,
   Download,
-  Share2
+  Share2,
+  Image as ImageIcon,
+  GalleryThumbnails,
+  BookImage,
+  BookOpenText,
+  Network,
+  PanelRightClose,
+  PanelRightOpen,
+  Grid,
+  Map as MapIcon,
+  Anchor
 } from 'lucide-react';
 
 const LOCAL_ICON_FALLBACKS: Record<string, LucideIcon> = {
@@ -62,6 +73,8 @@ const LOCAL_ICON_FALLBACKS: Record<string, LucideIcon> = {
   'compass': Compass,
   'lucide:bar-chart-2': BarChart2,
   'bar-chart-2': BarChart2,
+  'lucide:bar-chart-3': BarChart3,
+  'bar-chart-3': BarChart3,
   'lucide:sparkles': Sparkles,
   'sparkles': Sparkles,
   'lucide:tree-pine': TreePine,
@@ -71,12 +84,24 @@ const LOCAL_ICON_FALLBACKS: Record<string, LucideIcon> = {
   'lucide:download': Download,
   'download': Download,
   'lucide:share-2': Share2,
-  'share-2': Share2
+  'share-2': Share2,
+  'lucide:gallery-thumbnails': GalleryThumbnails,
+  'gallery-thumbnails': GalleryThumbnails,
+  'lucide:book-image': BookImage,
+  'book-image': BookImage,
+  'lucide:book-open-text': BookOpenText,
+  'book-open-text': BookOpenText,
+  'lucide:grid': Grid,
+  'grid': Grid,
+  'lucide:map': MapIcon,
+  'map': MapIcon,
+  'lucide:anchor': Anchor,
+  'anchor': Anchor
 };
 
 export interface DynamicIconProps {
   /**
-   * Can be an Iconify icon string (e.g. "lucide:dna", "ph:scales-bold", "gis:africa-alt", "carbon:document"),
+   * Can be an Iconify icon string (e.g. "lucide:dna", "fluent-mdl2:picture-center", "fluent-mdl2:picture-tile", "gis:search-globe", "game-icons:africa"),
    * a Lucide icon component, or a standard icon identifier.
    */
   icon?: string | LucideIcon | null;
@@ -89,7 +114,7 @@ export interface DynamicIconProps {
 
 /**
  * Dynamic universal icon renderer supporting both standard Lucide icons and
- * any Iconify icon name with offline resilience.
+ * any Iconify icon name.
  */
 export const DynamicIcon: React.FC<DynamicIconProps> = ({
   icon,
@@ -110,15 +135,40 @@ export const DynamicIcon: React.FC<DynamicIconProps> = ({
   }
 
   if (typeof icon === 'string') {
-    // Check local lookup first
-    const cleanKey = icon.trim().toLowerCase();
+    const raw = icon.trim();
+    const cleanKey = raw.toLowerCase();
+
+    // If icon explicitly contains an external collection prefix with a colon (e.g. "gis:search-globe", "fluent-mdl2:picture-center", "game-icons:africa")
+    // Render with IconifyIcon so the exact icon is displayed!
+    if (raw.includes(':') && !raw.startsWith('lucide:')) {
+      const iconElement = (
+        <IconifyIcon
+          icon={raw}
+          className={className}
+          width={size}
+          height={size}
+          color={color}
+        />
+      );
+
+      if (title) {
+        return (
+          <span title={title} className="inline-flex items-center justify-center">
+            {iconElement}
+          </span>
+        );
+      }
+      return iconElement;
+    }
+
+    // Check local lookup for lucide icons and aliases
     if (LOCAL_ICON_FALLBACKS[cleanKey]) {
       const LocalComponent = LOCAL_ICON_FALLBACKS[cleanKey];
       return <LocalComponent className={className} size={size} color={color} />;
     }
 
     // Normalise icon string format if provided without prefix
-    let iconName = icon.trim();
+    let iconName = raw;
     if (!iconName.includes(':') && !iconName.includes('-') && /^[A-Z]/.test(iconName)) {
       // CamelCase to kebab-case lucide (e.g. "BookOpen" -> "lucide:book-open")
       const kebab = iconName

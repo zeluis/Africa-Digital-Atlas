@@ -18,6 +18,7 @@ import { lazyWithRetry, ViewErrorBoundary } from './utils/lazyWithRetry';
 import { Globe, Database } from 'lucide-react';
 import { DynamicIcon } from './components/DynamicIcon';
 import { getPageInfo } from './utils/navigationTitles';
+import { initArchivalPrecache } from './utils/imagePrecache';
 
 // Lazy-load heavier views with automatic chunk recovery and cache resilience for GitHub Pages
 const CountryView = lazyWithRetry(() => import('./views/CountryView').then(m => ({ default: m.CountryView })), 'CountryView');
@@ -166,6 +167,7 @@ function AppContent() {
     };
 
     if (typeof window !== 'undefined') {
+      initArchivalPrecache();
       if ('requestIdleCallback' in window) {
         (window as any).requestIdleCallback(idlePreload, { timeout: 2500 });
       } else {
@@ -412,9 +414,20 @@ function AppContent() {
 
   // Check if current tab is a regional tab
   const isRegionalTab = currentTab === 'regions' || currentTab.startsWith('region-');
+  const pageInfo = getPageInfo(currentTab, selectedEntityId, activeRegion);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col selection:bg-emerald-500 selection:text-zinc-950 transition-colors duration-200">
+      {/* Accessible Skip Navigation Link */}
+      <a href="#main-content-workspace" className="skip-link">
+        Skip to main content
+      </a>
+
+      {/* Accessible Screen Reader Announcer for Dynamic View State Changes */}
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {pageInfo.title ? `Viewing ${pageInfo.title}` : 'Viewing Africa Data Atlas'}
+      </div>
+
       {/* Top Application Navbar (Always visible Menu button with no visible label) */}
       <Navbar
         currentTab={currentTab}

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { atlas } from '../data/atlas-store';
 import { AtlasEntity, IndicatorDefinition, HeritageSite } from '../data/types';
 import { SLAVE_TRADE_ILLUSTRATIONS, SlaveTradeIllustration } from '../data/slaveTradeIllustrations';
+import { CASTAS_ARCHIVE_ITEMS, CastasArchivalItem } from '../data/castasArchive';
+import { RESEARCH_REPORTS, ResearchReport } from '../data/reportsData';
 import { CountryFlag } from './CountryFlag';
 import { useSavedEntities } from '../contexts/SavedEntitiesContext';
 import { 
@@ -17,8 +19,12 @@ import {
   Layers,
   Sparkles,
   BookOpen,
-  Image as ImageIcon
+  Image as ImageIcon,
+  FileText,
+  Sliders,
+  Palette
 } from 'lucide-react';
+import { DynamicIcon } from './DynamicIcon';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -28,13 +34,15 @@ interface SearchModalProps {
   onSelectTab?: (tab: string) => void;
 }
 
-type SearchCategory = 'all' | 'countries' | 'indicators' | 'heritage' | 'iconography';
+type SearchCategory = 'all' | 'countries' | 'indicators' | 'iconography' | 'reports' | 'heritage';
 
 type SearchItemType = 
   | { type: 'entity'; data: AtlasEntity }
   | { type: 'indicator'; data: IndicatorDefinition }
   | { type: 'heritage'; data: HeritageSite }
-  | { type: 'iconography'; data: SlaveTradeIllustration };
+  | { type: 'iconography'; data: SlaveTradeIllustration }
+  | { type: 'castas'; data: CastasArchivalItem }
+  | { type: 'report'; data: ResearchReport };
 
 export const SearchModal: React.FC<SearchModalProps> = ({
   isOpen,
@@ -63,6 +71,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
   // Simple fuzzy scoring function
   const scoreMatch = (text: string, search: string): number => {
+    if (!text) return 0;
     const t = text.toLowerCase();
     if (t === search) return 100;
     if (t.startsWith(search)) return 80;
@@ -88,14 +97,14 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       })
       .filter(item => item.score > 0)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 8)
+      .slice(0, 6)
       .map(item => item.entity);
   }, [q, selectedCategory]);
 
   // Matched Indicators with scoring
   const matchedIndicators = useMemo<IndicatorDefinition[]>(() => {
     if (selectedCategory !== 'all' && selectedCategory !== 'indicators') return [];
-    if (q === '') return atlas.getAllIndicators().slice(0, 5);
+    if (q === '') return atlas.getAllIndicators().slice(0, 4);
     return atlas.getAllIndicators()
       .map(ind => {
         let score = 0;
@@ -109,34 +118,37 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       })
       .filter(item => item.score > 0)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 6)
+      .slice(0, 5)
       .map(item => item.indicator);
   }, [q, selectedCategory]);
 
-  // Matched Heritage Sites
-  const matchedHeritage = useMemo<HeritageSite[]>(() => {
-    if (selectedCategory !== 'all' && selectedCategory !== 'heritage') return [];
-    if (q === '') return atlas.getHeritageSites().slice(0, 3);
-    return atlas.getHeritageSites()
-      .map(site => {
+  // Matched Research Monographs
+  const matchedReports = useMemo<ResearchReport[]>(() => {
+    if (selectedCategory !== 'all' && selectedCategory !== 'reports') return [];
+    const reportList = Object.values(RESEARCH_REPORTS);
+    if (q === '') return reportList.slice(0, 3);
+    return reportList
+      .map(rep => {
         let score = 0;
+        const authorMatch = rep.authors.some(a => a.toLowerCase().includes(q)) ? 40 : 0;
         score = Math.max(
-          scoreMatch(site.name, q) * 1.5,
-          scoreMatch(site.location, q),
-          scoreMatch(site.category, q)
+          scoreMatch(rep.title, q) * 1.6,
+          scoreMatch(rep.subtitle, q) * 1.2,
+          scoreMatch(rep.categoryLabel, q),
+          authorMatch
         );
-        return { site, score };
+        return { report: rep, score };
       })
       .filter(item => item.score > 0)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 5)
-      .map(item => item.site);
+      .slice(0, 4)
+      .map(item => item.report);
   }, [q, selectedCategory]);
 
   // Matched Archival Iconography Plates
   const matchedIconography = useMemo<SlaveTradeIllustration[]>(() => {
     if (selectedCategory !== 'all' && selectedCategory !== 'iconography') return [];
-    if (q === '') return SLAVE_TRADE_ILLUSTRATIONS.slice(0, 4);
+    if (q === '') return SLAVE_TRADE_ILLUSTRATIONS.slice(0, 3);
     return SLAVE_TRADE_ILLUSTRATIONS
       .map(ill => {
         let score = 0;
@@ -153,19 +165,62 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       })
       .filter(item => item.score > 0)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 6)
+      .slice(0, 4)
       .map(item => item.ill);
+  }, [q, selectedCategory]);
+
+  // Matched Castas Archive
+  const matchedCastas = useMemo<CastasArchivalItem[]>(() => {
+    if (selectedCategory !== 'all' && selectedCategory !== 'iconography') return [];
+    if (q === '') return CASTAS_ARCHIVE_ITEMS.slice(0, 2);
+    return CASTAS_ARCHIVE_ITEMS
+      .map(item => {
+        let score = 0;
+        score = Math.max(
+          scoreMatch(item.title, q) * 1.5,
+          scoreMatch(item.creator, q) * 1.2,
+          scoreMatch(item.category, q),
+          scoreMatch(item.description, q) * 0.7
+        );
+        return { item, score };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map(item => item.item);
+  }, [q, selectedCategory]);
+
+  // Matched Heritage Sites
+  const matchedHeritage = useMemo<HeritageSite[]>(() => {
+    if (selectedCategory !== 'all' && selectedCategory !== 'heritage') return [];
+    if (q === '') return atlas.getHeritageSites().slice(0, 2);
+    return atlas.getHeritageSites()
+      .map(site => {
+        let score = 0;
+        score = Math.max(
+          scoreMatch(site.name, q) * 1.5,
+          scoreMatch(site.location, q),
+          scoreMatch(site.category, q)
+        );
+        return { site, score };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map(item => item.site);
   }, [q, selectedCategory]);
 
   // Flatten items for keyboard navigation
   const flattenedItems = useMemo<SearchItemType[]>(() => {
     const list: SearchItemType[] = [];
     matchedEntities.forEach(data => list.push({ type: 'entity', data }));
+    matchedReports.forEach(data => list.push({ type: 'report', data }));
+    matchedIconography.forEach(data => list.push({ type: 'iconography', data }));
+    matchedCastas.forEach(data => list.push({ type: 'castas', data }));
     matchedIndicators.forEach(data => list.push({ type: 'indicator', data }));
     matchedHeritage.forEach(data => list.push({ type: 'heritage', data }));
-    matchedIconography.forEach(data => list.push({ type: 'iconography', data }));
     return list;
-  }, [matchedEntities, matchedIndicators, matchedHeritage, matchedIconography]);
+  }, [matchedEntities, matchedReports, matchedIconography, matchedCastas, matchedIndicators, matchedHeritage]);
 
   // Reset selected index when results change
   useEffect(() => {
@@ -216,6 +271,18 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         onSelectTab('iconography');
       }
       onClose();
+    } else if (item.type === 'castas') {
+      addRecentSearch(item.data.title);
+      if (onSelectTab) {
+        onSelectTab('iconography');
+      }
+      onClose();
+    } else if (item.type === 'report') {
+      addRecentSearch(item.data.title);
+      if (onSelectTab) {
+        onSelectTab(item.data.id);
+      }
+      onClose();
     }
   };
 
@@ -238,7 +305,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
             type="text"
             value={query}
             onChange={e => setQuery(e.target.value)}
-            placeholder="Search African countries, ISO codes, indicators, UNESCO heritage..."
+            placeholder="Search African countries, historical plates, castas archive, monographs, indicators..."
             className="w-full bg-transparent text-sm md:text-base text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none font-sans"
           />
           {query && (
@@ -259,360 +326,181 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           <button
             type="button"
             onClick={() => setSelectedCategory('all')}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+            className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer ${
               selectedCategory === 'all'
-                ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-xs'
-                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold shadow-xs'
+                : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800'
             }`}
           >
-            <Sparkles className="w-3 h-3" />
-            <span>All Categories</span>
+            All
           </button>
           <button
             type="button"
             onClick={() => setSelectedCategory('countries')}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+            className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 ${
               selectedCategory === 'countries'
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                ? 'bg-blue-600 text-white font-bold shadow-xs'
+                : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800'
             }`}
           >
             <Globe className="w-3 h-3" />
             <span>Nations</span>
-            {matchedEntities.length > 0 && (
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 dark:bg-white/20">
-                {matchedEntities.length}
-              </span>
-            )}
           </button>
           <button
             type="button"
-            onClick={() => setSelectedCategory('indicators')}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
-              selectedCategory === 'indicators'
-                ? 'bg-cyan-600 text-white shadow-xs'
-                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+            onClick={() => setSelectedCategory('reports')}
+            className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 ${
+              selectedCategory === 'reports'
+                ? 'bg-indigo-600 text-white font-bold shadow-xs'
+                : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800'
             }`}
           >
-            <TrendingUp className="w-3 h-3" />
-            <span>Indicators</span>
-            {matchedIndicators.length > 0 && (
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 dark:bg-white/20">
-                {matchedIndicators.length}
-              </span>
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => setSelectedCategory('heritage')}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
-              selectedCategory === 'heritage'
-                ? 'bg-amber-600 text-white shadow-xs'
-                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-            }`}
-          >
-            <Landmark className="w-3 h-3" />
-            <span>UNESCO Heritage</span>
-            {matchedHeritage.length > 0 && (
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 dark:bg-white/20">
-                {matchedHeritage.length}
-              </span>
-            )}
+            <FileText className="w-3 h-3" />
+            <span>Monographs</span>
           </button>
           <button
             type="button"
             onClick={() => setSelectedCategory('iconography')}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+            className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 ${
               selectedCategory === 'iconography'
-                ? 'bg-amber-800 text-white shadow-xs'
-                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                ? 'bg-amber-600 text-white font-bold shadow-xs'
+                : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800'
             }`}
           >
-            <BookOpen className="w-3 h-3" />
-            <span>Archival Plates</span>
-            {matchedIconography.length > 0 && (
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 dark:bg-white/20">
-                {matchedIconography.length}
-              </span>
-            )}
+            <ImageIcon className="w-3 h-3" />
+            <span>Iconography</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedCategory('indicators')}
+            className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 ${
+              selectedCategory === 'indicators'
+                ? 'bg-emerald-600 text-white font-bold shadow-xs'
+                : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800'
+            }`}
+          >
+            <TrendingUp className="w-3 h-3" />
+            <span>Indicators</span>
           </button>
         </div>
 
-        {/* Recent Searches Header Chips */}
-        {recentSearches.length > 0 && q === '' && (
-          <div className="px-5 py-2.5 bg-zinc-100/60 dark:bg-zinc-900/40 border-b border-zinc-200 dark:border-zinc-800/80 flex items-center justify-between">
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-              <span className="text-[11px] font-mono text-zinc-500 flex items-center gap-1 shrink-0">
-                <Clock className="w-3 h-3 text-emerald-500" /> Recent:
-              </span>
-              {recentSearches.map(term => (
+        {/* Results Container */}
+        <div className="max-h-[60vh] overflow-y-auto p-4 space-y-2">
+          {flattenedItems.length === 0 ? (
+            <div className="p-8 text-center space-y-2">
+              <Search className="w-8 h-8 text-zinc-400 mx-auto opacity-50" />
+              <p className="text-sm font-sans text-zinc-600 dark:text-zinc-400">
+                No matching records found for &ldquo;{query}&rdquo;
+              </p>
+              <p className="text-xs font-mono text-zinc-500">
+                Try searching for &ldquo;Nigeria&rdquo;, &ldquo;Castas&rdquo;, &ldquo;Genetics&rdquo;, or &ldquo;GDP&rdquo;
+              </p>
+            </div>
+          ) : (
+            flattenedItems.map((item, idx) => {
+              const isSelected = idx === selectedIndex;
+              return (
                 <button
-                  key={term}
-                  onClick={() => setQuery(term)}
-                  className="text-xs px-2.5 py-0.5 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:border-emerald-500 shrink-0 cursor-pointer"
+                  key={idx}
+                  onClick={() => handleExecuteSelection(item)}
+                  onMouseEnter={() => setSelectedIndex(idx)}
+                  className={`w-full p-3 rounded-2xl flex items-center justify-between text-left transition-all cursor-pointer border ${
+                    isSelected
+                      ? 'bg-zinc-100 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 shadow-sm'
+                      : 'border-transparent hover:bg-zinc-50 dark:hover:bg-zinc-900/50'
+                  }`}
                 >
-                  {term}
-                </button>
-              ))}
-            </div>
-            <button
-              onClick={clearRecentSearches}
-              className="text-[10px] text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 ml-2 shrink-0 cursor-pointer"
-            >
-              Clear
-            </button>
-          </div>
-        )}
-
-        {/* Categorized Search Results */}
-        <div className="max-h-[60vh] overflow-y-auto p-4 space-y-5">
-          {/* Countries / Entities Section */}
-          {matchedEntities.length > 0 && (
-            <div>
-              <div className="text-[11px] font-mono font-bold tracking-wider uppercase text-zinc-500 px-2 mb-2 flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5 text-emerald-500" /> Sovereign Nations & Territories ({matchedEntities.length})
-              </div>
-              <div className="space-y-1">
-                {matchedEntities.map(entity => {
-                  const globalIdx = flattenedItems.findIndex(x => x.type === 'entity' && x.data.id === entity.id);
-                  const isSelected = globalIdx === selectedIndex;
-                  const isSaved = isCountrySaved(entity.id);
-
-                  return (
-                    <div
-                      key={entity.id}
-                      onClick={() => handleExecuteSelection({ type: 'entity', data: entity })}
-                      className={`w-full flex items-center justify-between p-2.5 rounded-2xl transition-all text-left cursor-pointer ${
-                        isSelected 
-                          ? 'bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700/80 shadow-xs' 
-                          : 'hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-transparent'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <CountryFlag entityId={entity.id} size="md" />
-                        <div>
-                          <div className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 flex items-center gap-1">
-                            <span>Africa</span>
-                            <span>›</span>
-                            <span>{entity.region}</span>
-                            <span>›</span>
-                            <span className="font-semibold text-emerald-600 dark:text-emerald-400">{entity.name}</span>
-                          </div>
-                          <div className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                            {entity.name}
-                            <span className="text-[10px] font-mono text-zinc-500 font-normal">[{entity.id}]</span>
-                          </div>
-                          <div className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
-                            <span>Cap: <strong>{entity.capital}</strong></span>
-                            {entity.officialName && entity.officialName !== entity.name && (
-                              <>
-                                <span>•</span>
-                                <span className="italic truncate max-w-xs">{entity.officialName}</span>
-                              </>
-                            )}
-                          </div>
-                        </div>
+                  <div className="flex items-center gap-3 min-w-0 pr-3">
+                    {/* Icon Column */}
+                    {item.type === 'entity' && (
+                      <CountryFlag entityId={item.data.id} size="sm" />
+                    )}
+                    {item.type === 'report' && (
+                      <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 flex items-center justify-center shrink-0">
+                        <FileText className="w-4 h-4" />
                       </div>
+                    )}
+                    {item.type === 'iconography' && (
+                      <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center shrink-0">
+                        <ImageIcon className="w-4 h-4" />
+                      </div>
+                    )}
+                    {item.type === 'castas' && (
+                      <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center shrink-0">
+                        <Palette className="w-4 h-4" />
+                      </div>
+                    )}
+                    {item.type === 'indicator' && (
+                      <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0">
+                        <TrendingUp className="w-4 h-4" />
+                      </div>
+                    )}
+                    {item.type === 'heritage' && (
+                      <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-500 flex items-center justify-center shrink-0">
+                        <Landmark className="w-4 h-4" />
+                      </div>
+                    )}
 
+                    {/* Text Column */}
+                    <div className="flex flex-col min-w-0">
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={e => {
-                            e.stopPropagation();
-                            toggleSaveCountry(entity.id);
-                          }}
-                          className="p-1 text-zinc-400 hover:text-amber-500 transition-colors"
-                          title={isSaved ? 'Remove from Saved' : 'Save Country'}
-                        >
-                          <Star className={`w-4 h-4 ${isSaved ? 'fill-amber-400 text-amber-400' : ''}`} />
-                        </button>
-                        <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:text-emerald-500 transition-transform" />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Indicators Section */}
-          {matchedIndicators.length > 0 && (
-            <div>
-              <div className="text-[11px] font-mono font-bold tracking-wider uppercase text-zinc-500 px-2 mb-2 flex items-center gap-1.5">
-                <TrendingUp className="w-3.5 h-3.5 text-cyan-500" /> Statistical Indicators ({matchedIndicators.length})
-              </div>
-              <div className="space-y-1">
-                {matchedIndicators.map(ind => {
-                  const globalIdx = flattenedItems.findIndex(x => x.type === 'indicator' && x.data.id === ind.id);
-                  const isSelected = globalIdx === selectedIndex;
-
-                  return (
-                    <div
-                      key={ind.id}
-                      onClick={() => handleExecuteSelection({ type: 'indicator', data: ind })}
-                      className={`w-full flex items-center justify-between p-2.5 rounded-2xl transition-all text-left cursor-pointer ${
-                        isSelected 
-                          ? 'bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-300 dark:border-cyan-700/80 shadow-xs' 
-                          : 'hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-transparent'
-                      }`}
-                    >
-                      <div className="pr-4">
-                        <div className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 flex items-center gap-1 mb-0.5">
-                          <span>Data Atlas</span>
-                          <span>›</span>
-                          <span className="text-cyan-600 dark:text-cyan-400 font-semibold">{ind.domain}</span>
-                        </div>
-                        <div className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                          {ind.name}
-                          <span className="rounded-md bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-[10px] font-mono px-2 py-0.5">
-                            {ind.domain}
+                        <span className="text-sm font-sans font-bold text-zinc-900 dark:text-zinc-100 truncate">
+                          {item.type === 'entity' && item.data.name}
+                          {item.type === 'report' && item.data.title}
+                          {item.type === 'iconography' && item.data.title}
+                          {item.type === 'castas' && item.data.title}
+                          {item.type === 'indicator' && item.data.name}
+                          {item.type === 'heritage' && item.data.name}
+                        </span>
+                        {item.type === 'entity' && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-200/60 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                            {item.data.id}
                           </span>
-                        </div>
-                        <div className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-1 mt-0.5">
-                          {ind.definition}
-                        </div>
+                        )}
+                        {item.type === 'iconography' && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                            Plate {item.data.regId}
+                          </span>
+                        )}
+                        {item.type === 'castas' && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                            Castas Archive
+                          </span>
+                        )}
                       </div>
-                      <span className="text-xs font-mono font-semibold text-zinc-500 dark:text-zinc-400 shrink-0">
-                        {ind.unit}
+                      <span className="text-xs font-serif text-zinc-500 dark:text-zinc-400 truncate">
+                        {item.type === 'entity' && `${item.data.region} • Capital: ${item.data.capital}`}
+                        {item.type === 'report' && `${item.data.categoryLabel} • ${item.data.authors[0]}`}
+                        {item.type === 'iconography' && `${item.data.date || 'Historical'} • ${item.data.source}`}
+                        {item.type === 'castas' && `${item.data.date} • ${item.data.creator}`}
+                        {item.type === 'indicator' && `${item.data.domain} • ${item.data.unit}`}
+                        {item.type === 'heritage' && `${item.data.location} • ${item.data.category}`}
                       </span>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+                  </div>
 
-          {/* Heritage Sites Section */}
-          {matchedHeritage.length > 0 && (
-            <div>
-              <div className="text-[11px] font-mono font-bold tracking-wider uppercase text-zinc-500 px-2 mb-2 flex items-center gap-1.5">
-                <Landmark className="w-3.5 h-3.5 text-amber-500" /> UNESCO Heritage Properties ({matchedHeritage.length})
-              </div>
-              <div className="space-y-1">
-                {matchedHeritage.map(site => {
-                  const country = atlas.getEntity(site.entityId);
-                  const globalIdx = flattenedItems.findIndex(x => x.type === 'heritage' && x.data.id === site.id);
-                  const isSelected = globalIdx === selectedIndex;
-
-                  return (
-                    <div
-                      key={site.id}
-                      onClick={() => handleExecuteSelection({ type: 'heritage', data: site })}
-                      className={`w-full flex items-center justify-between p-2.5 rounded-2xl transition-all text-left cursor-pointer ${
-                        isSelected 
-                          ? 'bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700/80 shadow-xs' 
-                          : 'hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-transparent'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-                          <Landmark className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 flex items-center gap-1 mb-0.5">
-                            <span>UNESCO World Heritage</span>
-                            <span>›</span>
-                            <span className="text-amber-600 dark:text-amber-400 font-semibold">{country?.name || 'Africa'}</span>
-                          </div>
-                          <div className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
-                            {site.name}
-                          </div>
-                          <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                            {country?.name} • Inscribed {site.inscribedYear} ({site.category})
-                          </div>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-mono bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-2 py-0.5 rounded text-zinc-600 dark:text-zinc-400">
-                        {site.location}
+                  <div className="flex items-center gap-1.5 text-zinc-400 shrink-0">
+                    {isSelected && (
+                      <span className="hidden sm:inline-flex text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                        Jump ↵
                       </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Archival Iconography Section */}
-          {matchedIconography.length > 0 && (
-            <div>
-              <div className="text-[11px] font-mono font-bold tracking-wider uppercase text-zinc-500 px-2 mb-2 flex items-center gap-1.5">
-                <BookOpen className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" /> Historical Iconography &amp; Plates ({matchedIconography.length})
-              </div>
-              <div className="space-y-1">
-                {matchedIconography.map(ill => {
-                  const globalIdx = flattenedItems.findIndex(x => x.type === 'iconography' && x.data.objectId === ill.objectId);
-                  const isSelected = globalIdx === selectedIndex;
-
-                  return (
-                    <div
-                      key={ill.objectId}
-                      onClick={() => handleExecuteSelection({ type: 'iconography', data: ill })}
-                      className={`w-full flex items-center justify-between p-2.5 rounded-2xl transition-all text-left cursor-pointer ${
-                        isSelected 
-                          ? 'bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700/80 shadow-xs' 
-                          : 'hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-transparent'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3 min-w-0 pr-2">
-                        <div className="w-10 h-10 rounded-xl bg-stone-200 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 overflow-hidden shrink-0 flex items-center justify-center">
-                          {ill.imageUrls?.[0] ? (
-                            <img
-                              src={ill.imageUrls[0]}
-                              alt={ill.title}
-                              className="w-full h-full object-cover grayscale contrast-125"
-                              referrerPolicy="no-referrer"
-                            />
-                          ) : (
-                            <ImageIcon className="w-4 h-4 text-stone-400" />
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 flex items-center gap-1 mb-0.5">
-                            <span className="font-bold text-amber-800 dark:text-amber-400">Plate {ill.regId}</span>
-                            <span>•</span>
-                            <span className="truncate">{ill.date || 'Historical Scan'}</span>
-                          </div>
-                          <div className="font-bold text-sm text-zinc-900 dark:text-zinc-100 truncate">
-                            {ill.title}
-                          </div>
-                          <div className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
-                            {ill.collectionNames?.join(', ') || ill.source}
-                          </div>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-mono bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60 px-2 py-0.5 rounded shrink-0">
-                        View Plate
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {matchedEntities.length === 0 && matchedIndicators.length === 0 && matchedHeritage.length === 0 && matchedIconography.length === 0 && (
-            <div className="py-12 text-center text-zinc-500">
-              <Search className="w-8 h-8 mx-auto mb-2 opacity-40 text-zinc-400" />
-              <p className="text-sm font-semibold">No records found matching "{query}"</p>
-              <p className="text-xs text-zinc-400 mt-1">Try searching by country name, ISO code (e.g. NGA, DZA, ZAF), indicator, or archival plate (e.g. Brookes, Stowage, Map).</p>
-            </div>
+                    )}
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </button>
+              );
+            })
           )}
         </div>
 
-        {/* Keyboard Navigation Footer */}
-        <div 
-          className="border-t border-zinc-200 dark:border-zinc-800/80 px-5 py-3 flex items-center justify-between text-xs text-zinc-500 font-mono transition-colors"
-          style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
-        >
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5">
-              <kbd className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-1.5 py-0.5 rounded text-zinc-700 dark:text-zinc-300">↑</kbd>
-              <kbd className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-1.5 py-0.5 rounded text-zinc-700 dark:text-zinc-300">↓</kbd> Navigate
-            </span>
-            <span className="flex items-center gap-1.5">
-              <kbd className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-1.5 py-0.5 rounded text-zinc-700 dark:text-zinc-300 flex items-center"><CornerDownLeft className="w-3 h-3" /></kbd> Select
-            </span>
+        {/* Footer Info */}
+        <div className="flex items-center justify-between px-5 py-3 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900/50 text-[11px] font-mono text-zinc-500">
+          <div className="flex items-center gap-3">
+            <span>↑↓ to navigate</span>
+            <span>↵ to select</span>
+            <span>ESC to close</span>
           </div>
-          <span>CC-BY 4.0 Open Data</span>
+          <span>Africa Data Atlas Universal Index</span>
         </div>
       </div>
     </div>

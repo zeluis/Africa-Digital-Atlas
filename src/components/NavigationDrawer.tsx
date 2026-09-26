@@ -378,7 +378,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
   // Submenu items for Explore (Concise style with African Nations)
   const exploreSubItems = [
-    { id: 'explore', label: 'African Nations', icon: Compass, badge: '54 Nations' },
+    { id: 'explore', label: 'African Nations', icon: 'game-icons:africa', badge: '54 Nations' },
     { id: 'pillars', label: 'Thematic Pillars', icon: Grid3X3, badge: 'Framework' },
     { id: 'blocs', label: 'Regional Blocs', icon: Boxes, badge: 'AU, ECOWAS, EAC' },
     { id: 'heritage', label: 'Heritage Sites', icon: Landmark, badge: 'UNESCO' }
@@ -403,7 +403,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   // Submenu items for Analytics (Ultra-Minimal style)
   const analyticsSubItems = [
     { id: 'analytics', label: 'Benchmarks', icon: BarChart3, badge: 'Time-series' },
-    { id: 'map', label: 'Map', icon: MapIcon, badge: 'Spatial GIS' }
+    { id: 'map', label: 'Map', icon: 'gis:search-globe', badge: 'Spatial GIS' }
   ];
 
   // Dynamic submenu categorized items for Reports (from static + drop-in markdown + custom)
@@ -585,7 +585,6 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                         className="overflow-hidden ml-4 pl-3 border-l-2 border-zinc-200 dark:border-zinc-800/80 space-y-1 my-1.5"
                       >
                         {exploreSubItems.map(sub => {
-                          const SubIcon = sub.icon;
                           const isSubActive = currentTab === sub.id;
                           return (
                             <motion.div key={sub.id} variants={submenuItemVariants}>
@@ -601,7 +600,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0 pr-1">
-                                  <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-blue-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                                  <DynamicIcon icon={sub.icon} className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-blue-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                                   <div className="flex flex-col min-w-0">
                                     <span className="truncate">{sub.label}</span>
                                     <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
@@ -846,7 +845,6 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                         className="overflow-hidden ml-4 pl-3 border-l-2 border-zinc-200 dark:border-zinc-800/80 space-y-1 my-1.5"
                       >
                         {regionsSubItems.map(sub => {
-                          const SubIcon = sub.icon;
                           const isSubActive = currentTab === sub.id;
                           return (
                             <motion.div key={sub.id} variants={submenuItemVariants}>
@@ -862,7 +860,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0 pr-1">
-                                  <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-purple-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                                  <DynamicIcon icon={sub.icon} className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-purple-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                                   <div className="flex flex-col min-w-0">
                                     <span className="truncate">{sub.label}</span>
                                     <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
@@ -928,7 +926,6 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                         className="overflow-hidden ml-4 pl-3 border-l-2 border-zinc-200 dark:border-zinc-800/80 space-y-1 my-1.5"
                       >
                         {analyticsSubItems.map(sub => {
-                          const SubIcon = sub.icon;
                           const isSubActive = currentTab === sub.id;
                           return (
                             <motion.div key={sub.id} variants={submenuItemVariants}>
@@ -944,7 +941,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0 pr-1">
-                                  <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-emerald-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                                  <DynamicIcon icon={sub.icon} className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-emerald-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                                   <div className="flex flex-col min-w-0">
                                     <span className="truncate">{sub.label}</span>
                                     <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
