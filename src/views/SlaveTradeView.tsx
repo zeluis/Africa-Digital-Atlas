@@ -181,10 +181,10 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                 Snapshot {SLAVEVOYAGES_METADATA.version}
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-[#1C1917] dark:text-[#FAFAF9]">
+            <h1 className="type-headline-lg font-serif-display font-bold tracking-tight text-[#1C1917] dark:text-[#FAFAF9]">
               Atlantic Slave Trade Data Atlas
             </h1>
-            <p className="text-sm text-[#57534E] dark:text-[#D6D3D1] leading-relaxed">
+            <p className="type-body-archival font-serif-book text-[#57534E] dark:text-[#D6D3D1] leading-relaxed max-w-3xl">
               An authoritative research repository and geospatial analytics engine documenting four centuries of forced trans-Atlantic and intra-American maritime migrations (1514–1866), grounded in surviving archival records and rigorous statistical imputation.
             </p>
           </div>

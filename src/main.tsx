@@ -2,6 +2,7 @@ import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import '@fontsource-variable/plus-jakarta-sans';
 import '@fontsource-variable/noto-serif-display';
+import '@fontsource-variable/noto-serif';
 import '@fontsource-variable/noto-sans';
 import App from './App.tsx';
 import { LanguageProvider } from './i18n/LanguageContext';

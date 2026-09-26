@@ -277,11 +277,11 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-zinc-900 dark:text-white font-serif tracking-tight leading-tight">
+          <h1 className="type-headline-lg font-serif-display font-black text-zinc-900 dark:text-white tracking-tight leading-tight">
             {report.title}
           </h1>
 
-          <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-300 font-serif italic leading-relaxed">
+          <p className="type-title-lg text-zinc-600 dark:text-zinc-300 font-serif-book italic leading-relaxed">
             {report.subtitle}
           </p>
 
@@ -424,14 +424,14 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
           {/* Executive Abstract Box */}
           <section 
             id="sec-abstract"
-            className="p-6 sm:p-8 rounded-3xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 space-y-3"
+            className="p-6 sm:p-8 rounded-3xl bg-amber-500/5 dark:bg-amber-500/10 border-l-4 border-amber-500 border-y border-r border-amber-500/20 space-y-3"
           >
-            <div className="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-2">
+            <div className="text-xs font-mono font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 flex items-center gap-2">
               <FileText className="w-4 h-4" />
               <span>Executive Abstract</span>
             </div>
-            <p className={`text-zinc-800 dark:text-zinc-200 font-serif leading-relaxed ${
-              fontSize === 'large' ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'
+            <p className={`text-zinc-800 dark:text-zinc-200 font-serif-book leading-[1.75] ${
+              fontSize === 'large' ? 'text-lg sm:text-xl' : 'type-body-editorial'
             }`}>
               {report.executiveSummary}
             </p>
@@ -444,12 +444,12 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
               id={section.id} 
               className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4"
             >
-              <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-white font-serif tracking-tight">
+              <h2 className="type-headline-md font-serif-display font-bold text-zinc-900 dark:text-white tracking-tight">
                 {section.title}
               </h2>
 
-              <div className={`text-zinc-700 dark:text-zinc-300 font-serif leading-relaxed ${
-                fontSize === 'large' ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'
+              <div className={`text-zinc-700 dark:text-zinc-300 font-serif-book leading-relaxed ${
+                fontSize === 'large' ? 'text-lg sm:text-xl' : ''
               }`}>
                 <SemanticReportRenderer 
                   content={section.content} 

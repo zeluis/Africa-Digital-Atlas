@@ -37,15 +37,18 @@ The production application is deployed on GitHub Pages:
 2. [Key Capabilities & Feature Modules](#-key-capabilities--feature-modules)
    - [Interactive Vector Cartography Stage](#1-interactive-vector-cartography-stage)
    - [Transatlantic Slave Voyages 3D Globe & Spatiotemporal Engine](#2-transatlantic-slave-voyages-3d-globe--spatiotemporal-engine)
-   - [Country Dossiers & Comprehensive National Profiles](#3-country-dossiers--comprehensive-national-profiles)
-   - [Comparative Analytics & Correlation Engine](#4-comparative-analytics--correlation-engine)
-   - [Regional Geopolitical & Economic Blocs (RECs)](#5-regional-geopolitical--economic-blocs-recs)
-   - [Multilateral Data APIs & Ingestion Hub (16 Active Connectors)](#6-multilateral-data-apis--ingestion-hub-16-active-connectors)
-   - [Data Provenance, Quality Audits & Cryptographic Verification](#7-data-provenance-quality-audits--cryptographic-verification)
-   - [Visual Identity & Japandi Design System](#8-visual-identity--japandi-design-system)
-   - [African Ethnic Tree & Ancestral Lineages Explorer](#9-african-ethnic-tree--ancestral-lineages-explorer)
-   - [Scholarly Treatises & Econometric Working Papers](#10-scholarly-treatises--econometric-working-papers)
-   - [Privacy, Data Governance & Scholarly Charter (MD3 Architecture)](#11-privacy-data-governance--scholarly-charter-md3-architecture)
+   - [Archival Iconography Archive & Castas Studio (1,252 Visual Records)](#3-archival-iconography-archive--castas-studio-1252-visual-records)
+   - [Archival Cartography, Ocean Currents & Monsoon Wind Regimes](#4-archival-cartography-ocean-currents--monsoon-wind-regimes)
+   - [Thematic Pillars & Multidimensional Country Portals](#5-thematic-pillars--multidimensional-country-portals)
+   - [African Development Foundations Master Report & Econometric Treatises](#6-african-development-foundations-master-report--econometric-treatises)
+   - [Country Dossiers & Comprehensive National Profiles](#7-country-dossiers--comprehensive-national-profiles)
+   - [Comparative Analytics & Correlation Engine](#8-comparative-analytics--correlation-engine)
+   - [Regional Geopolitical & Economic Blocs (RECs)](#9-regional-geopolitical--economic-blocs-recs)
+   - [Multilateral Data APIs & Ingestion Hub (16 Active Connectors)](#10-multilateral-data-apis--ingestion-hub-16-active-connectors)
+   - [Data Provenance, Quality Audits & Cryptographic Verification](#11-data-provenance-quality-audits--cryptographic-verification)
+   - [Visual Identity & Japandi Design System](#12-visual-identity--japandi-design-system)
+   - [African Ethnic Tree & Ancestral Lineages Explorer](#13-african-ethnic-tree--ancestral-lineages-explorer)
+   - [Privacy, Data Governance & Scholarly Charter (MD3 Architecture)](#14-privacy-data-governance--scholarly-charter-md3-architecture)
 3. [Indicators & Multilateral Data Sources Catalog](#-indicators--multilateral-data-sources-catalog)
 4. [SVG Geography Engine & Projection Geometry](#-svg-geography-engine--projection-geometry)
 5. [Multilingual Translation Engine (i18n)](#-multilingual-translation-engine-i18n)
@@ -69,10 +72,12 @@ Understanding Africa's demographic and economic trajectory is critical for polic
 
 ### Scope at a Glance:
 - **54 Sovereign Nations & Island States**: Complete geospatial and statistical coverage across Northern, Western, Central, Eastern, and Southern Africa.
-- **Over 90 Harmonized Indicators**: Spanning macroeconomic accounts, poverty lines, external debt stocks, governance ratings, gender equity, climate projections, and trade balances.
+- **Over 90 Harmonized Indicators & 6 Thematic Portals**: Spanning macroeconomic accounts, poverty lines, external debt stocks, governance ratings, gender equity, climate projections, and trade balances.
 - **36,000+ Documented Historical Voyages**: 3D globe and spatiotemporal flow visualizer charting the transatlantic slave trade from 1501 to 1867.
+- **1,252 Archival Visual Records & Castas Series Studio**: Direct scrutiny archival engine with hand-indexed historical plates, 32 colonial castas series, non-passive wheel zoom isolation, and full mobile two-finger pinch-to-zoom.
+- **Archival Cartography & Ocean Winds Engine**: Interactive comparison curtain viewer for antique cartographic plates (1688–1851), real-time particle animation of 8 major ocean currents, and monsoon seasonal wind regimes.
+- **African Development Foundations Master Report & 10 Econometric Treatises**: Comprehensive 7-epoch developmental synthesis examining deep genomic diversity gradients, Nathan Nunn extraction models, Tadei colonial monopsonies, and contemporary geopolitical alignments.
 - **African Ethnic Tree & Deep Ancestral Lineages**: Interactive anthropological and phylogenetic taxonomy mapping African linguistic phyla (*Niger-Congo*, *Afroasiatic*, *Nilo-Saharan*, *Khoisan*) and deep genetic population structures.
-- **10 Scholarly Treatises & Econometric Working Papers**: Peer-reviewed empirical research dossiers examining long-run colonial and slave trade impacts (Nathan Nunn QJE/AER models), Cabo Verdean genetic admixture, and reparatory economics in the Anthropocene.
 - **Sovereign Privacy, Zero Surveillance & GDPR Right to Erasure**: Complete client-side state minimization, zero commercial advertising cookies or tracking pixels, stateless neural speech audio, and a live client-side `localStorage` inspector with one-click wipe.
 - **100% Offline-Capable PWA**: Service Worker caching of vector geometries, baseline observations, and styling for low-bandwidth field environments.
 
@@ -136,7 +141,64 @@ A dedicated historical research subsystem visualizing the historical transatlant
 
 ---
 
-### 3. Country Dossiers & Comprehensive National Profiles
+### 3. Archival Iconography Archive & Castas Studio (1,252 Visual Records)
+A dedicated historical visual scrutiny workspace engineered for researchers, curators, and historians analyzing primary iconography of the African diaspora, the Atlantic Middle Passage, and colonial caste systems:
+
+- **1,220 Hand-Indexed Historical Plates**: A comprehensive visual catalog spanning the 16th to 19th centuries, documenting naval schematics, slave ship manifests, slave rebellions, agricultural labor conditions, fugitive notices, and portraits of liberation figures.
+- **32 Colonial Castas Painting Series**: High-resolution digital reproductions from the *Museo Nacional del Virreinato* and master colonial artists (Miguel Cabrera, Andrés de Islas, José de Páez), cataloging 18th-century *Pintura de Castas* genre conventions depicting racial classifications in colonial New Spain and the Hispanic Atlantic.
+- **Native Gesture & Scroll-Isolation Engine**:
+  - **Native Non-Passive Wheel Interception**: Replaces passive wheel defaults with strict `{ passive: false }` listeners on `containerRef`, intercepting `e.preventDefault()` and `e.stopPropagation()`. When the mouse pointer hovers over an image canvas, scrolling the wheel or trackpad **exclusively controls image zoom** ($1.00\times$ to $5.00\times$) and pan offsets—completely preventing the outer browser page from scrolling or jumping.
+  - **Mobile Touch & 2-Finger Pinch-to-Zoom**: Built with `touch-action: none` (`touch-none`) on the viewport canvas. Supports fluid two-finger Euclidean distance calculation for continuous geometric pinch-zooming and single-finger inertia panning, preventing mobile page bounces and pull-to-refresh conflicts.
+  - **Isolated Citation & Metadata Drawer**: Features `overscroll-behavior: contain` (`overscroll-contain`) with native boundary clamping. Scrolling through extensive historical footnotes, notarial research essays by Prof. Kathryn Burns, or bibliographic references never chains scroll momentum to the underlying document.
+  - **Filmstrip Horizontal Wheel Translation**: Vertical mouse wheel input over the bottom thumbnail tray is dynamically converted to smooth horizontal carousel scrolling.
+- **Unified Workbench & Zero-Layout-Shift Geometry**:
+  - Shared authoritative exhibition hero banner with curatorial kicker and high-resolution plate rotation.
+  - Symmetric 64px sticky toolbars for both the Registry and Castas tabs with anchored segmented mode controls, ensuring 0px layout shifts during navigation.
+  - Fullscreen Loupe Modal with deep-zoom pan controls and one-click citation exports (APA, Chicago, BibTeX).
+
+---
+
+### 4. Archival Cartography, Ocean Currents & Monsoon Wind Regimes
+An interactive cartographic lab examining the geographic and meteorological realities that governed pre-colonial African trade and navigation:
+
+- **Interactive Map Curtain Viewer**: Dynamic split-screen curtain slider allowing side-by-side comparison of historical cartographic plates (e.g., Vincenzo Coronelli 1688, Guillaume Delisle 1707, Rigobert Bonne 1780, John Tallis 1851) against the modern sovereign vector topology.
+- **Animated Ocean Currents Particle Canvas**: Real-time vector field simulation of 8 major maritime currents (*Canary Current*, *Guinea Current*, *Benguela Current*, *Agulhas Current*, *Mozambique Current*, *Somali Current*, *South Equatorial Current*, *North Equatorial Current*), demonstrating how hydrographic circulations determined historical shipping corridors.
+- **Seasonal Monsoon Wind Regimes**: Spatiotemporal quarterly toggle (**Q1 NE Monsoon**, **Q2 Spring Transition**, **Q3 SW Monsoon**, **Q4 Autumn Transition**) mapping the historical Swahili Coast dhow trade and trans-Indian Ocean trade routes between East Africa, Arabia, and the Indian subcontinent.
+- **Pre-Colonial Sovereign Entities & Polities**: Curated geographical boundaries, capitols, and institutional profiles of pre-colonial states (Songhai Empire, Kingdom of Kongo, Mali Empire, Oyo Empire, Kingdom of Aksum, Dahomey, Buganda, Zulu Kingdom).
+
+---
+
+### 5. Thematic Pillars & Multidimensional Country Portals
+A multi-lens developmental diagnostic tool organizing continental indicators into six core developmental pillars:
+
+- **6 Structured Thematic Pillars**:
+  1. **Macroeconomic Architecture & Trade (AfCFTA)**: GDP trajectories, sovereign debt sustainability, external reserves, intra-African trade shares, and economic diversification indices.
+  2. **Human Capital & Demographics**: Youth demographic dividends, fertility trends, urban migration corridors, life expectancy, and basic social protections.
+  3. **Energy Transition & Infrastructure**: Grid electrification rates, off-grid solar deployments, renewable potential (hydro, geothermal, solar), and logistics connectivity.
+  4. **Governance, Peace & Institutions**: Mo Ibrahim Index indicators, rule of law, anti-corruption performance, civic space, and state fragility scores.
+  5. **Digital Transformation & Innovation**: Mobile money penetration, fiber broadband density, fintech capital inflows, and digital public infrastructure.
+  6. **Climate Vulnerability & Ecological Resilience**: ND-GAIN climate vulnerability rankings, carbon footprints, agricultural rainfall anomalies, and biodiversity conservation areas.
+- **Deep Country Integration**: Dynamic country silhouette vectors, curated landmark photography, live Wikipedia academic narratives with automated fallbacks, and multi-country benchmarking cards.
+
+---
+
+### 6. African Development Foundations Master Report & Econometric Treatises
+An in-depth, long-form empirical study synthesising historical persistence and developmental economics:
+
+- **7 Compounding Structural Epochs**:
+  1. *Deep Ancestral Deep-Time & Genomic Gradients*: Genetic diversity gradients and archaeological foundations.
+  2. *Indigenous Polities & Pre-Colonial Governance*: Decentralized institutions, judicial councils, and trade networks.
+  3. *The Middle Passage & Transatlantic Extraction*: Empirical quantifications of demographic shocks.
+  4. *Colonial Monopsonies & Fiscal Concessions*: Analysis of trade monopsonies based on research by Filippo Tadei and Walter Rodney.
+  5. *Post-Independence Sovereign Statehood & Cold War Structural Adjustments*: Bretton Woods policies and macroeconomic volatility.
+  6. *The 21st-Century Commodity Supercycle & Demographic Dividend*: Urbanization, consumer markets, and leapfrog technologies.
+  7. *Contemporary Geopolitical Multipolartiy & AfCFTA Integration*: Multi-aligned foreign policies, infrastructure corridors, and continental integration.
+- **Interactive Econometric Chart Suite**: Responsive multi-series Recharts visualizations displaying genomic heterozygosity decay, transatlantic extraction volumes by coastal region, and colonial concession profit margins.
+- **Synchronized Audio Voice Reader**: Integrated Web Speech and neural reader with interactive playback controls, paragraph-level highlighting, and speech rate customization.
+
+---
+
+### 7. Country Dossiers & Comprehensive National Profiles
 Selecting any country opens an in-depth dossier presenting verified structural data:
 
 - **Geographic & Political Metadata**: ISO-3166-1 alpha-3 code, capital city coordinates, official and national languages, currency denomination and ISO-4217 currency codes, total land area in square kilometers, sovereign status, and United Nations Geoscheme classification.
@@ -146,7 +208,7 @@ Selecting any country opens an in-depth dossier presenting verified structural d
 
 ---
 
-### 4. Comparative Analytics & Correlation Engine
+### 8. Comparative Analytics & Correlation Engine
 The Analytics module provides policy analysts and economists with quantitative comparison tools:
 
 - **Bi-Variable Correlation Scatter Plots**: Plot any two indicators against each other (e.g., *GDP per Capita* vs. *Female Secondary Education Enrollment*, or *Renewable Energy Capacity* vs. *CO₂ Emissions per Capita*). The engine calculates the **Pearson correlation coefficient ($r$)**, trendline slope, and automatically identifies regional clusters and outlier nations.
@@ -155,7 +217,7 @@ The Analytics module provides policy analysts and economists with quantitative c
 
 ---
 
-### 5. Regional Geopolitical & Economic Blocs (RECs)
+### 9. Regional Geopolitical & Economic Blocs (RECs)
 The atlas models pan-African regional integration by organizing countries into recognized regional economic communities and geopolitical groupings:
 
 - **African Union (AU)**: Continental membership baseline.
@@ -173,7 +235,7 @@ The atlas models pan-African regional integration by organizing countries into r
 
 ---
 
-### 6. Multilateral Data APIs & Ingestion Hub (16 Active Connectors)
+### 10. Multilateral Data APIs & Ingestion Hub (16 Active Connectors)
 A dedicated API ingestion subsystem standardizes data feeds from 16 international institutions. Accessible directly via the **"16 DATA APIs"** button in the navigation bar:
 
 - **Live Handshake & Latency Testing**: Users and administrators can trigger real-time ping requests against external API endpoints (or validated fallback caches) to inspect response status codes, payload sizes (in bytes), and millisecond latency.
@@ -183,7 +245,7 @@ A dedicated API ingestion subsystem standardizes data feeds from 16 internationa
 
 ---
 
-### 7. Data Provenance, Quality Audits & Cryptographic Verification
+### 11. Data Provenance, Quality Audits & Cryptographic Verification
 To ensure academic credibility and transparency, the platform includes a **Provenance & Data Quality Console**:
 
 - **Real-Time Automated Integrity Audits**: Verifies all 54 sovereign entities against the indicator store, detecting potential statistical anomalies, missing values, or outlier bounds.
@@ -193,7 +255,7 @@ To ensure academic credibility and transparency, the platform includes a **Prove
 
 ---
 
-### 8. Visual Identity & Japandi Design System
+### 12. Visual Identity & Japandi Design System
 The UI adheres to a refined **Japandi aesthetic**—blending Japanese minimalism with Scandinavian functionalism:
 
 - **Organic Warm Palette**: Rooted in warm, natural neutrals (`#FAF8F5` light canvas, `#121310` dark canvas, with terracotta `#D97706`, sage `#059669`, and deep slate accents).
@@ -206,7 +268,7 @@ The UI adheres to a refined **Japandi aesthetic**—blending Japanese minimalism
 
 ---
 
-### 9. African Ethnic Tree & Ancestral Lineages Explorer
+### 13. African Ethnic Tree & Ancestral Lineages Explorer
 An interactive anthropological, linguistic, and genomic taxonomy explorer mapping Africa's living heritage:
 - **Hierarchical Phyla & Macro-Families**: Visualizes deep linguistic lineages rooted in four principal continental phyla:
   - **Niger-Congo**: Atlantic-Congo, Bantu dispersal, Volta-Niger, and Mande expansions.
@@ -218,16 +280,7 @@ An interactive anthropological, linguistic, and genomic taxonomy explorer mappin
 
 ---
 
-### 10. Scholarly Treatises & Econometric Working Papers
-A dedicated research library featuring 10 peer-reviewed empirical dossiers exploring development economics, historical persistence, and institutional formation:
-- **Nathan Nunn Econometric Models**: Detailed analysis of *The Long-Term Effects of Africa's Slave Trades* (Quarterly Journal of Economics, 2008) and the intergenerational transmission of mistrust (*The Slave Trade and the Origins of Mistrust in Africa*, American Economic Review, 2011).
-- **Genomic & Population Architecture**: Dossiers on tri-continental genetic admixture in Cabo Verde, molecular legacies, and founder effects across the Middle Passage.
-- **Reparatory Justice & International Law**: Rigorous academic frameworks examining historical debt, sovereign responsibility, and reparatory mechanisms in the Anthropocene.
-- **Direct Interactive Exploration**: Users can launch cross-referenced cartographic views, indicator correlations, and bibliographies directly from each treatise.
-
----
-
-### 11. Privacy, Data Governance & Scholarly Charter (MD3 Architecture)
+### 14. Privacy, Data Governance & Scholarly Charter (MD3 Architecture)
 An in-app four-pillar governance framework built with Material Design 3 (MD3) navigation:
 - **Zero-Surveillance Architecture**: Compliant with EU GDPR (Articles 12–22), ePrivacy, CCPA/CPRA, and the African Union Malabo Convention on Personal Data Protection. No commercial advertising cookies, tracking pixels, or cross-site fingerprinting.
 - **Interactive Local Storage Inspector**: Live in-app transparency utility scanning browser `localStorage` keys, enabling users to audit cached data and execute their GDPR **Right to Erasure** (Art. 17) with one click.
@@ -334,43 +387,45 @@ The Africa Data Atlas is configured as a fully compliant **Progressive Web App (
 ## 💻 Technology Stack & Architecture
 
 ```
-+------------------------------------------------------------------------------------+
-|                                    USER INTERFACE                                  |
-|  React 19  •  TypeScript 5.8  •  Tailwind CSS v4  •  Motion (Framer)  •  Lucide    |
-+------------------------------------------------------------------------------------+
-       │                                     │                                │
-       ▼                                     ▼                                ▼
-+──────────────────────────+   +──────────────────────────+   +──────────────────────+
-|    CARTOGRAPHY ENGINE    |   |    ANALYTICS & CHARTS    |   |   3D VOYAGES GLOBE   |
-| Pure SVG Path Topology   |   | Recharts Data Visualizer |   | Canvas Orthographic  |
-| Geodesic Island Anchors  |   | Bi-Variable Scatter & $r$|   | Great-Circle Vectors |
-| Quantile Color Scalers   |   | Radar Pillar Comparisons |   | Time Scrubber Engine |
-+──────────────────────────+   +──────────────────────────+   +──────────────────────+
-       │                                     │                                │
-       └─────────────────────────────────────┼────────────────────────────────┘
-                                             │
-                                             ▼
-+------------------------------------------------------------------------------------+
-|                              CANONICAL ATLAS DATA STORE                            |
-|    AtlasDataStore Singleton  •  54 Sovereign Entities  •  90+ Harmonized Series   |
-|    Integrity Audit Engine    •  SHA-256 Checksums       •  Provenance Metadata     |
-+------------------------------------------------------------------------------------+
-       │                                     │
-       ▼                                     ▼
-+──────────────────────────+   +─────────────────────────────────────────────────────+
-|   LOCAL OFFLINE CACHE    |   |          16 MULTILATERAL API CONNECTORS             |
-| Service Worker (sw.js)   |   | World Bank • IMF WEO • UN Comtrade • WHO GHO        |
-| localStorage Data Cache  |   | UNESCO UIS • Freedom House • WGI • WB Climate CCKP  |
-+──────────────────────────+   +─────────────────────────────────────────────────────+
++---------------------------------------------------------------------------------------------------------+
+|                                             USER INTERFACE                                              |
+|      React 19  •  TypeScript 5.8  •  Tailwind CSS v4  •  Motion (motion/react)  •  Lucide Icons         |
++---------------------------------------------------------------------------------------------------------+
+       │                                 │                                │                             │
+       ▼                                 ▼                                ▼                             ▼
++──────────────────────────+   +──────────────────────────+   +──────────────────────+   +──────────────────────+
+|    CARTOGRAPHY ENGINE    |   |    ANALYTICS & CHARTS    |   |   3D VOYAGES GLOBE   |   |   ARCHIVAL STUDIOS   |
+| Pure SVG Path Topology   |   | Recharts Data Visualizer |   | Canvas Orthographic  |   | 1,252 Visual Plates  |
+| Geodesic Island Anchors  |   | Bi-Variable Scatter & $r$|   | Great-Circle Vectors |   | Wheel Zoom Isolation |
+| Curtain Map Plate Slider |   | Radar Pillar Comparisons |   | Time Scrubber Engine |   | Touch Pinch/Pan Lab  |
+| Ocean Streamline Canvas  |   | 6 Thematic Pillar Panels |   | CSV & BibTeX Exports |   | 32 Castas Series     |
++──────────────────────────+   +──────────────────────────+   +──────────────────────+   +──────────────────────+
+       │                                 │                                │                             │
+       └─────────────────────────────────┴────────────────┬───────────────┴─────────────────────────────┘
+                                                          │
+                                                          ▼
++---------------------------------------------------------------------------------------------------------+
+|                                        CANONICAL ATLAS DATA STORE                                       |
+|            AtlasDataStore Singleton  •  54 Sovereign Entities  •  90+ Harmonized Series                 |
+|            Integrity Audit Engine    •  SHA-256 Checksums       •  Provenance Metadata                  |
++---------------------------------------------------------------------------------------------------------+
+       │                                                                  │
+       ▼                                                                  ▼
++───────────────────────────────────+             +───────────────────────────────────────────────────────+
+|        LOCAL OFFLINE CACHE        |             |            16 MULTILATERAL API CONNECTORS             |
+| Service Worker (sw.js)            |             | World Bank • IMF WEO • UN Comtrade • WHO GHO          |
+| localStorage Data Cache           |             | UNESCO UIS • Freedom House • WGI • WB Climate CCKP    |
++───────────────────────────────────+             +───────────────────────────────────────────────────────+
 ```
 
 ### Core Frontend Stack:
 - **UI Framework**: [React 19](https://react.dev/) + [TypeScript 5.8](https://www.typescriptlang.org/) (Strict Mode)
-- **Build System**: [Vite 6](https://vitejs.dev/) with ESModule bundling and chunk splitting
-- **Styling Engine**: [Tailwind CSS v4](https://tailwindcss.com/) with native CSS variable color theming
-- **Vector Animation**: [Motion (motion/react)](https://motion.dev/) for layout transitions and sheet drawers
-- **Chart Visualization**: [Recharts](https://recharts.org/) for multi-series line charts, radars, and scatter plots
-- **Icons**: [Lucide React](https://lucide.dev/) for vector UI iconography
+- **Build System**: [Vite 6](https://vitejs.dev/) with ESModule bundling, asset precaching, and code splitting
+- **Styling Engine**: [Tailwind CSS v4](https://tailwindcss.com/) with native CSS variables and `@import "tailwindcss";`
+- **Vector Animation**: [Motion (motion/react)](https://motion.dev/) for layout transitions, tab morphing, and drawer sheets
+- **Chart Visualization**: [Recharts](https://recharts.org/) for multi-series area charts, composed charts, radars, and bi-variable scatter plots
+- **Archival Deep-Zoom Engine**: Custom non-passive wheel interceptor with `{ passive: false }`, Euclidean two-finger mobile pinch-to-zoom, and boundary-clamped metadata drawers (`overscroll-behavior: contain`)
+- **Icons**: [Lucide React](https://lucide.dev/) for vector iconography alongside mathematical inline institutional SVG seals
 
 ---
 

@@ -51,6 +51,12 @@ interface HeroState {
   category?: string;
 }
 
+interface IconographyViewProps {
+  initialPlateId?: string | number;
+  initialSearchQuery?: string;
+  onClearInitialPlate?: () => void;
+}
+
 const getCandidateState = (excludeId?: number): HeroState => {
   const available = HERO_IMAGE_CANDIDATES.filter(id => id !== excludeId);
   const selectedId = available[Math.floor(Math.random() * available.length)] || HERO_IMAGE_CANDIDATES[0];
@@ -65,7 +71,11 @@ const getCandidateState = (excludeId?: number): HeroState => {
   };
 };
 
-export const IconographyView: React.FC = () => {
+export const IconographyView: React.FC<IconographyViewProps> = ({
+  initialPlateId,
+  initialSearchQuery,
+  onClearInitialPlate
+}) => {
   const [heroState, setHeroState] = useState<HeroState>(() => getCandidateState());
   const [inspectedIllustration, setInspectedIllustration] = useState<SlaveTradeIllustration | null>(null);
   
@@ -74,6 +84,35 @@ export const IconographyView: React.FC = () => {
 
   // Active Castas Item in embedded viewer
   const [activeCastasItem, setActiveCastasItem] = useState<SlaveTradeIllustration>(castasIllustrations[0]);
+
+  // Deep-linking: Automatically select and open initialPlateId if requested via search / URL
+  useEffect(() => {
+    if (!initialPlateId) return;
+    const numId = Number(initialPlateId);
+    // 1. Try finding in standard SLAVE_TRADE_ILLUSTRATIONS by objectId, regId, or identifier
+    const foundMain = SLAVE_TRADE_ILLUSTRATIONS.find(
+      item => item.objectId === numId || 
+              item.regId.toLowerCase() === String(initialPlateId).toLowerCase() ||
+              item.identifier === String(initialPlateId)
+    );
+    if (foundMain) {
+      setActiveTab('registry');
+      setInspectedIllustration(foundMain);
+      return;
+    }
+
+    // 2. Try finding in castasIllustrations
+    const foundCastas = castasIllustrations.find(
+      item => item.objectId === numId || 
+              item.identifier === String(initialPlateId) || 
+              item.regId.toLowerCase() === String(initialPlateId).toLowerCase()
+    );
+    if (foundCastas) {
+      setActiveTab('ingestion');
+      setActiveCastasItem(foundCastas);
+      setInspectedIllustration(foundCastas);
+    }
+  }, [initialPlateId]);
 
   const rotateHeroImage = useCallback(() => {
     setHeroState(prev => getCandidateState(prev.id));
@@ -125,9 +164,9 @@ export const IconographyView: React.FC = () => {
         <div className="relative z-10 w-full px-4 sm:px-6 md:px-12 py-12 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 text-left">
           <div className="max-w-3xl space-y-4 md:space-y-5">
             <div className="flex flex-wrap items-center gap-2.5">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/15 dark:border-amber-400/20 text-amber-900 dark:text-amber-300 text-[11px] font-mono font-bold uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5 animate-pulse text-amber-700 dark:text-amber-400" />
-                <span>Exhibition Plate No. SI-OB-{heroState.id}</span>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/15 dark:border-amber-400/20 text-amber-900 dark:text-amber-300 text-xs font-mono font-bold uppercase tracking-wider">
+                <BookOpen className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 shrink-0" />
+                <span>Scholarly Archival Iconography • Exhibition Plate SI-OB-{heroState.id}</span>
               </div>
 
               <button 
@@ -151,12 +190,17 @@ export const IconographyView: React.FC = () => {
             <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-stone-600 dark:text-stone-400 pt-1">
               <span className="flex items-center gap-1.5">
                 <BookOpen className="w-4 h-4 text-amber-800 dark:text-amber-400" />
-                <span className="font-semibold">1,220 Hand-Indexed Plates</span>
+                <span className="font-semibold">1,220 Archival Plates</span>
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1.5">
+                <Database className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+                <span className="font-semibold">32 Colonial Castas Series</span>
               </span>
               <span>•</span>
               <span className="flex items-center gap-1.5">
                 <ImageIcon className="w-4 h-4 text-amber-800 dark:text-amber-400" />
-                <span className="font-semibold">Full High-Res Scans</span>
+                <span className="font-semibold">1,252 Total Visual Records</span>
               </span>
             </div>
           </div>
@@ -210,72 +254,60 @@ export const IconographyView: React.FC = () => {
         </div>
       </div>
 
-      {/* Editorial Section Description */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-stone-200 dark:border-stone-800 pb-3 text-left">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 tracking-tight">
-              Iconography Archive
-            </h2>
-            <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/25 text-amber-800 dark:text-amber-300 text-[10px] font-mono font-bold">
-              {SLAVE_TRADE_ILLUSTRATIONS.length + castasIllustrations.length} Total Visual Records
-            </span>
-          </div>
-          <p className="text-xs sm:text-sm font-serif text-stone-600 dark:text-stone-400">
-            Curated historical plates, naval schematics, and colonial castas painting series with academic citations.
-          </p>
-        </div>
-      </div>
-
       {/* Tab Switchboard Content Area */}
       {activeTab === 'registry' ? (
-        <div className="px-1">
+        <div>
           <SlaveTradeIconography 
             activeTab={activeTab}
             onTabChange={setActiveTab}
             castasCount={castasIllustrations.length}
+            initialSearchTerm={initialSearchQuery}
           />
         </div>
       ) : (
         /* Castas Archive Tab: ArchivalImageViewer rendered standalone with all 32 images */
         <div className="space-y-4 animate-in fade-in duration-300 text-left">
           {/* Sticky Toolbar for Castas Archive with Integrated Segmented Control */}
-          <div className="sticky top-0 z-30 bg-[#FAF8F5]/95 dark:bg-stone-950/95 backdrop-blur-md p-4 rounded-2xl border border-stone-200/90 dark:border-stone-800 shadow-sm space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20 flex items-center justify-center text-amber-900 dark:text-amber-400 shrink-0">
-                  <Database className="w-4 h-4" />
+          <div className="sticky top-[64px] z-30 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 py-4 bg-stone-50/95 dark:bg-stone-950/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-800/80 space-y-4 shadow-sm transition-all text-left">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/15 dark:border-amber-400/20 text-amber-900 dark:text-amber-400 shrink-0">
+                  <Database className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-serif font-black text-stone-900 dark:text-stone-100 text-sm tracking-tight leading-none">
-                      Castas &amp; Colonial Painting Series
-                    </h3>
-                    <span className="px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-[10px] font-mono font-bold">
-                      {castasIllustrations.length} Plates Loaded
-                    </span>
-                  </div>
+                  <h3 className="font-serif font-bold text-stone-900 dark:text-stone-100 text-sm tracking-tight leading-none">
+                    Castas &amp; Colonial Painting Series
+                  </h3>
                   <p className="text-[10px] font-mono text-stone-500 dark:text-stone-400 mt-1">
-                    Direct visual scrutiny workspace with high-resolution zooming, rotation, and academic citations.
+                    Plate {activeCastasItem.regId} of {castasIllustrations.length} • Museo Nacional del Virreinato
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 self-start sm:self-auto">
+              <div className="flex flex-wrap items-center gap-3 lg:flex-1 lg:justify-end">
                 <button
                   onClick={() => setInspectedIllustration(activeCastasItem)}
-                  className="px-3.5 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 dark:bg-stone-100 dark:hover:bg-white text-white dark:text-stone-900 text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-2 shadow-xs shrink-0"
-                  title="Open Current Plate in Fullscreen Modal"
+                  className="px-4 py-2 rounded-xl bg-amber-900 hover:bg-amber-800 dark:bg-amber-500 dark:hover:bg-amber-400 text-white dark:text-stone-950 text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-2 shadow-xs"
+                  title="Open Current Plate in Fullscreen Loupe Modal"
                 >
                   <Maximize2 className="w-3.5 h-3.5" />
-                  <span>Fullscreen Modal</span>
+                  <span>Fullscreen Loupe Modal</span>
                 </button>
               </div>
             </div>
 
-            {/* Row 2: Right-Aligned Integrated Segmented Control */}
-            <div className="flex items-center justify-end pt-1 border-t border-stone-200/80 dark:border-stone-800/80">
-              <div className="inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner">
+            {/* Row 2: Selected Plate Caption & Right-Aligned Integrated Segmented Control */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+              <div className="flex items-center gap-2 truncate text-xs font-mono text-stone-600 dark:text-stone-400 min-w-0">
+                <span className="font-bold text-amber-900 dark:text-amber-400 uppercase tracking-wider shrink-0">
+                  Active Plate:
+                </span>
+                <span className="truncate text-stone-800 dark:text-stone-200 font-serif italic">
+                  {activeCastasItem.title}
+                </span>
+              </div>
+
+              <div className="inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner self-start lg:self-auto">
                 <button
                   onClick={() => setActiveTab('registry')}
                   className="px-3.5 py-1.5 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-2 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
@@ -308,7 +340,7 @@ export const IconographyView: React.FC = () => {
           </div>
 
           {/* Standalone Archival Image Viewer Workspace */}
-          <div className="h-[700px] sm:h-[780px] rounded-3xl overflow-hidden border border-stone-200/90 dark:border-stone-800 shadow-xl bg-[#FAF8F5] dark:bg-stone-950">
+          <div className="h-[740px] sm:h-[820px] rounded-3xl overflow-hidden border border-stone-200/90 dark:border-stone-800 shadow-xl bg-[#FAF8F5] dark:bg-stone-950">
             <ArchivalImageViewer
               illustration={activeCastasItem}
               illustrationsList={castasIllustrations}

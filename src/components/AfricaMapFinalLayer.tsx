@@ -70,6 +70,15 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
   const finalMap = mapData || streamedMap || AFRICA_FINAL_MAP;
   return (
     <>
+      {/* 
+        ============================================================================
+        AFRICALIA CARTOGRAPHIC OBSERVATORY — VECTOR CONTINENTAL TOPOLOGY
+        Author & Cartographer: Zéluis F. Correia
+        Copyright (c) 2024-2026 Africalia. All Rights Reserved.
+        Coordinate Space: 5796 x 5867 High-Precision Vector Cartesian Grid
+        Derived Admin-1 Subdivisions & Hydrographic Coastline Calibrations
+        ============================================================================
+      */}
       {/* Scaled Graticule Latitude / Longitude lines extending edge-to-edge across container */}
       {showGraticuleAndCompass && (
         <g id="graticule-grid-final" className="pointer-events-none select-none">

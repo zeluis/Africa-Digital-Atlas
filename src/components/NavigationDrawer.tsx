@@ -63,6 +63,7 @@ export type MainNavId =
   | 'report-rao-model-socioeconomic'
   | 'report-sociological-origins-racism'
   | 'privacy'
+  | 'style-guide'
   | (string & {});
 
 export type RegionNavId = 

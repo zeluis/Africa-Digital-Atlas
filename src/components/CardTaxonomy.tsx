@@ -168,7 +168,7 @@ export const DataCard: React.FC<DataCardProps> = ({
         </div>
 
         <div className="flex items-baseline gap-1.5 my-1">
-          <span className="text-2xl md:text-3xl font-extrabold font-mono text-zinc-900 dark:text-zinc-100 tracking-tight">
+          <span className="text-2xl md:text-3xl font-extrabold font-mono tabular-nums text-zinc-900 dark:text-zinc-100 tracking-tight">
             {value}
           </span>
           {unit && (

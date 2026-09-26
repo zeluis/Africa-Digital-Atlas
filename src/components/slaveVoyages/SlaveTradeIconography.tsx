@@ -31,14 +31,23 @@ interface SlaveTradeIconographyProps {
   activeTab?: 'registry' | 'ingestion';
   onTabChange?: (tab: 'registry' | 'ingestion') => void;
   castasCount?: number;
+  initialSearchTerm?: string;
 }
 
 export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
   activeTab = 'registry',
   onTabChange,
-  castasCount = 32
+  castasCount = 32,
+  initialSearchTerm = ''
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+
+  useEffect(() => {
+    if (initialSearchTerm !== undefined) {
+      setSearchTerm(initialSearchTerm);
+    }
+  }, [initialSearchTerm]);
+
   const [selectedCollection, setSelectedCollection] = useState<string>('all');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -140,39 +149,22 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
   }, [filteredIllustrations, visibleCount]);
 
   return (
-    <div className="space-y-8 text-left">
-      {/* Editorial Intro Banner */}
-      <div className="p-6 md:p-8 rounded-3xl bg-[#FAF8F5] dark:bg-stone-950 border border-stone-200 dark:border-stone-800 shadow-xs relative overflow-hidden">
-        <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-48 h-48 bg-amber-100/30 dark:bg-amber-950/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="max-w-3xl space-y-2">
-          <div className="flex items-center gap-2 text-xs font-sans uppercase tracking-widest text-amber-800 dark:text-amber-500 font-bold">
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>Scholarly Archival Iconography</span>
-          </div>
-          <h2 className="text-2xl md:text-3xl font-serif font-black text-stone-900 dark:text-stone-100 tracking-tight leading-tight">
-            The Atlantic Slave Trade & Iconography Registry
-          </h2>
-          <p className="text-xs sm:text-sm font-serif text-stone-600 dark:text-stone-400 leading-relaxed">
-            Exploring the visual archives of the Middle Passage. This curated repository preserves engravings, watercolors, and architectural schematics from the 16th to 19th centuries, documented by historians to recover individual and material narratives of confinement, labor, and liberation.
-          </p>
-        </div>
-      </div>
-
+    <div className="space-y-6 text-left">
       {/* Sticky, Unified Header & Custom Themes selector panel */}
       <div className="sticky top-[64px] z-30 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 py-4 bg-stone-50/95 dark:bg-stone-950/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-800/80 space-y-4 shadow-sm transition-all">
         {/* Row 1: Registry Branding & Unified Toolbar Controls */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           {/* Branding Left */}
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/40 text-amber-800 dark:text-amber-500 shrink-0">
+            <div className="p-2 rounded-xl bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/15 dark:border-amber-400/20 text-amber-900 dark:text-amber-400 shrink-0">
               <BookOpen className="w-4.5 h-4.5" />
             </div>
             <div>
-              <h3 className="font-serif font-black text-stone-900 dark:text-stone-100 text-sm tracking-tight leading-none">
-                Iconography Archive
+              <h3 className="font-serif font-bold text-stone-900 dark:text-stone-100 text-sm tracking-tight leading-none">
+                Visual Registry Catalog
               </h3>
-              <p className="text-[10px] font-mono text-stone-500 dark:text-stone-400 mt-1.5">
-                Showing {filteredIllustrations.length} of {SLAVE_TRADE_ILLUSTRATIONS.length} cataloged artifacts
+              <p className="text-[10px] font-mono text-stone-500 dark:text-stone-400 mt-1">
+                Showing {filteredIllustrations.length} of {SLAVE_TRADE_ILLUSTRATIONS.length} cataloged plates
               </p>
             </div>
           </div>
@@ -639,6 +631,8 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
       {/* Archival Deep Zoom & Citation Loupe Modal */}
       <ArchivalLoupeModal
         illustration={activeIllustration}
+        illustrationsList={filteredIllustrations}
+        onSelectIllustration={(item) => setActiveIllustration(item)}
         onClose={() => setActiveIllustration(null)}
       />
     </div>

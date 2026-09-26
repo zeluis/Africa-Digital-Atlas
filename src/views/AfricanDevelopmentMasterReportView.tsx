@@ -177,7 +177,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
 
           {/* Headline & Subtitle */}
           <div className="space-y-4 pt-1">
-            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[#181816] dark:text-[#E6E3DB] leading-[1.1] max-w-5xl">
+            <h1 className="font-serif-display type-display font-bold tracking-tight text-[#181816] dark:text-[#E6E3DB] leading-[1.1] max-w-5xl">
               The Structural & Evolutionary Foundations of African Development
             </h1>
             <p className="font-sans font-light text-lg sm:text-xl text-[#343430] dark:text-[#CCC8BC] leading-relaxed max-w-4xl">

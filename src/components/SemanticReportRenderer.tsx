@@ -64,7 +64,7 @@ export const SemanticReportRenderer: React.FC<SemanticReportRendererProps> = ({
 
   // Split paragraphs if pure text
   return (
-    <div className={`space-y-4 editorial-reading-lane font-reading text-pretty hyphens-auto text-[15px] sm:text-[16px] leading-[1.82] text-stone-800 dark:text-stone-200 ${className}`}>
+    <div className={`space-y-4 editorial-reading-lane font-serif-book type-body-editorial text-stone-800 dark:text-stone-200 ${className}`}>
       {parts.map((part, idx) => {
         if (part.type === 'text') {
           // Render text with line breaks
@@ -73,7 +73,7 @@ export const SemanticReportRenderer: React.FC<SemanticReportRendererProps> = ({
             return (
               <React.Fragment key={idx}>
                 {paragraphs.map((para, pIdx) => (
-                  <p key={pIdx} className="mt-4 first:mt-0 leading-[1.82] text-pretty">
+                  <p key={pIdx} className="mt-4 first:mt-0 leading-[1.80] text-pretty">
                     {para}
                   </p>
                 ))}

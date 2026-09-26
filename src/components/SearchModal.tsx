@@ -245,6 +245,16 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         const selected = flattenedItems[selectedIndex];
         if (selected) {
           handleExecuteSelection(selected);
+        } else if (q) {
+          addRecentSearch(query);
+          if (onSelectTab) {
+            if (selectedCategory === 'iconography') {
+              onSelectTab(`iconography?q=${encodeURIComponent(query)}`);
+            } else {
+              onSelectTab(`explore`);
+            }
+          }
+          onClose();
         }
       }
     };
@@ -268,13 +278,13 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     } else if (item.type === 'iconography') {
       addRecentSearch(item.data.title);
       if (onSelectTab) {
-        onSelectTab('iconography');
+        onSelectTab(`iconography?plate=${item.data.objectId}`);
       }
       onClose();
     } else if (item.type === 'castas') {
       addRecentSearch(item.data.title);
       if (onSelectTab) {
-        onSelectTab('iconography');
+        onSelectTab(`iconography?castas=${item.data.id}`);
       }
       onClose();
     } else if (item.type === 'report') {

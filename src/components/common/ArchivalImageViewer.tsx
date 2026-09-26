@@ -29,7 +29,8 @@ import {
   PanelRightOpen,
   FileDown,
   Download,
-  Loader2
+  Loader2,
+  Compass
 } from 'lucide-react';
 import { DynamicIcon } from '../DynamicIcon';
 import { SlaveTradeIllustration } from '../../data/slaveTradeIllustrations';
@@ -85,6 +86,31 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const filmstripRef = useRef<HTMLDivElement>(null);
+  const metadataScrollRef = useRef<HTMLDivElement>(null);
+
+  // Keep references to mutable zoom and pan states for native non-passive event listeners
+  const zoomLevelRef = useRef<number>(zoomLevel);
+  zoomLevelRef.current = zoomLevel;
+
+  const panOffsetRef = useRef<{ x: number; y: number }>(panOffset);
+  panOffsetRef.current = panOffset;
+
+  // Touch gesture state refs for mobile pinch-to-zoom and touch panning
+  const touchStartDistRef = useRef<number | null>(null);
+  const touchStartZoomRef = useRef<number>(1);
+  const touchStartPointRef = useRef<{ x: number; y: number } | null>(null);
+  const touchStartPanRef = useRef<{ x: number; y: number } | null>(null);
+
+  // Prevent background page scrolling when viewer is in modal mode
+  useEffect(() => {
+    if (mode === 'modal') {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [mode]);
 
   // Sync fullscreen state with document fullscreen changes
   useEffect(() => {
@@ -172,16 +198,148 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [illustration, onClose, handlePrevIllustration, handleNextIllustration, toggleFullscreen]);
 
-  // Mouse wheel zoom
-  const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    const zoomFactor = e.deltaY < 0 ? 0.25 : -0.25;
-    setZoomLevel(prev => {
-      const next = Math.max(1, Math.min(5, prev + zoomFactor));
-      if (next === 1) setPanOffset({ x: 0, y: 0 });
-      return Number(next.toFixed(2));
-    });
-  };
+  // Isolate wheel zoom on containerRef so pointer over image ONLY zooms and never scrolls the window
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleNativeWheel = (e: WheelEvent) => {
+      // Unconditionally stop the event from bubbling or scrolling the page
+      e.preventDefault();
+      e.stopPropagation();
+
+      const zoomFactor = e.deltaY < 0 ? 0.25 : -0.25;
+      setZoomLevel(prev => {
+        const next = Math.max(1, Math.min(5, prev + zoomFactor));
+        if (next === 1) {
+          setPanOffset({ x: 0, y: 0 });
+        }
+        return Number(next.toFixed(2));
+      });
+    };
+
+    // Mobile touch gestures: 2-finger pinch-to-zoom and 1-finger panning without scrolling the page
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        e.stopPropagation();
+        const dist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        touchStartDistRef.current = dist;
+        touchStartZoomRef.current = zoomLevelRef.current;
+      } else if (e.touches.length === 1) {
+        touchStartPointRef.current = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY
+        };
+        touchStartPanRef.current = { ...panOffsetRef.current };
+        if (zoomLevelRef.current > 1) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 2 && touchStartDistRef.current !== null) {
+        e.preventDefault();
+        e.stopPropagation();
+        const currentDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const scale = currentDist / touchStartDistRef.current;
+        const nextZoom = Math.max(1, Math.min(5, touchStartZoomRef.current * scale));
+        setZoomLevel(Number(nextZoom.toFixed(2)));
+      } else if (e.touches.length === 1 && touchStartPointRef.current && touchStartPanRef.current) {
+        if (zoomLevelRef.current > 1) {
+          e.preventDefault();
+          e.stopPropagation();
+          const dx = e.touches[0].clientX - touchStartPointRef.current.x;
+          const dy = e.touches[0].clientY - touchStartPointRef.current.y;
+          setPanOffset({
+            x: touchStartPanRef.current.x + dx,
+            y: touchStartPanRef.current.y + dy
+          });
+        }
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (e.touches.length < 2) {
+        touchStartDistRef.current = null;
+      }
+      if (e.touches.length === 0) {
+        touchStartPointRef.current = null;
+        touchStartPanRef.current = null;
+        setZoomLevel(z => {
+          if (z <= 1) {
+            setPanOffset({ x: 0, y: 0 });
+          }
+          return z;
+        });
+      }
+    };
+
+    container.addEventListener('wheel', handleNativeWheel, { passive: false });
+    container.addEventListener('touchstart', handleTouchStart, { passive: false });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('touchend', handleTouchEnd, { passive: false });
+    container.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+
+    return () => {
+      container.removeEventListener('wheel', handleNativeWheel);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchcancel', handleTouchEnd);
+    };
+  }, []);
+
+  // Isolate wheel scrolling inside the academic citation metadata drawer so reaching edges never scrolls the main page
+  useEffect(() => {
+    const metaEl = metadataScrollRef.current;
+    if (!metaEl) return;
+
+    const handleMetaWheel = (e: WheelEvent) => {
+      e.stopPropagation();
+      const { scrollTop, scrollHeight, clientHeight } = metaEl;
+      const isAtTop = scrollTop <= 0;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+
+      // Prevent scroll chaining to parent window when hitting the top or bottom of citation content
+      if ((e.deltaY < 0 && isAtTop) || (e.deltaY > 0 && isAtBottom)) {
+        e.preventDefault();
+      }
+    };
+
+    metaEl.addEventListener('wheel', handleMetaWheel, { passive: false });
+    return () => {
+      metaEl.removeEventListener('wheel', handleMetaWheel);
+    };
+  }, [isMetadataOpen, activeTab]);
+
+  // Convert vertical wheel on the filmstrip carousel to horizontal scrolling and prevent page scrolling
+  useEffect(() => {
+    const filmstrip = filmstripRef.current;
+    if (!filmstrip) return;
+
+    const handleFilmstripWheel = (e: WheelEvent) => {
+      if (e.deltaY !== 0 || e.deltaX !== 0) {
+        e.preventDefault();
+        e.stopPropagation();
+        const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        filmstrip.scrollBy({ left: delta, behavior: 'auto' });
+      }
+    };
+
+    filmstrip.addEventListener('wheel', handleFilmstripWheel, { passive: false });
+    return () => {
+      filmstrip.removeEventListener('wheel', handleFilmstripWheel);
+    };
+  }, [isThumbnailsOpen, illustrationsList.length]);
 
   // Pan event handlers
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -297,7 +455,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
     <div 
       ref={rootRef}
       className={`archival-viewer-root bg-[#FAF8F5] dark:bg-stone-950 text-stone-900 dark:text-stone-100 border border-stone-200/90 dark:border-stone-800 rounded-3xl w-full shadow-2xl relative text-left overflow-hidden flex flex-col transition-all duration-300 ${
-        mode === 'embedded' ? 'h-full border-none rounded-none shadow-none' : isFullscreen ? 'h-full max-h-[98vh] max-w-[98vw]' : 'max-w-7xl max-h-[94vh]'
+        mode === 'embedded' ? 'h-full border-none rounded-none shadow-none' : isFullscreen ? 'h-full max-h-[98vh] max-w-[98vw]' : 'w-full max-w-7xl h-[92vh] max-h-[95vh]'
       }`}
       onClick={e => e.stopPropagation()}
     >
@@ -485,11 +643,10 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
             </button>
           </div>
 
-          {/* Interactive Zoomable Viewport — Occupies Full Available Area Above Filmstrip */}
+          {/* Interactive Zoomable Viewport — Occupies Full Available Area Above Caption Bar & Filmstrip */}
           <div 
             ref={containerRef}
-            className="w-full flex-1 min-h-0 flex items-center justify-center relative overflow-hidden cursor-grab active:cursor-grabbing p-4 sm:p-6"
-            onWheel={handleWheel}
+            className="w-full flex-1 min-h-0 flex items-center justify-center relative overflow-hidden cursor-grab active:cursor-grabbing p-2 sm:p-4 touch-none overscroll-contain select-none"
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
@@ -512,6 +669,29 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
             </div>
           </div>
 
+          {/* Caption & Navigation Guidance Bar — Positioned OUTSIDE the image/zoom container */}
+          <div className="w-full shrink-0 px-4 py-2.5 bg-[#F4EFE6]/95 dark:bg-stone-900/95 backdrop-blur-md border-t border-stone-200/90 dark:border-stone-800 flex flex-wrap items-center justify-between gap-3 text-xs z-10">
+            {/* Archival Plate Caption */}
+            <div className="flex items-center gap-2 min-w-0 max-w-xl truncate text-stone-700 dark:text-stone-300">
+              <span className="font-serif font-semibold text-stone-900 dark:text-stone-100 truncate">
+                {illustration.title}
+              </span>
+              {illustration.date && (
+                <span className="text-stone-500 dark:text-stone-400 font-mono text-[11px] shrink-0">
+                  ({illustration.date})
+                </span>
+              )}
+            </div>
+
+            {/* Navigation Information Label / Pill (Positioned outside the zoom window) */}
+            <div className="flex items-center gap-1.5 shrink-0 text-[10px] font-mono text-stone-600 dark:text-stone-400">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-200/80 dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700/80 text-stone-700 dark:text-stone-300 shadow-2xs">
+                <Compass className="w-3 h-3 text-amber-700 dark:text-amber-400" />
+                <span>Scroll wheel: Zoom · Drag: Pan · Alt + ← / →: Step plates</span>
+              </span>
+            </div>
+          </div>
+
           {/* Bottom Complete Filmstrip Drawer — Positioned in flex flow so it never obscures image bottom/legend */}
           {isThumbnailsOpen && illustrationsList.length > 0 && (
             <div className="w-full shrink-0 bg-[#FAF8F5]/95 dark:bg-stone-950/95 backdrop-blur-xl border-t border-stone-200/90 dark:border-stone-800 p-2.5 z-20 flex items-center gap-2 shadow-md">
@@ -531,7 +711,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
               {/* Scrollable Container with all images */}
               <div 
                 ref={filmstripRef}
-                className="flex items-center gap-2.5 overflow-x-auto py-1 scroll-smooth no-scrollbar flex-1 min-w-0"
+                className="flex items-center gap-2.5 overflow-x-auto py-1 scroll-smooth no-scrollbar flex-1 min-w-0 overscroll-contain"
                 style={{ scrollbarWidth: 'thin' }}
               >
                 {illustrationsList.map((item, idx) => {
@@ -569,16 +749,11 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
               </button>
             </div>
           )}
-
-          {/* Bottom Hint */}
-          <div className="absolute bottom-20 right-4 z-10 pointer-events-none px-3 py-1 rounded-full bg-[#FAF8F5]/90 dark:bg-black/70 backdrop-blur-md text-stone-600 dark:text-stone-300 text-[10px] font-mono border border-stone-300/80 dark:border-white/10 hidden sm:block shadow-2xs">
-            Scroll wheel to zoom • Drag to pan • Alt + ← / → to step plates
-          </div>
         </div>
 
         {/* Right Collapsible Panel: Polished Editorial Dossier & Citation Generator */}
         {isMetadataOpen && (
-          <div className="w-full lg:w-5/12 xl:w-1/3 bg-[#FAF8F5] dark:bg-[#161413] flex flex-col h-full overflow-y-auto border-t lg:border-t-0 border-stone-200/90 dark:border-stone-800 text-stone-900 dark:text-stone-100">
+          <div className="w-full lg:w-5/12 xl:w-1/3 bg-[#FAF8F5] dark:bg-[#161413] flex flex-col h-full min-h-0 border-t lg:border-t-0 border-stone-200/90 dark:border-stone-800 text-stone-900 dark:text-stone-100 overflow-hidden">
             
             {/* Panel Header & Tabs: Metadata, Citation & Academia */}
             <div className="flex items-center justify-between border-b border-stone-200/90 dark:border-stone-800 bg-[#F4EFE6]/90 dark:bg-stone-950/80 shrink-0">
@@ -633,7 +808,11 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
               </button>
             </div>
 
-            <div className="p-5 sm:p-6 space-y-6 flex-1 overflow-y-auto">
+            <div 
+              ref={metadataScrollRef}
+              className="p-5 sm:p-6 space-y-6 flex-1 min-h-0 overflow-y-auto drawer-cozy-scrollbar overscroll-contain"
+              style={{ scrollbarGutter: 'stable', scrollbarWidth: 'thin' }}
+            >
               
               {/* TAB 1: ARCHIVAL METADATA */}
               {activeTab === 'metadata' && (

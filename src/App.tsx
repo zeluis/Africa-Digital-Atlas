@@ -50,7 +50,14 @@ const REGION_ID_TO_NAME: Record<string, AfricanRegion> = {
   'region-southern': 'Southern Africa'
 };
 
-const parseUrlHash = (): { tab: CanonicalNavTab; entityId?: string; region?: AfricanRegion; indicator?: string } => {
+const parseUrlHash = (): { 
+  tab: CanonicalNavTab; 
+  entityId?: string; 
+  region?: AfricanRegion; 
+  indicator?: string;
+  plateId?: string;
+  searchQuery?: string;
+} => {
   if (typeof window === 'undefined') return { tab: 'overview' };
   const hash = window.location.hash.replace(/^#\/?/, '').trim();
   if (!hash) return { tab: 'overview' };
@@ -78,6 +85,13 @@ const parseUrlHash = (): { tab: CanonicalNavTab; entityId?: string; region?: Afr
     const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
     const ind = params.get('ind') || 'NY.GDP.MKTP.CD';
     return { tab: 'analytics', indicator: ind };
+  }
+
+  if (hash.startsWith('iconography')) {
+    const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+    const plate = params.get('plate') || params.get('castas') || undefined;
+    const q = params.get('q') || undefined;
+    return { tab: 'iconography', plateId: plate, searchQuery: q };
   }
 
   if (hash === 'cartography' || hash === 'archival-cartography') {
@@ -125,6 +139,10 @@ function AppContent() {
   // Analytics selected indicator
   const [selectedIndicatorForAnalytics, setSelectedIndicatorForAnalytics] = useState<string>(initialRoute.indicator || 'NY.GDP.MKTP.CD');
 
+  // Universal Search & Deep link target for Iconography
+  const [activeIconographyPlateId, setActiveIconographyPlateId] = useState<string | undefined>(initialRoute.plateId);
+  const [activeIconographySearchQuery, setActiveIconographySearchQuery] = useState<string | undefined>(initialRoute.searchQuery);
+
   // Desktop Drawer starts open by default. It remains open on nav clicks; only Menu toggles it.
   const [isDesktopDrawerOpen, setIsDesktopDrawerOpen] = useState<boolean>(true);
   
@@ -138,6 +156,20 @@ function AppContent() {
     region?: AfricanRegion;
     indicator?: string;
   }>>([]);
+
+  // Active Typographic & Conceptual Core: Economics, Archival, or Academic
+  const activeCore = useMemo<'economics' | 'archival' | 'academic'>(() => {
+    if (['slave-trade', 'iconography', 'archival-cartography', 'heritage'].includes(currentTab)) {
+      return 'archival';
+    }
+    if (
+      ['molecular-legacies', 'african-development-foundations', 'ethnic-tree', 'languages', 'research-directory'].includes(currentTab) ||
+      (typeof currentTab === 'string' && currentTab.startsWith('report-'))
+    ) {
+      return 'academic';
+    }
+    return 'economics';
+  }, [currentTab]);
 
   // Background idle preloader for views to make navigation instantaneous
   useEffect(() => {
@@ -218,6 +250,8 @@ function AppContent() {
         if (parsed.entityId) setSelectedEntityId(parsed.entityId);
         if (parsed.region) setActiveRegion(parsed.region);
         if (parsed.indicator) setSelectedIndicatorForAnalytics(parsed.indicator);
+        if (parsed.plateId !== undefined) setActiveIconographyPlateId(parsed.plateId);
+        if (parsed.searchQuery !== undefined) setActiveIconographySearchQuery(parsed.searchQuery);
       });
     };
     window.addEventListener('hashchange', handleHashChange);
@@ -326,8 +360,23 @@ function AppContent() {
   };
 
   // High-performance canonical tab navigation handler
-  const handleSelectTab = (tab: CanonicalNavTab) => {
-    if (tab === currentTab) return;
+  const handleSelectTab = (tab: CanonicalNavTab | string) => {
+    const rawTabStr = tab as string;
+    const [baseTab, queryString] = rawTabStr.split('?');
+    const targetTab = baseTab as CanonicalNavTab;
+
+    if (queryString) {
+      const params = new URLSearchParams(queryString);
+      const plate = params.get('plate') || params.get('castas');
+      const q = params.get('q');
+      if (plate) setActiveIconographyPlateId(plate);
+      if (q) setActiveIconographySearchQuery(q);
+    } else if (targetTab !== 'iconography') {
+      setActiveIconographyPlateId(undefined);
+      setActiveIconographySearchQuery(undefined);
+    }
+
+    if (targetTab === currentTab && !queryString) return;
     setNavHistory(prev => [
       ...prev.slice(-30),
       {
@@ -338,12 +387,12 @@ function AppContent() {
       }
     ]);
     React.startTransition(() => {
-      setCurrentTab(tab);
+      setCurrentTab(targetTab);
       
       // If selecting a specific region, set the activeRegion for RegionalView
-      if (tab.startsWith('region-') && REGION_ID_TO_NAME[tab]) {
-        setActiveRegion(REGION_ID_TO_NAME[tab]);
-      } else if (tab === 'regions') {
+      if (targetTab.startsWith('region-') && REGION_ID_TO_NAME[targetTab]) {
+        setActiveRegion(REGION_ID_TO_NAME[targetTab]);
+      } else if (targetTab === 'regions') {
         setActiveRegion(undefined);
       }
     });
@@ -486,7 +535,8 @@ function AppContent() {
 
         {/* Main Content Area */}
         <main
-          className={`flex-1 min-w-0 w-full ${
+          data-core={activeCore}
+          className={`core-${activeCore} flex-1 min-w-0 w-full ${
             currentTab === 'map' || currentTab === 'ethnic-tree'
               ? 'p-0 max-w-none flex flex-col'
               : 'px-4 sm:px-6 lg:px-8 py-6 md:py-8 max-w-[1440px] mx-auto'
@@ -496,11 +546,12 @@ function AppContent() {
           <AnimatePresence mode="wait">
             <motion.div
               key={`view-${currentTab}`}
+              data-core={activeCore}
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, transition: { duration: 0.12 } }}
               transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full flex-1 flex flex-col"
+              className={`core-${activeCore} w-full flex-1 flex flex-col`}
             >
               <ViewErrorBoundary fallbackTitle="Module Unavailable">
                 <Suspense fallback={<MainContentSkeleton viewType={currentTab} />}>
@@ -527,7 +578,11 @@ function AppContent() {
                   )}
 
                   {currentTab === 'iconography' && (
-                    <IconographyView />
+                    <IconographyView 
+                      initialPlateId={activeIconographyPlateId}
+                      initialSearchQuery={activeIconographySearchQuery}
+                      onClearInitialPlate={() => setActiveIconographyPlateId(undefined)}
+                    />
                   )}
 
                   {currentTab === 'archival-cartography' && (

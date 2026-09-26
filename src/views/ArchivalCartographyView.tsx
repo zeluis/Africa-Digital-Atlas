@@ -73,11 +73,11 @@ export const ArchivalCartographyView: React.FC = () => {
             <span className="text-xs font-mono text-stone-500">17th – 18th Century Plates</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-black tracking-tight leading-tight text-stone-900 dark:text-stone-100">
+          <h1 className="type-headline-lg font-serif-display font-bold tracking-tight text-stone-900 dark:text-stone-100">
             Archival Cartography &amp; <span className="text-amber-900 dark:text-amber-400 italic">Oceanic Streamlines</span>
           </h1>
 
-          <p className="text-sm sm:text-base md:text-lg text-stone-800 dark:text-stone-200 font-serif leading-relaxed">
+          <p className="type-body-archival font-serif-book text-stone-800 dark:text-stone-200 leading-relaxed max-w-3xl">
             Contrast Enlightenment copperplates with modern 2026 sovereign borders using interactive split-curtain faders and alpha opacity layers. Explore pre-colonial state formations and analyze real-time hydrodynamic vectors governing transatlantic navigation.
           </p>
 

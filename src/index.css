@@ -14,6 +14,19 @@
     --surface-subtle: #EFECE3;
     --surface-sunken: #E7E3D8;
 
+    /* =========================================================================
+       UTOPIA & MD3 FLUID TYPE SCALE TOKENS (Interpolating 375px -> 1280px Viewport)
+       ========================================================================= */
+    --type-display: clamp(2.25rem, 1.8rem + 2.2vw, 3.5rem);        /* 36px -> 56px */
+    --type-headline-lg: clamp(1.75rem, 1.45rem + 1.4vw, 2.5rem);   /* 28px -> 40px */
+    --type-headline-md: clamp(1.35rem, 1.15rem + 1.0vw, 1.85rem);  /* 21.6px -> 29.6px */
+    --type-headline-sm: clamp(1.15rem, 1.05rem + 0.6vw, 1.45rem);  /* 18.4px -> 23.2px */
+    --type-title-lg: clamp(1.05rem, 0.98rem + 0.4vw, 1.25rem);      /* 16.8px -> 20px */
+    --type-body-editorial: clamp(1.00rem, 0.94rem + 0.3vw, 1.1875rem); /* 16px -> 19px (Academic & Longform) */
+    --type-body-dashboard: clamp(0.875rem, 0.84rem + 0.15vw, 0.9375rem); /* 14px -> 15px (Economics & Data) */
+    --type-body-archival: clamp(0.9375rem, 0.88rem + 0.25vw, 1.0625rem);  /* 15px -> 17px (Historical & Narrative) */
+    --type-caption-caps: clamp(0.72rem, 0.70rem + 0.1vw, 0.8125rem);      /* 11.5px -> 13px (Metadata & Small Caps) */
+
     /* 2. Typography & Content (Sumi Ink & Sandstone) */
     --text-primary: #191816;       /* Sumi Ink - WCAG AAA */
     --text-secondary: #4E5E51;     /* Kyoto Pine / Lichen */
@@ -446,15 +459,25 @@
 }
 
 /* --------------------------------------------------------------------------
-   Kyoto & Swiss Editorial Typography & Spatial System
+   Kyoto & Swiss Editorial Typography & 3-Core Spatial System
    -------------------------------------------------------------------------- */
+.font-serif-display {
+  font-family: "Noto Serif Display Variable", "Noto Serif Display", Georgia, Cambria, "Times New Roman", serif;
+  font-optical-sizing: auto;
+}
+
+.font-serif-book {
+  font-family: "Noto Serif Variable", "Noto Serif", Georgia, Cambria, "Times New Roman", serif;
+  font-optical-sizing: auto;
+}
+
 .font-serif {
   font-family: "Noto Serif Display Variable", "Noto Serif Display", Georgia, Cambria, "Times New Roman", serif;
   font-optical-sizing: auto;
 }
 
 .font-sans {
-  font-family: "Noto Sans Variable", "Noto Sans", "Plus Jakarta Sans Variable", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-optical-sizing: auto;
 }
 
@@ -464,8 +487,189 @@
 }
 
 .font-reading {
+  font-family: "Noto Serif Variable", "Noto Serif", Georgia, Cambria, serif;
+  font-optical-sizing: auto;
+}
+
+.font-reading-sans {
   font-family: "Noto Sans Variable", "Noto Sans", "Plus Jakarta Sans Variable", "Plus Jakarta Sans", system-ui, sans-serif;
   font-optical-sizing: auto;
+}
+
+/* Fluid Typographic Scale Classes (Utopia.fyi & MD3 Hierarchy) */
+.type-display {
+  font-size: var(--type-display);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.type-headline-lg {
+  font-size: var(--type-headline-lg);
+  line-height: 1.20;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.type-headline-md {
+  font-size: var(--type-headline-md);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.type-headline-sm {
+  font-size: var(--type-headline-sm);
+  line-height: 1.30;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.type-title-lg {
+  font-size: var(--type-title-lg);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.type-body-editorial {
+  font-size: var(--type-body-editorial);
+  line-height: 1.80;
+  letter-spacing: -0.005em;
+  text-wrap: pretty;
+}
+
+.type-body-dashboard {
+  font-size: var(--type-body-dashboard);
+  line-height: 1.46;
+  letter-spacing: normal;
+}
+
+.type-body-archival {
+  font-size: var(--type-body-archival);
+  line-height: 1.68;
+  letter-spacing: -0.005em;
+  text-wrap: pretty;
+}
+
+.type-caption-caps {
+  font-size: var(--type-caption-caps);
+  line-height: 1.35;
+  letter-spacing: 0.055em;
+}
+
+/* ==========================================================================
+   THE 3 DISTINCT CORES: ECONOMICS, ARCHIVAL, ACADEMIC
+   ========================================================================== */
+
+/* 1. Core: Economics Dashboard (Swiss Modernist, Tabular Numerals, High Density) */
+[data-core="economics"],
+.core-economics {
+  --core-body-size: var(--type-body-dashboard);
+  --core-body-line-height: 1.46;
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+[data-core="economics"] .data-numeric,
+.core-economics .data-numeric,
+[data-core="economics"] table td,
+.core-economics table td {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* 2. Core: Archival & Cartographic (Contemplative, Reverent Ancestral Serenity) */
+[data-core="archival"],
+.core-archival {
+  --core-body-size: var(--type-body-archival);
+  --core-body-line-height: 1.68;
+}
+
+[data-core="archival"] h1,
+.core-archival h1,
+[data-core="archival"] .archival-title,
+.core-archival .archival-title {
+  font-family: "Noto Serif Display Variable", "Noto Serif Display", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+[data-core="archival"] .archival-narrative,
+.core-archival .archival-narrative {
+  font-family: "Noto Serif Variable", "Noto Serif", Georgia, serif;
+  font-size: var(--type-body-archival);
+  line-height: 1.68;
+  text-wrap: pretty;
+}
+
+[data-core="archival"] .archival-metadata,
+.core-archival .archival-metadata {
+  font-variant-caps: all-small-caps;
+  font-feature-settings: "c2sc" 1, "smcp" 1;
+  letter-spacing: 0.06em;
+  font-size: var(--type-caption-caps);
+}
+
+/* 3. Core: Academic Research Analysis (Gutenberg CSS Reading Lane, Editorial Polish) */
+[data-core="academic"],
+.core-academic {
+  --core-body-size: var(--type-body-editorial);
+  --core-body-line-height: 1.80;
+}
+
+[data-core="academic"] h1,
+.core-academic h1,
+[data-core="academic"] h2,
+.core-academic h2,
+[data-core="academic"] .academic-heading,
+.core-academic .academic-heading {
+  font-family: "Noto Serif Display Variable", "Noto Serif Display", Georgia, serif;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* Gutenberg-Inspired Editorial Reading Lane (Optimal 62-66ch measure) */
+.editorial-reading-lane,
+[data-core="academic"] .editorial-reading-lane,
+.core-academic .editorial-reading-lane {
+  max-width: 65ch;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: "Noto Serif Variable", "Noto Serif", Georgia, serif;
+  font-size: var(--type-body-editorial);
+  line-height: 1.80;
+  text-wrap: pretty;
+  hyphens: auto;
+  word-break: break-word;
+  hanging-punctuation: first last;
+}
+
+.editorial-reading-lane p,
+[data-core="academic"] .editorial-reading-lane p {
+  margin-top: 1.4em;
+  margin-bottom: 1.4em;
+}
+
+.editorial-abstract-box,
+[data-core="academic"] .editorial-abstract-box,
+.core-academic .editorial-abstract-box {
+  background-color: var(--surface-card-elevated);
+  border-left: 4px solid var(--region-western-stroke);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0 12px 12px 0;
+  font-family: "Noto Serif Variable", "Noto Serif", Georgia, serif;
+  font-size: calc(var(--type-body-editorial) * 0.96);
+  line-height: 1.75;
+  font-style: italic;
+  hanging-punctuation: first last;
+}
+
+.editorial-node-header {
+  font-family: "Noto Serif Display Variable", "Noto Serif Display", serif;
+  font-optical-sizing: auto;
+  letter-spacing: -0.015em;
+  line-height: 1.22;
+  text-wrap: balance;
 }
 
 /* High-Precision Tabular Numbers for Indicators & Matrices */
@@ -501,29 +705,6 @@ abbr {
 }
 
 .text-balance {
-  text-wrap: balance;
-}
-
-.editorial-reading-lane {
-  max-width: 68ch;
-  line-height: 1.82;
-  text-wrap: pretty;
-  hyphens: auto;
-  word-break: break-word;
-  hanging-punctuation: first last;
-}
-
-.editorial-abstract-box {
-  background-color: var(--surface-card-elevated);
-  border-left: 4px solid var(--region-western-stroke);
-  hanging-punctuation: first last;
-}
-
-.editorial-node-header {
-  font-family: "Noto Serif Display Variable", "Noto Serif Display", serif;
-  font-optical-sizing: auto;
-  letter-spacing: -0.015em;
-  line-height: 1.22;
   text-wrap: balance;
 }
 
