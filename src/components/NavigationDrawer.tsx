@@ -26,7 +26,8 @@ import {
   X,
   TrendingUp,
   Cpu,
-  PanelLeftClose
+  PanelLeftClose,
+  Palette
 } from 'lucide-react';
 import { UN_REGIONAL_SILHOUETTES } from '../data/svgGeographySystem';
 import { AfricanRegion } from '../data/types';
@@ -1084,6 +1085,32 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             </div>
             {!isDesktopCollapsed && <ExternalLink className="w-3.5 h-3.5 text-zinc-400 opacity-60" />}
           </a>
+
+          {/* Universal Style Guide & Architectural Monograph */}
+          <button
+            onClick={() => {
+              onSelectTab('style-guide' as CanonicalNavTab);
+              if (isMobile) onCloseMobile();
+            }}
+            title={t('nav.styleGuide', 'Style Guide & Architecture')}
+            className={`w-full flex items-center ${
+              isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
+            } text-left rounded-xl transition-all cursor-pointer ${
+              currentTab === 'style-guide'
+                ? 'bg-amber-600 text-white font-bold shadow-sm'
+                : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-900'
+            } mt-1`}
+          >
+            <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
+              <Palette className="w-4 h-4 text-amber-500 shrink-0" />
+              {!isDesktopCollapsed && <span>{t('nav.styleGuide', 'Style Guide & Architecture')}</span>}
+            </div>
+            {!isDesktopCollapsed && (
+              <span className="text-[10px] font-mono uppercase bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-800 dark:text-amber-300">
+                Monograph
+              </span>
+            )}
+          </button>
 
           {/* Orientation & Onboarding Trigger */}
           {onOpenOnboarding && (

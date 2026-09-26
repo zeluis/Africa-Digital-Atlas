@@ -6,6 +6,7 @@ import { SearchModal } from './components/SearchModal';
 import { MultiSourceApiHubModal } from './components/MultiSourceApiHubModal';
 import { OnboardingModal } from './components/OnboardingModal';
 import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
+import { UniversalMonographModal } from './components/UniversalMonographModal';
 import { MainContentSkeleton } from './components/MainContentSkeleton';
 import { Footer } from './components/Footer';
 import { OfflineIndicator } from './components/OfflineIndicator';
@@ -38,6 +39,7 @@ const AfricanDevelopmentMasterReportView = lazyWithRetry(() => import('./views/A
 const ThematicPillarsView = lazyWithRetry(() => import('./views/ThematicPillarsView').then(m => ({ default: m.ThematicPillarsView })), 'ThematicPillarsView');
 const EntityBlocsBrowser = lazyWithRetry(() => import('./components/EntityBlocsBrowser').then(m => ({ default: m.EntityBlocsBrowser })), 'EntityBlocsBrowser');
 const EthnicTreeOfLifeView = lazyWithRetry(() => import('./views/EthnicTreeOfLifeView').then(m => ({ default: m.EthnicTreeOfLifeView })), 'EthnicTreeOfLifeView');
+const UniversalStyleGuideView = lazyWithRetry(() => import('./views/UniversalStyleGuideView').then(m => ({ default: m.UniversalStyleGuideView })), 'UniversalStyleGuideView');
 const ResearchReportsDirectoryView = lazyWithRetry(() => import('./views/ResearchReportsDirectoryView').then(m => ({ default: m.ResearchReportsDirectoryView })), 'ResearchReportsDirectoryView');
 const ResearchReportArticleView = lazyWithRetry(() => import('./views/ResearchReportArticleView').then(m => ({ default: m.ResearchReportArticleView })), 'ResearchReportArticleView');
 const PrivacySectionView = lazyWithRetry(() => import('./views/PrivacySectionView').then(m => ({ default: m.PrivacySectionView })), 'PrivacySectionView');
@@ -126,6 +128,9 @@ function AppContent() {
 
   // Keyboard Shortcuts cheat sheet modal state
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
+
+  // Universal Monograph Modal state
+  const [isMonographModalOpen, setIsMonographModalOpen] = useState<boolean>(false);
 
   // 3-Screen Curated Orientation & Historical Context Consent Modal (Auto-open for new users)
   const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(() => {
@@ -677,6 +682,13 @@ function AppContent() {
                     />
                   )}
 
+                  {currentTab === 'style-guide' && (
+                    <UniversalStyleGuideView
+                      onNavigateTab={(tab) => handleSelectTab(tab)}
+                      onOpenMonographModal={() => setIsMonographModalOpen(true)}
+                    />
+                  )}
+
                   {currentTab === 'ethnic-tree' && (
                     <EthnicTreeOfLifeView
                       onSelectReport={(reportId) => handleSelectTab(reportId as CanonicalNavTab)}
@@ -745,6 +757,13 @@ function AppContent() {
         onClose={() => setIsShortcutsOpen(false)}
         onNavigateTab={(tab) => handleSelectTab(tab as CanonicalNavTab)}
         onToggleTheme={toggleTheme}
+      />
+
+      {/* Universal Monograph Modal */}
+      <UniversalMonographModal
+        isOpen={isMonographModalOpen}
+        onClose={() => setIsMonographModalOpen(false)}
+        onNavigateTab={(tab) => handleSelectTab(tab)}
       />
 
       {/* Structured Credibility Footer (Hidden on map view for edge-to-edge cartographic full-screen) */}

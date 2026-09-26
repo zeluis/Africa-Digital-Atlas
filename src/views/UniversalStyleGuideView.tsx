@@ -25,15 +25,16 @@ import {
 import { CanonicalNavTab } from '../components/NavigationDrawer';
 import { AfricaUnLogo } from '../components/AfricaUnLogo';
 import { OrganizationLogo } from '../components/OrganizationLogo';
-import { UN_M49_REGIONAL_PALETTES } from '../data/unGeoschemeColors';
+import { UN_GEOSCHEME_TONAL_PALETTES as UN_M49_REGIONAL_PALETTES } from '../data/unGeoschemeColors';
 
 interface UniversalStyleGuideViewProps {
   onNavigateTab: (tab: CanonicalNavTab) => void;
+  onOpenMonographModal?: () => void;
 }
 
 type GuideTab = 'identity' | 'design-system' | 'cartography' | 'assets' | 'multilateral-apis' | 'ethics-governance';
 
-export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = ({ onNavigateTab }) => {
+export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = ({ onNavigateTab, onOpenMonographModal }) => {
   const [activeTab, setActiveTab] = useState<GuideTab>('identity');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
@@ -71,6 +72,16 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
           </div>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 shrink-0">
+            {onOpenMonographModal && (
+              <button
+                onClick={onOpenMonographModal}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>Open Interactive Monograph</span>
+                <Maximize2 className="w-3.5 h-3.5 opacity-80" />
+              </button>
+            )}
             <a
               href="./docs/UNIVERSAL_STYLE_GUIDE.md"
               target="_blank"
@@ -85,18 +96,18 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
         </div>
       </div>
 
-      {/* Segmented Top Navigation Bar */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none border-b border-stone-200 dark:border-stone-800">
+      {/* Segmented Top Navigation Bar - Unified Sleek Pill Control */}
+      <div className="p-1.5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-sm flex flex-wrap items-center gap-1.5">
         {navTabs.map(tab => {
           const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-amber-600 text-white shadow-sm'
-                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-900'
+                  ? 'bg-amber-600 text-white shadow-sm font-bold'
+                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800'
               }`}
             >
               {tab.icon}
