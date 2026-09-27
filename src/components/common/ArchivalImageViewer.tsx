@@ -40,6 +40,7 @@ import {
   exportRISFile, 
   exportCSLJSONFile 
 } from '../../utils/academicExport';
+import { resolveAssetPath } from '../../utils/assetPath';
 
 interface ArchivalImageViewerProps {
   illustration: SlaveTradeIllustration | null;
@@ -82,6 +83,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
   const [activeCitationStyle, setActiveCitationStyle] = useState<CitationStyle>('chicago');
   const [hasCopied, setHasCopied] = useState<boolean>(false);
   const [isExportingPDF, setIsExportingPDF] = useState<boolean>(false);
+  const [imageLoadError, setImageLoadError] = useState<boolean>(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -143,6 +145,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
     setRotation(0);
     setIsHighContrast(false);
     setIsInverted(false);
+    setImageLoadError(false);
   }, [illustration?.objectId]);
 
   // Scroll current thumbnail into view when illustration changes
@@ -449,7 +452,8 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
 
   if (!illustration) return null;
 
-  const imageUrl = illustration.imageUrls?.[0] || 'https://si.regeneratedidentities.org/project/DataFiles/SI-OB-17/17-4.jpg';
+  const rawImageUrl = illustration.imageUrls?.[0] || 'https://si.regeneratedidentities.org/project/DataFiles/SI-OB-17/17-4.jpg';
+  const imageUrl = resolveAssetPath(rawImageUrl);
 
   const contentUI = (
     <div 
@@ -658,14 +662,50 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                 transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel}) rotate(${rotation}deg)`
               }}
             >
-              <img
-                src={imageUrl}
-                alt={illustration.title}
-                draggable={false}
-                className={`max-w-full max-h-full object-contain shadow-2xl rounded-md ring-1 ring-stone-900/10 dark:ring-white/10 transition-all duration-300 ${
-                  isHighContrast ? 'contrast-150 brightness-110 grayscale' : 'contrast-105'
-                }`}
-              />
+              {imageLoadError ? (
+                <div className="flex flex-col items-center justify-center p-8 text-center max-w-md bg-[#F4EFE6]/90 dark:bg-stone-900/90 rounded-2xl border border-amber-900/20 dark:border-stone-800 space-y-3 shadow-xl backdrop-blur-md">
+                  <div className="w-14 h-14 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-700 dark:text-amber-400 ring-1 ring-amber-500/20">
+                    <FileText className="w-7 h-7" />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-900 dark:text-amber-400 bg-amber-900/10 dark:bg-amber-400/10 px-2 py-0.5 rounded-full">
+                      Archival Plate {illustration.regId}
+                    </span>
+                    <h4 className="font-serif font-bold text-base text-stone-900 dark:text-stone-100">
+                      {illustration.title}
+                    </h4>
+                    {illustration.date && (
+                      <p className="text-xs text-stone-500 dark:text-stone-400 font-mono">
+                        Date: {illustration.date}
+                      </p>
+                    )}
+                  </div>
+                  <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed font-sans px-2">
+                    {illustration.source}
+                  </p>
+                  {illustration.slaveryImagesPage && (
+                    <a
+                      href={illustration.slaveryImagesPage}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-900 text-white dark:bg-amber-500 dark:text-stone-950 text-xs font-semibold shadow-xs hover:opacity-90 transition-opacity"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>View at Primary Archival Repository</span>
+                    </a>
+                  )}
+                </div>
+              ) : (
+                <img
+                  src={imageUrl}
+                  alt={illustration.title}
+                  draggable={false}
+                  onError={() => setImageLoadError(true)}
+                  className={`max-w-full max-h-full object-contain shadow-2xl rounded-md ring-1 ring-stone-900/10 dark:ring-white/10 transition-all duration-300 ${
+                    isHighContrast ? 'contrast-150 brightness-110 grayscale' : 'contrast-105'
+                  }`}
+                />
+              )}
             </div>
           </div>
 
@@ -716,7 +756,8 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
               >
                 {illustrationsList.map((item, idx) => {
                   const isCurrent = item.objectId === illustration.objectId;
-                  const thumb = item.imageUrls?.[0] || '';
+                  const rawThumb = item.imageUrls?.[0] || '';
+                  const thumb = resolveAssetPath(rawThumb);
                   return (
                     <button
                       key={item.objectId}
@@ -729,7 +770,21 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                       }`}
                       title={`${item.regId}: ${item.title}`}
                     >
-                      <img src={thumb} alt={item.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                      {thumb ? (
+                        <img 
+                          src={thumb} 
+                          alt={item.title} 
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          onError={(e) => {
+                            // Hide broken img so backdrop and regId remain pristine
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-stone-200 dark:bg-stone-800 text-stone-400">
+                          <FileText className="w-5 h-5" />
+                        </div>
+                      )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/10" />
                       <div className="relative z-10 px-1 py-0.5 text-[9px] font-mono font-bold text-amber-200 dark:text-amber-300 truncate w-full bg-black/60 backdrop-blur-xs text-center">
                         {item.regId || `#${idx + 1}`}

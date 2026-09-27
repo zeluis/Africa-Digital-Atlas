@@ -26,6 +26,7 @@ import {
 import { SLAVE_TRADE_ILLUSTRATIONS, SlaveTradeIllustration } from '../../data/slaveTradeIllustrations';
 import { ArchivalLoupeModal } from './ArchivalLoupeModal';
 import { DynamicIcon } from '../DynamicIcon';
+import { resolveAssetPath } from '../../utils/assetPath';
 
 interface SlaveTradeIconographyProps {
   activeTab?: 'registry' | 'ingestion';
@@ -495,10 +496,13 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
               <div className="aspect-video w-full relative bg-stone-100 dark:bg-stone-950 overflow-hidden">
                 {item.imageUrls && item.imageUrls[0] ? (
                   <img
-                    src={item.imageUrls[0]}
+                    src={resolveAssetPath(item.imageUrls[0])}
                     alt={item.title}
                     className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-500 filter saturate-90 dark:brightness-90"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-stone-200 dark:bg-stone-950">
@@ -572,10 +576,13 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                 <div className="w-16 h-12 bg-stone-100 dark:bg-stone-950 rounded-lg overflow-hidden shrink-0 border border-stone-200/60 dark:border-stone-800">
                   {item.imageUrls && item.imageUrls[0] ? (
                     <img
-                      src={item.imageUrls[0]}
+                      src={resolveAssetPath(item.imageUrls[0])}
                       alt={item.title}
                       className="w-full h-full object-cover object-center"
                       referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">

@@ -19,6 +19,7 @@ import { SlaveTradeIconography } from '../components/slaveVoyages/SlaveTradeIcon
 import { ArchivalLoupeModal } from '../components/slaveVoyages/ArchivalLoupeModal';
 import { ArchivalImageViewer } from '../components/common/ArchivalImageViewer';
 import { DynamicIcon } from '../components/DynamicIcon';
+import { resolveAssetPath } from '../utils/assetPath';
 
 // Curated selection of visually striking, high-detail plates
 const HERO_IMAGE_CANDIDATES = [17, 18, 19, 20, 731, 732, 735, 788, 789, 790, 831, 835, 1021, 1028, 1032, 1042];
@@ -33,7 +34,7 @@ const castasIllustrations: SlaveTradeIllustration[] = CASTAS_ARCHIVE_ITEMS.map((
   title: item.title,
   date: item.date,
   source: `${item.creator} • Preserved at ${item.institution}`,
-  imageUrls: [item.imageUrl],
+  imageUrls: [resolveAssetPath(item.imageUrl)],
   collectionNames: [item.category],
   collectionIds: [999],
   itemSets: ['Castas & Colonial Visual Archive'],

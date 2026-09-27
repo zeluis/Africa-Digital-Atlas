@@ -23,9 +23,19 @@ import { AfricaUnLogo } from './AfricaUnLogo';
 
 interface FooterProps {
   onNavigateTab: (tab: CanonicalNavTab) => void;
+  onOpenColophon?: () => void;
+  onOpenCitationModal?: () => void;
+  onOpenWorkingPapers?: () => void;
+  onOpenMethodologyAudit?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
+export const Footer: React.FC<FooterProps> = ({ 
+  onNavigateTab,
+  onOpenColophon,
+  onOpenCitationModal,
+  onOpenWorkingPapers,
+  onOpenMethodologyAudit
+}) => {
   const manifest = atlas.getManifest();
 
   return (
@@ -227,38 +237,88 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
             </p>
           </div>
 
-          {/* Author Credits & Copyright Bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 dark:text-zinc-400">
-            <div className="flex items-center gap-2">
-              <span>Curated by African Geospatial Researchers & Open Data Contributors</span>
-              <span>•</span>
-              <span>Published {new Date().getFullYear()}</span>
+          {/* Institutional Masthead, Canonical Legal Notice & Copyright Bar */}
+          <div className="space-y-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-amber-500/[0.04] dark:bg-amber-500/[0.07] border border-amber-500/20">
+              <div className="space-y-1">
+                <span className="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 block">
+                  Africalia Cartographic &amp; Econometric Observatory
+                </span>
+                <p className="text-xs text-stone-600 dark:text-stone-400 font-sans leading-relaxed">
+                  Under the scientific direction and cartographic curation of <strong className="text-stone-900 dark:text-stone-100 font-semibold">Zéluis F. Correia</strong>. Dedicated to African data sovereignty, open scientific inquiry, and the rigorous preservation of continental heritage.
+                </p>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono mt-1">
+                  Cartography &amp; Phylogenetic Vector Topology © 2024–2026 Africalia. Authored and engineered by Zéluis F. Correia. All Rights Reserved.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 shrink-0">
+                {onOpenColophon && (
+                  <button
+                    onClick={onOpenColophon}
+                    className="px-3 py-1.5 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:border-amber-500 text-stone-800 dark:text-stone-200 text-xs font-semibold transition-colors cursor-pointer"
+                  >
+                    Colophon &amp; Imprint
+                  </button>
+                )}
+                {onOpenWorkingPapers && (
+                  <button
+                    onClick={onOpenWorkingPapers}
+                    className="px-3 py-1.5 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:border-amber-500 text-stone-800 dark:text-stone-200 text-xs font-semibold transition-colors cursor-pointer"
+                  >
+                    Working Papers
+                  </button>
+                )}
+                {onOpenCitationModal && (
+                  <button
+                    onClick={onOpenCitationModal}
+                    className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    Cite (DOI: 10.5281/zenodo.10842918)
+                  </button>
+                )}
+              </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <a
-                href="./docs/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors inline-flex items-center gap-1"
-              >
-                <span>Docs</span>
-                <ExternalLink className="w-3 h-3 opacity-60" />
-              </a>
-              <span>•</span>
-              <button
-                onClick={() => onNavigateTab('provenance')}
-                className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer"
-              >
-                Data Pipeline
-              </button>
-              <span>•</span>
-              <button
-                onClick={() => onNavigateTab('privacy')}
-                className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer"
-              >
-                Privacy & License
-              </button>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 dark:text-zinc-400">
+              <div className="flex items-center gap-2">
+                <span>Observatory Edition 2026.1</span>
+                <span>•</span>
+                <span>Permanent DOI: 10.5281/zenodo.10842918</span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <a
+                  href="./docs/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors inline-flex items-center gap-1"
+                >
+                  <span>Docs</span>
+                  <ExternalLink className="w-3 h-3 opacity-60" />
+                </a>
+                <span>•</span>
+                <button
+                  onClick={() => onNavigateTab('style-guide')}
+                  className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer"
+                >
+                  Style Guide
+                </button>
+                <span>•</span>
+                <button
+                  onClick={() => onNavigateTab('provenance')}
+                  className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer"
+                >
+                  Methodology &amp; Pipeline
+                </button>
+                <span>•</span>
+                <button
+                  onClick={() => onNavigateTab('privacy')}
+                  className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer"
+                >
+                  Privacy &amp; License
+                </button>
+              </div>
             </div>
           </div>
         </div>

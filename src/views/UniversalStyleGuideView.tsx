@@ -201,7 +201,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                     </div>
                     <div>
                       <h4 className="text-xs font-bold text-stone-900 dark:text-stone-100 truncate">{region}</h4>
-                      <p className="text-[10px] text-stone-500 font-mono truncate">{palette.subtext}</p>
+                      <p className="text-[10px] text-stone-500 font-mono truncate">M49 Code: {palette.m49Code}</p>
                     </div>
                   </div>
                 ))}

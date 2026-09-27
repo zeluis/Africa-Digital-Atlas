@@ -30,9 +30,12 @@ import {
   Landmark,
   ArrowRight,
   Globe,
-  Download
+  Download,
+  Quote,
+  Award
 } from 'lucide-react';
 import { AcademicExportModal } from '../AcademicExportModal';
+import { CartographicColophonModal } from '../CartographicColophonModal';
 import { 
   VBW, 
   VBH, 
@@ -371,11 +374,28 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     };
   }, []);
 
-  // Active raw SVG markup displayed in DOM with guaranteed ID for CSS targeting
+  // Active raw SVG markup displayed in DOM with guaranteed ID and provenance metadata
   const rawSvgToDisplay = useMemo(() => {
     let svg = customSvgMarkup || AUTHENTIC_ETHNIC_TREE_RAW_SVG;
-    if (svg && !svg.includes('id="africalia-master-sovereign-svg"')) {
-      svg = svg.replace('<svg ', '<svg id="africalia-master-sovereign-svg" ');
+    if (svg) {
+      if (!svg.includes('id="africalia-master-sovereign-svg"')) {
+        svg = svg.replace('<svg ', '<svg id="africalia-master-sovereign-svg" ');
+      }
+      if (!svg.includes('data-author=')) {
+        svg = svg.replace('<svg ', '<svg data-author="Zéluis F. Correia" data-curator="Africalia" data-copyright="© 2024-2026 Africalia. All Rights Reserved." data-doi="10.5281/zenodo.10842918" ');
+      }
+      if (!svg.includes('AFRICALIA CARTOGRAPHIC OBSERVATORY')) {
+        const comment = `<!--
+  ============================================================================
+  AFRICALIA CARTOGRAPHIC OBSERVATORY — VECTOR TOPOLOGY ARCHITECTURE
+  Author & Cartographer: Zéluis F. Correia
+  Copyright (c) 2024-2026 Africalia. All Rights Reserved.
+  Coordinate Space: 2000 x 2000 Sovereign Ethnic Radial Topology
+  DOI: 10.5281/zenodo.10842918 • Open Science Archive
+  ============================================================================
+-->\n`;
+        svg = comment + svg;
+      }
     }
     return svg;
   }, [customSvgMarkup]);
@@ -524,6 +544,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
   const [isLeftDockOpen, setIsLeftDockOpen] = useState<boolean>(true);
   const [methodologyModalOpen, setMethodologyModalOpen] = useState<boolean>(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
+  const [isColophonOpen, setIsColophonOpen] = useState<boolean>(false);
 
   // Fit View: Full continental tree overview (hard minimum scale limit 64% enforced, centered)
   const fitView = useCallback(() => {
@@ -1568,6 +1589,28 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         >
           <RotateCcw className="w-3 h-3 text-[#7D6B5A]" />
           <span>Full Tree</span>
+        </button>
+
+        {/* Colophon & Imprint Modal Trigger */}
+        <button
+          type="button"
+          onClick={() => setIsColophonOpen(true)}
+          className="hidden sm:flex px-2.5 py-1 rounded-full text-[11px] font-medium items-center gap-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition-colors cursor-pointer"
+          title="Open Cartographic Colophon & Imprint"
+        >
+          <Award className="w-3 h-3 text-[#E67E48]" />
+          <span>Colophon</span>
+        </button>
+
+        {/* Cite Observatory Platform Trigger */}
+        <button
+          type="button"
+          onClick={() => setIsExportModalOpen(true)}
+          className="hidden sm:flex px-2.5 py-1 rounded-full text-[11px] font-medium items-center gap-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition-colors cursor-pointer"
+          title="Cite this Research Platform (DOI: 10.5281/zenodo.10842918)"
+        >
+          <Quote className="w-3 h-3 text-[#E67E48]" />
+          <span>Cite (DOI)</span>
         </button>
 
         {/* Africalia Title & SVG Info Tag */}
@@ -2820,14 +2863,21 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         title="Africalia Sovereign Ethnic Tree of Life"
         sourceContext="Africalia Sovereign Lineage Vector Atlas & Harvard / Wikipedia Anthropological Corpus"
         citationMetadata={{
-          authors: ['Africalia Sovereign Lineage Initiative', 'UNESCO General History of Africa Project', 'Greenberg Linguistic Classification'],
+          authors: ['Zéluis F. Correia', 'Africalia Cartographic Observatory'],
           year: 2026,
           datasetName: 'Pan-African Ethno-Linguistic Continuum and Conduit Lineages',
-          url: window?.location?.href || 'https://africalia.org/#ethnic-tree',
-          doi: '10.5281/zenodo.africalia.tree.2026',
+          url: typeof window !== 'undefined' ? window.location.href : 'https://africalia.org/#ethnic-tree',
+          doi: '10.5281/zenodo.10842918',
           version: '2026.2'
         }}
         svgContainerId="africalia-master-sovereign-svg"
+      />
+
+      {/* Cartographic Colophon & Imprint Modal */}
+      <CartographicColophonModal
+        isOpen={isColophonOpen}
+        onClose={() => setIsColophonOpen(false)}
+        onOpenCitationModal={() => setIsExportModalOpen(true)}
       />
     </div>
   );

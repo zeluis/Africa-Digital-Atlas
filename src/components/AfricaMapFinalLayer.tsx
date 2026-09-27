@@ -4,6 +4,7 @@ import { useAfricaFinalMap } from '../utils/svgMapLoader';
 import { AfricanRegion } from '../data/types';
 import { AKP_INFRASTRUCTURE_POINTS, AKP_PROTECTED_AREAS, AkpInfrastructurePoint, AkpProtectedArea, AkpCategory } from '../data/akpDatasets';
 import { ThematicOverlaysLayer, AnyThematicItem, LayerVisibilityState } from './ThematicOverlaysLayer';
+import { CartographicCartouche } from './CartographicCartouche';
 
 export interface AfricaMapFinalLayerProps {
   mapData?: Record<string, AfricaFinalCountryPath>;
@@ -14,6 +15,8 @@ export interface AfricaMapFinalLayerProps {
   selectedAdmin1?: { id: string; name: string; countryId?: string } | null;
   showAdmin1Borders: boolean;
   showGraticuleAndCompass?: boolean;
+  showCartouche?: boolean;
+  activeMetricName?: string;
   showPowerPlants?: boolean;
   showProtectedAreas?: boolean;
   showThematicOverlays?: boolean;
@@ -45,6 +48,8 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
   selectedAdmin1,
   showAdmin1Borders,
   showGraticuleAndCompass = true,
+  showCartouche = true,
+  activeMetricName,
   showPowerPlants = false,
   showProtectedAreas = false,
   showThematicOverlays = true,
@@ -658,6 +663,16 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
           hoveredThematicItem={hoveredThematicItem}
           onHoverThematicItem={onHoverThematicItem}
           onClickThematicItem={onClickThematicItem}
+        />
+      )}
+
+      {/* Official Africalia Cartographic Cartouche (Title, Scale Bar, Geodesy, and Copyright Line) */}
+      {showCartouche && (
+        <CartographicCartouche
+          x={180}
+          y={4850}
+          scale={0.88}
+          activeMetricName={activeMetricName}
         />
       )}
     </>

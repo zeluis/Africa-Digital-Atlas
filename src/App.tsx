@@ -7,6 +7,10 @@ import { MultiSourceApiHubModal } from './components/MultiSourceApiHubModal';
 import { OnboardingModal } from './components/OnboardingModal';
 import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { UniversalMonographModal } from './components/UniversalMonographModal';
+import { CartographicColophonModal } from './components/CartographicColophonModal';
+import { WorkingPapersModal } from './components/WorkingPapersModal';
+import { AcademicExportModal } from './components/AcademicExportModal';
+import { MethodologyAuditModal } from './components/MethodologyAuditModal';
 import { MainContentSkeleton } from './components/MainContentSkeleton';
 import { Footer } from './components/Footer';
 import { OfflineIndicator } from './components/OfflineIndicator';
@@ -131,6 +135,18 @@ function AppContent() {
 
   // Universal Monograph Modal state
   const [isMonographModalOpen, setIsMonographModalOpen] = useState<boolean>(false);
+
+  // Cartographic Colophon & Imprint modal state
+  const [isColophonOpen, setIsColophonOpen] = useState<boolean>(false);
+
+  // Institutional Working Paper & Policy Brief Series modal state
+  const [isWorkingPapersOpen, setIsWorkingPapersOpen] = useState<boolean>(false);
+
+  // Universal Scholarly Citation (DOI) modal state
+  const [isCitationModalOpen, setIsCitationModalOpen] = useState<boolean>(false);
+
+  // Methodological Harmonization & Quality Audit Dossier modal state
+  const [isMethodologyModalOpen, setIsMethodologyModalOpen] = useState<boolean>(false);
 
   // 3-Screen Curated Orientation & Historical Context Consent Modal (Auto-open for new users)
   const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(() => {
@@ -536,6 +552,10 @@ function AppContent() {
           isMobileOpen={isMobileNavOpen}
           onCloseMobile={() => setIsMobileNavOpen(false)}
           onOpenOnboarding={() => setIsOnboardingOpen(true)}
+          onOpenColophon={() => setIsColophonOpen(true)}
+          onOpenCitationModal={() => setIsCitationModalOpen(true)}
+          onOpenWorkingPapers={() => setIsWorkingPapersOpen(true)}
+          onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
         />
 
         {/* Main Content Area */}
@@ -766,8 +786,46 @@ function AppContent() {
         onNavigateTab={(tab) => handleSelectTab(tab)}
       />
 
+      {/* Cartographic Colophon & Imprint Modal */}
+      <CartographicColophonModal
+        isOpen={isColophonOpen}
+        onClose={() => setIsColophonOpen(false)}
+        onOpenCitationModal={() => setIsCitationModalOpen(true)}
+        onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
+      />
+
+      {/* Institutional Working Paper & Policy Brief Series Modal */}
+      <WorkingPapersModal
+        isOpen={isWorkingPapersOpen}
+        onClose={() => setIsWorkingPapersOpen(false)}
+        onOpenCitationModal={() => setIsCitationModalOpen(true)}
+      />
+
+      {/* Methodological Harmonization & Quality Audit Dossier Modal */}
+      <MethodologyAuditModal
+        isOpen={isMethodologyModalOpen}
+        onClose={() => setIsMethodologyModalOpen(false)}
+        onOpenCitationModal={() => setIsCitationModalOpen(true)}
+      />
+
+      {/* Universal Scholarly Citation & Platform Attribution Modal */}
+      <AcademicExportModal
+        isOpen={isCitationModalOpen}
+        onClose={() => setIsCitationModalOpen(false)}
+        title="Africa Data Atlas & Cartographic Observatory"
+        sourceContext="Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform"
+      />
+
       {/* Structured Credibility Footer (Hidden on map view for edge-to-edge cartographic full-screen) */}
-      {currentTab !== 'map' && <Footer onNavigateTab={handleSelectTab} />}
+      {currentTab !== 'map' && (
+        <Footer 
+          onNavigateTab={handleSelectTab}
+          onOpenColophon={() => setIsColophonOpen(true)}
+          onOpenCitationModal={() => setIsCitationModalOpen(true)}
+          onOpenWorkingPapers={() => setIsWorkingPapersOpen(true)}
+          onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
+        />
+      )}
 
       {/* Offline Status Toast / Banner */}
       <OfflineIndicator />

@@ -27,7 +27,9 @@ import {
   TrendingUp,
   Cpu,
   PanelLeftClose,
-  Palette
+  Palette,
+  Award,
+  Quote
 } from 'lucide-react';
 import { UN_REGIONAL_SILHOUETTES } from '../data/svgGeographySystem';
 import { AfricanRegion } from '../data/types';
@@ -90,6 +92,11 @@ interface NavigationDrawerProps {
   isMobileOpen: boolean;
   onCloseMobile: () => void;
   onOpenOnboarding?: () => void;
+  onOpenColophon?: () => void;
+  onOpenCitationModal?: () => void;
+  onOpenWorkingPapers?: () => void;
+  onOpenMethodologyAudit?: () => void;
+  onOpenAfcftaSimulator?: () => void;
 }
 
 interface NavItemDef {
@@ -240,7 +247,11 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onToggleDesktop,
   isMobileOpen,
   onCloseMobile,
-  onOpenOnboarding
+  onOpenOnboarding,
+  onOpenColophon,
+  onOpenCitationModal,
+  onOpenWorkingPapers,
+  onOpenMethodologyAudit
 }) => {
   const { t } = useTranslation();
 
@@ -1112,6 +1123,78 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             )}
           </button>
 
+          {/* Institutional Policy Brief & Working Paper Series */}
+          {onOpenWorkingPapers && (
+            <button
+              onClick={() => {
+                if (isMobile) onCloseMobile();
+                onOpenWorkingPapers();
+              }}
+              title="Working Papers & Policy Briefs (ISSN-Ready)"
+              className={`w-full flex items-center ${
+                isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
+              } text-left rounded-xl transition-all cursor-pointer text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-900 mt-1`}
+            >
+              <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
+                <FileText className="w-4 h-4 text-amber-600 dark:text-amber-500 shrink-0" />
+                {!isDesktopCollapsed && <span>Working Papers (ISSN)</span>}
+              </div>
+              {!isDesktopCollapsed && (
+                <span className="text-[10px] font-mono uppercase bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-800 dark:text-amber-300">
+                  Series
+                </span>
+              )}
+            </button>
+          )}
+
+          {/* Cartographic Colophon & Imprint */}
+          {onOpenColophon && (
+            <button
+              onClick={() => {
+                if (isMobile) onCloseMobile();
+                onOpenColophon();
+              }}
+              title="Cartographic Colophon & Imprint"
+              className={`w-full flex items-center ${
+                isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
+              } text-left rounded-xl transition-all cursor-pointer text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-900 mt-1`}
+            >
+              <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
+                <Award className="w-4 h-4 text-amber-600 dark:text-amber-500 shrink-0" />
+                {!isDesktopCollapsed && <span>Colophon & Imprint</span>}
+              </div>
+              {!isDesktopCollapsed && (
+                <span className="text-[10px] font-mono uppercase bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded text-stone-600 dark:text-stone-400">
+                  Legal
+                </span>
+              )}
+            </button>
+          )}
+
+          {/* Cite Platform (DOI) */}
+          {onOpenCitationModal && (
+            <button
+              onClick={() => {
+                if (isMobile) onCloseMobile();
+                onOpenCitationModal();
+              }}
+              title="Cite this Research Platform (DOI: 10.5281/zenodo.10842918)"
+              className={`w-full flex items-center ${
+                isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
+              } text-left rounded-xl transition-all cursor-pointer text-amber-700 dark:text-amber-300 hover:bg-amber-500/10 dark:hover:bg-amber-500/15 mt-1 font-medium`}
+            >
+              <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
+                <Quote className="w-4 h-4 text-amber-600 dark:text-amber-500 shrink-0" />
+                {!isDesktopCollapsed && <span>Cite Observatory</span>}
+              </div>
+              {!isDesktopCollapsed && (
+                <span className="text-[10px] font-mono uppercase bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-800 dark:text-amber-300 font-bold">
+                  DOI
+                </span>
+              )}
+            </button>
+          )}
+
           {/* Orientation & Onboarding Trigger */}
           {onOpenOnboarding && (
             <button
@@ -1137,12 +1220,12 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           )}
 
           {!isDesktopCollapsed && (
-            <div className="pt-4 mt-2 border-t border-zinc-100 dark:border-zinc-800/50 px-2 select-none">
-              <div className="text-[10px] leading-relaxed text-zinc-400 dark:text-zinc-500">
-                <span className="font-semibold text-zinc-600 dark:text-zinc-400 block mb-0.5">
-                  Africa Data Atlas • CC-BY 4.0
+            <div className="pt-4 mt-2 border-t border-zinc-100 dark:border-zinc-800/50 px-2 select-none space-y-1">
+              <div className="text-[10px] leading-relaxed text-zinc-500 dark:text-zinc-400">
+                <span className="font-bold text-zinc-800 dark:text-zinc-200 block mb-0.5 font-serif">
+                  Africalia Cartographic Observatory
                 </span>
-                <span>Open Cartography & Research Archive</span>
+                <span>Under the direction of Zéluis F. Correia • CC-BY 4.0</span>
               </div>
             </div>
           )}

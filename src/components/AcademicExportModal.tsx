@@ -10,14 +10,17 @@ import {
   X, 
   ExternalLink, 
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  Fingerprint,
+  Award
 } from 'lucide-react';
+import { downloadFile } from '../utils/exportUtils';
 
-interface AcademicExportModalProps {
+export interface AcademicExportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
-  sourceContext: string;
+  title?: string;
+  sourceContext?: string;
   citationMetadata?: {
     authors?: string[];
     year?: number;
@@ -32,47 +35,61 @@ interface AcademicExportModalProps {
 export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
   isOpen,
   onClose,
-  title,
-  sourceContext,
+  title = 'Africa Data Atlas & Cartographic Observatory',
+  sourceContext = 'Multilateral Macroeconomic, Ethnographic & Cartographic Corpus',
   citationMetadata = {
-    authors: ['Africalia Consortium', 'SlaveVoyages Trans-Atlantic Dataset', 'UNESCO General History of Africa'],
+    authors: ['Zéluis F. Correia', 'Africalia Cartographic & Econometric Observatory'],
     year: 2026,
-    datasetName: 'Africalia Sovereign African Atlas & Ethnographic Tree of Life',
-    url: window?.location?.href || 'https://africalia.org',
-    doi: '10.5281/zenodo.africalia.2026.01',
-    version: '2026.1 (Canonical Edition)'
+    datasetName: 'Africa Data Atlas & Cartographic Observatory',
+    url: typeof window !== 'undefined' ? window.location.origin : 'https://africalia.org',
+    doi: '10.5281/zenodo.10842918',
+    version: '2026.1 (Observatory Canonical Edition)'
   },
   svgContainerId
 }) => {
-  const [citationTab, setCitationTab] = useState<'apa' | 'bibtex' | 'chicago' | 'ris'>('apa');
+  const [citationTab, setCitationTab] = useState<'apa' | 'chicago' | 'harvard' | 'bibtex' | 'ris'>('apa');
   const [copied, setCopied] = useState<boolean>(false);
   const [isExportingImage, setIsExportingImage] = useState<boolean>(false);
 
   if (!isOpen) return null;
 
   const accessDate = new Date().toISOString().split('T')[0];
-  const pageUrl = window?.location?.href || 'https://africalia.org';
+  const pageUrl = typeof window !== 'undefined' ? window.location.href : 'https://africalia.org';
+  const doi = citationMetadata.doi || '10.5281/zenodo.10842918';
 
-  // Citations
-  const apaCitation = `Africalia Research Consortium. (${citationMetadata.year || 2026}). ${title} [Data visualization & cartographic dataset]. ${citationMetadata.datasetName} (Version ${citationMetadata.version || '2026.1'}). Retrieved ${accessDate}, from ${pageUrl}`;
+  // Standardized Academic Citations adhering to authoritative specifications
+  const apaCitation = `Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform. Africalia Open Science Repository. https://doi.org/${doi}`;
 
-  const chicagoCitation = `Africalia Research Consortium. "${title}." ${citationMetadata.datasetName}, version ${citationMetadata.version || '2026.1'} (${citationMetadata.year || 2026}). Accessed ${accessDate}. ${pageUrl}.`;
+  const chicagoCitation = `Correia, Zéluis F. 2026. Africa Data Atlas & Cartographic Observatory. Lisbon/Praia: Africalia Open Science. https://doi.org/${doi}.`;
 
-  const bibtexCitation = `@misc{africalia_${(citationMetadata.year || 2026)},
-  author = {Africalia Research Consortium},
-  title = {{${title}}},
-  howpublished = {\\url{${pageUrl}}},
-  year = {${citationMetadata.year || 2026}},
-  note = {Accessed: ${accessDate}},
-  publisher = {${citationMetadata.datasetName}},
-  version = {${citationMetadata.version || '2026.1'}}
+  const harvardCitation = `Correia, Z.F. (2026) Africa Data Atlas & Cartographic Observatory. Africalia Open Science Repository. Available at: ${pageUrl} (Accessed: ${accessDate}). https://doi.org/${doi}.`;
+
+  const bibtexCitation = `@dataset{correia_africa_data_atlas_2026,
+  author    = {Correia, Z{\\'e}luis F.},
+  title     = {{Africa Data Atlas \\& Cartographic Observatory: Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform}},
+  year      = {2026},
+  publisher = {Africalia Open Science Repository},
+  doi       = {${doi}},
+  url       = {${pageUrl}},
+  version   = {${citationMetadata.version || '2026.1'}},
+  note      = {Accessed: ${accessDate}}
+}
+
+@software{correia_africalia_vector_engine_2026,
+  author    = {Correia, Z{\\'e}luis F.},
+  title     = {{Africalia Continental Vector Topology \\& High-Precision Geodetic Engine (5,796 x 5,867)}},
+  year      = {2026},
+  publisher = {Africalia Cartographic Observatory},
+  doi       = {${doi}},
+  url       = {${pageUrl}}
 }`;
 
   const risCitation = `TY  - DATA
-TI  - ${title}
-AU  - Africalia Research Consortium
-PY  - ${citationMetadata.year || 2026}
-DP  - ${citationMetadata.datasetName}
+TI  - Africa Data Atlas & Cartographic Observatory: Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform
+AU  - Correia, Zéluis F.
+PY  - 2026
+PB  - Africalia Open Science Repository
+DO  - ${doi}
 UR  - ${pageUrl}
 Y2  - ${accessDate}
 ER  -`;
@@ -81,6 +98,7 @@ ER  -`;
     switch (citationTab) {
       case 'apa': return apaCitation;
       case 'chicago': return chicagoCitation;
+      case 'harvard': return harvardCitation;
       case 'bibtex': return bibtexCitation;
       case 'ris': return risCitation;
     }
@@ -92,152 +110,170 @@ ER  -`;
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // SVG / Image snapshot export
-  const handleExportSvg = () => {
-    if (!svgContainerId) return;
-    const container = document.getElementById(svgContainerId);
-    if (!container) return;
+  const handleDownloadRis = () => {
+    downloadFile('africalia_atlas_citation.ris', risCitation, 'application/x-research-info-systems;charset=utf-8');
+  };
 
-    const svgElement = container.querySelector('svg');
-    if (!svgElement) return;
-
-    const serializer = new XMLSerializer();
-    let source = serializer.serializeToString(svgElement);
-
-    // Add XML namespaces if not present
-    if (!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
-      source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
-    }
-
-    const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `africalia-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${accessDate}.svg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  const handleDownloadBibtex = () => {
+    downloadFile('africalia_atlas_citation.bib', bibtexCitation, 'text/plain;charset=utf-8');
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="relative w-full max-w-xl rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/75 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-3xl bg-[#FAF8F5] dark:bg-stone-950 rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 grid place-items-center">
-              <Quote className="w-4 h-4" />
+        <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400">
+              <Quote className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-extrabold text-base text-zinc-900 dark:text-zinc-100">
-                Academic Citation & Vector Export
-              </h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                {sourceContext}
+              <h2 className="text-sm font-extrabold text-stone-900 dark:text-stone-100 font-serif">
+                Cite this Research Platform & Cartography
+              </h2>
+              <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
+                Standardized Academic Citations & Bibliographic Exports
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer transition-colors"
+            className="p-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 transition-colors cursor-pointer"
+            title="Close"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Body */}
-        <div className="p-4 sm:p-5 space-y-4 overflow-y-auto">
-          {/* Quick Snapshot Action */}
-          {svgContainerId && (
-            <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-between gap-3">
-              <div>
-                <span className="block text-xs font-bold text-emerald-950 dark:text-emerald-200">
-                  Export Vector Visual (.SVG)
-                </span>
-                <span className="block text-[11px] text-emerald-800 dark:text-emerald-400">
-                  Lossless scalable graphics with native embedded coordinates and styling.
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={handleExportSvg}
-                className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 shrink-0 cursor-pointer"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Save SVG</span>
-              </button>
-            </div>
-          )}
-
-          {/* Citation Format Switcher */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300 font-mono uppercase tracking-wider">
-                Bibliographic Citation Formats
-              </span>
-              <div className="flex items-center gap-1">
-                {(['apa', 'bibtex', 'chicago', 'ris'] as const).map(fmt => (
-                  <button
-                    key={fmt}
-                    onClick={() => setCitationTab(fmt)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-mono font-bold uppercase transition-all cursor-pointer ${
-                      citationTab === fmt
-                        ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow-xs'
-                        : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
-                    }`}
-                  >
-                    {fmt}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Citation Box */}
-            <div className="relative p-3.5 rounded-xl bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
-              <pre className="text-xs font-mono text-zinc-800 dark:text-zinc-200 whitespace-pre-wrap break-all select-all leading-relaxed max-h-48 overflow-y-auto">
-                {getActiveCitation()}
-              </pre>
-
-              <button
-                type="button"
-                onClick={handleCopy}
-                className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-md bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700 flex items-center gap-1 shadow-xs cursor-pointer transition-all"
-              >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copied ? 'Copied!' : 'Copy'}</span>
-              </button>
-            </div>
+        {/* Permanent DOI Banner */}
+        <div className="px-6 py-3 bg-amber-500/[0.06] dark:bg-amber-500/[0.1] border-b border-amber-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Fingerprint className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
+            <span className="text-xs font-mono font-bold text-amber-900 dark:text-amber-200">
+              DOI: {doi}
+            </span>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300">
+              Zenodo / CERN Open Science
+            </span>
           </div>
 
-          {/* Permanent Identifiers & Non-Affiliation Info */}
-          <div className="p-3.5 rounded-xl bg-stone-50 dark:bg-zinc-900/60 border border-stone-200 dark:border-zinc-800 text-[11px] text-stone-600 dark:text-zinc-400 space-y-2">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-1.5 border-b border-stone-200/60 dark:border-zinc-800">
-              <span>Permanent Digital Object Identifier (DOI):</span>
-              <span className="font-mono text-emerald-700 dark:text-emerald-400 font-bold">{citationMetadata.doi}</span>
+          <a
+            href={`https://doi.org/${doi}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[11px] font-mono font-semibold text-amber-800 dark:text-amber-300 hover:underline"
+          >
+            <span>Verify on Zenodo</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
+        </div>
+
+        {/* Tab Selectors */}
+        <div className="px-6 pt-4 pb-2 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800">
+          <div className="p-1 rounded-2xl bg-stone-100 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 flex flex-wrap items-center gap-1">
+            <button
+              onClick={() => setCitationTab('apa')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                citationTab === 'apa'
+                  ? 'bg-amber-600 text-white shadow-xs font-bold'
+                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
+              }`}
+            >
+              APA 7th
+            </button>
+            <button
+              onClick={() => setCitationTab('chicago')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                citationTab === 'chicago'
+                  ? 'bg-amber-600 text-white shadow-xs font-bold'
+                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
+              }`}
+            >
+              Chicago (Author-Date)
+            </button>
+            <button
+              onClick={() => setCitationTab('harvard')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                citationTab === 'harvard'
+                  ? 'bg-amber-600 text-white shadow-xs font-bold'
+                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
+              }`}
+            >
+              Harvard
+            </button>
+            <button
+              onClick={() => setCitationTab('bibtex')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                citationTab === 'bibtex'
+                  ? 'bg-amber-600 text-white shadow-xs font-bold'
+                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
+              }`}
+            >
+              BibTeX
+            </button>
+            <button
+              onClick={() => setCitationTab('ris')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                citationTab === 'ris'
+                  ? 'bg-amber-600 text-white shadow-xs font-bold'
+                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
+              }`}
+            >
+              RIS / EndNote
+            </button>
+          </div>
+        </div>
+
+        {/* Citation Display */}
+        <div className="p-6 space-y-4">
+          <div className="relative p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xs">
+            <pre className="font-mono text-xs text-stone-800 dark:text-stone-200 whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-64">
+              {getActiveCitation()}
+            </pre>
+
+            <button
+              onClick={handleCopy}
+              className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold transition-all shadow-xs cursor-pointer"
+            >
+              {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copied ? 'Copied to Clipboard' : 'Copy Citation'}</span>
+            </button>
+          </div>
+
+          {/* Quick Download Buttons for BibTeX & RIS */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleDownloadBibtex}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold transition-colors cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5 text-stone-500" />
+                <span>Download .bib (BibTeX)</span>
+              </button>
+              <button
+                onClick={handleDownloadRis}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold transition-colors cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5 text-stone-500" />
+                <span>Download .ris (EndNote/Zotero)</span>
+              </button>
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-1.5 border-b border-stone-200/60 dark:border-zinc-800">
-              <span>Canonical Repository Version:</span>
-              <span className="font-mono text-stone-800 dark:text-zinc-200">{citationMetadata.version}</span>
+
+            <div className="text-[11px] font-mono text-stone-500">
+              CC-BY 4.0 Open Access License
             </div>
-            <p className="text-[10px] text-stone-500 dark:text-zinc-400 leading-normal pt-0.5">
-              <strong>Attribution & Independence:</strong> Africalia is an independent, open-access platform. Indexed academic works belong exclusively to their respective authors and journals; cited scholars are not affiliated with Africalia unless explicitly noted under formal bilateral agreement.
-            </p>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="p-3.5 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/60 flex items-center justify-between">
-          <div className="flex items-center gap-1 text-[11px] text-zinc-500 font-mono">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-            <span>Open Access Academic Research License</span>
-          </div>
-
+        <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 shrink-0">
+          <span className="text-xs text-stone-500 font-mono">
+            Africalia Open Science Repository • Lisbon / Praia
+          </span>
           <button
-            type="button"
             onClick={onClose}
-            className="px-4 py-1.5 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-xs font-bold cursor-pointer hover:opacity-90 transition-opacity"
+            className="px-5 py-2 rounded-xl bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 text-white dark:text-stone-900 text-xs font-bold transition-colors cursor-pointer"
           >
             Close
           </button>

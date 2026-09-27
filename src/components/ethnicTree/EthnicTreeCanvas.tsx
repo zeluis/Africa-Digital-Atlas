@@ -314,12 +314,26 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
         className="w-full h-full"
         viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
         preserveAspectRatio="xMidYMid meet"
+        xmlns="http://www.w3.org/2000/svg"
+        data-author="Zéluis F. Correia"
+        data-curator="Africalia"
+        data-copyright="© 2024-2026 Africalia. All Rights Reserved."
+        data-doi="10.5281/zenodo.10842918"
         style={{
           transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
           transformOrigin: 'center center',
           transition: isDragging ? 'none' : 'transform 0.15s ease-out'
         }}
       >
+        {/* 
+          ============================================================================
+          AFRICALIA CARTOGRAPHIC OBSERVATORY — VECTOR TOPOLOGY ARCHITECTURE
+          Author & Cartographer: Zéluis F. Correia
+          Copyright (c) 2024-2026 Africalia. All Rights Reserved.
+          Coordinate Space: 2000 x 2000 Sovereign Ethnic Radial Topology
+          DOI: 10.5281/zenodo.10842918 • Open Science Archive
+          ============================================================================
+        */}
         <defs>
           {/* Gradients for Embarkation Core Clusters */}
           <radialGradient id="grad-bight-biafra" cx="50%" cy="50%" r="50%">

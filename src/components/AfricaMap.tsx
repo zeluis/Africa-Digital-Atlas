@@ -57,8 +57,11 @@ import {
   Activity,
   Footprints,
   Radio,
-  Clock
+  Clock,
+  Quote
 } from 'lucide-react';
+import { CartographicColophonModal } from './CartographicColophonModal';
+import { AcademicExportModal } from './AcademicExportModal';
 import { getAdmin1ForCountry, searchAdmin1Subdivisions, ALL_ADMIN1_SUBDIVISIONS } from '../data/africaliaGeographyData';
 import { AfricaliaAdmin1 } from '../data/types';
 import { getCanonicalCountryColor } from '../data/africaCanonicalColorPalette';
@@ -292,6 +295,9 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
   // Overlays toggle state (Graticule lines & Compass Rose, AKP Infrastructure & Biospheres)
   const [showGraticuleAndCompass, setShowGraticuleAndCompass] = useState<boolean>(true);
+  const [showCartouche, setShowCartouche] = useState<boolean>(true);
+  const [isColophonOpen, setIsColophonOpen] = useState<boolean>(false);
+  const [isCitationModalOpen, setIsCitationModalOpen] = useState<boolean>(false);
   const [showAdmin1Borders, setShowAdmin1Borders] = useState<boolean>(true);
   const [showPowerPlants, setShowPowerPlants] = useState<boolean>(false);
   const [showProtectedAreas, setShowProtectedAreas] = useState<boolean>(false);
@@ -1152,6 +1158,10 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       clonedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
       clonedSvg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
       clonedSvg.setAttribute('version', '1.1');
+      clonedSvg.setAttribute('data-author', 'Zéluis F. Correia');
+      clonedSvg.setAttribute('data-curator', 'Africalia');
+      clonedSvg.setAttribute('data-copyright', '© 2024-2026 Africalia. All Rights Reserved.');
+      clonedSvg.setAttribute('data-doi', '10.5281/zenodo.10842918');
 
       // Add background rect if solid
       if (bgChoice !== 'transparent') {
@@ -1194,6 +1204,20 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       const serializer = new XMLSerializer();
       let svgString = serializer.serializeToString(clonedSvg);
 
+      const provenanceHeader = `<!--
+  ============================================================================
+  AFRICALIA CARTOGRAPHIC OBSERVATORY — VECTOR TOPOLOGY ARCHITECTURE
+  Author & Cartographer: Zéluis F. Correia
+  Copyright (c) 2024-2026 Africalia. All Rights Reserved.
+  Coordinate Space: 5796 x 5867 High-Precision Vector Grid
+  Derived Admin-1 Subdivisions & Hydrographic Coastline Calibrations
+  DOI: 10.5281/zenodo.10842918 • Open Science Archive
+  ============================================================================
+-->\n`;
+      if (!svgString.startsWith('<!--')) {
+        svgString = provenanceHeader + svgString;
+      }
+
       const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
       const blobURL = URL.createObjectURL(svgBlob);
       const link = document.createElement('a');
@@ -1221,8 +1245,11 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           : "relative w-full rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-3.5 sm:p-5 shadow-2xl overflow-hidden backdrop-blur-md space-y-3.5"
       }
     >
-      {/* Unified Map Header & Controls Bar */}
-      <div id="unified-africa-map-control-card" className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-3 sm:p-4 shadow-sm backdrop-blur-md space-y-2.5">
+      {/* Unified Map Header & Controls Bar — Sticky with Header Zoom Controls Pill */}
+      <div 
+        id="unified-africa-map-control-card" 
+        className="sticky top-0 z-30 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-3 sm:p-4 shadow-sm backdrop-blur-md space-y-2.5 transition-all"
+      >
         {/* Top Header Row: Branding, Stable Tool Groups, Mode Switcher, and Export */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-2 border-b border-zinc-200/80 dark:border-zinc-800/80">
           {/* Left: Branding & Map Metadata */}
@@ -1254,6 +1281,40 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
           {/* Right: Stable Toolbar Group (Zero Layout Shift) */}
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            {/* Zoom Controls Pill in Header */}
+            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl shadow-2xs">
+              <button
+                type="button"
+                onClick={() => setZoomLevel(prev => Math.max(0.7, Number((prev - 0.25).toFixed(2))))}
+                className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all cursor-pointer"
+                title="Zoom Out (–)"
+                aria-label="Zoom Out"
+              >
+                <ZoomOut className="w-3.5 h-3.5" />
+              </button>
+              <span className="text-[11px] font-mono font-bold text-zinc-700 dark:text-zinc-300 px-2 min-w-[3.25rem] text-center select-none">
+                {Math.round(zoomLevel * 100)}%
+              </span>
+              <button
+                type="button"
+                onClick={() => setZoomLevel(prev => Math.min(4.0, Number((prev + 0.25).toFixed(2))))}
+                className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all cursor-pointer"
+                title="Zoom In (+)"
+                aria-label="Zoom In"
+              >
+                <ZoomIn className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={handleResetZoom}
+                className="p-1.5 ml-0.5 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800"
+                title="Reset View (100%)"
+                aria-label="Reset View"
+              >
+                <RotateCcw className="w-3 h-3" />
+              </button>
+            </div>
+
             {/* Unified Mode Switcher Segmented Pill */}
             <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl relative">
               <button
@@ -1392,6 +1453,45 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             >
               <Grid className="w-3 h-3" />
               <span>Graticule ({showGraticuleAndCompass ? 'ON' : 'OFF'})</span>
+            </button>
+
+            {/* Cartouche & Imprint Toggle */}
+            {isFinalMode && (
+              <button
+                type="button"
+                onClick={() => setShowCartouche(prev => !prev)}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
+                  showCartouche
+                    ? 'bg-amber-500/15 border-amber-500/40 text-amber-700 dark:text-amber-300'
+                    : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400'
+                }`}
+                title="Toggle Official Cartographic Cartouche & Scale Bar"
+              >
+                <Compass className="w-3 h-3 text-amber-500" />
+                <span>Cartouche ({showCartouche ? 'ON' : 'OFF'})</span>
+              </button>
+            )}
+
+            {/* Cartographic Colophon & Imprint Modal Trigger */}
+            <button
+              type="button"
+              onClick={() => setIsColophonOpen(true)}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-800 text-[11px] font-semibold transition-all shadow-xs cursor-pointer"
+              title="Open Official Cartographic Colophon, Geodesy Specs & Imprint"
+            >
+              <Award className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+              <span>Colophon</span>
+            </button>
+
+            {/* Cite Observatory Platform Trigger */}
+            <button
+              type="button"
+              onClick={() => setIsCitationModalOpen(true)}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-300 hover:bg-amber-500/20 text-[11px] font-semibold transition-all shadow-xs cursor-pointer"
+              title="Cite this Research Platform (DOI: 10.5281/zenodo.10842918)"
+            >
+              <Quote className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+              <span>Cite (DOI)</span>
             </button>
 
             {/* AKP Clean Energy & Dams Overlay Toggle */}
@@ -1959,6 +2059,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           data-author="Zéluis F. Correia"
           data-curator="Africalia"
           data-copyright="© 2024-2026 Africalia. All Rights Reserved."
+          data-doi="10.5281/zenodo.10842918"
           role="region"
           aria-label="Interactive Map of the African Continent"
           className="w-full h-full cursor-grab active:cursor-grabbing select-none block touch-none"
@@ -2010,6 +2111,8 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 selectedAdmin1={selectedAdmin1}
                 showAdmin1Borders={cartographySource === 'schematic' ? false : showAdmin1Borders}
                 showGraticuleAndCompass={showGraticuleAndCompass}
+                showCartouche={showCartouche}
+                activeMetricName={currentMetricDef?.label || activeMetric}
                 showPowerPlants={showPowerPlants}
                 showProtectedAreas={showProtectedAreas}
                 showThematicOverlays={showThematicOverlays}
@@ -2381,6 +2484,21 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           handleSelectMode('choropleth');
         }}
         currentChoroplethMetricId={activeMetric}
+      />
+
+      {/* Cartographic Colophon, Geodesy & Official Imprint Modal */}
+      <CartographicColophonModal
+        isOpen={isColophonOpen}
+        onClose={() => setIsColophonOpen(false)}
+        onOpenCitationModal={() => setIsCitationModalOpen(true)}
+      />
+
+      {/* Academic Citation & Platform Reference Modal */}
+      <AcademicExportModal
+        isOpen={isCitationModalOpen}
+        onClose={() => setIsCitationModalOpen(false)}
+        title="Africa Data Atlas & Cartographic Observatory"
+        sourceContext="High-Precision Continental Vector Cartography (5,796 × 5,867 Grid)"
       />
     </div>
   );

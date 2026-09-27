@@ -13,6 +13,10 @@ import {
 import { ExternalApiConnector, LiveApiTestResult } from '../data/externalApisIngestion';
 import { OrganizationLogo } from '../components/OrganizationLogo';
 import { AkpCatalogueModal } from '../components/AkpCatalogueModal';
+import { MethodologyAuditModal } from '../components/MethodologyAuditModal';
+import { CartographicColophonModal } from '../components/CartographicColophonModal';
+import { AcademicExportModal } from '../components/AcademicExportModal';
+import { DATASET_INTEGRITY_HASHES } from '../data/methodologyDossierData';
 import { 
   Database, 
   ShieldCheck, 
@@ -32,7 +36,11 @@ import {
   BookOpen,
   FileSpreadsheet,
   Globe2,
-  Terminal
+  Terminal,
+  Fingerprint,
+  Award,
+  Quote,
+  Scale
 } from 'lucide-react';
 
 export const ProvenanceQualityView: React.FC = () => {
@@ -43,6 +51,9 @@ export const ProvenanceQualityView: React.FC = () => {
   const [testingApiId, setTestingApiId] = useState<string | null>(null);
   const [apiTestResults, setApiTestResults] = useState<Record<string, LiveApiTestResult>>({});
   const [isAkpModalOpen, setIsAkpModalOpen] = useState(false);
+  const [isMethodologyModalOpen, setIsMethodologyModalOpen] = useState(false);
+  const [isColophonModalOpen, setIsColophonModalOpen] = useState(false);
+  const [isCitationModalOpen, setIsCitationModalOpen] = useState(false);
 
   const manifest = atlas.getManifest();
   const sources = atlas.getAllSources();
@@ -137,17 +148,38 @@ export const ProvenanceQualityView: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              onClick={() => setIsMethodologyModalOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 text-xs md:text-sm font-semibold transition-colors cursor-pointer"
+            >
+              <Scale className="w-4 h-4 text-amber-600" />
+              <span>Harmonization &amp; Audit Dossier</span>
+            </button>
+            <button
+              onClick={() => setIsColophonModalOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs md:text-sm font-semibold border border-stone-200 dark:border-stone-700 transition-colors cursor-pointer"
+            >
+              <Award className="w-4 h-4 text-amber-600" />
+              <span>Colophon</span>
+            </button>
+            <button
+              onClick={() => setIsCitationModalOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs md:text-sm font-bold transition-all shadow-xs cursor-pointer"
+            >
+              <Quote className="w-4 h-4" />
+              <span>Cite (DOI)</span>
+            </button>
             <button
               onClick={handleDownloadCanonicalJson}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs md:text-sm font-semibold border border-zinc-200 dark:border-zinc-700 transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs md:text-sm font-semibold border border-zinc-200 dark:border-zinc-700 transition-colors cursor-pointer"
             >
-              <Download className="w-4 h-4" /> Download JSON Artifact
+              <Download className="w-4 h-4" /> JSON Artifact
             </button>
             <button
               onClick={handleExecutePipeline}
               disabled={isRunningPipeline}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-zinc-950 text-xs md:text-sm font-bold shadow-lg transition-all cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-zinc-950 text-xs md:text-sm font-bold shadow-lg transition-all cursor-pointer"
             >
               {isRunningPipeline ? (
                 <>
@@ -578,6 +610,29 @@ export const ProvenanceQualityView: React.FC = () => {
       </div>
 
       <AkpCatalogueModal isOpen={isAkpModalOpen} onClose={() => setIsAkpModalOpen(false)} />
+
+      {/* Multilateral Harmonization & Quality Audit Dossier Modal */}
+      <MethodologyAuditModal
+        isOpen={isMethodologyModalOpen}
+        onClose={() => setIsMethodologyModalOpen(false)}
+        onOpenCitationModal={() => setIsCitationModalOpen(true)}
+      />
+
+      {/* Cartographic Colophon & Imprint Modal */}
+      <CartographicColophonModal
+        isOpen={isColophonModalOpen}
+        onClose={() => setIsColophonModalOpen(false)}
+        onOpenCitationModal={() => setIsCitationModalOpen(true)}
+        onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
+      />
+
+      {/* Academic Citation Modal */}
+      <AcademicExportModal
+        isOpen={isCitationModalOpen}
+        onClose={() => setIsCitationModalOpen(false)}
+        title="Africa Data Atlas & Cartographic Observatory"
+        sourceContext="Methodological Audit & Provenance Verification Subsystem"
+      />
     </div>
   );
 };

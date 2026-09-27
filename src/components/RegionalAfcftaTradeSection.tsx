@@ -10,10 +10,13 @@ import {
   Truck, 
   CheckCircle2, 
   FileText, 
-  Layers,
-  Sparkles,
-  AlertCircle
+  Layers, 
+  Sparkles, 
+  AlertCircle,
+  Sliders,
+  Compass
 } from 'lucide-react';
+import { AfcftaTradeCorridorSimulator } from './afcfta/AfcftaTradeCorridorSimulator';
 
 interface RegionalAfcftaTradeSectionProps {
   region: AfricanRegion;
@@ -30,6 +33,7 @@ export const RegionalAfcftaTradeSection: React.FC<RegionalAfcftaTradeSectionProp
   const [selectedCorridorId, setSelectedCorridorId] = useState<string>(
     profile?.corridors[0]?.id || ''
   );
+  const [activeSubTab, setActiveSubTab] = useState<'profile' | 'simulator'>('profile');
 
   if (!profile) return null;
 
@@ -38,38 +42,94 @@ export const RegionalAfcftaTradeSection: React.FC<RegionalAfcftaTradeSectionProp
 
   return (
     <div className="space-y-6 animate-in fade-in duration-150">
-      {/* 1. AfCFTA Macro Regional Trade Overview Hero Card */}
-      <div 
-        className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 md:p-8 space-y-6 shadow-sm transition-colors"
-        style={{ backgroundColor: calmBg }}
-      >
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200/60 dark:border-zinc-800/60 pb-5">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border shadow-2xs ${tonal.badge.bg} ${tonal.badge.border} ${tonal.badge.text}`}>
-                AfCFTA & INTRA-REGIONAL TRADE FLOW VECTORS
-              </span>
-            </div>
-            <h3 className="font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-zinc-100 font-display mt-1.5 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5" style={{ color: tonal.warmAccent }} />
-              {region} Commercial Integration & Corridors
-            </h3>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">
-              Tariff liberalization schedules, one-stop border posts (OSBPs), and guided trade initiative value chains
-            </p>
-          </div>
+      {/* Top View Mode Switcher Pill */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-2 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl">
+        <div className="flex items-center gap-1.5 p-1 bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200/60 dark:border-zinc-800/80 shadow-2xs">
+          <button
+            type="button"
+            onClick={() => setActiveSubTab('profile')}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+              activeSubTab === 'profile'
+                ? 'bg-emerald-600 text-white font-bold shadow-xs'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+            }`}
+          >
+            <Compass className="w-3.5 h-3.5" />
+            <span>Regional Trade Profile</span>
+          </button>
 
-          <div className="flex items-center gap-3">
-            <div className="px-4 py-2 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-black/20 text-center shadow-xs">
-              <span className="text-[10px] uppercase font-mono font-bold text-zinc-500 dark:text-zinc-400 block">
-                Intra-Regional Trade Share
-              </span>
-              <span className="text-xl font-black font-mono" style={{ color: tonal.warmAccent }}>
-                {profile.intraRegionalTradePct}%
-              </span>
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={() => setActiveSubTab('simulator')}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+              activeSubTab === 'simulator'
+                ? 'bg-emerald-600 text-white font-bold shadow-xs'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+            }`}
+          >
+            <Sliders className="w-3.5 h-3.5 text-amber-500" />
+            <span>Trade Corridor Simulator</span>
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold ml-1">
+              NEW
+            </span>
+          </button>
         </div>
+
+        <div className="flex items-center gap-2 pr-2 text-xs font-mono text-zinc-500">
+          <span>AfCFTA Guided Trade Initiative Active</span>
+        </div>
+      </div>
+
+      {/* When Simulator tab is chosen */}
+      {activeSubTab === 'simulator' ? (
+        <AfcftaTradeCorridorSimulator
+          initialRegion={region}
+          initialCorridorId={selectedCorridorId}
+          onSelectCountry={onSelectCountry}
+        />
+      ) : (
+        <>
+          {/* 1. AfCFTA Macro Regional Trade Overview Hero Card */}
+          <div 
+            className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 md:p-8 space-y-6 shadow-sm transition-colors"
+            style={{ backgroundColor: calmBg }}
+          >
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200/60 dark:border-zinc-800/60 pb-5">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border shadow-2xs ${tonal.badge.bg} ${tonal.badge.border} ${tonal.badge.text}`}>
+                    AfCFTA & INTRA-REGIONAL TRADE FLOW VECTORS
+                  </span>
+                </div>
+                <h3 className="font-extrabold text-xl md:text-2xl text-zinc-900 dark:text-zinc-100 font-display mt-1.5 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" style={{ color: tonal.warmAccent }} />
+                  {region} Commercial Integration & Corridors
+                </h3>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">
+                  Tariff liberalization schedules, one-stop border posts (OSBPs), and guided trade initiative value chains
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setActiveSubTab('simulator')}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
+                >
+                  <Sliders className="w-3.5 h-3.5" />
+                  <span>Launch Live Simulator</span>
+                </button>
+
+                <div className="px-4 py-2 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-black/20 text-center shadow-xs">
+                  <span className="text-[10px] uppercase font-mono font-bold text-zinc-500 dark:text-zinc-400 block">
+                    Intra-Regional Trade Share
+                  </span>
+                  <span className="text-xl font-black font-mono" style={{ color: tonal.warmAccent }}>
+                    {profile.intraRegionalTradePct}%
+                  </span>
+                </div>
+              </div>
+            </div>
 
         {/* Trade Partners & GTI Status Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -266,6 +326,8 @@ export const RegionalAfcftaTradeSection: React.FC<RegionalAfcftaTradeSectionProp
           </div>
         )}
       </div>
-    </div>
-  );
+    </>
+  )}
+</div>
+);
 };

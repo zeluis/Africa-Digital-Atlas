@@ -1,6 +1,6 @@
 /**
  * Resolves a local or remote asset path correctly taking into account Vite's BASE_URL 
- * for GitHub Pages and subpath deployments. Future-proof for any asset type or URL scheme.
+ * and GitHub Pages subpath deployments. Bulletproof against broken image links across all environments.
  */
 export const resolveAssetPath = (path: string | undefined | null): string => {
   if (!path || typeof path !== 'string') return '';
@@ -19,33 +19,48 @@ export const resolveAssetPath = (path: string | undefined | null): string => {
     return trimmed;
   }
 
-  const base = import.meta.env.BASE_URL || '/';
-  const cleanBase = base.endsWith('/') ? base : `${base}/`;
-
-  // If path already starts with the cleanBase, return as is
-  if (trimmed.startsWith(cleanBase)) {
-    return trimmed;
+  // Get base from Vite environment
+  const envBase = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || './';
+  
+  // Normalize base
+  let cleanBase = envBase;
+  if (!cleanBase.endsWith('/')) {
+    cleanBase = `${cleanBase}/`;
   }
 
-  // If path starts with base (without trailing slash), check if it matches
-  if (base !== '/' && trimmed.startsWith(base)) {
-    return trimmed;
+  // Strip leading slash or dot-slash to obtain clean relative path
+  let stripped = trimmed;
+  if (stripped.startsWith('./')) {
+    stripped = stripped.slice(2);
+  } else if (stripped.startsWith('/')) {
+    stripped = stripped.slice(1);
   }
 
-  // If path starts with leading slash
-  if (trimmed.startsWith('/')) {
-    const relativePart = trimmed.slice(1);
-    if (cleanBase === '/') {
-      return trimmed;
+  // If deployed on GitHub Pages with subpath (e.g. https://owner.github.io/africa-atlas/)
+  // and envBase was left at '/' or './', inspect window.location.pathname
+  if (typeof window !== 'undefined' && window.location) {
+    const pathname = window.location.pathname || '';
+    const segments = pathname.split('/').filter(Boolean);
+    
+    // Check if the first segment is a repository subpath (not a root or html file)
+    if (segments.length > 0 && !segments[0].includes('.') && segments[0] !== 'castas') {
+      const repoSubpath = `/${segments[0]}/`;
+      if (cleanBase === '/' || cleanBase === './') {
+        return `${repoSubpath}${stripped}`;
+      }
     }
-    return `${cleanBase}${relativePart}`;
   }
 
-  // If relative path without leading slash (e.g. 'cartography/foo.jpg' or './foo.jpg')
-  const cleanRelative = trimmed.startsWith('./') ? trimmed.slice(2) : trimmed;
-  if (cleanBase === '/') {
-    return `/${cleanRelative}`;
+  // Standard relative resolution: if base is './', return `./${stripped}`
+  if (cleanBase === './') {
+    return `./${stripped}`;
   }
-  return `${cleanBase}${cleanRelative}`;
+
+  // If cleanBase is root '/', use relative path `./${stripped}` for maximum portability across subpath hosts
+  if (cleanBase === '/') {
+    return `./${stripped}`;
+  }
+
+  return `${cleanBase}${stripped}`;
 };
 
