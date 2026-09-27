@@ -11,6 +11,7 @@ import { CartographicColophonModal } from './components/CartographicColophonModa
 import { WorkingPapersModal } from './components/WorkingPapersModal';
 import { AcademicExportModal } from './components/AcademicExportModal';
 import { MethodologyAuditModal } from './components/MethodologyAuditModal';
+import { AfcftaSimulatorModal } from './components/afcfta/AfcftaSimulatorModal';
 import { MainContentSkeleton } from './components/MainContentSkeleton';
 import { Footer } from './components/Footer';
 import { OfflineIndicator } from './components/OfflineIndicator';
@@ -147,6 +148,9 @@ function AppContent() {
 
   // Methodological Harmonization & Quality Audit Dossier modal state
   const [isMethodologyModalOpen, setIsMethodologyModalOpen] = useState<boolean>(false);
+
+  // AfCFTA Trade Corridor Simulator modal state
+  const [isAfcftaSimulatorOpen, setIsAfcftaSimulatorOpen] = useState<boolean>(false);
 
   // 3-Screen Curated Orientation & Historical Context Consent Modal (Auto-open for new users)
   const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(() => {
@@ -556,6 +560,7 @@ function AppContent() {
           onOpenCitationModal={() => setIsCitationModalOpen(true)}
           onOpenWorkingPapers={() => setIsWorkingPapersOpen(true)}
           onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
+          onOpenAfcftaSimulator={() => setIsAfcftaSimulatorOpen(true)}
         />
 
         {/* Main Content Area */}
@@ -806,6 +811,13 @@ function AppContent() {
         isOpen={isMethodologyModalOpen}
         onClose={() => setIsMethodologyModalOpen(false)}
         onOpenCitationModal={() => setIsCitationModalOpen(true)}
+      />
+
+      {/* AfCFTA Trade Corridor Simulator Modal */}
+      <AfcftaSimulatorModal
+        isOpen={isAfcftaSimulatorOpen}
+        onClose={() => setIsAfcftaSimulatorOpen(false)}
+        onSelectCountry={handleSelectCountry}
       />
 
       {/* Universal Scholarly Citation & Platform Attribution Modal */}

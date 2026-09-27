@@ -29,7 +29,8 @@ import {
   PanelLeftClose,
   Palette,
   Award,
-  Quote
+  Quote,
+  Truck
 } from 'lucide-react';
 import { UN_REGIONAL_SILHOUETTES } from '../data/svgGeographySystem';
 import { AfricanRegion } from '../data/types';
@@ -251,7 +252,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onOpenColophon,
   onOpenCitationModal,
   onOpenWorkingPapers,
-  onOpenMethodologyAudit
+  onOpenMethodologyAudit,
+  onOpenAfcftaSimulator
 }) => {
   const { t } = useTranslation();
 
@@ -1142,6 +1144,30 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               {!isDesktopCollapsed && (
                 <span className="text-[10px] font-mono uppercase bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-800 dark:text-amber-300">
                   Series
+                </span>
+              )}
+            </button>
+          )}
+
+          {/* AfCFTA Trade Corridor Simulator */}
+          {onOpenAfcftaSimulator && (
+            <button
+              onClick={() => {
+                if (isMobile) onCloseMobile();
+                onOpenAfcftaSimulator();
+              }}
+              title="AfCFTA Trade Corridor & Tariff Impact Simulator"
+              className={`w-full flex items-center ${
+                isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
+              } text-left rounded-xl transition-all cursor-pointer text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-900 mt-1`}
+            >
+              <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
+                <Truck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                {!isDesktopCollapsed && <span>AfCFTA Simulator</span>}
+              </div>
+              {!isDesktopCollapsed && (
+                <span className="text-[10px] font-mono uppercase bg-emerald-500/20 px-1.5 py-0.5 rounded text-emerald-800 dark:text-emerald-300 font-bold">
+                  Tool
                 </span>
               )}
             </button>
