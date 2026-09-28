@@ -272,7 +272,7 @@ export const ThematicOverlaysLayer: React.FC<ThematicOverlaysLayerProps> = ({
                 <circle cx="0" cy="0" r="10" fill="#00f0ff" />
 
                 {/* High-Legibility Pill */}
-                <g transform={`translate(${offsetX}, ${offsetY})`} className="pointer-events-none">
+                <g transform={`translate(${offsetX}, ${offsetY})`} className="cursor-pointer">
                   {hasOffset && (
                     <line
                       x1={-offsetX * 0.7}
@@ -440,7 +440,7 @@ export const ThematicOverlaysLayer: React.FC<ThematicOverlaysLayerProps> = ({
                 <circle cx="0" cy="0" r={isHovered ? 14 : 9} fill="#ffffff" />
 
                 {/* High-Legibility Scaled Pill */}
-                <g transform={`translate(${offsetX}, ${offsetY})`} className="pointer-events-none">
+                <g transform={`translate(${offsetX}, ${offsetY})`} className="cursor-pointer">
                   {hasOffset && (
                     <line
                       x1={-offsetX * 0.7}
@@ -539,7 +539,7 @@ export const ThematicOverlaysLayer: React.FC<ThematicOverlaysLayerProps> = ({
                 transform="scale(1.2)"
               />
 
-              <g transform={`translate(${offsetX}, ${offsetY})`} className="pointer-events-none">
+              <g transform={`translate(${offsetX}, ${offsetY})`} className="cursor-pointer">
                 {hasOffset && (
                   <line
                     x1={-offsetX * 0.7}
@@ -625,7 +625,7 @@ export const ThematicOverlaysLayer: React.FC<ThematicOverlaysLayerProps> = ({
               />
               <circle cx="0" cy="0" r={isHovered ? 14 : 9} fill="#ffffff" />
 
-              <g transform={`translate(${offsetX}, ${offsetY})`} className="pointer-events-none">
+              <g transform={`translate(${offsetX}, ${offsetY})`} className="cursor-pointer">
                 {hasOffset && (
                   <line
                     x1={-offsetX * 0.7}
@@ -715,7 +715,7 @@ export const ThematicOverlaysLayer: React.FC<ThematicOverlaysLayerProps> = ({
               />
               <circle cx="0" cy="0" r="9" fill="#ffffff" />
 
-              <g transform={`translate(${offsetX}, ${offsetY})`} className="pointer-events-none">
+              <g transform={`translate(${offsetX}, ${offsetY})`} className="cursor-pointer">
                 {hasOffset && (
                   <line
                     x1={-offsetX * 0.7}
@@ -806,7 +806,7 @@ export const ThematicOverlaysLayer: React.FC<ThematicOverlaysLayerProps> = ({
                 transform="scale(1.2)"
               />
 
-              <g transform={`translate(${offsetX}, ${offsetY})`} className="pointer-events-none">
+              <g transform={`translate(${offsetX}, ${offsetY})`} className="cursor-pointer">
                 {hasOffset && (
                   <line
                     x1={-offsetX * 0.7}
@@ -924,7 +924,7 @@ export const ThematicOverlaysLayer: React.FC<ThematicOverlaysLayerProps> = ({
               />
 
               {/* High-Legibility Scaled Pill Label */}
-              <g transform={`translate(${offsetX}, ${offsetY})`} className="pointer-events-none">
+              <g transform={`translate(${offsetX}, ${offsetY})`} className="cursor-pointer">
                 {hasSignificantOffset && (
                   <line
                     x1={-offsetX * 0.75}

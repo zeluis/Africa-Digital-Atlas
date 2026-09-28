@@ -306,7 +306,7 @@ export const THEMATIC_PULSE_NODES: ThematicPulseNode[] = [
     subtitle: 'Hydroelectric Super-Project',
     type: 'Hydroelectric (5,150 MW)',
     badge: '⚡ Clean Energy',
-    labelOffset: { x: 260, y: -70 },
+    labelOffset: { x: -280, y: 50 },
     stats: [
       { label: 'Installed Capacity', value: '5,150 MW' },
       { label: 'Reservoir Volume', value: '74 Billion m³' },
@@ -400,7 +400,7 @@ export const THEMATIC_PULSE_NODES: ThematicPulseNode[] = [
     subtitle: 'UNESCO World Heritage',
     type: 'Wildlife Ecosystem (14,763 km²)',
     badge: '🌿 World Heritage',
-    labelOffset: { x: 280, y: 70 },
+    labelOffset: { x: -280, y: 70 },
     stats: [
       { label: 'Area', value: '14,763 km²' },
       { label: 'Annual Migration', value: '1.5 Million Wildebeest' },
@@ -448,7 +448,7 @@ export const THEMATIC_PULSE_NODES: ThematicPulseNode[] = [
     subtitle: 'Commercial Powerhouse',
     type: 'Megacity (Pop: 21.3M)',
     badge: '🏙️ Megacity Hub',
-    labelOffset: { x: -260, y: 110 },
+    labelOffset: { x: -280, y: -80 },
     stats: [
       { label: 'Metropolitan Population', value: '21.3 Million' },
       { label: 'GDP Contribution', value: '~$102 Billion (Larger than Kenya)' },
@@ -471,7 +471,7 @@ export const THEMATIC_PULSE_NODES: ThematicPulseNode[] = [
     subtitle: 'Continental Megacity',
     type: 'Megacity (Pop: 22.1M)',
     badge: '🏙️ Megacity Hub',
-    labelOffset: { x: 270, y: -70 },
+    labelOffset: { x: 280, y: -90 },
     stats: [
       { label: 'Urban Population', value: '22.1 Million' },
       { label: 'New Administrative Capital', value: '6.5M Planned Capacity' },
@@ -485,8 +485,8 @@ export const THEMATIC_PULSE_NODES: ThematicPulseNode[] = [
     id: 'node-joburg',
     name: 'Gauteng Megalopolis (Johannesburg–Pretoria)',
     category: 'demographics',
-    x: 3380,
-    y: 4720,
+    x: 3400,
+    y: 4700,
     color: '#9333ea',
     pulseColor: '#c084fc',
     radius: 40,
@@ -494,7 +494,7 @@ export const THEMATIC_PULSE_NODES: ThematicPulseNode[] = [
     subtitle: 'Financial & Industrial Hub',
     type: 'Conurbation (Pop: 16.2M)',
     badge: '🏙️ Megacity Hub',
-    labelOffset: { x: -290, y: -50 },
+    labelOffset: { x: 0, y: -160 },
     stats: [
       { label: 'Conurbation Population', value: '16.2 Million' },
       { label: 'Stock Exchange', value: 'JSE (Top 20 Worldwide)' },

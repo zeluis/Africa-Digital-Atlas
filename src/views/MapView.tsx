@@ -16,9 +16,9 @@ export const MapView: React.FC<MapViewProps> = ({
   const [activeMetric, setActiveMetric] = useState<string>('NY.GDP.MKTP.CD');
 
   return (
-    <div className="w-full h-full flex-1 flex flex-col min-h-screen select-none relative overflow-hidden bg-zinc-50 dark:bg-zinc-950">
+    <div className="w-full min-h-screen flex-1 flex flex-col select-none relative bg-zinc-50 dark:bg-zinc-950">
       {/* Main Full-Screen Map Viewport */}
-      <div id="map-viewport-container" className="relative w-full h-full flex-1 flex flex-col overflow-hidden">
+      <div id="map-viewport-container" className="relative w-full flex-1 flex flex-col">
         <AfricaMap
           isFullBleed={true}
           initialCartographySource="authentic_final"

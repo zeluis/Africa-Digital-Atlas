@@ -49,6 +49,7 @@ interface ArchivalImageViewerProps {
   onClose?: () => void;
   mode?: 'modal' | 'embedded' | 'fullscreen';
   showThumbnails?: boolean;
+  onOpenModal?: () => void;
 }
 
 type CitationStyle = 'chicago' | 'apa' | 'harvard' | 'bibtex';
@@ -60,7 +61,8 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
   onSelectIllustration,
   onClose,
   mode = 'modal',
-  showThumbnails = true
+  showThumbnails = true,
+  onOpenModal
 }) => {
   // Zoom & Pan state
   const [zoomLevel, setZoomLevel] = useState<number>(1);
@@ -500,20 +502,32 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
             </div>
           )}
 
-          {/* Full-Screen Modal Button — Placed right beside pagination buttons, before Filmstrip button */}
-          <button
-            onClick={toggleFullscreen}
-            className={`flex items-center gap-1.5 p-2 sm:px-2.5 sm:py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer border ${
-              isFullscreen
-                ? 'bg-amber-900 text-amber-50 border-amber-900 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-400/40 shadow-2xs'
-                : 'bg-stone-200/70 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 border-stone-300/70 dark:border-stone-700'
-            }`}
-            title={isFullscreen ? "Exit Fullscreen (F)" : "Fullscreen Mode (F)"}
-            aria-label={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
-          >
-            {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-            <span className="hidden md:inline">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</span>
-          </button>
+          {/* Sleek Unified Pill containing Screen and Modal buttons */}
+          <div className="flex items-center bg-stone-200/70 dark:bg-stone-900 border border-stone-300/80 dark:border-stone-700/80 rounded-xl p-0.5 gap-0.5">
+            <button
+              onClick={toggleFullscreen}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                isFullscreen
+                  ? 'bg-amber-900 text-amber-50 dark:bg-amber-500/20 dark:text-amber-300 shadow-2xs'
+                  : 'hover:bg-stone-300/80 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300'
+              }`}
+              title={isFullscreen ? "Exit Screen (F)" : "Screen Mode (F)"}
+            >
+              {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+              <span className="hidden md:inline">{isFullscreen ? 'Exit Screen' : 'Screen'}</span>
+            </button>
+
+            {onOpenModal && (
+              <button
+                onClick={onOpenModal}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer hover:bg-stone-300/80 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300"
+                title="Open in Modal (Fullscreen Loupe)"
+              >
+                <DynamicIcon icon="carbon:expand-screen" className="w-3.5 h-3.5 text-amber-800 dark:text-amber-400" />
+                <span className="hidden md:inline">Modal</span>
+              </button>
+            )}
+          </div>
 
           {/* Toggle Thumbnails Strip */}
           {illustrationsList.length > 0 && (

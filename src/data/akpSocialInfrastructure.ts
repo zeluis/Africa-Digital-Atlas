@@ -54,8 +54,8 @@ export const SOCIAL_INFRASTRUCTURE_DATA: SocialInfrastructureFacility[] = [
     countryIso3: 'ZAF',
     countryName: 'South Africa',
     type: 'hospital',
-    x: 3380,
-    y: 4720,
+    x: 3350,
+    y: 4740,
     capacityValue: 3200,
     capacityUnit: 'Inpatient Beds',
     categoryLabel: 'Mega Academic Hospital',
@@ -71,7 +71,7 @@ export const SOCIAL_INFRASTRUCTURE_DATA: SocialInfrastructureFacility[] = [
     ],
     description: 'The largest hospital in the Southern Hemisphere, occupying 173 acres and providing comprehensive tertiary referrals for Southern Africa.',
     source: 'Gauteng Department of Health / WHO Health Observatory',
-    labelOffset: { x: -300, y: 80 }
+    labelOffset: { x: -280, y: 90 }
   },
   {
     id: 'hosp-kasr-al-ainy',
@@ -97,7 +97,7 @@ export const SOCIAL_INFRASTRUCTURE_DATA: SocialInfrastructureFacility[] = [
     ],
     description: 'The foremost medical super-center in North Africa, functioning as Cairo University’s primary clinical research and training complex.',
     source: 'Egyptian Ministry of Health & Population / Cairo University',
-    labelOffset: { x: 300, y: -70 }
+    labelOffset: { x: 300, y: 50 }
   },
   {
     id: 'hosp-kenyatta-national',
@@ -175,7 +175,7 @@ export const SOCIAL_INFRASTRUCTURE_DATA: SocialInfrastructureFacility[] = [
     ],
     description: 'One of the largest quaternary hospitals in Sub-Saharan Africa, serving metropolitan Lagos and the broader West African coastal corridor.',
     source: 'Federal Ministry of Health Nigeria',
-    labelOffset: { x: 300, y: 70 }
+    labelOffset: { x: 300, y: 100 }
   },
   {
     id: 'hosp-hopital-principal-dakar',
@@ -201,7 +201,7 @@ export const SOCIAL_INFRASTRUCTURE_DATA: SocialInfrastructureFacility[] = [
     ],
     description: 'Renowned military-civilian teaching hospital providing apex medical care and clinical infectious disease response in Senegal.',
     source: 'Ministère de la Santé du Sénégal / WHO',
-    labelOffset: { x: 290, y: 70 }
+    labelOffset: { x: 280, y: -180 }
   },
   {
     id: 'hosp-ibn-sina-rabat',
@@ -257,7 +257,7 @@ export const SOCIAL_INFRASTRUCTURE_DATA: SocialInfrastructureFacility[] = [
     ],
     description: 'The historic flagship institution of Egyptian higher education, producing generations of continental statesmen, scientists, and writers.',
     source: 'UNESCO Institute for Statistics / Times Higher Education Africa Ranking',
-    labelOffset: { x: -300, y: 150 }
+    labelOffset: { x: -320, y: 160 }
   },
   {
     id: 'univ-uct-cape-town',
@@ -309,7 +309,7 @@ export const SOCIAL_INFRASTRUCTURE_DATA: SocialInfrastructureFacility[] = [
     ],
     description: 'One of the most prestigious and historic academic institutions in Sub-Saharan Africa, often called the "Harvard of Africa".',
     source: 'Makerere Directorate of Research and Graduate Training / UNESCO',
-    labelOffset: { x: -300, y: -70 }
+    labelOffset: { x: -300, y: -80 }
   },
   {
     id: 'univ-cheikh-anta-diop',
@@ -335,7 +335,7 @@ export const SOCIAL_INFRASTRUCTURE_DATA: SocialInfrastructureFacility[] = [
     ],
     description: 'The intellectual heart of Francophone West Africa, named after polymath Cheikh Anta Diop and renowned for scientific and historical scholarship.',
     source: 'Ministère de l’Enseignement Supérieur du Sénégal / AUDA-NEPAD',
-    labelOffset: { x: 290, y: -70 }
+    labelOffset: { x: 280, y: -170 }
   },
   {
     id: 'univ-ibadan',
@@ -361,7 +361,7 @@ export const SOCIAL_INFRASTRUCTURE_DATA: SocialInfrastructureFacility[] = [
     ],
     description: 'Nigeria’s premier university, celebrated as the cradle of modern African literature and tropical agronomy research.',
     source: 'National Universities Commission (NUC) Nigeria / UNESCO UIS',
-    labelOffset: { x: -300, y: -70 }
+    labelOffset: { x: 280, y: 180 }
   },
   {
     id: 'univ-addis-ababa',
@@ -387,6 +387,6 @@ export const SOCIAL_INFRASTRUCTURE_DATA: SocialInfrastructureFacility[] = [
     ],
     description: 'The intellectual hub of the Horn of Africa, home to the Institute of Ethiopian Studies and leading geological and heritage scholarship.',
     source: 'Ministry of Education Ethiopia / AAU Strategic Plan',
-    labelOffset: { x: 300, y: 70 }
+    labelOffset: { x: 280, y: 90 }
   }
 ];

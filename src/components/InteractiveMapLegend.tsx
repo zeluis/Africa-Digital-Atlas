@@ -22,7 +22,7 @@ export interface InteractiveMapLegendProps {
   exportControls?: React.ReactNode;
 }
 
-interface SubregionPillDef {
+export interface SubregionPillDef {
   id: AfricanRegion | 'All';
   label: string;
   fullName: string;
@@ -31,7 +31,7 @@ interface SubregionPillDef {
   activeBorderColor: string;
 }
 
-const SUBREGION_PILL_DEFS: SubregionPillDef[] = [
+export const SUBREGION_PILL_DEFS: SubregionPillDef[] = [
   {
     id: 'All',
     label: 'All',

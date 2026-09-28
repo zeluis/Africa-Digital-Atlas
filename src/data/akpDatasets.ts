@@ -652,23 +652,24 @@ export interface AkpInfrastructurePoint {
   y: number;
   status: string;
   commissioned: string;
+  labelOffset?: { x: number; y: number };
 }
 
 export const AKP_INFRASTRUCTURE_POINTS: AkpInfrastructurePoint[] = [
-  { id: 'gerd', name: 'Grand Ethiopian Renaissance Dam (GERD)', countryIso3: 'ETH', type: 'hydro', capacity: '5,150 MW', x: 3880, y: 2260, status: 'Operational / Expanding', commissioned: '2022' },
-  { id: 'noor', name: 'Noor Ouarzazate Solar Complex', countryIso3: 'MAR', type: 'solar', capacity: '580 MW (CSP)', x: 1840, y: 780, status: 'Operational', commissioned: '2016' },
-  { id: 'benban', name: 'Benban Solar Park', countryIso3: 'EGY', type: 'solar', capacity: '1,650 MW (PV)', x: 3820, y: 1180, status: 'Operational', commissioned: '2019' },
-  { id: 'aswan', name: 'Aswan High Dam', countryIso3: 'EGY', type: 'hydro', capacity: '2,100 MW', x: 3850, y: 1210, status: 'Operational', commissioned: '1970' },
-  { id: 'turkana', name: 'Lake Turkana Wind Power', countryIso3: 'KEN', type: 'wind', capacity: '310 MW', x: 4100, y: 2780, status: 'Operational', commissioned: '2019' },
-  { id: 'olkaria', name: 'Olkaria Geothermal Complex', countryIso3: 'KEN', type: 'geothermal', capacity: '862 MW', x: 4060, y: 2980, status: 'Operational', commissioned: '2021' },
-  { id: 'inga', name: 'Inga Hydroelectric Complex (I & II)', countryIso3: 'COD', type: 'hydro', capacity: '1,775 MW', x: 2780, y: 3260, status: 'Operational', commissioned: '1972' },
-  { id: 'kariba', name: 'Kariba Dam & Hydropower', countryIso3: 'ZMB', type: 'hydro', capacity: '1,830 MW', x: 3450, y: 4050, status: 'Operational', commissioned: '1959' },
-  { id: 'cahora', name: 'Cahora Bassa Hydroelectric', countryIso3: 'MOZ', type: 'hydro', capacity: '2,075 MW', x: 3750, y: 3980, status: 'Operational', commissioned: '1974' },
-  { id: 'nyerere', name: 'Julius Nyerere Hydropower Plant (Stiegler\'s Gorge)', countryIso3: 'TZA', type: 'hydro', capacity: '2,115 MW', x: 4120, y: 3520, status: 'Operational / Testing', commissioned: '2024' },
-  { id: 'jasper', name: 'Jasper Solar Power Project', countryIso3: 'ZAF', type: 'solar', capacity: '96 MW', x: 3100, y: 4950, status: 'Operational', commissioned: '2014' },
-  { id: 'bujagali', name: 'Bujagali Power Station (Victoria Nile)', countryIso3: 'UGA', type: 'hydro', capacity: '250 MW', x: 3860, y: 2930, status: 'Operational', commissioned: '2012' },
-  { id: 'taiba', name: 'Taiba N\'Diaye Wind Farm', countryIso3: 'SEN', type: 'wind', capacity: '158 MW', x: 750, y: 2150, status: 'Operational', commissioned: '2020' },
-  { id: 'nachtigal', name: 'Nachtigal Hydro Power Project', countryIso3: 'CMR', type: 'hydro', capacity: '420 MW', x: 2600, y: 2750, status: 'Operational / Commissioning', commissioned: '2024' }
+  { id: 'gerd', name: 'Grand Ethiopian Renaissance Dam (GERD)', countryIso3: 'ETH', type: 'hydro', capacity: '5,150 MW', x: 3880, y: 2260, status: 'Operational / Expanding', commissioned: '2022', labelOffset: { x: -280, y: 50 } },
+  { id: 'noor', name: 'Noor Ouarzazate Solar Complex', countryIso3: 'MAR', type: 'solar', capacity: '580 MW (CSP)', x: 1840, y: 780, status: 'Operational', commissioned: '2016', labelOffset: { x: 0, y: 170 } },
+  { id: 'benban', name: 'Benban Solar Park', countryIso3: 'EGY', type: 'solar', capacity: '1,650 MW (PV)', x: 3820, y: 1180, status: 'Operational', commissioned: '2019', labelOffset: { x: -260, y: 0 } },
+  { id: 'aswan', name: 'Aswan High Dam', countryIso3: 'EGY', type: 'hydro', capacity: '2,100 MW', x: 3850, y: 1210, status: 'Operational', commissioned: '1970', labelOffset: { x: 260, y: 0 } },
+  { id: 'turkana', name: 'Lake Turkana Wind Power', countryIso3: 'KEN', type: 'wind', capacity: '310 MW', x: 4100, y: 2780, status: 'Operational', commissioned: '2019', labelOffset: { x: 270, y: -40 } },
+  { id: 'olkaria', name: 'Olkaria Geothermal Complex', countryIso3: 'KEN', type: 'geothermal', capacity: '862 MW', x: 4060, y: 2980, status: 'Operational', commissioned: '2021', labelOffset: { x: -260, y: 60 } },
+  { id: 'inga', name: 'Inga Hydroelectric Complex (I & II)', countryIso3: 'COD', type: 'hydro', capacity: '1,775 MW', x: 2780, y: 3260, status: 'Operational', commissioned: '1972', labelOffset: { x: -260, y: -60 } },
+  { id: 'kariba', name: 'Kariba Dam & Hydropower', countryIso3: 'ZMB', type: 'hydro', capacity: '1,830 MW', x: 3450, y: 4050, status: 'Operational', commissioned: '1959', labelOffset: { x: 260, y: -60 } },
+  { id: 'cahora', name: 'Cahora Bassa Hydroelectric', countryIso3: 'MOZ', type: 'hydro', capacity: '2,075 MW', x: 3750, y: 3980, status: 'Operational', commissioned: '1974', labelOffset: { x: 260, y: 50 } },
+  { id: 'nyerere', name: 'Julius Nyerere Hydropower Plant (Stiegler\'s Gorge)', countryIso3: 'TZA', type: 'hydro', capacity: '2,115 MW', x: 4120, y: 3520, status: 'Operational / Testing', commissioned: '2024', labelOffset: { x: 260, y: 60 } },
+  { id: 'jasper', name: 'Jasper Solar Power Project', countryIso3: 'ZAF', type: 'solar', capacity: '96 MW', x: 3100, y: 4950, status: 'Operational', commissioned: '2014', labelOffset: { x: -260, y: 50 } },
+  { id: 'bujagali', name: 'Bujagali Power Station (Victoria Nile)', countryIso3: 'UGA', type: 'hydro', capacity: '250 MW', x: 3860, y: 2930, status: 'Operational', commissioned: '2012', labelOffset: { x: -260, y: -60 } },
+  { id: 'taiba', name: 'Taiba N\'Diaye Wind Farm', countryIso3: 'SEN', type: 'wind', capacity: '158 MW', x: 750, y: 2150, status: 'Operational', commissioned: '2020', labelOffset: { x: -260, y: -60 } },
+  { id: 'nachtigal', name: 'Nachtigal Hydro Power Project', countryIso3: 'CMR', type: 'hydro', capacity: '420 MW', x: 2600, y: 2750, status: 'Operational / Commissioning', commissioned: '2024', labelOffset: { x: 260, y: 50 } }
 ];
 
 /**
@@ -683,20 +684,21 @@ export interface AkpProtectedArea {
   x: number;
   y: number;
   designation: string;
+  labelOffset?: { x: number; y: number };
 }
 
 export const AKP_PROTECTED_AREAS: AkpProtectedArea[] = [
-  { id: 'serengeti', name: 'Serengeti & Ngorongoro Conservation Area', countryIso3: 'TZA', category: 'Biosphere Reserve', areaKm2: '14,763 km²', x: 4020, y: 3180, designation: 'UNESCO World Heritage' },
-  { id: 'kruger', name: 'Kruger National Park & Great Limpopo', countryIso3: 'ZAF', category: 'National Park', areaKm2: '19,485 km²', x: 3620, y: 4720, designation: 'Transfrontier Park' },
-  { id: 'okavango', name: 'Okavango Delta Ramsar Wetland', countryIso3: 'BWA', category: 'Wetland of Global Significance', areaKm2: '20,236 km²', x: 3120, y: 4420, designation: 'UNESCO World Heritage' },
-  { id: 'virunga', name: 'Virunga National Park', countryIso3: 'COD', category: 'National Park', areaKm2: '7,800 km²', x: 3520, y: 3050, designation: 'UNESCO World Heritage' },
-  { id: 'salonga', name: 'Salonga National Park (Congo Basin)', countryIso3: 'COD', category: 'Rainforest Reserve', areaKm2: '36,000 km²', x: 3100, y: 3150, designation: 'UNESCO World Heritage' },
-  { id: 'niokolo', name: 'Niokolo-Koba National Park', countryIso3: 'SEN', category: 'National Park', areaKm2: '9,130 km²', x: 940, y: 2200, designation: 'UNESCO World Heritage' },
-  { id: 'w_arly', name: 'W-Arly-Pendjari Complex', countryIso3: 'BEN', category: 'Transboundary Biosphere', areaKm2: '17,148 km²', x: 1720, y: 2200, designation: 'UNESCO World Heritage' },
-  { id: 'ahaggar', name: 'Ahaggar Cultural & Nature Park', countryIso3: 'DZA', category: 'National Park', areaKm2: '450,000 km²', x: 2350, y: 1350, designation: 'National Biosphere' },
-  { id: 'tai', name: 'Taï National Park (Primary Rainforest)', countryIso3: 'CIV', category: 'Rainforest Reserve', areaKm2: '3,300 km²', x: 1220, y: 2680, designation: 'UNESCO World Heritage' },
-  { id: 'kafue', name: 'Kafue National Park', countryIso3: 'ZMB', category: 'National Park', areaKm2: '22,400 km²', x: 3320, y: 3980, designation: 'Protected Wildlife Area' },
-  { id: 'simien', name: 'Simien Mountains National Park', countryIso3: 'ETH', category: 'Highland Sanctuary', areaKm2: '220 km²', x: 4120, y: 2150, designation: 'UNESCO World Heritage' }
+  { id: 'serengeti', name: 'Serengeti & Ngorongoro Conservation Area', countryIso3: 'TZA', category: 'Biosphere Reserve', areaKm2: '14,763 km²', x: 4020, y: 3180, designation: 'UNESCO World Heritage', labelOffset: { x: -280, y: 70 } },
+  { id: 'kruger', name: 'Kruger National Park & Great Limpopo', countryIso3: 'ZAF', category: 'National Park', areaKm2: '19,485 km²', x: 3620, y: 4720, designation: 'Transfrontier Park', labelOffset: { x: 300, y: 0 } },
+  { id: 'okavango', name: 'Okavango Delta Ramsar Wetland', countryIso3: 'BWA', category: 'Wetland of Global Significance', areaKm2: '20,236 km²', x: 3120, y: 4420, designation: 'UNESCO World Heritage', labelOffset: { x: -280, y: 30 } },
+  { id: 'virunga', name: 'Virunga National Park', countryIso3: 'COD', category: 'National Park', areaKm2: '7,800 km²', x: 3520, y: 3050, designation: 'UNESCO World Heritage', labelOffset: { x: 280, y: -50 } },
+  { id: 'salonga', name: 'Salonga National Park (Congo Basin)', countryIso3: 'COD', category: 'Rainforest Reserve', areaKm2: '36,000 km²', x: 3100, y: 3150, designation: 'UNESCO World Heritage', labelOffset: { x: -280, y: 60 } },
+  { id: 'niokolo', name: 'Niokolo-Koba National Park', countryIso3: 'SEN', category: 'National Park', areaKm2: '9,130 km²', x: 940, y: 2200, designation: 'UNESCO World Heritage', labelOffset: { x: 280, y: 0 } },
+  { id: 'w_arly', name: 'W-Arly-Pendjari Complex', countryIso3: 'BEN', category: 'Transboundary Biosphere', areaKm2: '17,148 km²', x: 1720, y: 2200, designation: 'UNESCO World Heritage', labelOffset: { x: -260, y: -60 } },
+  { id: 'ahaggar', name: 'Ahaggar Cultural & Nature Park', countryIso3: 'DZA', category: 'National Park', areaKm2: '450,000 km²', x: 2350, y: 1350, designation: 'National Biosphere', labelOffset: { x: 0, y: 120 } },
+  { id: 'tai', name: 'Taï National Park (Primary Rainforest)', countryIso3: 'CIV', category: 'Rainforest Reserve', areaKm2: '3,300 km²', x: 1220, y: 2680, designation: 'UNESCO World Heritage', labelOffset: { x: -260, y: 60 } },
+  { id: 'kafue', name: 'Kafue National Park', countryIso3: 'ZMB', category: 'National Park', areaKm2: '22,400 km²', x: 3320, y: 3980, designation: 'Protected Wildlife Area', labelOffset: { x: -260, y: 50 } },
+  { id: 'simien', name: 'Simien Mountains National Park', countryIso3: 'ETH', category: 'Highland Sanctuary', areaKm2: '220 km²', x: 4120, y: 2150, designation: 'UNESCO World Heritage', labelOffset: { x: 260, y: -70 } }
 ];
 
 /**

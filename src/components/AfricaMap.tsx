@@ -16,7 +16,7 @@ import {
 } from '../data/africaFinalGeometry';
 import { UN_GEOSCHEME_REGIONS, getUnRegionColor, UnGeoschemeRegionData } from '../data/africaData';
 import { ENTITY_BLOCS } from '../data/entityBlocs';
-import { InteractiveMapLegend } from './InteractiveMapLegend';
+import { InteractiveMapLegend, SUBREGION_PILL_DEFS } from './InteractiveMapLegend';
 import { CountryFlag } from './CountryFlag';
 import { formatValueByUnit, formatPopulation, formatGDP, formatHDI } from '../data/atlas-formatters';
 import { 
@@ -35,6 +35,7 @@ import {
   Info,
   Check,
   Eye,
+  EyeOff,
   Loader2,
   X,
   Search,
@@ -58,7 +59,8 @@ import {
   Footprints,
   Radio,
   Clock,
-  Quote
+  Quote,
+  Database
 } from 'lucide-react';
 import { CartographicColophonModal } from './CartographicColophonModal';
 import { AcademicExportModal } from './AcademicExportModal';
@@ -1241,86 +1243,44 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     <div
       className={
         isFullBleed
-          ? "relative w-full h-full flex flex-col overflow-hidden select-none bg-zinc-50 dark:bg-zinc-950"
-          : "relative w-full rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-3.5 sm:p-5 shadow-2xl overflow-hidden backdrop-blur-md space-y-3.5"
+          ? "relative w-full flex-1 flex flex-col select-none bg-zinc-50 dark:bg-zinc-950 p-2 sm:p-4 space-y-3"
+          : "relative w-full rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-3 sm:p-4 shadow-2xl backdrop-blur-md space-y-3"
       }
     >
-      {/* Unified Map Header & Controls Bar — Sticky with Header Zoom Controls Pill */}
+      {/* Unified Map Header & Controls Bar — Sticky & Fully Responsive with All Controls Visible */}
       <div 
         id="unified-africa-map-control-card" 
-        className="sticky top-0 z-30 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-3 sm:p-4 shadow-sm backdrop-blur-md space-y-2.5 transition-all"
+        className="sticky top-16 z-30 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-2 sm:p-2.5 shadow-sm backdrop-blur-md space-y-2 transition-all"
       >
-        {/* Top Header Row: Branding, Stable Tool Groups, Mode Switcher, and Export */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-2 border-b border-zinc-200/80 dark:border-zinc-800/80">
-          {/* Left: Branding & Map Metadata */}
-          <div className="flex items-center gap-3 shrink-0">
+        {/* Row 1: Brand, Map Mode Selector, UN Subregion Pills, Graticule/Cartouche, Admin-1/Inspector, Clean Power, Reserves, Flows */}
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          {/* Left: Brand + Mode Switcher */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <AfricaUnLogo
               variant="warm-tonal"
               fillOpacity={0.65}
               interactive={false}
-              className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 text-amber-600/80 dark:text-amber-500/80 stroke-amber-700/80 dark:stroke-amber-400/80"
+              className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 text-amber-600/80 dark:text-amber-500/80 stroke-amber-700/80 dark:stroke-amber-400/80"
               strokeColor="currentColor"
               strokeWidth={1.4}
             />
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-bold text-sm sm:text-base text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight">
-                  African Geospatial Map
+            <div className="hidden sm:block">
+              <div className="flex items-center gap-1.5">
+                <h3 className="font-bold text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight whitespace-nowrap">
+                  African Map
                 </h3>
-                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-700/80">
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-700/80">
                   {isFinalMode ? 'AUTHENTIC' : 'UN M49'}
                 </span>
               </div>
-              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight mt-0.5">
-                {isFinalMode 
-                  ? 'Authoritative palette · 1,017 Admin-1 units' 
-                  : 'UN Geoscheme regional grouping'}
-              </p>
-            </div>
-          </div>
-
-          {/* Right: Stable Toolbar Group (Zero Layout Shift) */}
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            {/* Zoom Controls Pill in Header */}
-            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl shadow-2xs">
-              <button
-                type="button"
-                onClick={() => setZoomLevel(prev => Math.max(0.7, Number((prev - 0.25).toFixed(2))))}
-                className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all cursor-pointer"
-                title="Zoom Out (–)"
-                aria-label="Zoom Out"
-              >
-                <ZoomOut className="w-3.5 h-3.5" />
-              </button>
-              <span className="text-[11px] font-mono font-bold text-zinc-700 dark:text-zinc-300 px-2 min-w-[3.25rem] text-center select-none">
-                {Math.round(zoomLevel * 100)}%
-              </span>
-              <button
-                type="button"
-                onClick={() => setZoomLevel(prev => Math.min(4.0, Number((prev + 0.25).toFixed(2))))}
-                className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all cursor-pointer"
-                title="Zoom In (+)"
-                aria-label="Zoom In"
-              >
-                <ZoomIn className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={handleResetZoom}
-                className="p-1.5 ml-0.5 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800"
-                title="Reset View (100%)"
-                aria-label="Reset View"
-              >
-                <RotateCcw className="w-3 h-3" />
-              </button>
             </div>
 
-            {/* Unified Mode Switcher Segmented Pill */}
-            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl relative">
+            {/* Mode Switcher Pill */}
+            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl relative shrink-0">
               <button
                 type="button"
                 onClick={() => handleSelectMode('authentic')}
-                className={`relative px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
+                className={`relative px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
                   mapMode === 'authentic_palette'
                     ? 'text-white font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -1341,12 +1301,12 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <button
                 type="button"
                 onClick={() => handleSelectMode('antique')}
-                className={`relative px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
+                className={`relative px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
                   mapMode === 'antique_parchment'
                     ? 'text-white font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                 }`}
-                title="Antique Parchment Cartography Map (in the vein of Historical Map Plates)"
+                title="Antique Parchment Cartography Map"
               >
                 {mapMode === 'antique_parchment' && (
                   <motion.div
@@ -1356,13 +1316,13 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   />
                 )}
                 <Compass className="w-3 h-3 text-amber-500" />
-                <span>Antique Map</span>
+                <span>Antique</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleSelectMode('choropleth')}
-                className={`relative px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
+                className={`relative px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
                   mapMode === 'choropleth'
                     ? 'text-white font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -1383,12 +1343,12 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <button
                 type="button"
                 onClick={() => handleSelectMode('bivariate')}
-                className={`relative px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
+                className={`relative px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
                   mapMode === 'bivariate'
                     ? 'text-white font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                 }`}
-                title="Bivariate 2D choropleth (cross-analyze two indicators simultaneously)"
+                title="Bivariate 2D choropleth"
               >
                 {mapMode === 'bivariate' && (
                   <motion.div
@@ -1404,7 +1364,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <button
                 type="button"
                 onClick={() => handleSelectMode('schematic')}
-                className={`relative px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
+                className={`relative px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
                   mapMode === 'un_geoscheme'
                     ? 'text-white font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -1422,10 +1382,233 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 <span>Schematic</span>
               </button>
             </div>
+          </div>
 
+          {/* UN Subregions Filter Pills */}
+          <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
+            {SUBREGION_PILL_DEFS.map(pill => {
+              const isAll = pill.id === 'All';
+              const regionId = pill.id as AfricanRegion;
+              const isVisible = isAll ? visibleRegions.size === 5 : visibleRegions.has(regionId);
+              const isIsolated = !isAll && visibleRegions.size === 1 && visibleRegions.has(regionId);
+              const isHovered = !isAll && activeRegionHover === regionId;
+
+              return (
+                <div
+                  key={pill.id}
+                  onMouseEnter={() => {
+                    if (!isAll) setActiveRegionHover(regionId);
+                  }}
+                  onMouseLeave={() => {
+                    if (!isAll) setActiveRegionHover(null);
+                  }}
+                  className={`group inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-xl text-xs font-semibold tracking-normal transition-all select-none border cursor-pointer shrink-0 ${
+                    isAll
+                      ? visibleRegions.size === 5
+                        ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 border-zinc-900 dark:border-white shadow-xs ring-1 ring-emerald-500/40 font-bold'
+                        : 'bg-zinc-100/90 dark:bg-zinc-900/80 text-zinc-600 dark:text-zinc-400 border-zinc-200/80 dark:border-zinc-800 hover:bg-zinc-200/80 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-200'
+                      : isIsolated
+                        ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 border-zinc-900 dark:border-white shadow-xs ring-1 ' + pill.activeBorderColor + ' font-bold'
+                        : isVisible
+                          ? isHovered
+                            ? 'bg-zinc-200/90 dark:bg-zinc-800 text-zinc-950 dark:text-white border-zinc-300 dark:border-zinc-600 shadow-xs ring-1 ' + pill.activeBorderColor
+                            : 'bg-zinc-100/90 dark:bg-zinc-900/90 text-zinc-800 dark:text-zinc-200 border-zinc-200/90 dark:border-zinc-800 hover:bg-zinc-200/70 dark:hover:bg-zinc-800/80 shadow-xs'
+                          : 'bg-zinc-100/40 dark:bg-zinc-900/30 text-zinc-400 dark:text-zinc-500 border-zinc-200/50 dark:border-zinc-800/50 opacity-60 hover:opacity-100'
+                  }`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (isAll) {
+                        handleShowAllRegions();
+                        handleResetZoom();
+                      } else {
+                        if (visibleRegions.size === 1 && visibleRegions.has(regionId)) {
+                          handleShowAllRegions();
+                          handleResetZoom();
+                        } else {
+                          handleIsolateRegion(regionId);
+                          handleFocusRegion(regionId);
+                        }
+                      }
+                    }}
+                    className="flex items-center gap-1.5 cursor-pointer text-left focus:outline-none"
+                    title={isAll ? 'Display all 54 African nations' : `Focus ${pill.fullName}`}
+                  >
+                    <span
+                      className={`w-2 h-2 rounded-full shrink-0 transition-transform group-hover:scale-125 ${
+                        isVisible ? 'ring-1 ring-white/40 shadow-xs' : 'opacity-40'
+                      }`}
+                      style={{ backgroundColor: pill.color }}
+                    />
+                    <span className="whitespace-nowrap font-bold text-[11px] sm:text-xs">
+                      {pill.label}
+                    </span>
+                    <span
+                      className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded transition-colors ${
+                        (isAll && visibleRegions.size === 5) || isIsolated
+                          ? 'bg-white/20 text-current dark:bg-black/20'
+                          : 'bg-zinc-200/80 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                      }`}
+                    >
+                      {pill.count}
+                    </span>
+                  </button>
+
+                  {!isAll && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleRegion(regionId);
+                      }}
+                      className="p-0.5 rounded text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+                      title={isVisible ? `Hide ${pill.label}` : `Show ${pill.label}`}
+                      aria-label={isVisible ? `Hide ${pill.label}` : `Show ${pill.label}`}
+                    >
+                      {isVisible ? (
+                        <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-500" />
+                      ) : (
+                        <EyeOff className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-zinc-400 dark:text-zinc-600" />
+                      )}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Unified Graticule & Cartouche Pill */}
+          <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl shadow-2xs gap-0.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowGraticuleAndCompass(prev => !prev)}
+              className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
+                showGraticuleAndCompass
+                  ? 'bg-sky-500/15 text-sky-700 dark:text-sky-300 font-bold'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800'
+              }`}
+              title="Toggle Graticule & Compass Rose"
+            >
+              <Grid className="w-3 h-3" />
+              <span>Graticule ({showGraticuleAndCompass ? 'ON' : 'OFF'})</span>
+            </button>
+
+            {isFinalMode && (
+              <button
+                type="button"
+                onClick={() => setShowCartouche(prev => !prev)}
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800 ${
+                  showCartouche
+                    ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300 font-bold'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800'
+                }`}
+                title="Toggle Official Cartographic Cartouche & Scale Bar"
+              >
+                <Compass className="w-3 h-3 text-amber-500" />
+                <span>Cartouche ({showCartouche ? 'ON' : 'OFF'})</span>
+              </button>
+            )}
+          </div>
+
+          {/* Subdivisions Toggle & Inspector Toggle */}
+          {isFinalMode && (
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                type="button"
+                onClick={() => setShowAdmin1Borders(prev => !prev)}
+                className={`flex items-center gap-1 px-2 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
+                  showAdmin1Borders
+                    ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-300'
+                    : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400'
+                }`}
+                title="Toggle Admin-1 internal subdivisions"
+              >
+                <MapPin className="w-3 h-3" />
+                <span>Admin-1 ({showAdmin1Borders ? 'ON' : 'OFF'})</span>
+              </button>
+
+              <button
+                id="btn-toggle-admin1-inspector-header"
+                type="button"
+                onClick={() => setIsAdmin1InspectorOpen(prev => !prev)}
+                className={`flex items-center gap-1.5 px-2 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
+                  isAdmin1InspectorOpen
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                    : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+                title="Toggle Admin-1 Subdivisions Inspector"
+              >
+                <MapPin className="w-3 h-3" />
+                <span>Inspector</span>
+                <span className={`text-[10px] font-mono px-1 py-0.2 rounded font-bold ${
+                  isAdmin1InspectorOpen ? 'bg-emerald-700/80 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
+                }`}>
+                  {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
+                </span>
+              </button>
+            </div>
+          )}
+
+          {/* AKP Clean Energy & Dams Overlay Toggle */}
+          {isFinalMode && (
+            <button
+              type="button"
+              onClick={() => setShowPowerPlants(prev => !prev)}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer shrink-0 ${
+                showPowerPlants
+                  ? 'bg-amber-500/15 border-amber-500/40 text-amber-700 dark:text-amber-300 ring-1 ring-amber-500/30'
+                  : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+              }`}
+              title="Toggle European Commission AKP Clean Energy Infrastructure & Major Dams Overlay"
+            >
+              <Zap className="w-3 h-3 text-amber-500" />
+              <span>Clean Power ({showPowerPlants ? 'ON' : 'OFF'})</span>
+            </button>
+          )}
+
+          {/* AKP Protected Biospheres Overlay Toggle */}
+          {isFinalMode && (
+            <button
+              type="button"
+              onClick={() => setShowProtectedAreas(prev => !prev)}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer shrink-0 ${
+                showProtectedAreas
+                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-500/30'
+                  : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+              }`}
+              title="Toggle UNESCO World Heritage & BIOPAMA African Biosphere Reserves Overlay"
+            >
+              <Trees className="w-3 h-3 text-emerald-500" />
+              <span>Reserves ({showProtectedAreas ? 'ON' : 'OFF'})</span>
+            </button>
+          )}
+
+          {/* AKP Animated Thematic Overlays (Power Pools, Corridors, Megacities) */}
+          {isFinalMode && (
+            <button
+              type="button"
+              onClick={() => setShowThematicOverlays(prev => !prev)}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer shrink-0 ${
+                showThematicOverlays
+                  ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-700 dark:text-cyan-300 ring-1 ring-cyan-500/30'
+                  : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+              }`}
+              title="Toggle Animated Continental Corridors, Flow Pulses & Metropolitan Hubs"
+            >
+              <Activity className="w-3 h-3 text-cyan-500" />
+              <span>Flows ({showThematicOverlays ? 'ON' : 'OFF'})</span>
+            </button>
+          )}
+        </div>
+
+        {/* Row 2: Cartographic Overlays (Bloc selector, ThematicLayerDeck) and Research Imprints (AKP Registry, Colophon, Cite DOI), and docked Zoom Controls & Export dropdown */}
+        <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 pt-1.5 border-t border-zinc-200/70 dark:border-zinc-800/70">
+          {/* Left: Bloc selector, ThematicLayerDeck & Research Imprints */}
+          <div className="flex flex-wrap items-center gap-1.5">
             {/* Regional Economic Blocs Selector */}
-            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 px-2 py-1 rounded-xl text-xs">
-              <span className="text-[11px] font-bold text-zinc-500 mr-1">Bloc:</span>
+            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 px-2 py-1 rounded-xl text-xs shrink-0">
+              <span className="text-[10px] font-bold text-zinc-500 mr-1">Bloc:</span>
               <select
                 value={selectedBlocId}
                 onChange={(e) => setSelectedBlocId(e.target.value)}
@@ -1440,149 +1623,143 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               </select>
             </div>
 
-            {/* Graticule & Compass Toggle */}
-            <button
-              type="button"
-              onClick={() => setShowGraticuleAndCompass(prev => !prev)}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
-                showGraticuleAndCompass
-                  ? 'bg-sky-500/15 border-sky-500/40 text-sky-700 dark:text-sky-300'
-                  : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400'
-              }`}
-              title="Toggle Graticule & Compass Rose"
-            >
-              <Grid className="w-3 h-3" />
-              <span>Graticule ({showGraticuleAndCompass ? 'ON' : 'OFF'})</span>
-            </button>
-
-            {/* Cartouche & Imprint Toggle */}
+            {/* Thematic Layer Deck */}
             {isFinalMode && (
-              <button
-                type="button"
-                onClick={() => setShowCartouche(prev => !prev)}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
-                  showCartouche
-                    ? 'bg-amber-500/15 border-amber-500/40 text-amber-700 dark:text-amber-300'
-                    : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400'
-                }`}
-                title="Toggle Official Cartographic Cartouche & Scale Bar"
-              >
-                <Compass className="w-3 h-3 text-amber-500" />
-                <span>Cartouche ({showCartouche ? 'ON' : 'OFF'})</span>
-              </button>
-            )}
-
-            {/* Cartographic Colophon & Imprint Modal Trigger */}
-            <button
-              type="button"
-              onClick={() => setIsColophonOpen(true)}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-800 text-[11px] font-semibold transition-all shadow-xs cursor-pointer"
-              title="Open Official Cartographic Colophon, Geodesy Specs & Imprint"
-            >
-              <Award className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-              <span>Colophon</span>
-            </button>
-
-            {/* Cite Observatory Platform Trigger */}
-            <button
-              type="button"
-              onClick={() => setIsCitationModalOpen(true)}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-300 hover:bg-amber-500/20 text-[11px] font-semibold transition-all shadow-xs cursor-pointer"
-              title="Cite this Research Platform (DOI: 10.5281/zenodo.10842918)"
-            >
-              <Quote className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-              <span>Cite (DOI)</span>
-            </button>
-
-            {/* AKP Clean Energy & Dams Overlay Toggle */}
-            {isFinalMode && (
-              <button
-                type="button"
-                onClick={() => setShowPowerPlants(prev => !prev)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
-                  showPowerPlants
-                    ? 'bg-amber-500/15 border-amber-500/40 text-amber-700 dark:text-amber-300 ring-1 ring-amber-500/30'
-                    : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-                }`}
-                title="Toggle European Commission AKP Clean Energy Infrastructure & Major Dams Overlay"
-              >
-                <Zap className="w-3 h-3 text-amber-500" />
-                <span>Clean Power ({showPowerPlants ? 'ON' : 'OFF'})</span>
-              </button>
-            )}
-
-            {/* AKP Protected Biospheres Overlay Toggle */}
-            {isFinalMode && (
-              <button
-                type="button"
-                onClick={() => setShowProtectedAreas(prev => !prev)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
-                  showProtectedAreas
-                    ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-500/30'
-                    : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-                }`}
-                title="Toggle UNESCO World Heritage & BIOPAMA African Biosphere Reserves Overlay"
-              >
-                <Trees className="w-3 h-3 text-emerald-500" />
-                <span>Reserves ({showProtectedAreas ? 'ON' : 'OFF'})</span>
-              </button>
-            )}
-
-            {/* AKP Animated Thematic Overlays (Power Pools, Corridors, Megacities) */}
-            {isFinalMode && (
-              <button
-                type="button"
-                onClick={() => setShowThematicOverlays(prev => !prev)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
-                  showThematicOverlays
-                    ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-700 dark:text-cyan-300 ring-1 ring-cyan-500/30'
-                    : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-                }`}
-                title="Toggle Animated Continental Corridors, Flow Pulses & Metropolitan Hubs"
-              >
-                <Activity className="w-3 h-3 text-cyan-500" />
-                <span>Thematic Flows ({showThematicOverlays ? 'ON' : 'OFF'})</span>
-              </button>
-            )}
-
-            {/* Subdivisions Toggle & Inspector Toggle */}
-            {isFinalMode && (
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setShowAdmin1Borders(prev => !prev)}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
-                    showAdmin1Borders
-                      ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-300'
-                      : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400'
-                  }`}
-                  title="Toggle Admin-1 internal subdivisions"
-                >
-                  <MapPin className="w-3 h-3" />
-                  <span>Admin-1 ({showAdmin1Borders ? 'ON' : 'OFF'})</span>
-                </button>
-
-                <button
-                  id="btn-toggle-admin1-inspector-header"
-                  type="button"
-                  onClick={() => setIsAdmin1InspectorOpen(prev => !prev)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
-                    isAdmin1InspectorOpen
-                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                      : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-                  }`}
-                  title="Toggle Admin-1 Subdivisions Inspector"
-                >
-                  <MapPin className="w-3 h-3" />
-                  <span>Inspector ({isAdmin1InspectorOpen ? 'OPEN' : 'CLOSED'})</span>
-                  <span className={`text-[10px] font-mono px-1 py-0.2 rounded font-bold ${
-                    isAdmin1InspectorOpen ? 'bg-emerald-700/80 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
-                  }`}>
-                    {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
-                  </span>
-                </button>
+              <div className="shrink-0">
+                <ThematicLayerDeck
+                  layerVisibility={layerVisibility}
+                  onToggleLayer={handleToggleLayer}
+                  onSetAllLayers={handleSetAllLayers}
+                  onOpenCatalogueModal={() => setIsCatalogueModalOpen(true)}
+                  showPowerPlants={showPowerPlants}
+                  onTogglePowerPlants={() => setShowPowerPlants(prev => !prev)}
+                  showProtectedAreas={showProtectedAreas}
+                  onToggleProtectedAreas={() => setShowProtectedAreas(prev => !prev)}
+                />
               </div>
             )}
+
+            {/* Research & Imprints Pill (AKP Registry, Colophon, Cite DOI) */}
+            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl shadow-2xs gap-0.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsCatalogueModalOpen(true)}
+                className="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-[11px] font-semibold transition-all cursor-pointer"
+                title="Open AKP Data Registry & Geospatial Catalogue"
+              >
+                <Database className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                <span>AKP Registry</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsColophonOpen(true)}
+                className="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-[11px] font-semibold transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800"
+                title="Open Official Cartographic Colophon, Geodesy Specs & Imprint"
+              >
+                <Award className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                <span>Colophon</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsCitationModalOpen(true)}
+                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 text-[11px] font-semibold transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800"
+                title="Cite this Research Platform (DOI: 10.5281/zenodo.10842918)"
+              >
+                <Quote className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                <span>Cite (DOI)</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Right: Docked Zoom Controls & Export Pill */}
+          <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+            {/* Zoom Controls Pill */}
+            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl shadow-2xs">
+              <button
+                type="button"
+                onClick={() => setZoomLevel(prev => Math.max(0.7, Number((prev - 0.25).toFixed(2))))}
+                className="p-1 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all cursor-pointer"
+                title="Zoom Out (–)"
+                aria-label="Zoom Out"
+              >
+                <ZoomOut className="w-3.5 h-3.5" />
+              </button>
+              <span className="text-[11px] font-mono font-bold text-zinc-700 dark:text-zinc-300 px-1.5 min-w-[2.75rem] text-center select-none">
+                {Math.round(zoomLevel * 100)}%
+              </span>
+              <button
+                type="button"
+                onClick={() => setZoomLevel(prev => Math.min(4.0, Number((prev + 0.25).toFixed(2))))}
+                className="p-1 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all cursor-pointer"
+                title="Zoom In (+)"
+                aria-label="Zoom In"
+              >
+                <ZoomIn className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={handleResetZoom}
+                className="p-1 ml-0.5 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800"
+                title="Reset View (100%)"
+                aria-label="Reset View"
+              >
+                <RotateCcw className="w-3 h-3" />
+              </button>
+            </div>
+
+            {/* Export Dropdown Menu Pill */}
+            <div className="relative" ref={exportMenuRef}>
+              <button
+                type="button"
+                onClick={() => setIsExportMenuOpen(prev => !prev)}
+                disabled={isExporting || isExportingSvg}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-[11px] font-semibold transition-all shadow-xs cursor-pointer active:scale-95 disabled:opacity-50"
+                title="Export High-Resolution Vector/Raster Map"
+              >
+                {isExporting || isExportingSvg ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                  <Download className="w-3 h-3" />
+                )}
+                <span>{exportSuccess || exportSvgSuccess ? 'Exported!' : 'Export'}</span>
+                <ChevronDown className="w-3 h-3 opacity-70" />
+              </button>
+
+              {/* Export Dropdown Menu */}
+              {isExportMenuOpen && (
+                <div className="absolute right-0 top-full mt-1 z-50 w-48 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xl p-1.5 space-y-1 animate-in fade-in zoom-in-95 duration-150">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsExportMenuOpen(false);
+                      handleDownloadPng();
+                    }}
+                    className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-left cursor-pointer"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <FileImage className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                      PNG Image (2x HD)
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsExportMenuOpen(false);
+                      handleDownloadSvg();
+                    }}
+                    className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-left cursor-pointer"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <FileCode className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+                      Scalable SVG Vector
+                    </span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -1712,171 +1889,6 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             />
           )}
         </AnimatePresence>
-
-        {/* Integrated Subregion Pills & Zoom Controls Row */}
-        {!isFullBleed && (
-          <InteractiveMapLegend
-            embedded={true}
-            visibleRegions={visibleRegions}
-            onToggleRegion={handleToggleRegion}
-            onShowAll={() => {
-              handleShowAllRegions();
-              handleResetZoom();
-            }}
-            onHideAll={handleHideAllRegions}
-            onIsolateRegion={handleIsolateRegion}
-            activeHoverRegion={activeRegionHover}
-            onHoverRegion={setActiveRegionHover}
-            zoomLevel={zoomLevel}
-            onZoomIn={() => setZoomLevel(prev => Math.min(3.8, prev + 0.25))}
-            onZoomOut={() => setZoomLevel(prev => Math.max(0.7, prev - 0.25))}
-            onResetZoom={handleResetZoom}
-            onFocusRegion={handleFocusRegion}
-            exportControls={
-              <div className="relative" ref={exportMenuRef}>
-                <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl shadow-xs">
-                  {/* PNG Export Button */}
-                  <button
-                    type="button"
-                    onClick={() => handleDownloadPng()}
-                    disabled={isExporting}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-white dark:hover:bg-zinc-800 transition-all cursor-pointer disabled:opacity-50"
-                    title="Quick download as High-Res PNG (2x Raster)"
-                  >
-                    {isExporting ? (
-                      <Loader2 className="w-3 h-3 animate-spin text-emerald-500" />
-                    ) : exportSuccess ? (
-                      <Check className="w-3 h-3 text-emerald-500" />
-                    ) : (
-                      <FileImage className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                    )}
-                    <span>{isExporting ? 'Saving...' : exportSuccess ? 'Saved' : 'PNG'}</span>
-                  </button>
-
-                  {/* SVG Export Button */}
-                  <button
-                    type="button"
-                    onClick={() => handleDownloadSvg()}
-                    disabled={isExportingSvg}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-white dark:hover:bg-zinc-800 transition-all cursor-pointer disabled:opacity-50 border-l border-zinc-200/80 dark:border-zinc-800 pl-2"
-                    title="Quick download as Scalable Vector Graphic (SVG)"
-                  >
-                    {isExportingSvg ? (
-                      <Loader2 className="w-3 h-3 animate-spin text-cyan-500" />
-                    ) : exportSvgSuccess ? (
-                      <Check className="w-3 h-3 text-cyan-500" />
-                    ) : (
-                      <FileCode className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
-                    )}
-                    <span>{isExportingSvg ? 'Saving...' : exportSvgSuccess ? 'Saved' : 'SVG'}</span>
-                  </button>
-
-                  {/* Export Options Dropdown Button */}
-                  <button
-                    type="button"
-                    onClick={() => setIsExportMenuOpen(prev => !prev)}
-                    className={`px-1.5 py-1 rounded-lg text-xs transition-all cursor-pointer ml-0.5 ${
-                      isExportMenuOpen
-                        ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white'
-                        : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
-                    }`}
-                    title="Configure Export Options (Background, Watermark, Quality)"
-                    aria-label="Export options"
-                  >
-                    <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isExportMenuOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                </div>
-
-                {/* Export Options Popover Menu */}
-                <AnimatePresence>
-                  {isExportMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 6, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 6, scale: 0.96 }}
-                      transition={{ duration: 0.15, ease: 'easeOut' }}
-                      className="absolute right-0 top-full mt-2 w-72 p-3 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800 z-50 text-xs space-y-3"
-                    >
-                      <div className="flex items-center justify-between pb-2 border-b border-zinc-100 dark:border-zinc-800">
-                        <div className="flex items-center gap-1.5 font-bold text-zinc-900 dark:text-zinc-100">
-                          <SlidersHorizontal className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                          <span>Export Options</span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setIsExportMenuOpen(false)}
-                          className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-
-                      {/* Background Selector */}
-                      <div>
-                        <span className="block text-[11px] font-semibold text-zinc-500 mb-1.5">Canvas Background:</span>
-                        <div className="grid grid-cols-3 gap-1">
-                          {(['white', 'dark', 'transparent'] as const).map(bg => (
-                            <button
-                              key={bg}
-                              type="button"
-                              onClick={() => setExportBg(bg)}
-                              className={`py-1 px-2 rounded-lg text-[11px] font-medium border text-center capitalize transition-all cursor-pointer ${
-                                exportBg === bg
-                                  ? 'bg-emerald-500/10 border-emerald-500 text-emerald-700 dark:text-emerald-300 font-bold'
-                                  : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800'
-                              }`}
-                            >
-                              {bg}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Watermark Toggle */}
-                      <label className="flex items-center justify-between gap-2 py-1 cursor-pointer select-none">
-                        <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-300">
-                          Include Title & Watermark
-                        </span>
-                        <input
-                          type="checkbox"
-                          checked={exportIncludeWatermark}
-                          onChange={(e) => setExportIncludeWatermark(e.target.checked)}
-                          className="w-4 h-4 rounded text-emerald-600 border-zinc-300 focus:ring-emerald-500 cursor-pointer"
-                        />
-                      </label>
-
-                      {/* Actions */}
-                      <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 grid grid-cols-2 gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            handleDownloadPng();
-                            setIsExportMenuOpen(false);
-                          }}
-                          className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs cursor-pointer"
-                        >
-                          <FileImage className="w-3.5 h-3.5" />
-                          <span>PNG (2x)</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            handleDownloadSvg();
-                            setIsExportMenuOpen(false);
-                          }}
-                          className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-semibold shadow-xs cursor-pointer"
-                        >
-                          <FileCode className="w-3.5 h-3.5" />
-                          <span>SVG Vector</span>
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            }
-          />
-        )}
       </div>
 
       {/* SVG Canvas Map Container */}
@@ -1890,56 +1902,16 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         }}
         className={
           isFullBleed
-            ? "relative w-full h-full flex-1 flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 overflow-hidden"
+            ? "relative w-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs p-2 sm:p-4 min-h-[720px] aspect-[890/985]"
             : "relative w-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner p-[6px] aspect-[890/985] max-h-[85vh] min-h-[440px]"
         }
       >
-        {/* Top-Right Floating Overlays & Layer Deck Controls */}
-        <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
-          <ThematicLayerDeck
-            layerVisibility={layerVisibility}
-            onToggleLayer={handleToggleLayer}
-            onSetAllLayers={handleSetAllLayers}
-            onOpenCatalogueModal={() => setIsCatalogueModalOpen(true)}
-            showPowerPlants={showPowerPlants}
-            onTogglePowerPlants={() => setShowPowerPlants(prev => !prev)}
-            showProtectedAreas={showProtectedAreas}
-            onToggleProtectedAreas={() => setShowProtectedAreas(prev => !prev)}
-          />
-        </div>
-
-        {/* Floating Admin-1 Subdivisions Inspector */}
-        <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 max-w-[calc(100vw-32px)]">
-          {/* Collapsed Floating Pill in top-left */}
+        {/* Expanded Admin-1 Subdivisions Panel (Cleanly docked top-right when opened from header) */}
+        {isAdmin1InspectorOpen && (
           <div
-            id="floating-admin1-inspector-pill"
-            className="self-start inline-flex items-center rounded-2xl bg-white/95 dark:bg-zinc-900/95 border border-zinc-200/90 dark:border-zinc-800/90 shadow-xl backdrop-blur-md p-1 transition-all duration-200 hover:shadow-2xl"
+            id="floating-admin1-inspector-panel"
+            className="absolute top-4 right-4 z-30 w-auto min-w-[320px] sm:min-w-[420px] max-w-[calc(100vw-32px)] sm:max-w-lg rounded-2xl bg-white/95 dark:bg-zinc-950/95 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 overflow-hidden"
           >
-            <button
-              id="btn-toggle-admin1-inspector"
-              type="button"
-              onClick={() => setIsAdmin1InspectorOpen(prev => !prev)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                isAdmin1InspectorOpen
-                  ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold shadow-xs'
-                  : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
-              }`}
-              title="Toggle Admin-1 Subdivisions Inspector"
-            >
-              <MapPin className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span className="font-bold">Admin-1 Inspector</span>
-              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
-                {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
-              </span>
-            </button>
-          </div>
-
-          {/* Expanded Admin-1 Subdivisions Panel */}
-          {isAdmin1InspectorOpen && (
-            <div
-              id="floating-admin1-inspector-panel"
-              className="w-auto min-w-[320px] sm:min-w-[420px] max-w-[calc(100vw-32px)] sm:max-w-lg rounded-2xl bg-white/95 dark:bg-zinc-950/95 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 overflow-hidden"
-            >
               {/* Header with Title, Count & Close Control */}
               <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-900/60 gap-2">
                 <div className="flex items-center gap-2">
@@ -2047,7 +2019,6 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               </div>
             </div>
           )}
-        </div>
 
         <svg
           ref={svgRef}
@@ -2133,6 +2104,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 handleCountryClick={handleCountryClick}
                 handleAdmin1Click={handleAdmin1Click}
                 setHoveredAdmin1={setHoveredAdmin1}
+                onOpenColophonModal={() => setIsColophonOpen(true)}
               />
           </g>
         </svg>

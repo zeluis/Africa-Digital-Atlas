@@ -53,7 +53,7 @@ export const HERITAGE_SITES_DATA: HeritageSanctuarySite[] = [
     ],
     description: 'Eleven medieval monolithic rock-hewn churches carved out of solid volcanic rock in the mountains of Lasta, considered an engineering wonder of the medieval world.',
     source: 'UNESCO World Heritage Centre / Authority for Research and Conservation of Cultural Heritage (ARCCH)',
-    labelOffset: { x: 300, y: -80 }
+    labelOffset: { x: 320, y: 0 }
   },
   {
     id: 'heritage-axum',
@@ -77,7 +77,7 @@ export const HERITAGE_SITES_DATA: HeritageSanctuarySite[] = [
     ],
     description: 'The ancient capital of the Aksumite Empire, marked by massive carved monolithic obelisks, royal tombs, and the cradle of Ethiopian civilization.',
     source: 'UNESCO World Heritage Centre',
-    labelOffset: { x: -300, y: -70 }
+    labelOffset: { x: -280, y: -80 }
   },
   {
     id: 'heritage-giza-pyramids',
@@ -101,7 +101,7 @@ export const HERITAGE_SITES_DATA: HeritageSanctuarySite[] = [
     ],
     description: 'The capital of the Old Kingdom of Egypt with extraordinary funerary monuments, rock tombs, mastabas, temples, and the colossal Giza pyramids.',
     source: 'Supreme Council of Antiquities Egypt / UNESCO',
-    labelOffset: { x: -300, y: 70 }
+    labelOffset: { x: -320, y: -200 }
   },
   {
     id: 'heritage-djenne-timbuktu',
@@ -173,7 +173,7 @@ export const HERITAGE_SITES_DATA: HeritageSanctuarySite[] = [
     ],
     description: 'Lying off the coast of Senegal opposite Dakar, Gorée was the largest slave-trading center on the African coast from the 15th to the 19th century.',
     source: 'UNESCO World Heritage Centre',
-    labelOffset: { x: -300, y: 80 }
+    labelOffset: { x: -320, y: 80 }
   },
   {
     id: 'heritage-kilwa-kisiwani',
@@ -226,7 +226,7 @@ export const HERITAGE_SITES_DATA: HeritageSanctuarySite[] = [
     ],
     description: 'One of the largest and most ecologically intact wildlife sanctuaries in the world, anchoring the Great Limpopo Transfrontier Conservation Area.',
     source: 'SANParks (South African National Parks) / Peace Parks Foundation',
-    labelOffset: { x: 300, y: -70 }
+    labelOffset: { x: 300, y: 0 }
   },
   {
     id: 'reserve-kilimanjaro',
@@ -251,7 +251,7 @@ export const HERITAGE_SITES_DATA: HeritageSanctuarySite[] = [
     ],
     description: 'At 5,895 m, Kilimanjaro is the highest peak in Africa. The park encompasses the mountain above the tree line and montane forest belt.',
     source: 'Tanzania National Parks (TANAPA) / UNESCO',
-    labelOffset: { x: 300, y: 70 }
+    labelOffset: { x: 300, y: -70 }
   },
   {
     id: 'reserve-victoria-falls',

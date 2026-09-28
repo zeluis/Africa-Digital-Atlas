@@ -50,8 +50,8 @@ export const SUBSEA_CABLES_DATA: SubseaCablePath[] = [
     strokeWidth: 20,
     speedSec: 2.8,
     dashArray: '36 18',
-    // Complete oceanic loop encircling Africa: Western Atlantic down to Cape, around to East Africa & Red Sea
-    d: 'M 1780 620 C 1300 750, 480 1500, 450 2150 C 420 2800, 750 3300, 1400 3600 C 1750 3800, 2100 4200, 2500 4800 C 2700 5200, 2950 5450, 3350 5350 C 3750 5200, 4200 4700, 4250 4200 C 4300 3700, 4650 3200, 4750 2600 C 4800 2200, 4600 1800, 4250 1500 C 4000 1200, 3950 900, 3900 800',
+    // Complete oceanic loop: Gibraltar Atlantic entrance -> Moroccan shelf -> Mauritania -> Cap-Vert -> Gulf of Guinea -> Southern Ocean rounding Agulhas -> Indian Ocean -> Red Sea & Suez
+    d: 'M 1420 180 C 1320 380, 1180 720, 980 1150 C 780 1580, 580 1900, 320 2180 C 450 2520, 750 2820, 1380 2860 C 1680 2880, 1950 2860, 2080 2880 C 2240 2950, 2380 3150, 2460 3400 C 2550 3750, 2660 4350, 2740 4950 C 2850 5450, 2980 5650, 3220 5860 C 3550 5920, 3880 5860, 4180 5650 C 4420 5200, 4580 4650, 4680 4000 C 4750 3200, 4820 2600, 5450 1780 C 5650 1680, 5300 1580, 4950 1620 C 4720 1620, 4520 1350, 4420 1050 C 4350 850, 4280 650, 4220 450 C 4150 300, 3750 250, 3450 240',
     description: 'The world’s most comprehensive subsea cable project, interconnecting 33 countries across Africa, Europe, and the Middle East with up to 180 Tbps design capacity.',
     landingCountries: ['Egypt', 'Morocco', 'Senegal', 'Ivory Coast', 'Ghana', 'Nigeria', 'Angola', 'South Africa', 'Mozambique', 'Tanzania', 'Kenya', 'Djibouti', 'Sudan'],
     stats: [
@@ -75,8 +75,8 @@ export const SUBSEA_CABLES_DATA: SubseaCablePath[] = [
     strokeWidth: 22,
     speedSec: 2.3,
     dashArray: '40 20',
-    // Portugal -> Togo -> Nigeria -> Namibia -> South Africa
-    d: 'M 1600 500 C 1200 800, 380 1600, 400 2300 C 420 2850, 950 3200, 1680 3050 C 2050 2950, 2150 3400, 2350 3950 C 2550 4500, 2680 5000, 2850 5320',
+    // Portugal -> Moroccan Shelf -> Dakar Loop -> Gulf of Guinea -> Namibia -> Southern Ocean Cape Terminal
+    d: 'M 1380 120 C 1280 340, 1140 680, 940 1100 C 740 1520, 540 1850, 280 2160 C 420 2500, 720 2800, 1350 2840 C 1650 2860, 1850 2870, 2050 2870 C 2200 2930, 2350 3120, 2430 3380 C 2520 3720, 2630 4320, 2720 4920 C 2820 5420, 2960 5620, 3200 5840 C 3480 5900, 3680 5880, 3850 5780',
     description: 'Google’s state-of-the-art private subsea cable incorporating optical switching at the fiber-pair level rather than traditional wavelength switching.',
     landingCountries: ['Togo', 'Nigeria', 'Namibia', 'South Africa', 'Saint Helena'],
     stats: [
@@ -100,8 +100,8 @@ export const SUBSEA_CABLES_DATA: SubseaCablePath[] = [
     strokeWidth: 18,
     speedSec: 3.1,
     dashArray: '32 16',
-    // Red Sea -> Djibouti -> Mombasa -> Dar es Salaam -> Maputo -> Mtunzini / Durban
-    d: 'M 4050 1450 C 4300 1900, 4650 2300, 4600 2700 C 4550 3000, 4350 3250, 4280 3650 C 4200 4050, 4150 4400, 3950 4700 C 3750 4950, 3350 5250, 2900 5350',
+    // Red Sea -> Gulf of Aden -> Guardafui Loop -> Mombasa -> Mozambique Channel -> Rounding South Africa in Southern Ocean
+    d: 'M 4220 450 C 4320 750, 4450 1150, 4580 1480 C 4720 1650, 5050 1620, 5420 1650 C 5680 1780, 5450 2150, 5100 2550 C 4850 2900, 4750 3400, 4650 3950 C 4550 4500, 4400 5150, 4150 5620 C 3850 5860, 3520 5900, 3200 5840',
     description: 'Pioneering private subsea arterial network connecting East and Southern Africa directly with Europe and India across the Indian Ocean.',
     landingCountries: ['Sudan', 'Djibouti', 'Somalia', 'Kenya', 'Tanzania', 'Mozambique', 'South Africa', 'Madagascar'],
     stats: [
@@ -125,8 +125,8 @@ export const SUBSEA_CABLES_DATA: SubseaCablePath[] = [
     strokeWidth: 16,
     speedSec: 3.4,
     dashArray: '28 14',
-    // France down the West African shelf to South Africa
-    d: 'M 1750 550 C 1450 850, 600 1750, 580 2200 C 560 2600, 950 2850, 1380 2900 C 1800 2950, 2180 3250, 2400 3800 C 2600 4350, 2750 4900, 2860 5290',
+    // France -> Gibraltar Atlantic shelf -> Morocco -> Dakar -> Gulf of Guinea -> South Africa Cape
+    d: 'M 1400 150 C 1300 360, 1160 700, 960 1120 C 760 1540, 560 1870, 300 2170 C 440 2510, 740 2810, 1360 2850 C 1660 2870, 1920 2865, 2060 2875 C 2220 2940, 2360 3140, 2440 3390 C 2530 3730, 2640 4330, 2730 4930 C 2830 5430, 2970 5630, 3210 5850 C 3500 5910, 3700 5870, 3880 5770',
     description: 'Major multi-operator consortium cable connecting 24 countries from Brittany to Cape Town, providing first-time redundant connectivity to West Africa.',
     landingCountries: ['Morocco', 'Mauritania', 'Senegal', 'Gambia', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Ghana', 'Benin', 'Nigeria', 'Cameroon', 'Equatorial Guinea', 'Gabon', 'Sao Tome', 'South Africa'],
     stats: [
@@ -150,8 +150,8 @@ export const SUBSEA_CABLES_DATA: SubseaCablePath[] = [
     strokeWidth: 18,
     speedSec: 2.6,
     dashArray: '34 16',
-    // Europe -> Egypt -> Djibouti -> Kenya -> Seychelles
-    d: 'M 3780 720 C 3920 1000, 4200 1600, 4480 2300 C 4650 2650, 4450 3000, 4280 3300 C 4200 3450, 4550 3600, 4950 3650',
+    // Europe -> Mediterranean -> Suez -> Red Sea -> Gulf of Aden -> Seychelles (Indian Ocean Corridor)
+    d: 'M 3500 250 C 3850 320, 4150 420, 4220 450 C 4320 750, 4450 1150, 4580 1480 C 4720 1650, 5050 1620, 5420 1650 C 5680 1780, 5450 2150, 5150 2550 C 4950 2850, 5150 3150, 5450 3350 C 5650 3480, 5820 3550, 5950 3580',
     description: 'High-speed, open-access 200G/400G WDM subsea system providing lowest-latency routing between Asia, East Africa, and Europe.',
     landingCountries: ['Egypt', 'Djibouti', 'Kenya', 'Seychelles'],
     stats: [
@@ -170,22 +170,22 @@ export const SUBSEA_LANDING_STATIONS: CableLandingStation[] = [
     name: 'Tanger Med / Asilah Gateway',
     city: 'Tangier',
     countryIso3: 'MAR',
-    x: 1850,
-    y: 720,
+    x: 1550,
+    y: 120,
     cablesConnected: ['2Africa', 'SeaMeWe-3', 'Eurafrica'],
     totalBandwidthTbps: 220,
     status: 'Operational',
     operator: 'Maroc Telecom / Orange',
     description: 'Key North African crossroads connecting Maghreb terrestrial fiber to Mediterranean and Atlantic subsea routes.',
-    labelOffset: { x: -280, y: -70 }
+    labelOffset: { x: -300, y: -70 }
   },
   {
     id: 'station-alexandria',
     name: 'Alexandria & Zafarana Gateway',
     city: 'Alexandria / Suez',
     countryIso3: 'EGY',
-    x: 3820,
-    y: 980,
+    x: 4150,
+    y: 520,
     cablesConnected: ['2Africa', 'PEACE', 'SeaMeWe-5', 'AAE-1', 'FLAG'],
     totalBandwidthTbps: 580,
     status: 'Operational',
@@ -198,14 +198,14 @@ export const SUBSEA_LANDING_STATIONS: CableLandingStation[] = [
     name: 'Dakar Yoff Landing Hub',
     city: 'Dakar',
     countryIso3: 'SEN',
-    x: 680,
+    x: 480,
     y: 2160,
     cablesConnected: ['2Africa', 'ACE', 'SAT-3/WASC', 'MainOne'],
     totalBandwidthTbps: 160,
     status: 'Operational',
     operator: 'Sonatel / Orange',
     description: 'The principal digital gateway of West Africa, bridging the ECOWAS region with direct routes to Europe and the Americas.',
-    labelOffset: { x: -300, y: -70 }
+    labelOffset: { x: -320, y: -360 }
   },
   {
     id: 'station-lagos',
@@ -219,7 +219,7 @@ export const SUBSEA_LANDING_STATIONS: CableLandingStation[] = [
     status: 'Operational',
     operator: 'MainOne / Equinix / Google',
     description: 'The largest subsea broadband landing cluster in Sub-Saharan Africa, powering Nigeria’s booming fintech and tech startup ecosystem.',
-    labelOffset: { x: -300, y: 110 }
+    labelOffset: { x: 0, y: 180 }
   },
   {
     id: 'station-abidjan',
@@ -240,8 +240,8 @@ export const SUBSEA_LANDING_STATIONS: CableLandingStation[] = [
     name: 'Luanda Sangano Landing Station',
     city: 'Luanda',
     countryIso3: 'AGO',
-    x: 2650,
-    y: 3580,
+    x: 2750,
+    y: 3600,
     cablesConnected: ['2Africa', 'SACS (South Atlantic Cable System)', 'WACS', 'Monet'],
     totalBandwidthTbps: 190,
     status: 'Operational',
@@ -254,8 +254,8 @@ export const SUBSEA_LANDING_STATIONS: CableLandingStation[] = [
     name: 'Cape Town Melkbosstrand & Yzerfontein',
     city: 'Cape Town',
     countryIso3: 'ZAF',
-    x: 2850,
-    y: 5260,
+    x: 2900,
+    y: 5750,
     cablesConnected: ['2Africa', 'Equiano', 'WACS', 'SAT-3/WASC', 'SAFE', 'ACE'],
     totalBandwidthTbps: 420,
     status: 'Operational',
@@ -268,8 +268,8 @@ export const SUBSEA_LANDING_STATIONS: CableLandingStation[] = [
     name: 'Mtunzini / Durban Cable Terminal',
     city: 'Durban / Mtunzini',
     countryIso3: 'ZAF',
-    x: 3880,
-    y: 4700,
+    x: 4350,
+    y: 5100,
     cablesConnected: ['2Africa', 'SEACOM', 'EASSy', 'SAFE', 'METISS'],
     totalBandwidthTbps: 310,
     status: 'Operational',
@@ -282,7 +282,7 @@ export const SUBSEA_LANDING_STATIONS: CableLandingStation[] = [
     name: 'Mombasa Nyali Subsea Terminal',
     city: 'Mombasa',
     countryIso3: 'KEN',
-    x: 4220,
+    x: 5150,
     y: 3120,
     cablesConnected: ['2Africa', 'PEACE', 'SEACOM', 'EASSy', 'TEAMS', 'LION2'],
     totalBandwidthTbps: 360,
@@ -296,8 +296,8 @@ export const SUBSEA_LANDING_STATIONS: CableLandingStation[] = [
     name: 'Djibouti City Marine Terminal',
     city: 'Djibouti City',
     countryIso3: 'DJI',
-    x: 4460,
-    y: 2360,
+    x: 4850,
+    y: 1950,
     cablesConnected: ['2Africa', 'PEACE', 'SEACOM', 'EASSy', 'AAE-1', 'SeaMeWe-5', 'DAHRE'],
     totalBandwidthTbps: 450,
     status: 'Operational',

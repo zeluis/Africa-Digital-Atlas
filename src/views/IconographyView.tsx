@@ -284,17 +284,6 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
                   </p>
                 </div>
               </div>
-
-              <div className="flex flex-wrap items-center gap-3 lg:flex-1 lg:justify-end">
-                <button
-                  onClick={() => setInspectedIllustration(activeCastasItem)}
-                  className="px-4 py-2 rounded-xl bg-amber-900 hover:bg-amber-800 dark:bg-amber-500 dark:hover:bg-amber-400 text-white dark:text-stone-950 text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-2 shadow-xs"
-                  title="Open Current Plate in Fullscreen Loupe Modal"
-                >
-                  <Maximize2 className="w-3.5 h-3.5" />
-                  <span>Fullscreen Loupe Modal</span>
-                </button>
-              </div>
             </div>
 
             {/* Row 2: Selected Plate Caption & Right-Aligned Integrated Segmented Control */}
@@ -346,6 +335,7 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
               illustration={activeCastasItem}
               illustrationsList={castasIllustrations}
               onSelectIllustration={item => setActiveCastasItem(item)}
+              onOpenModal={() => setInspectedIllustration(activeCastasItem)}
               mode="embedded"
               showThumbnails={true}
             />
