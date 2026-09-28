@@ -122,7 +122,8 @@ ER  - `;
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+            className="p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
@@ -160,7 +161,7 @@ ER  - `;
         </div>
 
         {/* Actions Footer */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
           <div className="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
             <span>DOI:</span>
             <span className="font-mono font-medium text-zinc-700 dark:text-zinc-300">{doi}</span>
@@ -169,14 +170,14 @@ ER  - `;
           <div className="flex items-center gap-2">
             <button
               onClick={handleDownloadFile}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-medium transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-semibold transition cursor-pointer"
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-3.5 h-3.5 text-zinc-500" />
               <span>Download File</span>
             </button>
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shadow-sm transition cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shadow-sm transition cursor-pointer active:scale-95"
             >
               {copied ? (
                 <>
@@ -189,6 +190,12 @@ ER  - `;
                   <span>Copy Citation</span>
                 </>
               )}
+            </button>
+            <button
+              onClick={onClose}
+              className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-bold shadow-xs transition cursor-pointer active:scale-95"
+            >
+              Close
             </button>
           </div>
         </div>

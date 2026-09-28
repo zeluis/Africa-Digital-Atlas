@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { AcademicExportModal } from '../AcademicExportModal';
 import { CartographicColophonModal } from '../CartographicColophonModal';
+import { MolecularMigrationDrawer, MolecularMigrationCanvasLayer, MolecularDivergenceNode } from './MolecularMigrationOverlay';
 import { 
   VBW, 
   VBH, 
@@ -365,7 +366,8 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       })
       .finally(() => {
         if (isMounted) {
-          setTimeout(() => setIsSvgLoading(false), 200);
+          // Elegant continuous progression to allow fluid animation to seamlessly crossfade
+          setTimeout(() => setIsSvgLoading(false), 900);
         }
       });
     return () => {
@@ -530,6 +532,25 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
   const [isUnifiedPanelOpen, setIsUnifiedPanelOpen] = useState<boolean>(false);
   const [isUnifiedPanelMinimized, setIsUnifiedPanelMinimized] = useState<boolean>(false);
   
+  // Molecular Anthropology & Migration Overlay State
+  const [isMolecularOverlayOpen, setIsMolecularOverlayOpen] = useState<boolean>(false);
+  const [selectedMolecularNode, setSelectedMolecularNode] = useState<MolecularDivergenceNode | null>(null);
+
+  // Reactive Scoped CSS Layer Visibility Toggles
+  const [layerVisibility, setLayerVisibility] = useState<{
+    nodes: boolean;
+    branches: boolean;
+    crucibles: boolean;
+    labels: boolean;
+    tastCohorts: boolean;
+  }>({
+    nodes: true,
+    branches: true,
+    crucibles: true,
+    labels: true,
+    tastCohorts: true,
+  });
+  
   // Web Worker for asynchronous background ethnic search and indexation
   const [workerSearchResults, setWorkerSearchResults] = useState<{ id: string; name: string; type: 'ethnic' | 'country'; region: string; country?: string; languages?: string; x?: number; y?: number }[] | null>(null);
   const ethnicWorkerRef = useRef<Worker | null>(null);
@@ -586,6 +607,30 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     setLiveAnnouncement('Framed West Africa conduit: Cabo Verde Maritime Crucible & Atlantic lineages');
     setTimeout(() => alignCountryGeometryUnderLabel('Cabo Verde'), 60);
   }, [containerRef, setFitScale, setZoom, setPos, resetTerritoryDisplacements, alignCountryGeometryUnderLabel]);
+
+  // Dedicated TAST Cohort cycling zoom function (Zooms 1st WCA -> 2nd Bights -> 3rd Upper Guinea -> All Overview)
+  const cycleTastCohortZoom = useCallback(() => {
+    resetTerritoryDisplacements();
+    setActiveTastLayer(current => {
+      if (current === 'all') {
+        panToCoordinates(2011.6, 2397.0, 2.0);
+        setLiveAnnouncement('Framed 1st Historical Cohort: West Central Africa (5.69M Captives)');
+        return 'first';
+      } else if (current === 'first') {
+        panToCoordinates(2110.1, 2085.3, 2.0);
+        setLiveAnnouncement('Framed 2nd Historical Cohort: Bights of Benin & Biafra (4.80M Captives)');
+        return 'second';
+      } else if (current === 'second') {
+        panToCoordinates(2045.5, 1950.1, 2.0);
+        setLiveAnnouncement('Framed 3rd Historical Cohort: Upper Guinea & Senegambia (2.02M Captives)');
+        return 'third';
+      } else {
+        panToCoordinates(2000, 2000, 1.05);
+        setLiveAnnouncement('Framed all Trans-Atlantic Slave Trade (TAST) historical cohorts');
+        return 'all';
+      }
+    });
+  }, [panToCoordinates, resetTerritoryDisplacements]);
 
   // Upper middle top region start view
   const startUpperTopView = useCallback(() => {
@@ -1513,113 +1558,251 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       </div>
 
       {/* =========================================================================
-          1. SINGLE UNIFIED COLLAPSED FLOATING PILL (Search Trigger, Camera & Info)
+          UNIFIED FIXED MASTER HEADER CONTROL BAR
+          Permanently locked immediately beneath the app's h-16 (64px) top navbar.
+          Horizontally centered across all viewport sizes.
           ========================================================================= */}
-      <motion.div 
-        layout
-        initial={{ opacity: 0, y: -16 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="absolute top-4 left-4 sm:left-6 z-30 flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-full bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_8px_30px_rgba(75,55,35,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-md text-xs no-drag select-none max-w-[calc(100vw-32px)]"
-        id="africalia-top-control-bar"
-      >
-        {/* Search & Explore Trigger Button */}
-        <button
-          type="button"
-          onClick={() => {
-            setIsUnifiedPanelOpen(prev => !prev);
-            setIsUnifiedPanelMinimized(false);
-          }}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-full font-semibold transition-all cursor-pointer shadow-xs active:scale-95 ${
-            isUnifiedPanelOpen
-              ? 'bg-[#E67E48] text-white'
-              : 'bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/40'
-          }`}
-          title={isUnifiedPanelOpen ? "Close search panel" : "Expand Unified Search, Filters & Controls Panel"}
+      <div className="fixed top-[72px] sm:top-[76px] left-1/2 -translate-x-1/2 z-30 pointer-events-none flex justify-center w-max max-w-[calc(100vw-24px)] sm:max-w-[calc(100vw-48px)]">
+        <motion.div 
+          layout
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="pointer-events-auto flex items-center flex-wrap gap-1 sm:gap-1.5 p-1.5 rounded-2xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_8px_30px_rgba(75,55,35,0.14)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.6)] backdrop-blur-xl text-xs no-drag select-none"
+          id="africalia-master-top-control-bar"
         >
-          <Search className="w-3.5 h-3.5" />
-          <span className="font-bold hidden xs:inline">Search & Focus</span>
-          {(selectedRegion !== 'All' || selectedCountry !== 'All' || searchQuery) && (
-            <span className="w-2 h-2 rounded-full bg-[#E67E48] animate-pulse" />
-          )}
-        </button>
+          {/* 1. Search & Focus Trigger Button */}
+          <button
+            type="button"
+            onClick={() => {
+              setIsUnifiedPanelOpen(prev => !prev);
+              setIsUnifiedPanelMinimized(false);
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer shadow-xs active:scale-95 text-xs ${
+              isUnifiedPanelOpen
+                ? 'bg-[#E67E48] text-white shadow-xs'
+                : 'bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/40'
+            }`}
+            title={isUnifiedPanelOpen ? "Close search panel" : "Search Ethnic Groups, Lineages & Countries"}
+          >
+            <Search className="w-3.5 h-3.5" />
+            <span className="hidden xs:inline">Search & Focus</span>
+            {(selectedRegion !== 'All' || selectedCountry !== 'All' || searchQuery) && (
+              <span className="w-1.5 h-1.5 rounded-full bg-[#E67E48] animate-pulse" />
+            )}
+          </button>
 
-        <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0" />
+          <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0 mx-0.5" />
 
-        {/* Zoom Controls */}
-        <button
-          type="button"
-          onClick={() => handleZoomDelta(0.82)}
-          className="w-7 h-7 rounded-full flex items-center justify-center text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
-          title="Zoom out"
-        >
-          <ZoomOut className="w-3.5 h-3.5" />
-        </button>
+          {/* 2. Instant Reactive Scoped CSS Layer Toggles (0ms Latency) */}
+          <div className="flex items-center gap-1">
+            {/* Nodes Toggle */}
+            <button
+              type="button"
+              onClick={() => setLayerVisibility(prev => ({ ...prev, nodes: !prev.nodes }))}
+              className={`px-2 py-1 rounded-xl text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer border ${
+                layerVisibility.nodes
+                  ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] border-[#E67E48]/40 shadow-xs'
+                  : 'bg-black/5 dark:bg-white/5 text-[#7D6B5A] dark:text-[#B5A492] border-transparent opacity-60 line-through'
+              }`}
+              title="Toggle taxonomic and sovereign lineage nodes (0ms CSS)"
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${layerVisibility.nodes ? 'bg-[#E67E48]' : 'bg-zinc-400'}`} />
+              <span>Nodes</span>
+            </button>
 
-        <span className="text-[11px] font-mono font-bold text-[#7D6B5A] dark:text-[#B5A492] px-0.5 min-w-[2.75rem] text-center">
-          {Math.round(zoom * 100)}%
-        </span>
+            {/* Branches Toggle */}
+            <button
+              type="button"
+              onClick={() => setLayerVisibility(prev => ({ ...prev, branches: !prev.branches }))}
+              className={`px-2 py-1 rounded-xl text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer border ${
+                layerVisibility.branches
+                  ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] border-[#E67E48]/40 shadow-xs'
+                  : 'bg-black/5 dark:bg-white/5 text-[#7D6B5A] dark:text-[#B5A492] border-transparent opacity-60 line-through'
+              }`}
+              title="Toggle lineage branches, trunks, and conduits (0ms CSS)"
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${layerVisibility.branches ? 'bg-[#E67E48]' : 'bg-zinc-400'}`} />
+              <span>Branches</span>
+            </button>
 
-        <button
-          type="button"
-          onClick={() => handleZoomDelta(1.22)}
-          className="w-7 h-7 rounded-full flex items-center justify-center text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
-          title="Zoom in"
-        >
-          <ZoomIn className="w-3.5 h-3.5" />
-        </button>
+            {/* Crucible Toggle */}
+            <button
+              type="button"
+              onClick={() => setLayerVisibility(prev => ({ ...prev, crucibles: !prev.crucibles }))}
+              className={`px-2 py-1 rounded-xl text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer border ${
+                layerVisibility.crucibles
+                  ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] border-[#E67E48]/40 shadow-xs'
+                  : 'bg-black/5 dark:bg-white/5 text-[#7D6B5A] dark:text-[#B5A492] border-transparent opacity-60 line-through'
+              }`}
+              title="Toggle Cabo Verde Maritime Crucible nexus highlight (0ms CSS)"
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${layerVisibility.crucibles ? 'bg-[#E67E48]' : 'bg-zinc-400'}`} />
+              <span>Crucible</span>
+            </button>
 
-        <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0" />
+            {/* Labels Toggle */}
+            <button
+              type="button"
+              onClick={() => setLayerVisibility(prev => ({ ...prev, labels: !prev.labels }))}
+              className={`hidden md:flex px-2 py-1 rounded-xl text-[10px] font-bold items-center gap-1 transition-all cursor-pointer border ${
+                layerVisibility.labels
+                  ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] border-[#E67E48]/40 shadow-xs'
+                  : 'bg-black/5 dark:bg-white/5 text-[#7D6B5A] dark:text-[#B5A492] border-transparent opacity-60 line-through'
+              }`}
+              title="Toggle all text labels (0ms CSS)"
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${layerVisibility.labels ? 'bg-[#E67E48]' : 'bg-zinc-400'}`} />
+              <span>Labels</span>
+            </button>
 
-        {/* Crucible View & Full Tree Shortcuts */}
-        <button
-          type="button"
-          onClick={panToCrucible}
-          className="hidden sm:flex px-2.5 py-1 rounded-full text-[11px] font-medium items-center gap-1 bg-black/5 dark:bg-white/5 hover:bg-[#E67E48]/15 text-[#52463B] dark:text-[#C4B7A6] hover:text-[#B8571A] dark:hover:text-[#FFA573] border border-[#E5DDD0] dark:border-[#38322B] transition-colors cursor-pointer"
-          title="Crucible View: Zoom directly to Cabo Verde crucible nexus"
-        >
-          <Compass className="w-3 h-3 text-[#E67E48]" />
-          <span>Crucible</span>
-        </button>
+            {/* TAST Cohorts Layer Toggle */}
+            <button
+              type="button"
+              onClick={() => setLayerVisibility(prev => ({ ...prev, tastCohorts: !prev.tastCohorts }))}
+              className={`px-2 py-1 rounded-xl text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer border ${
+                layerVisibility.tastCohorts
+                  ? 'bg-[#724E5B]/15 text-[#5F3B4A] dark:text-[#E2B2C6] border-[#724E5B]/40 shadow-xs'
+                  : 'bg-black/5 dark:bg-white/5 text-[#7D6B5A] dark:text-[#B5A492] border-transparent opacity-60 line-through'
+              }`}
+              title="Toggle Trans-Atlantic Slave Trade (TAST) historical cohorts layer (0ms CSS)"
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${layerVisibility.tastCohorts ? 'bg-[#724E5B]' : 'bg-zinc-400'}`} />
+              <span>TAST Layer</span>
+            </button>
+          </div>
 
-        <button
-          type="button"
-          onClick={fitView}
-          className="hidden sm:flex px-2.5 py-1 rounded-full text-[11px] font-medium items-center gap-1 bg-black/5 dark:bg-white/5 hover:bg-black/10 text-[#52463B] dark:text-[#C4B7A6] border border-[#E5DDD0] dark:border-[#38322B] transition-colors cursor-pointer"
-          title="Reset zoom to full tree"
-        >
-          <RotateCcw className="w-3 h-3 text-[#7D6B5A]" />
-          <span>Full Tree</span>
-        </button>
+          <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0 mx-0.5" />
 
-        {/* Colophon & Imprint Modal Trigger */}
-        <button
-          type="button"
-          onClick={() => setIsColophonOpen(true)}
-          className="hidden sm:flex px-2.5 py-1 rounded-full text-[11px] font-medium items-center gap-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition-colors cursor-pointer"
-          title="Open Cartographic Colophon & Imprint"
-        >
-          <Award className="w-3 h-3 text-[#E67E48]" />
-          <span>Colophon</span>
-        </button>
+          {/* 3. TAST (Cohort) Zoom & Center Button */}
+          <button
+            type="button"
+            onClick={cycleTastCohortZoom}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-xl text-[10px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 border ${
+              activeTastLayer !== 'all'
+                ? 'bg-[#724E5B] text-white border-[#724E5B] shadow-[#724E5B]/25'
+                : 'bg-[#724E5B]/15 hover:bg-[#724E5B]/25 text-[#5F3B4A] dark:text-[#E2B2C6] border-[#724E5B]/40'
+            }`}
+            title="Cycle zoom through TAST historical cohort basins: 1st WCA (5.69M) -> 2nd Bights (4.80M) -> 3rd Upper Guinea (2.02M) -> All Overview"
+          >
+            <Layers className="w-3 h-3 text-[#E67E48]" />
+            <span className="hidden sm:inline">TAST Zoom:</span>
+            <span className="uppercase font-mono text-[9px]">
+              {activeTastLayer === 'all' ? 'All Basins' : activeTastLayer === 'first' ? '1st (WCA)' : activeTastLayer === 'second' ? '2nd (Bights)' : '3rd (Upper Guinea)'}
+            </span>
+          </button>
 
-        {/* Cite Observatory Platform Trigger */}
-        <button
-          type="button"
-          onClick={() => setIsExportModalOpen(true)}
-          className="hidden sm:flex px-2.5 py-1 rounded-full text-[11px] font-medium items-center gap-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition-colors cursor-pointer"
-          title="Cite this Research Platform (DOI: 10.5281/zenodo.10842918)"
-        >
-          <Quote className="w-3 h-3 text-[#E67E48]" />
-          <span>Cite (DOI)</span>
-        </button>
+          <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0 mx-0.5" />
 
-        {/* Africalia Title & SVG Info Tag */}
-        <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0" />
-        <div className="flex items-center gap-1.5 px-1.5 text-[10px] text-[#7D6B5A] dark:text-[#B5A492] font-medium truncate max-w-[130px] sm:max-w-[200px]">
-          <span className="font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6]">Africalia</span>
-          <span className="opacity-60 hidden md:inline">· SVG Vector Tree</span>
-        </div>
-      </motion.div>
+          {/* 4. Molecular Migration Overlay */}
+          <button
+            type="button"
+            onClick={() => setIsMolecularOverlayOpen(prev => !prev)}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[10px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 border ${
+              isMolecularOverlayOpen
+                ? 'bg-[#E67E48] text-white shadow-[#E67E48]/30 border-[#E67E48]'
+                : 'bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border-[#E67E48]/40'
+            }`}
+            title="Toggle Molecular Migration & Genetics Overlay"
+          >
+            <Dna className="w-3.5 h-3.5" />
+            <span className="hidden lg:inline">Molecular Migration</span>
+            <span className={`w-1.5 h-1.5 rounded-full ${isMolecularOverlayOpen ? 'bg-white animate-ping' : 'bg-[#E67E48]'}`} />
+          </button>
+
+          <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0 mx-0.5" />
+
+          {/* 5. Canvas Paper Selection */}
+          <div className="hidden lg:flex items-center gap-0.5 p-0.5 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B]">
+            {(['parchment', 'white', 'sepia'] as const).map(p => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setCanvasBg(p)}
+                className={`px-1.5 py-0.5 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer capitalize ${
+                  canvasBg === p
+                    ? 'bg-[#E67E48] text-white shadow-xs'
+                    : 'text-[#7D6B5A] dark:text-[#B5A492] hover:text-[#2B241E] dark:hover:text-[#F5EFE6]'
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+
+          <div className="hidden lg:block w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0 mx-0.5" />
+
+          {/* 6. Zoom & Camera Actions */}
+          <div className="flex items-center gap-0.5">
+            <button
+              type="button"
+              onClick={() => handleZoomDelta(0.82)}
+              className="w-6 h-6 rounded-lg flex items-center justify-center text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+              title="Zoom out"
+            >
+              <ZoomOut className="w-3 h-3" />
+            </button>
+            <span className="text-[10px] font-mono font-bold text-[#7D6B5A] dark:text-[#B5A492] min-w-[2.2rem] text-center">
+              {Math.round(zoom * 100)}%
+            </span>
+            <button
+              type="button"
+              onClick={() => handleZoomDelta(1.22)}
+              className="w-6 h-6 rounded-lg flex items-center justify-center text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+              title="Zoom in"
+            >
+              <ZoomIn className="w-3 h-3" />
+            </button>
+          </div>
+
+          {/* Shortcuts: Crucible & Reset */}
+          <button
+            type="button"
+            onClick={panToCrucible}
+            className="hidden xl:flex px-2 py-1 rounded-xl text-[10px] font-medium items-center gap-1 bg-black/5 dark:bg-white/5 hover:bg-[#E67E48]/15 text-[#52463B] dark:text-[#C4B7A6] hover:text-[#B8571A] dark:hover:text-[#FFA573] border border-[#E5DDD0] dark:border-[#38322B] transition-colors cursor-pointer"
+            title="Crucible View: Zoom directly to Cabo Verde crucible nexus"
+          >
+            <Compass className="w-3 h-3 text-[#E67E48]" />
+            <span>Crucible</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={fitView}
+            className="hidden xl:flex px-2 py-1 rounded-xl text-[10px] font-medium items-center gap-1 bg-black/5 dark:bg-white/5 hover:bg-black/10 text-[#52463B] dark:text-[#C4B7A6] border border-[#E5DDD0] dark:border-[#38322B] transition-colors cursor-pointer"
+            title="Reset zoom to full tree"
+          >
+            <RotateCcw className="w-3 h-3 text-[#7D6B5A]" />
+            <span>Full Tree</span>
+          </button>
+
+          {/* 7. Cite & Colophon Triggers */}
+          <button
+            type="button"
+            onClick={() => setIsExportModalOpen(true)}
+            className="hidden 2xl:flex px-2 py-1 rounded-xl text-[10px] font-medium items-center gap-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition-colors cursor-pointer"
+            title="Cite this Research Platform (DOI: 10.5281/zenodo.10842918)"
+          >
+            <Quote className="w-3 h-3 text-[#E67E48]" />
+            <span>Cite</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsColophonOpen(true)}
+            className="hidden 2xl:flex px-2 py-1 rounded-xl text-[10px] font-medium items-center gap-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition-colors cursor-pointer"
+            title="Open Cartographic Colophon"
+          >
+            <Award className="w-3 h-3 text-[#E67E48]" />
+            <span>Colophon</span>
+          </button>
+
+          {/* Africalia Title & SVG Info Tag */}
+          <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0 mx-0.5" />
+          <div className="flex items-center gap-1 px-1 text-[10px] text-[#7D6B5A] dark:text-[#B5A492] font-medium shrink-0">
+            <span className="font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6]">Africalia</span>
+          </div>
+        </motion.div>
+      </div>
 
       {/* =========================================================================
           2. UNIFIED DRAGGABLE & MINIMIZABLE AFRICALIA SEARCH & CONTROLS PANEL
@@ -1635,10 +1818,10 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -8 }}
             transition={{ type: "spring", damping: 27, stiffness: 330 }}
-            className={`absolute top-16 left-4 sm:left-6 z-40 rounded-3xl bg-[#FAF7F2]/96 dark:bg-[#1E1B18]/96 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_50px_rgba(75,55,35,0.18)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl overflow-hidden transition-all duration-200 ${
+            className={`fixed top-[132px] sm:top-[136px] left-1/2 -translate-x-1/2 z-40 rounded-3xl bg-[#FAF7F2]/96 dark:bg-[#1E1B18]/96 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_50px_rgba(75,55,35,0.18)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl overflow-hidden transition-all duration-200 ${
               isUnifiedPanelMinimized 
                 ? 'w-auto max-w-xs p-3 flex items-center gap-3 cursor-grab active:cursor-grabbing' 
-                : 'w-80 sm:w-88 max-h-[calc(100vh-80px)] flex flex-col'
+                : 'w-80 sm:w-88 max-h-[calc(100vh-140px)] flex flex-col'
             }`}
             id="unified-geography-search-dock"
           >
@@ -2065,78 +2248,13 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                   </div>
 
                   {/* =========================================================================
-                      INTEGRATED BOTTOM DOCK CONTROLS (Positioned directly below Languages Atlas)
+                      FOCUSED HISTORICAL COHORTS & RESEARCH LINKS
                       ========================================================================= */}
-                  <div 
-                    id="unified-bottom-control-dock"
-                    className="pt-3 border-t border-[#E5DDD0] dark:border-[#38322B] space-y-3"
-                  >
-                    {/* Section Header */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider font-mono text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">
-                        <Sliders className="w-3.5 h-3.5 text-[#E67E48]" />
-                        <span>Display Canvas & TAST Layers</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setIsExportModalOpen(true)}
-                        className="px-2 py-1 rounded-full text-[10px] font-semibold flex items-center gap-1 bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/40 transition-colors cursor-pointer"
-                        title="Export Citation & SVG"
-                      >
-                        <Download className="w-3 h-3 text-[#E67E48]" />
-                        <span>Cite & Export</span>
-                      </button>
-                    </div>
-
-                    {/* Archival Paper Selection */}
-                    <div className="space-y-1.5">
-                      <span className="text-[10px] font-bold uppercase tracking-wider font-mono text-[#7D6B5A] dark:text-[#B5A492] block">
-                        Archival Canvas Paper
-                      </span>
-                      <div className="grid grid-cols-3 gap-1">
-                        <button
-                          type="button"
-                          onClick={() => setCanvasBg('parchment')}
-                          className={`px-2 py-1.5 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center ${
-                            canvasBg === 'parchment'
-                              ? 'bg-[#E67E48] text-white shadow-xs'
-                              : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
-                          }`}
-                          title="Museum Parchment Paper"
-                        >
-                          Parchment
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setCanvasBg('white')}
-                          className={`px-2 py-1.5 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center ${
-                            canvasBg === 'white'
-                              ? 'bg-[#E67E48] text-white shadow-xs'
-                              : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
-                          }`}
-                          title="Pure White Paper"
-                        >
-                          Pure White
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setCanvasBg('sepia')}
-                          className={`px-2 py-1.5 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center ${
-                            canvasBg === 'sepia'
-                              ? 'bg-[#E67E48] text-white shadow-xs'
-                              : 'bg-black/5 dark:bg-white/10 text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/10'
-                          }`}
-                          title="Antique Sepia Paper"
-                        >
-                          Sepia
-                        </button>
-                      </div>
-                    </div>
-
+                  <div className="pt-3 border-t border-[#E5DDD0] dark:border-[#38322B] space-y-3">
                     {/* TAST Historical Cohorts */}
                     <div className="space-y-1.5">
                       <span className="text-[10px] font-bold uppercase tracking-wider font-mono text-[#7D6B5A] dark:text-[#B5A492] block">
-                        TAST Cohorts (Trans-Atlantic Slave Trade)
+                        TAST Historical Cohorts
                       </span>
                       <div className="grid grid-cols-2 gap-1.5">
                         <button
@@ -2410,6 +2528,54 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                 transition: opacity 0.25s ease-in;
               }
             `}
+
+            /* Reactive Scoped CSS Layer Visibility Toggles */
+            ${!layerVisibility.nodes ? `
+              #africalia-master-sovereign-svg [id^="node--"],
+              #africalia-master-sovereign-svg [id^="origin--"],
+              #africalia-master-sovereign-svg ellipse,
+              #africalia-master-sovereign-svg circle:not(.reticle) {
+                display: none !important;
+              }
+            ` : ''}
+
+            ${!layerVisibility.branches ? `
+              #africalia-master-sovereign-svg [id^="branch--"],
+              #africalia-master-sovereign-svg [id^="branches--"],
+              #africalia-master-sovereign-svg [id^="trunk--"],
+              #africalia-master-sovereign-svg path.branch,
+              #africalia-master-sovereign-svg path.trunk,
+              #africalia-master-sovereign-svg [id*="STEM" i],
+              #africalia-master-sovereign-svg [id*="CONDUIT" i] {
+                display: none !important;
+              }
+            ` : ''}
+
+            ${!layerVisibility.crucibles ? `
+              #africalia-master-sovereign-svg #assoc--ethnic--country--cabo-verde,
+              #africalia-master-sovereign-svg #CABO-VERDE,
+              #africalia-master-sovereign-svg [id*="cabo-verde" i],
+              #africalia-master-sovereign-svg [id*="crucible" i] {
+                opacity: 0.12 !important;
+                pointer-events: none !important;
+              }
+            ` : ''}
+
+            ${!layerVisibility.labels ? `
+              #africalia-master-sovereign-svg [id^="label--"],
+              #africalia-master-sovereign-svg [id^="assoc--"] text,
+              #africalia-master-sovereign-svg text {
+                display: none !important;
+              }
+            ` : ''}
+
+            ${!layerVisibility.tastCohorts ? `
+              #africalia-master-sovereign-svg [id*="TAST" i],
+              #africalia-master-sovereign-svg [id*="cohort" i],
+              #africalia-master-sovereign-svg [id*="slave-trade" i] {
+                display: none !important;
+              }
+            ` : ''}
           `}</style>
 
           {/* Africa UN Geo Scheme Visibility Toggle Rule */}
@@ -2508,18 +2674,34 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
               </g>
             </svg>
           )}
+
+          {/* Molecular Anthropology & Genetic Migration Canvas Vector Layer (Scaled in lockstep with VBW x VBH coordinate space) */}
+          <MolecularMigrationCanvasLayer
+            isVisible={isMolecularOverlayOpen}
+            selectedNode={selectedMolecularNode}
+            onSelectNode={setSelectedMolecularNode}
+            zoomToCoords={(x, y) => panToCoordinates(x, y, 2.2, { xOffset: 0 })}
+          />
         </div>
 
+        {/* Floating Screen-Space Migration Drawer & Information Card */}
+        <MolecularMigrationDrawer
+          isVisible={isMolecularOverlayOpen}
+          onToggle={() => setIsMolecularOverlayOpen(prev => !prev)}
+          selectedNode={selectedMolecularNode}
+          onSelectNode={setSelectedMolecularNode}
+          zoomToCoords={(x, y) => panToCoordinates(x, y, 2.2, { xOffset: 0 })}
+        />
+
         {/* Radial Tree Geometry Skeleton Indicator Overlay on Initial Master Render */}
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {isSvgLoading && (
             <motion.div
               key="radial-tree-canvas-skeleton"
-              initial={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 1 }}
               exit={{ 
                 opacity: 0, 
-                scale: 1.02,
-                transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } 
+                transition: { duration: 0.85, ease: [0.22, 1, 0.36, 1] } 
               }}
               className="absolute inset-0 z-40 w-full h-full pointer-events-none"
             >

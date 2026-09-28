@@ -228,55 +228,54 @@ ER  -`;
         {/* Citation Display */}
         <div className="p-6 space-y-4">
           <div className="relative p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xs">
-            <pre className="font-mono text-xs text-stone-800 dark:text-stone-200 whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-64">
+            <pre className="font-mono text-xs text-stone-800 dark:text-stone-200 whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-64 select-all">
               {getActiveCitation()}
             </pre>
+          </div>
 
+          <div className="flex items-center justify-between text-[11px] font-mono text-stone-500 px-1">
+            <span>Africalia Open Science Repository • Lisbon / Praia</span>
+            <span>CC-BY 4.0 Open Access License</span>
+          </div>
+        </div>
+
+        {/* Footer Button Row: [Download / Export] [Copy Citation] [Close] */}
+        <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 shrink-0">
+          {/* Download Formats */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleDownloadBibtex}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold transition-colors cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5 text-stone-500" />
+              <span>Download .bib</span>
+            </button>
+            <button
+              onClick={handleDownloadRis}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold transition-colors cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5 text-stone-500" />
+              <span>Download .ris</span>
+            </button>
+          </div>
+
+          {/* Action Row: [Copy Citation] [Close] */}
+          <div className="flex items-center gap-2">
             <button
               onClick={handleCopy}
-              className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold transition-all shadow-xs cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
             >
               {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied to Clipboard' : 'Copy Citation'}</span>
             </button>
+
+            <button
+              onClick={onClose}
+              className="px-5 py-2 rounded-xl bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 dark:hover:bg-white text-white dark:text-stone-900 text-xs font-bold transition-colors cursor-pointer active:scale-95"
+            >
+              Close
+            </button>
           </div>
-
-          {/* Quick Download Buttons for BibTeX & RIS */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleDownloadBibtex}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold transition-colors cursor-pointer"
-              >
-                <Download className="w-3.5 h-3.5 text-stone-500" />
-                <span>Download .bib (BibTeX)</span>
-              </button>
-              <button
-                onClick={handleDownloadRis}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold transition-colors cursor-pointer"
-              >
-                <Download className="w-3.5 h-3.5 text-stone-500" />
-                <span>Download .ris (EndNote/Zotero)</span>
-              </button>
-            </div>
-
-            <div className="text-[11px] font-mono text-stone-500">
-              CC-BY 4.0 Open Access License
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 shrink-0">
-          <span className="text-xs text-stone-500 font-mono">
-            Africalia Open Science Repository • Lisbon / Praia
-          </span>
-          <button
-            onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 text-white dark:text-stone-900 text-xs font-bold transition-colors cursor-pointer"
-          >
-            Close
-          </button>
         </div>
       </div>
     </div>

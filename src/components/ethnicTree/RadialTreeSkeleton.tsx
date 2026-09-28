@@ -187,13 +187,14 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
                 className="stroke-[#C86D3B] dark:stroke-[#F59E0B]"
                 strokeWidth={e.strokeWidth}
                 strokeDasharray={e.dash}
-                initial={{ opacity: 0, scale: 0.88 }}
+                initial={{ opacity: 0.2, scale: 0.94 }}
                 animate={{
-                  opacity: [e.opacity * 0.4, e.opacity, e.opacity * 0.4],
-                  scale: [0.96, 1.02, 0.96]
+                  opacity: [e.opacity * 0.3, e.opacity * 0.9, e.opacity * 0.4],
+                  scale: [0.96, 1.03, 0.96],
+                  rotate: [0, 4, 0, -4, 0]
                 }}
                 transition={{
-                  duration: 3.2,
+                  duration: 4.5 + idx * 0.8,
                   delay: e.delay,
                   repeat: Infinity,
                   ease: "easeInOut"
@@ -202,22 +203,48 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
             ))}
           </g>
 
-          {/* 2. DENDRITIC LINEAGE TREE: 8 TAST Provenance Bezier branches */}
+          {/* 2. DENDRITIC LINEAGE TREE: 8 TAST Provenance Bezier branches (Continuous fluid flow) */}
           {TAST_BRANCHES.map((b, i) => (
             <g key={`branch-${b.name}`}>
-              {/* Primary Trunk Path */}
+              {/* Primary Trunk Path (Continuous breathing pulse) */}
               <motion.path
                 d={b.main}
                 fill="none"
                 className="stroke-[#8C532B] dark:stroke-[#F97316]"
-                strokeWidth="1.8"
+                strokeWidth="2.2"
                 strokeLinecap="round"
                 initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 0.75 }}
+                animate={{ 
+                  pathLength: [0.15, 1, 1, 0.92, 1],
+                  opacity: [0.35, 0.85, 0.7, 0.9, 0.8]
+                }}
                 transition={{
-                  duration: 1.1,
-                  delay: 0.08 + i * 0.07,
-                  ease: [0.16, 1, 0.3, 1]
+                  duration: 3.6,
+                  delay: 0.05 + i * 0.1,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  ease: "easeInOut"
+                }}
+              />
+
+              {/* Luminous Energy Flow Particle along Trunk */}
+              <motion.path
+                d={b.main}
+                fill="none"
+                stroke="#E67E48"
+                strokeWidth="3.2"
+                strokeLinecap="round"
+                strokeDasharray="24 180"
+                initial={{ strokeDashoffset: 200, opacity: 0 }}
+                animate={{ 
+                  strokeDashoffset: [-200, 400],
+                  opacity: [0, 0.9, 0.9, 0]
+                }}
+                transition={{
+                  duration: 2.4,
+                  delay: 0.2 + i * 0.25,
+                  repeat: Infinity,
+                  ease: "easeInOut"
                 }}
               />
 
@@ -225,15 +252,20 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
               <motion.path
                 d={b.sub1}
                 fill="none"
-                className="stroke-[#C86D3B]/70 dark:stroke-[#FBBF24]/75"
-                strokeWidth="1.1"
+                className="stroke-[#C86D3B]/80 dark:stroke-[#FBBF24]/85"
+                strokeWidth="1.4"
                 strokeLinecap="round"
                 initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 0.65 }}
+                animate={{ 
+                  pathLength: [0.2, 1, 1, 0.88, 1],
+                  opacity: [0.3, 0.75, 0.6, 0.8, 0.7]
+                }}
                 transition={{
-                  duration: 0.9,
-                  delay: 0.25 + i * 0.07,
-                  ease: [0.16, 1, 0.3, 1]
+                  duration: 3.2,
+                  delay: 0.15 + i * 0.1,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  ease: "easeInOut"
                 }}
               />
 
@@ -241,19 +273,24 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
               <motion.path
                 d={b.sub2}
                 fill="none"
-                className="stroke-[#C86D3B]/70 dark:stroke-[#FBBF24]/75"
-                strokeWidth="1.0"
+                className="stroke-[#C86D3B]/80 dark:stroke-[#FBBF24]/85"
+                strokeWidth="1.3"
                 strokeLinecap="round"
                 initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 0.65 }}
+                animate={{ 
+                  pathLength: [0.2, 1, 1, 0.88, 1],
+                  opacity: [0.3, 0.75, 0.6, 0.8, 0.7]
+                }}
                 transition={{
-                  duration: 0.9,
-                  delay: 0.32 + i * 0.07,
-                  ease: [0.16, 1, 0.3, 1]
+                  duration: 3.4,
+                  delay: 0.22 + i * 0.1,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  ease: "easeInOut"
                 }}
               />
 
-              {/* Canopy Leaf Nodes (Ethnic Lineage Pearls) */}
+              {/* Canopy Leaf Nodes (Ethnic Lineage Pearls - Perpetual Organic Glow) */}
               {b.nodes.map((node, nodeIdx) => {
                 const fillClass =
                   node.colorType === 'primary'
@@ -263,23 +300,43 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
                     : 'fill-[#059669] dark:fill-[#10B981]';
 
                 return (
-                  <motion.circle
-                    key={`node-${b.name}-${nodeIdx}`}
-                    cx={node.x}
-                    cy={node.y}
-                    r={node.r}
-                    className={`${fillClass} drop-shadow-xs`}
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{
-                      scale: [0, 1.25, 1],
-                      opacity: [0, 0.95, 0.8]
-                    }}
-                    transition={{
-                      duration: 0.7,
-                      delay: 0.45 + i * 0.07 + nodeIdx * 0.1,
-                      ease: "easeOut"
-                    }}
-                  />
+                  <g key={`node-${b.name}-${nodeIdx}`}>
+                    {/* Pulsing Aura */}
+                    <motion.circle
+                      cx={node.x}
+                      cy={node.y}
+                      r={node.r * 2.2}
+                      className="fill-[#E67E48]/20 dark:fill-[#F59E0B]/25"
+                      animate={{
+                        scale: [0.8, 1.4, 0.9],
+                        opacity: [0.2, 0.7, 0.3]
+                      }}
+                      transition={{
+                        duration: 2.2,
+                        delay: 0.3 + i * 0.12 + nodeIdx * 0.15,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+                    {/* Node Core */}
+                    <motion.circle
+                      cx={node.x}
+                      cy={node.y}
+                      r={node.r}
+                      className={`${fillClass} drop-shadow-xs`}
+                      initial={{ scale: 0.6, opacity: 0.4 }}
+                      animate={{
+                        scale: [0.85, 1.15, 0.95],
+                        opacity: [0.65, 1, 0.75]
+                      }}
+                      transition={{
+                        duration: 2.5,
+                        delay: 0.4 + i * 0.1 + nodeIdx * 0.12,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+                  </g>
                 );
               })}
             </g>
