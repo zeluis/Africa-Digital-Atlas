@@ -50,8 +50,8 @@ export const SUBSEA_CABLES_DATA: SubseaCablePath[] = [
     strokeWidth: 20,
     speedSec: 2.8,
     dashArray: '36 18',
-    // Complete oceanic loop: Gibraltar Atlantic entrance -> Moroccan shelf -> Mauritania -> Cap-Vert -> Gulf of Guinea -> Southern Ocean rounding Agulhas -> Indian Ocean -> Red Sea & Suez
-    d: 'M 1420 180 C 1320 380, 1180 720, 980 1150 C 780 1580, 580 1900, 320 2180 C 450 2520, 750 2820, 1380 2860 C 1680 2880, 1950 2860, 2080 2880 C 2240 2950, 2380 3150, 2460 3400 C 2550 3750, 2660 4350, 2740 4950 C 2850 5450, 2980 5650, 3220 5860 C 3550 5920, 3880 5860, 4180 5650 C 4420 5200, 4580 4650, 4680 4000 C 4750 3200, 4820 2600, 5450 1780 C 5650 1680, 5300 1580, 4950 1620 C 4720 1620, 4520 1350, 4420 1050 C 4350 850, 4280 650, 4220 450 C 4150 300, 3750 250, 3450 240',
+    // Complete oceanic loop: Deep Atlantic shelf off Morocco/Mauritania/Dakar -> Gulf of Guinea shelf -> Offshore Gabon/Angola/Namibia -> Southern Ocean south of Cape Agulhas -> Middle of Mozambique Channel fairway -> Somali Basin -> Horn of Africa Loop -> Red Sea & Suez
+    d: 'M 1260 50 C 920 380, 620 850, 420 1320 C 250 1650, 180 1950, 160 2200 C 140 2520, 480 2840, 1100 2880 C 1400 2900, 1850 2920, 2060 2920 C 2240 3050, 2380 3350, 2480 3750 C 2560 4150, 2620 4550, 2680 4950 C 2720 5250, 2760 5550, 2850 5800 C 2980 6100, 3250 6260, 3600 6260 C 4000 6220, 4360 5980, 4580 5550 C 4680 5320, 4750 5050, 4790 4780 C 4820 4520, 4880 4350, 4920 4150 C 4980 3750, 5180 3350, 5320 2900 C 5450 2500, 5720 2250, 5680 1980 C 5550 1880, 5150 1820, 4850 1780 C 4650 1550, 4450 1150, 4320 750 C 4240 550, 4180 380, 3850 320 C 3550 280, 3450 260, 3450 260',
     description: 'The world’s most comprehensive subsea cable project, interconnecting 33 countries across Africa, Europe, and the Middle East with up to 180 Tbps design capacity.',
     landingCountries: ['Egypt', 'Morocco', 'Senegal', 'Ivory Coast', 'Ghana', 'Nigeria', 'Angola', 'South Africa', 'Mozambique', 'Tanzania', 'Kenya', 'Djibouti', 'Sudan'],
     stats: [
@@ -75,8 +75,8 @@ export const SUBSEA_CABLES_DATA: SubseaCablePath[] = [
     strokeWidth: 22,
     speedSec: 2.3,
     dashArray: '40 20',
-    // Portugal -> Moroccan Shelf -> Dakar Loop -> Gulf of Guinea -> Namibia -> Southern Ocean Cape Terminal
-    d: 'M 1380 120 C 1280 340, 1140 680, 940 1100 C 740 1520, 540 1850, 280 2160 C 420 2500, 720 2800, 1350 2840 C 1650 2860, 1850 2870, 2050 2870 C 2200 2930, 2350 3120, 2430 3380 C 2520 3720, 2630 4320, 2720 4920 C 2820 5420, 2960 5620, 3200 5840 C 3480 5900, 3680 5880, 3850 5780',
+    // Portugal -> Deep Atlantic Shelf -> West of Dakar -> Gulf of Guinea -> West of Gabon/Angola/Namibia -> Southern Ocean south of Cape Agulhas
+    d: 'M 1240 40 C 900 370, 600 840, 400 1310 C 230 1640, 160 1940, 140 2190 C 120 2510, 460 2830, 1080 2870 C 1380 2890, 1830 2910, 2050 2910 C 2220 3040, 2360 3340, 2460 3740 C 2540 4140, 2600 4540, 2660 4940 C 2700 5240, 2740 5540, 2820 5780 C 2950 6080, 3180 6220, 3500 6220',
     description: 'Google’s state-of-the-art private subsea cable incorporating optical switching at the fiber-pair level rather than traditional wavelength switching.',
     landingCountries: ['Togo', 'Nigeria', 'Namibia', 'South Africa', 'Saint Helena'],
     stats: [
@@ -100,8 +100,8 @@ export const SUBSEA_CABLES_DATA: SubseaCablePath[] = [
     strokeWidth: 18,
     speedSec: 3.1,
     dashArray: '32 16',
-    // Red Sea -> Gulf of Aden -> Guardafui Loop -> Mombasa -> Mozambique Channel -> Rounding South Africa in Southern Ocean
-    d: 'M 4220 450 C 4320 750, 4450 1150, 4580 1480 C 4720 1650, 5050 1620, 5420 1650 C 5680 1780, 5450 2150, 5100 2550 C 4850 2900, 4750 3400, 4650 3950 C 4550 4500, 4400 5150, 4150 5620 C 3850 5860, 3520 5900, 3200 5840',
+    // Red Sea -> Gulf of Aden -> Horn of Africa Loop -> Somali Basin -> Middle of Mozambique Channel fairway -> Southern Ocean south of Cape Agulhas
+    d: 'M 4200 450 C 4280 650, 4380 950, 4500 1250 C 4650 1520, 4850 1750, 4950 1820 C 5200 1850, 5500 1900, 5680 2000 C 5720 2250, 5450 2520, 5340 2920 C 5200 3370, 5000 3770, 4940 4170 C 4900 4370, 4840 4520, 4800 4770 C 4760 5070, 4700 5340, 4600 5570 C 4380 6000, 4020 6240, 3620 6260 C 3270 6260, 3000 6100, 2870 5800 C 2780 5450, 2780 5450, 2780 5450',
     description: 'Pioneering private subsea arterial network connecting East and Southern Africa directly with Europe and India across the Indian Ocean.',
     landingCountries: ['Sudan', 'Djibouti', 'Somalia', 'Kenya', 'Tanzania', 'Mozambique', 'South Africa', 'Madagascar'],
     stats: [
@@ -125,8 +125,8 @@ export const SUBSEA_CABLES_DATA: SubseaCablePath[] = [
     strokeWidth: 16,
     speedSec: 3.4,
     dashArray: '28 14',
-    // France -> Gibraltar Atlantic shelf -> Morocco -> Dakar -> Gulf of Guinea -> South Africa Cape
-    d: 'M 1400 150 C 1300 360, 1160 700, 960 1120 C 760 1540, 560 1870, 300 2170 C 440 2510, 740 2810, 1360 2850 C 1660 2870, 1920 2865, 2060 2875 C 2220 2940, 2360 3140, 2440 3390 C 2530 3730, 2640 4330, 2730 4930 C 2830 5430, 2970 5630, 3210 5850 C 3500 5910, 3700 5870, 3880 5770',
+    // France -> Deep Atlantic shelf west of Gibraltar/Morocco/Dakar -> Gulf of Guinea -> West of Gabon/Angola/Namibia -> Southern Ocean
+    d: 'M 1250 45 C 910 375, 610 845, 410 1315 C 240 1645, 170 1945, 150 2195 C 130 2515, 470 2835, 1090 2875 C 1390 2895, 1840 2915, 2055 2915 C 2230 3045, 2370 3345, 2470 3745 C 2550 4145, 2610 4545, 2670 4945 C 2710 5245, 2750 5545, 2835 5785 C 2965 6085, 3210 6240, 3550 6240',
     description: 'Major multi-operator consortium cable connecting 24 countries from Brittany to Cape Town, providing first-time redundant connectivity to West Africa.',
     landingCountries: ['Morocco', 'Mauritania', 'Senegal', 'Gambia', 'Guinea', 'Sierra Leone', 'Liberia', 'Ivory Coast', 'Ghana', 'Benin', 'Nigeria', 'Cameroon', 'Equatorial Guinea', 'Gabon', 'Sao Tome', 'South Africa'],
     stats: [
@@ -150,8 +150,8 @@ export const SUBSEA_CABLES_DATA: SubseaCablePath[] = [
     strokeWidth: 18,
     speedSec: 2.6,
     dashArray: '34 16',
-    // Europe -> Mediterranean -> Suez -> Red Sea -> Gulf of Aden -> Seychelles (Indian Ocean Corridor)
-    d: 'M 3500 250 C 3850 320, 4150 420, 4220 450 C 4320 750, 4450 1150, 4580 1480 C 4720 1650, 5050 1620, 5420 1650 C 5680 1780, 5450 2150, 5150 2550 C 4950 2850, 5150 3150, 5450 3350 C 5650 3480, 5820 3550, 5950 3580',
+    // Europe -> Mediterranean -> Suez -> Red Sea -> Gulf of Aden -> Horn of Africa Loop -> Somali Basin -> Seychelles (Indian Ocean Corridor)
+    d: 'M 3500 250 C 3850 320, 4150 420, 4200 450 C 4280 650, 4380 950, 4500 1250 C 4650 1520, 4850 1750, 4950 1820 C 5200 1850, 5500 1900, 5680 2000 C 5720 2250, 5500 2550, 5400 2950 C 5320 3280, 5580 3400, 5950 3450',
     description: 'High-speed, open-access 200G/400G WDM subsea system providing lowest-latency routing between Asia, East Africa, and Europe.',
     landingCountries: ['Egypt', 'Djibouti', 'Kenya', 'Seychelles'],
     stats: [

@@ -60,7 +60,13 @@ import {
   Radio,
   Clock,
   Quote,
-  Database
+  Database,
+  Globe2,
+  ShieldAlert,
+  Hospital,
+  GraduationCap,
+  Landmark,
+  Columns
 } from 'lucide-react';
 import { CartographicColophonModal } from './CartographicColophonModal';
 import { AcademicExportModal } from './AcademicExportModal';
@@ -449,6 +455,105 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     };
   };
   const [isAdmin1InspectorOpen, setIsAdmin1InspectorOpen] = useState<boolean>(false);
+  const [isUnifiedDeckOpen, setIsUnifiedDeckOpen] = useState<boolean>(false);
+  const [unifiedDeckTab, setUnifiedDeckTab] = useState<'both' | 'inspector' | 'deck'>('both');
+
+  const thematicActiveCount = useMemo(() => {
+    return (
+      Object.values(layerVisibility).filter(Boolean).length +
+      (showPowerPlants ? 1 : 0) +
+      (showProtectedAreas ? 1 : 0)
+    );
+  }, [layerVisibility, showPowerPlants, showProtectedAreas]);
+
+  const handleToggleUnifiedDeck = (tab: 'inspector' | 'deck') => {
+    if (isUnifiedDeckOpen) {
+      if (unifiedDeckTab === tab) {
+        setIsUnifiedDeckOpen(false);
+      } else {
+        setUnifiedDeckTab(tab);
+      }
+    } else {
+      setUnifiedDeckTab(tab);
+      setIsUnifiedDeckOpen(true);
+    }
+  };
+
+  const thematicDeckItems = useMemo(() => [
+    {
+      key: 'subseaCables' as keyof LayerVisibilityState,
+      label: 'Oceanic Subsea Fiber Cables',
+      badge: '2Africa, Equiano, ACE, SEACOM',
+      count: 5,
+      color: '#0284c7',
+      icon: Globe2,
+    },
+    {
+      key: 'landingStations' as keyof LayerVisibilityState,
+      label: 'Coastal Cable Landing Hubs',
+      badge: 'Alexandria, Lagos, Cape Town...',
+      count: 10,
+      color: '#0284c7',
+      icon: Globe2,
+    },
+    {
+      key: 'conflictBeacons' as keyof LayerVisibilityState,
+      label: 'Conflict & Security Beacons',
+      badge: 'ACLED Battles, Air Strikes, Disputes',
+      count: 8,
+      color: '#ef4444',
+      icon: ShieldAlert,
+    },
+    {
+      key: 'hospitals' as keyof LayerVisibilityState,
+      label: 'Tertiary Referral Hospitals',
+      badge: 'Bed Capacity & Level-1 Trauma Hubs',
+      count: 7,
+      color: '#0891b2',
+      icon: Hospital,
+    },
+    {
+      key: 'schools' as keyof LayerVisibilityState,
+      label: 'Universities & Education Hubs',
+      badge: 'Mega Campuses & Research Output',
+      count: 6,
+      color: '#d97706',
+      icon: GraduationCap,
+    },
+    {
+      key: 'culturalHeritage' as keyof LayerVisibilityState,
+      label: 'UNESCO Cultural Monuments',
+      badge: 'Lalibela, Giza, Djenné, Axum...',
+      count: 7,
+      color: '#ca8a04',
+      icon: Landmark,
+    },
+    {
+      key: 'naturalSanctuaries' as keyof LayerVisibilityState,
+      label: 'Natural Biospheres & Reserves',
+      badge: 'Kruger, Kilimanjaro, Victoria Falls',
+      count: 6,
+      color: '#059669',
+      icon: Trees,
+    },
+    {
+      key: 'powerCorridors' as keyof LayerVisibilityState,
+      label: 'Power Pools & Trade Corridors',
+      badge: 'SAPP, WAPP, EAPP 500kV HVDC',
+      count: 5,
+      color: '#0284c7',
+      icon: Zap,
+    },
+    {
+      key: 'growthNodes' as keyof LayerVisibilityState,
+      label: 'Megacity & Energy Growth Nodes',
+      badge: 'GERD, Benban, Johannesburg, Cairo',
+      count: 10,
+      color: '#7c3aed',
+      icon: Sparkles,
+    }
+  ], []);
+
   const [hoveredEntityId, setHoveredEntityId] = useState<string | null>(null);
   const [hoveredAdmin1, setHoveredAdmin1] = useState<{ id: string; name: string; countryId: string } | null>(null);
   const [activeRegionHover, setActiveRegionHover] = useState<AfricanRegion | null>(null);
@@ -1511,43 +1616,21 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             )}
           </div>
 
-          {/* Subdivisions Toggle & Inspector Toggle */}
+          {/* Admin-1 Subdivisions Layer Toggle */}
           {isFinalMode && (
-            <div className="flex items-center gap-1 shrink-0">
-              <button
-                type="button"
-                onClick={() => setShowAdmin1Borders(prev => !prev)}
-                className={`flex items-center gap-1 px-2 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
-                  showAdmin1Borders
-                    ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-300'
-                    : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400'
-                }`}
-                title="Toggle Admin-1 internal subdivisions"
-              >
-                <MapPin className="w-3 h-3" />
-                <span>Admin-1 ({showAdmin1Borders ? 'ON' : 'OFF'})</span>
-              </button>
-
-              <button
-                id="btn-toggle-admin1-inspector-header"
-                type="button"
-                onClick={() => setIsAdmin1InspectorOpen(prev => !prev)}
-                className={`flex items-center gap-1.5 px-2 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer ${
-                  isAdmin1InspectorOpen
-                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                    : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-                }`}
-                title="Toggle Admin-1 Subdivisions Inspector"
-              >
-                <MapPin className="w-3 h-3" />
-                <span>Inspector</span>
-                <span className={`text-[10px] font-mono px-1 py-0.2 rounded font-bold ${
-                  isAdmin1InspectorOpen ? 'bg-emerald-700/80 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
-                }`}>
-                  {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
-                </span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setShowAdmin1Borders(prev => !prev)}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer shrink-0 ${
+                showAdmin1Borders
+                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-300'
+                  : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400'
+              }`}
+              title="Toggle Admin-1 internal subdivisions"
+            >
+              <MapPin className="w-3 h-3" />
+              <span>Admin-1 ({showAdmin1Borders ? 'ON' : 'OFF'})</span>
+            </button>
           )}
 
           {/* AKP Clean Energy & Dams Overlay Toggle */}
@@ -1600,11 +1683,83 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <span>Flows ({showThematicOverlays ? 'ON' : 'OFF'})</span>
             </button>
           )}
+
+          {/* Unified Admin-1 Inspector & Thematic Layer Deck Pill (Right beside Flows button) */}
+          {isFinalMode && (
+            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl shadow-2xs gap-0.5 shrink-0">
+              <button
+                id="btn-toggle-admin1-inspector-header"
+                type="button"
+                onClick={() => handleToggleUnifiedDeck('inspector')}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
+                  isUnifiedDeckOpen && (unifiedDeckTab === 'inspector' || unifiedDeckTab === 'both')
+                    ? 'bg-emerald-600 text-white shadow-xs font-bold'
+                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-800'
+                }`}
+                title="Toggle Admin-1 Subdivisions Inspector"
+              >
+                <MapPin className="w-3 h-3 text-emerald-500" />
+                <span>Inspector</span>
+                <span className={`text-[10px] font-mono px-1 py-0.2 rounded font-bold ${
+                  isUnifiedDeckOpen && (unifiedDeckTab === 'inspector' || unifiedDeckTab === 'both')
+                    ? 'bg-emerald-700/80 text-white'
+                    : 'bg-zinc-200/80 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
+                }`}>
+                  {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
+                </span>
+              </button>
+
+              <button
+                id="btn-toggle-thematic-deck-header"
+                type="button"
+                onClick={() => handleToggleUnifiedDeck('deck')}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800 ${
+                  isUnifiedDeckOpen && (unifiedDeckTab === 'deck' || unifiedDeckTab === 'both')
+                    ? 'bg-cyan-600 text-white shadow-xs font-bold'
+                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-800'
+                }`}
+                title="Toggle Thematic Layers Deck"
+              >
+                <SlidersHorizontal className="w-3 h-3 text-cyan-500" />
+                <span>Layer Deck</span>
+                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${
+                  isUnifiedDeckOpen && (unifiedDeckTab === 'deck' || unifiedDeckTab === 'both')
+                    ? 'bg-cyan-700/80 text-white'
+                    : 'bg-zinc-200/80 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
+                }`}>
+                  {thematicActiveCount}/9
+                </span>
+              </button>
+            </div>
+          )}
+
+          {/* AKP Registry & Cartouche Buttons (Tonal Color Treatment, right beside unified pill) */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => setIsCatalogueModalOpen(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-800 dark:text-cyan-300 border border-cyan-500/30 text-[11px] font-semibold transition-all shadow-xs cursor-pointer active:scale-95 shrink-0"
+              title="Open AKP Data Registry & Geospatial Catalogue"
+            >
+              <Database className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+              <span>AKP Registry</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsColophonOpen(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 text-[11px] font-semibold transition-all shadow-xs cursor-pointer active:scale-95 shrink-0"
+              title="Open Official Cartographic Cartouche, Geodesy Specs & Imprint"
+            >
+              <Compass className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+              <span>Cartouche</span>
+            </button>
+          </div>
         </div>
 
-        {/* Row 2: Cartographic Overlays (Bloc selector, ThematicLayerDeck) and Research Imprints (AKP Registry, Colophon, Cite DOI), and docked Zoom Controls & Export dropdown */}
+        {/* Row 2: Regional Economic Blocs Selector, Citation DOI, Docked Zoom Controls & Export Dropdown */}
         <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 pt-1.5 border-t border-zinc-200/70 dark:border-zinc-800/70">
-          {/* Left: Bloc selector, ThematicLayerDeck & Research Imprints */}
+          {/* Left: Bloc selector & Research Citation */}
           <div className="flex flex-wrap items-center gap-1.5">
             {/* Regional Economic Blocs Selector */}
             <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 px-2 py-1 rounded-xl text-xs shrink-0">
@@ -1623,54 +1778,15 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               </select>
             </div>
 
-            {/* Thematic Layer Deck */}
-            {isFinalMode && (
-              <div className="shrink-0">
-                <ThematicLayerDeck
-                  layerVisibility={layerVisibility}
-                  onToggleLayer={handleToggleLayer}
-                  onSetAllLayers={handleSetAllLayers}
-                  onOpenCatalogueModal={() => setIsCatalogueModalOpen(true)}
-                  showPowerPlants={showPowerPlants}
-                  onTogglePowerPlants={() => setShowPowerPlants(prev => !prev)}
-                  showProtectedAreas={showProtectedAreas}
-                  onToggleProtectedAreas={() => setShowProtectedAreas(prev => !prev)}
-                />
-              </div>
-            )}
-
-            {/* Research & Imprints Pill (AKP Registry, Colophon, Cite DOI) */}
-            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl shadow-2xs gap-0.5 shrink-0">
-              <button
-                type="button"
-                onClick={() => setIsCatalogueModalOpen(true)}
-                className="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-[11px] font-semibold transition-all cursor-pointer"
-                title="Open AKP Data Registry & Geospatial Catalogue"
-              >
-                <Database className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
-                <span>AKP Registry</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setIsColophonOpen(true)}
-                className="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-[11px] font-semibold transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800"
-                title="Open Official Cartographic Colophon, Geodesy Specs & Imprint"
-              >
-                <Award className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                <span>Colophon</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setIsCitationModalOpen(true)}
-                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 text-[11px] font-semibold transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800"
-                title="Cite this Research Platform (DOI: 10.5281/zenodo.10842918)"
-              >
-                <Quote className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                <span>Cite (DOI)</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setIsCitationModalOpen(true)}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/25 text-[11px] font-semibold transition-all cursor-pointer shrink-0"
+              title="Cite this Research Platform (DOI: 10.5281/zenodo.10842918)"
+            >
+              <Quote className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+              <span>Cite (DOI)</span>
+            </button>
           </div>
 
           {/* Right: Docked Zoom Controls & Export Pill */}
@@ -1906,119 +2022,315 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             : "relative w-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner p-[6px] aspect-[890/985] max-h-[85vh] min-h-[440px]"
         }
       >
-        {/* Expanded Admin-1 Subdivisions Panel (Cleanly docked top-right when opened from header) */}
-        {isAdmin1InspectorOpen && (
-          <div
-            id="floating-admin1-inspector-panel"
-            className="absolute top-4 right-4 z-30 w-auto min-w-[320px] sm:min-w-[420px] max-w-[calc(100vw-32px)] sm:max-w-lg rounded-2xl bg-white/95 dark:bg-zinc-950/95 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 overflow-hidden"
-          >
-              {/* Header with Title, Count & Close Control */}
-              <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-900/60 gap-2">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                  <span className="font-bold text-xs text-zinc-900 dark:text-zinc-100">Admin-1 Subdivisions</span>
-                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300/60 dark:border-emerald-700/60">
-                    {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
-                  </span>
+        {/* Sophisticated Combined 2-Column Sliding Panel: Admin-1 Inspector + Thematic Layers Deck */}
+        <AnimatePresence>
+          {(isUnifiedDeckOpen || isAdmin1InspectorOpen) && (
+            <motion.div
+              id="unified-cartographic-deck-panel"
+              initial={{ opacity: 0, y: -16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -16, scale: 0.98 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 32, mass: 0.5 }}
+              className="absolute top-3 right-3 sm:right-4 z-40 w-auto min-w-[320px] sm:min-w-[540px] md:min-w-[760px] lg:min-w-[960px] max-w-[calc(100vw-24px)] rounded-3xl bg-white/95 dark:bg-zinc-950/95 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl backdrop-blur-2xl overflow-hidden flex flex-col max-h-[82vh]"
+            >
+              {/* Header with Title, Section Tabs & Close Control */}
+              <div className="flex items-center justify-between px-3.5 sm:px-4 py-2.5 sm:py-3 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-900/60 gap-2 shrink-0">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-700 dark:text-emerald-400 shrink-0">
+                    <SlidersHorizontal className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-extrabold text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 font-serif tracking-tight truncate">
+                        Cartographic Intelligence Deck
+                      </h3>
+                    </div>
+                    <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono truncate">
+                      Admin-1 Topology &amp; Thematic Multi-Layer Overlays
+                    </p>
+                  </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setIsAdmin1InspectorOpen(false)}
-                  className="p-1 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-                  title="Close Inspector"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                {/* Section Tabs & Close */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center bg-zinc-200/70 dark:bg-zinc-800/80 p-0.5 rounded-xl border border-zinc-300/60 dark:border-zinc-700/60">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUnifiedDeckTab('inspector');
+                        setIsUnifiedDeckOpen(true);
+                        setIsAdmin1InspectorOpen(true);
+                      }}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        unifiedDeckTab === 'inspector'
+                          ? 'bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-300 shadow-xs'
+                          : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                      }`}
+                      title="Admin-1 Subdivisions Inspector"
+                    >
+                      <MapPin className="w-3.5 h-3.5 text-emerald-500" />
+                      <span className="hidden sm:inline">Admin-1</span>
+                      <span>Inspector</span>
+                      <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold">
+                        {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUnifiedDeckTab('deck');
+                        setIsUnifiedDeckOpen(true);
+                      }}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        unifiedDeckTab === 'deck'
+                          ? 'bg-white dark:bg-zinc-900 text-cyan-700 dark:text-cyan-300 shadow-xs'
+                          : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                      }`}
+                      title="Thematic Layers Deck"
+                    >
+                      <Layers className="w-3.5 h-3.5 text-cyan-500" />
+                      <span className="hidden sm:inline">Thematic</span>
+                      <span>Layers</span>
+                      <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-cyan-100 dark:bg-cyan-900/60 text-cyan-800 dark:text-cyan-200 font-bold">
+                        {thematicActiveCount}/9
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUnifiedDeckTab('both');
+                        setIsUnifiedDeckOpen(true);
+                      }}
+                      className={`hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        unifiedDeckTab === 'both'
+                          ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-xs'
+                          : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                      }`}
+                      title="2-Column Split View (Both Inspector &amp; Layers)"
+                    >
+                      <Columns className="w-3.5 h-3.5 text-amber-500" />
+                      <span>2-Column</span>
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsUnifiedDeckOpen(false);
+                      setIsAdmin1InspectorOpen(false);
+                    }}
+                    className="p-1.5 rounded-xl hover:bg-zinc-200/70 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+                    title="Close Deck"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
 
-              {/* Admin-1 Subdivisions Inspector */}
-              <div id="admin1-subdivision-inspector" className="flex flex-col">
-                {/* Search Bar & Subheader */}
-                <div className="p-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/40 dark:bg-zinc-950/40">
-                  <div className="relative flex items-center mb-1.5">
-                    <Search className="absolute left-2.5 w-3.5 h-3.5 text-zinc-400" />
-                    <input
-                      type="text"
-                      placeholder="Search state, province, or region..."
-                      value={admin1SearchQuery}
-                      onChange={(e) => setAdmin1SearchQuery(e.target.value)}
-                      className="w-full pl-8 pr-7 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/90 dark:bg-zinc-900/90 text-xs font-medium text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
-                    />
-                    {admin1SearchQuery && (
+              {/* Panel Content: 2-Column or Single Tab */}
+              <div className={`overflow-y-auto flex-1 ${
+                unifiedDeckTab === 'both'
+                  ? 'grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-zinc-200/80 dark:divide-zinc-800/80'
+                  : 'flex flex-col'
+              }`}>
+                {/* Column 1: Admin-1 Subdivisions Inspector */}
+                {(unifiedDeckTab === 'both' || unifiedDeckTab === 'inspector') && (
+                  <div className="flex flex-col min-w-0">
+                    <div className="p-2.5 sm:p-3 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/40 dark:bg-zinc-950/40">
+                      <div className="relative flex items-center mb-1.5">
+                        <Search className="absolute left-2.5 w-3.5 h-3.5 text-zinc-400" />
+                        <input
+                          type="text"
+                          placeholder="Search state, province, or region..."
+                          value={admin1SearchQuery}
+                          onChange={(e) => setAdmin1SearchQuery(e.target.value)}
+                          className="w-full pl-8 pr-7 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/90 dark:bg-zinc-900/90 text-xs font-medium text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                        />
+                        {admin1SearchQuery && (
+                          <button
+                            type="button"
+                            onClick={() => setAdmin1SearchQuery('')}
+                            className="absolute right-2 p-0.5 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 px-1">
+                        <span className="truncate mr-2">
+                          {selectedEntityId ? (AFRICA_FINAL_MAP[selectedEntityId]?.name || selectedEntityId) : 'All African Territories'}
+                        </span>
+                        <span className="font-semibold text-emerald-600 dark:text-emerald-400 shrink-0">
+                          {filteredAdmin1List.length} subdivision{filteredAdmin1List.length === 1 ? '' : 's'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="overflow-y-auto p-2 space-y-1.5 max-h-[50vh]">
+                      {filteredAdmin1List.length === 0 ? (
+                        <div className="p-6 text-center text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+                          No subdivisions match &ldquo;{admin1SearchQuery}&rdquo;.
+                        </div>
+                      ) : (
+                        filteredAdmin1List.map((adm) => {
+                          const isAdmSelected = selectedAdmin1?.id === adm.id;
+                          const isAdmHovered = hoveredAdmin1?.id === adm.id;
+                          return (
+                            <div
+                              key={adm.id}
+                              onMouseEnter={() => {
+                                setHoveredAdmin1({ id: adm.id, name: adm.name, countryId: adm.iso3 });
+                                setHoveredEntityId(adm.iso3);
+                              }}
+                              onMouseLeave={() => {
+                                setHoveredAdmin1(null);
+                              }}
+                              onClick={() => handleAdmin1Focus(adm)}
+                              className={`flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer ${
+                                isAdmSelected
+                                  ? 'bg-emerald-500/15 border-emerald-500 text-emerald-950 dark:text-emerald-100 shadow-xs'
+                                  : isAdmHovered
+                                  ? 'bg-zinc-100/90 dark:bg-zinc-900/90 border-emerald-500/40 text-zinc-900 dark:text-zinc-100'
+                                  : 'bg-white/60 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <CountryFlag entityId={adm.iso3} size="xs" />
+                                <div className="min-w-0">
+                                  <p className="text-xs font-bold truncate leading-tight">{adm.name}</p>
+                                  <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">
+                                    {adm.countryName} ({adm.iso3})
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold">
+                                  {adm.admin1Code || adm.id}
+                                </span>
+                                <div className={`p-1 rounded-lg ${isAdmSelected ? 'bg-emerald-600 text-white' : 'text-zinc-400'}`}>
+                                  <Maximize2 className="w-3 h-3" />
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Column 2: Thematic Layer Deck */}
+                {(unifiedDeckTab === 'both' || unifiedDeckTab === 'deck') && (
+                  <div className="flex flex-col min-w-0 p-3 sm:p-4 bg-zinc-50/50 dark:bg-zinc-900/30">
+                    <div className="flex items-center justify-between pb-2.5 mb-2 border-b border-zinc-200 dark:border-zinc-800">
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+                          Cartographic Overlays
+                        </h4>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleSetAllLayers(true);
+                            setShowPowerPlants(true);
+                            setShowProtectedAreas(true);
+                          }}
+                          className="text-[10px] font-mono font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 underline cursor-pointer"
+                        >
+                          All On
+                        </button>
+                        <span className="text-zinc-300 dark:text-zinc-700">|</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleSetAllLayers(false);
+                            setShowPowerPlants(false);
+                            setShowProtectedAreas(false);
+                          }}
+                          className="text-[10px] font-mono font-semibold text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300 underline cursor-pointer"
+                        >
+                          All Off
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5 overflow-y-auto max-h-[50vh] pr-0.5">
+                      {thematicDeckItems.map((item) => {
+                        const active = Boolean(layerVisibility[item.key]);
+                        const Icon = item.icon;
+                        return (
+                          <div
+                            key={item.key}
+                            onClick={() => handleToggleLayer(item.key)}
+                            className={`flex items-center justify-between p-2 sm:p-2.5 rounded-xl border transition-all cursor-pointer select-none ${
+                              active
+                                ? 'bg-cyan-50/70 dark:bg-cyan-950/30 border-cyan-500/40 text-zinc-900 dark:text-zinc-100 shadow-xs'
+                                : 'bg-white/60 dark:bg-zinc-900/50 border-zinc-200/80 dark:border-zinc-800/80 opacity-70 hover:opacity-100 text-zinc-700 dark:text-zinc-300'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div
+                                className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                                style={{ backgroundColor: `${item.color}15`, border: `1px solid ${item.color}40` }}
+                              >
+                                <Icon className="w-3.5 h-3.5" style={{ color: item.color }} />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate flex items-center gap-1.5">
+                                  {item.label}
+                                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+                                    {item.count}
+                                  </span>
+                                </div>
+                                <div className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">{item.badge}</div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                              {active ? (
+                                <div className="w-5 h-5 rounded-full bg-cyan-600 text-white flex items-center justify-center shadow-xs">
+                                  <Check className="w-3 h-3" />
+                                </div>
+                              ) : (
+                                <div className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 flex items-center justify-center">
+                                  <EyeOff className="w-3 h-3" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="mt-3 pt-2.5 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400">
                       <button
                         type="button"
-                        onClick={() => setAdmin1SearchQuery('')}
-                        className="absolute right-2 p-0.5 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
+                        onClick={() => setIsCatalogueModalOpen(true)}
+                        className="text-[10px] font-bold text-cyan-700 dark:text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
                       >
-                        <X className="w-3 h-3" />
+                        <Database className="w-3 h-3" />
+                        <span>AKP Registry Modal</span>
                       </button>
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 px-1">
-                    <span>
-                      {selectedEntityId ? (AFRICA_FINAL_MAP[selectedEntityId]?.name || selectedEntityId) : 'All African Territories'}
-                    </span>
-                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                      {filteredAdmin1List.length} subdivision{filteredAdmin1List.length === 1 ? '' : 's'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Subdivisions List */}
-                <div className="overflow-y-auto p-2 space-y-1.5 max-h-[50vh]">
-                  {filteredAdmin1List.length === 0 ? (
-                    <div className="p-6 text-center text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-                      No subdivisions match &ldquo;{admin1SearchQuery}&rdquo;.
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsUnifiedDeckOpen(false);
+                          setIsAdmin1InspectorOpen(false);
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-[10px] font-bold cursor-pointer"
+                      >
+                        Done
+                      </button>
                     </div>
-                  ) : (
-                    filteredAdmin1List.map((adm) => {
-                      const isAdmSelected = selectedAdmin1?.id === adm.id;
-                      const isAdmHovered = hoveredAdmin1?.id === adm.id;
-                      return (
-                        <div
-                          key={adm.id}
-                          onMouseEnter={() => {
-                            setHoveredAdmin1({ id: adm.id, name: adm.name, countryId: adm.iso3 });
-                            setHoveredEntityId(adm.iso3);
-                          }}
-                          onMouseLeave={() => {
-                            setHoveredAdmin1(null);
-                          }}
-                          onClick={() => handleAdmin1Focus(adm)}
-                          className={`flex items-center justify-between p-2 rounded-xl border transition-all cursor-pointer ${
-                            isAdmSelected
-                              ? 'bg-emerald-500/15 border-emerald-500 text-emerald-950 dark:text-emerald-100 shadow-xs'
-                              : isAdmHovered
-                              ? 'bg-zinc-100/90 dark:bg-zinc-900/90 border-emerald-500/40 text-zinc-900 dark:text-zinc-100'
-                              : 'bg-white/60 dark:bg-zinc-900/40 border-zinc-200/60 dark:border-zinc-800/60 text-zinc-700 dark:text-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-700'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <CountryFlag entityId={adm.iso3} size="xs" />
-                            <div className="min-w-0">
-                              <p className="text-xs font-bold truncate leading-tight">{adm.name}</p>
-                              <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">
-                                {adm.countryName} ({adm.iso3})
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold">
-                              {adm.admin1Code || adm.id}
-                            </span>
-                            <div className={`p-1 rounded-lg ${isAdmSelected ? 'bg-emerald-600 text-white' : 'text-zinc-400'}`}>
-                              <Maximize2 className="w-3 h-3" />
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
-            </div>
+            </motion.div>
           )}
+        </AnimatePresence>
 
         <svg
           ref={svgRef}

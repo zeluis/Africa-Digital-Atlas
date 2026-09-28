@@ -30,7 +30,7 @@ export const CartographicCartouche: React.FC<CartographicCartoucheProps> = ({
   const accentBadgeBg = isDark ? 'rgba(217, 119, 6, 0.24)' : 'rgba(217, 119, 6, 0.14)';
 
   const cardWidth = 1760;
-  const cardHeight = 980;
+  const cardHeight = 880;
 
   return (
     <g 
@@ -344,31 +344,6 @@ export const CartographicCartouche: React.FC<CartographicCartoucheProps> = ({
           fontWeight="600"
         >
           Academic Fair Use: Authorized to cite &amp; project with attribution. Automated vector scraping and uncredited extraction prohibited under the Berne Convention.
-        </text>
-      </g>
-
-      {/* Interactive Loupe CTA Footer Ribbon */}
-      <g transform={`translate(70, ${activeMetricName ? 840 : 778})`}>
-        <rect
-          x="0"
-          y="0"
-          width={cardWidth - 140}
-          height="54"
-          rx="14"
-          fill={headerColor}
-          className="transition-all duration-200 group-hover:fill-amber-600"
-        />
-        <text
-          x={(cardWidth - 140) / 2}
-          y="35"
-          textAnchor="middle"
-          fill="#ffffff"
-          fontSize="20"
-          fontWeight="900"
-          fontFamily="monospace"
-          letterSpacing="2"
-        >
-          🔍 CLICK TO OPEN HIGH-RESOLUTION CARTOUCHE &amp; GEODESIC LOUPE INSPECTOR
         </text>
       </g>
     </g>

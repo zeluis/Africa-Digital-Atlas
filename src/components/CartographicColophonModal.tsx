@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Compass, 
@@ -10,11 +10,7 @@ import {
   Check, 
   ExternalLink, 
   Sparkles,
-  Fingerprint,
-  ZoomIn,
-  Search,
-  Download,
-  Info
+  Fingerprint
 } from 'lucide-react';
 import { AfricaUnLogo } from './AfricaUnLogo';
 import { CartographicCartouche } from './CartographicCartouche';
@@ -32,31 +28,13 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
   onOpenCitationModal,
   onOpenMethodologyAudit
 }) => {
-  const [activeTab, setActiveTab] = useState<'inspector' | 'narrative'>('inspector');
+  const [activeTab, setActiveTab] = useState<'cartouche' | 'narrative'>('cartouche');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-
-  // Magnifier Loupe state for Cartouche Inspector
-  const [loupeActive, setLoupeActive] = useState<boolean>(false);
-  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [relPos, setRelPos] = useState<{ x: number; y: number }>({ x: 0.5, y: 0.5 });
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleCopy = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
     setCopiedKey(key);
     setTimeout(() => setCopiedKey(null), 2000);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    setMousePos({ x, y });
-    setRelPos({
-      x: Math.max(0, Math.min(1, x / rect.width)),
-      y: Math.max(0, Math.min(1, y / rect.height))
-    });
   };
 
   if (!isOpen) return null;
@@ -89,7 +67,7 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
               </div>
               <div>
                 <h2 className="text-sm sm:text-base font-extrabold text-stone-900 dark:text-stone-100 font-serif tracking-tight">
-                  Official Cartographic Cartouche &amp; Imprint Inspector
+                  Official Cartographic Cartouche &amp; Imprint
                 </h2>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
                   Africalia Cartographic Observatory • High-Precision Geodesy Engine
@@ -102,15 +80,15 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
               <div className="flex items-center bg-stone-100 dark:bg-stone-800 p-1 rounded-xl border border-stone-200/80 dark:border-stone-700/80">
                 <button
                   type="button"
-                  onClick={() => setActiveTab('inspector')}
+                  onClick={() => setActiveTab('cartouche')}
                   className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    activeTab === 'inspector'
+                    activeTab === 'cartouche'
                       ? 'bg-white dark:bg-stone-900 text-amber-800 dark:text-amber-300 shadow-xs'
                       : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
                   }`}
                 >
-                  <Search className="w-3.5 h-3.5" />
-                  <span>Loupe Inspector</span>
+                  <Compass className="w-3.5 h-3.5" />
+                  <span>Cartouche</span>
                 </button>
                 <button
                   type="button"
@@ -138,46 +116,39 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
 
           {/* Body Content */}
           <div className="flex-1 overflow-y-auto p-5 sm:p-7 space-y-6 text-stone-800 dark:text-stone-200">
-            {activeTab === 'inspector' ? (
+            {activeTab === 'cartouche' ? (
               /* ========================================================================= */
-              /* 1. INTERACTIVE VECTOR CARTOUCHE & OPTICAL LOUPE MAGNIFIER INSPECTOR       */
+              /* 1. HIGH-RESOLUTION VECTOR CARTOUCHE DISPLAY (CLEAN, NO LOUPE OVERLAY)     */
               /* ========================================================================= */
               <div className="space-y-4">
-                {/* Instruction Banner */}
+                {/* Title & Canvas Banner */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/[0.08] dark:bg-amber-500/[0.12] border border-amber-500/25">
                   <div className="flex items-center gap-2.5">
                     <div className="p-2 rounded-xl bg-amber-500/20 text-amber-800 dark:text-amber-300">
-                      <ZoomIn className="w-4 h-4" />
+                      <Compass className="w-4 h-4" />
                     </div>
                     <div>
                       <h4 className="text-xs font-bold font-mono uppercase tracking-wider text-amber-950 dark:text-amber-200">
-                        Interactive Optical Loupe (2.5× Geodetic Magnification)
+                        Official Continental Cartouche Plaque
                       </h4>
                       <p className="text-[11px] text-stone-600 dark:text-stone-400 font-sans">
-                        Hover or move your cursor across the cartouche plaque below to inspect hairline typography, scale bar notches, and archival metadata.
+                        Authoritative geodesy, coordinate topology, dual graphic scale bar, and multilateral statistical attribution.
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-stone-700 dark:text-stone-300 shadow-2xs">
-                      CANVAS: 1,760 × 980 px
+                      PLAQUE: 1,760 × 880 px
                     </span>
                   </div>
                 </div>
 
-                {/* Loupe Container Preview Box */}
-                <div
-                  ref={containerRef}
-                  onMouseEnter={() => setLoupeActive(true)}
-                  onMouseLeave={() => setLoupeActive(false)}
-                  onMouseMove={handleMouseMove}
-                  className="relative w-full rounded-3xl bg-white dark:bg-stone-900 border-2 border-amber-500/30 dark:border-amber-500/20 shadow-xl overflow-hidden cursor-crosshair select-none p-4 sm:p-6"
-                >
-                  {/* Primary High-Resolution SVG Cartouche Rendering */}
-                  <div className="w-full flex items-center justify-center">
+                {/* High-Resolution SVG Cartouche Container */}
+                <div className="w-full rounded-3xl bg-white dark:bg-stone-900 border-2 border-amber-500/30 dark:border-amber-500/20 shadow-xl overflow-hidden p-4 sm:p-6 flex items-center justify-center">
+                  <div className="w-full max-w-4xl flex items-center justify-center">
                     <svg
-                      viewBox="0 0 1760 980"
-                      className="w-full h-auto max-h-[58vh] drop-shadow-md"
+                      viewBox="0 0 1760 880"
+                      className="w-full h-auto max-h-[62vh] drop-shadow-md select-none"
                     >
                       <CartographicCartouche
                         x={0}
@@ -188,52 +159,6 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                       />
                     </svg>
                   </div>
-
-                  {/* Optical Loupe Lens Overlay */}
-                  {loupeActive && (
-                    <div
-                      style={{
-                        left: `${mousePos.x}px`,
-                        top: `${mousePos.y}px`,
-                        transform: 'translate(-50%, -50%)',
-                      }}
-                      className="pointer-events-none absolute z-30 w-56 h-56 rounded-full border-4 border-amber-500 bg-white dark:bg-stone-950 shadow-2xl overflow-hidden ring-4 ring-black/20"
-                    >
-                      {/* Magnified SVG Projection (2.5x Zoom) */}
-                      <div
-                        style={{
-                          width: '250%',
-                          height: '250%',
-                          transform: `translate(${-relPos.x * 150}%, ${-relPos.y * 150}%)`,
-                          transformOrigin: '0 0',
-                        }}
-                        className="absolute top-0 left-0"
-                      >
-                        <svg
-                          viewBox="0 0 1760 980"
-                          className="w-full h-full"
-                        >
-                          <CartographicCartouche
-                            x={0}
-                            y={0}
-                            scale={1.0}
-                            theme="light"
-                            activeMetricName="GROSS DOMESTIC PRODUCT (NOMINAL USD)"
-                          />
-                        </svg>
-                      </div>
-
-                      {/* Loupe Crosshairs & Calibration Ring */}
-                      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                        <div className="w-full h-[1px] bg-amber-500/40" />
-                        <div className="h-full w-[1px] bg-amber-500/40 absolute" />
-                        <div className="w-8 h-8 rounded-full border border-amber-500/50 absolute" />
-                        <span className="absolute bottom-2 right-4 text-[9px] font-mono font-bold text-amber-800 dark:text-amber-300 bg-white/90 dark:bg-black/80 px-1.5 py-0.5 rounded shadow-xs">
-                          2.5× ZOOM
-                        </span>
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 {/* Key Technical Geodetic Metrics Summary */}
@@ -312,13 +237,45 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                   </div>
                 </div>
 
-                {/* 2. Legal Notice & Dual-Licensing Standard */}
+                {/* 2. Technical Geodesy & Cartographic Specifications */}
+                <div className="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 space-y-3">
+                  <div className="flex items-center gap-2 border-b border-stone-100 dark:border-stone-800 pb-2.5">
+                    <MapIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-stone-900 dark:text-stone-100">
+                      2. Technical Geodesy &amp; Coordinate Engine
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                    <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800">
+                      <span className="text-stone-500 text-[10px] block">Coordinate Space</span>
+                      <span className="font-bold text-stone-900 dark:text-stone-100">5,796 × 5,867 px</span>
+                      <span className="text-[10px] text-stone-400 block mt-0.5">High-Precision Cartesian</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800">
+                      <span className="text-stone-500 text-[10px] block">Sub-National Detail</span>
+                      <span className="font-bold text-stone-900 dark:text-stone-100">1,017 Admin-1</span>
+                      <span className="text-[10px] text-stone-400 block mt-0.5">Provincial Polygons</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800">
+                      <span className="text-stone-500 text-[10px] block">Sovereignty Scope</span>
+                      <span className="font-bold text-stone-900 dark:text-stone-100">54 Nations</span>
+                      <span className="text-[10px] text-stone-400 block mt-0.5">AU &amp; UN M49 Compliant</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800">
+                      <span className="text-stone-500 text-[10px] block">Graticule Precision</span>
+                      <span className="font-bold text-stone-900 dark:text-stone-100">0.5px – 1.6px</span>
+                      <span className="text-[10px] text-stone-400 block mt-0.5">Hairline Vector Strokes</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Canonical Legal Notice & Dual-Licensing Standard */}
                 <div className="p-5 rounded-2xl bg-amber-500/[0.06] dark:bg-amber-500/[0.1] border border-amber-500/25 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <ShieldCheck className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                       <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200">
-                        2. Canonical Legal Notice &amp; Dual-Licensing Standard
+                        3. Canonical Legal Notice &amp; Dual-Licensing Standard
                       </h3>
                     </div>
                     <button
@@ -361,12 +318,12 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                   </div>
                 </div>
 
-                {/* 3. Digital Object Identifier & Open Science Archiving */}
+                {/* 4. Digital Object Identifier & Open Science Archiving */}
                 <div className="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 space-y-3">
                   <div className="flex items-center gap-2 border-b border-stone-100 dark:border-stone-800 pb-2.5">
                     <Fingerprint className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                     <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-stone-900 dark:text-stone-100">
-                      3. Digital Object Identifier (DOI) &amp; Open Science Archiving
+                      4. Digital Object Identifier (DOI) &amp; Open Science Archiving
                     </h3>
                   </div>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800">

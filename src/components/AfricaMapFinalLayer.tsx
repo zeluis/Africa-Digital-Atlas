@@ -721,8 +721,8 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
       {/* Official Africalia Cartographic Cartouche (Title, Scale Bar, Geodesy, and Copyright Line) */}
       {showCartouche && (
         <CartographicCartouche
-          x={140}
-          y={4650}
+          x={50}
+          y={4700}
           scale={1.14}
           activeMetricName={activeMetricName}
           onOpenModal={onOpenColophonModal}
