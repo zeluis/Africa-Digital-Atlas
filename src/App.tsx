@@ -2,16 +2,6 @@ import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Navbar } from './components/Navbar';
 import { NavigationDrawer, CanonicalNavTab } from './components/NavigationDrawer';
-import { SearchModal } from './components/SearchModal';
-import { MultiSourceApiHubModal } from './components/MultiSourceApiHubModal';
-import { OnboardingModal } from './components/OnboardingModal';
-import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
-import { UniversalMonographModal } from './components/UniversalMonographModal';
-import { CartographicColophonModal } from './components/CartographicColophonModal';
-import { WorkingPapersModal } from './components/WorkingPapersModal';
-import { AcademicExportModal } from './components/AcademicExportModal';
-import { MethodologyAuditModal } from './components/MethodologyAuditModal';
-import { AfcftaSimulatorModal } from './components/afcfta/AfcftaSimulatorModal';
 import { MainContentSkeleton } from './components/MainContentSkeleton';
 import { Footer } from './components/Footer';
 import { OfflineIndicator } from './components/OfflineIndicator';
@@ -25,6 +15,18 @@ import { Globe, Database } from 'lucide-react';
 import { DynamicIcon } from './components/DynamicIcon';
 import { getPageInfo } from './utils/navigationTitles';
 import { initArchivalPrecache } from './utils/imagePrecache';
+
+// Lazy-load modals on demand to preserve instant initial First Contentful Paint
+const SearchModal = lazyWithRetry(() => import('./components/SearchModal').then(m => ({ default: m.SearchModal })), 'SearchModal');
+const MultiSourceApiHubModal = lazyWithRetry(() => import('./components/MultiSourceApiHubModal').then(m => ({ default: m.MultiSourceApiHubModal })), 'MultiSourceApiHubModal');
+const OnboardingModal = lazyWithRetry(() => import('./components/OnboardingModal').then(m => ({ default: m.OnboardingModal })), 'OnboardingModal');
+const KeyboardShortcutsModal = lazyWithRetry(() => import('./components/KeyboardShortcutsModal').then(m => ({ default: m.KeyboardShortcutsModal })), 'KeyboardShortcutsModal');
+const UniversalMonographModal = lazyWithRetry(() => import('./components/UniversalMonographModal').then(m => ({ default: m.UniversalMonographModal })), 'UniversalMonographModal');
+const CartographicColophonModal = lazyWithRetry(() => import('./components/CartographicColophonModal').then(m => ({ default: m.CartographicColophonModal })), 'CartographicColophonModal');
+const WorkingPapersModal = lazyWithRetry(() => import('./components/WorkingPapersModal').then(m => ({ default: m.WorkingPapersModal })), 'WorkingPapersModal');
+const AcademicExportModal = lazyWithRetry(() => import('./components/AcademicExportModal').then(m => ({ default: m.AcademicExportModal })), 'AcademicExportModal');
+const MethodologyAuditModal = lazyWithRetry(() => import('./components/MethodologyAuditModal').then(m => ({ default: m.MethodologyAuditModal })), 'MethodologyAuditModal');
+const AfcftaSimulatorModal = lazyWithRetry(() => import('./components/afcfta/AfcftaSimulatorModal').then(m => ({ default: m.AfcftaSimulatorModal })), 'AfcftaSimulatorModal');
 
 // Lazy-load heavier views with automatic chunk recovery and cache resilience for GitHub Pages
 const CountryView = lazyWithRetry(() => import('./views/CountryView').then(m => ({ default: m.CountryView })), 'CountryView');
@@ -751,82 +753,122 @@ function AppContent() {
       </div>
 
       {/* Global Quick Search Modal */}
-      <SearchModal
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        onSelectCountry={handleSelectCountry}
-        onSelectIndicator={handleSelectIndicator}
-        onSelectTab={handleSelectTab}
-      />
+      {isSearchOpen && (
+        <Suspense fallback={null}>
+          <SearchModal
+            isOpen={isSearchOpen}
+            onClose={() => setIsSearchOpen(false)}
+            onSelectCountry={handleSelectCountry}
+            onSelectIndicator={handleSelectIndicator}
+            onSelectTab={handleSelectTab}
+          />
+        </Suspense>
+      )}
 
       {/* Multilateral Data APIs & Ingestion Hub Modal */}
-      <MultiSourceApiHubModal
-        isOpen={isApiHubOpen}
-        onClose={() => setIsApiHubOpen(false)}
-        onSelectIndicator={handleSelectIndicator}
-      />
+      {isApiHubOpen && (
+        <Suspense fallback={null}>
+          <MultiSourceApiHubModal
+            isOpen={isApiHubOpen}
+            onClose={() => setIsApiHubOpen(false)}
+            onSelectIndicator={handleSelectIndicator}
+          />
+        </Suspense>
+      )}
 
       {/* 3-Screen Curated Orientation & Historical Context Consent Modal */}
-      <OnboardingModal
-        isOpen={isOnboardingOpen}
-        onClose={() => setIsOnboardingOpen(false)}
-        onNavigate={(targetTab) => {
-          setIsOnboardingOpen(false);
-          handleSelectTab(targetTab);
-        }}
-      />
+      {isOnboardingOpen && (
+        <Suspense fallback={null}>
+          <OnboardingModal
+            isOpen={isOnboardingOpen}
+            onClose={() => setIsOnboardingOpen(false)}
+            onNavigate={(targetTab) => {
+              setIsOnboardingOpen(false);
+              handleSelectTab(targetTab);
+            }}
+          />
+        </Suspense>
+      )}
 
       {/* Global Keyboard Shortcuts Helper Cheat Sheet Modal */}
-      <KeyboardShortcutsModal
-        isOpen={isShortcutsOpen}
-        onClose={() => setIsShortcutsOpen(false)}
-        onNavigateTab={(tab) => handleSelectTab(tab as CanonicalNavTab)}
-        onToggleTheme={toggleTheme}
-      />
+      {isShortcutsOpen && (
+        <Suspense fallback={null}>
+          <KeyboardShortcutsModal
+            isOpen={isShortcutsOpen}
+            onClose={() => setIsShortcutsOpen(false)}
+            onNavigateTab={(tab) => handleSelectTab(tab as CanonicalNavTab)}
+            onToggleTheme={toggleTheme}
+          />
+        </Suspense>
+      )}
 
       {/* Universal Monograph Modal */}
-      <UniversalMonographModal
-        isOpen={isMonographModalOpen}
-        onClose={() => setIsMonographModalOpen(false)}
-        onNavigateTab={(tab) => handleSelectTab(tab)}
-      />
+      {isMonographModalOpen && (
+        <Suspense fallback={null}>
+          <UniversalMonographModal
+            isOpen={isMonographModalOpen}
+            onClose={() => setIsMonographModalOpen(false)}
+            onNavigateTab={(tab) => handleSelectTab(tab)}
+          />
+        </Suspense>
+      )}
 
       {/* Cartographic Colophon & Imprint Modal */}
-      <CartographicColophonModal
-        isOpen={isColophonOpen}
-        onClose={() => setIsColophonOpen(false)}
-        onOpenCitationModal={() => setIsCitationModalOpen(true)}
-        onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
-      />
+      {isColophonOpen && (
+        <Suspense fallback={null}>
+          <CartographicColophonModal
+            isOpen={isColophonOpen}
+            onClose={() => setIsColophonOpen(false)}
+            onOpenCitationModal={() => setIsCitationModalOpen(true)}
+            onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
+          />
+        </Suspense>
+      )}
 
       {/* Institutional Working Paper & Policy Brief Series Modal */}
-      <WorkingPapersModal
-        isOpen={isWorkingPapersOpen}
-        onClose={() => setIsWorkingPapersOpen(false)}
-        onOpenCitationModal={() => setIsCitationModalOpen(true)}
-      />
+      {isWorkingPapersOpen && (
+        <Suspense fallback={null}>
+          <WorkingPapersModal
+            isOpen={isWorkingPapersOpen}
+            onClose={() => setIsWorkingPapersOpen(false)}
+            onOpenCitationModal={() => setIsCitationModalOpen(true)}
+          />
+        </Suspense>
+      )}
 
       {/* Methodological Harmonization & Quality Audit Dossier Modal */}
-      <MethodologyAuditModal
-        isOpen={isMethodologyModalOpen}
-        onClose={() => setIsMethodologyModalOpen(false)}
-        onOpenCitationModal={() => setIsCitationModalOpen(true)}
-      />
+      {isMethodologyModalOpen && (
+        <Suspense fallback={null}>
+          <MethodologyAuditModal
+            isOpen={isMethodologyModalOpen}
+            onClose={() => setIsMethodologyModalOpen(false)}
+            onOpenCitationModal={() => setIsCitationModalOpen(true)}
+          />
+        </Suspense>
+      )}
 
       {/* AfCFTA Trade Corridor Simulator Modal */}
-      <AfcftaSimulatorModal
-        isOpen={isAfcftaSimulatorOpen}
-        onClose={() => setIsAfcftaSimulatorOpen(false)}
-        onSelectCountry={handleSelectCountry}
-      />
+      {isAfcftaSimulatorOpen && (
+        <Suspense fallback={null}>
+          <AfcftaSimulatorModal
+            isOpen={isAfcftaSimulatorOpen}
+            onClose={() => setIsAfcftaSimulatorOpen(false)}
+            onSelectCountry={handleSelectCountry}
+          />
+        </Suspense>
+      )}
 
       {/* Universal Scholarly Citation & Platform Attribution Modal */}
-      <AcademicExportModal
-        isOpen={isCitationModalOpen}
-        onClose={() => setIsCitationModalOpen(false)}
-        title="Africa Data Atlas & Cartographic Observatory"
-        sourceContext="Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform"
-      />
+      {isCitationModalOpen && (
+        <Suspense fallback={null}>
+          <AcademicExportModal
+            isOpen={isCitationModalOpen}
+            onClose={() => setIsCitationModalOpen(false)}
+            title="Africa Data Atlas & Cartographic Observatory"
+            sourceContext="Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform"
+          />
+        </Suspense>
+      )}
 
       {/* Structured Credibility Footer (Hidden on map view for edge-to-edge cartographic full-screen) */}
       {currentTab !== 'map' && (

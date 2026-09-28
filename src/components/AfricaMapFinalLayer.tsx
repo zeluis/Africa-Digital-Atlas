@@ -489,7 +489,7 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
             .filter((reserve) => {
               // Deduplicate if counterpart is already active in ThematicOverlaysLayer
               if (showThematicOverlays && (activeThematicTheme === 'all' || activeThematicTheme === 'environment')) {
-                if (layerVisibility?.naturalSanctuaries !== false && (reserve.id === 'serengeti' || reserve.id === 'kruger')) {
+                if (layerVisibility?.naturalSanctuaries !== false && (reserve.id === 'serengeti' || reserve.id === 'kruger' || reserve.id === 'okavango')) {
                   return false;
                 }
               }

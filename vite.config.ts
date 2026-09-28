@@ -51,8 +51,8 @@ export default defineConfig(() => {
           ],
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,json,md}'],
-          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -76,6 +76,34 @@ export default defineConfig(() => {
                 expiration: {
                   maxEntries: 10,
                   maxAgeSeconds: 60 * 60 * 24 * 365,
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            {
+              urlPattern: /^https:\/\/flagcdn\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'flagcdn-flags-cache',
+                expiration: {
+                  maxEntries: 120,
+                  maxAgeSeconds: 60 * 60 * 24 * 60, // 60 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            {
+              urlPattern: /^https:\/\/upload\.wikimedia\.org\/.*/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'wikimedia-media-cache',
+                expiration: {
+                  maxEntries: 60,
+                  maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
                 },
                 cacheableResponse: {
                   statuses: [0, 200],

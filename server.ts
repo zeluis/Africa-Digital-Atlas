@@ -42,7 +42,7 @@ import { EXTERNAL_API_CONNECTORS } from "./src/data/externalApisIngestion.ts";
  * Health check endpoint
  */
 app.get("/api/health", (req, res) => {
-  const elevenLabsKey = process.env.ELEVENLABS_API_KEY || "sk_385cacd988ad2108f273ae546bbc6641f1fd4688283011a9";
+  const elevenLabsKey = process.env.ELEVENLABS_API_KEY || "";
   res.json({
     status: "ok",
     geminiEnabled: !!process.env.GEMINI_API_KEY,
@@ -157,7 +157,7 @@ app.post("/api/tts", async (req, res) => {
     }
 
     // 1. First priority: ElevenLabs if key is configured
-    const elevenLabsKey = process.env.ELEVENLABS_API_KEY || "sk_385cacd988ad2108f273ae546bbc6641f1fd4688283011a9";
+    const elevenLabsKey = process.env.ELEVENLABS_API_KEY || "";
     if (elevenLabsKey) {
       try {
         const langLower = (langTag || "").toLowerCase();

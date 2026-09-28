@@ -1008,7 +1008,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
                               <div className="relative w-full h-44 sm:h-48 md:h-52 rounded-2xl overflow-hidden bg-stone-100 border border-emerald-200/80 flex items-center justify-center mb-3">
                                 <img 
-                                  src="/atlas-hero-preview.jpg" 
+                                  src="/hero-preview.jpg" 
                                   alt="Digital Data Atlas Continental Overview Screenshot" 
                                   className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-500"
                                   onError={(e) => {

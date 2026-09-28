@@ -4,13 +4,12 @@
  * using requestIdleCallback to ensure zero main-thread jank.
  */
 
-import { SLAVE_TRADE_ILLUSTRATIONS } from '../data/slaveTradeIllustrations';
 import { CASTAS_ARCHIVE_ITEMS } from '../data/castasArchive';
 
 const CACHE_NAME = 'africa-archival-plates-v1';
 
 // Gather the top 100 critical archival thumbnail URLs
-export const getTopArchivalImageUrls = (): string[] => {
+export const getTopArchivalImageUrls = async (): Promise<string[]> => {
   const urls: string[] = [];
 
   // 1. Castas 32 plates
@@ -20,14 +19,19 @@ export const getTopArchivalImageUrls = (): string[] => {
     }
   });
 
-  // 2. Transatlantic Slave Trade Illustrations top plates
-  SLAVE_TRADE_ILLUSTRATIONS.forEach(item => {
-    if (item.imageUrls && item.imageUrls[0] && !urls.includes(item.imageUrls[0])) {
-      if (urls.length < 100) {
-        urls.push(item.imageUrls[0]);
+  // 2. Transatlantic Slave Trade Illustrations top plates (dynamically loaded to prevent startup blocking)
+  try {
+    const { SLAVE_TRADE_ILLUSTRATIONS } = await import('../data/slaveTradeIllustrations');
+    SLAVE_TRADE_ILLUSTRATIONS.forEach(item => {
+      if (item.imageUrls && item.imageUrls[0] && !urls.includes(item.imageUrls[0])) {
+        if (urls.length < 100) {
+          urls.push(item.imageUrls[0]);
+        }
       }
-    }
-  });
+    });
+  } catch (err) {
+    console.warn('[PWA] Archival precache dataset deferral:', err);
+  }
 
   return urls;
 };
@@ -40,7 +44,7 @@ export const prewarmArchivalImageCache = async (): Promise<{ cached: number; tot
     return { cached: 0, total: 0 };
   }
 
-  const urlsToCache = getTopArchivalImageUrls();
+  const urlsToCache = await getTopArchivalImageUrls();
   let cachedCount = 0;
 
   try {
