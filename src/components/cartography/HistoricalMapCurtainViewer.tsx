@@ -54,6 +54,12 @@ import { getRegionTonalPalette } from '../../data/unGeoschemeColors';
 import { AFRICA_FINAL_VIEWBOX, AFRICA_FINAL_TRANSFORM } from '../../data/africaFinalGeometry';
 import { getCanonicalCountryColor } from '../../data/africaCanonicalColorPalette';
 import { AntiquePlateCanvas } from './AntiquePlateCanvas';
+import { KingdomRichBottomPanel } from './KingdomRichBottomPanel';
+import { KingdomDynasticTreeModal } from './KingdomDynasticTreeModal';
+import { KingdomArtifact3DViewerModal } from './KingdomArtifact3DViewerModal';
+import { TradeCorridorParticleCanvas } from './TradeCorridorParticleCanvas';
+import { ToponymConcordanceModal } from './ToponymConcordanceModal';
+import { DETAILED_KINGDOMS_DATA, ToponymConcordanceItem } from '../../data/preColonialKingdomsDetailed';
 
 interface ToponymLocation {
   x: number;
@@ -146,12 +152,28 @@ const CHRONOLOGY_MILESTONES: { year: number; title: string; desc: string }[] = [
   { year: 1850, title: "Late Pre-Colonial Era", desc: "Vibrant coastal kingdoms prior to the 1884–1885 Berlin Conference." }
 ];
 
+const KINGDOM_SPATIAL_COORDINATES: Record<string, { zoom: number; panOffset: { x: number; y: number } }> = {
+  'axum-empire': { zoom: 2.2, panOffset: { x: -750, y: 280 } },
+  'kanem-bornu': { zoom: 2.2, panOffset: { x: -100, y: 300 } },
+  'benin-kingdom': { zoom: 2.3, panOffset: { x: 380, y: 80 } },
+  'great-zimbabwe': { zoom: 2.3, panOffset: { x: -550, y: -750 } },
+  'mali-empire': { zoom: 2.2, panOffset: { x: 750, y: 250 } },
+  'oyo-empire': { zoom: 2.3, panOffset: { x: 420, y: 120 } },
+  'kongo-kingdom': { zoom: 2.2, panOffset: { x: 100, y: -280 } },
+  'songhai-empire': { zoom: 2.2, panOffset: { x: 500, y: 400 } },
+  'dahomey-kingdom': { zoom: 2.4, panOffset: { x: 480, y: 120 } },
+  'ashanti-empire': { zoom: 2.3, panOffset: { x: 580, y: 100 } }
+};
+
 interface HistoricalMapCurtainViewerProps {
   selectedPlate: HistoricalMapPlate;
   onSelectPlate?: (plate: HistoricalMapPlate) => void;
   onSelectPreColonialEntity?: (entity: PreColonialEntity) => void;
   activeWorkbenchTab?: 'curtain' | 'streamlines' | 'kingdoms';
   onSelectWorkbenchTab?: (tab: 'curtain' | 'streamlines' | 'kingdoms') => void;
+  focusedEntity?: PreColonialEntity | null;
+  onClearFocusedEntity?: () => void;
+  onNavigateToCountry?: (iso3: string) => void;
 }
 
 type ComparisonMode = 'curtain' | 'opacity' | 'sideBySide';
@@ -162,7 +184,10 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
   onSelectPlate,
   onSelectPreColonialEntity,
   activeWorkbenchTab = 'curtain',
-  onSelectWorkbenchTab
+  onSelectWorkbenchTab,
+  focusedEntity,
+  onClearFocusedEntity,
+  onNavigateToCountry
 }) => {
   const { mapData } = useAfricaFinalMap();
 
@@ -186,10 +211,19 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
 
   // Overlays & Panels state
   const [showPreColonialKingdoms, setShowPreColonialKingdoms] = useState<boolean>(true);
+  const [showKingdomTerritoryPolygons, setShowKingdomTerritoryPolygons] = useState<boolean>(true);
+  const [showTradeCorridors, setShowTradeCorridors] = useState<boolean>(true);
+  const [activeCommodityFilter, setActiveCommodityFilter] = useState<string>('all');
   const [showModernBorders, setShowModernBorders] = useState<boolean>(true);
   const [showGraticules, setShowGraticules] = useState<boolean>(true);
   const [selectedEntity, setSelectedEntity] = useState<PreColonialEntity | null>(null);
   const [hoveredEntity, setHoveredEntity] = useState<PreColonialEntity | null>(null);
+
+  // Modal dialog states
+  const [isDynasticTreeOpen, setIsDynasticTreeOpen] = useState<boolean>(false);
+  const [isArtifact3DOpen, setIsArtifact3DOpen] = useState<boolean>(false);
+  const [isToponymConcordanceOpen, setIsToponymConcordanceOpen] = useState<boolean>(false);
+  const [activeArtifactId, setActiveArtifactId] = useState<string | undefined>(undefined);
 
   // Chronology Scrubber state for Pre-Colonial Kingdoms
   const [selectedChronologyYear, setSelectedChronologyYear] = useState<number | null>(null);
@@ -457,6 +491,60 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
     }
   };
 
+  // Pre-colonial kingdom spatial focus and centering handler
+  const focusOnEntity = useCallback((entity: PreColonialEntity) => {
+    const custom = KINGDOM_SPATIAL_COORDINATES[entity.id];
+    const zoom = custom?.zoom || 2.25;
+    const pan = custom?.panOffset || {
+      x: (2898 - entity.svgCoordinates[0]) * 0.55,
+      y: (2933 - entity.svgCoordinates[1]) * 0.55
+    };
+
+    setShowPreColonialKingdoms(true);
+    setSelectedEntity(entity);
+    setIsDossierOpen(false); // Hide Cartographic Dossier when an Old Kingdom is selected
+    setZoomLevel(zoom);
+    setPlateZoom(zoom);
+    setVectorZoom(zoom);
+    setPanOffset(pan);
+    setPlatePanOffset(pan);
+    setVectorPanOffset(pan);
+    setActiveToponymFocus(null);
+  }, []);
+
+  // Selection of an antique plate: opens Provenance dossier, collapses kingdom panel, and resets zoom
+  const handleSelectPlateItem = useCallback((plate: HistoricalMapPlate) => {
+    if (onSelectPlate) onSelectPlate(plate);
+    setIsDossierOpen(true);
+    setSelectedEntity(null);
+    setZoomLevel(1.0);
+    setPlateZoom(1.0);
+    setVectorZoom(1.0);
+    setPanOffset({ x: 0, y: 0 });
+    setPlatePanOffset({ x: 0, y: 0 });
+    setVectorPanOffset({ x: 0, y: 0 });
+    setActiveToponymFocus(null);
+  }, [onSelectPlate]);
+
+  // Plate pagination handlers
+  const currentPlateIndex = HISTORICAL_MAP_PLATES.findIndex(p => p.id === selectedPlate.id);
+  const handlePrevPlate = useCallback(() => {
+    const prevIdx = (currentPlateIndex - 1 + HISTORICAL_MAP_PLATES.length) % HISTORICAL_MAP_PLATES.length;
+    handleSelectPlateItem(HISTORICAL_MAP_PLATES[prevIdx]);
+  }, [currentPlateIndex, handleSelectPlateItem]);
+
+  const handleNextPlate = useCallback(() => {
+    const nextIdx = (currentPlateIndex + 1) % HISTORICAL_MAP_PLATES.length;
+    handleSelectPlateItem(HISTORICAL_MAP_PLATES[nextIdx]);
+  }, [currentPlateIndex, handleSelectPlateItem]);
+
+  // Center and zoom when focusedEntity prop is supplied (e.g. from Kingdoms matrix view)
+  useEffect(() => {
+    if (focusedEntity) {
+      focusOnEntity(focusedEntity);
+    }
+  }, [focusedEntity, focusOnEntity]);
+
   // Pre-colonial kingdom active checker based on chronology
   const isEntityActiveInChronology = useCallback((entityId: string): boolean => {
     if (selectedChronologyYear === null) return true;
@@ -580,6 +668,48 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                     {selectedChronologyYear ? `${selectedChronologyYear} CE` : 'Timeline'}
                   </span>
                 </button>
+              )}
+
+              {showPreColonialKingdoms && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setShowKingdomTerritoryPolygons(p => !p)}
+                    className={`px-2 py-1 rounded-lg text-[10px] font-mono font-bold flex items-center gap-1 transition-all cursor-pointer border ${
+                      showKingdomTerritoryPolygons
+                        ? 'bg-purple-500/20 text-purple-900 dark:text-purple-200 border-purple-500/50 shadow-2xs'
+                        : 'bg-transparent text-stone-500 border-transparent opacity-60 line-through'
+                    }`}
+                    title="Toggle Pre-Colonial Imperial Extent Polygons"
+                  >
+                    <Compass className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                    <span className="hidden md:inline">Extents</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowTradeCorridors(tc => !tc)}
+                    className={`px-2 py-1 rounded-lg text-[10px] font-mono font-bold flex items-center gap-1 transition-all cursor-pointer border ${
+                      showTradeCorridors
+                        ? 'bg-amber-500/20 text-amber-900 dark:text-amber-200 border-amber-500/50 shadow-2xs'
+                        : 'bg-transparent text-stone-500 border-transparent opacity-60 line-through'
+                    }`}
+                    title="Toggle Historical Trade Corridor Particle Streams (Gold, Salt, Cowries, Copper)"
+                  >
+                    <Sparkles className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                    <span className="hidden md:inline">Trade Flows</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsToponymConcordanceOpen(true)}
+                    className="px-2 py-1 rounded-lg text-[10px] font-mono font-bold flex items-center gap-1 transition-all cursor-pointer border bg-blue-500/15 text-blue-900 dark:text-blue-200 border-blue-500/40 hover:bg-blue-500/25"
+                    title="Open Toponymic Concordance Index (Antique Names ⇄ Indigenous ⇄ 2026 Nations)"
+                  >
+                    <BookOpen className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                    <span className="hidden lg:inline">Concordance</span>
+                  </button>
+                </>
               )}
 
               <button
@@ -1008,9 +1138,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                     <button
                       key={plate.id}
                       type="button"
-                      onClick={() => {
-                        if (onSelectPlate) onSelectPlate(plate);
-                      }}
+                      onClick={() => handleSelectPlateItem(plate)}
                       className={`w-full p-1.5 rounded-xl border text-left transition-all cursor-pointer group flex flex-col gap-1.5 ${
                         isSelected
                           ? 'bg-amber-500/15 border-amber-500/70 shadow-xs ring-2 ring-amber-500/40'
@@ -1256,8 +1384,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                                 opacity={isChronologyActive ? 1.0 : 0.22}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setSelectedEntity(entity);
-                                  setIsDossierOpen(true);
+                                  focusOnEntity(entity);
                                   if (onSelectPreColonialEntity) onSelectPreColonialEntity(entity);
                                 }}
                                 onMouseEnter={() => setHoveredEntity(entity)}
@@ -1271,9 +1398,38 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                                 )}
                                 <circle cx="0" cy="0" r="75" fill={entity.color} stroke="#ffffff" strokeWidth="18" className="drop-shadow-2xl" />
                                 <circle cx="0" cy="0" r="26" fill="#ffffff" />
-                                <g transform={`translate(${labelOffsetX}, ${labelOffsetY})`}>
-                                  <rect x={-textWidth / 2} y="-90" width={textWidth} height="170" rx="85" fill={isSelected ? '#3b0764' : '#09090b'} stroke={isSelected || isHovered ? '#fbbf24' : entity.color} strokeWidth={isSelected || isHovered ? '16' : '10'} className="drop-shadow-2xl" />
-                                  <text x="0" y="2" textAnchor="middle" dominantBaseline="middle" fill="#ffffff" fontFamily="'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif" fontSize="72" fontWeight="900" letterSpacing="1" pointerEvents="none">
+                                <g 
+                                  transform={`translate(${labelOffsetX}, ${labelOffsetY})`}
+                                  className="cursor-pointer pointer-events-auto"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    focusOnEntity(entity);
+                                    if (onSelectPreColonialEntity) onSelectPreColonialEntity(entity);
+                                  }}
+                                >
+                                  <rect 
+                                    x={-textWidth / 2} 
+                                    y="-90" 
+                                    width={textWidth} 
+                                    height="170" 
+                                    rx="85" 
+                                    fill={isSelected ? '#3b0764' : '#09090b'} 
+                                    stroke={isSelected || isHovered ? '#fbbf24' : entity.color} 
+                                    strokeWidth={isSelected || isHovered ? '16' : '10'} 
+                                    className="drop-shadow-2xl pointer-events-auto cursor-pointer" 
+                                  />
+                                  <text 
+                                    x="0" 
+                                    y="2" 
+                                    textAnchor="middle" 
+                                    dominantBaseline="middle" 
+                                    fill="#ffffff" 
+                                    fontFamily="'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif" 
+                                    fontSize="72" 
+                                    fontWeight="900" 
+                                    letterSpacing="1" 
+                                    className="select-none pointer-events-none"
+                                  >
                                     {cleanName}
                                   </text>
                                 </g>
@@ -1422,7 +1578,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                 </div>
               </div>
 
-              {/* 3. Pre-Colonial Empires & Kingdoms Vector Beacons (Top Layer) */}
+              {/* 3. Pre-Colonial Empires & Kingdoms Vector Beacons & Extents (Top Layer) */}
               {showPreColonialKingdoms && (
                 <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-4 pointer-events-none z-20">
                   <svg
@@ -1430,6 +1586,33 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                     className="w-full h-full max-w-[92vw] max-h-[calc(100vh-140px)] select-none pointer-events-none"
                     preserveAspectRatio="xMidYMid meet"
                   >
+                    {/* Pre-Colonial Peak Territorial Extents Polygons */}
+                    {showKingdomTerritoryPolygons && (
+                      <g id="preColonialTerritoryPolygons" transform={AFRICA_FINAL_TRANSFORM} className="pointer-events-none">
+                        {PRE_COLONIAL_ENTITIES.map(entity => {
+                          const detailed = DETAILED_KINGDOMS_DATA[entity.id];
+                          if (!detailed || !detailed.territoryPolygonPath) return null;
+                          const isChronologyActive = isEntityActiveInChronology(entity.id);
+                          if (!isChronologyActive && !dimInactiveKingdoms) return null;
+                          const isSelected = selectedEntity?.id === entity.id;
+
+                          return (
+                            <path
+                              key={`polygon-${entity.id}`}
+                              d={detailed.territoryPolygonPath}
+                              fill={entity.color}
+                              fillOpacity={isSelected ? 0.28 : 0.12}
+                              stroke={entity.color}
+                              strokeWidth={isSelected ? 26 : 14}
+                              strokeDasharray={isSelected ? "none" : "32 16"}
+                              className="transition-all duration-300"
+                              opacity={isChronologyActive ? 1.0 : 0.2}
+                            />
+                          );
+                        })}
+                      </g>
+                    )}
+
                     <g id="preColonialKingdomBeaconsTop" transform={AFRICA_FINAL_TRANSFORM} className="pointer-events-auto">
                       {PRE_COLONIAL_ENTITIES.map(entity => {
                         const [x, y] = entity.svgCoordinates;
@@ -1473,8 +1656,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                             opacity={isChronologyActive ? 1.0 : 0.22}
                             onClick={(e) => {
                               e.stopPropagation();
-                              setSelectedEntity(entity);
-                              setIsDossierOpen(true);
+                              focusOnEntity(entity);
                               if (onSelectPreColonialEntity) onSelectPreColonialEntity(entity);
                             }}
                             onMouseEnter={() => setHoveredEntity(entity)}
@@ -1555,8 +1737,16 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                             {/* Core Center White Dot */}
                             <circle cx="0" cy="0" r="26" fill="#ffffff" />
 
-                            {/* High-Contrast Floating Pill Label */}
-                            <g transform={`translate(${labelOffsetX}, ${labelOffsetY})`}>
+                            {/* High-Contrast Floating Pill Label (Clickable) */}
+                            <g 
+                              transform={`translate(${labelOffsetX}, ${labelOffsetY})`}
+                              className="cursor-pointer pointer-events-auto"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                focusOnEntity(entity);
+                                if (onSelectPreColonialEntity) onSelectPreColonialEntity(entity);
+                              }}
+                            >
                               <rect
                                 x={-textWidth / 2 - 16}
                                 y="-105"
@@ -1565,6 +1755,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                                 rx="100"
                                 fill={entity.color}
                                 opacity={isSelected || isHovered ? '0.65' : '0.3'}
+                                className="pointer-events-auto cursor-pointer"
                               />
 
                               <rect
@@ -1576,7 +1767,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                                 fill={isSelected ? '#3b0764' : '#09090b'}
                                 stroke={isSelected || isHovered ? '#fbbf24' : entity.color}
                                 strokeWidth={isSelected || isHovered ? '16' : '10'}
-                                className="drop-shadow-2xl"
+                                className="drop-shadow-2xl pointer-events-auto cursor-pointer"
                               />
 
                               <text
@@ -1589,7 +1780,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                                 fontSize="72"
                                 fontWeight="900"
                                 letterSpacing="1"
-                                pointerEvents="none"
+                                className="select-none pointer-events-none"
                               >
                                 {cleanName}
                               </text>
@@ -1602,7 +1793,16 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                 </div>
               )}
 
-              {/* 4. Split-Curtain Draggable Divider Line */}
+              {/* 4. Pre-Colonial Animated Trade Corridor Particle Flows Canvas */}
+              {showTradeCorridors && (
+                <TradeCorridorParticleCanvas
+                  activeCentury={selectedChronologyYear ? Math.ceil(selectedChronologyYear / 100) : null}
+                  activeCommodityFilter={activeCommodityFilter}
+                  showLabels={zoomLevel >= 1.4}
+                />
+              )}
+
+              {/* 5. Split-Curtain Draggable Divider Line */}
               {comparisonMode === 'curtain' && (
                 <div
                   style={{ left: `${curtainPosition}%` }}
@@ -1673,83 +1873,44 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                   </p>
                 </div>
 
-                {/* Close / Collapse Button in Dossier Header */}
-                <button
-                  type="button"
-                  onClick={() => setIsDossierOpen(false)}
-                  className="p-1.5 rounded-xl text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer shrink-0"
-                  title="Collapse dossier panel"
-                >
-                  <PanelRightClose className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-1 shrink-0">
+                  {/* Plate Pagination Controls */}
+                  <div className="flex items-center gap-0.5 p-0.5 rounded-xl bg-black/5 dark:bg-white/5 border border-stone-200 dark:border-stone-800 text-xs font-mono">
+                    <button
+                      type="button"
+                      onClick={handlePrevPlate}
+                      className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
+                      title="Previous Antique Plate"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="text-[9.5px] font-bold px-1 text-stone-600 dark:text-stone-400 font-tabular">
+                      {currentPlateIndex + 1}/{HISTORICAL_MAP_PLATES.length}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleNextPlate}
+                      className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
+                      title="Next Antique Plate"
+                    >
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {/* Close / Collapse Button in Dossier Header */}
+                  <button
+                    type="button"
+                    onClick={() => setIsDossierOpen(false)}
+                    className="p-1.5 rounded-xl text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer shrink-0"
+                    title="Collapse dossier panel"
+                  >
+                    <PanelRightClose className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
 
               {/* Scrollable Dossier Content */}
               <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-5 space-y-4 text-left">
-                
-                {/* Active Kingdom Selection Highlight Card (if user clicked a kingdom beacon) */}
-                <AnimatePresence>
-                  {selectedEntity && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="p-3.5 rounded-2xl bg-purple-500/10 border border-purple-500/30 space-y-2 shadow-2xs"
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-1.5">
-                            <span
-                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-sans font-bold border"
-                              style={{
-                                backgroundColor: `${selectedEntity.color}20`,
-                                borderColor: `${selectedEntity.color}50`,
-                                color: selectedEntity.color
-                              }}
-                            >
-                              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: selectedEntity.color }} />
-                              <span>{selectedEntity.regionBadge}</span>
-                            </span>
-                            <span className="px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-[9px] font-mono font-bold text-stone-600 dark:text-stone-300">
-                              {selectedEntity.period}
-                            </span>
-                          </div>
-                          <h4 className="text-sm font-serif font-bold text-stone-900 dark:text-stone-100">
-                            {selectedEntity.name}
-                          </h4>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedEntity(null)}
-                          className="p-1 rounded-md text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
-                          title="Deselect kingdom"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-
-                      <p className="text-xs font-sans leading-relaxed text-stone-700 dark:text-stone-300">
-                        {selectedEntity.significance}
-                      </p>
-
-                      <div className="grid grid-cols-2 gap-1.5 text-[11px] font-sans pt-1">
-                        <div className="p-2 rounded-xl bg-white/80 dark:bg-stone-900/80 border border-purple-200/50 dark:border-purple-800/40">
-                          <span className="text-[9px] uppercase font-bold text-stone-400 block">Capital</span>
-                          <span className="font-semibold text-stone-900 dark:text-stone-100 truncate block">{selectedEntity.capital}</span>
-                        </div>
-                        <div className="p-2 rounded-xl bg-white/80 dark:bg-stone-900/80 border border-purple-200/50 dark:border-purple-800/40">
-                          <span className="text-[9px] uppercase font-bold text-stone-400 block">Trade</span>
-                          <span className="font-semibold text-stone-900 dark:text-stone-100 truncate block">{selectedEntity.tradeSpecialty}</span>
-                        </div>
-                        <div className="col-span-2 p-2 rounded-xl bg-white/80 dark:bg-stone-900/80 border border-purple-200/50 dark:border-purple-800/40">
-                          <span className="text-[9px] uppercase font-bold text-stone-400 block">Modern Footprint</span>
-                          <span className="font-semibold text-purple-700 dark:text-purple-300 block">{selectedEntity.modernCountries.join(', ')}</span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
                 {/* Quick Actions (Citation & High-Res Scan) */}
                 <div className="flex items-center gap-2">
                   <button
@@ -1824,6 +1985,73 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                 </div>
               </div>
             </motion.aside>
+          )}
+        </AnimatePresence>
+
+        {/* Sleek Floating Rich Bottom-Left Kingdom Panel */}
+        <AnimatePresence>
+          {selectedEntity && (
+            <KingdomRichBottomPanel
+              entity={selectedEntity}
+              isFilmstripOpen={isFilmstripOpen}
+              onClose={() => {
+                setSelectedEntity(null);
+                if (onClearFocusedEntity) onClearFocusedEntity();
+              }}
+              onRecenterMap={(ent) => focusOnEntity(ent)}
+              onOpenDynasticTree={() => setIsDynasticTreeOpen(true)}
+              onOpenArtifact3D={(artId) => {
+                setActiveArtifactId(artId);
+                setIsArtifact3DOpen(true);
+              }}
+              onNavigateToCountry={onNavigateToCountry}
+              currentIndex={PRE_COLONIAL_ENTITIES.findIndex(e => e.id === selectedEntity.id)}
+              totalCount={PRE_COLONIAL_ENTITIES.length}
+              onPrevKingdom={() => {
+                const currIdx = PRE_COLONIAL_ENTITIES.findIndex(e => e.id === selectedEntity.id);
+                const prevIdx = (currIdx - 1 + PRE_COLONIAL_ENTITIES.length) % PRE_COLONIAL_ENTITIES.length;
+                focusOnEntity(PRE_COLONIAL_ENTITIES[prevIdx]);
+              }}
+              onNextKingdom={() => {
+                const currIdx = PRE_COLONIAL_ENTITIES.findIndex(e => e.id === selectedEntity.id);
+                const nextIdx = (currIdx + 1) % PRE_COLONIAL_ENTITIES.length;
+                focusOnEntity(PRE_COLONIAL_ENTITIES[nextIdx]);
+              }}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* 1. Interactive Dynastic Succession & Queen Mothers Tree Modal */}
+        <AnimatePresence>
+          {isDynasticTreeOpen && (
+            <KingdomDynasticTreeModal
+              kingdom={DETAILED_KINGDOMS_DATA[selectedEntity?.id || 'kongo-kingdom'] || DETAILED_KINGDOMS_DATA['kongo-kingdom']}
+              onClose={() => setIsDynasticTreeOpen(false)}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* 2. Interactive 3D & 360° Material Culture Artifact Inspector Modal */}
+        <AnimatePresence>
+          {isArtifact3DOpen && (
+            <KingdomArtifact3DViewerModal
+              kingdom={DETAILED_KINGDOMS_DATA[selectedEntity?.id || 'benin-kingdom'] || DETAILED_KINGDOMS_DATA['benin-kingdom']}
+              initialArtifactId={activeArtifactId}
+              onClose={() => setIsArtifact3DOpen(false)}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* 3. Toponymic Concordance Table Modal */}
+        <AnimatePresence>
+          {isToponymConcordanceOpen && (
+            <ToponymConcordanceModal
+              onClose={() => setIsToponymConcordanceOpen(false)}
+              onLocateToponym={(item: ToponymConcordanceItem) => {
+                setIsToponymConcordanceOpen(false);
+                handleFocusToponym(item.antiqueName);
+              }}
+            />
           )}
         </AnimatePresence>
       </div>

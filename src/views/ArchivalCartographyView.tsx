@@ -13,6 +13,8 @@ import {
 import { HistoricalMapCurtainViewer } from '../components/cartography/HistoricalMapCurtainViewer';
 import { OceanCurrentParticleCanvas } from '../components/cartography/OceanCurrentParticleCanvas';
 import { AntiquePlateCanvas } from '../components/cartography/AntiquePlateCanvas';
+import { KingdomDynasticTreeModal } from '../components/cartography/KingdomDynasticTreeModal';
+import { DETAILED_KINGDOMS_DATA, KingdomDetailedRecord } from '../data/preColonialKingdomsDetailed';
 import { SEASONAL_HYDRO_METRICS } from '../services/oceanHydrodynamicsService';
 import { Footer } from '../components/Footer';
 import { CanonicalNavTab } from '../components/NavigationDrawer';
@@ -34,7 +36,8 @@ import {
   ArrowRight, 
   SlidersHorizontal, 
   Anchor, 
-  Globe2 
+  Globe2,
+  Crown
 } from 'lucide-react';
 
 type CartographyWorkbenchTab = 'curtain' | 'streamlines' | 'kingdoms';
@@ -42,6 +45,7 @@ type CartographyWorkbenchTab = 'curtain' | 'streamlines' | 'kingdoms';
 interface ArchivalCartographyViewProps {
   initialPlateId?: string;
   onNavigateTab?: (tab: CanonicalNavTab) => void;
+  onSelectCountry?: (countryCode: string) => void;
   onOpenColophon?: () => void;
   onOpenCitationModal?: () => void;
   onOpenWorkingPapers?: () => void;
@@ -51,6 +55,7 @@ interface ArchivalCartographyViewProps {
 export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = ({ 
   initialPlateId,
   onNavigateTab,
+  onSelectCountry,
   onOpenColophon,
   onOpenCitationModal,
   onOpenWorkingPapers,
@@ -72,6 +77,8 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
 
   const [activeTab, setActiveTab] = useState<CartographyWorkbenchTab>(initialData.tab);
   const [selectedPlate, setSelectedPlate] = useState<HistoricalMapPlate>(initialData.plate);
+  const [focusedEntity, setFocusedEntity] = useState<PreColonialEntity | null>(null);
+  const [selectedDynastyKingdom, setSelectedDynastyKingdom] = useState<KingdomDetailedRecord | null>(null);
   const [activeSeasonId, setActiveSeasonId] = useState<'q1' | 'q2' | 'q3' | 'q4'>('q1');
   const [showCurrents, setShowCurrents] = useState<boolean>(true);
   const [showWinds, setShowWinds] = useState<boolean>(true);
@@ -108,6 +115,9 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
           onSelectPlate={setSelectedPlate}
           activeWorkbenchTab={activeTab}
           onSelectWorkbenchTab={setActiveTab}
+          focusedEntity={focusedEntity}
+          onClearFocusedEntity={() => setFocusedEntity(null)}
+          onNavigateToCountry={onSelectCountry}
         />
       )}
 
@@ -438,21 +448,44 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                       <span className="text-purple-700 dark:text-purple-300 font-semibold leading-tight block mt-0.5">{entity.modernCountries.join(', ')}</span>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setActiveTab('curtain');
-                      }}
-                      className="w-full mt-2 py-2 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/40 dark:hover:bg-purple-900/50 text-purple-800 dark:text-purple-300 text-[11px] font-sans font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <span>Locate on Georeferenced Curtain</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedDynastyKingdom(DETAILED_KINGDOMS_DATA[entity.id] || DETAILED_KINGDOMS_DATA['kongo-kingdom'])}
+                        className="py-2 px-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 dark:text-amber-200 border border-amber-500/30 text-[11px] font-mono font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                        title={`Inspect ${entity.name} Dynastic Succession & Queen Mothers`}
+                      >
+                        <Crown className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                        <span>Dynastic Lineage</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFocusedEntity(entity);
+                          setActiveTab('curtain');
+                        }}
+                        className="py-2 px-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/40 dark:hover:bg-purple-900/50 text-purple-800 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/40 text-[11px] font-sans font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <span>Map Curtain</span>
+                        <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* Interactive Dynastic Lineage Modal in Kingdoms Workbench */}
+          <AnimatePresence>
+            {selectedDynastyKingdom && (
+              <KingdomDynasticTreeModal
+                kingdom={selectedDynastyKingdom}
+                onClose={() => setSelectedDynastyKingdom(null)}
+              />
+            )}
+          </AnimatePresence>
 
           {/* Structured Credibility Footer */}
           <Footer

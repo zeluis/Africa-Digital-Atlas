@@ -627,6 +627,7 @@ function AppContent() {
                   {currentTab === 'archival-cartography' && (
                     <ArchivalCartographyView 
                       onNavigateTab={handleSelectTab}
+                      onSelectCountry={handleSelectCountry}
                       onOpenColophon={() => setIsColophonOpen(true)}
                       onOpenCitationModal={() => setIsCitationModalOpen(true)}
                       onOpenWorkingPapers={() => setIsWorkingPapersOpen(true)}
