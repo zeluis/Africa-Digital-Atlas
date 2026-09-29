@@ -416,6 +416,11 @@ function AppContent() {
     React.startTransition(() => {
       setCurrentTab(targetTab);
       
+      // Auto-collapse desktop navigation drawer on immersive full-screen views
+      if (targetTab === 'map' || targetTab === 'ethnic-tree' || targetTab === 'archival-cartography') {
+        setIsDesktopDrawerOpen(false);
+      }
+
       // If selecting a specific region, set the activeRegion for RegionalView
       if (targetTab.startsWith('region-') && REGION_ID_TO_NAME[targetTab]) {
         setActiveRegion(REGION_ID_TO_NAME[targetTab]);
@@ -569,7 +574,7 @@ function AppContent() {
         <main
           data-core={activeCore}
           className={`core-${activeCore} flex-1 min-w-0 w-full ${
-            currentTab === 'map' || currentTab === 'ethnic-tree'
+            currentTab === 'map' || currentTab === 'ethnic-tree' || currentTab === 'archival-cartography'
               ? 'p-0 max-w-none flex flex-col'
               : 'px-4 sm:px-6 lg:px-8 py-6 md:py-8 max-w-[1440px] mx-auto'
           }`}
@@ -870,8 +875,8 @@ function AppContent() {
         </Suspense>
       )}
 
-      {/* Structured Credibility Footer (Hidden on map view for edge-to-edge cartographic full-screen) */}
-      {currentTab !== 'map' && (
+      {/* Structured Credibility Footer (Hidden on map, ethnic tree & archival cartography for edge-to-edge full-screen) */}
+      {currentTab !== 'map' && currentTab !== 'ethnic-tree' && currentTab !== 'archival-cartography' && (
         <Footer 
           onNavigateTab={handleSelectTab}
           onOpenColophon={() => setIsColophonOpen(true)}

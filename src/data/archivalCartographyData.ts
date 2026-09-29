@@ -1,6 +1,7 @@
 export interface HistoricalMapPlate {
   id: string;
   title: string;
+  shortTitle: string;
   cartographer: string;
   year: string;
   century: string;
@@ -70,286 +71,22 @@ export interface SeasonalWindRegime {
 
 export const HISTORICAL_MAP_PLATES: HistoricalMapPlate[] = [
   {
-    id: 'ortelius-1570',
-    title: "Africae Tabula Nova",
-    cartographer: "Abraham Ortelius",
-    year: "1570",
-    century: "16th Century (Renaissance)",
-    region: "Pan-African Continental",
-    imageUrl: "/cartography/ortelius-1570.jpg",
-    fallbackUrls: [
-      "https://upload.wikimedia.org/wikipedia/commons/3/32/Ortelius_Africae_Tabula_Nova_1570.jpg",
-      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b550058301/f1/full/1600,/0/native.jpg"
-    ],
-    thumbnailUrl: "/cartography/ortelius-1570.jpg",
-    source: "Abraham Ortelius, Theatrum Orbis Terrarum, Antwerp (1570). Copperplate engraving with hand coloring.",
-    institution: "University of Amsterdam Special Collections / Bibliothèque nationale de France",
-    description: "One of the most influential maps of Africa from the 16th century, published in the first modern atlas. Features ornate strapwork cartouches, sea monsters, and early depictions of the interior lakes feeding the Nile.",
-    historicalSignificance: "Established the standard Renaissance depiction of the entire African continent based on Portuguese maritime discoveries and classical Ptolemaic geography.",
-    toponymsToObserve: [
-      "Aegyptus",
-      "Barbaria",
-      "Nigritie",
-      "Abissinia",
-      "Congo",
-      "Monomotapa",
-      "Caput Bonae Spei"
-    ],
-    homographyBounds: {
-      north: 38.0,
-      south: -36.0,
-      west: -22.0,
-      east: 54.0
-    },
-    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
-  },
-  {
-    id: 'mercator-1595',
-    title: "Africa ex magna orbis terrae descriptione",
-    cartographer: "Gerardus Mercator",
-    year: "1595",
-    century: "16th Century (Flemish Cartography)",
-    region: "Pan-African Continental",
-    imageUrl: "/cartography/mercator-1595.jpg",
-    fallbackUrls: [
-      "https://upload.wikimedia.org/wikipedia/commons/e/ec/1595_Mercator_Map_of_Africa_-_Geographiae_tabulae_antiquae_et_novae.jpg",
-      "https://tile.loc.gov/image-services/iiif/service:g3800:g3800:ct003305/full/pct:100/0/default.jpg"
-    ],
-    thumbnailUrl: "/cartography/mercator-1595.jpg",
-    source: "Gerardus Mercator, Geographiae tabulae antiquae et novae, Duisburg (1595).",
-    institution: "Library of Congress Geography and Map Division / Wikimedia Commons",
-    description: "Published posthumously in Mercator's atlas, this masterwork presents the entire African continent with graceful calligraphy and detailed inland river systems derived from Portuguese and Arabic itineraries.",
-    historicalSignificance: "Refined the geographic contour of southern Africa and the horn of Africa during the late Renaissance.",
-    toponymsToObserve: [
-      "Africa Interior",
-      "Regnum Aegypti",
-      "Nubia",
-      "Monomotapa",
-      "Congo Regnum"
-    ],
-    homographyBounds: {
-      north: 37.5,
-      south: -35.5,
-      west: -21.5,
-      east: 53.0
-    },
-    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
-  },
-  {
-    id: 'speed-1626',
-    title: "Africa Described with the Atire of the Inhabitants",
-    cartographer: "John Speed",
-    year: "1626",
-    century: "17th Century (English Cartography)",
-    region: "Pan-African Continental & Maritime Rim",
-    imageUrl: "/cartography/speed-1626.jpg",
-    fallbackUrls: [
-      "https://upload.wikimedia.org/wikipedia/commons/4/46/Africa_Described_with_the_Atire_of_the_Inhabitants_-_John_Speed_1626.jpg",
-      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b8469315n/f1/full/1600,/0/native.jpg"
-    ],
-    thumbnailUrl: "/cartography/speed-1626.jpg",
-    source: "John Speed, London (1626). Published by George Humble. Hand-colored engraved map with costumed figures.",
-    institution: "Cambridge University Library / Gallica BNF",
-    description: "Celebrated for its decorative side borders displaying historical costume studies of African inhabitants and top border city views (Algiers, Cairo, Tunis, etc.).",
-    historicalSignificance: "Brought fine English cartographic publishing to bear on continental African geography, widely circulated throughout the British Isles.",
-    toponymsToObserve: [
-      "Barbary",
-      "Biledulgerid",
-      "Zaara Deserta",
-      "Negroland",
-      "Abissinia",
-      "Congo",
-      "Monomotapa"
-    ],
-    homographyBounds: {
-      north: 38.0,
-      south: -36.0,
-      west: -22.0,
-      east: 54.0
-    },
-    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
-  },
-  {
-    id: 'blaeu-1644',
-    title: "Africae nova descriptio",
-    cartographer: "Willem Janszoon Blaeu",
-    year: "1644",
-    century: "17th Century (Golden Age of Dutch Cartography)",
-    region: "Pan-African Continental & Atlantic Rim",
-    imageUrl: "/cartography/blaeu-1644.jpg",
-    fallbackUrls: [
-      "https://upload.wikimedia.org/wikipedia/commons/d/d5/Blaeu_Africae_Nova_Descriptio_1617_UTA.jpg",
-      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b8468537z/f1/full/1600,/0/native.jpg"
-    ],
-    thumbnailUrl: "/cartography/blaeu-1644.jpg",
-    source: "Willem Blaeu, Theatrum Orbis Terrarum, Amsterdam (1644). Copperplate with original hand wash.",
-    institution: "University of Amsterdam Special Collections / Library of Congress",
-    description: "One of the most famous and visually ornate baroque maps of Africa. Decorated with side panels depicting indigenous African peoples in regional dress and top border vignettes of nine major ports.",
-    historicalSignificance: "Illustrates 17th-century European geographic understanding prior to the interior exploration era, detailing coastal trading forts from Senegambia to the Cape of Good Hope.",
-    toponymsToObserve: [
-      "Barbaria",
-      "Biafara Regnum",
-      "Monomotapa Regnum",
-      "Zanguebar",
-      "Caput Bonae Spei",
-      "Congo Regnum"
-    ],
-    homographyBounds: {
-      north: 38.0,
-      south: -36.0,
-      west: -22.0,
-      east: 54.0
-    },
-    svgOverlayTransform: { scale: 1.04, offsetX: 2, offsetY: 0 }
-  },
-  {
-    id: 'sanson-1656',
-    title: "Afrique Divisée en ses Principaux Empires, Royaumes et Estats",
-    cartographer: "Nicolas Sanson d'Abbeville",
-    year: "1656",
-    century: "17th Century (French Royal Cartography)",
-    region: "Pan-African & Atlantic Maritime Corridors",
-    imageUrl: "/cartography/sanson-1656.jpg",
-    fallbackUrls: [
-      "https://upload.wikimedia.org/wikipedia/commons/2/2d/Afrique._Par_le_Sur._Sanson_d%27Abbeville%2C_Geographe_du_Roy._Avec_privilege_pour_vingtans._A_Paris_chez_l%27Autheur._1656._A._%28IA_dr_afrique-par-le-sur-sanson-dabbeville-geographe-du-roy-avec-privilege-p-11575005%29.jpg",
-      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b8468494n/f1/full/1600,/0/native.jpg"
-    ],
-    thumbnailUrl: "/cartography/sanson-1656.jpg",
-    source: "Nicolas Sanson, Geographer to the King of France, Paris (1656).",
-    institution: "Bibliothèque nationale de France, Département Cartes et Plans",
-    description: "Published under the patronage of Louis XIV, this map highlights the political units and trans-Saharan trading routes recognized by French royal geographers in the mid-17th century.",
-    historicalSignificance: "Demonstrates early French mapping of West African river basins and their connection to Atlantic commerce.",
-    toponymsToObserve: [
-      "Royaume de Tombut",
-      "Royaume de Benin",
-      "Guinée Proprement Dite",
-      "Borno Regnum",
-      "Abissinie"
-    ],
-    homographyBounds: {
-      north: 37.0,
-      south: -35.0,
-      west: -21.0,
-      east: 53.0
-    },
-    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
-  },
-  {
-    id: 'dewit-1670',
-    title: "Totius Africae Accurata Tabula",
-    cartographer: "Frederik de Wit",
-    year: "1670",
-    century: "17th Century (Dutch Cartography)",
-    region: "Pan-African Continental",
-    imageUrl: "/cartography/dewit-1670.jpg",
-    fallbackUrls: [
-      "https://upload.wikimedia.org/wikipedia/commons/e/ec/1670_Frederik_de_Wit_Map_of_Africa_-_Geographicus_-_Africa-dewit-1670.jpg",
-      "https://www.geographicus.com/P/AntiqueMap/Africa-dewit-1670"
-    ],
-    thumbnailUrl: "/cartography/dewit-1670.jpg",
-    source: "Frederik de Wit, Amsterdam (1670). Finely engraved copperplate with original hand coloring.",
-    institution: "Geographicus Rare Maps / Amsterdam University Library",
-    description: "A striking Dutch golden age map featuring magnificent baroque cartouches, native wildlife illustrations in the interior, and meticulous coastal hydrography.",
-    historicalSignificance: "Exemplifies the peak of Amsterdam commercial map publishing, synthesizing Spanish, Portuguese, and Dutch logs into a unified continental plate.",
-    toponymsToObserve: [
-      "Aegyptus",
-      "Barbaria",
-      "Nigritia",
-      "Guineae Pars",
-      "Congo",
-      "Monomotapa",
-      "Cafraria"
-    ],
-    homographyBounds: {
-      north: 37.8,
-      south: -35.8,
-      west: -21.8,
-      east: 53.5
-    },
-    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
-  },
-  {
-    id: 'coronelli-1690',
-    title: "Africa Antica e Moderna",
-    cartographer: "Vincenzo Coronelli",
-    year: "1690",
-    century: "17th/18th Century (Venetian Cartography)",
-    region: "Pan-African Continental",
-    imageUrl: "/cartography/coronelli-1690.jpg",
-    fallbackUrls: [
-      "https://upload.wikimedia.org/wikipedia/commons/1/1e/1690_Coronelli_Map_of_Africa_-_Geographicus_-_Africa-coronelli-1690.jpg",
-      "https://www.geographicus.com/P/AntiqueMap/Africa-coronelli-1690"
-    ],
-    thumbnailUrl: "/cartography/coronelli-1690.jpg",
-    source: "Vincenzo Coronelli, Cosmografo della Serenissima Repubblica di Venezia, Venice (1690).",
-    institution: "Biblioteca Nazionale Marciana / Geographicus",
-    description: "Created by the renowned Franciscan cosmographer and globe-maker to Louis XIV and the Venetian Republic. Combines monumental baroque cartouche work with scholarly geographic annotations.",
-    historicalSignificance: "Represents Venetian mastery of hydrographic compilation at the close of the 17th century.",
-    toponymsToObserve: [
-      "Africa Propria",
-      "Biledulgerid",
-      "Nigritia",
-      "Abissinia",
-      "Zanguebar",
-      "Congo"
-    ],
-    homographyBounds: {
-      north: 37.5,
-      south: -35.0,
-      west: -21.0,
-      east: 53.0
-    },
-    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
-  },
-  {
-    id: 'delisle-1700',
-    title: "L'Afrique Dressée sur les Observations de Mrs. de l'Academie Royale des Sciences",
-    cartographer: "Guillaume De L'Isle",
-    year: "1700",
-    century: "18th Century (Scientific Cartography)",
-    region: "Pan-African Continental",
-    imageUrl: "/cartography/delisle-1700.jpg",
-    fallbackUrls: [
-      "https://upload.wikimedia.org/wikipedia/commons/9/98/1700_Delisle_Map_of_Africa_-_Geographicus_-_Africa-delisle-1700.jpg",
-      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b53053165w/f1/full/1600,/0/native.jpg"
-    ],
-    thumbnailUrl: "/cartography/delisle-1700.jpg",
-    source: "Guillaume De L'Isle, Paris (1700). The foundational scientific map of the Enlightenment.",
-    institution: "Bibliothèque nationale de France / David Rumsey Map Collection",
-    description: "De L'Isle discarded traditional Ptolemaic errors that had persisted for centuries, relying strictly on astronomical observations and traveler accounts vetted by the Royal Academy of Sciences.",
-    historicalSignificance: "Marked the scientific revolution in cartography, setting a new standard of empirical accuracy across Europe.",
-    toponymsToObserve: [
-      "Biledulgerid",
-      "Soudan",
-      "Guinée",
-      "Ethiopie",
-      "Congo",
-      "Monomotapa"
-    ],
-    homographyBounds: {
-      north: 37.5,
-      south: -35.2,
-      west: -20.5,
-      east: 52.0
-    },
-    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
-  },
-  {
     id: 'danville-1749',
-    title: "Afrique Publiée sous les Auspices de Monseigneur le Duc d'Orléans",
+    title: "Afrique Publiée sous les Auspices de Monseigneur le Duc d'Orléans (1749)",
+    shortTitle: "D'Anville (1749)",
     cartographer: "Jean-Baptiste Bourguignon d'Anville",
     year: "1749",
     century: "18th Century (Enlightenment)",
     region: "Pan-African Continental",
-    imageUrl: "/cartography/danville-1749.jpg",
+    imageUrl: "/cartography/plate-03-tilte-Afrique,\" created by Jean Baptiste Bourguignon d'Anville in 1749-default.jpg",
     fallbackUrls: [
-      "https://upload.wikimedia.org/wikipedia/commons/7/79/Afrique_-_publi%C3%A9e_sous_les_auspices_de_Monseigneur_le_Duc_d%27Orl%C3%A9ans..._par_le_Sr_d%27Anville_%3B_grav%C3%A9_par_Guill%27Delahaye_-_btv1b53053165w.jpg",
-      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b53053165w/f1/full/1600,/0/native.jpg"
+      "/cartography/thumbs/Plate-01-tilte-Afrique,\" created by Jean Baptiste Bourguignon d'Anville in 1749-default-thumb.jpg",
+      "/cartography/thumbs/danville-1749-opt-thumb.jpg"
     ],
-    thumbnailUrl: "/cartography/danville-1749.jpg",
-    source: "Jean-Baptiste Bourguignon d'Anville, Paris (1749). Hand-colored copperplate engraving.",
+    thumbnailUrl: "/cartography/thumbs/Plate-01-tilte-Afrique,\" created by Jean Baptiste Bourguignon d'Anville in 1749-default-thumb.jpg",
+    source: "Jean-Baptiste Bourguignon d'Anville, Paris (1749). Hand-colored copperplate engraving published under the auspices of the Duke of Orléans.",
     institution: "Bibliothèque nationale de France / Geographicus Rare Maps Collection",
-    description: "A landmark in scientific cartography. D'Anville famously excised speculative mythical geographic features, leaving uncharted interior zones blank ('terra incognita') while meticulously detailing coasts.",
+    description: "Titled \"Afrique\", created by Jean Baptiste Bourguignon d'Anville in 1749. A landmark turning point in scientific cartography: D'Anville famously excised speculative mythical interior kingdoms, leaving unverified interior zones blank ('terra incognita') while meticulously detailing empirical coastal soundings.",
     historicalSignificance: "Initiated modern empirical cartography of Africa by refusing to fill inland voids with speculative kingdoms or mythical creatures.",
     toponymsToObserve: [
       "Guinée Septentrionale & Méridionale",
@@ -358,45 +95,291 @@ export const HISTORICAL_MAP_PLATES: HistoricalMapPlate[] = [
       "Côte des Esclaves",
       "Royaume de Congo"
     ],
-    homographyBounds: {
-      north: 37.5,
-      south: -35.2,
-      west: -20.5,
-      east: 52.0
-    },
+    homographyBounds: { north: 37.5, south: -35.2, west: -20.5, east: 52.0 },
     svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
   },
   {
-    id: 'bonne-1780',
-    title: "Carte de l'Afrique Divisée en ses Principaux Etats",
-    cartographer: "Rigobert Bonne",
-    year: "1780",
-    century: "18th Century (French Enlightenment)",
+    id: 'bellin-1747',
+    title: "Carte de l'Afrique pour servir à l'Histoire Générale des Voyages (1747)",
+    shortTitle: "Bellin (1747)",
+    cartographer: "Jacques-Nicolas Bellin",
+    year: "1747",
+    century: "18th Century (French Hydrographic Office)",
     region: "Pan-African Continental",
-    imageUrl: "/cartography/bonne-1780.jpg",
-    fallbackUrls: [
-      "https://upload.wikimedia.org/wikipedia/commons/1/1b/1780_Bonne_Map_of_Africa_-_Geographicus_-_Africa-bonne-1780.jpg",
-      "https://gallica.bnf.fr/iiif/ark:/12148/btv1b530275597/f1/full/1600,/0/native.jpg"
-    ],
-    thumbnailUrl: "/cartography/bonne-1780.jpg",
-    source: "Rigobert Bonne, Atlas Encyclopédique, Paris (1780). Copperplate engraving with hand coloring.",
+    imageUrl: "/cartography/plate-00-tilte-bellin-1747.jpg",
+    fallbackUrls: ["/cartography/thumbs/bellin-1747-thumb.jpg"],
+    thumbnailUrl: "/cartography/thumbs/bellin-1747-thumb.jpg",
+    source: "Jacques-Nicolas Bellin, Chief Cartographer to the French Navy (Dépôt de la Marine), Paris (1747).",
     institution: "Dépôt de la Marine / Bibliothèque nationale de France",
-    description: "An authoritative late 18th-century Enlightenment map of the entire African continent by the Royal Hydrographer to the King of France.",
-    historicalSignificance: "Represents the culmination of 18th-century continental copperplate cartography prior to the 19th-century colonial scramble.",
-    toponymsToObserve: [
-      "Barbarie",
-      "Nigritie",
-      "Haute Guinée",
-      "Côte d'Or",
-      "Congo",
-      "Abyssinie"
+    description: "Created by Jacques-Nicolas Bellin in 1747 for Abbé Prévost's monumental travel compilation \"Histoire Générale des Voyages\". Bellin streamlined naval navigation charts, eliminating obsolete mythical interior topography.",
+    historicalSignificance: "Set the empirical standard for 18th-century French naval cartography and hydrographic surveys during the Enlightenment.",
+    toponymsToObserve: ["Barbarie", "Soudan", "Haute Guinée", "Biledulgerid", "Congo", "Abyssinie"],
+    homographyBounds: { north: 37.5, south: -35.0, west: -21.0, east: 53.0 },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'arrowsmith-1802',
+    title: "Africa (Created by Aaron Arrowsmith, Published November 1, 1802)",
+    shortTitle: "Arrowsmith (1802)",
+    cartographer: "Aaron Arrowsmith",
+    year: "1802",
+    century: "19th Century (British Hydrography)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/Plate-001-tilte-titled \"Africa,\" was created by Aaron Arrowsmith and published on November 1, 1802.jpg",
+    fallbackUrls: ["/cartography/thumbs/arrowsmith-1802-thumb.jpg"],
+    thumbnailUrl: "/cartography/thumbs/arrowsmith-1802-thumb.jpg",
+    source: "Aaron Arrowsmith, Hydrographer to the Prince of Wales, London (Published November 1, 1802).",
+    institution: "Arrowsmith London Cartographic Archive / Royal Geographical Society",
+    description: "Titled \"Africa\", created by Aaron Arrowsmith and published on November 1, 1802. Arrowsmith synthesized Mungo Park's pioneering Niger River explorations and Admiralty coastal surveys at the dawn of 19th-century African exploration.",
+    historicalSignificance: "The authoritative scientific reference map used by the African Association to coordinate early Niger River and Saharan expeditions.",
+    toponymsToObserve: ["Barbary States", "Sahara Desert", "Soudan", "Upper Guinea", "Lower Guinea", "Cape Colony"],
+    homographyBounds: { north: 38.0, south: -36.0, west: -22.0, east: 54.0 },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'anselmi-1873',
+    title: "Africa (1873)",
+    shortTitle: "Anselmi (1873)",
+    cartographer: "Giorgio Ermanno Anselmi",
+    year: "1873",
+    century: "19th Century (Late 19th-Century Manuscript)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/plate-01-tilte-giorgio ermanno anselmi-africa-1.jpg",
+    fallbackUrls: ["/cartography/thumbs/Plate-06-tilte-Giorgio Ermanno Anselmi-Africa-1-thumb.jpg"],
+    thumbnailUrl: "/cartography/thumbs/Plate-06-tilte-Giorgio Ermanno Anselmi-Africa-1-thumb.jpg",
+    source: "Giorgio Ermanno Anselmi (c. 1873). Geographical map of Africa drawn in Indian ink, with watercolor borders.",
+    institution: "Wikimedia Commons / Giorgio Ermanno Anselmi Collection",
+    description: "Geographical map of Africa drawn in Indian ink, with the borders between delimited states in watercolor. Created in the late 19th century—certainly after the Mexican-American War (1846–1848) and the localization of Timbuktu on maps (1854); likely before the War of the Pacific (1879–1884) and prior to the 1884 Berlin Conference and the Scramble for Africa.",
+    historicalSignificance: "An intriguing hand-drawn manuscript map documenting late 19th-century African geopolitical entities, river systems, and commercial networks prior to European colonial partition.",
+    toponymsToObserve: ["Timbuktu", "Soudan", "Sahara", "Guinée", "Congo", "Abyssinie", "Zanguebar", "Cap de Bonne-Espérance"],
+    homographyBounds: { north: 37.0, south: -35.0, west: -21.0, east: 53.0 },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'berghaus-1824',
+    title: "Karte von Afrika nach den neuesten Entdeckungen... bearbeitet im Jahre 1824",
+    shortTitle: "Berghaus (1824)",
+    cartographer: "Heinrich Berghaus & Heinrich Brose",
+    year: "1824",
+    century: "19th Century (German Scientific Geography)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/plate-02-tilte-title- *karte von afrika nach den neuesten entdeckungen... bearbeitet im jahre 1824* author- heinrich berghaus (1797–1884) engraver- heinrich brose publisher- j. g. cotta, stuttgart date- 1824 (issued 1826)-16777000.jpg",
+    fallbackUrls: [
+      "/cartography/thumbs/Plate-03-tilte-Title- *Karte von Afrika nach den neuesten Entdeckungen... bearbeitet im Jahre 1824* Author- Heinrich Berghaus (1797–1884) Engraver- Heinrich Brose Publisher- J. G. Cotta, Stuttgart Date- 1824 (issued 1826)-16777000-thumb.jpg"
     ],
-    homographyBounds: {
-      north: 37.5,
-      south: -35.0,
-      west: -21.0,
-      east: 53.0
-    },
+    thumbnailUrl: "/cartography/thumbs/Plate-03-tilte-Title- *Karte von Afrika nach den neuesten Entdeckungen... bearbeitet im Jahre 1824* Author- Heinrich Berghaus (1797–1884) Engraver- Heinrich Brose Publisher- J. G. Cotta, Stuttgart Date- 1824 (issued 1826)-16777000-thumb.jpg",
+    source: "Author: Heinrich Berghaus (1797–1884), Engraver: Heinrich Brose, Publisher: J. G. Cotta, Stuttgart (1824, issued 1826).",
+    institution: "J. G. Cotta Publishing Archive / Berlin Geographical Society",
+    description: "Titled \"Karte von Afrika nach den neuesten Entdeckungen... bearbeitet im Jahre 1824\", authored by Heinrich Berghaus (1797–1884), engraved by Heinrich Brose, and published by J. G. Cotta in Stuttgart (date 1824, issued 1826). A triumph of German thematic and physical cartography.",
+    historicalSignificance: "Pioneered systematic physical geography, climate regimes, and precise hypsometric altitude modeling across Africa.",
+    toponymsToObserve: ["Nordafrika", "Sahara", "Sudan", "Äthiopien", "Kapkolonie", "Guinea-Küste"],
+    homographyBounds: { north: 38.0, south: -36.0, west: -22.0, east: 54.0 },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'meurs-1668',
+    title: "Africae Accurata Tabula (1668)",
+    shortTitle: "Van Meurs (1668)",
+    cartographer: "Jacob van Meurs",
+    year: "1668",
+    century: "17th Century (Dutch Golden Age)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/plate-04-tilte-jacob_van_meurs,_africae-meurs-1668.jpg",
+    fallbackUrls: ["/cartography/thumbs/meurs-1668-opt-thumb.jpg"],
+    thumbnailUrl: "/cartography/thumbs/meurs-1668-opt-thumb.jpg",
+    source: "Jacob van Meurs, Amsterdam (1668). Engraved for Olfert Dapper's Description of Africa.",
+    institution: "University of Amsterdam Special Collections",
+    description: "Titled \"Africae Accurata Tabula\", created by Jacob van Meurs in Amsterdam (1668) for Olfert Dapper's authoritative treatise. Lavishly engraved with regional wildlife, maritime routes, and detailed depictions of West and Central African sovereign kingdoms.",
+    historicalSignificance: "Captured vital 17th-century geographical and ethnographic intelligence gathered by Dutch East and West India Companies.",
+    toponymsToObserve: ["Aegyptus", "Barbaria", "Nigritia", "Congo", "Monomotapa", "Cafraria", "Zanguebar"],
+    homographyBounds: { north: 38.0, south: -36.0, west: -22.0, east: 54.0 },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'bartholomew-1885',
+    title: "Africa (Edinburgh Geographical Institute, 1885)",
+    shortTitle: "Bartholomew (1885)",
+    cartographer: "John George Bartholomew",
+    year: "1885",
+    century: "19th Century (Victorian Cartography)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/plate-05-tilte-j. bartholomew-africa_1885.jpg",
+    fallbackUrls: ["/cartography/thumbs/Plate-02-tilte-J. Bartholomew-africa_1885-thumb.jpg"],
+    thumbnailUrl: "/cartography/thumbs/Plate-02-tilte-J. Bartholomew-africa_1885-thumb.jpg",
+    source: "John Bartholomew & Co., Edinburgh Geographical Institute (1885).",
+    institution: "National Library of Scotland / Edinburgh Geographical Archive",
+    description: "Titled \"Africa\", created by J. Bartholomew in 1885. Published on the eve of the Berlin Conference, detailing European colonial partition lines, telegraph routes, and transcontinental trade concessions.",
+    historicalSignificance: "Captured the exact geopolitical snapshot of Africa at the formal onset of the Scramble for Africa.",
+    toponymsToObserve: ["Egypt", "Tripoli", "Sahara", "Congo Free State", "Transvaal", "Cape Colony", "Zanzibar"],
+    homographyBounds: { north: 38.0, south: -36.0, west: -22.0, east: 54.0 },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'blaeu-1644',
+    title: "Africae Nova Descriptio (Special Collections University of Amsterdam)",
+    shortTitle: "Blaeu (1644)",
+    cartographer: "Willem Janszoon Blaeu",
+    year: "1644",
+    century: "17th Century (Golden Age of Dutch Cartography)",
+    region: "Pan-African Continental & Atlantic Rim",
+    imageUrl: "/cartography/plate-06-tilte-map_-_special_collections_university_of_amsterdam.jpg",
+    fallbackUrls: [
+      "/cartography/thumbs/Plate-09-tilte-map_-_special_collections_university_of_amsterdam_-_otm-_hb-kzl_33.17.49-thumb.jpg",
+      "/cartography/thumbs/blaeu-1644-opt-thumb.jpg"
+    ],
+    thumbnailUrl: "/cartography/thumbs/Plate-09-tilte-map_-_special_collections_university_of_amsterdam_-_otm-_hb-kzl_33.17.49-thumb.jpg",
+    source: "Willem Janszoon Blaeu, Amsterdam (1644). Preserved at Special Collections University of Amsterdam (OTM: HB-KZL 33.17.49).",
+    institution: "Special Collections, University of Amsterdam",
+    description: "Historic map preserved in the Special Collections of the University of Amsterdam. Features Blaeu's iconic decorative borders depicting African city harbors (Alexandria, Algiers, Cairo, Mozambique) and side vignettes of indigenous costumes.",
+    historicalSignificance: "One of the most famous and visually ornate baroque maps of Africa produced during the 17th century.",
+    toponymsToObserve: [
+      "Barbaria",
+      "Biafara Regnum",
+      "Monomotapa Regnum",
+      "Zanguebar",
+      "Caput Bonae Spei",
+      "Congo Regnum"
+    ],
+    homographyBounds: { north: 38.0, south: -36.0, west: -22.0, east: 54.0 },
+    svgOverlayTransform: { scale: 1.04, offsetX: 2, offsetY: 0 }
+  },
+  {
+    id: 'bowen-1747',
+    title: "A New and Accurate Map of Africa, from the Latest and Best Observations (1747)",
+    shortTitle: "Bowen (1747)",
+    cartographer: "Emanuel Bowen",
+    year: "1747",
+    century: "18th Century (British Enlightenment Cartography)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/plate-07-tilte-a_new_and_accurate_map_of_africa,_from_the_latest_and_best_observations_1747.jpg",
+    fallbackUrls: ["/cartography/thumbs/bowen-1747-opt-thumb.jpg"],
+    thumbnailUrl: "/cartography/thumbs/bowen-1747-opt-thumb.jpg",
+    source: "Emanuel Bowen, Geographer to His Majesty George II, London (1747).",
+    institution: "Royal Society of London / Historical Cartography Collection",
+    description: "Titled \"A New and Accurate Map of Africa, from the Latest and Best Observations 1747\", authored by Emanuel Bowen. Details trading factories, coastal anchorages, seasonal trade winds, and extensive historical commentary in the margins.",
+    historicalSignificance: "Provided British merchants and statesmen with comprehensive geographic intelligence on West, Central, and East African commercial hubs.",
+    toponymsToObserve: ["Barbary", "Zaara or Desert", "Negroland", "Guinea", "Congo", "Monomotapa", "Abissinia"],
+    homographyBounds: { north: 38.0, south: -36.0, west: -22.0, east: 54.0 },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'sandrart-1680',
+    title: "Accuratissima Totius Africae Tabula in Lucem Producta (c. 1680)",
+    shortTitle: "Sandrart (c. 1680)",
+    cartographer: "Jacob von Sandrart & J.B. Homann",
+    year: "1680",
+    century: "17th Century (German Baroque Cartography)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/plate-08-tilte-sandrart-1680.jpg",
+    fallbackUrls: ["/cartography/thumbs/sandrart-1680-opt-thumb.jpg"],
+    thumbnailUrl: "/cartography/thumbs/sandrart-1680-opt-thumb.jpg",
+    source: "Jacob von Sandrart, Nuremberg (c. 1680). Engraved by Johann Baptist Homann.",
+    institution: "Nuremberg Cartographic Archive / German National Museum",
+    description: "Titled \"Accuratissima Totius Africae Tabula\", created by Jacob von Sandrart in Nuremberg (c. 1680) with engraving by J.B. Homann. Features ornate baroque title cartouches and detailed representations of African inland river systems.",
+    historicalSignificance: "Exemplifies the transition of German cartography into precision copperplate engraving and scientific map publishing.",
+    toponymsToObserve: ["Aegyptus", "Barbaria", "Biledulgerid", "Nigritia", "Abissinia", "Congo", "Monomotapa"],
+    homographyBounds: { north: 38.0, south: -36.0, west: -22.0, east: 54.0 },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'allardt-1650',
+    title: "Nova Africae Descriptio (Hugo Allardt, c. 1650)",
+    shortTitle: "Allardt (c. 1650)",
+    cartographer: "Hugo Allardt",
+    year: "1650",
+    century: "17th Century (Dutch Maritime Cartography)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/plate-09-tilte-Nova_Africa_by_Hugo_Allardt.jpg",
+    fallbackUrls: [
+      "/cartography/thumbs/Plate-11-tilte-Nova_Africa_-_Hugo_Allardt,_excudit_-_btv1b8469595q-thumb.jpg",
+      "/cartography/thumbs/allardt-1650-opt-thumb.jpg"
+    ],
+    thumbnailUrl: "/cartography/thumbs/Plate-11-tilte-Nova_Africa_-_Hugo_Allardt,_excudit_-_btv1b8469595q-thumb.jpg",
+    source: "Hugo Allardt, Amsterdam (c. 1650). Copperplate engraving with decorative marine cartouches.",
+    institution: "Bibliothèque nationale de France, Département Cartes et Plans (btv1b8469595q)",
+    description: "Titled \"Nova Africa\", created by Hugo Allardt in Amsterdam (c. 1650). A masterwork of Dutch sea-atlas cartography highlighting trade winds, shipping lanes, and coastal trading kingdoms.",
+    historicalSignificance: "Documents Dutch maritime expansion around the Cape of Good Hope toward the Atlantic and Indian Oceans.",
+    toponymsToObserve: ["Guineae Nova Descriptio", "Congo", "Angola", "Mozambique", "Madagascar", "Caput Bonae Spei"],
+    homographyBounds: { north: 38.0, south: -36.0, west: -22.0, east: 54.0 },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'visscher-1690',
+    title: "Africa Accurate in Imperia, Regna et Status Divisa (c. 1690)",
+    shortTitle: "Visscher (c. 1690)",
+    cartographer: "Nicolaes Visscher II",
+    year: "1690",
+    century: "17th Century (Dutch Golden Age)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/plate-10-tilte-Nicolass-Visscher-Map-of-Africa-visscher-1690.jpg",
+    fallbackUrls: [
+      "/cartography/thumbs/Plate-07-tilte-Nicolass-Visscher-Map-of-Africa-thumb.jpg",
+      "/cartography/thumbs/visscher-1690-opt-thumb.jpg"
+    ],
+    thumbnailUrl: "/cartography/thumbs/Plate-07-tilte-Nicolass-Visscher-Map-of-Africa-thumb.jpg",
+    source: "Nicolaes Visscher II, Amsterdam (c. 1690). Hand-colored copperplate map with decorative royal cartouche.",
+    institution: "Visscher Atlas Collection / Amsterdam Historical Cartography Archive",
+    description: "Titled \"Africa Accurate in Imperia, Regna et Status Divisa\", created by Nicolaes Visscher II in Amsterdam (c. 1690). Renowned for its rich color delineations of African sovereign states, imperial realms, and coastal hydrography.",
+    historicalSignificance: "Demonstrates the pinnacle of Dutch cartographic artistry and regional kingdom boundaries at the end of the 17th century.",
+    toponymsToObserve: ["Barbaria", "Nigritia", "Guineae Pars", "Congo", "Monomotapa", "Zanguebar", "Cafraria"],
+    homographyBounds: { north: 38.0, south: -36.0, west: -22.0, east: 54.0 },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'ottoman-1893',
+    title: "\"Afrika Kıtası\" (Continent of Africa, 1893)",
+    shortTitle: "Ottoman Atlas (1893)",
+    cartographer: "Ali Şeref Paşa & Hafız Ali Eşref",
+    year: "1893",
+    century: "19th Century (Late Ottoman Empire)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/plate-11-tilte-Ottoman-Turkish-Africa-Map.jpg",
+    fallbackUrls: ["/cartography/thumbs/plate-11-ottoman-1893-thumb.jpg"],
+    thumbnailUrl: "/cartography/thumbs/plate-11-ottoman-1893-thumb.jpg",
+    source: "Ali Şeref Paşa & Hafız Ali Eşref, \"Yeni coğrafya atlası\" (New Geographical Atlas). Published by Hasan Ferid, Matbaa-i Amire Press, Dersa'adet (Istanbul), 1309–1311 AH / 1891–1893 AD.",
+    institution: "David Rumsey Map Collection, Stanford University Libraries / Matbaa-i Amire Press, Istanbul",
+    description: "Historical lithographed color map titled \"Afrika Kıtası\" (Continent of Africa) from the \"Yeni coğrafya atlası\" (New Geographical Atlas), published in Istanbul in 1893. Features a pastel color palette, relief hachures, and inscriptions in Ottoman Turkish depicting the geopolitical landscape and colonial boundaries during the height of late 19th-century European expansion.",
+    historicalSignificance: "Reflects the late Ottoman Empire's strategic engagement with global geography and politics, illustrating how Istanbul monitored contemporary European colonial divisions in Africa.",
+    toponymsToObserve: ["Afrika Kıtası", "Mısır (Egypt)", "Trablusgarp (Tripoli)", "Sudan", "Kongo", "Habeşistan (Abyssinia)", "Nil Nehri"],
+    homographyBounds: { north: 38.0, south: -36.0, west: -22.0, east: 54.0 },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'daikokuya-1876',
+    title: "Africa from Russia (アフリカ - АФРИКА)",
+    shortTitle: "Daikokuya (1876)",
+    cartographer: "Daikokuya Kōdayū & Katsuragawa Hoshū",
+    year: "1876",
+    century: "19th Century (Meiji Era / Japanese Manuscript)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/plate-12-tilte-japanese-plate-53cm.jpg",
+    fallbackUrls: ["/cartography/thumbs/plate-12-daikokuya-1876-thumb.jpg"],
+    thumbnailUrl: "/cartography/thumbs/plate-12-daikokuya-1876-thumb.jpg",
+    source: "Hand-drawn Japanese manuscript transcription based on Russian Imperial charts brought home by Captain Daikokuya Kōdayū (大黒屋 光太夫) after his 1782–1792 Siberian odyssey. Documented in the Hokusabenryaku (北槎聞略) under Katsuragawa Hoshū; stamped with official Meiji seals of the Asakusa Library (浅草文庫, 1874) and Cabinet Library (内閣文庫, 1885).",
+    institution: "National Archives of Japan (国立公文書館) / Naikaku Bunko (Cabinet Library)",
+    description: "Late 19th-century Japanese manuscript map pairing Cyrillic headline 'АФРИКА' with traditional kanji and katakana translations. Based on Russian geographical charts brought home by Captain Daikokuya Kōdayū following his royal audience with Catherine the Great in Saint Petersburg. Details rivers, coasts, and marks unexplored interior voids simply as '未詳地' (Unknown Territory).",
+    historicalSignificance: "Marks the pioneering transmission of Russian and Western geographical intelligence into Japan, preserved in the Japanese Cabinet Library as vital geopolitical intelligence.",
+    toponymsToObserve: ["АФРИКА (Africa)", "大沙漠 (Great Desert)", "泥児利亜 (Nigeria)", "コンゴ (Congo)", "喜望峰 (Cape of Good Hope)", "エギプト (Egypt)", "アビシニア (Abyssinia)", "モノモタパ (Monomotapa)", "未詳地 (Unexplored Region)"],
+    homographyBounds: { north: 38.0, south: -36.0, west: -22.0, east: 54.0 },
+    svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
+  },
+  {
+    id: 'carey-1814',
+    title: "Africa According to the Best Authorities (1814)",
+    shortTitle: "Carey (1814)",
+    cartographer: "Mathew Carey",
+    year: "1814",
+    century: "19th Century (Early American Cartography)",
+    region: "Pan-African Continental",
+    imageUrl: "/cartography/plate-13-tilte-Africa_According_to_the_best_Authorities-Matthew Carey-1814.jpg",
+    fallbackUrls: ["/cartography/thumbs/plate-13-carey-1814-thumb.jpg"],
+    thumbnailUrl: "/cartography/thumbs/plate-13-carey-1814-thumb.jpg",
+    source: "Mathew Carey, Carey's General Atlas, Philadelphia (1814 edition, preface dated March 17, 1814). Engraved with original publisher hand-coloring.",
+    institution: "David Rumsey Map Collection, David Rumsey Map Center, Stanford University Libraries (Pub List No: 4577.000 / List No: 4577.056)",
+    description: "Engraved for Mathew Carey's American edition of the General Atlas, published in Philadelphia in late 1814. Renowned as the first atlas produced in the United States to employ standard original publisher color on maps. Depicts regional indigenous kingdoms such as Nubia and traditional landmarks including the legendary 'Mountains of the Moon'.",
+    historicalSignificance: "A foundational milestone in early United States atlas publishing, capturing American geographic knowledge and cartographic style in the early Republic.",
+    toponymsToObserve: ["Mountains of the Moon", "Kingdom of Nubia", "Barbary", "Negroland", "Guinea", "The Hottentots", "Cape of Good Hope"],
+    homographyBounds: { north: 38.0, south: -36.0, west: -22.0, east: 54.0 },
     svgOverlayTransform: { scale: 1.0, offsetX: 0, offsetY: 0 }
   }
 ];
@@ -501,247 +484,151 @@ export const PRE_COLONIAL_ENTITIES: PreColonialEntity[] = [
     color: "#d97706"
   },
   {
-    id: 'kush-nubia',
-    name: "Kingdom of Kush (Nubia / Meroë)",
-    period: "c. 1070 BCE – 350 CE",
-    region: "Northern / Eastern Africa",
-    regionBadge: "Nile Valley",
-    capital: "Meroë / Napata",
-    coordinates: [16.933, 33.750],
-    svgCoordinates: [4116, 1650],
-    modernCountries: ["Sudan", "South Sudan", "Egypt"],
-    significance: "Ancient Nile civilization renowned for constructing more steep-sided pyramids at Meroë and Napata than Egypt; governed the 25th Dynasty Black Pharaohs.",
-    tradeSpecialty: "Iron smelting, Nubian gold, ebony, Meroitic script",
-    color: "#b45309"
-  },
-  {
-    id: 'aksum-kingdom',
-    name: "Kingdom of Aksum",
-    period: "c. 100 – 940 CE",
-    region: "Eastern Africa (Horn)",
-    regionBadge: "Horn of Africa",
-    capital: "Aksum",
-    coordinates: [14.133, 38.717],
-    svgCoordinates: [4600, 2020],
-    modernCountries: ["Ethiopia", "Eritrea"],
-    significance: "Major global maritime trading power minting its own currency, erecting towering monumental granite stelae, and linking the Red Sea with Rome and India.",
-    tradeSpecialty: "Myrrh, frankincense, ivory, minted gold coins",
-    color: "#0891b2"
-  },
-  {
-    id: 'monomotapa-kingdom',
-    name: "Kingdom of Mutapa (Monomotapa)",
-    period: "c. 1430 – 1760",
+    id: 'great-zimbabwe',
+    name: "Kingdom of Zimbabwe",
+    period: "c. 1220 – 1450",
     region: "Southern Africa",
     regionBadge: "Southern Africa",
-    capital: "Zvongombe (near Great Zimbabwe)",
-    coordinates: [-17.500, 31.000],
-    svgCoordinates: [4046, 4621],
-    modernCountries: ["Zimbabwe", "Mozambique", "Zambia", "South Africa"],
-    significance: "Shona empire renowned in Portuguese cartography for its sophisticated stone architectural masonry (Great Zimbabwe dry-stone walls) and Indian Ocean gold trade via Sofala.",
-    tradeSpecialty: "Gold mining, ivory, copper ingots, iron smelting",
-    color: "#dc2626"
-  },
-  {
-    id: 'kanem-bornu-empire',
-    name: "Kanem-Bornu Empire",
-    period: "c. 700 – 1893",
-    region: "Central / Sahelian Africa",
-    regionBadge: "Lake Chad Sahel",
-    capital: "Ngazargamu",
-    coordinates: [13.000, 12.000],
-    svgCoordinates: [2850, 2050],
-    modernCountries: ["Chad", "Nigeria", "Cameroon", "Niger"],
-    significance: "Over a millennium of continuous dynastic statehood around the Lake Chad basin, known for the Mais (kings), armored heavy cavalry, and trans-Saharan diplomacy with Cairo and Tripoli.",
-    tradeSpecialty: "Natron, cotton textiles, leather goods, trans-Saharan salt",
-    color: "#0284c7"
-  },
-  {
-    id: 'kilwa-sultanate',
-    name: "Kilwa Sultanate",
-    period: "c. 957 – 1513",
-    region: "Eastern Africa (Swahili Coast)",
-    regionBadge: "Swahili Coast",
-    capital: "Kilwa Kisiwani",
-    coordinates: [-8.958, 39.512],
-    svgCoordinates: [4620, 3720],
-    modernCountries: ["Tanzania", "Mozambique", "Kenya"],
-    significance: "Thriving Swahili city-state controlling Indian Ocean maritime trade routes connecting Sofala's goldfields with Arabia, Persia, India, and Ming China.",
-    tradeSpecialty: "Gold, pearls, mangrove timber, coral rag architecture",
+    capital: "Great Zimbabwe",
+    coordinates: [-20.267, 30.933],
+    svgCoordinates: [4600, 4800],
+    modernCountries: ["Zimbabwe", "Mozambique"],
+    significance: "Master stonemasons who constructed the massive dry-stone Great Enclosure; central nexus of the Indian Ocean gold and ivory trade linking Sofala to Kilwa and China.",
+    tradeSpecialty: "Gold, copper, cattle, soapstone carvings",
     color: "#059669"
   },
   {
-    id: 'buganda-kingdom',
-    name: "Kingdom of Buganda",
-    period: "c. 1300 – Present",
-    region: "Eastern Africa (Great Lakes)",
-    regionBadge: "Great Lakes",
-    capital: "Mengo (Kampala)",
-    coordinates: [0.316, 32.581],
-    svgCoordinates: [4253, 3003],
-    modernCountries: ["Uganda"],
-    significance: "Powerful centralized Great Lakes kingdom ruled by the Kabaka, with sophisticated royal fleets on Lake Victoria (Nnalubaale) and Kasubi royal tombs.",
-    tradeSpecialty: "Barkcloth manufacturing, brass smithing, canoe navigation",
+    id: 'axum-empire',
+    name: "Kingdom of Aksum (Axum)",
+    period: "c. 100 – 940 CE",
+    region: "Eastern Africa",
+    regionBadge: "Eastern Africa",
+    capital: "Aksum",
+    coordinates: [14.133, 38.717],
+    svgCoordinates: [4200, 2050],
+    modernCountries: ["Ethiopia", "Eritrea", "Sudan"],
+    significance: "Major global maritime trading empire minting its own gold coinage; one of the first nations to officially adopt Christianity under King Ezana.",
+    tradeSpecialty: "Frankincense, myrrh, ivory, gold, emeralds",
     color: "#7c3aed"
   },
   {
-    id: 'merina-kingdom',
-    name: "Kingdom of Imerina (Merina)",
-    period: "c. 1540 – 1897",
-    region: "Eastern Africa (Madagascar)",
-    regionBadge: "Madagascar",
-    capital: "Antananarivo (Rova)",
-    coordinates: [-18.913, 47.536],
-    svgCoordinates: [5255, 4522],
-    modernCountries: ["Madagascar"],
-    significance: "Unified the Malagasy highland plateau under King Andrianampoinimerina; renowned for terraced rice irrigation and the royal Rova palace complex.",
-    tradeSpecialty: "Silk weaving (Lamba Arlandy), metallurgy, rice agriculture",
-    color: "#c026d3"
-  },
-  {
-    id: 'luba-empire',
-    name: "Luba Empire",
-    period: "c. 1585 – 1889",
-    region: "Central Africa",
-    regionBadge: "Central Africa",
-    capital: "Mwibele (Katanga)",
-    coordinates: [-7.500, 25.500],
-    svgCoordinates: [3500, 3680],
-    modernCountries: ["DR Congo", "Zambia"],
-    significance: "Innovators of the sacred Lukasa memory boards (mnemonic historical encoding devices) and complex sacred kingship governance across Central Africa.",
-    tradeSpecialty: "Lukasa memory crafts, copper cruciform ingots, iron regalia",
-    color: "#0d9488"
+    id: 'kanem-bornu',
+    name: "Kanem-Bornu Empire",
+    period: "c. 700 – 1900",
+    region: "Central / Sahelian Africa",
+    regionBadge: "Lake Chad Basin",
+    capital: "Njimi / Ngazargamu",
+    coordinates: [13.000, 14.000],
+    svgCoordinates: [2750, 2050],
+    modernCountries: ["Chad", "Nigeria", "Niger", "Cameroon"],
+    significance: "One of the longest-lasting states in African history; Islamic scholarship center controlling trans-Saharan trade routes across the Lake Chad basin.",
+    tradeSpecialty: "Ostrich feathers, natron, livestock, cotton textiles",
+    color: "#dc2626"
   }
 ];
 
 export const OCEAN_CURRENTS: OceanCurrentDef[] = [
   {
     id: 'canary-current',
-    name: "Canary Current (Corriente de Canarias)",
+    name: "Canary Current",
     type: 'cold',
-    flowDirection: "South-Southwest along Northwest African seaboard",
-    velocityKnots: "0.5 – 1.8 knots",
-    description: "A cold, nutrient-rich coastal upwelling current flowing southward from the Iberian peninsula past Morocco, the Canary Islands, and Cape Verde, feeding into the North Equatorial Current.",
-    historicalImpact: "Facilitated rapid southward navigation for European sailing ships from Lisbon, Cadiz, and Bristol down to the Senegambia and Gold Coast estuaries.",
-    pathCoordinates: [
-      [36.0, -10.0],
-      [31.0, -12.5],
-      [26.0, -16.0],
-      [20.0, -18.5],
-      [14.0, -21.0],
-      [10.0, -25.0]
-    ]
-  },
-  {
-    id: 'guinea-current',
-    name: "Guinea Current (Courant de Guinée)",
-    type: 'warm',
-    flowDirection: "Eastward along the Bight of Benin and Biafra",
-    velocityKnots: "1.0 – 3.0 knots",
-    description: "A warm, fast eastward-flowing boundary current hugging the Gulf of Guinea coastline from Liberia past Ivory Coast, Ghana, Togo, Benin, and Nigeria into Cameroon.",
-    historicalImpact: "Created treacherous navigational conditions for return journeys, compelling sailing ships to loop far south into the South Atlantic gyre rather than sailing back against the current.",
-    pathCoordinates: [
-      [4.5, -9.0],
-      [4.2, -4.0],
-      [5.0, 1.0],
-      [4.0, 6.0],
-      [3.0, 9.0]
-    ]
+    flowDirection: "Southward along Northwest African coast toward West Africa",
+    velocityKnots: "0.5 – 1.2 knots",
+    description: "A wind-driven surface current that is part of the North Atlantic Gyre, flowing south along the coast of Northwest Africa.",
+    historicalImpact: "Provided the crucial maritime tailwind for Portuguese caravels exploring down the Atlantic coast of Africa during the 15th century.",
+    pathCoordinates: [[32.0, -10.0], [25.0, -16.0], [18.0, -18.0], [10.0, -20.0]]
   },
   {
     id: 'benguela-current',
     name: "Benguela Current",
     type: 'cold',
-    flowDirection: "North-Northwest from Cape of Good Hope to Angola",
-    velocityKnots: "0.8 – 2.2 knots",
-    description: "A vigorous, cold sub-Antarctic upwelling current flowing northward along the Namibian and Angolan coastline, merging into the South Equatorial Current near Point Noire.",
-    historicalImpact: "Provided the fastest natural oceanic highway across the Atlantic, enabling slave ships embarking from Luanda and Benguela to reach Salvador da Bahia and Rio de Janeiro in under 30–35 days.",
-    pathCoordinates: [
-      [-34.0, 18.0],
-      [-28.0, 14.5],
-      [-22.0, 12.0],
-      [-15.0, 10.5],
-      [-8.0, 8.0],
-      [-3.0, 2.0]
-    ]
+    flowDirection: "North-northwestward along the southwest coast of Africa",
+    velocityKnots: "0.5 – 1.5 knots",
+    description: "The eastern branch of the South Atlantic Gyre, carrying cold sub-Antarctic waters northward along the coasts of South Africa and Namibia.",
+    historicalImpact: "Created rich upwelling fisheries while presenting formidable headwind barriers for early southbound mariners rounding the Cape.",
+    pathCoordinates: [[-34.0, 18.0], [-28.0, 14.0], [-20.0, 11.0], [-10.0, 10.0]]
   },
   {
-    id: 'south-equatorial-current',
-    name: "South Equatorial Current",
-    type: 'equatorial',
-    flowDirection: "Westward across the Atlantic to Brazil & Caribbean",
-    velocityKnots: "1.5 – 3.5 knots",
-    description: "The primary trans-oceanic conveyor of the tropical Atlantic, driven by steady Southeast Trade Winds spanning from the Gulf of Guinea to the Brazilian bulge (Cabo de São Roque).",
-    historicalImpact: "The direct oceanic engine of the Middle Passage; ships captured in its grip made rapid westerly headway toward Recife, Bahia, Barbados, and Jamaica.",
-    pathCoordinates: [
-      [-2.0, 5.0],
-      [-4.0, -10.0],
-      [-6.0, -25.0],
-      [-7.0, -34.0],
-      [-8.0, -36.0]
-    ]
+    id: 'agulhas-current',
+    name: "Agulhas Current",
+    type: 'warm',
+    flowDirection: "Southwestward down the east coast of Africa, retroflecting eastward",
+    velocityKnots: "2.0 – 4.5 knots (very strong)",
+    description: "The western boundary current of the southwest Indian Ocean, flowing fast down the Mozambique and South African coastline.",
+    historicalImpact: "Notoriously violent sea conditions at the southern tip of Africa (Cape Agulhas), responsible for numerous historic shipwrecks.",
+    pathCoordinates: [[-25.0, 35.0], [-30.0, 32.0], [-35.0, 25.0], [-37.0, 20.0]]
+  },
+  {
+    id: 'guinea-current',
+    name: "Guinea Current",
+    type: 'warm',
+    flowDirection: "Eastward along the Gulf of Guinea coast",
+    velocityKnots: "0.8 – 1.8 knots",
+    description: "A warm, slow eastward flowing ocean current stretching along the West African coast from Cape Palmas to the Niger Delta.",
+    historicalImpact: "Governed coastal navigation schedules between the Gold Coast, the Slave Coast, and the Bight of Benin.",
+    pathCoordinates: [[4.0, -8.0], [4.5, -2.0], [4.0, 4.0], [3.5, 7.0]]
   }
 ];
 
 export const SEASONAL_WIND_REGIMES: SeasonalWindRegime[] = [
   {
     id: 'q1',
-    seasonName: "Boreal Winter / Dry Season (Jan – Mar)",
+    seasonName: "Q1: Winter Northeast Monsoon & Harmattan Season",
     months: "January – March",
-    tradeWindsBehavior: "Strong, reliable Northeast Trade Winds; intense desert Harmattan winds sweeping dust seaward across Upper Guinea.",
-    itczPosition: "Southernmost position (near 2°N to 4°S), creating a narrow doldrums belt in the Atlantic.",
+    tradeWindsBehavior: "Strong NE Harmattan trade winds blowing dust off the Sahara across West Africa; steady Easterlies south of the equator.",
+    itczPosition: "Southernmost position (approx. 5°S to 10°S)",
     transatlanticPassageDurationDays: {
-      senegambiaToCaribbean: 32,
-      bightOfBeninToBahia: 42,
-      angolaToRioDeJaneiro: 30,
-      mozambiqueToBrazil: 68
+      senegambiaToCaribbean: 28,
+      bightOfBeninToBahia: 34,
+      angolaToRioDeJaneiro: 39,
+      mozambiqueToBrazil: 62
     },
-    mortalityImpactNote: "Fastest crossing times for Senegambia and Angola corridors; lower mortality rate (~8.5%) due to reduced transit duration and steady winds.",
-    harmattanIntensity: "Severe"
+    mortalityImpactNote: "Dry Harmattan conditions reduced airborne malaria vector activity in northern corridors but increased respiratory distress during long maritime confinement.",
+    harmattanIntensity: 'Severe'
   },
   {
     id: 'q2',
-    seasonName: "Boreal Spring / Pre-Monsoon (Apr – Jun)",
+    seasonName: "Q2: Spring Equinox & ITCZ Northward Transition",
     months: "April – June",
-    tradeWindsBehavior: "Northeast Trades begin to weaken; Southeast Trades strengthen and expand north of the equator.",
-    itczPosition: "Migrating northward toward 6°N – 8°N, expanding the convective rain zone.",
+    tradeWindsBehavior: "NE trades weaken as the sun crosses the equator; Atlantic equatorial counter-current intensifies eastward.",
+    itczPosition: "Shifting rapidly northward across the Equator to 5°N",
     transatlanticPassageDurationDays: {
-      senegambiaToCaribbean: 39,
-      bightOfBeninToBahia: 48,
-      angolaToRioDeJaneiro: 34,
-      mozambiqueToBrazil: 74
+      senegambiaToCaribbean: 31,
+      bightOfBeninToBahia: 36,
+      angolaToRioDeJaneiro: 42,
+      mozambiqueToBrazil: 68
     },
-    mortalityImpactNote: "Moderate crossing times; frequent squalls and tropical depressions emerging near the Cape Verde archipelago.",
-    harmattanIntensity: "Low"
+    mortalityImpactNote: "Monsoon rains begin in West Africa, creating high humidity and acute dysentery outbreaks in coastal slave factories (forts).",
+    harmattanIntensity: 'Moderate'
   },
   {
     id: 'q3',
-    seasonName: "Boreal Summer / Monsoon & Hurricane Peak (Jul – Sep)",
+    seasonName: "Q3: Summer Southwest Monsoon & Peak Rainfalls",
     months: "July – September",
-    tradeWindsBehavior: "Southwest Monsoon active across Gulf of Guinea; wide equatorial calms (Doldrums) stalling vessels; Atlantic hurricane season begins.",
-    itczPosition: "Northernmost position (10°N – 14°N), creating expansive windless doldrum zones.",
+    tradeWindsBehavior: "Southwest monsoon winds dominate West Africa, delivering torrential rains; powerful Southeast trades in the South Atlantic.",
+    itczPosition: "Northernmost position (approx. 15°N)",
     transatlanticPassageDurationDays: {
-      senegambiaToCaribbean: 54,
-      bightOfBeninToBahia: 62,
-      angolaToRioDeJaneiro: 38,
-      mozambiqueToBrazil: 86
+      senegambiaToCaribbean: 26,
+      bightOfBeninToBahia: 32,
+      angolaToRioDeJaneiro: 37,
+      mozambiqueToBrazil: 58
     },
-    mortalityImpactNote: "Highest mortality risk (~16.2%) caused by ships becoming becalmed in the Doldrums for weeks, exhausting freshwater provisions and triggering dysentery outbreaks.",
-    harmattanIntensity: "Low"
+    mortalityImpactNote: "Peak rainy season in West Africa; severe gastrointestinal and malarial mortality spikes in coastal holding barracks.",
+    harmattanIntensity: 'Low'
   },
   {
     id: 'q4',
-    seasonName: "Boreal Autumn / Post-Monsoon Transition (Oct – Dec)",
+    seasonName: "Q4: Autumn Southerly Retreat & Calm Equatorial Belts",
     months: "October – December",
-    tradeWindsBehavior: "Northeast Trades re-establish strength; Southeast Trades retreat southward; sea surface temperatures cool.",
-    itczPosition: "Retreating southward toward the geographical equator.",
+    tradeWindsBehavior: "Monsoon retreats southward; NE trades begin to re-establish across the Sahara and Sahel.",
+    itczPosition: "Moving southward toward the Equator",
     transatlanticPassageDurationDays: {
-      senegambiaToCaribbean: 36,
-      bightOfBeninToBahia: 45,
-      angolaToRioDeJaneiro: 32,
-      mozambiqueToBrazil: 71
+      senegambiaToCaribbean: 29,
+      bightOfBeninToBahia: 33,
+      angolaToRioDeJaneiro: 38,
+      mozambiqueToBrazil: 60
     },
-    mortalityImpactNote: "Transit times normalize; maritime navigation stabilizes across the Windward and Leeward passage routes.",
-    harmattanIntensity: "Moderate"
+    mortalityImpactNote: "Favourable sailing conditions across the South Atlantic from Angola and Mozambique as stable high-pressure cells stabilize.",
+    harmattanIntensity: 'Moderate'
   }
 ];
