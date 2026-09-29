@@ -631,14 +631,14 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
           <span>Hydrodynamic Engine: <strong className="text-amber-300">{activeSeasonMeta.seasonName.split(':')[0]}</strong></span>
         </div>
 
-        {/* Real-time Velocity & Particle Volume Diagnostic Badges */}
-        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 backdrop-blur-md border border-slate-700 text-[11px] font-mono text-slate-300 shadow-md">
-          <Activity className="w-3 h-3 text-emerald-400" />
-          <span>Velocity: <strong className="text-emerald-300">{activeHydroMetrics.speedFactor.toFixed(2)}x</strong></span>
+        {/* Real-time TAST Correlated Meteorological & Mortality Badges */}
+        <div className="hidden lg:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 backdrop-blur-md border border-slate-700 text-[11px] font-mono text-slate-300 shadow-md">
+          <Activity className="w-3 h-3 text-cyan-400" />
+          <span>Wind: <strong className="text-cyan-300">{activeHydroMetrics.tastCorrelations.windSpeedDisplay}</strong></span>
           <span className="text-slate-500">•</span>
-          <span>Trail: <strong className="text-sky-300">{activeHydroMetrics.trailScale}px</strong></span>
+          <span>Hold Temp: <strong className="text-amber-300">{activeHydroMetrics.tastCorrelations.holdTemperature}</strong></span>
           <span className="text-slate-500">•</span>
-          <span>Volume: <strong className="text-amber-300">{Math.round(activeHydroMetrics.activeRatio * 100)}%</strong></span>
+          <span>Mortality: <strong className="text-rose-400">{activeHydroMetrics.tastCorrelations.mortalityRate}</strong></span>
         </div>
 
         <button

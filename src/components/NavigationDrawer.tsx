@@ -258,7 +258,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   const { t } = useTranslation();
 
   // Determine if current page triggers auto-collapse rail mode on desktop
-  const isAutoCollapsePage = currentTab === 'ethnic-tree' || currentTab === 'map';
+  const isAutoCollapsePage = currentTab === 'ethnic-tree' || currentTab === 'map' || currentTab === 'archival-cartography';
   const [isDrawerHovered, setIsDrawerHovered] = useState(false);
 
   // Active group detections

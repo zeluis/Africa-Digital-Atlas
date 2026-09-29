@@ -900,7 +900,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                 badgeOffsetX = -88;
                 badgeOffsetY = -2;
               } else if (zone.id === 'southeast_africa') {
-                badgeOffsetX = 10;
+                badgeOffsetX = -95;
                 badgeOffsetY = 2;
               }
 
@@ -1502,21 +1502,36 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
 
           <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono pt-1">
             <div className="p-1.5 rounded-lg bg-[#FAF6EE] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800">
-              <span className="text-stone-500 dark:text-stone-400 block text-[9px]">Velocity Factor</span>
-              <strong className="text-cyan-800 dark:text-cyan-300 text-xs">
-                {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].speedFactor.toFixed(2)}x
+              <span className="text-stone-500 dark:text-stone-400 block text-[9px]">Wind Speed</span>
+              <strong className="text-cyan-800 dark:text-cyan-300 text-[10.5px] leading-tight block">
+                {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].tastCorrelations.windSpeedDisplay}
               </strong>
             </div>
             <div className="p-1.5 rounded-lg bg-[#FAF6EE] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800">
-              <span className="text-stone-500 dark:text-stone-400 block text-[9px]">Trail Width</span>
-              <strong className="text-amber-800 dark:text-amber-300 text-xs">
-                {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].trailScale}px
+              <span className="text-stone-500 dark:text-stone-400 block text-[9px]">Hold Temp &amp; Sickness</span>
+              <strong className="text-rose-700 dark:text-rose-300 text-[10.5px] leading-tight block">
+                {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].tastCorrelations.holdTemperature}
+              </strong>
+            </div>
+          </div>
+
+          <div className="p-2 rounded-xl bg-[#FAF6EE] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800 text-[10.5px] font-mono space-y-1">
+            <div className="flex justify-between">
+              <span className="text-stone-500 dark:text-stone-400">Mortality Rate:</span>
+              <strong className="text-rose-600 dark:text-rose-400 font-bold">
+                {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].tastCorrelations.mortalityRate}
+              </strong>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-stone-500 dark:text-stone-400">Trade Volume:</span>
+              <strong className="text-amber-700 dark:text-amber-300 font-bold">
+                {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].tastCorrelations.departureShare}
               </strong>
             </div>
           </div>
 
           <p className="text-[10px] text-stone-600 dark:text-stone-400 leading-tight">
-            {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].dominantVectorNote}
+            {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].tastCorrelations.climateImpactNote}
           </p>
 
           {onNavigateToCartography && (

@@ -423,11 +423,6 @@ function AppContent() {
     React.startTransition(() => {
       setCurrentTab(targetTab);
       
-      // Auto-collapse desktop navigation drawer on immersive full-screen views
-      if (targetTab === 'map' || targetTab === 'ethnic-tree' || targetTab === 'archival-cartography') {
-        setIsDesktopDrawerOpen(false);
-      }
-
       // If selecting a specific region, set the activeRegion for RegionalView
       if (targetTab.startsWith('region-') && REGION_ID_TO_NAME[targetTab]) {
         setActiveRegion(REGION_ID_TO_NAME[targetTab]);
@@ -630,7 +625,13 @@ function AppContent() {
                   )}
 
                   {currentTab === 'archival-cartography' && (
-                    <ArchivalCartographyView />
+                    <ArchivalCartographyView 
+                      onNavigateTab={handleSelectTab}
+                      onOpenColophon={() => setIsColophonOpen(true)}
+                      onOpenCitationModal={() => setIsCitationModalOpen(true)}
+                      onOpenWorkingPapers={() => setIsWorkingPapersOpen(true)}
+                      onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
+                    />
                   )}
 
                   {currentTab === 'molecular-legacies' && (
