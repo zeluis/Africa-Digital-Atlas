@@ -103,8 +103,10 @@ const parseUrlHash = (): {
     return { tab: 'iconography', plateId: plate, searchQuery: q };
   }
 
-  if (hash === 'cartography' || hash === 'archival-cartography') {
-    return { tab: 'archival-cartography' };
+  if (hash.startsWith('cartography') || hash.startsWith('archival-cartography')) {
+    const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+    const plate = params.get('plate') || undefined;
+    return { tab: 'archival-cartography', plateId: plate };
   }
 
   return { tab: hash as CanonicalNavTab };
@@ -260,6 +262,11 @@ function AppContent() {
       targetHash = `regions/${encodeURIComponent(activeRegion)}`;
     } else if (currentTab === 'analytics' && selectedIndicatorForAnalytics) {
       targetHash = `analytics?ind=${encodeURIComponent(selectedIndicatorForAnalytics)}`;
+    } else if (currentTab === 'archival-cartography') {
+      const currentHash = window.location.hash.replace(/^#\/?/, '').trim();
+      if (currentHash.startsWith('cartography') || currentHash.startsWith('archival-cartography')) {
+        return;
+      }
     }
 
     const currentHash = window.location.hash.replace(/^#\/?/, '').trim();

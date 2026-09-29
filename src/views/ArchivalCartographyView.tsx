@@ -13,6 +13,7 @@ import {
 import { HistoricalMapCurtainViewer } from '../components/cartography/HistoricalMapCurtainViewer';
 import { OceanCurrentParticleCanvas } from '../components/cartography/OceanCurrentParticleCanvas';
 import { AntiquePlateCanvas } from '../components/cartography/AntiquePlateCanvas';
+import { SEASONAL_HYDRO_METRICS } from '../services/oceanHydrodynamicsService';
 import { 
   Map as MapIcon, 
   Wind, 
@@ -36,9 +37,27 @@ import {
 
 type CartographyWorkbenchTab = 'curtain' | 'streamlines' | 'kingdoms';
 
-export const ArchivalCartographyView: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<CartographyWorkbenchTab>('curtain');
-  const [selectedPlate, setSelectedPlate] = useState<HistoricalMapPlate>(HISTORICAL_MAP_PLATES[0]);
+interface ArchivalCartographyViewProps {
+  initialPlateId?: string;
+}
+
+export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = ({ initialPlateId }) => {
+  const initialData = React.useMemo(() => {
+    if (typeof window === 'undefined') return { plate: HISTORICAL_MAP_PLATES[0], tab: 'curtain' as CartographyWorkbenchTab };
+    const hash = window.location.hash.replace(/^#\/?/, '').trim();
+    const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+    const pId = params.get('plate') || initialPlateId;
+    const foundPlate = pId ? HISTORICAL_MAP_PLATES.find(p => p.id === pId) : undefined;
+    const tabParam = params.get('tab');
+    const validTab: CartographyWorkbenchTab = (tabParam === 'streamlines' || tabParam === 'kingdoms' || tabParam === 'curtain') ? (tabParam as CartographyWorkbenchTab) : 'curtain';
+    return {
+      plate: foundPlate || HISTORICAL_MAP_PLATES[0],
+      tab: validTab
+    };
+  }, [initialPlateId]);
+
+  const [activeTab, setActiveTab] = useState<CartographyWorkbenchTab>(initialData.tab);
+  const [selectedPlate, setSelectedPlate] = useState<HistoricalMapPlate>(initialData.plate);
   const [activeSeasonId, setActiveSeasonId] = useState<'q1' | 'q2' | 'q3' | 'q4'>('q1');
   const [showCurrents, setShowCurrents] = useState<boolean>(true);
   const [showWinds, setShowWinds] = useState<boolean>(true);
@@ -169,18 +188,39 @@ export const ArchivalCartographyView: React.FC = () => {
           </div>
 
           {/* Seasonal Switcher Header Card */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm text-left">
-            <div className="space-y-0.5">
-              <span className="text-[10px] font-mono uppercase font-bold text-cyan-700 dark:text-cyan-400 tracking-wider">
-                Seasonal Maritime Hydrodynamics &amp; Navigation GIS
-              </span>
-              <h2 className="text-xl font-serif font-bold text-stone-900 dark:text-stone-100">
-                {activeSeason.seasonName}
-              </h2>
+          <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm text-left space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-mono uppercase font-bold text-cyan-700 dark:text-cyan-400 tracking-wider">
+                  Seasonal Maritime Hydrodynamics &amp; Navigation GIS
+                </span>
+                <h2 className="text-xl font-serif font-bold text-stone-900 dark:text-stone-100">
+                  {activeSeason.seasonName}
+                </h2>
+              </div>
+
+              {/* Dynamic Hydrodynamic Performance Diagnostics */}
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="px-3 py-1.5 rounded-full bg-cyan-50 dark:bg-cyan-950/50 border border-cyan-200 dark:border-cyan-800/60 text-xs font-mono text-cyan-800 dark:text-cyan-300 font-bold flex items-center gap-1.5 shadow-2xs">
+                  <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
+                  <span>Velocity Factor: <strong className="text-cyan-950 dark:text-cyan-100">{SEASONAL_HYDRO_METRICS[activeSeasonId].speedFactor.toFixed(2)}x</strong></span>
+                </div>
+                <div className="px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/60 text-xs font-mono text-amber-800 dark:text-amber-300 font-bold flex items-center gap-1.5 shadow-2xs">
+                  <span>Trail Width: <strong className="text-amber-950 dark:text-amber-100">{SEASONAL_HYDRO_METRICS[activeSeasonId].trailScale}px</strong></span>
+                </div>
+                <div className="px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 text-xs font-mono text-emerald-800 dark:text-emerald-300 font-bold flex items-center gap-1.5 shadow-2xs">
+                  <span>Stream Density: <strong className="text-emerald-950 dark:text-emerald-100">{Math.round(SEASONAL_HYDRO_METRICS[activeSeasonId].activeRatio * 100)}%</strong></span>
+                </div>
+              </div>
             </div>
 
-            <div className="text-xs font-mono text-stone-500 dark:text-stone-400">
-              Active Months: <strong className="text-cyan-800 dark:text-cyan-300">{activeSeason.months}</strong>
+            {/* Dominant Oceanic Vector Narrative */}
+            <div className="p-3 rounded-2xl bg-[#FAF8F5] dark:bg-stone-950/60 border border-stone-200/80 dark:border-stone-800/80 text-xs text-stone-700 dark:text-stone-300 leading-relaxed font-sans flex items-start gap-2.5">
+              <Compass className="w-4 h-4 text-cyan-600 dark:text-cyan-400 shrink-0 mt-0.5" />
+              <div>
+                <strong className="font-semibold text-stone-900 dark:text-stone-100">Prevailing Maritime Circulation: </strong>
+                <span>{SEASONAL_HYDRO_METRICS[activeSeasonId].dominantVectorNote}</span>
+              </div>
             </div>
           </div>
 

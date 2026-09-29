@@ -34,10 +34,18 @@ import {
   Image as ImageIcon,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  Move,
   Wind,
   Globe2,
   Calendar,
-  ArrowRight
+  ArrowRight,
+  Link2,
+  Unlink2,
+  Share2,
+  Clock,
+  History,
+  Maximize2
 } from 'lucide-react';
 import { AfricaMapFinalLayer } from '../AfricaMapFinalLayer';
 import { AfricanRegion } from '../../data/types';
@@ -46,6 +54,97 @@ import { getRegionTonalPalette } from '../../data/unGeoschemeColors';
 import { AFRICA_FINAL_VIEWBOX, AFRICA_FINAL_TRANSFORM } from '../../data/africaFinalGeometry';
 import { getCanonicalCountryColor } from '../../data/africaCanonicalColorPalette';
 import { AntiquePlateCanvas } from './AntiquePlateCanvas';
+
+interface ToponymLocation {
+  x: number;
+  y: number;
+  zoom: number;
+  note: string;
+}
+
+const TOPONYM_LOCATIONS: Record<string, ToponymLocation> = {
+  "Mountains of the Moon": { x: -280, y: -220, zoom: 2.2, note: "Legendary Ptolemaic equatorial lunar range reputed as the source of the White Nile." },
+  "Kingdom of Nubia": { x: -480, y: 650, zoom: 2.2, note: "Ancient Nile kingdoms of Kush, Dongola, and Christian Nubia along the Upper Nile." },
+  "Barbary": { x: -200, y: 850, zoom: 2.0, note: "North African Mediterranean littoral (Maghreb and Ottoman Regencies)." },
+  "Barbarie": { x: -200, y: 850, zoom: 2.0, note: "North African Mediterranean littoral (Maghreb and Ottoman Regencies)." },
+  "Barbaria": { x: -200, y: 850, zoom: 2.0, note: "North African Mediterranean littoral (Maghreb and Ottoman Regencies)." },
+  "Barbary States": { x: -200, y: 850, zoom: 2.0, note: "North African Mediterranean littoral (Maghreb and Ottoman Regencies)." },
+  "Congo": { x: 200, y: -260, zoom: 2.2, note: "Sovereign Kingdom of Kongo and the vast equatorial Congo river basin." },
+  "Royaume de Congo": { x: 200, y: -260, zoom: 2.2, note: "Sovereign Kingdom of Kongo (Kongo dya Ntotila) on the Atlantic coast." },
+  "Congo Regnum": { x: 200, y: -260, zoom: 2.2, note: "Sovereign Kingdom of Kongo (Kongo dya Ntotila) on the Atlantic coast." },
+  "Congo Free State": { x: 200, y: -260, zoom: 2.2, note: "Late 19th-century colonial territory encompassing the Congo River basin." },
+  "Monomotapa": { x: -550, y: -750, zoom: 2.3, note: "Mutapa Empire and gold-bearing plateau between the Zambezi and Limpopo." },
+  "Monomotapa Regnum": { x: -550, y: -750, zoom: 2.3, note: "Mutapa Empire and gold-bearing plateau between the Zambezi and Limpopo." },
+  "Caput Bonae Spei": { x: -200, y: -1100, zoom: 2.2, note: "Cape of Good Hope and Table Bay maritime navigation point." },
+  "Cape of Good Hope": { x: -200, y: -1100, zoom: 2.2, note: "Cape of Good Hope and Table Bay maritime navigation point." },
+  "Cap de Bonne-Espérance": { x: -200, y: -1100, zoom: 2.2, note: "Cape of Good Hope and Table Bay maritime navigation point." },
+  "Cape Colony": { x: -200, y: -1100, zoom: 2.2, note: "Southern tip of the continent and Table Bay anchorage." },
+  "The Hottentots": { x: -200, y: -1100, zoom: 2.2, note: "Historical designation for indigenous Khoekhoe pastoralists of Southern Africa." },
+  "Guinée": { x: 550, y: 150, zoom: 2.1, note: "West African Upper and Lower Guinea coastlines and river kingdoms." },
+  "Guinea": { x: 550, y: 150, zoom: 2.1, note: "West African Upper and Lower Guinea coastlines and river kingdoms." },
+  "Guineae Pars": { x: 550, y: 150, zoom: 2.1, note: "West African Upper and Lower Guinea coastlines and river kingdoms." },
+  "Guineae Nova Descriptio": { x: 550, y: 150, zoom: 2.1, note: "Detailed 17th-century coastal charting of West African trading forts." },
+  "Haute Guinée": { x: 550, y: 150, zoom: 2.1, note: "Upper Guinea coast and forested interior polities." },
+  "Guinea-Küste": { x: 550, y: 150, zoom: 2.1, note: "West African maritime Guinea coast." },
+  "Côte de l'Or": { x: 550, y: 120, zoom: 2.3, note: "Gold Coast (modern Ghana) and coastal Akan trading forts." },
+  "Côte des Esclaves": { x: 420, y: 100, zoom: 2.3, note: "Bight of Benin coastal trade embouchures." },
+  "Royaume de Juda": { x: 420, y: 100, zoom: 2.4, note: "Kingdom of Whydah (Ouidah) along the Bight of Benin." },
+  "Abyssinie": { x: -750, y: 280, zoom: 2.2, note: "Ethiopian Highlands and historic Solomonic Empire / Kingdom of Aksum." },
+  "Abissinia": { x: -750, y: 280, zoom: 2.2, note: "Ethiopian Highlands and historic Solomonic Empire / Kingdom of Aksum." },
+  "Habeşistan (Abyssinia)": { x: -750, y: 280, zoom: 2.2, note: "Ottoman designation for the historic Abyssinian Empire in the Horn of Africa." },
+  "Trablusgarp (Tripoli)": { x: -250, y: 750, zoom: 2.2, note: "Ottoman Eyalet and Vilayet of Tripoli along the Libyan Mediterranean coast." },
+  "Mısır (Egypt)": { x: -650, y: 780, zoom: 2.2, note: "Khedivate of Egypt and Lower Nile river delta." },
+  "Egypt": { x: -650, y: 780, zoom: 2.2, note: "Lower Nile Valley, Cairo, and Red Sea trading ports." },
+  "Aegyptus": { x: -650, y: 780, zoom: 2.2, note: "Lower Nile Valley and Delta recorded in classical Latin." },
+  "Sahara": { x: 0, y: 550, zoom: 2.0, note: "Great Sahara Desert and trans-Saharan camel caravan trade routes." },
+  "Sahara Desert": { x: 0, y: 550, zoom: 2.0, note: "Great Sahara Desert and trans-Saharan camel caravan trade routes." },
+  "Zaara or Desert": { x: 0, y: 550, zoom: 2.0, note: "Emanuel Bowen's 18th-century recording of the Sahara Desert expanse." },
+  "Soudan": { x: 150, y: 250, zoom: 2.0, note: "Bilad al-Sudan / Sahelian grassland belt spanning from Senegal to Chad." },
+  "Sudan": { x: 150, y: 250, zoom: 2.0, note: "Sahelian savanna belt connecting West Africa to the Nile basin." },
+  "Nigritia": { x: 200, y: 300, zoom: 2.0, note: "17th-century European cartographic designation for the Niger River basin and Sahel." },
+  "Negroland": { x: 200, y: 300, zoom: 2.0, note: "18th-century British map term for the interior Sahel and savanna nations." },
+  "Timbuktu": { x: 450, y: 380, zoom: 2.4, note: "Historic trans-Saharan scholastic and gold/salt entrepôt on the Niger River bend." },
+  "Biafara Regnum": { x: 100, y: 80, zoom: 2.3, note: "Legendary Biafara kingdom inland from the Bight of Biafra." },
+  "Zanguebar": { x: -800, y: -300, zoom: 2.2, note: "Swahili Coast maritime trade corridor from Mogadishu to Sofala." },
+  "Zanzibar": { x: -800, y: -300, zoom: 2.3, note: "Sultanate of Zanzibar and Indian Ocean spice & clove trade hub." },
+  "Nil Nehri": { x: -600, y: 500, zoom: 2.2, note: "The Nile River system flowing north from Lake Victoria and the Ethiopian Highlands." },
+  "Afrika Kıtası": { x: 0, y: 0, zoom: 1.0, note: "Pan-African continental overview in Ottoman Turkish cartography." },
+  "大沙漠 (Great Desert)": { x: 0, y: 550, zoom: 2.0, note: "The Sahara Desert designated in historical Japanese kanji." },
+  "泥児利亜 (Nigeria)": { x: 300, y: 150, zoom: 2.2, note: "Early phonetic kanji representation for Nigeria / Niger basin." },
+  "喜望峰 (Cape of Good Hope)": { x: -200, y: -1100, zoom: 2.2, note: "Cape of Good Hope rendered in traditional Japanese characters." },
+  "エギプト (Egypt)": { x: -650, y: 780, zoom: 2.2, note: "Egypt and Nile valley documented in early katakana." },
+  "未詳地 (Unexplored Region)": { x: -50, y: -150, zoom: 2.2, note: "Central African deep interior marked as uncharted terra incognita." }
+};
+
+interface PreColonialEraSpan {
+  id: string;
+  start: number;
+  end: number;
+}
+
+const KINGDOM_CHRONOLOGY: Record<string, PreColonialEraSpan> = {
+  'axum-empire': { id: 'axum-empire', start: 100, end: 940 },
+  'kanem-bornu': { id: 'kanem-bornu', start: 700, end: 1900 },
+  'benin-kingdom': { id: 'benin-kingdom', start: 1180, end: 1897 },
+  'great-zimbabwe': { id: 'great-zimbabwe', start: 1220, end: 1450 },
+  'mali-empire': { id: 'mali-empire', start: 1235, end: 1670 },
+  'oyo-empire': { id: 'oyo-empire', start: 1300, end: 1896 },
+  'kongo-kingdom': { id: 'kongo-kingdom', start: 1390, end: 1914 },
+  'songhai-empire': { id: 'songhai-empire', start: 1464, end: 1591 },
+  'dahomey-kingdom': { id: 'dahomey-kingdom', start: 1600, end: 1904 },
+  'ashanti-empire': { id: 'ashanti-empire', start: 1701, end: 1957 },
+};
+
+const CHRONOLOGY_MILESTONES: { year: number; title: string; desc: string }[] = [
+  { year: 350, title: "Aksumite Golden Age", desc: "King Ezana expands trade across the Red Sea and adopts coinage." },
+  { year: 800, title: "Rise of Kanem-Bornu", desc: "Duguwa dynasty consolidates trans-Saharan Lake Chad trade." },
+  { year: 1250, title: "Sundiata Keita & Mali", desc: "Kouroukan Fouga charter and unification of the Manden empire." },
+  { year: 1324, title: "Mansa Musa & Great Zimbabwe", desc: "Legendary Hajj pilgrimage and dry-stone Great Enclosure masonry." },
+  { year: 1490, title: "Songhai & Kingdom of Kongo", desc: "Askia Muhammad's scholastic empire and early Kongo-Lisbon diplomacy." },
+  { year: 1650, title: "Oyo & Benin Flowering", desc: "Yoruba cavalry supremacy and zenith of royal lost-wax bronze casting." },
+  { year: 1701, title: "Golden Stool of Ashanti", desc: "Osei Tutu I unifies the Ashanti Kingdom; Dahomey palace militarization." },
+  { year: 1850, title: "Late Pre-Colonial Era", desc: "Vibrant coastal kingdoms prior to the 1884–1885 Berlin Conference." }
+];
 
 interface HistoricalMapCurtainViewerProps {
   selectedPlate: HistoricalMapPlate;
@@ -72,10 +171,18 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
   const [curtainPosition, setCurtainPosition] = useState<number>(50); // percentage (0 - 100)
   const [opacityLevel, setOpacityLevel] = useState<number>(65); // percentage (0 - 100)
   const [borderVibrancy, setBorderVibrancy] = useState<BorderVibrancy>('vibrant');
+  
+  // High-precision Zoom & Pan state (supporting synchronized dual-pane in sideBySide as well as curtain/opacity)
   const [zoomLevel, setZoomLevel] = useState<number>(1.0); // 100% uncropped full continent view
+  const [plateZoom, setPlateZoom] = useState<number>(1.0);
+  const [vectorZoom, setVectorZoom] = useState<number>(1.0);
   const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [platePanOffset, setPlatePanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [vectorPanOffset, setVectorPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isDraggingPan, setIsDraggingPan] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isSyncedPanZoom, setIsSyncedPanZoom] = useState<boolean>(true);
+  const [activePanTarget, setActivePanTarget] = useState<'both' | 'plate' | 'vector'>('both');
 
   // Overlays & Panels state
   const [showPreColonialKingdoms, setShowPreColonialKingdoms] = useState<boolean>(true);
@@ -83,6 +190,20 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
   const [showGraticules, setShowGraticules] = useState<boolean>(true);
   const [selectedEntity, setSelectedEntity] = useState<PreColonialEntity | null>(null);
   const [hoveredEntity, setHoveredEntity] = useState<PreColonialEntity | null>(null);
+
+  // Chronology Scrubber state for Pre-Colonial Kingdoms
+  const [selectedChronologyYear, setSelectedChronologyYear] = useState<number | null>(null);
+  const [isChronologyOpen, setIsChronologyOpen] = useState<boolean>(false);
+  const [dimInactiveKingdoms, setDimInactiveKingdoms] = useState<boolean>(true);
+
+  // Toponym Spatial Callout state
+  const [activeToponymFocus, setActiveToponymFocus] = useState<{ name: string; note: string } | null>(null);
+
+  // Deep link sharing state
+  const [copiedDeepLink, setCopiedDeepLink] = useState<boolean>(false);
+
+  // Vector map country hover in side-by-side
+  const [hoveredCountryInfo, setHoveredCountryInfo] = useState<{ name: string; region: string } | null>(null);
 
   // Immersive layout state
   const [isDossierOpen, setIsDossierOpen] = useState<boolean>(true);
@@ -96,8 +217,63 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
   // Reset viewport upon new plate selection to 100% full uncropped view
   useEffect(() => {
     setZoomLevel(1.0);
+    setPlateZoom(1.0);
+    setVectorZoom(1.0);
     setPanOffset({ x: 0, y: 0 });
+    setPlatePanOffset({ x: 0, y: 0 });
+    setVectorPanOffset({ x: 0, y: 0 });
+    setActiveToponymFocus(null);
   }, [selectedPlate.id]);
+
+  // Deep-linking hash parsing on mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const hash = window.location.hash.replace(/^#\/?/, '').trim();
+    if (hash.startsWith('cartography') || hash.startsWith('archival-cartography')) {
+      const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+      const modeParam = params.get('mode');
+      if (modeParam === 'curtain' || modeParam === 'opacity' || modeParam === 'sideBySide') {
+        setComparisonMode(modeParam);
+      }
+      const kingdomParam = params.get('kingdom');
+      if (kingdomParam) {
+        const found = PRE_COLONIAL_ENTITIES.find(e => e.id === kingdomParam);
+        if (found) {
+          setSelectedEntity(found);
+          setIsDossierOpen(true);
+        }
+      }
+      const yearParam = params.get('year');
+      if (yearParam && !isNaN(Number(yearParam))) {
+        setSelectedChronologyYear(Number(yearParam));
+        setIsChronologyOpen(true);
+      }
+    }
+  }, []);
+
+  // Sync state to URL hash query parameters
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams();
+    if (selectedPlate.id !== HISTORICAL_MAP_PLATES[0].id) {
+      params.set('plate', selectedPlate.id);
+    }
+    if (comparisonMode !== 'curtain') {
+      params.set('mode', comparisonMode);
+    }
+    if (selectedEntity) {
+      params.set('kingdom', selectedEntity.id);
+    }
+    if (selectedChronologyYear !== null) {
+      params.set('year', String(selectedChronologyYear));
+    }
+    const query = params.toString();
+    const targetHash = query ? `archival-cartography?${query}` : 'archival-cartography';
+    const currentHash = window.location.hash.replace(/^#\/?/, '').trim();
+    if (currentHash !== targetHash) {
+      window.history.replaceState(null, '', `#${targetHash}`);
+    }
+  }, [selectedPlate.id, comparisonMode, selectedEntity, selectedChronologyYear]);
 
   // Curtain slider drag handlers
   const handleCurtainMove = useCallback((clientX: number) => {
@@ -131,23 +307,179 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
     }
   };
 
-  // Pan handlers for canvas
-  const handleMouseDownCanvas = (e: React.MouseEvent) => {
-    if (zoomLevel <= 1.05) return;
+  // Zoom Pane function (supports both synchronized and independent zoom)
+  const zoomPane = useCallback((target: 'both' | 'plate' | 'vector', delta: number) => {
+    if (target === 'both' || isSyncedPanZoom) {
+      setZoomLevel(prev => {
+        const next = Math.max(0.6, Math.min(4.0, Number((prev + delta).toFixed(2))));
+        setPlateZoom(next);
+        setVectorZoom(next);
+        if (next === 1.0) {
+          setPanOffset({ x: 0, y: 0 });
+          setPlatePanOffset({ x: 0, y: 0 });
+          setVectorPanOffset({ x: 0, y: 0 });
+        }
+        return next;
+      });
+    } else if (target === 'plate') {
+      setPlateZoom(prev => {
+        const next = Math.max(0.6, Math.min(4.0, Number((prev + delta).toFixed(2))));
+        if (next === 1.0) setPlatePanOffset({ x: 0, y: 0 });
+        return next;
+      });
+    } else if (target === 'vector') {
+      setVectorZoom(prev => {
+        const next = Math.max(0.6, Math.min(4.0, Number((prev + delta).toFixed(2))));
+        if (next === 1.0) setVectorPanOffset({ x: 0, y: 0 });
+        return next;
+      });
+    }
+  }, [isSyncedPanZoom]);
+
+  const resetPane = useCallback((target: 'both' | 'plate' | 'vector') => {
+    if (target === 'both' || isSyncedPanZoom) {
+      setZoomLevel(1.0);
+      setPlateZoom(1.0);
+      setVectorZoom(1.0);
+      setPanOffset({ x: 0, y: 0 });
+      setPlatePanOffset({ x: 0, y: 0 });
+      setVectorPanOffset({ x: 0, y: 0 });
+      setActiveToponymFocus(null);
+    } else if (target === 'plate') {
+      setPlateZoom(1.0);
+      setPlatePanOffset({ x: 0, y: 0 });
+    } else if (target === 'vector') {
+      setVectorZoom(1.0);
+      setVectorPanOffset({ x: 0, y: 0 });
+    }
+  }, [isSyncedPanZoom]);
+
+  const nudgePan = useCallback((dx: number, dy: number, target: 'both' | 'plate' | 'vector' = 'both') => {
+    if (target === 'both' || isSyncedPanZoom) {
+      setPanOffset(p => ({ x: p.x + dx, y: p.y + dy }));
+      setPlatePanOffset(p => ({ x: p.x + dx, y: p.y + dy }));
+      setVectorPanOffset(p => ({ x: p.x + dx, y: p.y + dy }));
+    } else if (target === 'plate') {
+      setPlatePanOffset(p => ({ x: p.x + dx, y: p.y + dy }));
+    } else if (target === 'vector') {
+      setVectorPanOffset(p => ({ x: p.x + dx, y: p.y + dy }));
+    }
+  }, [isSyncedPanZoom]);
+
+  // Wheel zoom handler across all viewport modes
+  const handleWheelZoom = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.15 : -0.15;
+    zoomPane('both', delta);
+  }, [zoomPane]);
+
+  // Wheel zoom handler per individual pane in side-by-side mode
+  const handlePaneWheel = useCallback((e: React.WheelEvent, target: 'both' | 'plate' | 'vector') => {
+    e.preventDefault();
+    e.stopPropagation();
+    const delta = e.deltaY < 0 ? 0.15 : -0.15;
+    zoomPane(target, delta);
+  }, [zoomPane]);
+
+  // Pointer drag pan handlers using PointerCapture for seamless dragging across all browsers and devices
+  const handlePointerDownPan = (
+    e: React.PointerEvent<HTMLDivElement>,
+    target: 'both' | 'plate' | 'vector' = 'both'
+  ) => {
+    if (e.button !== 0) return; // Only primary mouse button or touch
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {}
+
     setIsDraggingPan(true);
-    setDragStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y });
+    setActivePanTarget(target);
+
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+
+    if (target === 'plate' && !isSyncedPanZoom) {
+      setDragStart({ x: clientX - platePanOffset.x, y: clientY - platePanOffset.y });
+    } else if (target === 'vector' && !isSyncedPanZoom) {
+      setDragStart({ x: clientX - vectorPanOffset.x, y: clientY - vectorPanOffset.y });
+    } else {
+      setDragStart({ x: clientX - panOffset.x, y: clientY - panOffset.y });
+    }
   };
 
-  const handleMouseMoveCanvas = (e: React.MouseEvent) => {
+  const handlePointerMovePan = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isDraggingPan) return;
-    setPanOffset({
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y
-    });
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+    const newX = clientX - dragStart.x;
+    const newY = clientY - dragStart.y;
+
+    if (activePanTarget === 'plate' && !isSyncedPanZoom) {
+      setPlatePanOffset({ x: newX, y: newY });
+    } else if (activePanTarget === 'vector' && !isSyncedPanZoom) {
+      setVectorPanOffset({ x: newX, y: newY });
+    } else {
+      setPanOffset({ x: newX, y: newY });
+      if (isSyncedPanZoom) {
+        setPlatePanOffset({ x: newX, y: newY });
+        setVectorPanOffset({ x: newX, y: newY });
+      }
+    }
   };
 
-  const handleMouseUpCanvas = () => {
-    setIsDraggingPan(false);
+  const handlePointerUpPan = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (isDraggingPan) {
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {}
+      setIsDraggingPan(false);
+    }
+  };
+
+  // Toponym spatial focus handler
+  const handleFocusToponym = (toponymName: string) => {
+    const cleanName = toponymName.replace(/["'()]/g, '').trim();
+    const match = TOPONYM_LOCATIONS[toponymName] || 
+      Object.entries(TOPONYM_LOCATIONS).find(([k]) => cleanName.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(cleanName.toLowerCase()))?.[1];
+
+    if (match) {
+      setZoomLevel(match.zoom);
+      setPlateZoom(match.zoom);
+      setVectorZoom(match.zoom);
+      setPanOffset({ x: match.x, y: match.y });
+      setPlatePanOffset({ x: match.x, y: match.y });
+      setVectorPanOffset({ x: match.x, y: match.y });
+      setActiveToponymFocus({ name: toponymName, note: match.note });
+    } else {
+      setZoomLevel(1.85);
+      setPlateZoom(1.85);
+      setVectorZoom(1.85);
+      setActiveToponymFocus({ name: toponymName, note: `Historic territory or maritime landmark observed on ${selectedPlate.title}.` });
+    }
+  };
+
+  // Pre-colonial kingdom active checker based on chronology
+  const isEntityActiveInChronology = useCallback((entityId: string): boolean => {
+    if (selectedChronologyYear === null) return true;
+    const span = KINGDOM_CHRONOLOGY[entityId];
+    if (!span) return true;
+    return selectedChronologyYear >= span.start && selectedChronologyYear <= span.end;
+  }, [selectedChronologyYear]);
+
+  // Deep-link copy handler
+  const handleCopyDeepLink = async () => {
+    try {
+      const origin = window.location.origin;
+      const pathname = window.location.pathname;
+      const params = new URLSearchParams();
+      params.set('plate', selectedPlate.id);
+      if (comparisonMode !== 'curtain') params.set('mode', comparisonMode);
+      if (selectedEntity) params.set('kingdom', selectedEntity.id);
+      if (selectedChronologyYear !== null) params.set('year', String(selectedChronologyYear));
+      const url = `${origin}${pathname}#archival-cartography?${params.toString()}`;
+      await navigator.clipboard.writeText(url);
+      setCopiedDeepLink(true);
+      setTimeout(() => setCopiedDeepLink(false), 2500);
+    } catch {}
   };
 
   // Copy citation handler
@@ -216,7 +548,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
 
           {/* Right: Layer Toggles & Zoom Controls */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0 text-xs">
-            {/* Layer Toggles (Kingdoms & Borders) */}
+            {/* Layer Toggles (Kingdoms & Borders) + Chronology Scrubber Trigger */}
             <div className="flex items-center gap-1 p-0.5 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B]">
               <button
                 type="button"
@@ -231,6 +563,24 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                 <MapPin className="w-3 h-3 text-purple-600 dark:text-purple-400" />
                 <span className="hidden sm:inline">Kingdoms</span>
               </button>
+
+              {showPreColonialKingdoms && (
+                <button
+                  type="button"
+                  onClick={() => setIsChronologyOpen(o => !o)}
+                  className={`px-2 py-1 rounded-lg text-[10px] font-mono font-bold flex items-center gap-1 transition-all cursor-pointer border ${
+                    isChronologyOpen || selectedChronologyYear !== null
+                      ? 'bg-purple-700 text-white border-purple-700 shadow-2xs'
+                      : 'bg-transparent text-purple-700 dark:text-purple-300 border-purple-400/40 hover:bg-purple-50 dark:hover:bg-purple-900/30'
+                  }`}
+                  title="Toggle Chronological Era Scrubber (100–1900 CE)"
+                >
+                  <Clock className="w-3 h-3" />
+                  <span className="hidden md:inline">
+                    {selectedChronologyYear ? `${selectedChronologyYear} CE` : 'Timeline'}
+                  </span>
+                </button>
+              )}
 
               <button
                 type="button"
@@ -247,21 +597,34 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
               </button>
             </div>
 
+            {/* Side-by-Side Pan/Zoom Synchronization Toggle */}
+            {comparisonMode === 'sideBySide' && (
+              <div className="flex items-center gap-1 p-0.5 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                <button
+                  type="button"
+                  onClick={() => setIsSyncedPanZoom(s => !s)}
+                  className={`px-2 py-1 rounded-lg text-[10px] font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    isSyncedPanZoom
+                      ? 'bg-amber-600 text-white shadow-2xs'
+                      : 'bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300'
+                  }`}
+                  title={isSyncedPanZoom ? "Pan & Zoom is Synchronized between panes (Click to unlock independent pan)" : "Pan & Zoom is Independent (Click to synchronize)"}
+                >
+                  {isSyncedPanZoom ? <Link2 className="w-3 h-3" /> : <Unlink2 className="w-3 h-3 text-stone-400" />}
+                  <span className="hidden md:inline">{isSyncedPanZoom ? "Synced" : "Independent"}</span>
+                </button>
+              </div>
+            )}
+
             <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0 hidden sm:block" />
 
             {/* Zoom Controls */}
             <div className="flex items-center gap-0.5 p-0.5 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B]">
               <button
                 type="button"
-                onClick={() => {
-                  setZoomLevel(z => {
-                    const next = Math.max(Number((z - 0.15).toFixed(2)), 0.6);
-                    if (next === 1.0) setPanOffset({ x: 0, y: 0 });
-                    return next;
-                  });
-                }}
+                onClick={() => zoomPane('both', -0.15)}
                 className="w-6 h-6 rounded-lg flex items-center justify-center text-stone-600 dark:text-stone-300 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
-                title="Zoom Out"
+                title="Zoom Out (or Mouse Wheel down)"
               >
                 <ZoomOut className="w-3 h-3" />
               </button>
@@ -272,19 +635,16 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
 
               <button
                 type="button"
-                onClick={() => setZoomLevel(z => Math.min(Number((z + 0.15).toFixed(2)), 3.5))}
+                onClick={() => zoomPane('both', 0.15)}
                 className="w-6 h-6 rounded-lg flex items-center justify-center text-stone-600 dark:text-stone-300 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
-                title="Zoom In"
+                title="Zoom In (or Mouse Wheel up)"
               >
                 <ZoomIn className="w-3 h-3" />
               </button>
 
               <button
                 type="button"
-                onClick={() => {
-                  setZoomLevel(1.0);
-                  setPanOffset({ x: 0, y: 0 });
-                }}
+                onClick={() => resetPane('both')}
                 className="w-6 h-6 rounded-lg flex items-center justify-center text-stone-500 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
                 title="Reset to 100% Uncropped Full Africa View"
               >
@@ -444,6 +804,112 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
             </div>
           </div>
         </div>
+
+        {/* Chronology Scrubber Drawer (Expandable when user toggles Chronology) */}
+        <AnimatePresence>
+          {showPreColonialKingdoms && isChronologyOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="w-full pt-1.5 pb-1 border-t border-purple-500/25 bg-purple-500/10 dark:bg-purple-950/30 px-3 rounded-xl flex flex-col gap-1.5 overflow-hidden"
+            >
+              <div className="flex items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2">
+                  <History className="w-3.5 h-3.5 text-purple-700 dark:text-purple-300" />
+                  <span className="text-[10.5px] font-mono font-bold text-purple-950 dark:text-purple-200">
+                    Dynastic Chronology Scrubber:
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-purple-700 text-white font-mono text-[10px] font-bold shadow-2xs">
+                    {selectedChronologyYear ? `${selectedChronologyYear} CE` : 'All Eras (100–1900 CE)'}
+                  </span>
+                </div>
+
+                {/* Quick Era Presets */}
+                <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedChronologyYear(null)}
+                    className={`px-2 py-0.5 rounded-lg text-[9.5px] font-mono font-bold transition-all cursor-pointer ${
+                      selectedChronologyYear === null
+                        ? 'bg-purple-700 text-white shadow-2xs'
+                        : 'bg-white/80 dark:bg-stone-900/80 text-stone-700 dark:text-stone-300 hover:bg-purple-100 dark:hover:bg-purple-900/50'
+                    }`}
+                  >
+                    All Eras
+                  </button>
+                  {[
+                    { year: 350, label: '350 CE (Aksum)' },
+                    { year: 800, label: '800 CE (Kanem)' },
+                    { year: 1250, label: '1250 CE (Mali)' },
+                    { year: 1350, label: '1350 CE (Zimbabwe)' },
+                    { year: 1500, label: '1500 CE (Songhai/Kongo)' },
+                    { year: 1650, label: '1650 CE (Oyo/Benin)' },
+                    { year: 1750, label: '1750 CE (Ashanti/Dahomey)' }
+                  ].map(p => (
+                    <button
+                      key={p.year}
+                      type="button"
+                      onClick={() => setSelectedChronologyYear(p.year)}
+                      className={`px-2 py-0.5 rounded-lg text-[9.5px] font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
+                        selectedChronologyYear === p.year
+                          ? 'bg-purple-700 text-white shadow-2xs'
+                          : 'bg-white/80 dark:bg-stone-900/80 text-stone-700 dark:text-stone-300 hover:bg-purple-100 dark:hover:bg-purple-900/50'
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setDimInactiveKingdoms(d => !d)}
+                  className="text-[9.5px] font-mono text-purple-700 dark:text-purple-300 hover:underline cursor-pointer hidden lg:inline"
+                >
+                  {dimInactiveKingdoms ? 'Mode: Dim Inactive' : 'Mode: Hide Inactive'}
+                </button>
+              </div>
+
+              {/* Slider Bar */}
+              <div className="flex items-center gap-3 w-full">
+                <span className="text-[9px] font-mono font-bold text-stone-500">100 CE</span>
+                <input
+                  type="range"
+                  min="100"
+                  max="1900"
+                  step="25"
+                  value={selectedChronologyYear ?? 1350}
+                  onChange={e => setSelectedChronologyYear(Number(e.target.value))}
+                  className="flex-1 accent-purple-600 h-1.5 bg-stone-200 dark:bg-stone-700 rounded-lg cursor-pointer"
+                />
+                <span className="text-[9px] font-mono font-bold text-stone-500">1900 CE</span>
+              </div>
+
+              {/* Contextual Milestone Banner */}
+              {selectedChronologyYear && (
+                <div className="text-[10.5px] font-serif text-purple-950 dark:text-purple-100 bg-white/80 dark:bg-stone-900/80 px-2.5 py-1 rounded-lg border border-purple-200/60 dark:border-purple-800/50 flex items-center justify-between">
+                  <span>
+                    {(() => {
+                      const activeCount = PRE_COLONIAL_ENTITIES.filter(e => isEntityActiveInChronology(e.id)).length;
+                      const closestMilestone = CHRONOLOGY_MILESTONES.reduce((prev, curr) => 
+                        Math.abs(curr.year - selectedChronologyYear) < Math.abs(prev.year - selectedChronologyYear) ? curr : prev
+                      );
+                      return `${activeCount} kingdoms active in ${selectedChronologyYear} CE • ${closestMilestone.title}: ${closestMilestone.desc}`;
+                    })()}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedChronologyYear(null)}
+                    className="text-[9.5px] font-mono text-purple-700 dark:text-purple-300 hover:underline ml-2 cursor-pointer"
+                  >
+                    Clear Filter
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       {/* =========================================================================
@@ -452,6 +918,37 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
           ========================================================================= */}
       <div className="flex-1 w-full flex flex-row overflow-hidden relative min-h-0">
         
+        {/* Floating Toponym Callout Indicator */}
+        <AnimatePresence>
+          {activeToponymFocus && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="absolute top-3 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-2xl bg-amber-950/95 text-amber-200 backdrop-blur-md border border-amber-500/50 shadow-xl text-xs font-serif flex items-center gap-3 max-w-[90vw]"
+            >
+              <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+              <div className="text-left truncate">
+                <strong className="text-amber-100 font-bold">{activeToponymFocus.name}:</strong>{' '}
+                <span className="text-[11px] text-amber-200/90 font-sans">{activeToponymFocus.note}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveToponymFocus(null);
+                  setZoomLevel(1.0);
+                  setPanOffset({ x: 0, y: 0 });
+                  setPlatePanOffset({ x: 0, y: 0 });
+                  setVectorPanOffset({ x: 0, y: 0 });
+                }}
+                className="px-2 py-0.5 rounded-lg bg-amber-500/30 hover:bg-amber-500/50 text-amber-100 font-mono text-[9px] font-bold transition-colors cursor-pointer shrink-0"
+              >
+                Reset View
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Floating Left Button when Filmstrip is collapsed */}
         <AnimatePresence>
           {!isFilmstripOpen && (
@@ -551,66 +1048,324 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
         {/* Main Map Viewport */}
         <div 
           ref={containerRef}
-          onMouseDown={handleMouseDownCanvas}
-          onMouseMove={handleMouseMoveCanvas}
-          onMouseUp={handleMouseUpCanvas}
-          className={`flex-1 relative w-full h-full overflow-hidden flex items-center justify-center select-none ${
-            zoomLevel > 1.05 ? 'cursor-grab active:cursor-grabbing' : 'cursor-default'
-          }`}
+          onWheel={handleWheelZoom}
+          className="flex-1 relative w-full h-full overflow-hidden flex items-center justify-center select-none"
         >
           {comparisonMode === 'sideBySide' ? (
-            /* Side-by-Side Dual Viewport Mode */
-            <div className="w-full h-full grid grid-cols-1 lg:grid-cols-2 gap-3 p-3 sm:p-4">
+            /* Side-by-Side Dual Viewport Mode with Full Synchronized Zoom & Pan */
+            <div className="w-full h-full grid grid-cols-1 lg:grid-cols-2 gap-3 p-2 sm:p-3 relative overflow-hidden">
+              
               {/* Historical Plate Pane */}
-              <div className="relative rounded-2xl overflow-hidden border border-stone-300 dark:border-stone-800 bg-[#F4EFE6] dark:bg-stone-900 flex flex-col shadow-xs">
-                <div className="absolute top-2.5 left-2.5 z-20 px-2.5 py-0.5 rounded-full bg-stone-900/85 text-amber-300 font-mono text-[10px] font-bold backdrop-blur-md border border-amber-500/30">
-                  {selectedPlate.year} • {selectedPlate.shortTitle || selectedPlate.cartographer}
+              <div 
+                className="relative rounded-2xl overflow-hidden border border-stone-300 dark:border-stone-800 bg-[#F4EFE6] dark:bg-stone-900 flex flex-col shadow-xs select-none touch-none cursor-grab active:cursor-grabbing group"
+                onPointerDown={(e) => handlePointerDownPan(e, 'plate')}
+                onPointerMove={handlePointerMovePan}
+                onPointerUp={handlePointerUpPan}
+                onPointerCancel={handlePointerUpPan}
+                onWheel={(e) => handlePaneWheel(e, 'plate')}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  zoomPane('plate', 0.25);
+                }}
+              >
+                {/* Pane Header Info */}
+                <div className="absolute top-2.5 left-2.5 z-20 flex items-center gap-2 max-w-[calc(100%-170px)] pointer-events-none">
+                  <div className="px-2.5 py-0.5 rounded-full bg-stone-900/85 text-amber-300 font-mono text-[10px] font-bold backdrop-blur-md border border-amber-500/30 truncate shadow-xs">
+                    {selectedPlate.year} • {selectedPlate.shortTitle || selectedPlate.cartographer}
+                  </div>
                 </div>
-                <div className="w-full h-full p-2 flex items-center justify-center">
-                  <AntiquePlateCanvas plate={selectedPlate} className="w-full h-full max-h-[78vh] rounded-xl object-contain" />
+
+                {/* Pane Floating Zoom HUD */}
+                <div 
+                  className="absolute top-2.5 right-2.5 z-20 flex items-center gap-0.5 bg-stone-900/90 text-white rounded-xl p-0.5 border border-white/20 backdrop-blur-md shadow-md"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    onClick={() => zoomPane('plate', -0.2)}
+                    className="p-1 rounded-lg hover:bg-white/20 text-stone-200 hover:text-white transition-colors cursor-pointer"
+                    title={isSyncedPanZoom ? "Zoom Out Both Viewports" : "Zoom Out Historical Plate"}
+                  >
+                    <ZoomOut className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="font-mono text-[9px] font-bold px-1.5 min-w-[2.6rem] text-center font-tabular text-amber-300">
+                    {Math.round((isSyncedPanZoom ? zoomLevel : plateZoom) * 100)}%
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => zoomPane('plate', 0.2)}
+                    className="p-1 rounded-lg hover:bg-white/20 text-stone-200 hover:text-white transition-colors cursor-pointer"
+                    title={isSyncedPanZoom ? "Zoom In Both Viewports" : "Zoom In Historical Plate"}
+                  >
+                    <ZoomIn className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => resetPane('plate')}
+                    className="p-1 rounded-lg hover:bg-white/20 text-stone-300 hover:text-white transition-colors cursor-pointer"
+                    title={isSyncedPanZoom ? "Reset Both to 100%" : "Reset Historical Plate to 100%"}
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                {/* Pane Canvas with Zoom & Pan Transform */}
+                <div className="w-full h-full flex items-center justify-center p-2 overflow-hidden pointer-events-none">
+                  <div 
+                    className="w-full h-full flex items-center justify-center transition-transform duration-75 origin-center pointer-events-none"
+                    style={{
+                      transform: `scale(${isSyncedPanZoom ? zoomLevel : plateZoom}) translate(${((isSyncedPanZoom ? panOffset.x : platePanOffset.x) / (isSyncedPanZoom ? zoomLevel : plateZoom))}px, ${((isSyncedPanZoom ? panOffset.y : platePanOffset.y) / (isSyncedPanZoom ? zoomLevel : plateZoom))}px)`
+                    }}
+                  >
+                    <AntiquePlateCanvas plate={selectedPlate} className="w-full h-full max-h-[78vh] rounded-xl object-contain pointer-events-none" />
+                  </div>
                 </div>
               </div>
 
               {/* Contemporary Sovereign Vector Pane */}
-              <div className="relative rounded-2xl overflow-hidden border border-stone-300 dark:border-stone-800 bg-[#FAF8F5] dark:bg-stone-950 flex flex-col items-center justify-center p-3 shadow-xs">
-                <div className="absolute top-2.5 left-2.5 z-20 px-2.5 py-0.5 rounded-full bg-emerald-950/85 text-emerald-300 font-mono text-[10px] font-bold backdrop-blur-md border border-emerald-500/30">
-                  2026 Sovereign Boundaries (54 Nations)
+              <div 
+                className="relative rounded-2xl overflow-hidden border border-stone-300 dark:border-stone-800 bg-[#FAF8F5] dark:bg-stone-950 flex flex-col items-center justify-center p-2 shadow-xs select-none touch-none cursor-grab active:cursor-grabbing group"
+                onPointerDown={(e) => handlePointerDownPan(e, 'vector')}
+                onPointerMove={handlePointerMovePan}
+                onPointerUp={handlePointerUpPan}
+                onPointerCancel={handlePointerUpPan}
+                onWheel={(e) => handlePaneWheel(e, 'vector')}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  zoomPane('vector', 0.25);
+                }}
+              >
+                {/* Pane Header Info */}
+                <div className="absolute top-2.5 left-2.5 z-20 flex items-center gap-2 max-w-[calc(100%-170px)] pointer-events-none">
+                  <div className="px-2.5 py-0.5 rounded-full bg-emerald-950/85 text-emerald-300 font-mono text-[10px] font-bold backdrop-blur-md border border-emerald-500/30 truncate shadow-xs">
+                    2026 Sovereign Map (54 Nations)
+                  </div>
                 </div>
-                <div className="w-full h-full flex items-center justify-center">
-                  <svg
-                    viewBox={AFRICA_FINAL_VIEWBOX}
-                    className="w-full h-full max-w-[92vw] max-h-[78vh] select-none"
-                    preserveAspectRatio="xMidYMid meet"
+
+                {/* Pane Floating Zoom HUD */}
+                <div 
+                  className="absolute top-2.5 right-2.5 z-20 flex items-center gap-0.5 bg-stone-900/90 text-white rounded-xl p-0.5 border border-white/20 backdrop-blur-md shadow-md"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    onClick={() => zoomPane('vector', -0.2)}
+                    className="p-1 rounded-lg hover:bg-white/20 text-stone-200 hover:text-white transition-colors cursor-pointer"
+                    title={isSyncedPanZoom ? "Zoom Out Both Viewports" : "Zoom Out Contemporary Map"}
                   >
-                    <g key={`side-by-side-vibrancy-${borderVibrancy}`} opacity={0.9}>
-                      <AfricaMapFinalLayer
-                        mapData={mapData}
-                        selectedEntityId={null}
-                        activeTooltipEntityId={null}
-                        hoveredEntityId={null}
-                        hoveredAdmin1={null}
-                        showAdmin1Borders={borderVibrancy === 'contrast' || borderVibrancy === 'vibrant'}
-                        showGraticuleAndCompass={showGraticules}
-                        showThematicOverlays={false}
-                        showPowerPlants={false}
-                        showProtectedAreas={false}
-                        visibleRegions={new Set(['Northern Africa', 'Western Africa', 'Central Africa', 'Eastern Africa', 'Southern Africa'])}
-                        activeRegionFilter="All"
-                        getCountryFill={getCountryFill}
-                        handleCountryHover={() => {}}
-                        handleCountryLeave={() => {}}
-                        handleCountryClick={() => {}}
-                        setHoveredAdmin1={() => {}}
-                      />
-                    </g>
-                  </svg>
+                    <ZoomOut className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="font-mono text-[9px] font-bold px-1.5 min-w-[2.6rem] text-center font-tabular text-emerald-300">
+                    {Math.round((isSyncedPanZoom ? zoomLevel : vectorZoom) * 100)}%
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => zoomPane('vector', 0.2)}
+                    className="p-1 rounded-lg hover:bg-white/20 text-stone-200 hover:text-white transition-colors cursor-pointer"
+                    title={isSyncedPanZoom ? "Zoom In Both Viewports" : "Zoom In Contemporary Map"}
+                  >
+                    <ZoomIn className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => resetPane('vector')}
+                    className="p-1 rounded-lg hover:bg-white/20 text-stone-300 hover:text-white transition-colors cursor-pointer"
+                    title={isSyncedPanZoom ? "Reset Both to 100%" : "Reset Contemporary Map to 100%"}
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </button>
                 </div>
+
+                {/* Pane Canvas with Zoom & Pan Transform */}
+                <div className="w-full h-full flex items-center justify-center overflow-hidden pointer-events-none">
+                  <div 
+                    className="w-full h-full flex items-center justify-center transition-transform duration-75 origin-center pointer-events-none"
+                    style={{
+                      transform: `scale(${isSyncedPanZoom ? zoomLevel : vectorZoom}) translate(${((isSyncedPanZoom ? panOffset.x : vectorPanOffset.x) / (isSyncedPanZoom ? zoomLevel : vectorZoom))}px, ${((isSyncedPanZoom ? panOffset.y : vectorPanOffset.y) / (isSyncedPanZoom ? zoomLevel : vectorZoom))}px)`
+                    }}
+                  >
+                    <svg
+                      viewBox={AFRICA_FINAL_VIEWBOX}
+                      className="w-full h-full max-w-[92vw] max-h-[78vh] select-none"
+                      preserveAspectRatio="xMidYMid meet"
+                    >
+                      <g key={`side-by-side-vibrancy-${borderVibrancy}`} opacity={0.92}>
+                        <AfricaMapFinalLayer
+                          mapData={mapData}
+                          selectedEntityId={null}
+                          activeTooltipEntityId={null}
+                          hoveredEntityId={null}
+                          hoveredAdmin1={null}
+                          showAdmin1Borders={borderVibrancy === 'contrast' || borderVibrancy === 'vibrant'}
+                          showGraticuleAndCompass={showGraticules}
+                          showThematicOverlays={false}
+                          showPowerPlants={false}
+                          showProtectedAreas={false}
+                          visibleRegions={new Set(['Northern Africa', 'Western Africa', 'Central Africa', 'Eastern Africa', 'Southern Africa'])}
+                          activeRegionFilter="All"
+                          getCountryFill={getCountryFill}
+                          handleCountryHover={() => {}}
+                          handleCountryLeave={() => {}}
+                          handleCountryClick={() => {}}
+                          setHoveredAdmin1={() => {}}
+                        />
+                      </g>
+
+                      {/* Optional Pre-Colonial Kingdoms Beacons in Side-by-Side */}
+                      {showPreColonialKingdoms && (
+                        <g id="preColonialKingdomBeaconsSideBySide" transform={AFRICA_FINAL_TRANSFORM} className="pointer-events-auto">
+                          {PRE_COLONIAL_ENTITIES.map(entity => {
+                            const [x, y] = entity.svgCoordinates;
+                            const isSelected = selectedEntity?.id === entity.id;
+                            const isHovered = hoveredEntity?.id === entity.id;
+                            const isChronologyActive = isEntityActiveInChronology(entity.id);
+                            if (!isChronologyActive && !dimInactiveKingdoms) return null;
+                            const cleanName = entity.name.split('(')[0].trim();
+                            const textWidth = Math.max(460, cleanName.length * 52 + 180);
+                            
+                            let labelOffsetX = 0;
+                            let labelOffsetY = -190;
+                            if (entity.id === 'dahomey-kingdom') {
+                              labelOffsetX = 20;
+                              labelOffsetY = -200;
+                            } else if (entity.id === 'benin-kingdom') {
+                              labelOffsetX = 220;
+                              labelOffsetY = 190;
+                            } else if (entity.id === 'ashanti-empire') {
+                              labelOffsetX = -560;
+                              labelOffsetY = 0;
+                            } else if (entity.id === 'oyo-empire') {
+                              labelOffsetX = 460;
+                              labelOffsetY = 2;
+                            } else if (entity.id === 'mali-empire') {
+                              labelOffsetX = -120;
+                              labelOffsetY = -190;
+                            } else if (entity.id === 'kongo-kingdom') {
+                              labelOffsetX = -100;
+                              labelOffsetY = 200;
+                            } else if (entity.id === 'great-zimbabwe') {
+                              labelOffsetX = -240;
+                              labelOffsetY = -190;
+                            }
+
+                            return (
+                              <g
+                                key={`svg-beacon-sbs-${entity.id}`}
+                                transform={`translate(${x}, ${y})`}
+                                className="cursor-pointer group"
+                                opacity={isChronologyActive ? 1.0 : 0.22}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedEntity(entity);
+                                  setIsDossierOpen(true);
+                                  if (onSelectPreColonialEntity) onSelectPreColonialEntity(entity);
+                                }}
+                                onMouseEnter={() => setHoveredEntity(entity)}
+                                onMouseLeave={() => setHoveredEntity(null)}
+                              >
+                                {isChronologyActive && (isSelected || isHovered) && (
+                                  <circle cx="0" cy="0" r="100" fill={entity.color}>
+                                    <animate attributeName="r" values="90;480" dur="2.6s" repeatCount="indefinite" />
+                                    <animate attributeName="opacity" values="0.85;0;0" dur="2.6s" repeatCount="indefinite" />
+                                  </circle>
+                                )}
+                                <circle cx="0" cy="0" r="75" fill={entity.color} stroke="#ffffff" strokeWidth="18" className="drop-shadow-2xl" />
+                                <circle cx="0" cy="0" r="26" fill="#ffffff" />
+                                <g transform={`translate(${labelOffsetX}, ${labelOffsetY})`}>
+                                  <rect x={-textWidth / 2} y="-90" width={textWidth} height="170" rx="85" fill={isSelected ? '#3b0764' : '#09090b'} stroke={isSelected || isHovered ? '#fbbf24' : entity.color} strokeWidth={isSelected || isHovered ? '16' : '10'} className="drop-shadow-2xl" />
+                                  <text x="0" y="2" textAnchor="middle" dominantBaseline="middle" fill="#ffffff" fontFamily="'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif" fontSize="72" fontWeight="900" letterSpacing="1" pointerEvents="none">
+                                    {cleanName}
+                                  </text>
+                                </g>
+                              </g>
+                            );
+                          })}
+                        </g>
+                      )}
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating Synchronized Navigation & Directional Pan Toolbar */}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-stone-900/90 text-white border border-white/20 backdrop-blur-md shadow-xl text-[11px] font-mono">
+                <button
+                  type="button"
+                  onClick={() => setIsSyncedPanZoom(s => !s)}
+                  className={`flex items-center gap-1.5 px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
+                    isSyncedPanZoom
+                      ? 'bg-amber-600 text-white shadow-xs'
+                      : 'bg-white/10 text-stone-300 hover:text-white'
+                  }`}
+                  title={isSyncedPanZoom ? "Pan & Zoom is Synchronized between panes (Click to unlock independent pan)" : "Pan & Zoom is Independent (Click to synchronize)"}
+                >
+                  {isSyncedPanZoom ? <Link2 className="w-3.5 h-3.5" /> : <Unlink2 className="w-3.5 h-3.5 text-stone-400" />}
+                  <span>{isSyncedPanZoom ? "Pan & Zoom Synced" : "Independent"}</span>
+                </button>
+
+                <div className="w-[1px] h-4 bg-white/20 shrink-0" />
+
+                {/* Directional Nudge D-pad */}
+                <div className="flex items-center gap-0.5" title="Directional Pan Nudge">
+                  <button
+                    type="button"
+                    onClick={() => nudgePan(60, 0)}
+                    className="p-1 rounded-md hover:bg-white/20 text-stone-300 hover:text-white transition-colors cursor-pointer"
+                    title="Pan Left"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => nudgePan(0, 60)}
+                    className="p-1 rounded-md hover:bg-white/20 text-stone-300 hover:text-white transition-colors cursor-pointer"
+                    title="Pan Up"
+                  >
+                    <ChevronUp className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => nudgePan(0, -60)}
+                    className="p-1 rounded-md hover:bg-white/20 text-stone-300 hover:text-white transition-colors cursor-pointer"
+                    title="Pan Down"
+                  >
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => nudgePan(-60, 0)}
+                    className="p-1 rounded-md hover:bg-white/20 text-stone-300 hover:text-white transition-colors cursor-pointer"
+                    title="Pan Right"
+                  >
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                <div className="w-[1px] h-4 bg-white/20 shrink-0" />
+
+                <button
+                  type="button"
+                  onClick={() => resetPane('both')}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-lg hover:bg-white/20 text-stone-300 hover:text-white transition-colors cursor-pointer"
+                  title="Reset Both Viewports to 100%"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span className="hidden sm:inline">Reset Both</span>
+                </button>
               </div>
             </div>
           ) : (
             /* Full-Bleed Split-Curtain & Alpha Opacity Layered Viewport */
             <div
-              className="w-full h-full flex items-center justify-center transition-transform duration-75 origin-center"
+              className="w-full h-full flex items-center justify-center transition-transform duration-75 origin-center select-none touch-none cursor-grab active:cursor-grabbing"
+              onPointerDown={(e) => handlePointerDownPan(e, 'both')}
+              onPointerMove={handlePointerMovePan}
+              onPointerUp={handlePointerUpPan}
+              onPointerCancel={handlePointerUpPan}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                zoomPane('both', 0.25);
+              }}
               style={{
                 transform: `scale(${zoomLevel}) translate(${panOffset.x / zoomLevel}px, ${panOffset.y / zoomLevel}px)`
               }}
@@ -680,6 +1435,8 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                         const [x, y] = entity.svgCoordinates;
                         const isSelected = selectedEntity?.id === entity.id;
                         const isHovered = hoveredEntity?.id === entity.id;
+                        const isChronologyActive = isEntityActiveInChronology(entity.id);
+                        if (!isChronologyActive && !dimInactiveKingdoms) return null;
                         const cleanName = entity.name.split('(')[0].trim();
                         const textWidth = Math.max(460, cleanName.length * 52 + 180);
                         
@@ -703,6 +1460,9 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                         } else if (entity.id === 'kongo-kingdom') {
                           labelOffsetX = -100;
                           labelOffsetY = 200;
+                        } else if (entity.id === 'great-zimbabwe') {
+                          labelOffsetX = -240;
+                          labelOffsetY = -190;
                         }
 
                         return (
@@ -710,6 +1470,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                             key={`svg-beacon-top-${entity.id}`}
                             transform={`translate(${x}, ${y})`}
                             className="cursor-pointer group"
+                            opacity={isChronologyActive ? 1.0 : 0.22}
                             onClick={(e) => {
                               e.stopPropagation();
                               setSelectedEntity(entity);
@@ -720,7 +1481,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                             onMouseLeave={() => setHoveredEntity(null)}
                           >
                             {/* Radiating Pulsating Radar Wave & Rings */}
-                            {(isSelected || isHovered) && (
+                            {isChronologyActive && (isSelected || isHovered) && (
                               <>
                                 <circle cx="0" cy="0" r="100" fill={entity.color}>
                                   <animate

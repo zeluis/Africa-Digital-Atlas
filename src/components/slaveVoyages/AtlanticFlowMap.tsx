@@ -1,9 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { REGIONAL_ROUTE_FLOWS } from '../../data/slaveVoyagesData';
 import { RegionalRouteFlow, EpistemicMode } from '../../data/slaveVoyagesTypes';
 import { 
-  Play, Pause, RotateCcw, Layers, Compass, Wind, Eye, EyeOff, MapPin, Sparkles, Navigation
+  Play, Pause, RotateCcw, Layers, Compass, Wind, Eye, EyeOff, MapPin, Sparkles, Navigation, Waves, Activity
 } from 'lucide-react';
+import {
+  mapCalendarSeasonToHydro,
+  SEASONAL_HYDRO_METRICS,
+  evaluateHydrodynamicVector,
+  easeInOutCubic,
+  HydrodynamicSeasonId
+} from '../../services/oceanHydrodynamicsService';
 import {
   projectCoord,
   SOUTH_AMERICA_PATH,
@@ -35,6 +42,7 @@ interface AtlanticFlowMapProps {
   onSelectRoute?: (route: RegionalRouteFlow) => void;
   yearRange?: [number, number];
   onYearChange?: (year: number) => void;
+  onNavigateToCartography?: () => void;
 }
 
 // Major coastal nodes for visual geographic grounding
@@ -71,7 +79,8 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
   selectedRouteId,
   onSelectRoute,
   yearRange,
-  onYearChange
+  onYearChange,
+  onNavigateToCartography
 }) => {
   const [hoveredRoute, setHoveredRoute] = useState<RegionalRouteFlow | null>(null);
   const [hoveredNode, setHoveredNode] = useState<any | null>(null);
@@ -83,11 +92,199 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
   const [showContinents, setShowContinents] = useState(true);
   const [showMortalityColors, setShowMortalityColors] = useState(true);
   const [showPorts, setShowPorts] = useState(true);
+  const [showOceanCurrents, setShowOceanCurrents] = useState(true);
   const [destinationFilter, setDestinationFilter] = useState<'all' | 'Brazil' | 'British Caribbean' | 'French Caribbean' | 'Spanish Americas' | 'North America'>('all');
 
   // Seasonal meteorological states
   const [selectedSeason, setSelectedSeason] = useState<'summer' | 'autumn' | 'winter' | 'spring'>('summer');
   const [showTradeWinds, setShowTradeWinds] = useState(true);
+
+  // Hydrodynamic Ocean Currents Particle Streamlines Engine
+  const oceanCanvasRef = useRef<HTMLCanvasElement>(null);
+  const animFrameIdRef = useRef<number | null>(null);
+
+  const hydroSeasonRef = useRef<HydrodynamicSeasonId>(mapCalendarSeasonToHydro(selectedSeason));
+  const prevHydroSeasonRef = useRef<HydrodynamicSeasonId>(mapCalendarSeasonToHydro(selectedSeason));
+  const transitionProgressRef = useRef<number>(1.0);
+
+  const showOceanCurrentsRef = useRef<boolean>(showOceanCurrents);
+  const showTradeWindsRef = useRef<boolean>(showTradeWinds);
+
+  useEffect(() => {
+    const target = mapCalendarSeasonToHydro(selectedSeason);
+    if (hydroSeasonRef.current !== target) {
+      prevHydroSeasonRef.current = hydroSeasonRef.current;
+      hydroSeasonRef.current = target;
+      transitionProgressRef.current = 0.0;
+    }
+  }, [selectedSeason]);
+
+  useEffect(() => {
+    showOceanCurrentsRef.current = showOceanCurrents;
+  }, [showOceanCurrents]);
+
+  useEffect(() => {
+    showTradeWindsRef.current = showTradeWinds;
+  }, [showTradeWinds]);
+
+  // Persistent Particle Animation Loop for Atlantic Basin Hydrodynamics
+  useEffect(() => {
+    const canvas = oceanCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
+
+    const VIRTUAL_WIDTH = 1000;
+    const VIRTUAL_HEIGHT = 580;
+    const num = 640;
+    const particles = new Float32Array(num * 6);
+
+    for (let i = 0; i < num; i++) {
+      const idx = i * 6;
+      particles[idx] = Math.random() * VIRTUAL_WIDTH;
+      particles[idx + 1] = Math.random() * VIRTUAL_HEIGHT;
+      const vec = evaluateHydrodynamicVector(particles[idx], particles[idx + 1], hydroSeasonRef.current, true, showTradeWindsRef.current);
+      particles[idx + 2] = vec.vx;
+      particles[idx + 3] = vec.vy;
+      particles[idx + 4] = Math.random() * 80;
+      particles[idx + 5] = 75 + Math.random() * 85;
+    }
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    const handleResize = () => {
+      if (!canvas.parentElement) return;
+      const displayWidth = canvas.parentElement.clientWidth;
+      const displayHeight = canvas.parentElement.clientHeight;
+      if (displayWidth === 0 || displayHeight === 0) return;
+
+      canvas.width = displayWidth * dpr;
+      canvas.height = displayHeight * dpr;
+
+      const scale = Math.min(displayWidth / VIRTUAL_WIDTH, displayHeight / VIRTUAL_HEIGHT);
+      const offsetX = (displayWidth - VIRTUAL_WIDTH * scale) / 2;
+      const offsetY = (displayHeight - VIRTUAL_HEIGHT * scale) / 2;
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.translate(offsetX * dpr, offsetY * dpr);
+      ctx.scale(scale * dpr, scale * dpr);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    let lastTime = performance.now();
+
+    const render = (now: number) => {
+      animFrameIdRef.current = requestAnimationFrame(render);
+
+      if (!showOceanCurrentsRef.current) {
+        ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+        lastTime = now;
+        return;
+      }
+
+      const dt = Math.min((now - lastTime) / 1000, 0.04);
+      lastTime = now;
+
+      if (transitionProgressRef.current < 1.0) {
+        transitionProgressRef.current = Math.min(1.0, transitionProgressRef.current + dt * 1.85);
+      }
+      const t = easeInOutCubic(transitionProgressRef.current);
+
+      const prevM = SEASONAL_HYDRO_METRICS[prevHydroSeasonRef.current];
+      const targetM = SEASONAL_HYDRO_METRICS[hydroSeasonRef.current];
+
+      const curSpeed = (prevM.speedFactor * (1 - t) + targetM.speedFactor * t) * 0.95;
+      const curWidth = prevM.trailScale * (1 - t) + targetM.trailScale * t;
+      const curRatio = prevM.activeRatio * (1 - t) + targetM.activeRatio * t;
+      const activeLimit = Math.floor(num * curRatio);
+
+      ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+
+      const isDark = document.documentElement.classList.contains('dark');
+
+      for (let i = 0; i < num; i++) {
+        const idx = i * 6;
+        const px = particles[idx];
+        const py = particles[idx + 1];
+        const age = particles[idx + 4];
+        const maxAge = particles[idx + 5];
+
+        const vec0 = evaluateHydrodynamicVector(px, py, prevHydroSeasonRef.current, true, showTradeWindsRef.current);
+        const vec1 = evaluateHydrodynamicVector(px, py, hydroSeasonRef.current, true, showTradeWindsRef.current);
+
+        const tvx = vec0.vx * (1 - t) + vec1.vx * t;
+        const tvy = vec0.vy * (1 - t) + vec1.vy * t;
+        const force = vec0.force * (1 - t) + vec1.force * t;
+        const type = t > 0.5 ? vec1.type : vec0.type;
+        const isWarm = t > 0.5 ? vec1.isWarm : vec0.isWarm;
+
+        particles[idx + 2] = particles[idx + 2] * 0.88 + tvx * 0.12;
+        particles[idx + 3] = particles[idx + 3] * 0.88 + tvy * 0.12;
+
+        const nextX = px + particles[idx + 2] * curSpeed * (dt * 60);
+        const nextY = py + particles[idx + 3] * curSpeed * (dt * 60);
+
+        if (i < activeLimit) {
+          const lifeAlpha = Math.sin((age / maxAge) * Math.PI);
+          const alpha = Math.max(0, Math.min(1, lifeAlpha * 0.90));
+
+          if (type === 1) {
+            // Ocean current
+            if (isDark) {
+              ctx.strokeStyle = isWarm
+                ? `rgba(251, 191, 36, ${alpha * 0.92})`
+                : `rgba(56, 189, 248, ${alpha * 0.92})`;
+            } else {
+              ctx.strokeStyle = isWarm
+                ? `rgba(194, 65, 12, ${alpha * 0.85})`
+                : `rgba(2, 132, 199, ${alpha * 0.85})`;
+            }
+            ctx.lineWidth = Math.max(0.9, curWidth * 0.72 * (0.8 + force * 0.3));
+          } else if (type === 2) {
+            // Wind vector
+            ctx.strokeStyle = isDark
+              ? `rgba(224, 242, 254, ${alpha * 0.8})`
+              : `rgba(71, 85, 105, ${alpha * 0.65})`;
+            ctx.lineWidth = Math.max(0.7, curWidth * 0.45 * (0.8 + force * 0.25));
+          } else {
+            // Ambient
+            ctx.strokeStyle = isDark
+              ? `rgba(148, 163, 184, ${alpha * 0.22})`
+              : `rgba(168, 162, 158, ${alpha * 0.3})`;
+            ctx.lineWidth = 0.7;
+          }
+
+          ctx.beginPath();
+          ctx.moveTo(px, py);
+          ctx.lineTo(nextX, nextY);
+          ctx.stroke();
+        }
+
+        particles[idx] = nextX;
+        particles[idx + 1] = nextY;
+        particles[idx + 4] = age + 1;
+
+        if (age >= maxAge || nextX < -10 || nextX > VIRTUAL_WIDTH + 10 || nextY < -10 || nextY > VIRTUAL_HEIGHT + 10) {
+          particles[idx] = Math.random() * VIRTUAL_WIDTH;
+          particles[idx + 1] = Math.random() * VIRTUAL_HEIGHT;
+          particles[idx + 4] = 0;
+          particles[idx + 5] = 70 + Math.random() * 80;
+          const newVec = evaluateHydrodynamicVector(particles[idx], particles[idx + 1], hydroSeasonRef.current, true, showTradeWindsRef.current);
+          particles[idx + 2] = newVec.vx;
+          particles[idx + 3] = newVec.vy;
+        }
+      }
+    };
+
+    animFrameIdRef.current = requestAnimationFrame(render);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
+    };
+  }, []);
 
   // Playback timer loop
   useEffect(() => {
@@ -190,6 +387,19 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
           >
             <MapPin className="w-3.5 h-3.5" />
             <span>Ports: {showPorts ? 'ON' : 'OFF'}</span>
+          </button>
+
+          <button
+            onClick={() => setShowOceanCurrents(!showOceanCurrents)}
+            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all border cursor-pointer flex items-center gap-1.5 shadow-xs ${
+              showOceanCurrents
+                ? 'bg-[#E0F2FE] dark:bg-sky-500/20 border-[#0284C7] dark:border-sky-500/40 text-[#0369A1] dark:text-sky-300'
+                : 'bg-white dark:bg-zinc-800/80 border-[#DCD3C1] dark:border-zinc-700 text-[#78716C] dark:text-zinc-400'
+            }`}
+            title="Toggle Dynamic Ocean Hydrodynamic Particle Streamlines"
+          >
+            <Waves className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+            <span>Ocean Currents: {showOceanCurrents ? 'ON' : 'OFF'}</span>
           </button>
         </div>
       </div>
@@ -1035,6 +1245,14 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
           <rect x="22" y="20" width="956" height="540" fill="none" stroke="#C2410C" className="dark:[stroke:#0ea5e9]" strokeWidth="0.6" opacity="0.35" />
         </svg>
 
+        {/* Real-time Hydrodynamic Streamlines Canvas Overlay */}
+        <canvas
+          ref={oceanCanvasRef}
+          className={`absolute inset-0 w-full h-full pointer-events-none z-15 transition-opacity duration-300 ${
+            showOceanCurrents ? 'opacity-90' : 'opacity-0'
+          }`}
+        />
+
         {/* Floating Route Inspection Tooltip Dossier */}
         {hoveredRoute && (
           <div className="absolute bottom-4 left-4 max-w-sm p-4 rounded-2xl bg-white/95 dark:bg-zinc-900/95 border border-[#DCD3C1] dark:border-zinc-700 backdrop-blur-md shadow-2xl space-y-2 pointer-events-none text-left z-20 animate-in fade-in zoom-in duration-100">
@@ -1267,6 +1485,48 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
             <p className="text-[11px] text-[#78716C] dark:text-zinc-500 italic">
               Hover or click any transatlantic flow arc to inspect simulated crossing durations and mortality gradients under the active meteorological forces.
             </p>
+          )}
+        </div>
+
+        {/* Real-Time Hydrodynamic Vector Stream Diagnostic Card */}
+        <div className="p-3 rounded-2xl bg-white dark:bg-zinc-950 border border-cyan-500/30 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
+              <Waves className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 animate-pulse" />
+              <span>Hydrodynamic Stream Engine</span>
+            </span>
+            <span className="text-[9.5px] font-mono px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 font-bold">
+              {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].quarterLabel.split(' ')[0]}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono pt-1">
+            <div className="p-1.5 rounded-lg bg-[#FAF6EE] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800">
+              <span className="text-stone-500 dark:text-stone-400 block text-[9px]">Velocity Factor</span>
+              <strong className="text-cyan-800 dark:text-cyan-300 text-xs">
+                {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].speedFactor.toFixed(2)}x
+              </strong>
+            </div>
+            <div className="p-1.5 rounded-lg bg-[#FAF6EE] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800">
+              <span className="text-stone-500 dark:text-stone-400 block text-[9px]">Trail Width</span>
+              <strong className="text-amber-800 dark:text-amber-300 text-xs">
+                {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].trailScale}px
+              </strong>
+            </div>
+          </div>
+
+          <p className="text-[10px] text-stone-600 dark:text-stone-400 leading-tight">
+            {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].dominantVectorNote}
+          </p>
+
+          {onNavigateToCartography && (
+            <button
+              onClick={onNavigateToCartography}
+              className="w-full mt-1.5 px-3 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white text-[11px] font-mono font-bold flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
+            >
+              <Compass className="w-3.5 h-3.5" />
+              <span>Open Cartography GIS Lab ➔</span>
+            </button>
           )}
         </div>
       </div>

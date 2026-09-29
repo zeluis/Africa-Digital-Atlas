@@ -93,7 +93,8 @@ export const AntiquePlateCanvas: React.FC<AntiquePlateCanvasProps> = ({
         loading="eager"
         decoding="async"
         onError={handleImageError}
-        className={`w-full h-full ${
+        draggable={false}
+        className={`w-full h-full pointer-events-none select-none ${
           isThumbnail ? 'object-cover' : 'object-contain'
         }`}
       />

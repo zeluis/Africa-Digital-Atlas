@@ -338,6 +338,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                 epistemicMode={filters.epistemicMode}
                 selectedRouteId={selectedRoute?.id}
                 onSelectRoute={(r) => setSelectedRoute(r)}
+                onNavigateToCartography={onNavigateToCartography}
               />
             </div>
           </div>
