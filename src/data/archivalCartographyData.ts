@@ -491,7 +491,7 @@ export const PRE_COLONIAL_ENTITIES: PreColonialEntity[] = [
     regionBadge: "Southern Africa",
     capital: "Great Zimbabwe",
     coordinates: [-20.267, 30.933],
-    svgCoordinates: [4600, 4800],
+    svgCoordinates: [3980, 4640],
     modernCountries: ["Zimbabwe", "Mozambique"],
     significance: "Master stonemasons who constructed the massive dry-stone Great Enclosure; central nexus of the Indian Ocean gold and ivory trade linking Sofala to Kilwa and China.",
     tradeSpecialty: "Gold, copper, cattle, soapstone carvings",
