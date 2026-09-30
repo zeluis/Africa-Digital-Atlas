@@ -73,6 +73,10 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
 
   // Mouse wheel zoom to cursor position
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (target?.closest?.('.overflow-y-auto, .overflow-x-auto, .no-drag, [data-panel-scroll="true"], .stable-gutter, .sleek-scrollbar, .sleek-scrollbar-amber, aside, dialog, .modal-scroll-pane')) {
+      return;
+    }
     e.preventDefault();
     const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
     const newScale = Math.min(Math.max(scale * zoomFactor, 0.45), 4.5);
@@ -233,37 +237,43 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
               )}
             </div>
 
-            {/* Search Dropdown */}
+            {/* Search Dropdown with Sleek Scrollbar & Bottom Fade */}
             {isSearchOpen && searchResults.length > 0 && (
-              <div className="absolute right-0 top-full mt-2 w-72 bg-zinc-900/95 dark:bg-zinc-950/95 border border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="absolute right-0 top-full mt-2 w-72 bg-zinc-900/95 dark:bg-zinc-950/95 border border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150 relative overflow-hidden">
                 <div className="text-[10px] uppercase font-mono tracking-wider text-zinc-500 px-2.5 py-1">
                   Matching Ethnic Groups
                 </div>
-                {searchResults.map(result => (
-                  <button
-                    key={result.id}
-                    type="button"
-                    onClick={() => {
-                      focusOnNode(result);
-                      setIsSearchOpen(false);
-                      setSearchQuery('');
-                    }}
-                    className="w-full text-left px-3 py-2 rounded-xl text-xs hover:bg-zinc-800/80 transition-colors flex items-center justify-between group"
-                  >
-                    <div>
-                      <div className="font-bold text-zinc-200 group-hover:text-amber-400">
-                        {result.name}
+                <div className="max-h-56 overflow-y-auto stable-gutter sleek-scrollbar-amber pr-1 pb-4">
+                  {searchResults.map(result => (
+                    <button
+                      key={result.id}
+                      type="button"
+                      onClick={() => {
+                        focusOnNode(result);
+                        setIsSearchOpen(false);
+                        setSearchQuery('');
+                      }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-xs hover:bg-zinc-800/80 transition-colors flex items-center justify-between group cursor-pointer"
+                    >
+                      <div>
+                        <div className="font-bold text-zinc-200 group-hover:text-amber-400">
+                          {result.name}
+                        </div>
+                        <div className="text-[10px] text-zinc-400">
+                          {result.country} • {result.region}
+                        </div>
                       </div>
-                      <div className="text-[10px] text-zinc-400">
-                        {result.country} • {result.region}
-                      </div>
-                    </div>
-                    <span 
-                      className="w-2.5 h-2.5 rounded-full"
-                      style={{ backgroundColor: result.color }}
-                    />
-                  </button>
-                ))}
+                      <span 
+                        className="w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: result.color }} 
+                      />
+                    </button>
+                  ))}
+                </div>
+                <div 
+                  className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-zinc-900 dark:from-zinc-950 to-transparent pointer-events-none z-10"
+                  aria-hidden="true"
+                />
               </div>
             )}
           </div>
@@ -631,35 +641,44 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
             </button>
           </div>
 
-          <div className="py-3.5 space-y-3 text-xs">
-            {/* Demographic TAST share metric */}
-            <div className="flex items-center justify-between p-2.5 rounded-2xl bg-zinc-900/80 border border-zinc-800/80">
-              <span className="text-zinc-400 font-medium">Estimated TAST Share:</span>
-              <span className="font-mono font-bold text-amber-400 text-sm">
-                {selectedNode.percentage}%
-              </span>
-            </div>
-
-            {/* Linguistic classification */}
-            <div className="flex items-center justify-between px-1">
-              <span className="text-zinc-400">Linguistic Phylum:</span>
-              <span className="text-zinc-200 font-medium truncate max-w-[200px]">
-                {selectedNode.linguisticFamily}
-              </span>
-            </div>
-
-            {/* Embarkation & diaspora context */}
-            <div className="space-y-1 bg-zinc-900/50 p-2.5 rounded-xl border border-zinc-800/60">
-              <div className="text-[10px] uppercase font-mono tracking-wider text-amber-400 font-semibold">
-                Historical Context & Embarkation
+          {/* Scrollable Details Body with Floating Sleek Scrollbar & Bottom Fade */}
+          <div className="relative overflow-hidden py-2">
+            <div className="max-h-[min(52vh,360px)] overflow-y-auto stable-gutter sleek-scrollbar-amber pr-1 pb-4 space-y-3 text-xs">
+              {/* Demographic TAST share metric */}
+              <div className="flex items-center justify-between p-2.5 rounded-2xl bg-zinc-900/80 border border-zinc-800/80">
+                <span className="text-zinc-400 font-medium">Estimated TAST Share:</span>
+                <span className="font-mono font-bold text-amber-400 text-sm">
+                  {selectedNode.percentage}%
+                </span>
               </div>
-              <p className="text-zinc-300 leading-relaxed text-[11px]">
-                {selectedNode.tastContext}
-              </p>
-              <p className="text-[10px] text-zinc-400 pt-1">
-                <strong className="text-zinc-300">Ports:</strong> {selectedNode.historicalEmbarkation}
-              </p>
+
+              {/* Linguistic classification */}
+              <div className="flex items-center justify-between px-1">
+                <span className="text-zinc-400">Linguistic Phylum:</span>
+                <span className="text-zinc-200 font-medium truncate max-w-[200px]">
+                  {selectedNode.linguisticFamily}
+                </span>
+              </div>
+
+              {/* Embarkation & diaspora context */}
+              <div className="space-y-1 bg-zinc-900/50 p-2.5 rounded-xl border border-zinc-800/60">
+                <div className="text-[10px] uppercase font-mono tracking-wider text-amber-400 font-semibold">
+                  Historical Context & Embarkation
+                </div>
+                <p className="text-zinc-300 leading-relaxed text-[11px]">
+                  {selectedNode.tastContext}
+                </p>
+                <p className="text-[10px] text-zinc-400 pt-1">
+                  <strong className="text-zinc-300">Ports:</strong> {selectedNode.historicalEmbarkation}
+                </p>
+              </div>
             </div>
+
+            {/* Click-Through Bottom Fade Overlay */}
+            <div 
+              className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-zinc-950 to-transparent pointer-events-none z-10"
+              aria-hidden="true"
+            />
           </div>
 
           {/* Links: Wikipedia and Research Report */}
@@ -726,8 +745,14 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
             </button>
           </div>
 
-          <div className="py-3 text-xs text-zinc-300 leading-relaxed">
-            {selectedCluster.description}
+          <div className="relative overflow-hidden py-3">
+            <div className="max-h-48 overflow-y-auto stable-gutter sleek-scrollbar-amber pr-1 pb-3 text-xs text-zinc-300 leading-relaxed">
+              {selectedCluster.description}
+            </div>
+            <div 
+              className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-zinc-950 to-transparent pointer-events-none z-10"
+              aria-hidden="true"
+            />
           </div>
 
           {onNavigateToSlaveTrade && (

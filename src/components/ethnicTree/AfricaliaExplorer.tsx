@@ -412,6 +412,10 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
   const [selectedLinguisticFamily, setSelectedLinguisticFamily] = useState<string>('All');
   const [activeTastLayer, setActiveTastLayer] = useState<'all' | 'first' | 'second' | 'third'>('all');
   
+  // Top control bar dropdown states (Filters/Layers & TAST cohort basins)
+  const [isLayersDropdownOpen, setIsLayersDropdownOpen] = useState<boolean>(false);
+  const [isTastDropdownOpen, setIsTastDropdownOpen] = useState<boolean>(false);
+  
   // Expandable bottom control bar state (user requested: only expand by clicking icon)
   const [isControlBarExpanded, setIsControlBarExpanded] = useState<boolean>(false);
   // Top bar expanded/collapsed title state
@@ -1593,103 +1597,279 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
           <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0 mx-0.5" />
 
-          {/* 2. Instant Reactive Scoped CSS Layer Toggles (0ms Latency) */}
-          <div className="flex items-center gap-1">
-            {/* Nodes Toggle */}
+          {/* 2. Unified Filters / Layers Toggle Pill with Sleek Sliding Dropdown */}
+          <div className="relative">
             <button
               type="button"
-              onClick={() => setLayerVisibility(prev => ({ ...prev, nodes: !prev.nodes }))}
-              className={`px-2 py-1 rounded-xl text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer border ${
-                layerVisibility.nodes
-                  ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] border-[#E67E48]/40 shadow-xs'
-                  : 'bg-black/5 dark:bg-white/5 text-[#7D6B5A] dark:text-[#B5A492] border-transparent opacity-60 line-through'
+              onClick={() => {
+                setIsLayersDropdownOpen(prev => !prev);
+                setIsTastDropdownOpen(false);
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer shadow-xs active:scale-95 text-xs border ${
+                isLayersDropdownOpen
+                  ? 'bg-[#E67E48] text-white border-[#E67E48] shadow-xs'
+                  : 'bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border-[#E67E48]/40'
               }`}
-              title="Toggle taxonomic and sovereign lineage nodes (0ms CSS)"
+              title="Toggle Map Layers & Visibility (Nodes, Branches, Labels, TAST)"
             >
-              <span className={`w-1.5 h-1.5 rounded-full ${layerVisibility.nodes ? 'bg-[#E67E48]' : 'bg-zinc-400'}`} />
-              <span>Nodes</span>
+              <Layers className="w-3.5 h-3.5" />
+              <span>Layers</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#E67E48]" />
+              <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isLayersDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
-            {/* Branches Toggle */}
-            <button
-              type="button"
-              onClick={() => setLayerVisibility(prev => ({ ...prev, branches: !prev.branches }))}
-              className={`px-2 py-1 rounded-xl text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer border ${
-                layerVisibility.branches
-                  ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] border-[#E67E48]/40 shadow-xs'
-                  : 'bg-black/5 dark:bg-white/5 text-[#7D6B5A] dark:text-[#B5A492] border-transparent opacity-60 line-through'
-              }`}
-              title="Toggle lineage branches, trunks, and conduits (0ms CSS)"
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${layerVisibility.branches ? 'bg-[#E67E48]' : 'bg-zinc-400'}`} />
-              <span>Branches</span>
-            </button>
+            {/* Sleek Sliding Dropdown Panel */}
+            <AnimatePresence>
+              {isLayersDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 6, scale: 0.96 }}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                  className="absolute left-0 top-full mt-2 w-56 p-2 rounded-2xl bg-[#FAF7F2]/98 dark:bg-[#1E1B18]/98 border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl backdrop-blur-2xl z-50 text-xs no-drag select-none"
+                  onWheel={(e) => e.stopPropagation()}
+                >
+                  <div className="text-[10px] uppercase font-mono font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492] px-2.5 py-1 flex items-center justify-between border-b border-[#E5DDD0]/60 dark:border-[#38322B]/60 mb-1">
+                    <span>Active Layers</span>
+                    <button
+                      type="button"
+                      onClick={() => setIsLayersDropdownOpen(false)}
+                      className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
 
-            {/* Crucible Toggle */}
-            <button
-              type="button"
-              onClick={() => setLayerVisibility(prev => ({ ...prev, crucibles: !prev.crucibles }))}
-              className={`px-2 py-1 rounded-xl text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer border ${
-                layerVisibility.crucibles
-                  ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] border-[#E67E48]/40 shadow-xs'
-                  : 'bg-black/5 dark:bg-white/5 text-[#7D6B5A] dark:text-[#B5A492] border-transparent opacity-60 line-through'
-              }`}
-              title="Toggle Cabo Verde Maritime Crucible nexus highlight (0ms CSS)"
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${layerVisibility.crucibles ? 'bg-[#E67E48]' : 'bg-zinc-400'}`} />
-              <span>Crucible</span>
-            </button>
+                  <div className="space-y-1">
+                    {/* Lineage Nodes */}
+                    <button
+                      type="button"
+                      onClick={() => setLayerVisibility(prev => ({ ...prev, nodes: !prev.nodes }))}
+                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+                        layerVisibility.nodes
+                          ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] font-bold'
+                          : 'text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 opacity-60'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${layerVisibility.nodes ? 'bg-[#E67E48]' : 'bg-stone-400'}`} />
+                        <span>Lineage Nodes</span>
+                      </div>
+                      <span className="text-[10px] font-mono">{layerVisibility.nodes ? 'ON' : 'OFF'}</span>
+                    </button>
 
-            {/* Labels Toggle */}
-            <button
-              type="button"
-              onClick={() => setLayerVisibility(prev => ({ ...prev, labels: !prev.labels }))}
-              className={`hidden md:flex px-2 py-1 rounded-xl text-[10px] font-bold items-center gap-1 transition-all cursor-pointer border ${
-                layerVisibility.labels
-                  ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] border-[#E67E48]/40 shadow-xs'
-                  : 'bg-black/5 dark:bg-white/5 text-[#7D6B5A] dark:text-[#B5A492] border-transparent opacity-60 line-through'
-              }`}
-              title="Toggle all text labels (0ms CSS)"
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${layerVisibility.labels ? 'bg-[#E67E48]' : 'bg-zinc-400'}`} />
-              <span>Labels</span>
-            </button>
+                    {/* Lineage Branches */}
+                    <button
+                      type="button"
+                      onClick={() => setLayerVisibility(prev => ({ ...prev, branches: !prev.branches }))}
+                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+                        layerVisibility.branches
+                          ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] font-bold'
+                          : 'text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 opacity-60'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${layerVisibility.branches ? 'bg-[#E67E48]' : 'bg-stone-400'}`} />
+                        <span>Lineage Branches</span>
+                      </div>
+                      <span className="text-[10px] font-mono">{layerVisibility.branches ? 'ON' : 'OFF'}</span>
+                    </button>
 
-            {/* TAST Cohorts Layer Toggle */}
-            <button
-              type="button"
-              onClick={() => setLayerVisibility(prev => ({ ...prev, tastCohorts: !prev.tastCohorts }))}
-              className={`px-2 py-1 rounded-xl text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer border ${
-                layerVisibility.tastCohorts
-                  ? 'bg-[#724E5B]/15 text-[#5F3B4A] dark:text-[#E2B2C6] border-[#724E5B]/40 shadow-xs'
-                  : 'bg-black/5 dark:bg-white/5 text-[#7D6B5A] dark:text-[#B5A492] border-transparent opacity-60 line-through'
-              }`}
-              title="Toggle Trans-Atlantic Slave Trade (TAST) historical cohorts layer (0ms CSS)"
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${layerVisibility.tastCohorts ? 'bg-[#724E5B]' : 'bg-zinc-400'}`} />
-              <span>TAST Layer</span>
-            </button>
+                    {/* Text Labels */}
+                    <button
+                      type="button"
+                      onClick={() => setLayerVisibility(prev => ({ ...prev, labels: !prev.labels }))}
+                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+                        layerVisibility.labels
+                          ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] font-bold'
+                          : 'text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 opacity-60'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${layerVisibility.labels ? 'bg-[#E67E48]' : 'bg-stone-400'}`} />
+                        <span>Text Labels</span>
+                      </div>
+                      <span className="text-[10px] font-mono">{layerVisibility.labels ? 'ON' : 'OFF'}</span>
+                    </button>
+
+                    {/* TAST Layer */}
+                    <button
+                      type="button"
+                      onClick={() => setLayerVisibility(prev => ({ ...prev, tastCohorts: !prev.tastCohorts }))}
+                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+                        layerVisibility.tastCohorts
+                          ? 'bg-[#724E5B]/20 text-[#5F3B4A] dark:text-[#E2B2C6] font-bold'
+                          : 'text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 opacity-60'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${layerVisibility.tastCohorts ? 'bg-[#724E5B]' : 'bg-stone-400'}`} />
+                        <span>TAST Layer</span>
+                      </div>
+                      <span className="text-[10px] font-mono">{layerVisibility.tastCohorts ? 'ON' : 'OFF'}</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0 mx-0.5" />
 
-          {/* 3. TAST (Cohort) Zoom & Center Button */}
-          <button
-            type="button"
-            onClick={cycleTastCohortZoom}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-xl text-[10px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 border ${
-              activeTastLayer !== 'all'
-                ? 'bg-[#724E5B] text-white border-[#724E5B] shadow-[#724E5B]/25'
-                : 'bg-[#724E5B]/15 hover:bg-[#724E5B]/25 text-[#5F3B4A] dark:text-[#E2B2C6] border-[#724E5B]/40'
-            }`}
-            title="Cycle zoom through TAST historical cohort basins: 1st WCA (5.69M) -> 2nd Bights (4.80M) -> 3rd Upper Guinea (2.02M) -> All Overview"
-          >
-            <Layers className="w-3 h-3 text-[#E67E48]" />
-            <span className="hidden sm:inline">TAST Zoom:</span>
-            <span className="uppercase font-mono text-[9px]">
-              {activeTastLayer === 'all' ? 'All Basins' : activeTastLayer === 'first' ? '1st (WCA)' : activeTastLayer === 'second' ? '2nd (Bights)' : '3rd (Upper Guinea)'}
-            </span>
-          </button>
+          {/* 3. TAST Zoom Dropdown with Cohort Selection, Centering & Dimming */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => {
+                setIsTastDropdownOpen(prev => !prev);
+                setIsLayersDropdownOpen(false);
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95 border ${
+                activeTastLayer !== 'all' || isTastDropdownOpen
+                  ? 'bg-[#724E5B] text-white border-[#724E5B] shadow-[#724E5B]/25'
+                  : 'bg-[#724E5B]/15 hover:bg-[#724E5B]/25 text-[#5F3B4A] dark:text-[#E2B2C6] border-[#724E5B]/40'
+              }`}
+              title="Select and zoom to specific TAST historical cohort basins"
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">TAST Zoom:</span>
+              <span className="uppercase font-mono text-[10px]">
+                {activeTastLayer === 'all' ? 'All Basins' : activeTastLayer === 'first' ? '1st WCA' : activeTastLayer === 'second' ? '2nd Bights' : '3rd U. Guinea'}
+              </span>
+              <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isTastDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            <AnimatePresence>
+              {isTastDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 6, scale: 0.96 }}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                  className="absolute left-0 top-full mt-2 w-72 p-2 rounded-2xl bg-[#FAF7F2]/98 dark:bg-[#1E1B18]/98 border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl backdrop-blur-2xl z-50 text-xs no-drag select-none"
+                  onWheel={(e) => e.stopPropagation()}
+                >
+                  <div className="text-[10px] uppercase font-mono font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492] px-2.5 py-1 flex items-center justify-between border-b border-[#E5DDD0]/60 dark:border-[#38322B]/60 mb-1">
+                    <span>TAST Historical Basins</span>
+                    <button
+                      type="button"
+                      onClick={() => setIsTastDropdownOpen(false)}
+                      className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-1">
+                    {/* All Basins Overview */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveTastLayer('all');
+                        panToCoordinates(CX, CY, 1.05);
+                        setIsTastDropdownOpen(false);
+                        setLiveAnnouncement('Framed full continental tree overview across all TAST basins');
+                      }}
+                      className={`w-full text-left px-2.5 py-2 rounded-xl transition-all cursor-pointer flex items-center justify-between ${
+                        activeTastLayer === 'all'
+                          ? 'bg-[#724E5B] text-white font-bold'
+                          : 'hover:bg-black/5 dark:hover:bg-white/5 text-[#2B241E] dark:text-[#F5EFE6]'
+                      }`}
+                    >
+                      <div>
+                        <div className="font-bold">All Basins &amp; Overview</div>
+                        <div className={`text-[10px] ${activeTastLayer === 'all' ? 'text-white/80' : 'text-[#7D6B5A] dark:text-[#B5A492]'}`}>
+                          12,521,354 Documented Captives
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono uppercase">Full</span>
+                    </button>
+
+                    {/* 1st Cohort: West Central Africa */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveTastLayer('first');
+                        panToCoordinates(2011.6, 2397.0, 2.3);
+                        setIsTastDropdownOpen(false);
+                        setLiveAnnouncement('Centered 1st Historical Cohort: West Central Africa (5.69M Captives)');
+                      }}
+                      className={`w-full text-left px-2.5 py-2 rounded-xl transition-all cursor-pointer flex items-center justify-between ${
+                        activeTastLayer === 'first'
+                          ? 'bg-[#049B4D] text-white font-bold shadow-xs'
+                          : 'hover:bg-black/5 dark:hover:bg-white/5 text-[#2B241E] dark:text-[#F5EFE6]'
+                      }`}
+                    >
+                      <div>
+                        <div className="font-bold flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-[#049B4D] shrink-0" />
+                          <span>1st Cohort · West Central Africa</span>
+                        </div>
+                        <div className={`text-[10px] pl-3.5 ${activeTastLayer === 'first' ? 'text-white/80' : 'text-[#7D6B5A] dark:text-[#B5A492]'}`}>
+                          5.69M Captives (45.4%) • Angola, Congo, Gabon
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono">1501–1600</span>
+                    </button>
+
+                    {/* 2nd Cohort: Bights of Benin & Biafra */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveTastLayer('second');
+                        panToCoordinates(2110.1, 2085.3, 2.3);
+                        setIsTastDropdownOpen(false);
+                        setLiveAnnouncement('Centered 2nd Historical Cohort: Bights of Benin & Biafra (4.80M Captives)');
+                      }}
+                      className={`w-full text-left px-2.5 py-2 rounded-xl transition-all cursor-pointer flex items-center justify-between ${
+                        activeTastLayer === 'second'
+                          ? 'bg-[#E06BA1] text-white font-bold shadow-xs'
+                          : 'hover:bg-black/5 dark:hover:bg-white/5 text-[#2B241E] dark:text-[#F5EFE6]'
+                      }`}
+                    >
+                      <div>
+                        <div className="font-bold flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-[#E06BA1] shrink-0" />
+                          <span>2nd Cohort · Bights of Benin &amp; Biafra</span>
+                        </div>
+                        <div className={`text-[10px] pl-3.5 ${activeTastLayer === 'second' ? 'text-white/80' : 'text-[#7D6B5A] dark:text-[#B5A492]'}`}>
+                          4.80M Captives (38.3%) • Nigeria, Benin, Ghana
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono">1601–1700</span>
+                    </button>
+
+                    {/* 3rd Cohort: Upper Guinea & Senegambia */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveTastLayer('third');
+                        panToCoordinates(2045.5, 1950.1, 2.3);
+                        setIsTastDropdownOpen(false);
+                        setLiveAnnouncement('Centered 3rd Historical Cohort: Upper Guinea & Senegambia (2.02M Captives)');
+                      }}
+                      className={`w-full text-left px-2.5 py-2 rounded-xl transition-all cursor-pointer flex items-center justify-between ${
+                        activeTastLayer === 'third'
+                          ? 'bg-[#C68B29] text-white font-bold shadow-xs'
+                          : 'hover:bg-black/5 dark:hover:bg-white/5 text-[#2B241E] dark:text-[#F5EFE6]'
+                      }`}
+                    >
+                      <div>
+                        <div className="font-bold flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-[#C68B29] shrink-0" />
+                          <span>3rd Cohort · Upper Guinea &amp; Senegambia</span>
+                        </div>
+                        <div className={`text-[10px] pl-3.5 ${activeTastLayer === 'third' ? 'text-white/80' : 'text-[#7D6B5A] dark:text-[#B5A492]'}`}>
+                          2.02M Captives (16.1%) • Senegambia, Windward
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono">1701–1867</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0 mx-0.5" />
 
@@ -1754,17 +1934,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             </button>
           </div>
 
-          {/* Shortcuts: Crucible & Reset */}
-          <button
-            type="button"
-            onClick={panToCrucible}
-            className="hidden xl:flex px-2 py-1 rounded-xl text-[10px] font-medium items-center gap-1 bg-black/5 dark:bg-white/5 hover:bg-[#E67E48]/15 text-[#52463B] dark:text-[#C4B7A6] hover:text-[#B8571A] dark:hover:text-[#FFA573] border border-[#E5DDD0] dark:border-[#38322B] transition-colors cursor-pointer"
-            title="Crucible View: Zoom directly to Cabo Verde crucible nexus"
-          >
-            <Compass className="w-3 h-3 text-[#E67E48]" />
-            <span>Crucible</span>
-          </button>
-
+          {/* Reset Full Tree */}
           <button
             type="button"
             onClick={fitView}
@@ -1775,15 +1945,26 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             <span>Full Tree</span>
           </button>
 
-          {/* 7. Cite & Colophon Triggers */}
+          {/* Crucible Zoom Pill - Positioned right beside Cite (DOI) */}
+          <button
+            type="button"
+            onClick={panToCrucible}
+            className="flex px-2.5 py-1 rounded-xl text-[10px] font-bold items-center gap-1 bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/35 transition-all cursor-pointer shadow-xs active:scale-95"
+            title="Crucible View: Zoom directly to Cabo Verde maritime crucible nexus"
+          >
+            <Compass className="w-3.5 h-3.5 text-[#E67E48]" />
+            <span>Crucible</span>
+          </button>
+
+          {/* 7. Cite (DOI) & Colophon Triggers */}
           <button
             type="button"
             onClick={() => setIsExportModalOpen(true)}
-            className="hidden 2xl:flex px-2 py-1 rounded-xl text-[10px] font-medium items-center gap-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition-colors cursor-pointer"
+            className="flex px-2 py-1 rounded-xl text-[10px] font-bold items-center gap-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition-colors cursor-pointer shadow-xs active:scale-95"
             title="Cite this Research Platform (DOI: 10.5281/zenodo.10842918)"
           >
             <Quote className="w-3 h-3 text-[#E67E48]" />
-            <span>Cite</span>
+            <span>Cite (DOI)</span>
           </button>
 
           <button
@@ -1933,8 +2114,9 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                   </button>
                 </div>
 
-                {/* Dock Scrollable Body with Cozy Scrollbar */}
-                <div className="p-3.5 space-y-3 overflow-y-auto drawer-cozy-scrollbar flex-1 no-drag">
+                {/* Dock Scrollable Body with Sleek Scrollbar & Bottom Fade */}
+                <div className="relative flex-1 min-h-0 overflow-hidden flex flex-col no-drag">
+                  <div className="p-3.5 space-y-3 overflow-y-auto stable-gutter sleek-scrollbar-amber flex-1 pb-10">
                   {/* Search Input Bar */}
                   <div className="relative">
                     <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] text-xs">
@@ -1965,9 +2147,10 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                       )}
                     </div>
 
-                    {/* Integrated Search Results List */}
+                    {/* Integrated Search Results List with Sleek Scrollbar */}
                     {isSearchDropdownOpen && searchResults.length > 0 && (
-                      <div className="mt-1.5 rounded-xl bg-[#FAF7F2] dark:bg-[#1E1B18] border border-[#E5DDD0] dark:border-[#38322B] shadow-lg max-h-44 overflow-y-auto drawer-cozy-scrollbar divide-y divide-[#E5DDD0]/50 dark:divide-[#38322B]/50">
+                      <div className="relative mt-1.5 rounded-xl bg-[#FAF7F2] dark:bg-[#1E1B18] border border-[#E5DDD0] dark:border-[#38322B] shadow-lg overflow-hidden">
+                        <div className="max-h-44 overflow-y-auto stable-gutter sleek-scrollbar-amber divide-y divide-[#E5DDD0]/50 dark:divide-[#38322B]/50 pb-3">
                         {searchResults.map((item) => (
                           <button
                             key={item.id}
@@ -2041,6 +2224,11 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                             </span>
                           </button>
                         ))}
+                        </div>
+                        <div 
+                          className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-[#FAF7F2] dark:from-[#1E1B18] to-transparent pointer-events-none z-10" 
+                          aria-hidden="true" 
+                        />
                       </div>
                     )}
                   </div>
@@ -2159,29 +2347,35 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                         </span>
                         <span className="text-[9px] text-[#7D6B5A] dark:text-[#B5A492]">Tap to inspect</span>
                       </div>
-                      <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto drawer-cozy-scrollbar pr-1">
-                        {linguisticFilteredGroups.slice(0, 15).map(item => (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => {
-                              if (item.x && item.y) {
-                                panToCoordinates(item.x, item.y, 2.5);
-                              }
-                              setSelectedEntity({
-                                id: item.id,
-                                name: item.name,
-                                type: 'ethnic',
-                                country: item.country,
-                                region: item.region,
-                                coords: item.x && item.y ? { x: item.x, y: item.y, r: 12 } : undefined
-                              });
-                            }}
-                            className="px-2 py-0.5 rounded-full text-[10px] bg-white dark:bg-[#2B241E] border border-[#E67E48]/30 hover:border-[#E67E48] text-[#2B241E] dark:text-[#F5EFE6] hover:text-[#E67E48] transition-colors cursor-pointer"
-                          >
-                            {item.name}
-                          </button>
-                        ))}
+                      <div className="relative overflow-hidden">
+                        <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto stable-gutter sleek-scrollbar-amber pr-1 pb-3">
+                          {linguisticFilteredGroups.slice(0, 15).map(item => (
+                            <button
+                              key={item.id}
+                              type="button"
+                              onClick={() => {
+                                if (item.x && item.y) {
+                                  panToCoordinates(item.x, item.y, 2.5);
+                                }
+                                setSelectedEntity({
+                                  id: item.id,
+                                  name: item.name,
+                                  type: 'ethnic',
+                                  country: item.country,
+                                  region: item.region,
+                                  coords: item.x && item.y ? { x: item.x, y: item.y, r: 12 } : undefined
+                                });
+                              }}
+                              className="px-2 py-0.5 rounded-full text-[10px] bg-white dark:bg-[#2B241E] border border-[#E67E48]/30 hover:border-[#E67E48] text-[#2B241E] dark:text-[#F5EFE6] hover:text-[#E67E48] transition-colors cursor-pointer"
+                            >
+                              {item.name}
+                            </button>
+                          ))}
+                        </div>
+                        <div 
+                          className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-[#FAF7F2] dark:from-[#1E1B18] to-transparent pointer-events-none z-10" 
+                          aria-hidden="true" 
+                        />
                       </div>
                     </div>
                   )}
@@ -2417,6 +2611,12 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                       </button>
                     </div>
                   </div>
+                  </div>
+                  {/* Click-Through Bottom Fade Overlay */}
+                  <div 
+                    className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[#FAF7F2] dark:from-[#1E1B18] to-transparent pointer-events-none z-10" 
+                    aria-hidden="true" 
+                  />
                 </div>
               </>
             )}
@@ -2910,106 +3110,120 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                 </div>
               </div>
 
-          {/* Drawer Body with Custom Slim Smooth Cozy Scrollbar */}
-          <div className="overflow-y-auto pr-1.5 drawer-cozy-scrollbar space-y-4 flex-1 text-xs">
-            {/* Demographic or Volume Metrics */}
-            {(selectedEntity.count || selectedEntity.tastVolumeShare) && (
-              <div className="p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] space-y-1">
-                <p className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
-                  Documented TAST Volume
-                </p>
-                {selectedEntity.count && (
-                  <p className="text-base font-bold text-[#2B241E] dark:text-[#F5EFE6]">
-                    {selectedEntity.count}
+          {/* Drawer Body with Custom Hover-Expanded Sleek Scrollbar & Bottom Fade */}
+          <div className="flex-1 min-h-0 relative overflow-hidden flex flex-col">
+            <div className="overflow-y-auto pr-1.5 stable-gutter sleek-scrollbar-amber space-y-4 flex-1 text-xs pb-10">
+              {/* Demographic or Volume Metrics */}
+              {(selectedEntity.count || selectedEntity.tastVolumeShare) && (
+                <div className="p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] space-y-1">
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
+                    Documented TAST Volume
                   </p>
-                )}
-                {selectedEntity.tastVolumeShare && (
-                  <p className="text-[11px] text-[#7D6B5A] dark:text-[#B5A492]">
-                    Transatlantic Embarkation Share: <span className="font-bold text-[#E67E48]">{selectedEntity.tastVolumeShare}%</span>
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Documented Ethnic Groups under this Conduit */}
-            {(() => {
-              const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
-                c.name.toLowerCase() === selectedEntity.name.toLowerCase() || 
-                c.id.toLowerCase() === selectedEntity.id.toLowerCase()
-              );
-              if (!conduit || !conduit.ethnicGroups.length) return null;
-              return (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
-                      Documented Ethnic Lineages ({conduit.ethnicGroups.length})
-                    </h4>
-                    <span className="text-[9px] text-[#E67E48] font-semibold">Click for Wikipedia</span>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto drawer-cozy-scrollbar p-1">
-                    {conduit.ethnicGroups.map((eg) => (
-                      <button
-                        key={eg.name}
-                        type="button"
-                        onClick={() => {
-                          setSelectedEntity({
-                            id: `${conduit.id}-${eg.name.toLowerCase().replace(/\s+/g, '-')}`,
-                            name: eg.name,
-                            type: 'ethnic',
-                            country: conduit.name,
-                            region: conduit.region,
-                            tastVolumeShare: conduit.tastVolumeShare,
-                            coords: { x: eg.nodeX, y: eg.nodeY, r: 14 }
-                          });
-                          zoomToCountryRegion(conduit.name, { x: eg.nodeX, y: eg.nodeY });
-                        }}
-                        className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#E67E48]/10 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/30 transition-all cursor-pointer flex items-center gap-1 active:scale-95"
-                        title={`Open Wikipedia Dossier for ${eg.name}`}
-                      >
-                        <span>{eg.name}</span>
-                        <ChevronRight className="w-3 h-3 text-[#E67E48]/60" />
-                      </button>
-                    ))}
-                  </div>
+                  {selectedEntity.count && (
+                    <p className="text-base font-bold text-[#2B241E] dark:text-[#F5EFE6]">
+                      {selectedEntity.count}
+                    </p>
+                  )}
+                  {selectedEntity.tastVolumeShare && (
+                    <p className="text-[11px] text-[#7D6B5A] dark:text-[#B5A492]">
+                      Transatlantic Embarkation Share: <span className="font-bold text-[#E67E48]">{selectedEntity.tastVolumeShare}%</span>
+                    </p>
+                  )}
                 </div>
-              );
-            })()}
+              )}
 
-            {/* Historical Narrative */}
-            {selectedEntity.description && (
-              <div className="space-y-1.5">
-                <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
-                  Historical Description & Provenance
-                </h4>
-                <p className="text-[#52463B] dark:text-[#C4B7A6] leading-relaxed">
-                  {selectedEntity.description}
+              {/* Documented Ethnic Groups under this Conduit */}
+              {(() => {
+                const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
+                  c.name.toLowerCase() === selectedEntity.name.toLowerCase() || 
+                  c.id.toLowerCase() === selectedEntity.id.toLowerCase()
+                );
+                if (!conduit || !conduit.ethnicGroups.length) return null;
+                return (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
+                        Documented Ethnic Lineages ({conduit.ethnicGroups.length})
+                      </h4>
+                      <span className="text-[9px] text-[#E67E48] font-semibold">Click for Wikipedia</span>
+                    </div>
+                    <div className="relative overflow-hidden">
+                      <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto stable-gutter sleek-scrollbar-amber p-1 pb-4">
+                        {conduit.ethnicGroups.map((eg) => (
+                          <button
+                            key={eg.name}
+                            type="button"
+                            onClick={() => {
+                              setSelectedEntity({
+                                id: `${conduit.id}-${eg.name.toLowerCase().replace(/\s+/g, '-')}`,
+                                name: eg.name,
+                                type: 'ethnic',
+                                country: conduit.name,
+                                region: conduit.region,
+                                tastVolumeShare: conduit.tastVolumeShare,
+                                coords: { x: eg.nodeX, y: eg.nodeY, r: 14 }
+                              });
+                              zoomToCountryRegion(conduit.name, { x: eg.nodeX, y: eg.nodeY });
+                            }}
+                            className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#E67E48]/10 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/30 transition-all cursor-pointer flex items-center gap-1 active:scale-95"
+                            title={`Open Wikipedia Dossier for ${eg.name}`}
+                          >
+                            <span>{eg.name}</span>
+                            <ChevronRight className="w-3 h-3 text-[#E67E48]/60" />
+                          </button>
+                        ))}
+                      </div>
+                      <div 
+                        className="absolute bottom-0 left-0 right-0 h-5 bg-gradient-to-t from-[#FAF7F2] dark:from-[#1E1B18] to-transparent pointer-events-none z-10" 
+                        aria-hidden="true" 
+                      />
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Historical Narrative */}
+              {selectedEntity.description && (
+                <div className="space-y-1.5">
+                  <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
+                    Historical Description & Provenance
+                  </h4>
+                  <p className="text-[#52463B] dark:text-[#C4B7A6] leading-relaxed">
+                    {selectedEntity.description}
+                  </p>
+                </div>
+              )}
+
+              {/* Rich Editorial Country Development & TAST Foundations Panel */}
+              <RichEditorialCountryDevelopmentPanel
+                countryName={selectedEntity.country || selectedEntity.name}
+                countryCode={selectedEntity.name}
+                regionName={selectedEntity.region}
+                tastVolumeShare={selectedEntity.tastVolumeShare}
+                onNavigateToMolecular={onNavigateToMolecular}
+                onNavigateToFoundations={onNavigateToFoundations}
+                onNavigateToSlaveTrade={onNavigateToSlaveTrade}
+                onSelectReport={onSelectReport}
+                compact={false}
+              />
+
+              {/* Cabo Verde Crucible Linkage */}
+              <div className="p-3 rounded-2xl bg-[#E67E48]/10 border border-[#E67E48]/25 space-y-1">
+                <p className="text-[10px] font-bold uppercase text-[#B8571A] dark:text-[#FFA573] flex items-center gap-1">
+                  <Compass className="w-3.5 h-3.5" />
+                  Cabo Verde Transatlantic Crucible Linkage
+                </p>
+                <p className="text-[11px] text-[#52463B] dark:text-[#C4B7A6] leading-relaxed">
+                  Lineages were processed through the Macaronesian maritime nexus, establishing foundational African-Atlantic creolization and linguistic transmission.
                 </p>
               </div>
-            )}
-
-            {/* Rich Editorial Country Development & TAST Foundations Panel */}
-            <RichEditorialCountryDevelopmentPanel
-              countryName={selectedEntity.country || selectedEntity.name}
-              countryCode={selectedEntity.name}
-              regionName={selectedEntity.region}
-              tastVolumeShare={selectedEntity.tastVolumeShare}
-              onNavigateToMolecular={onNavigateToMolecular}
-              onNavigateToFoundations={onNavigateToFoundations}
-              onNavigateToSlaveTrade={onNavigateToSlaveTrade}
-              onSelectReport={onSelectReport}
-              compact={false}
-            />
-
-            {/* Cabo Verde Crucible Linkage */}
-            <div className="p-3 rounded-2xl bg-[#E67E48]/10 border border-[#E67E48]/25 space-y-1">
-              <p className="text-[10px] font-bold uppercase text-[#B8571A] dark:text-[#FFA573] flex items-center gap-1">
-                <Compass className="w-3.5 h-3.5" />
-                Cabo Verde Transatlantic Crucible Linkage
-              </p>
-              <p className="text-[11px] text-[#52463B] dark:text-[#C4B7A6] leading-relaxed">
-                Lineages were processed through the Macaronesian maritime nexus, establishing foundational African-Atlantic creolization and linguistic transmission.
-              </p>
             </div>
+
+            {/* Click-Through Bottom Fade Overlay */}
+            <div 
+              className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[#FAF7F2] dark:from-[#1E1B18] to-transparent pointer-events-none z-10" 
+              aria-hidden="true"
+            />
           </div>
 
           {/* Drawer Actions */}

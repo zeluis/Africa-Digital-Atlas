@@ -266,8 +266,9 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
         </div>
       </div>
 
-      {/* 2. Scrollable Body */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
+      {/* 2. Scrollable Body with Hover-Expanded Floating Scrollbar & Click-Through Bottom Fade */}
+      <div className="relative flex-1 min-h-0 overflow-hidden flex flex-col">
+        <div className="flex-1 overflow-y-auto stable-gutter sleek-scrollbar-amber p-4 space-y-4 text-xs pb-10">
         {/* Visual Hero Image Banner (if available from Wikipedia) */}
         {dossier?.thumbnail && !imageFailed ? (
           <div className="relative w-full rounded-2xl overflow-hidden border border-[#E5DDD0] dark:border-[#38322B] shadow-inner bg-black/10">
@@ -564,6 +565,13 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
           onNavigateToSlaveTrade={onNavigateToSlaveTrade}
           onSelectReport={onSelectReport}
           compact={true}
+        />
+        </div>
+
+        {/* Click-Through Bottom Fade Overlay */}
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[#FAF7F2] dark:from-[#1E1B18] to-transparent pointer-events-none z-10" 
+          aria-hidden="true"
         />
       </div>
 

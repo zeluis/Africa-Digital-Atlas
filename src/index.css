@@ -734,34 +734,163 @@ abbr {
 
 /* Cozy Tonal Slim Scrollbar for Scholarly Drawer - Dynamic Link Active State Color Sync */
 .drawer-cozy-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: var(--drawer-scrollbar-thumb, #F59E0B) transparent;
-  transition: scrollbar-color 0.3s ease;
+  scrollbar-gutter: stable;
 }
+
+@supports not selector(::-webkit-scrollbar) {
+  .drawer-cozy-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--drawer-scrollbar-thumb, #F59E0B) transparent;
+  }
+}
+
 .drawer-cozy-scrollbar::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 12px;
+  height: 12px;
 }
 .drawer-cozy-scrollbar::-webkit-scrollbar-track {
   background: transparent;
-  margin: 6px 0;
 }
 .drawer-cozy-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--drawer-scrollbar-thumb, #F59E0B);
+  background-color: var(--drawer-scrollbar-thumb, #F59E0B);
   border-radius: 9999px;
-  transition: background-color 0.3s ease;
+  border: 4px solid transparent;
+  background-clip: padding-box;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
-.drawer-cozy-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--drawer-scrollbar-thumb-hover, #D97706);
+.drawer-cozy-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: var(--drawer-scrollbar-thumb-hover, #D97706);
+  border-width: 2px;
 }
-.dark .drawer-cozy-scrollbar {
-  scrollbar-color: var(--drawer-scrollbar-thumb, #F59E0B) transparent;
+.drawer-cozy-scrollbar::-webkit-scrollbar-thumb:active {
+  background-color: var(--drawer-scrollbar-thumb-hover, #B45309);
+  border-width: 2px;
 }
-.dark .drawer-cozy-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--drawer-scrollbar-thumb, #F59E0B);
+
+/* =========================================================================
+   Hover-Expanded Floating Scrollbar & Stable Gutter Utilities
+   ========================================================================= */
+
+/* Prevent scrolling layout shifts across all dynamic/modal panels */
+.stable-gutter {
+  scrollbar-gutter: stable;
 }
-.dark .drawer-cozy-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--drawer-scrollbar-thumb-hover, #D97706);
+
+/* Firefox Fallbacks (only applied if ::-webkit-scrollbar is not supported) */
+@supports not selector(::-webkit-scrollbar) {
+  .sleek-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(120, 113, 108, 0.45) transparent;
+  }
+  .dark .sleek-scrollbar,
+  [data-theme="dark"] .sleek-scrollbar {
+    scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+  }
+
+  .sleek-scrollbar-amber {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(217, 119, 6, 0.55) transparent;
+  }
+  .dark .sleek-scrollbar-amber,
+  [data-theme="dark"] .sleek-scrollbar-amber {
+    scrollbar-color: rgba(245, 158, 11, 0.55) transparent;
+  }
+}
+
+/* WebKit / Chromium / Blink / Safari Floating Scrollbars:
+   - Hit area: 12px
+   - Idle state: 4px thin floating ribbon (border: 4px solid transparent)
+   - Hover state: Expands to 8px grab bar (border-width: 2px)
+   - Active state: High-contrast press feedback
+*/
+.sleek-scrollbar::-webkit-scrollbar {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+.sleek-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.sleek-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(120, 113, 108, 0.38) !important;
+  border-radius: 9999px !important;
+  border: 4px solid transparent !important;
+  background-clip: padding-box !important;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1) !important;
+}
+
+.sleek-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(120, 113, 108, 0.75) !important;
+  border-width: 2px !important;
+}
+
+.sleek-scrollbar::-webkit-scrollbar-thumb:active {
+  background-color: rgba(120, 113, 108, 0.95) !important;
+  border-width: 2px !important;
+}
+
+/* Dark mode adjustment for neutral sleek scrollbar */
+.dark .sleek-scrollbar::-webkit-scrollbar-thumb,
+[data-theme="dark"] .sleek-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.35) !important;
+}
+
+.dark .sleek-scrollbar:hover::-webkit-scrollbar-thumb,
+[data-theme="dark"] .sleek-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.75) !important;
+  border-width: 2px !important;
+}
+
+.dark .sleek-scrollbar::-webkit-scrollbar-thumb:active,
+[data-theme="dark"] .sleek-scrollbar::-webkit-scrollbar-thumb:active {
+  background-color: rgba(226, 232, 240, 0.95) !important;
+  border-width: 2px !important;
+}
+
+/* Amber/Warm Sleek Floating Scrollbar for Cultural & Archival Surfaces */
+.sleek-scrollbar-amber::-webkit-scrollbar {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+.sleek-scrollbar-amber::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.sleek-scrollbar-amber::-webkit-scrollbar-thumb {
+  background-color: rgba(217, 119, 6, 0.45) !important;
+  border-radius: 9999px !important;
+  border: 4px solid transparent !important;
+  background-clip: padding-box !important;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1) !important;
+}
+
+.sleek-scrollbar-amber:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(217, 119, 6, 0.85) !important;
+  border-width: 2px !important;
+}
+
+.sleek-scrollbar-amber::-webkit-scrollbar-thumb:active {
+  background-color: rgba(180, 83, 9, 1.0) !important;
+  border-width: 2px !important;
+}
+
+.dark .sleek-scrollbar-amber::-webkit-scrollbar-thumb,
+[data-theme="dark"] .sleek-scrollbar-amber::-webkit-scrollbar-thumb {
+  background-color: rgba(245, 158, 11, 0.45) !important;
+}
+
+.dark .sleek-scrollbar-amber:hover::-webkit-scrollbar-thumb,
+[data-theme="dark"] .sleek-scrollbar-amber:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(245, 158, 11, 0.85) !important;
+  border-width: 2px !important;
+}
+
+.dark .sleek-scrollbar-amber::-webkit-scrollbar-thumb:active,
+[data-theme="dark"] .sleek-scrollbar-amber::-webkit-scrollbar-thumb:active {
+  background-color: rgba(251, 191, 36, 1.0) !important;
+  border-width: 2px !important;
 }
 
 /* =========================================================================

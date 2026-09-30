@@ -136,8 +136,9 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
           </div>
         </div>
 
-        {/* Concordance List Body */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 sm:p-5 space-y-2.5 text-left">
+        {/* Concordance List Body with Sleek Scrollbar & Click-Through Bottom Fade */}
+        <div className="relative flex-1 min-h-0 overflow-hidden flex flex-col">
+          <div className="flex-1 overflow-y-auto stable-gutter sleek-scrollbar-amber p-3 sm:p-5 space-y-2.5 text-left pb-10">
           {filteredItems.map((item, idx) => (
             <div
               key={idx}
@@ -178,6 +179,13 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
               </button>
             </div>
           ))}
+          </div>
+
+          {/* Click-Through Bottom Fade Overlay */}
+          <div 
+            className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[#FAF7F2] dark:from-[#181614] to-transparent pointer-events-none z-10" 
+            aria-hidden="true" 
+          />
         </div>
       </motion.div>
     </div>

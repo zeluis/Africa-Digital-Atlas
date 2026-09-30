@@ -394,8 +394,9 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           </button>
         </div>
 
-        {/* Results Container */}
-        <div className="max-h-[60vh] overflow-y-auto p-4 space-y-2">
+        {/* Results Container with Sleek Scrollbar & Click-Through Bottom Fade */}
+        <div className="relative overflow-hidden">
+          <div className="max-h-[60vh] overflow-y-auto stable-gutter sleek-scrollbar p-4 space-y-2 pb-8">
           {flattenedItems.length === 0 ? (
             <div className="p-8 text-center space-y-2">
               <Search className="w-8 h-8 text-zinc-400 mx-auto opacity-50" />
@@ -501,6 +502,13 @@ export const SearchModal: React.FC<SearchModalProps> = ({
               );
             })
           )}
+          </div>
+
+          {/* Click-Through Bottom Fade Overlay */}
+          <div 
+            className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white dark:from-zinc-950 to-transparent pointer-events-none z-10" 
+            aria-hidden="true" 
+          />
         </div>
 
         {/* Footer Info */}

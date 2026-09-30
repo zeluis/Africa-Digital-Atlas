@@ -1279,17 +1279,33 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           '--drawer-scrollbar-thumb': selectedScrollbarColor.thumb,
           '--drawer-scrollbar-thumb-hover': selectedScrollbarColor.hover,
         } as React.CSSProperties}
-        className={`hidden lg:flex flex-col shrink-0 sticky top-16 h-[calc(100vh-4rem)] border-r border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl z-30 transition-all duration-300 ease-out overflow-y-auto overflow-x-hidden drawer-cozy-scrollbar ${
+        className={`hidden lg:flex flex-col shrink-0 sticky top-16 h-[calc(100vh-4rem)] border-r border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl z-30 transition-all duration-300 ease-out relative overflow-hidden ${
           !isDesktopOpen
             ? 'w-0 p-0 border-r-0 overflow-hidden'
             : isAutoCollapsePage
               ? isDrawerHovered
-                ? 'w-72 p-4 shadow-2xl'
-                : 'w-[68px] p-2 shadow-xs'
-              : 'w-72 p-4'
+                ? 'w-72 shadow-2xl'
+                : 'w-[68px] shadow-xs'
+              : 'w-72'
         }`}
       >
-        {isDesktopOpen && navContent(false)}
+        {isDesktopOpen && (
+          <div className="relative flex-1 min-h-0 w-full overflow-hidden flex flex-col">
+            <div 
+              className={`flex-1 overflow-y-auto overflow-x-hidden stable-gutter sleek-scrollbar pb-12 ${
+                isAutoCollapsePage && !isDrawerHovered ? 'p-2' : 'p-4'
+              }`}
+            >
+              {navContent(false)}
+            </div>
+
+            {/* Click-Through Bottom Fade Overlay */}
+            <div 
+              className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white dark:from-zinc-950 to-transparent pointer-events-none z-10"
+              aria-hidden="true" 
+            />
+          </div>
+        )}
       </aside>
 
       {/* 2. MOBILE DRAWER MODAL / SHEET */}
@@ -1312,20 +1328,31 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 '--drawer-scrollbar-thumb': selectedScrollbarColor.thumb,
                 '--drawer-scrollbar-thumb-hover': selectedScrollbarColor.hover,
               } as React.CSSProperties}
-              className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 z-50 p-5 overflow-y-auto drawer-cozy-scrollbar lg:hidden flex flex-col justify-between shadow-2xl"
+              className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 z-50 overflow-hidden lg:hidden flex flex-col justify-between shadow-2xl"
             >
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-zinc-100 dark:border-zinc-800">
-                <span className="text-sm font-bold text-zinc-900 dark:text-white font-serif tracking-wide">
-                  Navigation Menu
-                </span>
-                <button
-                  onClick={onCloseMobile}
-                  className="p-1.5 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 cursor-pointer"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+              <div className="p-5 pb-0 flex flex-col flex-1 min-h-0 relative overflow-hidden">
+                <div className="flex items-center justify-between pb-4 mb-2 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
+                  <span className="text-sm font-bold text-zinc-900 dark:text-white font-serif tracking-wide">
+                    Navigation Menu
+                  </span>
+                  <button
+                    onClick={onCloseMobile}
+                    className="p-1.5 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto overflow-x-hidden stable-gutter sleek-scrollbar pb-12 pr-1">
+                  {navContent(true)}
+                </div>
+
+                {/* Click-Through Bottom Fade Overlay */}
+                <div 
+                  className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white dark:from-zinc-950 to-transparent pointer-events-none z-10"
+                  aria-hidden="true" 
+                />
               </div>
-              {navContent(true)}
             </motion.div>
           </>
         )}

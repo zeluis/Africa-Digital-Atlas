@@ -842,7 +842,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
 
         {/* Right Collapsible Panel: Polished Editorial Dossier & Citation Generator */}
         {isMetadataOpen && (
-          <div className="w-full lg:w-5/12 xl:w-1/3 bg-[#FAF8F5] dark:bg-[#161413] flex flex-col h-full min-h-0 border-t lg:border-t-0 border-stone-200/90 dark:border-stone-800 text-stone-900 dark:text-stone-100 overflow-hidden">
+          <div className="w-full lg:w-5/12 xl:w-1/3 bg-[#FAF8F5] dark:bg-[#161413] flex flex-col h-full min-h-0 border-t lg:border-t-0 border-stone-200/90 dark:border-stone-800 text-stone-900 dark:text-stone-100 overflow-hidden relative">
             
             {/* Panel Header & Tabs: Metadata, Citation & Academia */}
             <div className="flex items-center justify-between border-b border-stone-200/90 dark:border-stone-800 bg-[#F4EFE6]/90 dark:bg-stone-950/80 shrink-0">
@@ -899,8 +899,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
 
             <div 
               ref={metadataScrollRef}
-              className="p-5 sm:p-6 space-y-6 flex-1 min-h-0 overflow-y-auto drawer-cozy-scrollbar overscroll-contain"
-              style={{ scrollbarGutter: 'stable', scrollbarWidth: 'thin' }}
+              className="p-5 sm:p-6 space-y-6 flex-1 min-h-0 overflow-y-auto stable-gutter sleek-scrollbar pb-16 overscroll-contain"
             >
               
               {/* TAB 1: ARCHIVAL METADATA */}
@@ -1282,6 +1281,12 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
               )}
 
             </div>
+
+            {/* Click-Through Bottom Fade Overlay */}
+            <div 
+              className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#FAF8F5] dark:from-[#161413] to-transparent pointer-events-none z-10" 
+              aria-hidden="true" 
+            />
           </div>
         )}
 

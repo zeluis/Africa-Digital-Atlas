@@ -344,9 +344,10 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
               </button>
             </div>
 
-            {/* Scrollable Tab Content Body */}
-            <div className="p-3.5 sm:p-4 overflow-y-auto custom-scrollbar space-y-3.5 text-left text-xs font-sans max-h-[340px]">
-              {/* TAB 1: OVERVIEW */}
+            {/* Scrollable Tab Content Body with Sleek Scrollbar & Click-Through Bottom Fade */}
+            <div className="relative overflow-hidden">
+              <div className="p-3.5 sm:p-4 overflow-y-auto stable-gutter sleek-scrollbar-amber space-y-3.5 text-left text-xs font-sans max-h-[340px] pb-10">
+                {/* TAB 1: OVERVIEW */}
               {activeTab === 'overview' && (
                 <div className="space-y-3">
                   <p className="text-xs sm:text-[13px] font-serif leading-relaxed text-stone-800 dark:text-stone-200">
@@ -609,6 +610,13 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
                   )}
                 </div>
               )}
+              </div>
+
+              {/* Click-Through Bottom Fade Overlay */}
+              <div 
+                className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[#FAF7F2] dark:from-[#181614] to-transparent pointer-events-none z-10" 
+                aria-hidden="true" 
+              />
             </div>
           </motion.div>
         )}
