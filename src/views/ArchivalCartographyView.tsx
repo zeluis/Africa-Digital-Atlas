@@ -14,7 +14,8 @@ import { HistoricalMapCurtainViewer } from '../components/cartography/Historical
 import { OceanCurrentParticleCanvas } from '../components/cartography/OceanCurrentParticleCanvas';
 import { AntiquePlateCanvas } from '../components/cartography/AntiquePlateCanvas';
 import { KingdomDynasticTreeModal } from '../components/cartography/KingdomDynasticTreeModal';
-import { DETAILED_KINGDOMS_DATA, KingdomDetailedRecord } from '../data/preColonialKingdomsDetailed';
+import { ToponymConcordanceModal } from '../components/cartography/ToponymConcordanceModal';
+import { DETAILED_KINGDOMS_DATA, KingdomDetailedRecord, ToponymConcordanceItem } from '../data/preColonialKingdomsDetailed';
 import { SEASONAL_HYDRO_METRICS } from '../services/oceanHydrodynamicsService';
 import { Footer } from '../components/Footer';
 import { CanonicalNavTab } from '../components/NavigationDrawer';
@@ -79,6 +80,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
   const [selectedPlate, setSelectedPlate] = useState<HistoricalMapPlate>(initialData.plate);
   const [focusedEntity, setFocusedEntity] = useState<PreColonialEntity | null>(null);
   const [selectedDynastyKingdom, setSelectedDynastyKingdom] = useState<KingdomDetailedRecord | null>(null);
+  const [isToponymConcordanceOpen, setIsToponymConcordanceOpen] = useState<boolean>(false);
   const [activeSeasonId, setActiveSeasonId] = useState<'q1' | 'q2' | 'q3' | 'q4'>('q1');
   const [showCurrents, setShowCurrents] = useState<boolean>(true);
   const [showWinds, setShowWinds] = useState<boolean>(true);
@@ -381,6 +383,17 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                     <span>Kingdoms ({PRE_COLONIAL_ENTITIES.length})</span>
                   </button>
                 </div>
+
+                {/* Toponymic Concordance Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsToponymConcordanceOpen(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-900 dark:text-amber-200 border border-amber-500/40 text-[10px] font-mono font-bold transition-all cursor-pointer shadow-2xs"
+                  title="Open Toponymic Concordance Index Table"
+                >
+                  <BookOpen className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                  <span>Concordance</span>
+                </button>
               </motion.div>
             </div>
 
@@ -483,6 +496,19 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
               <KingdomDynasticTreeModal
                 kingdom={selectedDynastyKingdom}
                 onClose={() => setSelectedDynastyKingdom(null)}
+              />
+            )}
+          </AnimatePresence>
+
+          {/* Toponymic Concordance Table Modal */}
+          <AnimatePresence>
+            {isToponymConcordanceOpen && (
+              <ToponymConcordanceModal
+                onClose={() => setIsToponymConcordanceOpen(false)}
+                onLocateToponym={(item: ToponymConcordanceItem) => {
+                  setIsToponymConcordanceOpen(false);
+                  setActiveTab('curtain');
+                }}
               />
             )}
           </AnimatePresence>

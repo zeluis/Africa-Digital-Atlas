@@ -1580,10 +1580,10 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
 
               {/* 3. Pre-Colonial Empires & Kingdoms Vector Beacons & Extents (Top Layer) */}
               {showPreColonialKingdoms && (
-                <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-4 pointer-events-none z-20">
+                <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-4 pointer-events-auto z-20">
                   <svg
                     viewBox={AFRICA_FINAL_VIEWBOX}
-                    className="w-full h-full max-w-[92vw] max-h-[calc(100vh-140px)] select-none pointer-events-none"
+                    className="w-full h-full max-w-[92vw] max-h-[calc(100vh-140px)] select-none pointer-events-auto"
                     preserveAspectRatio="xMidYMid meet"
                   >
                     {/* Pre-Colonial Peak Territorial Extents Polygons */}

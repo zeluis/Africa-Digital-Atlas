@@ -1082,48 +1082,29 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             )}
           </button>
 
-          {/* Documentation External Link */}
-          <a
-            href="./docs/"
-            target="_blank"
-            rel="noopener noreferrer"
-            title={t('nav.docs', 'Docs')}
-            className={`w-full flex items-center ${
-              isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
-            } text-left rounded-xl transition-all cursor-pointer text-zinc-500 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-800 dark:hover:text-zinc-200 mt-1`}
-          >
-            <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
-              <BookOpen className="w-4 h-4 text-amber-600 dark:text-amber-500 shrink-0" />
-              {!isDesktopCollapsed && <span>{t('nav.docs', 'Docs')}</span>}
-            </div>
-            {!isDesktopCollapsed && <ExternalLink className="w-3.5 h-3.5 text-zinc-400 opacity-60" />}
-          </a>
-
-          {/* Universal Style Guide & Architectural Monograph */}
-          <button
-            onClick={() => {
-              onSelectTab('style-guide' as CanonicalNavTab);
-              if (isMobile) onCloseMobile();
-            }}
-            title={t('nav.styleGuide', 'Style Guide & Architecture')}
-            className={`w-full flex items-center ${
-              isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
-            } text-left rounded-xl transition-all cursor-pointer ${
-              currentTab === 'style-guide'
-                ? 'bg-amber-600 text-white font-bold shadow-sm'
-                : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-900'
-            } mt-1`}
-          >
-            <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
-              <Palette className="w-4 h-4 text-amber-500 shrink-0" />
-              {!isDesktopCollapsed && <span>{t('nav.styleGuide', 'Style Guide & Architecture')}</span>}
-            </div>
-            {!isDesktopCollapsed && (
-              <span className="text-[10px] font-mono uppercase bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-800 dark:text-amber-300">
-                Monograph
-              </span>
-            )}
-          </button>
+          {/* AfCFTA Trade Corridor Simulator */}
+          {onOpenAfcftaSimulator && (
+            <button
+              onClick={() => {
+                if (isMobile) onCloseMobile();
+                onOpenAfcftaSimulator();
+              }}
+              title="AfCFTA Trade Corridor & Tariff Impact Simulator"
+              className={`w-full flex items-center ${
+                isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
+              } text-left rounded-xl transition-all cursor-pointer text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-900 mt-1`}
+            >
+              <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
+                <Truck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                {!isDesktopCollapsed && <span>AfCFTA Simulator</span>}
+              </div>
+              {!isDesktopCollapsed && (
+                <span className="text-[10px] font-mono uppercase bg-emerald-500/20 px-1.5 py-0.5 rounded text-emerald-800 dark:text-emerald-300 font-bold">
+                  Tool
+                </span>
+              )}
+            </button>
+          )}
 
           {/* Institutional Policy Brief & Working Paper Series */}
           {onOpenWorkingPapers && (
@@ -1149,25 +1130,25 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             </button>
           )}
 
-          {/* AfCFTA Trade Corridor Simulator */}
-          {onOpenAfcftaSimulator && (
+          {/* Orientation & Onboarding Trigger */}
+          {onOpenOnboarding && (
             <button
               onClick={() => {
                 if (isMobile) onCloseMobile();
-                onOpenAfcftaSimulator();
+                onOpenOnboarding();
               }}
-              title="AfCFTA Trade Corridor & Tariff Impact Simulator"
+              title={t('nav.orientation', 'Orientation & Heritage')}
               className={`w-full flex items-center ${
                 isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
-              } text-left rounded-xl transition-all cursor-pointer text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-900 mt-1`}
+              } text-left rounded-xl transition-all cursor-pointer text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 dark:hover:bg-amber-500/15 mt-1 font-medium`}
             >
               <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
-                <Truck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                {!isDesktopCollapsed && <span>AfCFTA Simulator</span>}
+                <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+                {!isDesktopCollapsed && <span>{t('nav.orientation', 'Orientation & Heritage')}</span>}
               </div>
               {!isDesktopCollapsed && (
-                <span className="text-[10px] font-mono uppercase bg-emerald-500/20 px-1.5 py-0.5 rounded text-emerald-800 dark:text-emerald-300 font-bold">
-                  Tool
+                <span className="text-[10px] font-mono uppercase bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-700 dark:text-amber-300">
+                  3-Step
                 </span>
               )}
             </button>
@@ -1221,29 +1202,52 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             </button>
           )}
 
-          {/* Orientation & Onboarding Trigger */}
-          {onOpenOnboarding && (
-            <button
-              onClick={() => {
-                if (isMobile) onCloseMobile();
-                onOpenOnboarding();
-              }}
-              title={t('nav.orientation', 'Orientation & Heritage')}
-              className={`w-full flex items-center ${
-                isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
-              } text-left rounded-xl transition-all cursor-pointer text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 dark:hover:bg-amber-500/15 mt-1 font-medium`}
-            >
-              <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
-                <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
-                {!isDesktopCollapsed && <span>{t('nav.orientation', 'Orientation & Heritage')}</span>}
-              </div>
-              {!isDesktopCollapsed && (
-                <span className="text-[10px] font-mono uppercase bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-700 dark:text-amber-300">
-                  3-Step
-                </span>
-              )}
-            </button>
-          )}
+          {/* Style & Architecture (Renamed) */}
+          <button
+            onClick={() => {
+              onSelectTab('style-guide' as CanonicalNavTab);
+              if (isMobile) onCloseMobile();
+            }}
+            title={t('nav.styleGuide', 'Style & Architecture')}
+            className={`w-full flex items-center ${
+              isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
+            } text-left rounded-xl transition-all cursor-pointer ${
+              currentTab === 'style-guide'
+                ? 'bg-amber-600 text-white font-bold shadow-sm'
+                : 'text-stone-700 dark:text-stone-300 hover:bg-amber-500/10 dark:hover:bg-amber-500/15 hover:text-amber-900 dark:hover:text-amber-200'
+            } mt-1`}
+          >
+            <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
+              <Palette className={`w-4 h-4 shrink-0 transition-colors ${currentTab === 'style-guide' ? 'text-white' : 'text-amber-700 dark:text-amber-300'}`} />
+              {!isDesktopCollapsed && <span>{t('nav.styleGuide', 'Style & Architecture')}</span>}
+            </div>
+            {!isDesktopCollapsed && (
+              <span className={`text-[10px] font-mono uppercase px-1.5 py-0.5 rounded font-bold transition-colors ${
+                currentTab === 'style-guide'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-amber-500/20 text-amber-800 dark:text-amber-300'
+              }`}>
+                Monograph
+              </span>
+            )}
+          </button>
+
+          {/* Documentation & Guides External Link */}
+          <a
+            href="./docs/"
+            target="_blank"
+            rel="noopener noreferrer"
+            title={t('nav.docs', 'Documentation & Guides')}
+            className={`w-full flex items-center ${
+              isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
+            } text-left rounded-xl transition-all cursor-pointer text-stone-700 dark:text-stone-300 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-stone-900 dark:hover:text-stone-100 mt-1`}
+          >
+            <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
+              <BookOpen className="w-4 h-4 text-stone-700 dark:text-stone-300 shrink-0" />
+              {!isDesktopCollapsed && <span>{t('nav.docs', 'Documentation & Guides')}</span>}
+            </div>
+            {!isDesktopCollapsed && <ExternalLink className="w-3.5 h-3.5 text-stone-400 opacity-60" />}
+          </a>
 
           {!isDesktopCollapsed && (
             <div className="pt-4 mt-2 border-t border-zinc-100 dark:border-zinc-800/50 px-2 select-none space-y-1">
