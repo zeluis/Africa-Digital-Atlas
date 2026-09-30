@@ -40,7 +40,7 @@ import {
   exportRISFile, 
   exportCSLJSONFile 
 } from '../../utils/academicExport';
-import { resolveAssetPath } from '../../utils/assetPath';
+import { resolveAssetPath, getAssetCandidateUrls } from '../../utils/assetPath';
 
 interface ArchivalImageViewerProps {
   illustration: SlaveTradeIllustration | null;
@@ -86,6 +86,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
   const [hasCopied, setHasCopied] = useState<boolean>(false);
   const [isExportingPDF, setIsExportingPDF] = useState<boolean>(false);
   const [imageLoadError, setImageLoadError] = useState<boolean>(false);
+  const [candidateIndex, setCandidateIndex] = useState<number>(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -148,6 +149,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
     setIsHighContrast(false);
     setIsInverted(false);
     setImageLoadError(false);
+    setCandidateIndex(0);
   }, [illustration?.objectId]);
 
   // Scroll current thumbnail into view when illustration changes
@@ -455,7 +457,16 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
   if (!illustration) return null;
 
   const rawImageUrl = illustration.imageUrls?.[0] || 'https://si.regeneratedidentities.org/project/DataFiles/SI-OB-17/17-4.jpg';
-  const imageUrl = resolveAssetPath(rawImageUrl);
+  const candidates = getAssetCandidateUrls(rawImageUrl);
+  const imageUrl = candidates[candidateIndex] || resolveAssetPath(rawImageUrl);
+
+  const handleMainImageError = () => {
+    if (candidateIndex + 1 < candidates.length) {
+      setCandidateIndex(prev => prev + 1);
+    } else {
+      setImageLoadError(true);
+    }
+  };
 
   const contentUI = (
     <div 
@@ -714,7 +725,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                   src={imageUrl}
                   alt={illustration.title}
                   draggable={false}
-                  onError={() => setImageLoadError(true)}
+                  onError={handleMainImageError}
                   className={`max-w-full max-h-full object-contain shadow-2xl rounded-md ring-1 ring-stone-900/10 dark:ring-white/10 transition-all duration-300 ${
                     isHighContrast ? 'contrast-150 brightness-110 grayscale' : 'contrast-105'
                   }`}
@@ -790,8 +801,17 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                           alt={item.title} 
                           className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                           onError={(e) => {
-                            // Hide broken img so backdrop and regId remain pristine
-                            e.currentTarget.style.display = 'none';
+                            const el = e.currentTarget;
+                            const currentIdx = parseInt(el.getAttribute('data-candidate-idx') || '0', 10);
+                            const candidateList = getAssetCandidateUrls(rawThumb);
+                            if (currentIdx + 1 < candidateList.length) {
+                              const nextIdx = currentIdx + 1;
+                              el.setAttribute('data-candidate-idx', String(nextIdx));
+                              el.src = candidateList[nextIdx];
+                            } else {
+                              // Hide broken img so backdrop and regId remain pristine
+                              el.style.display = 'none';
+                            }
                           }}
                         />
                       ) : (

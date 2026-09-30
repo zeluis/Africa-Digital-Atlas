@@ -34,7 +34,7 @@ const castasIllustrations: SlaveTradeIllustration[] = CASTAS_ARCHIVE_ITEMS.map((
   title: item.title,
   date: item.date,
   source: `${item.creator} • Preserved at ${item.institution}`,
-  imageUrls: [resolveAssetPath(item.imageUrl)],
+  imageUrls: [item.imageUrl],
   collectionNames: [item.category],
   collectionIds: [999],
   itemSets: ['Castas & Colonial Visual Archive'],
@@ -125,6 +125,94 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
     }, 14000);
     return () => clearInterval(interval);
   }, [rotateHeroImage]);
+
+  // Full-bleed workbench mode for Castas & Colonial Archive
+  if (activeTab === 'ingestion') {
+    return (
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8 -my-6 w-[calc(100%+2rem)] sm:w-[calc(100%+3rem)] lg:w-[calc(100%+4rem)] h-[calc(100vh-64px)] min-h-[640px] flex flex-col overflow-hidden bg-[#FAF8F5] dark:bg-stone-950 select-none">
+        {/* Full-Bleed Workbench Top Integrated Controls Bar (in the vein of HistoricalMapCurtainViewer) */}
+        <header className="w-full shrink-0 border-b border-stone-200/90 dark:border-stone-800/90 bg-[#FAF8F5]/98 dark:bg-stone-950/98 backdrop-blur-md px-3 sm:px-6 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 z-20 shadow-xs">
+          
+          {/* Left: View Title & Active Plate Badge */}
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="p-1.5 rounded-xl bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/15 dark:border-amber-400/20 text-amber-900 dark:text-amber-400 shrink-0">
+              <Database className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="font-serif font-bold text-xs sm:text-sm md:text-base text-stone-900 dark:text-stone-100 whitespace-nowrap">
+                  Castas &amp; Colonial Visual Archive
+                </h1>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-900 dark:text-amber-300 font-mono text-[9.5px] font-bold border border-amber-500/30 whitespace-nowrap">
+                  Plate {activeCastasItem.regId} of {castasIllustrations.length}
+                </span>
+                <span className="text-[11px] font-serif italic text-stone-700 dark:text-stone-300 truncate max-w-xs md:max-w-md hidden lg:inline">
+                  • {activeCastasItem.title}
+                </span>
+              </div>
+              <p className="text-[10px] font-mono text-stone-500 dark:text-stone-400 truncate hidden md:block">
+                18th-Century Viceroyalty of New Spain • Museo Nacional del Virreinato
+              </p>
+            </div>
+          </div>
+
+          {/* Right: Segmented Switchboard to toggle between Archival Plates Grid and Castas */}
+          <div className="inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner self-start sm:self-auto">
+            <button
+              onClick={() => setActiveTab('registry')}
+              className="px-3 py-1 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-1.5 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
+            >
+              <DynamicIcon 
+                icon="fluent-mdl2:picture-tile" 
+                className="w-3.5 h-3.5 shrink-0 transition-colors text-stone-500 dark:text-stone-400" 
+              />
+              <span>Archival Plates Grid</span>
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold bg-stone-200/80 dark:bg-stone-800 text-stone-600 dark:text-stone-400">
+                {SLAVE_TRADE_ILLUSTRATIONS.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('ingestion')}
+              className="px-3 py-1 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-1.5 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-sm"
+            >
+              <DynamicIcon 
+                icon="lucide:gallery-thumbnails" 
+                className="w-3.5 h-3.5 shrink-0 transition-colors text-amber-400 dark:text-amber-600" 
+              />
+              <span>Castas Series</span>
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold bg-stone-800 text-amber-300 dark:bg-stone-200 dark:text-stone-900">
+                {castasIllustrations.length}
+              </span>
+            </button>
+          </div>
+        </header>
+
+        {/* Full-Bleed Archival Image Viewer Workspace */}
+        <div className="flex-1 w-full min-h-0 overflow-hidden relative">
+          <ArchivalImageViewer
+            illustration={activeCastasItem}
+            illustrationsList={castasIllustrations}
+            onSelectIllustration={item => setActiveCastasItem(item)}
+            onOpenModal={() => setInspectedIllustration(activeCastasItem)}
+            mode="embedded"
+            showThumbnails={true}
+          />
+        </div>
+
+        {/* Fullscreen Loupe / Modal Viewer */}
+        <ArchivalLoupeModal
+          illustration={inspectedIllustration}
+          illustrationsList={castasIllustrations}
+          onSelectIllustration={item => {
+            setInspectedIllustration(item);
+            setActiveCastasItem(item);
+          }}
+          onClose={() => setInspectedIllustration(null)}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 pb-16">
@@ -255,103 +343,20 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
         </div>
       </div>
 
-      {/* Tab Switchboard Content Area */}
-      {activeTab === 'registry' ? (
-        <div>
-          <SlaveTradeIconography 
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            castasCount={castasIllustrations.length}
-            initialSearchTerm={initialSearchQuery}
-          />
-        </div>
-      ) : (
-        /* Castas Archive Tab: ArchivalImageViewer rendered standalone with all 32 images */
-        <div className="space-y-4 animate-in fade-in duration-300 text-left">
-          {/* Sticky Toolbar for Castas Archive with Integrated Segmented Control */}
-          <div className="sticky top-[64px] z-30 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 py-4 bg-stone-50/95 dark:bg-stone-950/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-800/80 space-y-4 shadow-sm transition-all text-left">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/15 dark:border-amber-400/20 text-amber-900 dark:text-amber-400 shrink-0">
-                  <Database className="w-4.5 h-4.5" />
-                </div>
-                <div>
-                  <h3 className="font-serif font-bold text-stone-900 dark:text-stone-100 text-sm tracking-tight leading-none">
-                    Castas &amp; Colonial Painting Series
-                  </h3>
-                  <p className="text-[10px] font-mono text-stone-500 dark:text-stone-400 mt-1">
-                    Plate {activeCastasItem.regId} of {castasIllustrations.length} • Museo Nacional del Virreinato
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Row 2: Selected Plate Caption & Right-Aligned Integrated Segmented Control */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-              <div className="flex items-center gap-2 truncate text-xs font-mono text-stone-600 dark:text-stone-400 min-w-0">
-                <span className="font-bold text-amber-900 dark:text-amber-400 uppercase tracking-wider shrink-0">
-                  Active Plate:
-                </span>
-                <span className="truncate text-stone-800 dark:text-stone-200 font-serif italic">
-                  {activeCastasItem.title}
-                </span>
-              </div>
-
-              <div className="inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner self-start lg:self-auto">
-                <button
-                  onClick={() => setActiveTab('registry')}
-                  className="px-3.5 py-1.5 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-2 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
-                >
-                  <DynamicIcon 
-                    icon="fluent-mdl2:picture-tile" 
-                    className="w-3.5 h-3.5 shrink-0 transition-colors text-stone-500 dark:text-stone-400" 
-                  />
-                  <span>Archival Plates Grid</span>
-                  <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold bg-stone-200/80 dark:bg-stone-800 text-stone-600 dark:text-stone-400">
-                    {SLAVE_TRADE_ILLUSTRATIONS.length}
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => setActiveTab('ingestion')}
-                  className="px-3.5 py-1.5 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-2 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-sm"
-                >
-                  <DynamicIcon 
-                    icon="lucide:gallery-thumbnails" 
-                    className="w-3.5 h-3.5 shrink-0 transition-colors text-amber-400 dark:text-amber-600" 
-                  />
-                  <span>Castas &amp; Colonial Archive</span>
-                  <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold bg-stone-800 text-amber-300 dark:bg-stone-200 dark:text-stone-900">
-                    {castasIllustrations.length} Plates
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Standalone Archival Image Viewer Workspace */}
-          <div className="h-[740px] sm:h-[820px] rounded-3xl overflow-hidden border border-stone-200/90 dark:border-stone-800 shadow-xl bg-[#FAF8F5] dark:bg-stone-950">
-            <ArchivalImageViewer
-              illustration={activeCastasItem}
-              illustrationsList={castasIllustrations}
-              onSelectIllustration={item => setActiveCastasItem(item)}
-              onOpenModal={() => setInspectedIllustration(activeCastasItem)}
-              mode="embedded"
-              showThumbnails={true}
-            />
-          </div>
-        </div>
-      )}
+      {/* Registry Grid Content */}
+      <SlaveTradeIconography 
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        castasCount={castasIllustrations.length}
+        initialSearchTerm={initialSearchQuery}
+      />
 
       {/* Fullscreen Loupe / Modal Viewer */}
       <ArchivalLoupeModal
         illustration={inspectedIllustration}
-        illustrationsList={activeTab === 'ingestion' ? castasIllustrations : SLAVE_TRADE_ILLUSTRATIONS}
+        illustrationsList={SLAVE_TRADE_ILLUSTRATIONS}
         onSelectIllustration={item => {
           setInspectedIllustration(item);
-          if (activeTab === 'ingestion') {
-            setActiveCastasItem(item);
-          }
         }}
         onClose={() => setInspectedIllustration(null)}
       />

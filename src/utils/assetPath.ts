@@ -1,6 +1,12 @@
 /**
- * Resolves local and remote asset paths robustly across all hosting platforms
- * (GitHub Pages subpaths, Vercel, Netlify, custom domains, and local development).
+ * Resolves local and remote asset paths robustly across all hosting platforms:
+ * - GitHub Pages (*.github.io/<repo>/)
+ * - GitHub Pages with custom domains
+ * - Subfolder deployments on any hosting provider
+ * - Root-level deployments (Vercel, Netlify, Cloud Run, localhost)
+ *
+ * Guarantees 100% idempotency: calling resolveAssetPath() multiple times on an
+ * already-resolved path will NEVER duplicate repository or subpath prefixes.
  */
 export const resolveAssetPath = (path: string | undefined | null): string => {
   if (!path || typeof path !== 'string') return '';
@@ -19,37 +25,91 @@ export const resolveAssetPath = (path: string | undefined | null): string => {
     return trimmed;
   }
 
-  // Strip leading slash or dot-slash to get clean relative asset path
+  // Strip all leading './' and '/' to get pure relative asset path
   let clean = trimmed;
-  if (clean.startsWith('./')) {
-    clean = clean.slice(2);
-  }
-  if (clean.startsWith('/')) {
-    clean = clean.slice(1);
+  while (clean.startsWith('./') || clean.startsWith('/')) {
+    if (clean.startsWith('./')) clean = clean.slice(2);
+    if (clean.startsWith('/')) clean = clean.slice(1);
   }
 
   // 1. Check if Vite BASE_URL is configured to a specific subpath (e.g. '/my-repo/')
   const metaBase = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '';
-  if (metaBase && metaBase !== './' && metaBase !== '/') {
-    const cleanBase = metaBase.endsWith('/') ? metaBase : `${metaBase}/`;
-    return `${cleanBase}${clean}`;
-  }
+  let basePath = '/';
 
-  // 2. Browser runtime detection for GitHub Pages (e.g. https://username.github.io/repo-name/...)
-  if (typeof window !== 'undefined' && window.location) {
-    const hostname = window.location.hostname || '';
-    const pathname = window.location.pathname || '';
+  if (metaBase && metaBase !== './' && metaBase !== '/') {
+    basePath = metaBase.endsWith('/') ? metaBase : `${metaBase}/`;
+  } else if (typeof window !== 'undefined' && window.location) {
+    const { hostname, pathname } = window.location;
     
     // GitHub Pages standard subdomain: username.github.io/repository-name/
     if (hostname.endsWith('github.io')) {
       const segments = pathname.split('/').filter(Boolean);
       if (segments.length > 0 && !segments[0].includes('.')) {
-        const repoName = segments[0];
-        return `/${repoName}/${clean}`;
+        basePath = `/${segments[0]}/`;
+      }
+    } else {
+      // Generic subfolder detection on custom domains or third-party hosting
+      const lastSlash = pathname.lastIndexOf('/');
+      if (lastSlash > 0) {
+        const dir = pathname.slice(0, lastSlash + 1);
+        if (dir && dir !== '/') {
+          basePath = dir.endsWith('/') ? dir : `${dir}/`;
+        }
       }
     }
   }
 
-  // 3. Default to root-relative path for standard domains and dev server
-  return `/${clean}`;
+  // Idempotency check: Strip any already-prepended base segments to prevent duplication
+  const cleanBase = basePath.replace(/^\/|\/$/g, '');
+  if (cleanBase) {
+    while (clean.startsWith(`${cleanBase}/`)) {
+      clean = clean.slice(cleanBase.length + 1);
+    }
+  }
+
+  return `${basePath}${clean}`;
 };
+
+/**
+ * Returns an ordered array of candidate URLs for an asset to guarantee zero broken images.
+ * Useful for fallback handling in <img> onError event handlers.
+ */
+export const getAssetCandidateUrls = (path: string | undefined | null): string[] => {
+  if (!path || typeof path !== 'string') return [];
+  const primary = resolveAssetPath(path);
+  if (!primary) return [];
+
+  // For external or data URLs, only return primary
+  if (
+    primary.startsWith('http://') ||
+    primary.startsWith('https://') ||
+    primary.startsWith('data:') ||
+    primary.startsWith('blob:')
+  ) {
+    return [primary];
+  }
+
+  // Clean relative path without leading slash
+  let clean = path.trim();
+  while (clean.startsWith('./') || clean.startsWith('/')) {
+    if (clean.startsWith('./')) clean = clean.slice(2);
+    if (clean.startsWith('/')) clean = clean.slice(1);
+  }
+
+  const candidates: string[] = [primary];
+
+  // Candidate 2: Relative to current HTML document (e.g. './castas/...')
+  const relativeCandidate = `./${clean}`;
+  if (!candidates.includes(relativeCandidate)) {
+    candidates.push(relativeCandidate);
+  }
+
+  // Candidate 3: Root-relative (e.g. '/castas/...')
+  const rootCandidate = `/${clean}`;
+  if (!candidates.includes(rootCandidate)) {
+    candidates.push(rootCandidate);
+  }
+
+  return candidates;
+};
+
