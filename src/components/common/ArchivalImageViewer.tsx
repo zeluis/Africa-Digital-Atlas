@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   ZoomIn, 
   ZoomOut, 
@@ -513,22 +514,70 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
             </div>
           )}
 
-          {/* Sleek Unified Pill containing Screen and Modal buttons */}
-          <div className="flex items-center bg-stone-200/70 dark:bg-stone-900 border border-stone-300/80 dark:border-stone-700/80 rounded-xl p-0.5 gap-0.5">
+          {/* Integrated Zoom, Full-Screen, Reset & Contrast Pill */}
+          <div className="hidden sm:flex items-center bg-stone-200/70 dark:bg-stone-900 border border-stone-300/80 dark:border-stone-700/80 rounded-xl p-0.5 gap-0.5">
             <button
-              onClick={toggleFullscreen}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
-                isFullscreen
-                  ? 'bg-amber-900 text-amber-50 dark:bg-amber-500/20 dark:text-amber-300 shadow-2xs'
-                  : 'hover:bg-stone-300/80 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300'
-              }`}
-              title={isFullscreen ? "Exit Screen (F)" : "Screen Mode (F)"}
+              onClick={() => setZoomLevel(z => Math.min(z + 0.5, 5))}
+              className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
+              title="Zoom In (+)"
             >
-              {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-              <span className="hidden md:inline">{isFullscreen ? 'Exit Screen' : 'Screen'}</span>
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+            <span className="text-[11px] font-mono px-1.5 text-stone-700 dark:text-stone-300 select-none font-semibold">
+              {Math.round(zoomLevel * 100)}%
+            </span>
+            <button
+              onClick={() => {
+                setZoomLevel(z => {
+                  const next = Math.max(z - 0.5, 1);
+                  if (next === 1) setPanOffset({ x: 0, y: 0 });
+                  return next;
+                });
+              }}
+              className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
+              title="Zoom Out (-)"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
             </button>
 
-            {onOpenModal && (
+            <div className="w-px h-3.5 bg-stone-300 dark:bg-white/20 mx-0.5" />
+
+            <button
+              onClick={toggleFullscreen}
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                isFullscreen 
+                  ? 'bg-amber-900 text-amber-50 font-bold dark:bg-amber-500 dark:text-stone-950' 
+                  : 'hover:bg-stone-300/80 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300'
+              }`}
+              title={isFullscreen ? "Exit Fullscreen (F)" : "Enter Fullscreen (F)"}
+            >
+              {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            </button>
+
+            <button
+              onClick={resetViewport}
+              className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
+              title="Reset Viewport"
+            >
+              <RotateCw className="w-3.5 h-3.5" />
+            </button>
+
+            <button
+              onClick={() => setIsHighContrast(!isHighContrast)}
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                isHighContrast 
+                  ? 'bg-amber-900 text-amber-50 font-bold dark:bg-amber-500 dark:text-stone-950' 
+                  : 'hover:bg-stone-300/80 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300'
+              }`}
+              title="High Contrast Filter"
+            >
+              <Contrast className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Sleek Unified Pill containing Modal button */}
+          {onOpenModal && (
+            <div className="flex items-center bg-stone-200/70 dark:bg-stone-900 border border-stone-300/80 dark:border-stone-700/80 rounded-xl p-0.5">
               <button
                 onClick={onOpenModal}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer hover:bg-stone-300/80 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300"
@@ -537,8 +586,8 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                 <DynamicIcon icon="carbon:expand-screen" className="w-3.5 h-3.5 text-amber-800 dark:text-amber-400" />
                 <span className="hidden md:inline">Modal</span>
               </button>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Toggle Thumbnails Strip */}
           {illustrationsList.length > 0 && (
@@ -556,28 +605,38 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
             </button>
           )}
 
-          {/* Collapsible Metadata Drawer Toggle with Navigation Drawer Style Icon */}
-          <button
-            onClick={() => setIsMetadataOpen(!isMetadataOpen)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
-              isMetadataOpen
-                ? 'bg-stone-200/70 hover:bg-stone-300 text-stone-800 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 border border-stone-300/70 dark:border-stone-700'
-                : 'bg-amber-900/10 hover:bg-amber-900/20 text-amber-900 border border-amber-900/25 dark:bg-amber-500/20 dark:text-amber-300'
-            }`}
-            title={isMetadataOpen ? "Hide Details Drawer" : "Show Details Drawer"}
-          >
+          {/* Collapsible Metadata Drawer Toggle with spring pop-up animation */}
+          <AnimatePresence mode="wait">
             {isMetadataOpen ? (
-              <>
+              <motion.button
+                key="hide-details-btn"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 450, damping: 25 }}
+                onClick={() => setIsMetadataOpen(false)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer bg-stone-200/70 hover:bg-stone-300 text-stone-800 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 border border-stone-300/70 dark:border-stone-700 shadow-2xs"
+                title="Hide Details Drawer"
+              >
                 <DynamicIcon icon="codicon:layout-sidebar-right-off" className="w-4 h-4 text-amber-800 dark:text-amber-400" />
                 <span className="hidden sm:inline">Hide Details</span>
-              </>
+              </motion.button>
             ) : (
-              <>
+              <motion.button
+                key="show-details-btn"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 450, damping: 25 }}
+                onClick={() => setIsMetadataOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer bg-amber-900/10 hover:bg-amber-900/20 text-amber-900 border border-amber-900/25 dark:bg-amber-500/20 dark:text-amber-300 shadow-2xs"
+                title="Show Details Drawer"
+              >
                 <DynamicIcon icon="codicon:layout-sidebar-right" className="w-4 h-4 text-amber-800 dark:text-amber-400" />
                 <span className="hidden sm:inline">Show Details</span>
-              </>
+              </motion.button>
             )}
-          </button>
+          </AnimatePresence>
 
           {mode === 'modal' && onClose && (
             <button
@@ -607,70 +666,6 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
               backgroundSize: '16px 16px'
             }}
           />
-
-          {/* Floating Top Control Toolbar — Light Editorial Glass Style */}
-          <div className="absolute top-4 left-4 z-20 flex items-center gap-1.5 p-1.5 rounded-2xl bg-[#FAF8F5]/95 dark:bg-stone-900/90 backdrop-blur-md border border-stone-300/90 dark:border-white/15 text-stone-800 dark:text-stone-100 shadow-md">
-            <button
-              onClick={() => setZoomLevel(z => Math.min(z + 0.5, 5))}
-              className="p-2 rounded-xl hover:bg-stone-200/80 dark:hover:bg-white/20 transition-colors cursor-pointer text-stone-800 dark:text-stone-200"
-              title="Zoom In (+)"
-            >
-              <ZoomIn className="w-4 h-4" />
-            </button>
-
-            <button
-              onClick={() => {
-                setZoomLevel(z => {
-                  const next = Math.max(z - 0.5, 1);
-                  if (next === 1) setPanOffset({ x: 0, y: 0 });
-                  return next;
-                });
-              }}
-              className="p-2 rounded-xl hover:bg-stone-200/80 dark:hover:bg-white/20 transition-colors cursor-pointer text-stone-800 dark:text-stone-200"
-              title="Zoom Out (-)"
-            >
-              <ZoomOut className="w-4 h-4" />
-            </button>
-
-            <span className="text-xs font-mono px-2 text-stone-700 dark:text-stone-300 select-none font-semibold">
-              {Math.round(zoomLevel * 100)}%
-            </span>
-
-            <div className="w-px h-4 bg-stone-300 dark:bg-white/20 mx-0.5" />
-
-            {/* Fullscreen Icon (Replaces Rotation Icon) */}
-            <button
-              onClick={toggleFullscreen}
-              className={`p-2 rounded-xl transition-colors cursor-pointer ${
-                isFullscreen 
-                  ? 'bg-amber-900 text-amber-50 font-bold dark:bg-amber-500 dark:text-stone-950' 
-                  : 'hover:bg-stone-200/80 dark:hover:bg-white/20 text-stone-800 dark:text-stone-200'
-              }`}
-              title={isFullscreen ? "Exit Fullscreen (F)" : "Enter Fullscreen (F)"}
-            >
-              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-            </button>
-
-            <button
-              onClick={() => setIsHighContrast(!isHighContrast)}
-              className={`p-2 rounded-xl transition-colors cursor-pointer ${
-                isHighContrast 
-                  ? 'bg-amber-900 text-amber-50 font-bold dark:bg-amber-500 dark:text-stone-950' 
-                  : 'hover:bg-stone-200/80 dark:hover:bg-white/20 text-stone-800 dark:text-stone-200'
-              }`}
-              title="High Contrast Filter"
-            >
-              <Contrast className="w-4 h-4" />
-            </button>
-
-            <button
-              onClick={resetViewport}
-              className="p-2 rounded-xl hover:bg-stone-200/80 dark:hover:bg-white/20 transition-colors cursor-pointer text-xs font-mono font-bold text-stone-700 dark:text-stone-300"
-              title="Reset Viewport"
-            >
-              Reset
-            </button>
-          </div>
 
           {/* Interactive Zoomable Viewport — Occupies Full Available Area Above Caption Bar & Filmstrip */}
           <div 
@@ -846,6 +841,20 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
             
             {/* Panel Header & Tabs: Metadata, Citation & Academia */}
             <div className="flex items-center justify-between border-b border-stone-200/90 dark:border-stone-800 bg-[#F4EFE6]/90 dark:bg-stone-950/80 shrink-0">
+              {/* MD3-style Floating Extended FAB Collapse Button on Dossier Panel Header */}
+              <div className="flex items-center px-3 py-2 border-r border-stone-200/90 dark:border-stone-800 shrink-0">
+                <button
+                  onClick={() => setIsMetadataOpen(false)}
+                  className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-900/10 hover:bg-amber-900/20 text-amber-900 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-900/25 dark:border-amber-500/30 shadow-md transition-all cursor-pointer"
+                  title="Hide Dossier"
+                >
+                  <DynamicIcon icon="codicon:layout-sidebar-right-off" className="w-4 h-4 text-amber-800 dark:text-amber-400 shrink-0" />
+                  <span className="max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 transition-all duration-300 text-[11px] font-mono font-bold whitespace-nowrap">
+                    Hide Dossier
+                  </span>
+                </button>
+              </div>
+
               <div className="flex items-center flex-1">
                 <button
                   onClick={() => setActiveTab('metadata')}
@@ -886,15 +895,6 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                   <span className="truncate">Academia</span>
                 </button>
               </div>
-
-              {/* Close / Collapse Button in Header with Navigation Drawer Icon */}
-              <button
-                onClick={() => setIsMetadataOpen(false)}
-                className="p-3 text-stone-600 hover:text-stone-900 hover:bg-stone-200/70 dark:text-stone-400 dark:hover:text-stone-200 dark:hover:bg-stone-900 transition-colors cursor-pointer border-l border-stone-200/90 dark:border-stone-800 shrink-0"
-                title="Collapse Details Drawer"
-              >
-                <DynamicIcon icon="codicon:layout-sidebar-right-off" className="w-4 h-4 text-amber-800 dark:text-amber-400" />
-              </button>
             </div>
 
             <div 
