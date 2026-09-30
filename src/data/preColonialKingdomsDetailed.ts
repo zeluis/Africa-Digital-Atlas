@@ -38,6 +38,15 @@ export interface TradeCorridorPath {
   flowDirection: 'north' | 'south' | 'east' | 'west' | 'bidirectional';
   volumeDescription: string;
   activeCenturies: number[];
+  kingdomId?: string;
+  kingdomName?: string;
+  transportMode?: 'maritime_dhow' | 'camel_caravan' | 'riverine_flotilla' | 'cavalry_corridor' | 'forest_porters';
+  historicalPeriod?: string;
+  keyStops?: { name: string; role: string; modernCountry?: string }[];
+  economicSignificance?: string;
+  historicalQuote?: { text: string; author: string; source: string; year?: string };
+  cargoTypes?: string[];
+  modernLegacy?: string;
 }
 
 export interface ToponymConcordanceItem {
@@ -204,27 +213,58 @@ export const DETAILED_KINGDOMS_DATA: Record<string, KingdomDetailedRecord> = {
     tradeCorridorPaths: [
       {
         id: 'kongo-luanda-route',
-        name: "Luanda Nzimbu & Raffia Maritime Conduit",
+        name: "Luanda Nzimbu Shell Currency & Raffia Maritime Conduit",
         commodity: 'cowries',
         color: '#a855f7',
         startName: "Luanda Island Shell Fisheries",
-        endName: "M'banza-Kongo Capital",
-        points: [[2850, 3750], [2890, 3640], [2950, 3520]],
+        endName: "M'banza-Kongo Imperial Capital",
+        points: [[2820, 3750], [2880, 3630], [2950, 3520]],
         flowDirection: 'north',
-        volumeDescription: "Annual extraction of over 20 million Nzimbu shells circulating across Central Africa as currency.",
-        activeCenturies: [14, 15, 16, 17, 18]
+        volumeDescription: "Annual extraction of over 20 million Nzimbu shells circulating across Central Africa as official legal tender.",
+        activeCenturies: [14, 15, 16, 17, 18],
+        kingdomId: 'kongo-kingdom',
+        kingdomName: "Kingdom of Kongo",
+        transportMode: 'maritime_dhow',
+        historicalPeriod: "14th – 18th Century CE",
+        cargoTypes: ["Nzimbu cowries", "Palm raffia cloth", "Salt slabs", "Dried marine fish"],
+        keyStops: [
+          { name: "Ilha de Luanda", role: "Royal shell fisheries & currency harvest", modernCountry: "Angola" },
+          { name: "Ambriz River Littoral", role: "Coastal caravanserai & salt drying station", modernCountry: "Angola" },
+          { name: "M'banza-Kongo", role: "Imperial Chancellery & Treasury", modernCountry: "Angola" }
+        ],
+        economicSignificance: "Extracted over 20 million Nzimbu shell currency units annually, which functioned as the universal legal tender across Central and West-Central Africa.",
+        historicalQuote: {
+          text: "The money which current in this country is a kind of little shell... they are fished at the island of Luanda and are the King's own monopoly.",
+          author: "Duarte Lopes & Filippo Pigafetta",
+          source: "Relatione del Reame di Congo",
+          year: "1591"
+        },
+        modernLegacy: "Precursor to modern Angolan Atlantic port infrastructure and Luanda's financial prominence."
       },
       {
         id: 'kongo-malebo-copper',
-        name: "Malebo Pool Copper & Ivory Inland Route",
+        name: "Mindouli Copper & Soyo Atlantic Fluvial Conduit",
         commodity: 'copper',
         color: '#f97316',
         startName: "Mindouli Copper Mines",
-        endName: "M'banza-Kongo & Soyo Port",
-        points: [[3100, 3350], [3020, 3440], [2950, 3520], [2780, 3480]],
+        endName: "Soyo Atlantic Port",
+        points: [[3000, 3320], [3060, 3380], [2950, 3520], [2810, 3470]],
         flowDirection: 'west',
-        volumeDescription: "High-purity forged copper bars traded for Atlantic and inland forest prestige goods.",
-        activeCenturies: [14, 15, 16, 17]
+        volumeDescription: "High-purity forged copper bars and raffia velvets traded for Atlantic prestige wares.",
+        activeCenturies: [14, 15, 16, 17],
+        kingdomId: 'kongo-kingdom',
+        kingdomName: "Kingdom of Kongo",
+        transportMode: 'riverine_flotilla',
+        historicalPeriod: "14th – 17th Century CE",
+        cargoTypes: ["High-purity copper ingots", "Ivory tusks", "Lubongo raffia velvet", "Iron blades"],
+        keyStops: [
+          { name: "Mindouli Mines", role: "High-grade copper extraction & smelting", modernCountry: "Republic of the Congo" },
+          { name: "Malebo Pool", role: "Inland river trading emporium & flotilla terminus", modernCountry: "DR Congo" },
+          { name: "M'banza-Kongo", role: "Royal inspection & tax collection", modernCountry: "Angola" },
+          { name: "Port of Soyo", role: "Atlantic deepwater maritime outlet", modernCountry: "Angola" }
+        ],
+        economicSignificance: "Linked the rich copper deposits of the Niari basin with the Congo River waterway and Atlantic maritime commerce.",
+        modernLegacy: "Precursor to the modern Central African Copperbelt transport corridors."
       }
     ],
     architecturalMonuments: [
@@ -341,27 +381,51 @@ export const DETAILED_KINGDOMS_DATA: Record<string, KingdomDetailedRecord> = {
     tradeCorridorPaths: [
       {
         id: 'oyo-cavalry-route',
-        name: "Northern Horse & Leather Savanna Corridor",
+        name: "Savanna Cavalry Horse & Leather Highway",
         commodity: 'textiles',
         color: '#16a34a',
         startName: "Hausaland & Nupe Markets",
         endName: "Oyo-Ile Imperial Capital",
-        points: [[2400, 2050], [2350, 2220], [2280, 2380]],
+        points: [[2550, 2120], [2400, 2260], [2280, 2380]],
         flowDirection: 'south',
-        volumeDescription: "Import of thousands of northern Barbary cavalry horses exchanged for southern forest kola nuts and dyed textiles.",
-        activeCenturies: [15, 16, 17, 18]
+        volumeDescription: "Import of thousands of northern Barbary cavalry war horses exchanged for southern forest kola nuts and dyed indigo textiles.",
+        activeCenturies: [15, 16, 17, 18],
+        kingdomId: 'oyo-empire',
+        kingdomName: "Oyo Empire",
+        transportMode: 'cavalry_corridor',
+        historicalPeriod: "15th – 18th Century CE",
+        cargoTypes: ["Barbary war horses", "Tanned red leather", "Sahara rock salt", "Sahelian brass"],
+        keyStops: [
+          { name: "Kano Kurmi Market", role: "Trans-Saharan horse and leather exchange", modernCountry: "Nigeria" },
+          { name: "Jebba Niger Crossing", role: "Strategic river ford and Nupe frontier", modernCountry: "Nigeria" },
+          { name: "Oyo-Ile (Old Oyo)", role: "Imperial military headquarters of the Eso Ikoyi cavalry", modernCountry: "Nigeria" }
+        ],
+        economicSignificance: "Supplied the 30,000-strong cavalry corps of the Oyo Empire that maintained imperial hegemony over the West African savanna.",
+        modernLegacy: "Precursor to the modern Lagos-Ibadan-Kano trade and rail corridor."
       },
       {
         id: 'oyo-coast-route',
-        name: "Oyo Coastal Export Highway to Badagry",
+        name: "Oyo Coastal Export Highway to Badagry & Porto-Novo",
         commodity: 'kola',
         color: '#ca8a04',
-        startName: "Oyo-Ile",
+        startName: "Oyo-Ile Imperial Capital",
         endName: "Atlantic Ports (Badagry & Whydah)",
-        points: [[2280, 2380], [2200, 2500], [2150, 2620]],
+        points: [[2280, 2380], [2250, 2490], [2200, 2600]],
         flowDirection: 'south',
         volumeDescription: "Mass transit of agricultural surplus, woven Aso-Oke cloth, and regional manufactures.",
-        activeCenturies: [16, 17, 18, 19]
+        activeCenturies: [16, 17, 18, 19],
+        kingdomId: 'oyo-empire',
+        kingdomName: "Oyo Empire",
+        transportMode: 'forest_porters',
+        historicalPeriod: "16th – 19th Century CE",
+        cargoTypes: ["Aso-Oke woven textiles", "Kola nuts", "Palm oil", "European trade wares"],
+        keyStops: [
+          { name: "Oyo-Ile", role: "Imperial chancellery and textile guild workshops", modernCountry: "Nigeria" },
+          { name: "Abeokuta & Ibadan Corridor", role: "Forest caravan transit & toll collection", modernCountry: "Nigeria" },
+          { name: "Port of Badagry", role: "Atlantic export lodge and customs house", modernCountry: "Nigeria" }
+        ],
+        economicSignificance: "Enabled Oyo to control both northern savanna cavalry corridors and southern Atlantic maritime trading outlets.",
+        modernLegacy: "The primary high-density commercial backbone connecting Lagos and the Nigerian hinterland."
       }
     ],
     architecturalMonuments: ["Royal Palace Compound of Oyo-Ile (250+ hectares)", "Great Defensive Earthen Walls of Old Oyo", "Koso and Bara imperial ancestral shrines"],
@@ -470,15 +534,57 @@ export const DETAILED_KINGDOMS_DATA: Record<string, KingdomDetailedRecord> = {
     tradeCorridorPaths: [
       {
         id: 'benin-manilla-route',
-        name: "Ughoton Port Atlantic Trade & Metallurgy Inflow",
+        name: "Ughoton Port Atlantic Trade & Metallurgy Conduit",
         commodity: 'copper',
         color: '#e11d48',
         startName: "Port of Ughoton (Gwato)",
         endName: "Edo Imperial Palace Foundry",
-        points: [[2260, 2600], [2310, 2560], [2360, 2520]],
+        points: [[2310, 2580], [2335, 2550], [2360, 2520]],
         flowDirection: 'east',
         volumeDescription: "Importation of millions of European brass manillas recast into world-famous Benin bronze masterpieces.",
-        activeCenturies: [15, 16, 17, 18]
+        activeCenturies: [15, 16, 17, 18],
+        kingdomId: 'benin-kingdom',
+        kingdomName: "Kingdom of Benin",
+        transportMode: 'riverine_flotilla',
+        historicalPeriod: "15th – 18th Century CE",
+        cargoTypes: ["Brass manillas", "Copper ingots", "Ivory carvings", "Benin pepper (uziza)", "Coral beads"],
+        keyStops: [
+          { name: "Port of Ughoton (Gwato)", role: "Sovereign customs post for Portuguese and Dutch fleets", modernCountry: "Nigeria" },
+          { name: "Ikpoba River Waterway", role: "Canoe transport highway to the city gates", modernCountry: "Nigeria" },
+          { name: "Edo (Benin City)", role: "Royal Igun Eronmwon lost-wax guild foundry", modernCountry: "Nigeria" }
+        ],
+        economicSignificance: "Imported millions of European brass and copper manillas which were systematically melted down and cast into the immortal Benin Bronzes.",
+        historicalQuote: {
+          text: "The King of Benin has ordered that none of his subjects shall trade with foreigners except at the port of Gwato, where his officers collect the customs.",
+          author: "Duarte Pacheco Pereira",
+          source: "Esmeraldo de Situ Orbis",
+          year: "1508"
+        },
+        modernLegacy: "Historic gateway to Benin City and the current site of the EMOWAA cultural ecosystem."
+      },
+      {
+        id: 'benin-lagoon-network',
+        name: "Bight of Benin Coastal Lagoon & Niger Delta Network",
+        commodity: 'ivory',
+        color: '#f43f5e',
+        startName: "Edo Imperial Capital",
+        endName: "Niger Delta & Onitsha Markets",
+        points: [[2360, 2520], [2420, 2620], [2500, 2560]],
+        flowDirection: 'east',
+        volumeDescription: "Interconnected coastal canoe network moving salt, dried fish, woven cloths, and bronze ceremonial regalia.",
+        activeCenturies: [15, 16, 17, 18, 19],
+        kingdomId: 'benin-kingdom',
+        kingdomName: "Kingdom of Benin",
+        transportMode: 'riverine_flotilla',
+        historicalPeriod: "15th – 19th Century CE",
+        cargoTypes: ["Woven Benin cloth", "Smelted bronze regalia", "Palm oil", "Smoked delta fish"],
+        keyStops: [
+          { name: "Benin City", role: "Artisan workshops and royal palace", modernCountry: "Nigeria" },
+          { name: "Forcados River Delta", role: "Mangrove waterway junction", modernCountry: "Nigeria" },
+          { name: "Lower Niger River Confluence", role: "Inland riverine commodity exchange", modernCountry: "Nigeria" }
+        ],
+        economicSignificance: "Integrated the coastal mangrove lagoons with the River Niger fluvial trade basin.",
+        modernLegacy: "Precursor to modern Niger Delta maritime waterways and petrochemical logistics."
       }
     ],
     architecturalMonuments: [
@@ -588,15 +694,52 @@ export const DETAILED_KINGDOMS_DATA: Record<string, KingdomDetailedRecord> = {
     tradeCorridorPaths: [
       {
         id: 'ashanti-gold-salaga',
-        name: "Great Northern Gold & Kola Caravan Route",
+        name: "Great Northern Gold & Kola Caravan Highway",
         commodity: 'gold',
         color: '#eab308',
         startName: "Kumasi Goldfields",
         endName: "Salaga Market & Hausaland",
-        points: [[1865, 2460], [1820, 2280], [1780, 2050]],
+        points: [[1865, 2460], [1950, 2320], [2200, 2150]],
         flowDirection: 'north',
-        volumeDescription: "Vast shipments of gold dust and millions of kola nuts exchanged for trans-Saharan salt, leather, and manuscripts.",
-        activeCenturies: [18, 19]
+        volumeDescription: "Vast shipments of gold dust and millions of forest kola nuts exchanged for trans-Saharan rock salt, leather, and manuscripts.",
+        activeCenturies: [18, 19],
+        kingdomId: 'ashanti-empire',
+        kingdomName: "Ashanti Empire",
+        transportMode: 'camel_caravan',
+        historicalPeriod: "18th – 19th Century CE",
+        cargoTypes: ["Alluvial gold dust (Sika)", "Fresh kola nuts", "Kente silk", "Saharan rock salt", "Manuscripts"],
+        keyStops: [
+          { name: "Kumasi", role: "Imperial capital and royal gold treasury", modernCountry: "Ghana" },
+          { name: "Mampong Escarpment", role: "Northern frontier toll gate", modernCountry: "Ghana" },
+          { name: "Salaga Market", role: "Great caravanserai of the Volta Basin", modernCountry: "Ghana" },
+          { name: "Hausaland Emporia", role: "Trans-Saharan terminus", modernCountry: "Nigeria" }
+        ],
+        economicSignificance: "Exchanged hundreds of tons of forest kola nuts and pure gold dust for trans-Saharan leather goods, salt slabs, and Islamic scholastic books.",
+        modernLegacy: "The historic trade route that structured the modern Ghana-Burkina Faso-Mali transport corridor."
+      },
+      {
+        id: 'ashanti-coastal-route',
+        name: "Kumasi to Elmina & Cape Coast Royal Highway",
+        commodity: 'gold',
+        color: '#f59e0b',
+        startName: "Kumasi Imperial Capital",
+        endName: "Elmina & Cape Coast Castles",
+        points: [[1865, 2460], [1880, 2560], [1890, 2650]],
+        flowDirection: 'south',
+        volumeDescription: "Royal chancellery corridor connecting the Akan interior goldfields directly with Atlantic maritime forts.",
+        activeCenturies: [18, 19],
+        kingdomId: 'ashanti-empire',
+        kingdomName: "Ashanti Empire",
+        transportMode: 'forest_porters',
+        historicalPeriod: "18th – 19th Century CE",
+        cargoTypes: ["Gold nuggets & dust", "Timber", "Muskets & gunpowder", "Dutch trade gin", "Brass bowls"],
+        keyStops: [
+          { name: "Kumasi", role: "Metropolitan capital", modernCountry: "Ghana" },
+          { name: "Pra River Station", role: "Border crossing & military checkpoint", modernCountry: "Ghana" },
+          { name: "Elmina Castle (São Jorge da Mina)", role: "Atlantic maritime trade emporium", modernCountry: "Ghana" }
+        ],
+        economicSignificance: "Secured direct Ashanti access to European maritime merchant shipping along the Gold Coast.",
+        modernLegacy: "The primary commercial artery connecting Kumasi to Ghana's coastal deepwater ports (Takoradi/Tema)."
       }
     ],
     architecturalMonuments: [
@@ -709,27 +852,61 @@ export const DETAILED_KINGDOMS_DATA: Record<string, KingdomDetailedRecord> = {
     tradeCorridorPaths: [
       {
         id: 'mali-gold-trans-saharan',
-        name: "Trans-Saharan Imperial Gold-Salt Highway",
+        name: "Trans-Saharan Imperial Gold-Salt Highway (Mansa Musa Hajj Route)",
         commodity: 'gold',
         color: '#d97706',
         startName: "Bure & Bambuk Goldfields",
-        endName: "Cairo, Alexandria & Mediterranean",
-        points: [[1320, 2050], [1520, 1850], [1650, 1500], [2100, 1100], [3800, 750]],
+        endName: "Cairo & Alexandria (Mediterranean)",
+        points: [[1280, 2200], [1350, 2100], [1520, 1950], [1620, 1800], [2050, 1350], [2600, 1080], [3300, 950], [3770, 850]],
         flowDirection: 'east',
         volumeDescription: "Historic conveyance of metric tons of pure West African gold that supplied over 60% of medieval European and Islamic coin mints.",
-        activeCenturies: [13, 14, 15, 16]
+        activeCenturies: [13, 14, 15, 16],
+        kingdomId: 'mali-empire',
+        kingdomName: "Mali Empire",
+        transportMode: 'camel_caravan',
+        historicalPeriod: "13th – 16th Century CE",
+        cargoTypes: ["Pure gold dust (Tibar)", "Gold mithqals", "Rock salt", "Manuscripts", "Textiles"],
+        keyStops: [
+          { name: "Bure Goldfields", role: "Primary alluvial gold source", modernCountry: "Guinea / Mali" },
+          { name: "Niani", role: "Imperial capital of Sundiata Keita", modernCountry: "Guinea" },
+          { name: "Timbuktu", role: "University of Sankoré & scholastic entrepôt", modernCountry: "Mali" },
+          { name: "In Salah / Tuat Oasis", role: "Central Saharan water and camel station", modernCountry: "Algeria" },
+          { name: "Ghadames Oasis", role: "Crossroads to Tripoli and Egypt", modernCountry: "Libya" },
+          { name: "Cairo & Alexandria", role: "Mamluk Sultanate capital and Mediterranean port", modernCountry: "Egypt" }
+        ],
+        economicSignificance: "Supplied more than 60% of all gold circulating throughout medieval Europe and the Mediterranean basin, famously documented during Mansa Musa's 1324 pilgrimage.",
+        historicalQuote: {
+          text: "Gold was so plentiful in Cairo during Mansa Musa's stay that the value of the dinar fell by twelve silver dirhams and remained depressed for over a decade.",
+          author: "Al-Umari",
+          source: "Masalik al-Absar",
+          year: "1342"
+        },
+        modernLegacy: "The defining trans-continental trade corridor immortalized on the 1375 Catalan Atlas."
       },
       {
         id: 'mali-salt-taghaza',
-        name: "Taghaza Trans-Saharan Rock Salt Inflow",
+        name: "Taghaza-Taoudenni Azalai Rock Salt Caravan",
         commodity: 'salt',
         color: '#38bdf8',
         startName: "Taghaza Salt Mines (Central Sahara)",
-        endName: "Timbuktu & Djenné",
-        points: [[1550, 1200], [1580, 1500], [1650, 1750], [1520, 1920]],
+        endName: "Djenné Inland Niger Delta",
+        points: [[1600, 1300], [1610, 1550], [1620, 1800], [1520, 1950]],
         flowDirection: 'south',
         volumeDescription: "Caravans of thousands of camels transporting standard 200kg salt slabs traded weight-for-weight for gold.",
-        activeCenturies: [13, 14, 15, 16]
+        activeCenturies: [13, 14, 15, 16],
+        kingdomId: 'mali-empire',
+        kingdomName: "Mali Empire",
+        transportMode: 'camel_caravan',
+        historicalPeriod: "13th – 16th Century CE",
+        cargoTypes: ["Standard 200kg rock salt slabs", "Dried desert dates", "Leather baggage"],
+        keyStops: [
+          { name: "Taghaza Mines", role: "Subterranean salt quarrying in the Sahara", modernCountry: "Mali" },
+          { name: "Araouane Oasis", role: "Desert well station and guide junction", modernCountry: "Mali" },
+          { name: "Timbuktu", role: "River-desert port of transshipment", modernCountry: "Mali" },
+          { name: "Djenné", role: "Inland agricultural hub and grain exchange", modernCountry: "Mali" }
+        ],
+        economicSignificance: "Transported hundreds of thousands of salt slabs traded weight-for-weight against gold dust across the Sahel.",
+        modernLegacy: "The famous Azalai salt caravan tradition that continues to this day in northern Mali."
       }
     ],
     architecturalMonuments: ["Djinguereber Mosque in Timbuktu (built 1327 by al-Sahili)", "University of Sankoré campus", "Great Palace of Niani"],
@@ -824,15 +1001,60 @@ export const DETAILED_KINGDOMS_DATA: Record<string, KingdomDetailedRecord> = {
     tradeCorridorPaths: [
       {
         id: 'zim-sofala-route',
-        name: "Indian Ocean Gold & Ivory Maritime Highway to Sofala",
+        name: "Save River to Sofala & Kilwa Swahili Gold Highway",
         commodity: 'gold',
         color: '#10b981',
         startName: "Great Zimbabwe Plateau",
         endName: "Port of Sofala & Kilwa Sultanate",
-        points: [[3980, 4640], [4250, 4580], [4520, 4520]],
+        points: [[3710, 4490], [3920, 4490], [4160, 4480], [4280, 4200], [4320, 3820]],
         flowDirection: 'east',
         volumeDescription: "Conveyance of thousands of ounces of pure plateau gold loaded onto Swahili dhows for India and China in exchange for Ming celadon porcelain and Persian glassware.",
-        activeCenturies: [13, 14, 15]
+        activeCenturies: [13, 14, 15],
+        kingdomId: 'great-zimbabwe',
+        kingdomName: "Kingdom of Zimbabwe",
+        transportMode: 'maritime_dhow',
+        historicalPeriod: "13th – 15th Century CE",
+        cargoTypes: ["Refined alluvial gold", "Elephant ivory", "Soapstone carvings", "Ming porcelain", "Persian glassware", "Indian cottons"],
+        keyStops: [
+          { name: "Great Zimbabwe Acropolis", role: "Shona royal capital and gold collection citadel", modernCountry: "Zimbabwe" },
+          { name: "Save-Buzi River Corridors", role: "Highland-to-coastal fluvial navigation path", modernCountry: "Zimbabwe / Mozambique" },
+          { name: "Port of Sofala", role: "Primary Indian Ocean gold-loading harbor", modernCountry: "Mozambique" },
+          { name: "Mozambique Island", role: "Monsoon anchorage and dhow waystation", modernCountry: "Mozambique" },
+          { name: "Kilwa Kisiwani", role: "Swahili Sultanate capital minting gold coins", modernCountry: "Tanzania" }
+        ],
+        economicSignificance: "Connected the gold-bearing plateau of Southern Africa with the Indian Ocean Swahili maritime trade web reaching Kilwa, Arabia, India, and Ming-era China.",
+        historicalQuote: {
+          text: "From Sofala the Moors bring much gold to Kilwa... and they load great quantities onto their vessels to take across the Indian Ocean to Cambay and Malacca.",
+          author: "Duarte Barbosa",
+          source: "The Book of Duarte Barbosa",
+          year: "1518"
+        },
+        modernLegacy: "The ancient gold trade route that evolved into the modern Beira & Maputo development corridors."
+      },
+      {
+        id: 'zim-mapungubwe-limpopo',
+        name: "Limpopo-Shashe Gold & Ivory Inland Corridor",
+        commodity: 'copper',
+        color: '#059669',
+        startName: "Mapungubwe Goldfields",
+        endName: "Delagoa Bay & Inhambane",
+        points: [[3550, 4720], [3710, 4490], [3950, 4580], [4100, 4780]],
+        flowDirection: 'east',
+        volumeDescription: "Interlocking inland trail moving copper cross ingots (Hanga), gold beads, and cattle wealth to southeastern ocean harbors.",
+        activeCenturies: [12, 13, 14],
+        kingdomId: 'great-zimbabwe',
+        kingdomName: "Kingdom of Zimbabwe",
+        transportMode: 'riverine_flotilla',
+        historicalPeriod: "12th – 14th Century CE",
+        cargoTypes: ["Gold foil ornaments", "Cast copper cross ingots (Hanga)", "Cattle wealth", "Glass trade beads"],
+        keyStops: [
+          { name: "Mapungubwe Hill", role: "Ancestral gold metallurgy center", modernCountry: "South Africa" },
+          { name: "Great Zimbabwe", role: "Imperial administrative capital", modernCountry: "Zimbabwe" },
+          { name: "Manyikeni", role: "Granite coastal outpost of Zimbabwe culture", modernCountry: "Mozambique" },
+          { name: "Delagoa Bay", role: "Southern Indian Ocean maritime shelter", modernCountry: "Mozambique" }
+        ],
+        economicSignificance: "Integrated the ancestral Limpopo gold-working tradition with the emerging coastal trade posts of southeastern Africa.",
+        modernLegacy: "Precursor to the modern Limpopo Transfrontier Conservation and trade network."
       }
     ],
     architecturalMonuments: [
@@ -943,15 +1165,61 @@ export const DETAILED_KINGDOMS_DATA: Record<string, KingdomDetailedRecord> = {
     tradeCorridorPaths: [
       {
         id: 'axum-adulis-red-sea',
-        name: "Adulis Red Sea & Indian Ocean Maritime Gateway",
+        name: "Adulis Red Sea & Greco-Roman Maritime Gateway",
         commodity: 'gold',
         color: '#7c3aed',
-        startName: "Port of Adulis (Red Sea)",
-        endName: "Alexandria, Constantinople & Rome",
-        points: [[4350, 1950], [4450, 1750], [4500, 1400], [4300, 950]],
+        startName: "Aksum Highlands & Port of Adulis",
+        endName: "Alexandria & Byzantine Mediterranean",
+        points: [[4200, 2050], [4400, 2080], [4320, 1750], [4180, 1400], [4020, 1120], [3920, 960], [3770, 820]],
         flowDirection: 'north',
-        volumeDescription: "Vital maritime corridor delivering Arabian frankincense, African ivory, and gold directly to Byzantine and Roman markets.",
-        activeCenturies: [1, 2, 3, 4, 5, 6]
+        volumeDescription: "Vital maritime conduit delivering Ethiopian highlands gold, African ivory, and Arabian frankincense directly to Roman, Byzantine, and Levantine markets.",
+        activeCenturies: [1, 2, 3, 4, 5, 6],
+        kingdomId: 'axum-empire',
+        kingdomName: "Kingdom of Aksum",
+        transportMode: 'maritime_dhow',
+        historicalPeriod: "1st – 7th Century CE",
+        cargoTypes: ["Ivory tusks", "Frankincense & myrrh", "Gold dinar coins", "Roman glass", "Amphorae of wine & olive oil"],
+        keyStops: [
+          { name: "Aksum Highlands", role: "Imperial capital, royal mint & obelisk sanctuaries", modernCountry: "Ethiopia" },
+          { name: "Port of Adulis (Gulf of Zula)", role: "Premier classical deepwater port of the Red Sea", modernCountry: "Eritrea" },
+          { name: "Dahlak & Suakin Channel", role: "Red Sea coral channel navigation waystation", modernCountry: "Eritrea / Sudan" },
+          { name: "Berenike Troglodytica", role: "Greco-Roman desert caravan terminus", modernCountry: "Egypt" },
+          { name: "Clysma (Suez) & Pelusium", role: "Isthmus gateway to the Nile Delta", modernCountry: "Egypt" },
+          { name: "Alexandria", role: "Mediterranean metropolis and scholastic capital", modernCountry: "Egypt" }
+        ],
+        economicSignificance: "The foremost Red Sea commercial artery connecting sub-Saharan Africa with the Roman, Byzantine, and Mediterranean empires.",
+        historicalQuote: {
+          text: "From Adulis it is a journey of eight days to the city of the people called Auxumites, where all the ivory is brought from the country beyond the Nile.",
+          author: "Anonymous (Greek Merchant)",
+          source: "Periplus of the Erythraean Sea",
+          year: "c. 50 CE"
+        },
+        modernLegacy: "The geostrategic Red Sea maritime choke point and modern Horn of Africa trade route."
+      },
+      {
+        id: 'axum-himyar-yemen',
+        name: "Red Sea Bab el-Mandeb Trans-Arabian Gateway",
+        commodity: 'ivory',
+        color: '#9333ea',
+        startName: "Port of Adulis",
+        endName: "Zafar & Himyarite Kingdom (Yemen)",
+        points: [[4400, 2080], [4550, 2220], [4680, 2350], [4820, 2300]],
+        flowDirection: 'east',
+        volumeDescription: "Cross-strait naval and merchant conduit linking Aksumite East Africa with South Arabian frankincense kingdoms.",
+        activeCenturies: [3, 4, 5, 6],
+        kingdomId: 'axum-empire',
+        kingdomName: "Kingdom of Aksum",
+        transportMode: 'maritime_dhow',
+        historicalPeriod: "3rd – 6th Century CE",
+        cargoTypes: ["South Arabian frankincense", "Indian Ocean spices", "Silk fabrics", "Obsidian blades"],
+        keyStops: [
+          { name: "Port of Adulis", role: "Aksumite naval fleet base", modernCountry: "Eritrea" },
+          { name: "Bab el-Mandeb ('Gate of Tears')", role: "Strategic maritime strait", modernCountry: "Djibouti / Yemen" },
+          { name: "Mocha & Aden", role: "Arabian incense trade harbors", modernCountry: "Yemen" },
+          { name: "Zafar", role: "Himyarite royal mountain capital", modernCountry: "Yemen" }
+        ],
+        economicSignificance: "Maintained Aksum's trans-continental hegemony over both the African and Arabian shores of the Red Sea under King Kaleb.",
+        modernLegacy: "The vital Bab el-Mandeb strait connecting Asia, Africa, and European sea lines of communication."
       }
     ],
     architecturalMonuments: ["The Obelisks of Aksum (Ezana Stele)", "Church of Our Lady Mary of Zion", "Palace of Dungur"],
@@ -1049,10 +1317,29 @@ export const DETAILED_KINGDOMS_DATA: Record<string, KingdomDetailedRecord> = {
         color: '#dc2626',
         startName: "Lake Chad (Ngazargamu)",
         endName: "Bilma Oasis, Fezzan & Tripoli",
-        points: [[2750, 2050], [2800, 1700], [2850, 1350], [2900, 950]],
+        points: [[2750, 2100], [2820, 1680], [2750, 1250], [2680, 780]],
         flowDirection: 'north',
-        volumeDescription: "Continuous trans-Saharan trade route transporting Bilma natron, ostrich feathers, and high-grade leather to Mediterranean ports.",
-        activeCenturies: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+        volumeDescription: "Continuous millennium-long trans-Saharan trade route transporting Bilma natron, ostrich feathers, and high-grade leather to Mediterranean ports.",
+        activeCenturies: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+        kingdomId: 'kanem-bornu',
+        kingdomName: "Kanem-Bornu Empire",
+        transportMode: 'camel_caravan',
+        historicalPeriod: "8th – 19th Century CE",
+        cargoTypes: ["Bilma natron salt", "Ostrich plumes", "Tanned Bornu red leather", "Muskets", "Venetian trade glass"],
+        keyStops: [
+          { name: "Birni Ngazargamu", role: "Burnt-brick imperial capital and Sayfawa court", modernCountry: "Nigeria" },
+          { name: "Bilma Salt Escarpment", role: "Vital Saharan natron and salt mines", modernCountry: "Niger" },
+          { name: "Murzuk (Fezzan)", role: "Great desert caravanserai and customs depot", modernCountry: "Libya" },
+          { name: "Port of Tripoli", role: "Ottoman regency and Mediterranean maritime outlet", modernCountry: "Libya" }
+        ],
+        economicSignificance: "One of the oldest continuously operated trans-Saharan highways in world history, sustaining the Sayfawa dynasty for over a thousand years.",
+        historicalQuote: {
+          text: "The King of Bornu has Turkish musketeers and cavalry clad in chain mail... his empire is rich, tranquil, and celebrated for scholars.",
+          author: "Imam Ahmad ibn Fartuwa",
+          source: "The Bornu Chronicle",
+          year: "1576"
+        },
+        modernLegacy: "Precursor to the modern Trans-Sahara Highway (Algiers-Lagos / Tripoli corridor)."
       }
     ],
     architecturalMonuments: ["The Fortified Red-Brick City of Birni Ngazargamu (200,000 residents, 7m brick walls)", "Sayfawa royal mosques"],
@@ -1147,11 +1434,25 @@ export const DETAILED_KINGDOMS_DATA: Record<string, KingdomDetailedRecord> = {
         commodity: 'gold',
         color: '#2563eb',
         startName: "Djenné & Timbuktu",
-        endName: "Gao & Hausaland",
-        points: [[1520, 1920], [1650, 1750], [1820, 1850], [2100, 2050]],
+        endName: "Gao & Hausaland Emporia",
+        points: [[1520, 1950], [1620, 1800], [1780, 1850], [2020, 2020], [2250, 2100]],
         flowDirection: 'east',
-        volumeDescription: "2,000 km riverine transit corridor moving grain surplus, salt, and gold with a permanent fleet of 400 war canoes.",
-        activeCenturies: [15, 16]
+        volumeDescription: "2,000 km fluvial transit corridor moving agricultural grain surplus, dried river fish, salt slabs, and gold with a standing navy of 400 war canoes.",
+        activeCenturies: [15, 16],
+        kingdomId: 'songhai-empire',
+        kingdomName: "Songhai Empire",
+        transportMode: 'riverine_flotilla',
+        historicalPeriod: "15th – 16th Century CE",
+        cargoTypes: ["Surplus grain & millet", "Smoked Niger fish", "Gold dinars", "Manuscripts", "Salt slabs"],
+        keyStops: [
+          { name: "Djenné", role: "Inland Niger Delta agricultural capital", modernCountry: "Mali" },
+          { name: "Timbuktu", role: "University of Sankoré & library collections", modernCountry: "Mali" },
+          { name: "Gao", role: "Imperial capital of Askia the Great", modernCountry: "Mali" },
+          { name: "Niamey Bend", role: "Riverine toll checkpoint", modernCountry: "Niger" },
+          { name: "Kebbi / Kano", role: "Hausa textile and metalworking emporia", modernCountry: "Nigeria" }
+        ],
+        economicSignificance: "Patrolled by a standing imperial navy of 400 war canoes commanded by the Hi-Koy (Grand Admiral of the Songhai Fleet).",
+        modernLegacy: "The primary navigational lifeline of the Niger Basin Authority serving 100M+ people."
       }
     ],
     architecturalMonuments: ["Tomb of Askia in Gao (monumental mud-brick pyramidal mausoleum)", "University of Sankoré in Timbuktu", "Great Mosque of Djenné"],
@@ -1259,15 +1560,27 @@ export const DETAILED_KINGDOMS_DATA: Record<string, KingdomDetailedRecord> = {
     tradeCorridorPaths: [
       {
         id: 'dahomey-ouidah-palm',
-        name: "Royal Highway Palm Oil Export Conduit to Ouidah",
+        name: "Abomey Royal Highway to Port of Ouidah",
         commodity: 'kola',
         color: '#ca8a04',
-        startName: "Abomey Royal Plantations",
+        startName: "Abomey Royal Palaces",
         endName: "Port of Ouidah (Bight of Benin)",
-        points: [[2100, 2360], [2130, 2450], [2160, 2550]],
+        points: [[2200, 2480], [2210, 2540], [2220, 2600]],
         flowDirection: 'south',
         volumeDescription: "Large-scale conveyance of thousands of puncheons of palm oil driving West Africa's 19th-century agricultural export revolution.",
-        activeCenturies: [18, 19]
+        activeCenturies: [18, 19],
+        kingdomId: 'dahomey-kingdom',
+        kingdomName: "Kingdom of Dahomey",
+        transportMode: 'forest_porters',
+        historicalPeriod: "18th – 19th Century CE",
+        cargoTypes: ["Palm oil casks", "Appliqué banners", "Brass bocio sculptures", "European flintlock muskets"],
+        keyStops: [
+          { name: "Royal Palaces of Abomey", role: "Alladahonu royal court and agricultural estates", modernCountry: "Benin" },
+          { name: "Allada", role: "Regional grain and palm clearinghouse", modernCountry: "Benin" },
+          { name: "Port of Ouidah (Whydah)", role: "Atlantic deepwater trade beach and European lodges", modernCountry: "Benin" }
+        ],
+        economicSignificance: "Spearheaded the 19th-century palm oil export revolution that sustained Dahomey's economic independence.",
+        modernLegacy: "Precursor to the modern Cotonou-Parakou transport corridor in Benin."
       }
     ],
     architecturalMonuments: ["Royal Palaces of Abomey (ten interconnected palace complexes covering 47 hectares)", "Fort of Ouidah"],
@@ -1396,3 +1709,10 @@ export const TOPONYM_CONCORDANCE_INDEX: ToponymConcordanceItem[] = [
     note: "The primary gold-exporting littoral of West Africa governed by the Ashanti and Fante confederacies."
   }
 ];
+
+export const ALL_TRADE_CORRIDORS: TradeCorridorPath[] = Object.values(DETAILED_KINGDOMS_DATA).flatMap(k => k.tradeCorridorPaths);
+
+export function getTradeCorridorById(id: string): TradeCorridorPath | undefined {
+  return ALL_TRADE_CORRIDORS.find(c => c.id === id);
+}
+

@@ -57,9 +57,10 @@ import { AntiquePlateCanvas } from './AntiquePlateCanvas';
 import { KingdomRichBottomPanel } from './KingdomRichBottomPanel';
 import { KingdomDynasticTreeModal } from './KingdomDynasticTreeModal';
 import { KingdomArtifact3DViewerModal } from './KingdomArtifact3DViewerModal';
-import { TradeCorridorParticleCanvas } from './TradeCorridorParticleCanvas';
+import { TradeCorridorParticleCanvas, TradeCorridorVectorLayer } from './TradeCorridorParticleCanvas';
+import { TradeCorridorDetailPanel } from './TradeCorridorDetailPanel';
 import { ToponymConcordanceModal } from './ToponymConcordanceModal';
-import { DETAILED_KINGDOMS_DATA, ToponymConcordanceItem } from '../../data/preColonialKingdomsDetailed';
+import { DETAILED_KINGDOMS_DATA, ToponymConcordanceItem, ALL_TRADE_CORRIDORS, TradeCorridorPath } from '../../data/preColonialKingdomsDetailed';
 
 interface ToponymLocation {
   x: number;
@@ -218,6 +219,8 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
   const [showGraticules, setShowGraticules] = useState<boolean>(true);
   const [selectedEntity, setSelectedEntity] = useState<PreColonialEntity | null>(null);
   const [hoveredEntity, setHoveredEntity] = useState<PreColonialEntity | null>(null);
+  const [selectedTradeCorridor, setSelectedTradeCorridor] = useState<TradeCorridorPath | null>(null);
+  const [hoveredTradeCorridor, setHoveredTradeCorridor] = useState<TradeCorridorPath | null>(null);
 
   // Modal dialog states
   const [isDynasticTreeOpen, setIsDynasticTreeOpen] = useState<boolean>(false);
@@ -502,6 +505,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
 
     setShowPreColonialKingdoms(true);
     setSelectedEntity(entity);
+    setSelectedTradeCorridor(null); // Clear trade corridor selection when a kingdom is selected
     setIsDossierOpen(false); // Hide Cartographic Dossier when an Old Kingdom is selected
     setZoomLevel(zoom);
     setPlateZoom(zoom);
@@ -511,6 +515,60 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
     setVectorPanOffset(pan);
     setActiveToponymFocus(null);
   }, []);
+
+  // Pre-colonial trade corridor spatial focus and centering handler
+  const focusOnTradeCorridor = useCallback((corridor: TradeCorridorPath) => {
+    setSelectedTradeCorridor(corridor);
+    setSelectedEntity(null);
+    setIsDossierOpen(false);
+    if (corridor.points.length > 0) {
+      const sumX = corridor.points.reduce((acc, p) => acc + p[0], 0);
+      const sumY = corridor.points.reduce((acc, p) => acc + p[1], 0);
+      const avgX = sumX / corridor.points.length;
+      const avgY = sumY / corridor.points.length;
+
+      // Dynamic zoom based on geographic bounding box extent
+      const xs = corridor.points.map(p => p[0]);
+      const ys = corridor.points.map(p => p[1]);
+      const spanX = Math.max(...xs) - Math.min(...xs);
+      const spanY = Math.max(...ys) - Math.min(...ys);
+      const maxSpan = Math.max(spanX, spanY);
+
+      let zoom = 2.15;
+      if (maxSpan > 2200) zoom = 1.65;
+      else if (maxSpan > 1200) zoom = 1.85;
+      else if (maxSpan < 600) zoom = 2.35;
+
+      const pan = {
+        x: (2898 - avgX) * 0.55,
+        y: (2933 - avgY) * 0.55
+      };
+      setZoomLevel(zoom);
+      setPlateZoom(zoom);
+      setVectorZoom(zoom);
+      setPanOffset(pan);
+      setPlatePanOffset(pan);
+      setVectorPanOffset(pan);
+      setActiveToponymFocus(null);
+    }
+  }, []);
+
+  // Escape key closes open dossiers and resets zoom
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (selectedEntity || selectedTradeCorridor || activeToponymFocus) {
+          setSelectedEntity(null);
+          setSelectedTradeCorridor(null);
+          setActiveToponymFocus(null);
+          if (onClearFocusedEntity) onClearFocusedEntity();
+          resetPane('both');
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedEntity, selectedTradeCorridor, activeToponymFocus, onClearFocusedEntity, resetPane]);
 
   // Selection of an antique plate: opens Provenance dossier, collapses kingdom panel, and resets zoom
   const handleSelectPlateItem = useCallback((plate: HistoricalMapPlate) => {
@@ -688,17 +746,43 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
 
                   <button
                     type="button"
-                    onClick={() => setShowTradeCorridors(tc => !tc)}
+                    onClick={() => {
+                      setShowTradeCorridors(tc => !tc);
+                      if (showTradeCorridors) {
+                        setSelectedTradeCorridor(null);
+                      }
+                    }}
                     className={`px-2 py-1 rounded-lg text-[10px] font-mono font-bold flex items-center gap-1 transition-all cursor-pointer border ${
                       showTradeCorridors
                         ? 'bg-amber-500/20 text-amber-900 dark:text-amber-200 border-amber-500/50 shadow-2xs'
                         : 'bg-transparent text-stone-500 border-transparent opacity-60 line-through'
                     }`}
-                    title="Toggle Historical Trade Corridor Particle Streams (Gold, Salt, Cowries, Copper)"
+                    title="Toggle Historical Trade Corridors (Gold, Salt, Cowries, Copper, Ivory)"
                   >
                     <Sparkles className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                    <span className="hidden md:inline">Trade Flows</span>
+                    <span className="hidden md:inline">Trade Corridors</span>
                   </button>
+
+                  {/* Commodity Quick Filter Dropdown/Chips */}
+                  {showTradeCorridors && (
+                    <div className="hidden xl:flex items-center gap-0.5 p-0.5 rounded-lg bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] text-[9.5px] font-mono">
+                      {(['all', 'gold', 'salt', 'copper', 'cowries', 'kola', 'ivory'] as string[]).map(com => (
+                        <button
+                          key={com}
+                          type="button"
+                          onClick={() => setActiveCommodityFilter(com)}
+                          className={`px-1.5 py-0.5 rounded uppercase font-bold transition-all cursor-pointer ${
+                            activeCommodityFilter === com
+                              ? 'bg-amber-600 text-white shadow-2xs'
+                              : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+                          }`}
+                          title={`Filter trade corridors: ${com}`}
+                        >
+                          {com}
+                        </button>
+                      ))}
+                    </div>
+                  )}
 
                   <button
                     type="button"
@@ -1348,6 +1432,17 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                             const isHovered = hoveredEntity?.id === entity.id;
                             const isChronologyActive = isEntityActiveInChronology(entity.id);
                             if (!isChronologyActive && !dimInactiveKingdoms) return null;
+
+                            let beaconOpacity = 1.0;
+                            if (selectedEntity) {
+                              beaconOpacity = isSelected ? 1.0 : 0.04;
+                            } else if (selectedTradeCorridor) {
+                              const isRelatedKingdom = selectedTradeCorridor.kingdomId === entity.id;
+                              beaconOpacity = isRelatedKingdom ? 0.9 : 0.04;
+                            } else if (!isChronologyActive) {
+                              beaconOpacity = 0.22;
+                            }
+
                             const cleanName = entity.name.split('(')[0].trim();
                             const textWidth = Math.max(460, cleanName.length * 52 + 180);
                             
@@ -1380,8 +1475,8 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                               <g
                                 key={`svg-beacon-sbs-${entity.id}`}
                                 transform={`translate(${x}, ${y})`}
-                                className="cursor-pointer group"
-                                opacity={isChronologyActive ? 1.0 : 0.22}
+                                className="cursor-pointer group transition-opacity duration-300 ease-out"
+                                opacity={beaconOpacity}
                                 onPointerDown={(e) => e.stopPropagation()}
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -1437,6 +1532,22 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                               </g>
                             );
                           })}
+                        </g>
+                      )}
+
+                      {/* Pre-Colonial Trade Corridors in Side-by-Side View */}
+                      {showTradeCorridors && (
+                        <g id="preColonialTradeCorridorsSideBySide" transform={AFRICA_FINAL_TRANSFORM} className="pointer-events-auto">
+                          <TradeCorridorVectorLayer
+                            selectedCorridorId={selectedTradeCorridor?.id || null}
+                            selectedKingdomId={selectedEntity?.id || null}
+                            hoveredCorridorId={hoveredTradeCorridor?.id || null}
+                            onSelectCorridor={(corr) => focusOnTradeCorridor(corr)}
+                            onHoverCorridor={(corr) => setHoveredTradeCorridor(corr)}
+                            activeCentury={selectedChronologyYear ? Math.ceil(selectedChronologyYear / 100) : null}
+                            activeCommodityFilter={activeCommodityFilter}
+                            showLabels={(isSyncedPanZoom ? zoomLevel : vectorZoom) >= 1.25}
+                          />
                         </g>
                       )}
                     </svg>
@@ -1597,17 +1708,27 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                           if (!isChronologyActive && !dimInactiveKingdoms) return null;
                           const isSelected = selectedEntity?.id === entity.id;
 
+                          let polygonOpacity = 1.0;
+                          if (selectedEntity) {
+                            polygonOpacity = isSelected ? 1.0 : 0.04;
+                          } else if (selectedTradeCorridor) {
+                            const isRelatedKingdom = selectedTradeCorridor.kingdomId === entity.id;
+                            polygonOpacity = isRelatedKingdom ? 0.85 : 0.04;
+                          } else if (!isChronologyActive) {
+                            polygonOpacity = 0.2;
+                          }
+
                           return (
                             <path
                               key={`polygon-${entity.id}`}
                               d={detailed.territoryPolygonPath}
                               fill={entity.color}
-                              fillOpacity={isSelected ? 0.28 : 0.12}
+                              fillOpacity={isSelected ? 0.32 : 0.12}
                               stroke={entity.color}
                               strokeWidth={isSelected ? 26 : 14}
                               strokeDasharray={isSelected ? "none" : "32 16"}
                               className="transition-all duration-300"
-                              opacity={isChronologyActive ? 1.0 : 0.2}
+                              opacity={polygonOpacity}
                             />
                           );
                         })}
@@ -1621,6 +1742,17 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                         const isHovered = hoveredEntity?.id === entity.id;
                         const isChronologyActive = isEntityActiveInChronology(entity.id);
                         if (!isChronologyActive && !dimInactiveKingdoms) return null;
+
+                        let beaconOpacity = 1.0;
+                        if (selectedEntity) {
+                          beaconOpacity = isSelected ? 1.0 : 0.04;
+                        } else if (selectedTradeCorridor) {
+                          const isRelatedKingdom = selectedTradeCorridor.kingdomId === entity.id;
+                          beaconOpacity = isRelatedKingdom ? 0.9 : 0.04;
+                        } else if (!isChronologyActive) {
+                          beaconOpacity = 0.22;
+                        }
+
                         const cleanName = entity.name.split('(')[0].trim();
                         const textWidth = Math.max(460, cleanName.length * 52 + 180);
                         
@@ -1653,8 +1785,8 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                           <g
                             key={`svg-beacon-top-${entity.id}`}
                             transform={`translate(${x}, ${y})`}
-                            className="cursor-pointer group"
-                            opacity={isChronologyActive ? 1.0 : 0.22}
+                            className="cursor-pointer group transition-opacity duration-300 ease-out"
+                            opacity={beaconOpacity}
                             onPointerDown={(e) => e.stopPropagation()}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -1791,18 +1923,50 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                         );
                       })}
                     </g>
+
+                    {/* Pre-Colonial Trade Corridors Vector Layer (Inside SVG coordinate space) */}
+                    {showTradeCorridors && (
+                      <g id="preColonialTradeCorridorsTop" transform={AFRICA_FINAL_TRANSFORM} className="pointer-events-auto">
+                        <TradeCorridorVectorLayer
+                          selectedCorridorId={selectedTradeCorridor?.id || null}
+                          selectedKingdomId={selectedEntity?.id || null}
+                          hoveredCorridorId={hoveredTradeCorridor?.id || null}
+                          onSelectCorridor={(corr) => focusOnTradeCorridor(corr)}
+                          onHoverCorridor={(corr) => setHoveredTradeCorridor(corr)}
+                          activeCentury={selectedChronologyYear ? Math.ceil(selectedChronologyYear / 100) : null}
+                          activeCommodityFilter={activeCommodityFilter}
+                          showLabels={zoomLevel >= 1.25}
+                        />
+                      </g>
+                    )}
                   </svg>
                 </div>
               )}
 
-              {/* 4. Pre-Colonial Animated Trade Corridor Particle Flows Canvas */}
-              {showTradeCorridors && (
-                <TradeCorridorParticleCanvas
-                  activeCentury={selectedChronologyYear ? Math.ceil(selectedChronologyYear / 100) : null}
-                  activeCommodityFilter={activeCommodityFilter}
-                  showLabels={zoomLevel >= 1.4}
-                />
-              )}
+              {/* Floating Trade Corridor Hover Indicator */}
+              <AnimatePresence>
+                {hoveredTradeCorridor && !selectedTradeCorridor && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -15, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -15, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-16 left-1/2 -translate-x-1/2 z-35 px-4 py-2 rounded-2xl bg-stone-950/95 text-stone-100 border border-amber-500/50 shadow-2xl backdrop-blur-md text-xs font-sans flex items-center gap-3 pointer-events-none"
+                  >
+                    <span
+                      className="w-3 h-3 rounded-full shrink-0 animate-pulse"
+                      style={{ backgroundColor: hoveredTradeCorridor.color }}
+                    />
+                    <div className="text-left">
+                      <span className="font-bold text-amber-300 font-serif">{hoveredTradeCorridor.name}</span>
+                      <span className="text-[11px] text-stone-300 ml-2 font-mono">({hoveredTradeCorridor.startName} → {hoveredTradeCorridor.endName})</span>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-mono uppercase font-bold border border-amber-500/40">
+                      Click to Inspect Dossier
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* 5. Split-Curtain Draggable Divider Line */}
               {comparisonMode === 'curtain' && (
@@ -2022,6 +2186,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
               onClose={() => {
                 setSelectedEntity(null);
                 if (onClearFocusedEntity) onClearFocusedEntity();
+                resetPane('both');
               }}
               onRecenterMap={(ent) => focusOnEntity(ent)}
               onOpenDynasticTree={() => setIsDynasticTreeOpen(true)}
@@ -2041,6 +2206,29 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                 const currIdx = PRE_COLONIAL_ENTITIES.findIndex(e => e.id === selectedEntity.id);
                 const nextIdx = (currIdx + 1) % PRE_COLONIAL_ENTITIES.length;
                 focusOnEntity(PRE_COLONIAL_ENTITIES[nextIdx]);
+              }}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Sleek Floating Rich Trade Corridor Dossier Panel */}
+        <AnimatePresence>
+          {selectedTradeCorridor && (
+            <TradeCorridorDetailPanel
+              corridor={selectedTradeCorridor}
+              allCorridors={ALL_TRADE_CORRIDORS}
+              isFilmstripOpen={isFilmstripOpen}
+              onClose={() => {
+                setSelectedTradeCorridor(null);
+                resetPane('both');
+              }}
+              onSelectCorridor={(corr) => focusOnTradeCorridor(corr)}
+              onRecenterMap={(corr) => focusOnTradeCorridor(corr)}
+              onNavigateToKingdom={(kingdomId) => {
+                const found = PRE_COLONIAL_ENTITIES.find(k => k.id === kingdomId);
+                if (found) {
+                  focusOnEntity(found);
+                }
               }}
             />
           )}
