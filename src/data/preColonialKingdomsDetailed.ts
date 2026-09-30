@@ -990,6 +990,21 @@ export const DETAILED_KINGDOMS_DATA: Record<string, KingdomDetailedRecord> = {
         historicalSignificance: "The national emblem of modern Zimbabwe, featured on the national flag, coat of arms, and currency.",
         shaderType: "granite_grain",
         accentColor: "#059669"
+      },
+      {
+        id: 'mapungubwe-gold-rhino',
+        title: "The Mapungubwe Golden Rhinoceros",
+        nativeTitle: "Chipembere cheNdarama",
+        period: "12th – 13th Century (c. 1220 CE)",
+        material: "hammered_gold",
+        dimensions: "15.2 cm length × 5.5 cm height × 4.2 cm width",
+        provenance: "Royal Hill Sanctuary, Mapungubwe / Great Zimbabwe Corridor",
+        currentLocation: "Mapungubwe Museum, University of Pretoria",
+        description: "Hammered foil gold sculpture of a rhinoceros with solid gold horn and gold tack rivets over a sculpted wooden core, the ultimate symbol of sacred leadership in the Limpopo-Zambezi basin.",
+        materialDetails: "24-karat hammered foil sheet gold with repoussé dot stippling and hand-forged golden miniature tacks.",
+        historicalSignificance: "Declared a South African National Treasure; represents the earliest documented indigenous gold-foil masterwork in Southern Africa.",
+        shaderType: "gold_specular",
+        accentColor: "#eab308"
       }
     ],
     governanceSystem: "Centralized sacred monarchy centered on the royal hill complex, supported by hereditary provincial lords managing cattle wealth and tributary gold mining.",
@@ -1301,6 +1316,21 @@ export const DETAILED_KINGDOMS_DATA: Record<string, KingdomDetailedRecord> = {
         historicalSignificance: "Equipped the feared Sayfawa armored cavalry that protected the Lake Chad basin caravan routes for over 800 years.",
         shaderType: "bronze_patina",
         accentColor: "#dc2626"
+      },
+      {
+        id: 'bornu-royal-charter',
+        title: "Mahram Royal Charter of Tax Immunity on Leather Vellum",
+        nativeTitle: "Mahram Hummay (Imperial Vellum Privilege)",
+        period: "11th – 16th Century (c. 1086 CE re-issued)",
+        material: "illuminated_parchment",
+        dimensions: "42 cm × 29 cm",
+        provenance: "Sayfawa Imperial Chancellery, Birni Ngazargamu",
+        currentLocation: "Arewa House Historical Archives, Kaduna / British Library",
+        description: "Official imperial leather charter granted by the Mai of Bornu, conferring perpetual tax-exempt privileges on scholars and jurists, written in classic Kanuri-Maghribi calligraphic hand.",
+        materialDetails: "Tanned gazelle vellum inscribed with carbon-iron gall ink and red vermilion seal cartouches.",
+        historicalSignificance: "The oldest continuously preserved legal charter series in the Lake Chad basin, proving sophisticated constitutional jurisprudence.",
+        shaderType: "aged_manuscript",
+        accentColor: "#f59e0b"
       }
     ],
     governanceSystem: "Centralized bureaucratic monarchy supported by the Grand Council of Twelve and influential royal women (Magira / Queen Mother).",
@@ -1419,6 +1449,21 @@ export const DETAILED_KINGDOMS_DATA: Record<string, KingdomDetailedRecord> = {
         historicalSignificance: "Proves the existence of advanced indigenous scientific research in astronomy and optics centuries before colonial contact.",
         shaderType: "aged_manuscript",
         accentColor: "#2563eb"
+      },
+      {
+        id: 'askia-tomb-reliquary',
+        title: "Monumental Pyramidal Mud-Brick Model of the Tomb of Askia",
+        nativeTitle: "Askia Maya (Gao Royal Mausoleum Architecture)",
+        period: "1495 CE",
+        material: "terracotta",
+        dimensions: "17 meters height × 14m base (original pyramid)",
+        provenance: "Gao Imperial Citadel, Songhai Empire",
+        currentLocation: "Gao Archaeological Museum & UNESCO World Heritage Site",
+        description: "Monumental stepped pyramidal mud-brick tomb erected by Askia Muhammad upon his return from Mecca, featuring projecting palm toron timbers that serve as permanent scaffolding.",
+        materialDetails: "Sun-dried laterite mud-brick with Bancou plaster and ironwood toron projecting scaffold beams.",
+        historicalSignificance: "The supreme architectural emblem of the Songhai Empire and a UNESCO World Heritage cultural masterpiece.",
+        shaderType: "granite_grain",
+        accentColor: "#3b82f6"
       }
     ],
     governanceSystem: "Centralized imperial bureaucracy with specialized ministries (Finance, Agriculture, Justice, Navigation) and imperial governors (Faris).",
@@ -1609,38 +1654,50 @@ export const DETAILED_KINGDOMS_DATA: Record<string, KingdomDetailedRecord> = {
 };
 
 export const TOPONYM_CONCORDANCE_INDEX: ToponymConcordanceItem[] = [
+  // West Africa & Guinea Coast
   {
-    antiqueName: "Congo Regnum / Manicongo",
-    plateSource: "1690 Visscher & 1747 Bowen",
-    indigenousName: "Kongo dya Ntotila",
-    modernName: "M'banza-Kongo / Congo Basin",
-    modernCountry: "Angola / DR Congo",
-    category: "polity",
-    coordinates: [-6.267, 14.242],
-    svgCoordinates: [2950, 3520],
-    note: "Prominently inscribed across 17th–18th century Dutch and English atlases as the supreme sovereign kingdom of Central Africa."
+    antiqueName: "Guinée Septentrionale & Méridionale",
+    plateSource: "1749 D'Anville & 1802 Arrowsmith",
+    indigenousName: "Bilad al-Sudan / Manden / Akan / Dahomey",
+    modernName: "Upper & Lower Guinea Coast (Senegal to Gabon)",
+    modernCountry: "Senegal, Guinea, Ghana, Nigeria, Benin, Cameroon",
+    category: "coast",
+    coordinates: [6.5, 2.0],
+    svgCoordinates: [2100, 2450],
+    note: "Archival division of West Africa into Northern (Upper) Guinea and Southern (Lower) Guinea along the Atlantic littoral."
   },
   {
-    antiqueName: "Empire of Monomotapa",
-    plateSource: "1747 Bowen & 1787 Cary",
-    indigenousName: "Wene weMutapa / Great Zimbabwe",
-    modernName: "Masvingo & Zimbabwe Plateau",
-    modernCountry: "Zimbabwe / Mozambique",
-    category: "polity",
-    coordinates: [-20.267, 30.933],
-    svgCoordinates: [3980, 4640],
-    note: "Legendary gold-producing Shona empire celebrated in Portuguese cartography for its dry-stone granite citadels."
+    antiqueName: "Côte de l'Or / Gold Coast",
+    plateSource: "1749 D'Anville, 1690 Visscher & 1747 Bowen",
+    indigenousName: "Asanteman / Akan Coast (Sika Mpoano)",
+    modernName: "Ghana Coast (Elmina, Cape Coast, Accra, Kumasi)",
+    modernCountry: "Ghana",
+    category: "coast",
+    coordinates: [5.1, -1.2],
+    svgCoordinates: [1865, 2580],
+    note: "The primary gold-exporting littoral of West Africa governed by the Ashanti and Fante confederacies, dotted with European trade forts."
   },
   {
-    antiqueName: "Negroland / Nigritia",
-    plateSource: "1690 Visscher, 1747 Bowen, 1787 Cary",
-    indigenousName: "Bilad al-Sudan / Manden / Songhay",
-    modernName: "Sahel & Niger River Basin",
-    modernCountry: "Mali / Niger / Nigeria",
-    category: "polity",
-    coordinates: [14.0, 0.0],
-    svgCoordinates: [1650, 1850],
-    note: "Archival European blanket term for the vast Sahelian urban empires of Mali, Songhai, and Hausaland."
+    antiqueName: "Côte des Esclaves / Slave Coast",
+    plateSource: "1749 D'Anville & 1747 Bellin",
+    indigenousName: "Danxome / Xwéda / Oyo Coastal Reach",
+    modernName: "Bight of Benin (Ouidah, Grand-Popo, Cotonou, Lagos)",
+    modernCountry: "Benin, Togo, Nigeria",
+    category: "coast",
+    coordinates: [6.3, 2.5],
+    svgCoordinates: [2200, 2560],
+    note: "Historical maritime designation for the coastal embouchures and lagoons of the Bight of Benin."
+  },
+  {
+    antiqueName: "Royaume de Juda / Fida / Ajuda",
+    plateSource: "1749 D'Anville, 1747 Bowen & 1787 Cary",
+    indigenousName: "Whydah / Ouidah / Xwéda",
+    modernName: "Ouidah",
+    modernCountry: "Benin",
+    category: "metropolis",
+    coordinates: [6.363, 2.085],
+    svgCoordinates: [2160, 2550],
+    note: "The primary maritime port of the Kingdom of Dahomey, marked by Portuguese (São João Baptista de Ajudá), French, and English trading lodges."
   },
   {
     antiqueName: "Kingdom of Benin / Oedo",
@@ -1651,62 +1708,382 @@ export const TOPONYM_CONCORDANCE_INDEX: ToponymConcordanceItem[] = [
     category: "metropolis",
     coordinates: [6.335, 5.603],
     svgCoordinates: [2360, 2520],
-    note: "Celebrated on archival maritime charts for its enormous urban walls and diplomatic court of the Oba."
+    note: "Celebrated on archival maritime charts for its enormous urban walls, royal palace compound, and diplomatic court of the Oba."
   },
   {
-    antiqueName: "Kingdom of Juda / Fida / Ajuda",
-    plateSource: "1747 Bowen & 1787 Cary",
-    indigenousName: "Whydah / Ouidah / Xwéda",
-    modernName: "Ouidah",
-    modernCountry: "Benin",
-    category: "metropolis",
-    coordinates: [6.363, 2.085],
-    svgCoordinates: [2160, 2550],
-    note: "The primary maritime port of the Kingdom of Dahomey, marked by Portuguese, French, and English trading lodges."
+    antiqueName: "Haute Guinée / Upper Guinea",
+    plateSource: "1747 Bellin & 1802 Arrowsmith",
+    indigenousName: "Kaabu / Fouta Djallon / Windward Coast",
+    modernName: "Senegambia to Sierra Leone",
+    modernCountry: "Senegal, The Gambia, Guinea, Sierra Leone",
+    category: "coast",
+    coordinates: [10.0, -12.0],
+    svgCoordinates: [1420, 2300],
+    note: "Encompassed the Windward Coast and the highlands of Fouta Djallon, source of the Niger and Senegal rivers."
   },
   {
-    antiqueName: "Abissinia / Kingdom of Tigre / Axum",
-    plateSource: "1690 Visscher & 1787 Cary",
-    indigenousName: "መንግሥተ አክሱም (Mängəśtä Aksum)",
-    modernName: "Aksum / Tigray",
-    modernCountry: "Ethiopia",
+    antiqueName: "Lower Guinea",
+    plateSource: "1802 Arrowsmith & 1814 Carey",
+    indigenousName: "Bight of Biafra & Gabon Estuary",
+    modernName: "Bight of Biafra to Luanda",
+    modernCountry: "Nigeria, Cameroon, Gabon, Angola",
+    category: "coast",
+    coordinates: [3.0, 9.0],
+    svgCoordinates: [2550, 2800],
+    note: "Archival designation for the equatorial and central Atlantic African coast south of the Niger Delta."
+  },
+  {
+    antiqueName: "Guinea / Guinée / Guinea-Küste / Guineae Pars",
+    plateSource: "1690 Visscher, 1747 Bowen, 1824 Berghaus & 1873 Anselmi",
+    indigenousName: "Bilad al-Sudan / Manden / Akan / Yoruba",
+    modernName: "West African Coast & Interior",
+    modernCountry: "Ghana, Nigeria, Côte d'Ivoire, Senegal",
+    category: "coast",
+    coordinates: [7.5, -2.0],
+    svgCoordinates: [1950, 2450],
+    note: "General Portuguese and European cartographic name derived from Berber 'Akal n-Iguinawen' (Land of the Black Peoples)."
+  },
+  {
+    antiqueName: "Guineae Nova Descriptio",
+    plateSource: "1650 Allardt & 1644 Blaeu",
+    indigenousName: "Akan, Dahomey, Benin & Kongo Littoral",
+    modernName: "West and Central African Maritime Shelf",
+    modernCountry: "Ghana, Togo, Benin, Nigeria, Angola",
+    category: "coast",
+    coordinates: [5.0, 0.0],
+    svgCoordinates: [1800, 2550],
+    note: "Detailed Dutch Golden Age marine charting of West African anchorages, coastal bathymetry, and fortified lodges."
+  },
+
+  // Central Africa & Congo Basin
+  {
+    antiqueName: "Congo Regnum / Royaume de Congo / Congo / Kongo",
+    plateSource: "1644 Blaeu, 1668 Van Meurs, 1749 D'Anville, 1873 Anselmi & 1893 Ottoman",
+    indigenousName: "Kongo dya Ntotila",
+    modernName: "M'banza-Kongo / Congo Basin",
+    modernCountry: "Angola, DR Congo, Republic of the Congo, Gabon",
     category: "polity",
-    coordinates: [14.133, 38.717],
-    svgCoordinates: [4200, 2050],
-    note: "Ancient classical civilization recognized on world maps since Ptolemy for its monolithic stelae and Red Sea trade."
+    coordinates: [-6.267, 14.242],
+    svgCoordinates: [2950, 3520],
+    note: "Prominently inscribed across 17th–19th century European and Ottoman atlases as the supreme sovereign kingdom of Central Africa."
+  },
+  {
+    antiqueName: "Congo Free State",
+    plateSource: "1885 Bartholomew",
+    indigenousName: "Congo River Basin / Luba / Lunda Empires",
+    modernName: "Democratic Republic of the Congo",
+    modernCountry: "DR Congo",
+    category: "polity",
+    coordinates: [-4.0, 22.0],
+    svgCoordinates: [3300, 3400],
+    note: "Geopolitical boundary demarcated during the 1884–1885 Berlin Conference prior to Belgian state annexation."
+  },
+  {
+    antiqueName: "Angola",
+    plateSource: "1650 Allardt & 1690 Visscher",
+    indigenousName: "Kingdom of Ndongo / Matamba (Ngola)",
+    modernName: "Luanda & Kwanza River Valley",
+    modernCountry: "Angola",
+    category: "polity",
+    coordinates: [-9.0, 15.0],
+    svgCoordinates: [2900, 3750],
+    note: "Sovereign realm ruled by Queen Nzinga Mbande, recorded from the dynastic title 'Ngola a Kiluanje'."
+  },
+  {
+    antiqueName: "Biafara Regnum",
+    plateSource: "1644 Blaeu & 1668 Van Meurs",
+    indigenousName: "Bight of Biafra / Cross River & Mount Cameroon Basin",
+    modernName: "Cross River / Calabar / Mount Cameroon",
+    modernCountry: "Nigeria, Cameroon",
+    category: "polity",
+    coordinates: [5.0, 9.5],
+    svgCoordinates: [2600, 2600],
+    note: "Historical inland kingdom marked on 17th-century Dutch maps east of the Niger Delta."
+  },
+
+  // Sahel, Sahara & West African Interior
+  {
+    antiqueName: "Timbuktu",
+    plateSource: "1873 Anselmi & 1802 Arrowsmith",
+    indigenousName: "Tumbutu / Tin-Buktu (Tigidit)",
+    modernName: "Timbuktu (Tombouctou)",
+    modernCountry: "Mali",
+    category: "metropolis",
+    coordinates: [16.766, -3.002],
+    svgCoordinates: [1680, 1720],
+    note: "Historic trans-Saharan scholastic and gold/salt entrepôt on the Niger River bend, home to Sankore University."
+  },
+  {
+    antiqueName: "Negroland / Nigritia",
+    plateSource: "1690 Visscher, 1747 Bowen, 1787 Cary & 1814 Carey",
+    indigenousName: "Bilad al-Sudan / Manden / Songhay",
+    modernName: "Sahel & Niger River Basin",
+    modernCountry: "Mali, Niger, Nigeria, Senegal, Chad",
+    category: "polity",
+    coordinates: [14.0, 0.0],
+    svgCoordinates: [1650, 1850],
+    note: "Archival European blanket term for the vast Sahelian urban empires of Mali, Songhai, and Hausaland."
+  },
+  {
+    antiqueName: "Soudan / Sudan",
+    plateSource: "1747 Bellin, 1802 Arrowsmith, 1824 Berghaus, 1873 Anselmi & 1893 Ottoman",
+    indigenousName: "Bilad al-Sudan (Land of the Black Peoples)",
+    modernName: "Sudano-Sahelian Belt (Dakar to Khartoum)",
+    modernCountry: "Senegal, Mali, Niger, Chad, Sudan",
+    category: "polity",
+    coordinates: [13.5, 12.0],
+    svgCoordinates: [2400, 1950],
+    note: "Arabic geographic term designating the savanna grassland zone spanning the entire breadth of Africa south of the Sahara."
+  },
+  {
+    antiqueName: "Sahara / Sahara Desert / Zaara or Desert / 大沙漠",
+    plateSource: "1747 Bowen, 1802 Arrowsmith, 1824 Berghaus, 1873 Anselmi, 1885 Bartholomew & 1876 Daikokuya",
+    indigenousName: "Al-Sahra al-Kubra / Tenere / Tinariwen",
+    modernName: "Sahara Desert Expanse",
+    modernCountry: "Algeria, Libya, Egypt, Mauritania, Mali, Niger, Chad, Sudan",
+    category: "polity",
+    coordinates: [23.5, 12.0],
+    svgCoordinates: [2400, 1250],
+    note: "The world's largest hot desert, crisscrossed by trans-Saharan salt, gold, and scholastic camel caravan arteries."
   },
   {
     antiqueName: "Kingdom of Bornou / Lake Chad",
     plateSource: "1747 Bowen & 1805 Carey",
-    indigenousName: "Kanem-Borno",
-    modernName: "Birni Ngazargamu / Lake Chad",
-    modernCountry: "Nigeria / Chad",
+    indigenousName: "Kanem-Borno (Sayfawa Dynasty)",
+    modernName: "Birni Ngazargamu / Lake Chad Basin",
+    modernCountry: "Nigeria, Chad, Niger, Cameroon",
     category: "polity",
     coordinates: [13.0, 14.0],
     svgCoordinates: [2750, 2050],
-    note: "Centuries-long Sayfawa Islamic empire dominating trans-Saharan trade to the Mediterranean."
+    note: "Thousand-year Sayfawa Islamic empire dominating trans-Saharan trade to the Mediterranean via Fezzan."
+  },
+  {
+    antiqueName: "泥児利亜 (Nigeria)",
+    plateSource: "1876 Daikokuya (Japanese Manuscript)",
+    indigenousName: "Kano / Sokoto / Yoruba / Igbo",
+    modernName: "Federal Republic of Nigeria & Niger Basin",
+    modernCountry: "Nigeria",
+    category: "polity",
+    coordinates: [9.0, 7.5],
+    svgCoordinates: [2400, 2300],
+    note: "Meiji-era Japanese kanji phonetic rendering for Nigeria and the Niger River basin."
+  },
+
+  // North Africa & Mediterranean Littoral
+  {
+    antiqueName: "Barbarie / Barbaria / Barbary / Barbary States",
+    plateSource: "1644 Blaeu, 1668 Van Meurs, 1680 Sandrart, 1747 Bellin, 1747 Bowen & 1802 Arrowsmith",
+    indigenousName: "Tamazgha / Al-Maghrib al-Arabi",
+    modernName: "Maghreb (Morocco, Algeria, Tunisia, Tripoli)",
+    modernCountry: "Morocco, Algeria, Tunisia, Libya",
+    category: "polity",
+    coordinates: [33.0, 4.0],
+    svgCoordinates: [2050, 550],
+    note: "North African coastal territory inhabited by Amazigh (Berber) peoples and Ottoman Mediterranean regencies."
+  },
+  {
+    antiqueName: "Nordafrika",
+    plateSource: "1824 Berghaus",
+    indigenousName: "Tamazgha / Al-Maghrib",
+    modernName: "North Africa (Atlas Mountains to Nile Delta)",
+    modernCountry: "Morocco, Algeria, Tunisia, Libya, Egypt",
+    category: "polity",
+    coordinates: [32.0, 15.0],
+    svgCoordinates: [2650, 650],
+    note: "Heinrich Berghaus's systematic physical and climatic classification of the Mediterranean and Saharan transition zone."
+  },
+  {
+    antiqueName: "Biledulgerid",
+    plateSource: "1747 Bellin & 1680 Sandrart",
+    indigenousName: "Bilad al-Jarid (Land of the Dates)",
+    modernName: "Chott el Djerid / Southern Tunisia & Algerian Oases",
+    modernCountry: "Tunisia, Algeria",
+    category: "polity",
+    coordinates: [33.8, 8.5],
+    svgCoordinates: [2250, 600],
+    note: "Historic Arab-Berber date-palm oasis zone on the northern rim of the Sahara."
+  },
+  {
+    antiqueName: "Trablusgarp (Tripoli) / Tripoli",
+    plateSource: "1893 Ottoman & 1885 Bartholomew",
+    indigenousName: "Tarabulus al-Gharb",
+    modernName: "Tripoli & Fezzan",
+    modernCountry: "Libya",
+    category: "metropolis",
+    coordinates: [32.887, 13.191],
+    svgCoordinates: [2600, 650],
+    note: "Ottoman Eyalet and Mediterranean port serving as the northern terminus of the Bilma salt and Trans-Saharan trade."
+  },
+  {
+    antiqueName: "Aegyptus / Egypt / Mısır (Egypt) / エギプト",
+    plateSource: "1668 Van Meurs, 1680 Sandrart, 1885 Bartholomew, 1893 Ottoman & 1876 Daikokuya",
+    indigenousName: "Kemet / Misr (مصر)",
+    modernName: "Cairo, Alexandria & Nile Delta",
+    modernCountry: "Egypt",
+    category: "polity",
+    coordinates: [27.0, 30.0],
+    svgCoordinates: [3650, 850],
+    note: "Ancient Lower and Upper Nile civilization recorded across Latin, Ottoman, Victorian, and Japanese charts."
+  },
+
+  // Horn of Africa, Nile Basin & East Africa
+  {
+    antiqueName: "Abyssinie / Abissinia / Äthiopien / Habeşistan / アビシニア",
+    plateSource: "1668 Van Meurs, 1680 Sandrart, 1747 Bellin, 1747 Bowen, 1824 Berghaus, 1873 Anselmi, 1893 Ottoman & 1876 Daikokuya",
+    indigenousName: "መንግሥተ ኢትዮጵያ (Mängəśtä Ityop'p'ya) / Aksum",
+    modernName: "Ethiopian Highlands & Horn of Africa",
+    modernCountry: "Ethiopia, Eritrea",
+    category: "polity",
+    coordinates: [14.133, 38.717],
+    svgCoordinates: [4200, 2050],
+    note: "Solomonic Empire and ancient Kingdom of Aksum, renowned for Christian monolithic rock churches and Red Sea trade."
+  },
+  {
+    antiqueName: "Kingdom of Nubia",
+    plateSource: "1814 Carey",
+    indigenousName: "Kush / Nobatia / Makuria / Alodia",
+    modernName: "Upper Nile Valley & Dongola Reach",
+    modernCountry: "Sudan, Egypt",
+    category: "polity",
+    coordinates: [18.5, 31.8],
+    svgCoordinates: [3750, 1600],
+    note: "Classical and medieval Christian Nile kingdoms renowned for pyramid complexes at Meroë and Jebel Barkal."
+  },
+  {
+    antiqueName: "Nil Nehri / River Nile",
+    plateSource: "1893 Ottoman & 1747 Bellin",
+    indigenousName: "Iteru / Abbay / White & Blue Nile",
+    modernName: "Nile River Basin",
+    modernCountry: "Egypt, Sudan, South Sudan, Uganda, Ethiopia",
+    category: "river",
+    coordinates: [15.5, 32.5],
+    svgCoordinates: [3800, 1800],
+    note: "The world's longest river system uniting Lake Victoria and the Ethiopian Highlands to the Mediterranean."
   },
   {
     antiqueName: "Mountains of the Moon (Lunae Montes)",
-    plateSource: "1690 Visscher, 1747 Bowen, 1787 Cary, 1805 Carey",
+    plateSource: "1690 Visscher, 1747 Bowen, 1787 Cary, 1805 Carey & 1814 Carey",
     indigenousName: "Rwenzori (The Rainmaker Mountains)",
-    modernName: "Rwenzori Mountains",
-    modernCountry: "Uganda / DR Congo",
+    modernName: "Rwenzori Mountain Range",
+    modernCountry: "Uganda, DR Congo",
     category: "mountain",
     coordinates: [0.383, 29.867],
     svgCoordinates: [3620, 3100],
-    note: "Legendary Ptolemaic mountain range believed on historic maps to be the source of the White Nile."
+    note: "Legendary Ptolemaic snow-capped mountain range believed on historic maps to be the ultimate source of the White Nile."
   },
   {
-    antiqueName: "Gold Coast / Coast of Guinea",
-    plateSource: "1690 Visscher & 1747 Bowen",
-    indigenousName: "Asanteman / Akan Coast",
-    modernName: "Elmina, Cape Coast, Kumasi",
-    modernCountry: "Ghana",
+    antiqueName: "Zanguebar / Zanzibar",
+    plateSource: "1644 Blaeu, 1668 Van Meurs, 1690 Visscher, 1873 Anselmi & 1885 Bartholomew",
+    indigenousName: "Swahili Coast / Unguja (Barr al-Zanj)",
+    modernName: "Swahili Coast (Mombasa, Kilwa, Zanzibar, Dar es Salaam)",
+    modernCountry: "Tanzania, Kenya, Mozambique",
     category: "coast",
-    coordinates: [5.1, -1.2],
-    svgCoordinates: [1865, 2580],
-    note: "The primary gold-exporting littoral of West Africa governed by the Ashanti and Fante confederacies."
+    coordinates: [-6.165, 39.202],
+    svgCoordinates: [4150, 3600],
+    note: "Vibrant Indian Ocean maritime trade network connecting African inland gold/ivory with Arabia, Persia, and India."
+  },
+
+  // Southern Africa & Indian Ocean
+  {
+    antiqueName: "Empire of Monomotapa / Monomotapa Regnum / モノモタパ",
+    plateSource: "1644 Blaeu, 1668 Van Meurs, 1680 Sandrart, 1690 Visscher, 1747 Bowen & 1876 Daikokuya",
+    indigenousName: "Wene weMutapa / Great Zimbabwe / Torwa",
+    modernName: "Zimbabwe Plateau & Save River Basin",
+    modernCountry: "Zimbabwe, Mozambique, South Africa",
+    category: "polity",
+    coordinates: [-20.267, 30.933],
+    svgCoordinates: [3980, 4640],
+    note: "Legendary gold-producing Shona empire celebrated in Portuguese and Dutch cartography for its dry-stone granite citadels."
+  },
+  {
+    antiqueName: "Caput Bonae Spei / Cape of Good Hope / Cap de Bonne-Espérance / 喜望峰",
+    plateSource: "1644 Blaeu, 1650 Allardt, 1802 Arrowsmith, 1814 Carey, 1873 Anselmi & 1876 Daikokuya",
+    indigenousName: "Hui !Gaeb (Table Bay / Khoekhoe territory)",
+    modernName: "Cape Point & Cape Town",
+    modernCountry: "South Africa",
+    category: "coast",
+    coordinates: [-34.356, 18.474],
+    svgCoordinates: [3150, 5450],
+    note: "Strategic maritime turning point between the Atlantic and Indian Oceans first rounded by Bartolomeu Dias in 1488."
+  },
+  {
+    antiqueName: "Cape Colony / Kapkolonie",
+    plateSource: "1802 Arrowsmith, 1824 Berghaus & 1885 Bartholomew",
+    indigenousName: "Khoekhoen & Xhosa ancestral lands",
+    modernName: "Western & Eastern Cape",
+    modernCountry: "South Africa",
+    category: "polity",
+    coordinates: [-33.5, 22.0],
+    svgCoordinates: [3300, 5300],
+    note: "Dutch VOC refreshment station established 1652, later ceded to the British Empire during the Napoleonic Wars."
+  },
+  {
+    antiqueName: "The Hottentots / Cafraria",
+    plateSource: "1668 Van Meurs, 1690 Visscher & 1814 Carey",
+    indigenousName: "Khoekhoe & San (Khoisan) Pastoralists",
+    modernName: "Kalahari & Great Karoo Basin",
+    modernCountry: "Namibia, South Africa, Botswana",
+    category: "polity",
+    coordinates: [-28.0, 24.0],
+    svgCoordinates: [3400, 4950],
+    note: "Archaic European ethnographic designation for indigenous Khoekhoen pastoralists and San hunter-gatherers of Southern Africa."
+  },
+  {
+    antiqueName: "Transvaal",
+    plateSource: "1885 Bartholomew",
+    indigenousName: "Limpopo Basin / Bapedi & Bakgatla Realms",
+    modernName: "Gauteng, Limpopo & Mpumalanga",
+    modernCountry: "South Africa",
+    category: "polity",
+    coordinates: [-25.0, 29.0],
+    svgCoordinates: [3850, 4800],
+    note: "Late 19th-century South African Republic (ZAR) following the discovery of gold on the Witwatersrand."
+  },
+  {
+    antiqueName: "Mozambique",
+    plateSource: "1650 Allardt & 1644 Blaeu",
+    indigenousName: "Mussa Bin Bique / Ilha de Moçambique",
+    modernName: "Island of Mozambique & Zambezi Littoral",
+    modernCountry: "Mozambique",
+    category: "metropolis",
+    coordinates: [-15.034, 40.735],
+    svgCoordinates: [4350, 4300],
+    note: "Swahili-Arab trading settlement fortified by the Portuguese as the primary naval hub of the Estado da Índia."
+  },
+  {
+    antiqueName: "Madagascar",
+    plateSource: "1650 Allardt & 1644 Blaeu",
+    indigenousName: "Madagasikara / Imerina Kingdom",
+    modernName: "Republic of Madagascar (Antananarivo)",
+    modernCountry: "Madagascar",
+    category: "polity",
+    coordinates: [-18.766, 46.869],
+    svgCoordinates: [4800, 4450],
+    note: "Vast island nation shaped by ancient Austronesian and Bantu maritime migrations and the 18th-century Merina Kingdom."
+  },
+
+  // General Cartographic Epistemology
+  {
+    antiqueName: "Afrika Kıtası / АФРИКА",
+    plateSource: "1893 Ottoman & 1876 Daikokuya",
+    indigenousName: "Alkebu-lan / Ifriqiya / Africa",
+    modernName: "African Continent (54 Sovereign Nations)",
+    modernCountry: "Pan-African (54 Member States of African Union)",
+    category: "polity",
+    coordinates: [0.0, 20.0],
+    svgCoordinates: [2900, 2900],
+    note: "Pan-African continental overview synthesized in late Ottoman Turkish lithography and Meiji Japanese manuscript atlases."
+  },
+  {
+    antiqueName: "未詳地 (Unexplored Region / Terra Incognita)",
+    plateSource: "1876 Daikokuya & 1749 D'Anville",
+    indigenousName: "Interior River Basins & Rainforest Polities",
+    modernName: "Congo Basin & Central African Interior",
+    modernCountry: "DR Congo, Central African Republic, South Sudan",
+    category: "polity",
+    coordinates: [3.0, 24.0],
+    svgCoordinates: [3400, 2800],
+    note: "Interior zones deliberately left blank by empirical cartographers when direct geodesic measurements were absent."
   }
 ];
 

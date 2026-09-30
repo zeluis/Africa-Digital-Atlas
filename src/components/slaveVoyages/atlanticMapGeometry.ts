@@ -30,15 +30,15 @@ export interface GeoPoint {
   label?: string;
 }
 
-// Fixed Projection: Geographic (Plate Carrée / Equirectangular with calibrated scale)
+// Fixed Projection: Geographic (Plate Carrée / Equirectangular covering Lat -38° to +58°, Lng -105° to +52°)
 export function projectCoord(lat: number, lng: number): [number, number] {
   const minLng = -105;
   const maxLng = 52;
   const minLat = -38;
   const maxLat = 58;
 
-  const x = ((lng - minLng) / (maxLng - minLng)) * 960 + 20;
-  const y = ((maxLat - lat) / (maxLat - minLat)) * 540 + 20;
+  const x = ((lng - minLng) / (maxLng - minLng)) * 1000;
+  const y = ((maxLat - lat) / (maxLat - minLat)) * 580;
   return [x, y];
 }
 

@@ -171,6 +171,7 @@ function AppContent() {
   // Universal Search & Deep link target for Iconography
   const [activeIconographyPlateId, setActiveIconographyPlateId] = useState<string | undefined>(initialRoute.plateId);
   const [activeIconographySearchQuery, setActiveIconographySearchQuery] = useState<string | undefined>(initialRoute.searchQuery);
+  const [isIconographyIngestion, setIsIconographyIngestion] = useState(false);
 
   // Desktop Drawer starts open by default. It remains open on nav clicks; only Menu toggles it.
   const [isDesktopDrawerOpen, setIsDesktopDrawerOpen] = useState<boolean>(true);
@@ -570,13 +571,14 @@ function AppContent() {
           onOpenWorkingPapers={() => setIsWorkingPapersOpen(true)}
           onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
           onOpenAfcftaSimulator={() => setIsAfcftaSimulatorOpen(true)}
+          isIconographyIngestion={isIconographyIngestion}
         />
 
         {/* Main Content Area */}
         <main
           data-core={activeCore}
           className={`core-${activeCore} flex-1 min-w-0 w-full ${
-            currentTab === 'map' || currentTab === 'ethnic-tree' || currentTab === 'archival-cartography'
+            currentTab === 'map' || currentTab === 'ethnic-tree' || currentTab === 'archival-cartography' || (currentTab === 'iconography' && isIconographyIngestion)
               ? 'p-0 max-w-none flex flex-col'
               : 'px-4 sm:px-6 lg:px-8 py-6 md:py-8 max-w-[1440px] mx-auto'
           }`}
@@ -621,6 +623,7 @@ function AppContent() {
                       initialPlateId={activeIconographyPlateId}
                       initialSearchQuery={activeIconographySearchQuery}
                       onClearInitialPlate={() => setActiveIconographyPlateId(undefined)}
+                      onIngestionModeChange={setIsIconographyIngestion}
                     />
                   )}
 
@@ -884,8 +887,8 @@ function AppContent() {
         </Suspense>
       )}
 
-      {/* Structured Credibility Footer (Hidden on map, ethnic tree & archival cartography for edge-to-edge full-screen) */}
-      {currentTab !== 'map' && currentTab !== 'ethnic-tree' && currentTab !== 'archival-cartography' && (
+      {/* Structured Credibility Footer (Hidden on map, ethnic tree, archival cartography & iconography ingestion workbench) */}
+      {currentTab !== 'map' && currentTab !== 'ethnic-tree' && currentTab !== 'archival-cartography' && !(currentTab === 'iconography' && isIconographyIngestion) && (
         <Footer 
           onNavigateTab={handleSelectTab}
           onOpenColophon={() => setIsColophonOpen(true)}

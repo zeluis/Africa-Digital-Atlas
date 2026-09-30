@@ -14,6 +14,7 @@ import { HistoricalMapCurtainViewer } from '../components/cartography/Historical
 import { OceanCurrentParticleCanvas } from '../components/cartography/OceanCurrentParticleCanvas';
 import { AntiquePlateCanvas } from '../components/cartography/AntiquePlateCanvas';
 import { KingdomDynasticTreeModal } from '../components/cartography/KingdomDynasticTreeModal';
+import { KingdomArtifact3DViewerModal } from '../components/cartography/KingdomArtifact3DViewerModal';
 import { ToponymConcordanceModal } from '../components/cartography/ToponymConcordanceModal';
 import { DETAILED_KINGDOMS_DATA, KingdomDetailedRecord, ToponymConcordanceItem } from '../data/preColonialKingdomsDetailed';
 import { SEASONAL_HYDRO_METRICS } from '../services/oceanHydrodynamicsService';
@@ -80,6 +81,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
   const [selectedPlate, setSelectedPlate] = useState<HistoricalMapPlate>(initialData.plate);
   const [focusedEntity, setFocusedEntity] = useState<PreColonialEntity | null>(null);
   const [selectedDynastyKingdom, setSelectedDynastyKingdom] = useState<KingdomDetailedRecord | null>(null);
+  const [selectedArtifactKingdom, setSelectedArtifactKingdom] = useState<KingdomDetailedRecord | null>(null);
   const [isToponymConcordanceOpen, setIsToponymConcordanceOpen] = useState<boolean>(false);
   const [activeSeasonId, setActiveSeasonId] = useState<'q1' | 'q2' | 'q3' | 'q4'>('q1');
   const [showCurrents, setShowCurrents] = useState<boolean>(true);
@@ -461,15 +463,25 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                       <span className="text-purple-700 dark:text-purple-300 font-semibold leading-tight block mt-0.5">{entity.modernCountries.join(', ')}</span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 mt-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 mt-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedArtifactKingdom(DETAILED_KINGDOMS_DATA[entity.id] || DETAILED_KINGDOMS_DATA['benin-kingdom'])}
+                        className="py-2 px-2 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-900 dark:text-purple-200 border border-purple-500/30 text-[10.5px] font-mono font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer shadow-2xs"
+                        title={`Inspect ${entity.name} 3D Material Culture Artifacts`}
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
+                        <span>3D Artifact</span>
+                      </button>
+
                       <button
                         type="button"
                         onClick={() => setSelectedDynastyKingdom(DETAILED_KINGDOMS_DATA[entity.id] || DETAILED_KINGDOMS_DATA['kongo-kingdom'])}
-                        className="py-2 px-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 dark:text-amber-200 border border-amber-500/30 text-[11px] font-mono font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                        className="py-2 px-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 dark:text-amber-200 border border-amber-500/30 text-[10.5px] font-mono font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer shadow-2xs"
                         title={`Inspect ${entity.name} Dynastic Succession & Queen Mothers`}
                       >
                         <Crown className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                        <span>Dynastic Lineage</span>
+                        <span>Dynasty</span>
                       </button>
 
                       <button
@@ -478,9 +490,10 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                           setFocusedEntity(entity);
                           setActiveTab('curtain');
                         }}
-                        className="py-2 px-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/40 dark:hover:bg-purple-900/50 text-purple-800 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/40 text-[11px] font-sans font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                        className="py-2 px-2 rounded-xl bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 border border-stone-300/80 dark:border-stone-700 text-[10.5px] font-sans font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer shadow-2xs"
+                        title={`View ${entity.name} on Map Curtain`}
                       >
-                        <span>Map Curtain</span>
+                        <span>Curtain</span>
                         <ArrowRight className="w-3.5 h-3.5 shrink-0" />
                       </button>
                     </div>
@@ -496,6 +509,16 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
               <KingdomDynasticTreeModal
                 kingdom={selectedDynastyKingdom}
                 onClose={() => setSelectedDynastyKingdom(null)}
+              />
+            )}
+          </AnimatePresence>
+
+          {/* Interactive 3D Artifact Inspector Modal in Kingdoms Workbench */}
+          <AnimatePresence>
+            {selectedArtifactKingdom && (
+              <KingdomArtifact3DViewerModal
+                kingdom={selectedArtifactKingdom}
+                onClose={() => setSelectedArtifactKingdom(null)}
               />
             )}
           </AnimatePresence>

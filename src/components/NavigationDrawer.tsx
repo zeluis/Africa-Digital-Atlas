@@ -98,6 +98,7 @@ interface NavigationDrawerProps {
   onOpenWorkingPapers?: () => void;
   onOpenMethodologyAudit?: () => void;
   onOpenAfcftaSimulator?: () => void;
+  isIconographyIngestion?: boolean;
 }
 
 interface NavItemDef {
@@ -253,12 +254,13 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onOpenCitationModal,
   onOpenWorkingPapers,
   onOpenMethodologyAudit,
-  onOpenAfcftaSimulator
+  onOpenAfcftaSimulator,
+  isIconographyIngestion
 }) => {
   const { t } = useTranslation();
 
   // Determine if current page triggers auto-collapse rail mode on desktop
-  const isAutoCollapsePage = currentTab === 'ethnic-tree' || currentTab === 'map' || currentTab === 'archival-cartography';
+  const isAutoCollapsePage = currentTab === 'ethnic-tree' || currentTab === 'map' || currentTab === 'archival-cartography' || (currentTab === 'iconography' && Boolean(isIconographyIngestion));
   const [isDrawerHovered, setIsDrawerHovered] = useState(false);
 
   // Active group detections

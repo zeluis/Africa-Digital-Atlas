@@ -320,9 +320,9 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
       {/* TAB 1: OVERVIEW & FLOW MAP */}
       {activeSubTab === 'overview' && (
         <div className="space-y-8">
-          {/* Interactive Atlantic Geodesic Flow Map (Option A: Atmospheric Framing) */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
+          {/* Interactive Atlantic Geodesic Flow Map - Edge-to-Edge Full Width Breakout */}
+          <div className="space-y-3 -mx-4 sm:-mx-6 lg:-mx-8 w-[calc(100%+2rem)] sm:w-[calc(100%+3rem)] lg:w-[calc(100%+4rem)]">
+            <div className="px-4 sm:px-6 lg:px-8 flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-extrabold text-[#1C1917] dark:text-zinc-100">
                   Interactive Atlantic Geodesic Network
@@ -333,7 +333,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
               </div>
             </div>
 
-            <div className="rounded-3xl border border-[#DCD3C1] dark:border-zinc-800 overflow-hidden shadow-xs bg-[#FAF6EE] dark:bg-zinc-950">
+            <div className="w-full">
               <AtlanticFlowMap
                 epistemicMode={filters.epistemicMode}
                 selectedRouteId={selectedRoute?.id}

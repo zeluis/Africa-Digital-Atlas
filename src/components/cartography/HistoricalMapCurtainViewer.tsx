@@ -226,6 +226,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
   const [isDynasticTreeOpen, setIsDynasticTreeOpen] = useState<boolean>(false);
   const [isArtifact3DOpen, setIsArtifact3DOpen] = useState<boolean>(false);
   const [isToponymConcordanceOpen, setIsToponymConcordanceOpen] = useState<boolean>(false);
+  const [selectedToponymForModal, setSelectedToponymForModal] = useState<string>('');
   const [activeArtifactId, setActiveArtifactId] = useState<string | undefined>(undefined);
 
   // Chronology Scrubber state for Pre-Colonial Kingdoms
@@ -2131,7 +2132,10 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                       </h4>
                       <button
                         type="button"
-                        onClick={() => setIsToponymConcordanceOpen(true)}
+                        onClick={() => {
+                          setSelectedToponymForModal('');
+                          setIsToponymConcordanceOpen(true);
+                        }}
                         className="text-[10px] font-mono font-bold text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 hover:underline cursor-pointer flex items-center gap-1"
                         title="Open Archaic Toponym Concordance Table"
                       >
@@ -2144,7 +2148,10 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                         <button
                           key={idx}
                           type="button"
-                          onClick={() => setIsToponymConcordanceOpen(true)}
+                          onClick={() => {
+                            setSelectedToponymForModal(toponym);
+                            setIsToponymConcordanceOpen(true);
+                          }}
                           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-amber-100/80 dark:bg-stone-800 dark:hover:bg-amber-950/50 border border-stone-200 dark:border-stone-700 hover:border-amber-400/50 text-[10.5px] font-mono font-medium text-stone-800 dark:text-stone-200 hover:text-amber-900 dark:hover:text-amber-300 transition-all cursor-pointer group active:scale-95 shadow-2xs"
                           title={`Inspect ${toponym} in Concordance Table`}
                         >
@@ -2259,6 +2266,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
         <AnimatePresence>
           {isToponymConcordanceOpen && (
             <ToponymConcordanceModal
+              initialToponym={selectedToponymForModal}
               onClose={() => setIsToponymConcordanceOpen(false)}
               onLocateToponym={(item: ToponymConcordanceItem) => {
                 setIsToponymConcordanceOpen(false);

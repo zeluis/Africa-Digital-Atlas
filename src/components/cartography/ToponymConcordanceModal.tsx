@@ -14,28 +14,33 @@ import {
 } from 'lucide-react';
 
 interface ToponymConcordanceModalProps {
+  initialToponym?: string;
   onClose: () => void;
   onLocateToponym: (item: ToponymConcordanceItem) => void;
 }
 
 export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = ({
+  initialToponym = '',
   onClose,
   onLocateToponym
 }) => {
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [categoryFilter, setCategoryFilter] = useState<'all' | 'polity' | 'metropolis' | 'coast' | 'mountain'>('all');
+  const [searchQuery, setSearchQuery] = useState<string>(initialToponym);
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'polity' | 'metropolis' | 'coast' | 'mountain' | 'river'>('all');
 
   const filteredItems = useMemo(() => {
     return TOPONYM_CONCORDANCE_INDEX.filter(item => {
       if (categoryFilter !== 'all' && item.category !== categoryFilter) return false;
-      if (!searchQuery) return true;
-      const q = searchQuery.toLowerCase();
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase().trim();
+      // Handle exact or fuzzy search
+      const cleanQ = q.replace(/[()]/g, '').trim();
       return (
-        item.antiqueName.toLowerCase().includes(q) ||
-        item.indigenousName.toLowerCase().includes(q) ||
-        item.modernName.toLowerCase().includes(q) ||
-        item.modernCountry.toLowerCase().includes(q) ||
-        item.plateSource.toLowerCase().includes(q)
+        item.antiqueName.toLowerCase().includes(cleanQ) ||
+        item.indigenousName.toLowerCase().includes(cleanQ) ||
+        item.modernName.toLowerCase().includes(cleanQ) ||
+        item.modernCountry.toLowerCase().includes(cleanQ) ||
+        item.plateSource.toLowerCase().includes(cleanQ) ||
+        item.note.toLowerCase().includes(cleanQ)
       );
     });
   }, [searchQuery, categoryFilter]);
@@ -83,8 +88,18 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search antique toponym or modern city..."
-              className="w-full pl-9 pr-3 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-xs font-sans text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-hidden focus:ring-2 focus:ring-amber-500/50"
+              className="w-full pl-9 pr-8 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-xs font-sans text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-hidden focus:ring-2 focus:ring-amber-500/50"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 cursor-pointer"
+                title="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
           {/* Category Filter Pills */}
@@ -92,7 +107,7 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
             <button
               type="button"
               onClick={() => setCategoryFilter('all')}
-              className={`px-3 py-1 rounded-xl transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-xl transition-all cursor-pointer whitespace-nowrap ${
                 categoryFilter === 'all'
                   ? 'bg-amber-600 text-white shadow-xs'
                   : 'text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-800'
@@ -103,7 +118,7 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
             <button
               type="button"
               onClick={() => setCategoryFilter('polity')}
-              className={`px-3 py-1 rounded-xl transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-xl transition-all cursor-pointer whitespace-nowrap ${
                 categoryFilter === 'polity'
                   ? 'bg-amber-600 text-white shadow-xs'
                   : 'text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-800'
@@ -114,7 +129,7 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
             <button
               type="button"
               onClick={() => setCategoryFilter('metropolis')}
-              className={`px-3 py-1 rounded-xl transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-xl transition-all cursor-pointer whitespace-nowrap ${
                 categoryFilter === 'metropolis'
                   ? 'bg-amber-600 text-white shadow-xs'
                   : 'text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-800'
@@ -125,13 +140,35 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
             <button
               type="button"
               onClick={() => setCategoryFilter('coast')}
-              className={`px-3 py-1 rounded-xl transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-xl transition-all cursor-pointer whitespace-nowrap ${
                 categoryFilter === 'coast'
                   ? 'bg-amber-600 text-white shadow-xs'
                   : 'text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-800'
               }`}
             >
               Coasts
+            </button>
+            <button
+              type="button"
+              onClick={() => setCategoryFilter('river')}
+              className={`px-3 py-1 rounded-xl transition-all cursor-pointer whitespace-nowrap ${
+                categoryFilter === 'river'
+                  ? 'bg-amber-600 text-white shadow-xs'
+                  : 'text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-800'
+              }`}
+            >
+              Rivers
+            </button>
+            <button
+              type="button"
+              onClick={() => setCategoryFilter('mountain')}
+              className={`px-3 py-1 rounded-xl transition-all cursor-pointer whitespace-nowrap ${
+                categoryFilter === 'mountain'
+                  ? 'bg-amber-600 text-white shadow-xs'
+                  : 'text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-800'
+              }`}
+            >
+              Mountains
             </button>
           </div>
         </div>
