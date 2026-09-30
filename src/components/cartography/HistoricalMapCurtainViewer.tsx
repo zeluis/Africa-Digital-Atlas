@@ -1382,6 +1382,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                                 transform={`translate(${x}, ${y})`}
                                 className="cursor-pointer group"
                                 opacity={isChronologyActive ? 1.0 : 0.22}
+                                onPointerDown={(e) => e.stopPropagation()}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   focusOnEntity(entity);
@@ -1654,6 +1655,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                             transform={`translate(${x}, ${y})`}
                             className="cursor-pointer group"
                             opacity={isChronologyActive ? 1.0 : 0.22}
+                            onPointerDown={(e) => e.stopPropagation()}
                             onClick={(e) => {
                               e.stopPropagation();
                               focusOnEntity(entity);
