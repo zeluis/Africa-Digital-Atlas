@@ -588,7 +588,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
           </div>
         ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {visibleIllustrations.map((item) => (
+            {visibleIllustrations.map((item, idx) => (
               <div
                 key={item.objectId}
                 onClick={() => setActiveIllustration(item)}
@@ -600,7 +600,8 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                     <ProgressiveImage
                       src={item.imageUrls[0]}
                       alt={item.title}
-                      className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-500 filter saturate-90 dark:brightness-90"
+                      priority={idx < 9}
+                      className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-300 filter saturate-90 dark:brightness-90"
                       containerClassName="w-full h-full"
                     />
                   ) : (
@@ -664,7 +665,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
         ) : (
           /* List View Mode */
           <div className="border border-stone-200 dark:border-stone-800 rounded-2xl overflow-hidden bg-white dark:bg-stone-950/20 shadow-xs divide-y divide-stone-200 dark:divide-stone-800">
-            {visibleIllustrations.map((item) => (
+            {visibleIllustrations.map((item, idx) => (
               <div
                 key={item.objectId}
                 onClick={() => setActiveIllustration(item)}
@@ -677,6 +678,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                       <ProgressiveImage
                         src={item.imageUrls[0]}
                         alt={item.title}
+                        priority={idx < 9}
                         className="w-full h-full object-cover object-center"
                         containerClassName="w-full h-full"
                       />

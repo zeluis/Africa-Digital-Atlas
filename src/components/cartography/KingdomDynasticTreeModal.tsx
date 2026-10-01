@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { KingdomDetailedRecord, DynasticNode } from '../../data/preColonialKingdomsDetailed';
+import { speakAcademicNarration, stopAfricaliaSpeech } from '../../utils/africaliaVoiceEngine';
 import { 
   Crown, 
   Sparkles, 
@@ -31,18 +32,27 @@ export const KingdomDynasticTreeModal: React.FC<KingdomDynasticTreeModalProps> =
   const [filterType, setFilterType] = useState<'all' | 'monarch' | 'queen_mother' | 'constitutional_milestone'>('all');
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
+  // Stop audio on unmount or node change
+  useEffect(() => {
+    return () => {
+      stopAfricaliaSpeech();
+    };
+  }, [selectedNode?.id]);
+
   const handleSpeak = (text: string) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    try {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.9;
-      utterance.pitch = 1.0;
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
-      window.speechSynthesis.speak(utterance);
-    } catch {}
+    if (isSpeaking) {
+      stopAfricaliaSpeech();
+      setIsSpeaking(false);
+      return;
+    }
+
+    speakAcademicNarration({
+      text,
+      playChime: true,
+      onStart: () => setIsSpeaking(true),
+      onEnd: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false)
+    });
   };
 
   const filteredNodes = kingdom.dynasticTree.filter(node => {
@@ -76,10 +86,10 @@ export const KingdomDynasticTreeModal: React.FC<KingdomDynasticTreeModalProps> =
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-md select-none">
       <motion.div
-        initial={{ opacity: 0, scale: 0.94, y: 20 }}
+        initial={{ opacity: 0, scale: 0.95, y: 16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.94, y: 20 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        exit={{ opacity: 0, scale: 0.95, y: 16 }}
+        transition={{ type: 'spring', damping: 28, stiffness: 350 }}
         className="relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl bg-[#FAF7F2] dark:bg-[#181614] border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl overflow-hidden"
       >
         {/* Modal Header */}

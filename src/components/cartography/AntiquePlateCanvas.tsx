@@ -78,8 +78,8 @@ export const AntiquePlateCanvas: React.FC<AntiquePlateCanvasProps> = ({
 
           <g fill="#43311E" fontFamily="serif" fontWeight="bold" textAnchor="middle">
             <text x="500" y="150" fontSize="18" letterSpacing="4">AFRICA</text>
-            <text x="500" y="250" fontSize="14" letterSpacing="3">{plate.cartographer}</text>
-            <text x="500" y="300" fontSize="12" fontStyle="italic">({plate.year})</text>
+            <text x="500" y="250" fontSize="13" letterSpacing="1">{plate.shortTitle || plate.cartographer}</text>
+            <text x="500" y="295" fontSize="11" fontStyle="italic">({plate.year})</text>
           </g>
         </svg>
       </div>
@@ -104,14 +104,20 @@ export const AntiquePlateCanvas: React.FC<AntiquePlateCanvasProps> = ({
       )}
 
       <img
+        ref={(img) => {
+          if (img && img.complete && img.naturalWidth > 0 && !isLoaded) {
+            setIsLoaded(true);
+          }
+        }}
         src={currentSrc}
         alt={plate.shortTitle || plate.title}
         loading={isThumbnail ? "lazy" : "eager"}
+        fetchPriority={isThumbnail ? "auto" : "high"}
         decoding="async"
         onLoad={() => setIsLoaded(true)}
         onError={handleImageError}
         draggable={false}
-        className={`relative z-10 w-full h-full pointer-events-none select-none transition-all duration-400 ease-out ${
+        className={`relative z-10 w-full h-full pointer-events-none select-none transition-all duration-250 ease-out ${
           isThumbnail ? 'object-cover' : 'object-contain'
         } ${isLoaded ? 'opacity-100 filter blur-0 scale-100' : 'opacity-0 filter blur-sm scale-102'}`}
       />

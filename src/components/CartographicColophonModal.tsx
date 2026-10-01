@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { AfricaUnLogo } from './AfricaUnLogo';
 import { CartographicCartouche } from './CartographicCartouche';
-import { prewarmArchivalImageCache } from '../utils/imagePrecache';
+import { prewarmArchivalImageCache, checkArchivalCacheReadiness, type CacheReadinessReport } from '../utils/imagePrecache';
 import { ALL_TRADE_CORRIDORS } from '../data/preColonialKingdomsDetailed';
 import { PRE_COLONIAL_ENTITIES } from '../data/archivalCartographyData';
 
@@ -44,7 +44,17 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [isPrewarming, setIsPrewarming] = useState(false);
   const [prewarmResult, setPrewarmResult] = useState<{ cached: number; total: number } | null>(null);
-  const [readinessScore, setReadinessScore] = useState(100);
+  const [readinessScore, setReadinessScore] = useState(96);
+  const [cacheStats, setCacheStats] = useState<CacheReadinessReport | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      checkArchivalCacheReadiness().then(stats => {
+        setCacheStats(stats);
+        setReadinessScore(stats.score);
+      });
+    }
+  }, [isOpen, activeTab]);
 
   const handleCopy = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
@@ -57,7 +67,9 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
     try {
       const res = await prewarmArchivalImageCache();
       setPrewarmResult(res);
-      setReadinessScore(100);
+      const updated = await checkArchivalCacheReadiness();
+      setCacheStats(updated);
+      setReadinessScore(updated.score);
     } catch {
       // Graceful fallback
     } finally {
@@ -492,7 +504,7 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                         <HardDrive className="w-4 h-4" />
                       </div>
                       <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 font-mono text-[9px] font-bold">
-                        ✓ CacheStorage
+                        {cacheStats?.isStorageAvailable ? '✓ CacheStorage' : '✓ In-Memory Bundle'}
                       </span>
                     </div>
                     <div>
@@ -500,11 +512,11 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                         Archival Engravings &amp; Castas
                       </h4>
                       <p className="text-[11px] font-mono text-stone-500 dark:text-stone-400 pt-0.5">
-                        30 Local Originals • 32 Castas
+                        {cacheStats ? `${cacheStats.cachedCount} of ${cacheStats.totalCount} Plates Verified` : '30 Local Originals • 32 Castas'}
                       </p>
                     </div>
                     <p className="text-[11px] text-stone-600 dark:text-stone-400 leading-snug">
-                      Stored in public distribution bundle with 4-tier candidate fallback cascade.
+                      Stored in distribution bundle with 4-tier candidate fallback cascade and progressive LQIP blur-up.
                     </p>
                   </div>
 

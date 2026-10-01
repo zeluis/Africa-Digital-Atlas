@@ -10,6 +10,8 @@ interface ProgressiveImageProps extends React.ImgHTMLAttributes<HTMLImageElement
   containerClassName?: string;
   aspectRatio?: string;
   showParchementPlaceholder?: boolean;
+  priority?: boolean;
+  fetchPriority?: 'high' | 'low' | 'auto';
 }
 
 export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
@@ -20,6 +22,9 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
   containerClassName = '',
   aspectRatio,
   showParchementPlaceholder = true,
+  priority = false,
+  loading,
+  fetchPriority,
   ...props
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -46,6 +51,15 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
       setHasFailedAll(true);
     }
   };
+
+  const imgRefCallback = (el: HTMLImageElement | null) => {
+    if (el && el.complete && el.naturalWidth > 0 && !isLoaded) {
+      setIsLoaded(true);
+    }
+  };
+
+  const computedLoading = loading || (priority ? 'eager' : 'lazy');
+  const computedFetchPriority = fetchPriority || (priority ? 'high' : 'auto');
 
   return (
     <div 
@@ -83,16 +97,18 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
         </div>
       )}
 
-      {/* 2. Main High-Res Image with smooth unblur / fade-in transition */}
+      {/* 2. Main High-Res Image with smooth unblur / immediate display */}
       {!hasFailedAll && (
         <img
+          ref={imgRefCallback}
           src={currentSrc}
           alt={alt}
-          loading="lazy"
+          loading={computedLoading}
+          fetchPriority={computedFetchPriority}
           decoding="async"
           onLoad={() => setIsLoaded(true)}
           onError={handleError}
-          className={`relative z-10 w-full h-full transition-all duration-500 ease-out ${
+          className={`relative z-10 w-full h-full transition-all duration-250 ease-out ${
             isLoaded 
               ? 'opacity-100 filter blur-0 scale-100' 
               : 'opacity-0 filter blur-md scale-105'

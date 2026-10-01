@@ -73,7 +73,7 @@ export const HISTORICAL_MAP_PLATES: HistoricalMapPlate[] = [
   {
     id: 'danville-1749',
     title: "Afrique Publiée sous les Auspices de Monseigneur le Duc d'Orléans (1749)",
-    shortTitle: "D'Anville (1749)",
+    shortTitle: "Afrique (1749)",
     cartographer: "Jean-Baptiste Bourguignon d'Anville",
     year: "1749",
     century: "18th Century (Enlightenment)",

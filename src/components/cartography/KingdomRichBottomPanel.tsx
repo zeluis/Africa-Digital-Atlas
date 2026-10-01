@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PreColonialEntity } from '../../data/archivalCartographyData';
 import { DETAILED_KINGDOMS_DATA, KingdomDetailedRecord } from '../../data/preColonialKingdomsDetailed';
+import { speakAcademicNarration, stopAfricaliaSpeech } from '../../utils/africaliaVoiceEngine';
 import { 
   Crown, 
   Landmark, 
@@ -65,18 +66,28 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
 
   const detailedRecord: KingdomDetailedRecord | undefined = DETAILED_KINGDOMS_DATA[entity.id];
 
+  // Stop audio on unmount or entity change
+  useEffect(() => {
+    return () => {
+      stopAfricaliaSpeech();
+    };
+  }, [entity.id]);
+
   const handleSpeak = () => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    try {
-      window.speechSynthesis.cancel();
-      const text = `${entity.name}. Royal Title: ${detailedRecord?.royalTitle || ''}. ${detailedRecord?.indigenousScript?.phoneticSpelling || ''}.`;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.88;
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
-      window.speechSynthesis.speak(utterance);
-    } catch {}
+    if (isSpeaking) {
+      stopAfricaliaSpeech();
+      setIsSpeaking(false);
+      return;
+    }
+
+    const narration = `${entity.name}. Period: ${detailedRecord?.period || entity.period}. Royal Title: ${detailedRecord?.royalTitle || ''}. ${detailedRecord?.indigenousScript?.phoneticSpelling || ''}. ${detailedRecord?.foundingNarrative || entity.significance}. Trade Specialty: ${entity.tradeSpecialty}.`;
+    speakAcademicNarration({
+      text: narration,
+      playChime: true,
+      onStart: () => setIsSpeaking(true),
+      onEnd: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false)
+    });
   };
 
   const handleCopyCitation = async () => {

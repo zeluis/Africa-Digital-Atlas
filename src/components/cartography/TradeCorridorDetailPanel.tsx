@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { TradeCorridorPath } from '../../data/preColonialKingdomsDetailed';
+import { speakAcademicNarration, stopAfricaliaSpeech } from '../../utils/africaliaVoiceEngine';
 import { 
   Compass, 
   MapPin, 
@@ -51,6 +52,13 @@ export const TradeCorridorDetailPanel: React.FC<TradeCorridorDetailPanelProps> =
   const currentIndex = allCorridors.findIndex(c => c.id === corridor.id);
   const totalCount = allCorridors.length;
 
+  // Stop audio playback on unmount or corridor change
+  useEffect(() => {
+    return () => {
+      stopAfricaliaSpeech();
+    };
+  }, [corridor.id]);
+
   const handlePrev = () => {
     if (totalCount === 0 || !onSelectCorridor) return;
     const nextIdx = (currentIndex - 1 + totalCount) % totalCount;
@@ -64,17 +72,20 @@ export const TradeCorridorDetailPanel: React.FC<TradeCorridorDetailPanelProps> =
   };
 
   const handleSpeak = () => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    try {
-      window.speechSynthesis.cancel();
-      const text = `${corridor.name}. Major trade corridor of the ${corridor.kingdomName || 'pre-colonial era'}. Primary commodity: ${corridor.commodity}. Active during centuries ${corridor.activeCenturies.join(', ')}. ${corridor.volumeDescription || ''}`;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.9;
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
-      window.speechSynthesis.speak(utterance);
-    } catch {}
+    if (isSpeaking) {
+      stopAfricaliaSpeech();
+      setIsSpeaking(false);
+      return;
+    }
+
+    const narration = `${corridor.name}. Major trade corridor of the ${corridor.kingdomName || 'pre-colonial era'}. Primary commodity: ${corridor.commodity}. Active during centuries ${corridor.activeCenturies.join(', ')}. ${corridor.volumeDescription || ''}`;
+    speakAcademicNarration({
+      text: narration,
+      playChime: true,
+      onStart: () => setIsSpeaking(true),
+      onEnd: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false)
+    });
   };
 
   const handleCopyCitation = async () => {

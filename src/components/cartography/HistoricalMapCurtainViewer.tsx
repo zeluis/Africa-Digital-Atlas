@@ -243,10 +243,43 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
   // Vector map country hover in side-by-side
   const [hoveredCountryInfo, setHoveredCountryInfo] = useState<{ name: string; region: string } | null>(null);
 
-  // Immersive layout state
-  const [isDossierOpen, setIsDossierOpen] = useState<boolean>(true);
-  const [isFilmstripOpen, setIsFilmstripOpen] = useState<boolean>(true);
+  // Immersive layout state - Single-Active Drawer System
+  const [isDossierOpen, setIsDossierOpen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024;
+    }
+    return true;
+  });
+  const [isFilmstripOpen, setIsFilmstripOpen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1440;
+    }
+    return false;
+  });
   const [copiedCitation, setCopiedCitation] = useState<boolean>(false);
+
+  // Single-Active Drawer System: Prevents overlapping panels from cluttering the cartographic canvas
+  const handleOpenFilmstrip = useCallback(() => {
+    setIsFilmstripOpen(true);
+    if (typeof window !== 'undefined' && window.innerWidth < 1440) {
+      setIsDossierOpen(false);
+    }
+  }, []);
+
+  const handleCloseFilmstrip = useCallback(() => {
+    setIsFilmstripOpen(false);
+  }, []);
+
+  const handleOpenDossier = useCallback(() => {
+    setIsDossierOpen(true);
+    if (typeof window !== 'undefined' && window.innerWidth < 1440) {
+      setIsFilmstripOpen(false);
+    }
+  }, []);
+
+  const handleCloseDossier = useCallback(() => {
+    setIsDossierOpen(false);
+  }, []);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const filmstripScrollRef = useRef<HTMLDivElement>(null);
@@ -508,6 +541,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
     setSelectedEntity(entity);
     setSelectedTradeCorridor(null); // Clear trade corridor selection when a kingdom is selected
     setIsDossierOpen(false); // Hide Cartographic Dossier when an Old Kingdom is selected
+    setIsFilmstripOpen(false); // Close Filmstrip to prevent viewport collision
     setZoomLevel(zoom);
     setPlateZoom(zoom);
     setVectorZoom(zoom);
@@ -522,6 +556,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
     setSelectedTradeCorridor(corridor);
     setSelectedEntity(null);
     setIsDossierOpen(false);
+    setIsFilmstripOpen(false); // Close Filmstrip to prevent viewport collision
     if (corridor.points.length > 0) {
       const sumX = corridor.points.reduce((acc, p) => acc + p[0], 0);
       const sumY = corridor.points.reduce((acc, p) => acc + p[1], 0);
@@ -575,6 +610,9 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
   const handleSelectPlateItem = useCallback((plate: HistoricalMapPlate) => {
     if (onSelectPlate) onSelectPlate(plate);
     setIsDossierOpen(true);
+    if (typeof window !== 'undefined' && window.innerWidth < 1280) {
+      setIsFilmstripOpen(false);
+    }
     setSelectedEntity(null);
     setZoomLevel(1.0);
     setPlateZoom(1.0);
@@ -1172,8 +1210,8 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              transition={{ type: "spring", damping: 26, stiffness: 320 }}
-              onClick={() => setIsFilmstripOpen(true)}
+              transition={{ type: "spring", damping: 28, stiffness: 350 }}
+              onClick={handleOpenFilmstrip}
               className="absolute top-3.5 left-3.5 z-30 flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border border-stone-300 dark:border-stone-700 text-xs font-mono font-bold text-amber-800 dark:text-amber-300 shadow-md hover:shadow-lg cursor-pointer transition-all active:scale-95"
               title="Expand Antique Plates Filmstrip"
             >
@@ -1190,7 +1228,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
               initial={{ opacity: 0, x: -60, width: 0 }}
               animate={{ opacity: 1, x: 0, width: 230 }}
               exit={{ opacity: 0, x: -60, width: 0 }}
-              transition={{ type: "spring", damping: 28, stiffness: 320 }}
+              transition={{ type: "spring", damping: 28, stiffness: 350 }}
               className="w-52 sm:w-56 lg:w-[230px] shrink-0 h-full border-r border-stone-200 dark:border-stone-800 bg-[#FAF8F5]/98 dark:bg-stone-950/98 backdrop-blur-xl flex flex-col z-20 shadow-xs overflow-hidden"
               id="vertical-thumbnail-filmstrip"
             >
@@ -1204,7 +1242,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                 </div>
                 <button
                   type="button"
-                  onClick={() => setIsFilmstripOpen(false)}
+                  onClick={handleCloseFilmstrip}
                   className="p-1 rounded-lg text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer shrink-0"
                   title="Collapse filmstrip"
                 >
@@ -1242,11 +1280,17 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                         </div>
                       </div>
 
-                      <div className="min-w-0 px-0.5">
-                        <h5 className="font-serif font-bold text-[11px] text-stone-900 dark:text-stone-100 truncate group-hover:text-amber-800 dark:group-hover:text-amber-400 leading-tight">
-                          {plate.shortTitle || `${plate.cartographer.split(' ')[1] || plate.cartographer} (${plate.year})`}
+                      <div className="w-full min-w-0 px-0.5 overflow-hidden">
+                        <h5 
+                          className="w-full font-serif font-bold text-[11px] text-stone-900 dark:text-stone-100 truncate group-hover:text-amber-800 dark:group-hover:text-amber-400 leading-tight block overflow-hidden text-ellipsis whitespace-nowrap"
+                          title={plate.title}
+                        >
+                          {plate.shortTitle || plate.title}
                         </h5>
-                        <p className="text-[9.5px] font-mono text-stone-500 dark:text-stone-400 truncate">
+                        <p 
+                          className="w-full text-[9.5px] font-mono text-stone-500 dark:text-stone-400 truncate block overflow-hidden text-ellipsis whitespace-nowrap"
+                          title={plate.cartographer}
+                        >
                           {plate.cartographer}
                         </p>
                       </div>
@@ -2002,8 +2046,8 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              transition={{ type: "spring", damping: 26, stiffness: 320 }}
-              onClick={() => setIsDossierOpen(true)}
+              transition={{ type: "spring", damping: 28, stiffness: 350 }}
+              onClick={handleOpenDossier}
               className="absolute top-3.5 right-3.5 z-30 flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border border-stone-300 dark:border-stone-700 text-xs font-mono font-bold text-amber-800 dark:text-amber-300 shadow-md hover:shadow-lg cursor-pointer transition-all active:scale-95"
               title="Expand Cartographic Dossier & Provenance"
             >
@@ -2020,7 +2064,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
               initial={{ opacity: 0, x: 100, width: 0 }}
               animate={{ opacity: 1, x: 0, width: 380 }}
               exit={{ opacity: 0, x: 100, width: 0 }}
-              transition={{ type: "spring", damping: 28, stiffness: 320 }}
+              transition={{ type: "spring", damping: 28, stiffness: 350 }}
               className="w-80 sm:w-96 lg:w-[380px] shrink-0 h-full border-l border-stone-200 dark:border-stone-800 bg-white/98 dark:bg-stone-900/98 backdrop-blur-xl flex flex-col z-20 shadow-md overflow-hidden"
               id="cartographic-dossier-panel"
             >
@@ -2033,7 +2077,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                     </span>
                   </div>
                   <h2 className="text-sm sm:text-base font-serif font-bold text-stone-900 dark:text-stone-100 leading-snug line-clamp-2">
-                    {selectedPlate.title} ({selectedPlate.year})
+                    {selectedPlate.title.includes(selectedPlate.year) ? selectedPlate.title : `${selectedPlate.title} (${selectedPlate.year})`}
                   </h2>
                   <p className="text-[11px] font-mono text-stone-500 dark:text-stone-400 truncate">
                     {selectedPlate.cartographer} • {selectedPlate.century}
@@ -2067,7 +2111,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                   {/* Close / Collapse Button in Dossier Header */}
                   <button
                     type="button"
-                    onClick={() => setIsDossierOpen(false)}
+                    onClick={handleCloseDossier}
                     className="p-1.5 rounded-xl text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer shrink-0"
                     title="Collapse dossier panel"
                   >

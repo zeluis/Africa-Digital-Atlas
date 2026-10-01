@@ -719,6 +719,9 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                 <img
                   src={imageUrl}
                   alt={illustration.title}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
                   draggable={false}
                   onError={handleMainImageError}
                   className={`max-w-full max-h-full object-contain shadow-2xl rounded-md ring-1 ring-stone-900/10 dark:ring-white/10 transition-all duration-300 ${

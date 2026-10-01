@@ -278,6 +278,96 @@ export function stopAfricaliaSpeech() {
 }
 
 /**
+ * Speaks an academic narrative (primary source quote, historical chronicle, or kingdom profile)
+ * with rhythmic cadence, clean pronunciation, authoritative un-distorted tone, and singleton safety.
+ */
+export function speakAcademicNarration(config: {
+  text: string;
+  langTag?: string;
+  playChime?: boolean;
+  onStart?: () => void;
+  onEnd?: () => void;
+  onError?: () => void;
+}) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    config.onStart?.();
+    setTimeout(() => config.onEnd?.(), 2000);
+    return;
+  }
+
+  // 1. Terminate any active speech or audio singleton
+  stopAfricaliaSpeech();
+
+  // 2. Play subtle introductory chime if requested
+  if (config.playChime) {
+    playWarmAfricanChime();
+  }
+
+  try {
+    // 3. Clean textual artifacts (Markdown bold/italics, citation years, brackets, excessive punctuation)
+    const cleanedText = config.text
+      .replace(/[*_#`~]/g, '')
+      .replace(/\(\s*\d{3,4}\s*[-–—]\s*\d{3,4}\s*(?:BCE|CE|AD)?\s*\)/gi, '')
+      .replace(/\[\s*\d+\s*\]/g, '')
+      .replace(/https?:\/\/\S+/gi, '')
+      .replace(/[—–]/g, ', ')
+      .replace(/\s*:\s*/g, ', ')
+      .replace(/\s*\.\.\.\s*/g, '. ')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+
+    const utterance = new SpeechSynthesisUtterance(cleanedText);
+    currentUtterance = utterance;
+
+    const { voice, langCode } = getBestSystemVoice(config.langTag || 'en');
+    if (voice) {
+      utterance.voice = voice;
+      utterance.lang = voice.lang;
+    } else {
+      utterance.lang = langCode;
+    }
+
+    // Authoritative, dignified academic pacing (0.92x prevents slurred fast synthesis)
+    utterance.rate = 0.92;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    utterance.onstart = () => {
+      config.onStart?.();
+    };
+
+    utterance.onend = () => {
+      currentUtterance = null;
+      config.onEnd?.();
+    };
+
+    utterance.onerror = () => {
+      currentUtterance = null;
+      config.onError?.();
+      config.onEnd?.();
+    };
+
+    if (window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        const lateVoice = getBestSystemVoice(config.langTag || 'en');
+        if (lateVoice.voice) {
+          utterance.voice = lateVoice.voice;
+          utterance.lang = lateVoice.voice.lang;
+        }
+        window.speechSynthesis.speak(utterance);
+      };
+    } else {
+      setTimeout(() => {
+        window.speechSynthesis.speak(utterance);
+      }, config.playChime ? 220 : 60);
+    }
+  } catch {
+    config.onError?.();
+    config.onEnd?.();
+  }
+}
+
+/**
  * Speak welcoming phrase using the high-fidelity native OS voice system
  */
 export async function speakAfricaliaGreeting(config: SpeechGreetingConfig) {

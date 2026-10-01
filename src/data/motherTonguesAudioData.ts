@@ -254,7 +254,7 @@ export const AFRICAN_MOTHER_TONGUES: Record<string, MotherTongueEntry> = {
   }
 };
 
-import { getBestSystemVoice } from '../utils/africaliaVoiceEngine';
+import { getBestSystemVoice, stopAfricaliaSpeech } from '../utils/africaliaVoiceEngine';
 
 /**
  * Play an indigenous musical greeting soundscape using high-fidelity native voice & harmonic Web Audio
@@ -265,7 +265,7 @@ export function playMotherTongueAudio(entry: MotherTongueEntry) {
   // 1. Play Browser Native Speech Synthesis with natural voice selection
   if ('speechSynthesis' in window) {
     try {
-      window.speechSynthesis.cancel();
+      stopAfricaliaSpeech();
       const utterance = new SpeechSynthesisUtterance(entry.greetingText);
       const { voice, langCode, rate, pitch } = getBestSystemVoice(entry.bcp47Tag);
       if (voice) {
