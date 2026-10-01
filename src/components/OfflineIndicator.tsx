@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { WifiOff, Database, CheckCircle2, X } from 'lucide-react';
 
-export const OfflineIndicator: React.FC = () => {
+interface OfflineIndicatorProps {
+  onOpenColophon?: () => void;
+}
+
+export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ onOpenColophon }) => {
   const isOnline = useNetworkStatus();
   const [dismissed, setDismissed] = useState(false);
   const [wasOffline, setWasOffline] = useState(false);
@@ -52,15 +56,20 @@ export const OfflineIndicator: React.FC = () => {
       <div className="flex items-center gap-1.5 text-zinc-300">
         <span>Offline Research Active</span>
         <span className="text-zinc-500">•</span>
-        <span className="text-[11px] text-zinc-400 flex items-center gap-1">
+        <button
+          type="button"
+          onClick={() => onOpenColophon?.()}
+          className="text-[11px] text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer font-mono"
+          title="Inspect Offline Expedition Cache Diagnostics"
+        >
           <Database className="w-3 h-3 text-emerald-400" />
-          Cached Monographs & Atlas Available
-        </span>
+          <span>Vector Atlas 100% Primed</span>
+        </button>
       </div>
 
       <button
         onClick={() => setDismissed(true)}
-        className="p-1 text-zinc-400 hover:text-white rounded-lg transition-colors ml-1"
+        className="p-1 text-zinc-400 hover:text-white rounded-lg transition-colors ml-1 cursor-pointer"
         title="Dismiss notice"
       >
         <X className="w-3.5 h-3.5" />

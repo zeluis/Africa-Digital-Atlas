@@ -47,8 +47,9 @@ export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
   },
   svgContainerId
 }) => {
-  const [citationTab, setCitationTab] = useState<'apa' | 'chicago' | 'harvard' | 'bibtex' | 'ris'>('apa');
+  const [citationTab, setCitationTab] = useState<'apa' | 'chicago' | 'harvard' | 'mla' | 'bibtex' | 'ris'>('apa');
   const [copied, setCopied] = useState<boolean>(false);
+  const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
   const [isExportingImage, setIsExportingImage] = useState<boolean>(false);
 
   if (!isOpen) return null;
@@ -61,6 +62,8 @@ export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
   const apaCitation = `Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform. Africalia Open Science Repository. https://doi.org/${doi}`;
 
   const chicagoCitation = `Correia, Zéluis F. 2026. Africa Data Atlas & Cartographic Observatory. Lisbon/Praia: Africalia Open Science. https://doi.org/${doi}.`;
+
+  const mlaCitation = `Correia, Zéluis F. "Africa Data Atlas & Cartographic Observatory: Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform." Africalia Open Science Repository, 2026, https://doi.org/${doi}. Accessed ${accessDate}.`;
 
   const harvardCitation = `Correia, Z.F. (2026) Africa Data Atlas & Cartographic Observatory. Africalia Open Science Repository. Available at: ${pageUrl} (Accessed: ${accessDate}). https://doi.org/${doi}.`;
 
@@ -94,20 +97,29 @@ UR  - ${pageUrl}
 Y2  - ${accessDate}
 ER  -`;
 
-  const getActiveCitation = () => {
-    switch (citationTab) {
+  const getActiveCitation = (tab = citationTab) => {
+    switch (tab) {
       case 'apa': return apaCitation;
       case 'chicago': return chicagoCitation;
+      case 'mla': return mlaCitation;
       case 'harvard': return harvardCitation;
       case 'bibtex': return bibtexCitation;
       case 'ris': return risCitation;
     }
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(getActiveCitation());
+  const handleCopySpecific = async (tab: typeof citationTab) => {
+    await navigator.clipboard.writeText(getActiveCitation(tab));
+    setCopiedFormat(tab);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => {
+      setCopied(false);
+      setCopiedFormat(null);
+    }, 2000);
+  };
+
+  const handleCopy = () => {
+    handleCopySpecific(citationTab);
   };
 
   const handleDownloadRis = () => {
@@ -169,8 +181,8 @@ ER  -`;
           </a>
         </div>
 
-        {/* Tab Selectors */}
-        <div className="px-6 pt-4 pb-2 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800">
+        {/* Tab Selectors & Quick Copy Bar */}
+        <div className="px-6 pt-4 pb-2 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="p-1 rounded-2xl bg-stone-100 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 flex flex-wrap items-center gap-1">
             <button
               onClick={() => setCitationTab('apa')}
@@ -190,7 +202,17 @@ ER  -`;
                   : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
               }`}
             >
-              Chicago (Author-Date)
+              Chicago
+            </button>
+            <button
+              onClick={() => setCitationTab('mla')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                citationTab === 'mla'
+                  ? 'bg-amber-600 text-white shadow-xs font-bold'
+                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
+              }`}
+            >
+              MLA 9th
             </button>
             <button
               onClick={() => setCitationTab('harvard')}
@@ -220,7 +242,34 @@ ER  -`;
                   : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
               }`}
             >
-              RIS / EndNote
+              RIS
+            </button>
+          </div>
+
+          {/* Quick Copy Pills */}
+          <div className="flex items-center gap-1.5 text-[11px] font-mono shrink-0">
+            <span className="text-stone-400 text-[10px]">1-click:</span>
+            <button
+              type="button"
+              onClick={() => handleCopySpecific('bibtex')}
+              className={`px-2 py-1 rounded-lg border font-bold transition-all cursor-pointer ${
+                copiedFormat === 'bibtex'
+                  ? 'bg-emerald-600 text-white border-emerald-600'
+                  : 'bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:border-amber-500'
+              }`}
+            >
+              {copiedFormat === 'bibtex' ? '✓ BibTeX' : '+ BibTeX'}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleCopySpecific('ris')}
+              className={`px-2 py-1 rounded-lg border font-bold transition-all cursor-pointer ${
+                copiedFormat === 'ris'
+                  ? 'bg-emerald-600 text-white border-emerald-600'
+                  : 'bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:border-amber-500'
+              }`}
+            >
+              {copiedFormat === 'ris' ? '✓ RIS' : '+ RIS'}
             </button>
           </div>
         </div>

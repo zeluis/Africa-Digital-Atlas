@@ -899,7 +899,7 @@ function AppContent() {
       )}
 
       {/* Offline Status Toast / Banner */}
-      <OfflineIndicator />
+      <OfflineIndicator onOpenColophon={() => setIsColophonOpen(true)} />
     </div>
   );
 }

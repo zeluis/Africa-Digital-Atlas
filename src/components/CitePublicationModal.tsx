@@ -14,8 +14,9 @@ export const CitePublicationModal: React.FC<CitePublicationModalProps> = ({
   isOpen,
   onClose
 }) => {
-  const [style, setStyle] = useState<'chicago' | 'apa' | 'bibtex' | 'harvard' | 'ris' | 'jsonld'>('chicago');
+  const [style, setStyle] = useState<'chicago' | 'apa' | 'mla' | 'bibtex' | 'harvard' | 'ris' | 'jsonld'>('chicago');
   const [copied, setCopied] = useState(false);
+  const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -29,12 +30,14 @@ export const CitePublicationModal: React.FC<CitePublicationModalProps> = ({
   const title = report.title;
   const subtitle = report.subtitle ? `: ${report.subtitle}` : '';
 
-  const generateCitationText = () => {
-    switch (style) {
+  const generateCitationText = (targetStyle = style) => {
+    switch (targetStyle) {
       case 'chicago':
         return `${authorsStr}. ${year}. "${title}${subtitle}." Africalia: Pan-African Research Repository. ${doiUrl}.`;
       case 'apa':
         return `${authorsStr} (${year}). ${title}${subtitle}. Africalia: Pan-African Research Repository. ${doiUrl}`;
+      case 'mla':
+        return `${authorsStr}. "${title}${subtitle}." Africalia: Pan-African Research Repository, ${year}, ${doiUrl}. Accessed ${new Date().toLocaleDateString('en-GB')}.`;
       case 'harvard':
         return `${authorsStr}, ${year}. ${title}${subtitle}. Africalia Research Repository. Available at: <${doiUrl}> [Accessed ${new Date().toLocaleDateString('en-GB')}].`;
       case 'bibtex': {
@@ -86,16 +89,26 @@ ER  - `;
 
   const citationText = generateCitationText();
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(citationText);
+  const handleCopySpecific = async (format: typeof style, text?: string) => {
+    const toCopy = text || generateCitationText(format);
+    await navigator.clipboard.writeText(toCopy);
+    setCopiedFormat(format);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => {
+      setCopied(false);
+      setCopiedFormat(null);
+    }, 2000);
   };
 
-  const handleDownloadFile = () => {
-    const ext = style === 'bibtex' ? 'bib' : style === 'ris' ? 'ris' : style === 'jsonld' ? 'json' : 'txt';
-    const mime = style === 'jsonld' ? 'application/json' : 'text/plain';
-    const blob = new Blob([citationText], { type: mime });
+  const handleCopy = () => {
+    handleCopySpecific(style, citationText);
+  };
+
+  const handleDownloadFile = (targetStyle = style) => {
+    const text = generateCitationText(targetStyle);
+    const ext = targetStyle === 'bibtex' ? 'bib' : targetStyle === 'ris' ? 'ris' : targetStyle === 'jsonld' ? 'json' : 'txt';
+    const mime = targetStyle === 'jsonld' ? 'application/json' : 'text/plain';
+    const blob = new Blob([text], { type: mime });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -130,29 +143,70 @@ ER  - `;
         </div>
 
         {/* Style Selector Tabs */}
-        <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 text-xs">
-          {(
-            [
-              { id: 'chicago', label: 'Chicago' },
-              { id: 'apa', label: 'APA 7th' },
-              { id: 'harvard', label: 'Harvard' },
-              { id: 'bibtex', label: 'BibTeX' },
-              { id: 'ris', label: 'RIS / EndNote' },
-              { id: 'jsonld', label: 'Schema.org JSON-LD' },
-            ] as const
-          ).map(tab => (
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 text-xs">
+            {(
+              [
+                { id: 'chicago', label: 'Chicago' },
+                { id: 'apa', label: 'APA 7th' },
+                { id: 'mla', label: 'MLA 9th' },
+                { id: 'bibtex', label: 'BibTeX' },
+                { id: 'ris', label: 'RIS / EndNote' },
+                { id: 'harvard', label: 'Harvard' },
+                { id: 'jsonld', label: 'JSON-LD' },
+              ] as const
+            ).map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setStyle(tab.id)}
+                className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer ${
+                  style === tab.id
+                    ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-xs font-bold'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Instant 1-Click Researcher Quick Export Pills */}
+          <div className="flex items-center gap-1 text-[11px] font-mono">
+            <span className="text-zinc-400 text-[10px] mr-1">Quick copy:</span>
             <button
-              key={tab.id}
-              onClick={() => setStyle(tab.id)}
-              className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer ${
-                style === tab.id
-                  ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-xs font-bold'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
+              type="button"
+              onClick={() => handleCopySpecific('bibtex')}
+              className={`px-2 py-1 rounded-lg border font-bold transition-all cursor-pointer ${
+                copiedFormat === 'bibtex'
+                  ? 'bg-emerald-600 text-white border-emerald-600'
+                  : 'bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:border-amber-500'
               }`}
             >
-              {tab.label}
+              {copiedFormat === 'bibtex' ? '✓ BibTeX' : '+ BibTeX'}
             </button>
-          ))}
+            <button
+              type="button"
+              onClick={() => handleCopySpecific('ris')}
+              className={`px-2 py-1 rounded-lg border font-bold transition-all cursor-pointer ${
+                copiedFormat === 'ris'
+                  ? 'bg-emerald-600 text-white border-emerald-600'
+                  : 'bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:border-amber-500'
+              }`}
+            >
+              {copiedFormat === 'ris' ? '✓ RIS' : '+ RIS'}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleCopySpecific('apa')}
+              className={`px-2 py-1 rounded-lg border font-bold transition-all cursor-pointer ${
+                copiedFormat === 'apa'
+                  ? 'bg-emerald-600 text-white border-emerald-600'
+                  : 'bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:border-amber-500'
+              }`}
+            >
+              {copiedFormat === 'apa' ? '✓ APA' : '+ APA'}
+            </button>
+          </div>
         </div>
 
         {/* Citation Output Box */}
@@ -169,7 +223,7 @@ ER  - `;
 
           <div className="flex items-center gap-2">
             <button
-              onClick={handleDownloadFile}
+              onClick={() => handleDownloadFile()}
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-semibold transition cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-zinc-500" />

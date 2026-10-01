@@ -13,6 +13,7 @@ export const AntiquePlateCanvas: React.FC<AntiquePlateCanvasProps> = ({
   isThumbnail = false,
   className = ''
 }) => {
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [imageIdx, setImageIdx] = useState<number>(0);
   const [hasFailedAll, setHasFailedAll] = useState<boolean>(false);
 
@@ -31,6 +32,7 @@ export const AntiquePlateCanvas: React.FC<AntiquePlateCanvasProps> = ({
   ])).filter(Boolean);
 
   useEffect(() => {
+    setIsLoaded(false);
     setImageIdx(0);
     setHasFailedAll(false);
   }, [plate.id, isThumbnail, plate.imageUrl, plate.thumbnailUrl]);
@@ -84,19 +86,34 @@ export const AntiquePlateCanvas: React.FC<AntiquePlateCanvasProps> = ({
     );
   }
 
-  // 2. Direct High-Speed Image Element (Thumbnail or Full Resolution)
+  // 2. Direct High-Speed Image Element with LQIP blur-up and unblur transition
   return (
     <div className={`relative w-full h-full overflow-hidden bg-[#F2EDE4] dark:bg-[#1a1714] select-none ${className}`}>
+      {/* LQIP Shimmer / Parchment Blur-Up State */}
+      {!isLoaded && !hasFailedAll && (
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#FAF5EC] via-[#EFE5D5] to-[#E2D2BC] dark:from-stone-900 dark:via-stone-950 dark:to-stone-900 flex items-center justify-center">
+          <div 
+            className="absolute inset-0 opacity-[0.07] dark:opacity-[0.05] pointer-events-none"
+            style={{
+              backgroundImage: 'radial-gradient(#92400e 1px, transparent 1px)',
+              backgroundSize: '10px 10px'
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-200/20 dark:via-amber-800/10 to-transparent animate-pulse" />
+        </div>
+      )}
+
       <img
         src={currentSrc}
         alt={plate.shortTitle || plate.title}
-        loading="eager"
+        loading={isThumbnail ? "lazy" : "eager"}
         decoding="async"
+        onLoad={() => setIsLoaded(true)}
         onError={handleImageError}
         draggable={false}
-        className={`w-full h-full pointer-events-none select-none ${
+        className={`relative z-10 w-full h-full pointer-events-none select-none transition-all duration-400 ease-out ${
           isThumbnail ? 'object-cover' : 'object-contain'
-        }`}
+        } ${isLoaded ? 'opacity-100 filter blur-0 scale-100' : 'opacity-0 filter blur-sm scale-102'}`}
       />
     </div>
   );

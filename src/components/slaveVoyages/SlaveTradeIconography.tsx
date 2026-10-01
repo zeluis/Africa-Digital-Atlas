@@ -17,15 +17,21 @@ import {
   Info,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   Tag,
   Check,
   X,
   Sparkles,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Layers
 } from 'lucide-react';
 import { SLAVE_TRADE_ILLUSTRATIONS, SlaveTradeIllustration } from '../../data/slaveTradeIllustrations';
 import { ArchivalLoupeModal } from './ArchivalLoupeModal';
 import { DynamicIcon } from '../DynamicIcon';
+import { ProgressiveImage } from '../common/ProgressiveImage';
 import { resolveAssetPath, getAssetCandidateUrls } from '../../utils/assetPath';
 
 interface SlaveTradeIconographyProps {
@@ -58,6 +64,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
   const [isThemePanelOpen, setIsThemePanelOpen] = useState(false);
   const [themeSearchQuery, setThemeSearchQuery] = useState('');
   const themePanelRef = useRef<HTMLDivElement>(null);
+  const galleryTopRef = useRef<HTMLDivElement>(null);
 
   // Close theme panel on click outside or Escape
   useEffect(() => {
@@ -79,13 +86,18 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
     };
   }, [isThemePanelOpen]);
   
-  // High-performance visible pagination state
-  const [visibleCount, setVisibleCount] = useState(24);
+  // High-performance windowed virtualization & pagination state
+  const [paginationMode, setPaginationMode] = useState<'windowed' | 'stream'>('windowed');
+  const [pageSize, setPageSize] = useState<number>(24);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [visibleStreamCount, setVisibleStreamCount] = useState<number>(24);
+  const [jumpInput, setJumpInput] = useState<string>('');
 
   // Reset pagination on filter or search changes to maintain maximum performance
   useEffect(() => {
-    setVisibleCount(24);
-  }, [searchTerm, selectedCollection, selectedLanguage]);
+    setCurrentPage(1);
+    setVisibleStreamCount(24);
+  }, [searchTerm, selectedCollection, selectedLanguage, pageSize]);
 
   // Extract unique filter categories
   const collections = useMemo(() => {
@@ -144,10 +156,47 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
     });
   }, [searchTerm, selectedCollection, selectedLanguage]);
 
-  // Sliced items for performant lazy rendering
+  // Calculate total pages for windowed pagination
+  const totalPages = Math.max(1, Math.ceil(filteredIllustrations.length / pageSize));
+
+  // Current slice items for performant 60fps rendering
   const visibleIllustrations = useMemo(() => {
-    return filteredIllustrations.slice(0, visibleCount);
-  }, [filteredIllustrations, visibleCount]);
+    if (paginationMode === 'stream') {
+      return filteredIllustrations.slice(0, visibleStreamCount);
+    }
+    const startIndex = (currentPage - 1) * pageSize;
+    return filteredIllustrations.slice(startIndex, startIndex + pageSize);
+  }, [filteredIllustrations, paginationMode, visibleStreamCount, currentPage, pageSize]);
+
+  // Handle page navigation with smooth scroll to gallery header
+  const handlePageChange = (newPage: number) => {
+    const target = Math.max(1, Math.min(newPage, totalPages));
+    setCurrentPage(target);
+    galleryTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const handleJumpSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = parseInt(jumpInput, 10);
+    if (!isNaN(parsed)) {
+      handlePageChange(parsed);
+      setJumpInput('');
+    }
+  };
+
+  // Helper for generating page numbers with ellipsis
+  const pageNumbers = useMemo(() => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    if (currentPage <= 4) {
+      return [1, 2, 3, 4, 5, '...', totalPages];
+    }
+    if (currentPage >= totalPages - 3) {
+      return [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    }
+    return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+  }, [currentPage, totalPages]);
 
   return (
     <div className="space-y-6 text-left">
@@ -182,6 +231,58 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-9 pr-3 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 text-xs font-sans focus:outline-none focus:ring-2 focus:ring-amber-500/35 focus:border-amber-600 transition-all placeholder:text-stone-400"
               />
+            </div>
+
+            {/* Page Size Selector */}
+            <div className="hidden sm:flex items-center gap-1 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-1 text-[11px] font-mono">
+              <span className="text-stone-400 px-1.5 text-[10px]">Per page:</span>
+              {[24, 48, 96].map(size => (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => {
+                    setPageSize(size);
+                    setCurrentPage(1);
+                  }}
+                  className={`px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
+                    pageSize === size && paginationMode === 'windowed'
+                      ? 'bg-amber-800 text-white shadow-xs'
+                      : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+
+            {/* Pagination Mode Toggle (Windowed 60fps vs Continuous Stream) */}
+            <div className="flex items-center border border-stone-200 dark:border-stone-800 rounded-xl p-0.5 bg-white dark:bg-stone-900 overflow-hidden text-[11px] font-mono">
+              <button
+                type="button"
+                onClick={() => setPaginationMode('windowed')}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-bold transition-colors cursor-pointer ${
+                  paginationMode === 'windowed'
+                    ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-xs'
+                    : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+                }`}
+                title="Windowed Pagination (60fps guaranteed, zero DOM overhead)"
+              >
+                <Layers className="w-3 h-3" />
+                <span className="hidden md:inline">Pages</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaginationMode('stream')}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-bold transition-colors cursor-pointer ${
+                  paginationMode === 'stream'
+                    ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-xs'
+                    : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+                }`}
+                title="Continuous Stream Mode"
+              >
+                <SlidersHorizontal className="w-3 h-3" />
+                <span className="hidden md:inline">Stream</span>
+              </button>
             </div>
 
             {/* Language Filter */}
@@ -464,193 +565,281 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
       </div>
 
       {/* Grid or List View Container */}
-      {filteredIllustrations.length === 0 ? (
-        <div className="p-16 rounded-3xl border border-dashed border-stone-200 dark:border-stone-800 text-center space-y-3">
-          <HelpCircle className="w-10 h-10 text-stone-400 mx-auto" />
-          <h3 className="text-sm font-sans font-bold text-stone-800 dark:text-stone-200">
-            No archival illustrations match your query
-          </h3>
-          <p className="text-xs text-stone-400 max-w-md mx-auto">
-            Try resetting your active category or adjusting keywords to search the 1,200+ documented historical files.
-          </p>
-          <button
-            onClick={() => {
-              setSearchTerm('');
-              setSelectedCollection('all');
-              setSelectedLanguage('all');
-            }}
-            className="px-4 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200/50 dark:border-amber-900/40 text-xs font-sans font-bold transition-all cursor-pointer"
-          >
-            Clear Search Filters
-          </button>
-        </div>
-      ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {visibleIllustrations.map((item) => (
-            <div
-              key={item.objectId}
-              onClick={() => setActiveIllustration(item)}
-              className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl overflow-hidden hover:shadow-md hover:border-stone-300 dark:hover:border-stone-700 transition-all flex flex-col justify-between cursor-pointer group"
+      <div ref={galleryTopRef} className="scroll-mt-36">
+        {filteredIllustrations.length === 0 ? (
+          <div className="p-16 rounded-3xl border border-dashed border-stone-200 dark:border-stone-800 text-center space-y-3">
+            <HelpCircle className="w-10 h-10 text-stone-400 mx-auto" />
+            <h3 className="text-sm font-sans font-bold text-stone-800 dark:text-stone-200">
+              No archival illustrations match your query
+            </h3>
+            <p className="text-xs text-stone-400 max-w-md mx-auto">
+              Try resetting your active category or adjusting keywords to search the 1,200+ documented historical files.
+            </p>
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedCollection('all');
+                setSelectedLanguage('all');
+              }}
+              className="px-4 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/20 text-amber-900 dark:text-amber-300 border border-amber-200/50 dark:border-amber-900/40 text-xs font-sans font-bold transition-all cursor-pointer"
             >
-              {/* Graphic container with high contrast scrim */}
-              <div className="aspect-video w-full relative bg-stone-100 dark:bg-stone-950 overflow-hidden">
-                {item.imageUrls && item.imageUrls[0] ? (
-                  <img
-                    src={resolveAssetPath(item.imageUrls[0])}
-                    alt={item.title}
-                    className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-500 filter saturate-90 dark:brightness-90"
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      const el = e.currentTarget;
-                      const raw = item.imageUrls?.[0] || '';
-                      const candidates = getAssetCandidateUrls(raw);
-                      const currentIdx = parseInt(el.getAttribute('data-candidate-idx') || '0', 10);
-                      if (currentIdx + 1 < candidates.length) {
-                        const nextIdx = currentIdx + 1;
-                        el.setAttribute('data-candidate-idx', String(nextIdx));
-                        el.src = candidates[nextIdx];
-                      } else {
-                        el.style.display = 'none';
-                      }
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-stone-200 dark:bg-stone-950">
-                    <BookOpen className="w-8 h-8 text-stone-400" />
+              Clear Search Filters
+            </button>
+          </div>
+        ) : viewMode === 'grid' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {visibleIllustrations.map((item) => (
+              <div
+                key={item.objectId}
+                onClick={() => setActiveIllustration(item)}
+                className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl overflow-hidden hover:shadow-md hover:border-stone-300 dark:hover:border-stone-700 transition-all flex flex-col justify-between cursor-pointer group"
+              >
+                {/* Graphic container with high contrast scrim and LQIP blur-up */}
+                <div className="aspect-video w-full relative bg-stone-100 dark:bg-stone-950 overflow-hidden">
+                  {item.imageUrls && item.imageUrls[0] ? (
+                    <ProgressiveImage
+                      src={item.imageUrls[0]}
+                      alt={item.title}
+                      className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-500 filter saturate-90 dark:brightness-90"
+                      containerClassName="w-full h-full"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-stone-200 dark:bg-stone-950">
+                      <BookOpen className="w-8 h-8 text-stone-400" />
+                    </div>
+                  )}
+                  {/* ID badge overlay */}
+                  <div className="absolute top-3 left-3 z-20 bg-black/70 text-white font-mono text-[9px] font-bold px-2 py-0.5 rounded-md backdrop-blur-xs">
+                    {item.regId}
                   </div>
-                )}
-                {/* ID badge overlay */}
-                <div className="absolute top-3 left-3 bg-black/70 text-white font-mono text-[9px] font-bold px-2 py-0.5 rounded-md backdrop-blur-xs">
-                  {item.regId}
+                  {/* View Action overlay on hover */}
+                  <div className="absolute inset-0 z-20 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                    <div className="p-3 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/20">
+                      <Eye className="w-5 h-5" />
+                    </div>
+                  </div>
                 </div>
-                {/* View Action overlay on hover */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                  <div className="p-3 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/20">
-                    <Eye className="w-5 h-5" />
+
+                {/* Text Meta Fields */}
+                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {item.collectionNames.slice(0, 1).map((name) => (
+                        <span
+                          key={name}
+                          className="text-[9px] font-sans font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 px-2 py-0.5 rounded-md border border-amber-200/40 dark:border-amber-900/40"
+                        >
+                          {name}
+                        </span>
+                      ))}
+                      {item.date && (
+                        <span className="text-[10px] font-mono font-bold text-stone-400 flex items-center gap-1">
+                          <Calendar className="w-3 h-3 shrink-0" />
+                          <span>{item.date}</span>
+                        </span>
+                      )}
+                    </div>
+
+                    <h4 className="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 leading-snug line-clamp-2">
+                      {item.title}
+                    </h4>
+
+                    <p className="text-[11px] font-sans text-stone-500 dark:text-stone-400 line-clamp-3 leading-relaxed">
+                      Source: {item.source}
+                    </p>
+                  </div>
+
+                  {/* Bottom Footer Controls */}
+                  <div className="pt-3 border-t border-stone-100 dark:border-stone-800/80 flex items-center justify-between text-[11px] font-mono text-stone-400">
+                    <span>Ref: {item.identifier || 'N/A'}</span>
+                    <span className="text-amber-800 dark:text-amber-500 font-sans font-bold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                      <span>Inspect Details</span>
+                      <span>→</span>
+                    </span>
                   </div>
                 </div>
               </div>
-
-              {/* Text Meta Fields */}
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    {item.collectionNames.slice(0, 1).map((name) => (
-                      <span
-                        key={name}
-                        className="text-[9px] font-sans font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 px-2 py-0.5 rounded-md border border-amber-200/40 dark:border-amber-900/40"
-                      >
-                        {name}
-                      </span>
-                    ))}
-                    {item.date && (
-                      <span className="text-[10px] font-mono font-bold text-stone-400 flex items-center gap-1">
-                        <Calendar className="w-3 h-3 shrink-0" />
-                        <span>{item.date}</span>
-                      </span>
+            ))}
+          </div>
+        ) : (
+          /* List View Mode */
+          <div className="border border-stone-200 dark:border-stone-800 rounded-2xl overflow-hidden bg-white dark:bg-stone-950/20 shadow-xs divide-y divide-stone-200 dark:divide-stone-800">
+            {visibleIllustrations.map((item) => (
+              <div
+                key={item.objectId}
+                onClick={() => setActiveIllustration(item)}
+                className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-stone-50/50 dark:hover:bg-stone-900/30 transition-colors cursor-pointer group"
+              >
+                <div className="flex items-center gap-4 flex-1">
+                  {/* Tiny Image Thumbnail with Progressive LQIP */}
+                  <div className="w-16 h-12 bg-stone-100 dark:bg-stone-950 rounded-lg overflow-hidden shrink-0 border border-stone-200/60 dark:border-stone-800 relative">
+                    {item.imageUrls && item.imageUrls[0] ? (
+                      <ProgressiveImage
+                        src={item.imageUrls[0]}
+                        alt={item.title}
+                        className="w-full h-full object-cover object-center"
+                        containerClassName="w-full h-full"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <BookOpen className="w-5 h-5 text-stone-400" />
+                      </div>
                     )}
                   </div>
 
-                  <h4 className="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 leading-snug line-clamp-2">
-                    {item.title}
-                  </h4>
-
-                  <p className="text-[11px] font-sans text-stone-500 dark:text-stone-400 line-clamp-3 leading-relaxed">
-                    Source: {item.source}
-                  </p>
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-mono text-[10px] font-bold text-stone-500 dark:text-stone-400">
+                        {item.regId}
+                      </span>
+                      <span className="text-stone-300 dark:text-stone-700">·</span>
+                      <span className="text-[10px] text-amber-800 dark:text-amber-400 font-bold">
+                        {item.collectionNames[0]}
+                      </span>
+                    </div>
+                    <h4 className="font-serif font-bold text-xs sm:text-sm text-stone-900 dark:text-stone-100 line-clamp-1">
+                      {item.title}
+                    </h4>
+                    <p className="text-[10px] text-stone-400 line-clamp-1">
+                      {item.source}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Bottom Footer Controls */}
-                <div className="pt-3 border-t border-stone-100 dark:border-stone-800/80 flex items-center justify-between text-[11px] font-mono text-stone-400">
-                  <span>Ref: {item.identifier || 'N/A'}</span>
-                  <span className="text-amber-800 dark:text-amber-500 font-sans font-bold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                    <span>Inspect Details</span>
+                <div className="flex items-center gap-4 shrink-0 text-xs font-sans text-stone-400">
+                  {item.date && <span className="font-mono">{item.date}</span>}
+                  <span className="text-amber-800 dark:text-amber-500 font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                    <span>Inspect</span>
                     <span>→</span>
                   </span>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        /* List View Mode */
-        <div className="border border-stone-200 dark:border-stone-800 rounded-2xl overflow-hidden bg-white dark:bg-stone-950/20 shadow-xs divide-y divide-stone-200 dark:divide-stone-800">
-          {visibleIllustrations.map((item) => (
-            <div
-              key={item.objectId}
-              onClick={() => setActiveIllustration(item)}
-              className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-stone-50/50 dark:hover:bg-stone-900/30 transition-colors cursor-pointer group"
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* High-Performance Pagination & Virtualization Bar */}
+      {filteredIllustrations.length > 0 && paginationMode === 'windowed' && totalPages > 1 && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+          {/* Summary Label */}
+          <div className="text-xs font-mono text-stone-500 dark:text-stone-400">
+            Showing <strong className="text-stone-900 dark:text-stone-100">{((currentPage - 1) * pageSize) + 1}–{Math.min(currentPage * pageSize, filteredIllustrations.length)}</strong> of <strong className="text-stone-900 dark:text-stone-100">{filteredIllustrations.length}</strong> cataloged plates (Page {currentPage} of {totalPages})
+          </div>
+
+          {/* Navigation Controls */}
+          <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-1.5">
+            {/* First Page */}
+            <button
+              type="button"
+              onClick={() => handlePageChange(1)}
+              disabled={currentPage === 1}
+              className="p-1.5 rounded-xl border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer"
+              title="First Page"
             >
-              <div className="flex items-center gap-4 flex-1">
-                {/* Tiny Image Thumbnail */}
-                <div className="w-16 h-12 bg-stone-100 dark:bg-stone-950 rounded-lg overflow-hidden shrink-0 border border-stone-200/60 dark:border-stone-800">
-                  {item.imageUrls && item.imageUrls[0] ? (
-                    <img
-                      src={resolveAssetPath(item.imageUrls[0])}
-                      alt={item.title}
-                      className="w-full h-full object-cover object-center"
-                      referrerPolicy="no-referrer"
-                      onError={(e) => {
-                        const el = e.currentTarget;
-                        const raw = item.imageUrls?.[0] || '';
-                        const candidates = getAssetCandidateUrls(raw);
-                        const currentIdx = parseInt(el.getAttribute('data-candidate-idx') || '0', 10);
-                        if (currentIdx + 1 < candidates.length) {
-                          const nextIdx = currentIdx + 1;
-                          el.setAttribute('data-candidate-idx', String(nextIdx));
-                          el.src = candidates[nextIdx];
-                        } else {
-                          el.style.display = 'none';
-                        }
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <BookOpen className="w-5 h-5 text-stone-400" />
-                    </div>
-                  )}
-                </div>
+              <ChevronsLeft className="w-4 h-4 text-stone-600 dark:text-stone-300" />
+            </button>
 
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-mono text-[10px] font-bold text-stone-500 dark:text-stone-400">
-                      {item.regId}
-                    </span>
-                    <span className="text-stone-300 dark:text-stone-700">·</span>
-                    <span className="text-[10px] text-amber-800 dark:text-amber-400 font-bold">
-                      {item.collectionNames[0]}
-                    </span>
-                  </div>
-                  <h4 className="font-serif font-bold text-xs sm:text-sm text-stone-900 dark:text-stone-100 line-clamp-1">
-                    {item.title}
-                  </h4>
-                  <p className="text-[10px] text-stone-400 line-clamp-1">
-                    {item.source}
-                  </p>
-                </div>
-              </div>
+            {/* Previous Page */}
+            <button
+              type="button"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="p-1.5 rounded-xl border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer"
+              title="Previous Page"
+            >
+              <ChevronLeft className="w-4 h-4 text-stone-600 dark:text-stone-300" />
+            </button>
 
-              <div className="flex items-center gap-4 shrink-0 text-xs font-sans text-stone-400">
-                {item.date && <span className="font-mono">{item.date}</span>}
-                <span className="text-amber-800 dark:text-amber-500 font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
-                  <span>Inspect</span>
-                  <span>→</span>
-                </span>
-              </div>
+            {/* Page Number Pills */}
+            <div className="flex items-center gap-1">
+              {pageNumbers.map((p, idx) => {
+                if (p === '...') {
+                  return (
+                    <span key={`ellipsis-${idx}`} className="px-1.5 text-stone-400 font-mono text-xs select-none">
+                      …
+                    </span>
+                  );
+                }
+                const pageNum = p as number;
+                const isActive = pageNum === currentPage;
+                return (
+                  <button
+                    key={pageNum}
+                    type="button"
+                    onClick={() => handlePageChange(pageNum)}
+                    className={`min-w-8 h-8 px-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-amber-800 text-white shadow-xs'
+                        : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
             </div>
-          ))}
+
+            {/* Next Page */}
+            <button
+              type="button"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="p-1.5 rounded-xl border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer"
+              title="Next Page"
+            >
+              <ChevronRight className="w-4 h-4 text-stone-600 dark:text-stone-300" />
+            </button>
+
+            {/* Last Page */}
+            <button
+              type="button"
+              onClick={() => handlePageChange(totalPages)}
+              disabled={currentPage === totalPages}
+              className="p-1.5 rounded-xl border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer"
+              title="Last Page"
+            >
+              <ChevronsRight className="w-4 h-4 text-stone-600 dark:text-stone-300" />
+            </button>
+          </div>
+
+          {/* Jump To Page Input */}
+          <form onSubmit={handleJumpSubmit} className="flex items-center gap-1.5 text-xs font-mono">
+            <span className="text-stone-400">Go to:</span>
+            <input
+              type="number"
+              min="1"
+              max={totalPages}
+              value={jumpInput}
+              onChange={(e) => setJumpInput(e.target.value)}
+              placeholder={String(currentPage)}
+              className="w-14 px-2 py-1 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-950 text-center font-bold text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-1 focus:ring-amber-500"
+            />
+            <button
+              type="submit"
+              className="px-2.5 py-1 rounded-xl bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 font-bold transition-colors cursor-pointer"
+            >
+              Go
+            </button>
+          </form>
         </div>
       )}
 
-      {/* Performance-friendly "Load More" controls */}
-      {visibleCount < filteredIllustrations.length && (
-        <div className="flex justify-center pt-6">
+      {/* Stream Mode Load More Controls */}
+      {paginationMode === 'stream' && visibleStreamCount < filteredIllustrations.length && (
+        <div className="flex flex-col items-center justify-center gap-2 pt-6">
           <button
-            onClick={() => setVisibleCount(prev => prev + 36)}
+            onClick={() => setVisibleStreamCount(prev => prev + 36)}
             className="px-6 py-3 rounded-xl bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-600 text-white font-sans font-bold text-xs tracking-wide shadow-md transition-all cursor-pointer flex items-center gap-2 hover:scale-[1.01] active:scale-[0.99]"
           >
             <BookOpen className="w-3.5 h-3.5 animate-pulse" />
-            <span>Load More Historical Records (+36 of {filteredIllustrations.length - visibleCount} remaining)</span>
+            <span>Load More Historical Records (+36 of {filteredIllustrations.length - visibleStreamCount} remaining)</span>
+          </button>
+          <button
+            onClick={() => setPaginationMode('windowed')}
+            className="text-[11px] font-mono text-amber-800 dark:text-amber-400 hover:underline cursor-pointer"
+          >
+            Switch to Windowed Pages (60fps browsing)
           </button>
         </div>
       )}

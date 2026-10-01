@@ -23,7 +23,7 @@
       (function() {
         try {
           var saved = localStorage.getItem('atlas_theme');
-          var theme = saved === 'light' ? 'light' : 'dark';
+          var theme = saved === 'dark' ? 'dark' : 'light';
           if (theme === 'dark') {
             document.documentElement.classList.add('dark');
             document.documentElement.classList.remove('light');
