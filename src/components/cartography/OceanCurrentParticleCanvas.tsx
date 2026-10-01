@@ -54,16 +54,16 @@ export interface NauticalPortItem {
   svgCoord?: [number, number];
 }
 
-// Major coastal nodes for visual geographic grounding (Calibrated to coastal geography)
+// Major coastal nodes for visual geographic grounding (Accurately calibrated to African and Atlantic coastlines)
 export const NAUTICAL_PORTS: NauticalPortItem[] = [
-  // West & Southern African Coastline Anchor Nodes
+  // West & Southern African Coastline Anchor Nodes (Corrected & precisely aligned to African coastal geometry)
   { 
     name: 'Senegambia (Gorée)', 
     lat: 14.6708, 
     lng: -17.4381, 
     type: 'african-port', 
     note: 'Canary Current Departure (28 days to Caribbean)',
-    svgCoord: [582, 258] 
+    svgCoord: [572, 250] 
   },
   { 
     name: 'Sierra Leone (Bunce Island)', 
@@ -71,7 +71,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: -13.2344, 
     type: 'african-port', 
     note: 'Windward Coast departure node & fortified estuary',
-    svgCoord: [604, 295] 
+    svgCoord: [592, 282] 
   },
   { 
     name: 'Gold Coast (Elmina)', 
@@ -79,7 +79,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: -1.2466, 
     type: 'african-port', 
     note: 'Guinea Current Hub & São Jorge da Mina fort complex',
-    svgCoord: [638, 292] 
+    svgCoord: [624, 290] 
   },
   { 
     name: 'Bight of Benin (Ouidah)', 
@@ -87,7 +87,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: 2.0851, 
     type: 'african-port', 
     note: 'Equatorial Flow directly toward Bahia (34 days)',
-    svgCoord: [658, 286] 
+    svgCoord: [644, 286] 
   },
   { 
     name: 'Biafra (Bonny)', 
@@ -95,7 +95,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: 7.1639, 
     type: 'african-port', 
     note: 'Niger Delta Estuary & embarkation hub',
-    svgCoord: [678, 295] 
+    svgCoord: [662, 292] 
   },
   { 
     name: 'Luanda (Angola)', 
@@ -103,7 +103,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: 13.2894, 
     type: 'african-port', 
     note: 'Benguela Highway (Record fast: 39 days to Rio)',
-    svgCoord: [698, 388] 
+    svgCoord: [682, 368] 
   },
   { 
     name: 'Benguela (São Filipe)', 
@@ -111,7 +111,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: 13.4055, 
     type: 'african-port', 
     note: 'South Atlantic Gyre southern embarkation port',
-    svgCoord: [702, 416] 
+    svgCoord: [685, 395] 
   },
   { 
     name: 'Cape of Good Hope', 
@@ -119,7 +119,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: 18.4740, 
     type: 'african-port', 
     note: 'Agulhas Confluence & southern rounding passage',
-    svgCoord: [762, 524] 
+    svgCoord: [738, 485] 
   },
   { 
     name: 'Mozambique Channel', 
@@ -127,7 +127,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: 40.7358, 
     type: 'african-port', 
     note: 'Indian Ocean Route to Brazil (62–68 days)',
-    svgCoord: [838, 430] 
+    svgCoord: [790, 410] 
   },
 
   // American Disembarkation & Terminal Ports
@@ -223,7 +223,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
   }
 ];
 
-// Virtual coordinate space moved down another 60px (Total VIRTUAL_MIN_Y = -120) for ample top headroom
+// Virtual coordinate space with top headroom and edge-to-edge span
 const VIRTUAL_WIDTH = 1000;
 const VIRTUAL_HEIGHT = 700;
 const VIRTUAL_MIN_Y = -120;
@@ -309,12 +309,9 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    // Fast, lightweight particle buffer (560 particles default for peak 120 FPS fluid motion)
     const maxParticles = 640;
-    // Flat buffer: 8 floats per particle -> [x, y, vx, vy, age, maxAge, targetVx, targetVy]
     const particles = new Float32Array(maxParticles * 8);
 
-    // Initial random distribution
     for (let i = 0; i < maxParticles; i++) {
       const idx = i * 8;
       const isWind = i >= maxParticles / 2;
@@ -342,25 +339,22 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-    // Proportional aspect-ratio matching scale with top headroom for the HUD
+    // Edge-to-edge stretch scaling without letterboxing gaps
     const resizeCanvas = () => {
       if (!canvas.parentElement) return;
       const containerW = canvas.parentElement.clientWidth;
       const containerH = canvas.parentElement.clientHeight;
       if (containerW === 0 || containerH === 0) return;
       
-      const scale = Math.min(containerW / VIRTUAL_WIDTH, containerH / VIRTUAL_HEIGHT);
-      const actualW = VIRTUAL_WIDTH * scale;
-      const actualH = VIRTUAL_HEIGHT * scale;
-      const offsetX = (containerW - actualW) / 2;
-      const offsetY = (containerH - actualH) / 2;
+      const scaleX = containerW / VIRTUAL_WIDTH;
+      const scaleY = containerH / VIRTUAL_HEIGHT;
 
       canvas.width = containerW * dpr;
       canvas.height = containerH * dpr;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
-      ctx.translate(offsetX, offsetY - VIRTUAL_MIN_Y * scale);
-      ctx.scale(scale, scale);
+      ctx.translate(0, 120 * scaleY);
+      ctx.scale(scaleX, scaleY);
     };
 
     resizeCanvas();
@@ -390,7 +384,6 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
         transitionTimeRef.current = Math.min(1.0, transitionTimeRef.current + 0.03);
       }
 
-      // Fast clear covering the full virtual viewport
       ctx.clearRect(0, VIRTUAL_MIN_Y, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
 
       const densityCount = densityRef.current === 'low' ? 360 : densityRef.current === 'high' ? 640 : 520;
@@ -428,7 +421,6 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
           force = prevVec.force * (1 - t) + curVec.force * t;
         }
 
-        // Fast linear interpolation
         vx += (targetVx - vx) * 0.14;
         vy += (targetVy - vy) * 0.14;
 
@@ -440,7 +432,6 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
 
         age += 1;
 
-        // Boundary respawn
         if (age >= maxAge || nextX < 5 || nextX > 995 || nextY < 5 || nextY > 575) {
           const [spawnX, spawnY] = getRandomOceanCoord();
           particles[idx] = spawnX;
@@ -458,22 +449,16 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
         particles[idx + 3] = vy;
         particles[idx + 4] = age;
 
-        // Smooth sinusoidal fade
         const lifeRatio = age / maxAge;
         const baseAlpha = Math.sin(lifeRatio * Math.PI);
         const particleAlpha = baseAlpha * (0.55 + (i % 5) * 0.1);
 
         if (isWind) {
-          // -------------------------------------------------------------------
-          // TRADE WINDS: Streamline + Direct Triangular Arrowhead
-          // (Dark Theme: Luminous Frost-Cyan / Light Theme: Deep Azure & Lapis)
-          // -------------------------------------------------------------------
           const windAlpha = Math.max(0.18, particleAlpha * 0.94);
           const streakLen = 2.0 + force * 2.8;
           const prevX = nextX - effectiveVx * streakLen;
           const prevY = nextY - effectiveVy * streakLen;
 
-          // Streamline tail
           ctx.beginPath();
           ctx.moveTo(prevX, prevY);
           ctx.lineTo(nextX, nextY);
@@ -483,7 +468,6 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
           ctx.lineWidth = 0.85 + force * 0.35;
           ctx.stroke();
 
-          // Direct directional arrowhead math
           const speed = Math.hypot(effectiveVx, effectiveVy) || 0.001;
           const ux = effectiveVx / speed;
           const uy = effectiveVy / speed;
@@ -513,9 +497,6 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
             : `rgba(255, 255, 255, ${Math.min(1.0, windAlpha * 1.25)})`;
           ctx.fill();
         } else {
-          // -------------------------------------------------------------------
-          // OCEAN CURRENTS: Golden Amber vs Electric Sapphire + Luminous Nodal Beads
-          // -------------------------------------------------------------------
           const nextLat = 58 - (nextY / 580) * 96;
           const isEquatorial = nextLat > -5 && nextLat < 12;
           const currentAlpha = Math.max(0.2, particleAlpha * 0.9);
@@ -529,17 +510,16 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
           
           if (isLightTheme) {
             ctx.strokeStyle = isEquatorial
-              ? `rgba(217, 119, 6, ${currentAlpha * 0.85})` // Terracotta / Amber
-              : `rgba(37, 99, 235, ${currentAlpha * 0.85})`; // Deep Blue
+              ? `rgba(217, 119, 6, ${currentAlpha * 0.85})` 
+              : `rgba(37, 99, 235, ${currentAlpha * 0.85})`;
           } else {
             ctx.strokeStyle = isEquatorial
-              ? `rgba(245, 158, 11, ${currentAlpha * 0.8})` // Golden Amber
-              : `rgba(14, 165, 233, ${currentAlpha * 0.8})`; // Cobalt Cyan
+              ? `rgba(245, 158, 11, ${currentAlpha * 0.8})` 
+              : `rgba(14, 165, 233, ${currentAlpha * 0.8})`;
           }
           ctx.lineWidth = 0.9 + force * 0.4;
           ctx.stroke();
 
-          // Direct circular nodal bead
           ctx.beginPath();
           ctx.arc(nextX, nextY, 1.1 + (i % 3) * 0.3, 0, Math.PI * 2);
           if (isLightTheme) {
@@ -574,21 +554,19 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
         isLight ? 'bg-[#FAF7F2]' : 'bg-[#040914]'
       } ${className}`}
     >
-      {/* 1. Base SVG Cartographic Vector Landmasses & Navigation Grid (Top clearance moved down another 60px) */}
+      {/* 1. Base SVG Cartographic Vector Landmasses & Navigation Grid (Edge-to-edge stretch with preserveAspectRatio="none") */}
       <svg
         viewBox="0 -120 1000 700"
         className="absolute inset-0 w-full h-full pointer-events-none"
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio="none"
       >
         <defs>
-          {/* Dark Ocean Gradient */}
           <radialGradient id="hydroOceanGlowDark" cx="45%" cy="50%" r="65%">
             <stop offset="0%" stopColor="#0B162C" />
             <stop offset="60%" stopColor="#060E1C" />
             <stop offset="100%" stopColor="#030710" />
           </radialGradient>
 
-          {/* Light Antique Parchment Ocean Gradient */}
           <radialGradient id="hydroOceanGlowLight" cx="45%" cy="50%" r="65%">
             <stop offset="0%" stopColor="#FBF9F4" />
             <stop offset="60%" stopColor="#F5EFE6" />
@@ -603,7 +581,6 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
             <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#D8CEBD" strokeWidth="0.5" strokeDasharray="3,3" opacity="0.6" />
           </pattern>
 
-          {/* Continents Gradients */}
           <linearGradient id="hydroAmericasLandDark" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#152238" />
             <stop offset="100%" stopColor="#0B1322" />
@@ -615,7 +592,7 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
           </linearGradient>
         </defs>
 
-        {/* Ocean Background extending into generous top headroom (-120 to 580) */}
+        {/* Ocean Background extending edge-to-edge */}
         <rect 
           x="0" 
           y="-120" 
@@ -683,7 +660,7 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
           <path d={LESSER_ANTILLES_PATH} fill="#D97706" stroke={isLight ? "#92400E" : "#F59E0B"} strokeWidth="1.0" />
         </g>
 
-        {/* CONTINENTAL VECTORS: EUROPE & BRITISH ISLES (Fully visible below the HUD) */}
+        {/* CONTINENTAL VECTORS: EUROPE & BRITISH ISLES */}
         <g id="hydroEurope">
           <path
             d={EUROPE_MAINLAND_PATH}
@@ -729,11 +706,11 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
           opacity={0.95}
         />
 
-        {/* Topographic Typography Labels */}
+        {/* Topographic Typography Labels (Placed ON TOP of the continents, not beside them) */}
         <g className="pointer-events-none select-none font-serif" style={{ paintOrder: 'stroke fill' }}>
           <text 
-            x="745" 
-            y="210" 
+            x="765" 
+            y="340" 
             fill={isLight ? "#1C1917" : "#ECFDF5"} 
             stroke={isLight ? "#FAF7F2" : "#020617"} 
             strokeWidth="3.5px" 
@@ -741,13 +718,14 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
             fontSize="19" 
             fontWeight="900" 
             letterSpacing="4" 
+            textAnchor="middle"
           >
             AFRICA
           </text>
 
           <text 
-            x="320" 
-            y="420" 
+            x="355" 
+            y="410" 
             fill={isLight ? "#1C1917" : "#BAE6FD"} 
             stroke={isLight ? "#FAF7F2" : "#020617"} 
             strokeWidth="3.5px" 
@@ -755,13 +733,14 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
             fontSize="16" 
             fontWeight="900" 
             letterSpacing="3" 
+            textAnchor="middle"
           >
             SOUTH AMERICA
           </text>
 
           <text 
-            x="240" 
-            y="110" 
+            x="230" 
+            y="140" 
             fill={isLight ? "#1C1917" : "#CFFAFE"} 
             stroke={isLight ? "#FAF7F2" : "#020617"} 
             strokeWidth="3.5px" 
@@ -769,13 +748,14 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
             fontSize="15" 
             fontWeight="900" 
             letterSpacing="3" 
+            textAnchor="middle"
           >
             NORTH AMERICA
           </text>
 
           <text 
-            x="575" 
-            y="80" 
+            x="610" 
+            y="45" 
             fill={isLight ? "#1C1917" : "#FEF3C7"} 
             stroke={isLight ? "#FAF7F2" : "#020617"} 
             strokeWidth="3.5px" 
@@ -783,6 +763,7 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
             fontSize="14" 
             fontWeight="900" 
             letterSpacing="3" 
+            textAnchor="middle"
           >
             EUROPE
           </text>
@@ -800,6 +781,7 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
             fontWeight="700" 
             letterSpacing="3" 
             opacity="0.85" 
+            textAnchor="middle"
           >
             NORTH ATLANTIC OCEAN
           </text>
@@ -816,12 +798,13 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
             fontWeight="700" 
             letterSpacing="3" 
             opacity="0.85" 
+            textAnchor="middle"
           >
             SOUTH ATLANTIC OCEAN
           </text>
         </g>
 
-        {/* Coastal Anchors & Nautical Ports */}
+        {/* Coastal Anchors & Nautical Ports (Accurately calibrated on African coastlines) */}
         <g id="nauticalPortsLayer" className="pointer-events-auto">
           {NAUTICAL_PORTS.map((port) => {
             const [cx, cy] = port.svgCoord || projectCoord(port.lat, port.lng);
