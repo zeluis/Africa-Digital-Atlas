@@ -26,7 +26,7 @@ import {
 import { SLAVE_TRADE_ILLUSTRATIONS, SlaveTradeIllustration } from '../../data/slaveTradeIllustrations';
 import { ArchivalLoupeModal } from './ArchivalLoupeModal';
 import { DynamicIcon } from '../DynamicIcon';
-import { resolveAssetPath } from '../../utils/assetPath';
+import { resolveAssetPath, getAssetCandidateUrls } from '../../utils/assetPath';
 
 interface SlaveTradeIconographyProps {
   activeTab?: 'registry' | 'ingestion';
@@ -501,7 +501,17 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                     className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-500 filter saturate-90 dark:brightness-90"
                     referrerPolicy="no-referrer"
                     onError={(e) => {
-                      e.currentTarget.style.display = 'none';
+                      const el = e.currentTarget;
+                      const raw = item.imageUrls?.[0] || '';
+                      const candidates = getAssetCandidateUrls(raw);
+                      const currentIdx = parseInt(el.getAttribute('data-candidate-idx') || '0', 10);
+                      if (currentIdx + 1 < candidates.length) {
+                        const nextIdx = currentIdx + 1;
+                        el.setAttribute('data-candidate-idx', String(nextIdx));
+                        el.src = candidates[nextIdx];
+                      } else {
+                        el.style.display = 'none';
+                      }
                     }}
                   />
                 ) : (
@@ -581,7 +591,17 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                       className="w-full h-full object-cover object-center"
                       referrerPolicy="no-referrer"
                       onError={(e) => {
-                        e.currentTarget.style.display = 'none';
+                        const el = e.currentTarget;
+                        const raw = item.imageUrls?.[0] || '';
+                        const candidates = getAssetCandidateUrls(raw);
+                        const currentIdx = parseInt(el.getAttribute('data-candidate-idx') || '0', 10);
+                        if (currentIdx + 1 < candidates.length) {
+                          const nextIdx = currentIdx + 1;
+                          el.setAttribute('data-candidate-idx', String(nextIdx));
+                          el.src = candidates[nextIdx];
+                        } else {
+                          el.style.display = 'none';
+                        }
                       }}
                     />
                   ) : (

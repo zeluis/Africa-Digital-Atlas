@@ -19,7 +19,7 @@ import { SlaveTradeIconography } from '../components/slaveVoyages/SlaveTradeIcon
 import { ArchivalLoupeModal } from '../components/slaveVoyages/ArchivalLoupeModal';
 import { ArchivalImageViewer } from '../components/common/ArchivalImageViewer';
 import { DynamicIcon } from '../components/DynamicIcon';
-import { resolveAssetPath } from '../utils/assetPath';
+import { resolveAssetPath, getAssetCandidateUrls } from '../utils/assetPath';
 
 // Curated selection of visually striking, high-detail plates
 const HERO_IMAGE_CANDIDATES = [17, 18, 19, 20, 731, 732, 735, 788, 789, 790, 831, 835, 1021, 1028, 1032, 1042];
@@ -317,9 +317,19 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
             >
               <div className="relative aspect-4/3 rounded-xl overflow-hidden border border-stone-200 dark:border-stone-800 bg-stone-100 dark:bg-stone-950">
                 <img 
-                  src={heroState.url} 
+                  src={resolveAssetPath(heroState.url)} 
                   alt={heroState.title}
                   className="w-full h-full object-cover grayscale contrast-110 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
+                  onError={(e) => {
+                    const el = e.currentTarget;
+                    const candidates = getAssetCandidateUrls(heroState.url);
+                    const currentIdx = parseInt(el.getAttribute('data-candidate-idx') || '0', 10);
+                    if (currentIdx + 1 < candidates.length) {
+                      const nextIdx = currentIdx + 1;
+                      el.setAttribute('data-candidate-idx', String(nextIdx));
+                      el.src = candidates[nextIdx];
+                    }
+                  }}
                 />
                 <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-stone-900/80 text-amber-400 text-[9px] font-mono font-bold">
                   SI-OB-{heroState.id}

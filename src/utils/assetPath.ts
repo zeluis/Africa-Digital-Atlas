@@ -79,14 +79,38 @@ export const getAssetCandidateUrls = (path: string | undefined | null): string[]
   const primary = resolveAssetPath(path);
   if (!primary) return [];
 
-  // For external or data URLs, only return primary
-  if (
-    primary.startsWith('http://') ||
-    primary.startsWith('https://') ||
-    primary.startsWith('data:') ||
-    primary.startsWith('blob:')
-  ) {
+  // Data or blob URLs don't have fallbacks
+  if (primary.startsWith('data:') || primary.startsWith('blob:')) {
     return [primary];
+  }
+
+  const candidates: string[] = [primary];
+
+  // For external remote URLs (e.g., si.regeneratedidentities.org)
+  if (primary.startsWith('http://') || primary.startsWith('https://')) {
+    // Check if this is a Slavery Images archival record (SI-OB-...)
+    const regMatch = primary.match(/SI-OB-(\d+)/i);
+    if (regMatch) {
+      const regId = `SI-OB-${regMatch[1]}`;
+      const localByRegId = resolveAssetPath(`/assets/archives/${regId}.jpg`);
+      const relByRegId = `./assets/archives/${regId}.jpg`;
+      const rootByRegId = `/assets/archives/${regId}.jpg`;
+      if (!candidates.includes(localByRegId)) candidates.push(localByRegId);
+      if (!candidates.includes(relByRegId)) candidates.push(relByRegId);
+      if (!candidates.includes(rootByRegId)) candidates.push(rootByRegId);
+    }
+    // Also extract raw filename (e.g., 1-4.jpg)
+    const urlParts = primary.split('?')[0].split('/');
+    const filename = urlParts[urlParts.length - 1];
+    if (filename && filename.endsWith('.jpg')) {
+      const localByName = resolveAssetPath(`/assets/archives/${filename}`);
+      const relByName = `./assets/archives/${filename}`;
+      const rootByName = `/assets/archives/${filename}`;
+      if (!candidates.includes(localByName)) candidates.push(localByName);
+      if (!candidates.includes(relByName)) candidates.push(relByName);
+      if (!candidates.includes(rootByName)) candidates.push(rootByName);
+    }
+    return candidates;
   }
 
   // Clean relative path without leading slash
@@ -95,8 +119,6 @@ export const getAssetCandidateUrls = (path: string | undefined | null): string[]
     if (clean.startsWith('./')) clean = clean.slice(2);
     if (clean.startsWith('/')) clean = clean.slice(1);
   }
-
-  const candidates: string[] = [primary];
 
   // Candidate 2: Relative to current HTML document (e.g. './castas/...')
   const relativeCandidate = `./${clean}`;
@@ -108,6 +130,19 @@ export const getAssetCandidateUrls = (path: string | undefined | null): string[]
   const rootCandidate = `/${clean}`;
   if (!candidates.includes(rootCandidate)) {
     candidates.push(rootCandidate);
+  }
+
+  // Candidate 4: Castas thumbnail cross-fallback
+  if (clean.includes('castas/thumbs/')) {
+    const fullImg = resolveAssetPath(clean.replace('castas/thumbs/', 'castas/'));
+    if (!candidates.includes(fullImg)) {
+      candidates.push(fullImg);
+    }
+  } else if (clean.includes('castas/')) {
+    const thumbImg = resolveAssetPath(clean.replace('castas/', 'castas/thumbs/'));
+    if (!candidates.includes(thumbImg)) {
+      candidates.push(thumbImg);
+    }
   }
 
   return candidates;

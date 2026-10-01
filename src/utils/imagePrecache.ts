@@ -12,10 +12,22 @@ const CACHE_NAME = 'africa-archival-plates-v1';
 export const getTopArchivalImageUrls = async (): Promise<string[]> => {
   const urls: string[] = [];
 
-  // 1. Castas 32 plates
+  // 1. Castas 32 plates and thumbnails
   CASTAS_ARCHIVE_ITEMS.forEach(item => {
+    if (item.thumbnailUrl && !urls.includes(item.thumbnailUrl)) {
+      urls.push(item.thumbnailUrl);
+    }
     if (item.imageUrl && !urls.includes(item.imageUrl)) {
       urls.push(item.imageUrl);
+    }
+  });
+
+  // 2. Pre-packaged local archive fallbacks
+  const localArchiveIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 36, 46, 50, 536, 802, 1042];
+  localArchiveIds.forEach(id => {
+    const localUrl = `/assets/archives/SI-OB-${id}.jpg`;
+    if (!urls.includes(localUrl)) {
+      urls.push(localUrl);
     }
   });
 
