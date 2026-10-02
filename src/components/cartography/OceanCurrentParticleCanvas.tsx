@@ -26,6 +26,7 @@ import {
   HISTORIC_RIVERS
 } from '../slaveVoyages/atlanticMapGeometry';
 import { AfricaVectorContinent } from '../common/AfricaVectorContinent';
+import { AFRICA_FINAL_TRANSFORM } from '../../data/africaFinalGeometry';
 import {
   HydrodynamicSeasonId,
   SEASONAL_HYDRO_METRICS,
@@ -63,7 +64,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: -17.4381, 
     type: 'african-port', 
     note: 'Canary Current Departure (28 days to Caribbean)',
-    svgCoord: [572, 250] 
+    svgCoord: [606, 264] 
   },
   { 
     name: 'Sierra Leone (Bunce Island)', 
@@ -71,7 +72,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: -13.2344, 
     type: 'african-port', 
     note: 'Windward Coast departure node & fortified estuary',
-    svgCoord: [592, 282] 
+    svgCoord: [627, 297] 
   },
   { 
     name: 'Gold Coast (Elmina)', 
@@ -79,7 +80,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: -1.2466, 
     type: 'african-port', 
     note: 'Guinea Current Hub & São Jorge da Mina fort complex',
-    svgCoord: [624, 290] 
+    svgCoord: [687, 319] 
   },
   { 
     name: 'Bight of Benin (Ouidah)', 
@@ -87,7 +88,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: 2.0851, 
     type: 'african-port', 
     note: 'Equatorial Flow directly toward Bahia (34 days)',
-    svgCoord: [644, 286] 
+    svgCoord: [704, 311] 
   },
   { 
     name: 'Biafra (Bonny)', 
@@ -95,7 +96,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: 7.1639, 
     type: 'african-port', 
     note: 'Niger Delta Estuary & embarkation hub',
-    svgCoord: [662, 292] 
+    svgCoord: [728, 322] 
   },
   { 
     name: 'Luanda (Angola)', 
@@ -103,7 +104,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: 13.2894, 
     type: 'african-port', 
     note: 'Benguela Highway (Record fast: 39 days to Rio)',
-    svgCoord: [682, 368] 
+    svgCoord: [756, 391] 
   },
   { 
     name: 'Benguela (São Filipe)', 
@@ -111,7 +112,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: 13.4055, 
     type: 'african-port', 
     note: 'South Atlantic Gyre southern embarkation port',
-    svgCoord: [685, 395] 
+    svgCoord: [758, 412] 
   },
   { 
     name: 'Cape of Good Hope', 
@@ -119,7 +120,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: 18.4740, 
     type: 'african-port', 
     note: 'Agulhas Confluence & southern rounding passage',
-    svgCoord: [738, 485] 
+    svgCoord: [795, 538] 
   },
   { 
     name: 'Mozambique Channel', 
@@ -127,7 +128,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: 40.7358, 
     type: 'african-port', 
     note: 'Indian Ocean Route to Brazil (62–68 days)',
-    svgCoord: [790, 410] 
+    svgCoord: [891, 436] 
   },
 
   // American Disembarkation & Terminal Ports
@@ -196,14 +197,14 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     svgCoord: [194, 152] 
   },
 
-  // European Metropoles
+  // European Metropoles (Calibrated to Natural Earth European landmass)
   { 
     name: 'Lisbon (Tagus)', 
     lat: 38.7223, 
     lng: -9.1393, 
     type: 'european-port', 
     note: 'Canary Current Launchpoint & Casa da Índia',
-    svgCoord: [606, 116] 
+    svgCoord: [611, 116] 
   },
   { 
     name: 'Liverpool', 
@@ -211,7 +212,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: -2.9916, 
     type: 'european-port', 
     note: 'North Atlantic Departure & triangular trade hub',
-    svgCoord: [648, 28] 
+    svgCoord: [650, 28] 
   },
   { 
     name: 'Nantes', 
@@ -219,7 +220,7 @@ export const NAUTICAL_PORTS: NauticalPortItem[] = [
     lng: -1.5536, 
     type: 'european-port', 
     note: 'Loire Estuary Fleet & French triangular trade center',
-    svgCoord: [658, 65] 
+    svgCoord: [659, 65] 
   }
 ];
 
@@ -658,20 +659,10 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
           <path d={PUERTO_RICO_PATH} fill="#D97706" stroke={isLight ? "#92400E" : "#F59E0B"} strokeWidth="1.2" />
           <path d={BAHAMAS_PATH} fill="#D97706" stroke={isLight ? "#92400E" : "#F59E0B"} strokeWidth="1.2" />
           <path d={LESSER_ANTILLES_PATH} fill="#D97706" stroke={isLight ? "#92400E" : "#F59E0B"} strokeWidth="1.0" />
-          {/* Suriname Path / Territory Marker */}
-          <g id="surinamePath" transform="translate(312.1, 326.2)">
-            <path
-              d="M-5,-3 C-2,-4 3,-3 5,0 C3,3 -2,4 -5,2 Z"
-              fill={isLight ? "#E5D9C5" : "#1E293B"}
-              stroke={isLight ? "#8C7E64" : "#F59E0B"}
-              strokeWidth="1.1"
-            />
-            <text x="7" y="2" fill={isLight ? "#78716C" : "#F59E0B"} fontSize="8" fontFamily="monospace" opacity="0.9">SURINAME</text>
-          </g>
         </g>
 
         {/* CONTINENTAL VECTORS: EUROPE & BRITISH ISLES (Correctly positioned in Mediterranean basin north of Africa) */}
-        <g id="hydroEurope" transform="translate(50, -12) scale(1)">
+        <g id="hydroEurope">
           <path
             d={EUROPE_MAINLAND_PATH}
             fill={isLight ? "#EDE6D8" : "url(#hydroEuropeLandDark)"}
@@ -684,81 +675,6 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
           <path d={BALEARIC_PATH} fill={isLight ? "#EDE6D8" : "url(#hydroEuropeLandDark)"} stroke={isLight ? "#8C7E64" : "#F59E0B"} strokeWidth="1.0" />
           <path d={SARDINIA_CORSICA_PATH} fill={isLight ? "#EDE6D8" : "url(#hydroEuropeLandDark)"} stroke={isLight ? "#8C7E64" : "#F59E0B"} strokeWidth="1.0" />
           <path d={SICILY_PATH} fill={isLight ? "#EDE6D8" : "url(#hydroEuropeLandDark)"} stroke={isLight ? "#8C7E64" : "#F59E0B"} strokeWidth="1.0" />
-
-          {/* European Rivers, Ports & Labels (Translated by 0, 12) */}
-          <g transform="translate(0, 12)">
-            {/* European Rivers */}
-            <g stroke={isLight ? "#2563EB" : "#0284C7"} strokeWidth="1.1" fill="none" opacity={isLight ? "0.65" : "0.75"} strokeLinecap="round">
-              {HISTORIC_RIVERS.filter(r => ['tagus_river', 'loire_river', 'seine_river', 'thames_river', 'rhine_river'].includes(r.id)).map(river => (
-                <path key={river.id} d={river.path} />
-              ))}
-            </g>
-
-            {/* European Ports */}
-            {NAUTICAL_PORTS.filter(p => p.type === 'european-port').map((port) => {
-              const [cx, cy] = port.svgCoord || projectCoord(port.lat, port.lng);
-              const isHovered = hoveredPort?.name === port.name;
-              return (
-                <g
-                  key={port.name}
-                  className="cursor-pointer group"
-                  onMouseEnter={() => setHoveredPort(port)}
-                  onMouseLeave={() => setHoveredPort(null)}
-                >
-                  <circle
-                    cx={cx}
-                    cy={cy}
-                    r={isHovered ? 7.5 : 4}
-                    fill="#D97706"
-                    stroke={isLight ? "#FAF7F2" : "#020617"}
-                    strokeWidth="1.5"
-                    className="transition-all duration-150"
-                  />
-                  {isHovered && (
-                    <circle
-                      cx={cx}
-                      cy={cy}
-                      r={13}
-                      fill="none"
-                      stroke="#F59E0B"
-                      strokeWidth="1.5"
-                      strokeDasharray="3 3"
-                      className="animate-spin-slow"
-                    />
-                  )}
-                  <text
-                    x={cx + 7}
-                    y={cy + 3.5}
-                    fill={isHovered ? (isLight ? "#0F172A" : "#FFFFFF") : (isLight ? "#92400E" : "#FDE68A")}
-                    fontSize={isHovered ? "9.5" : "8"}
-                    fontFamily="monospace"
-                    fontWeight="bold"
-                    stroke={isLight ? "#FFFFFF" : "#020617"}
-                    strokeWidth="2px"
-                    style={{ paintOrder: 'stroke fill' }}
-                  >
-                    {port.name}
-                  </text>
-                </g>
-              );
-            })}
-
-            {/* EUROPE label inside group */}
-            <text 
-              x="610" 
-              y="45" 
-              fill={isLight ? "#1C1917" : "#FEF3C7"} 
-              stroke={isLight ? "#FAF7F2" : "#020617"} 
-              strokeWidth="3.5px" 
-              strokeLinejoin="round"
-              fontSize="14" 
-              fontWeight="900" 
-              letterSpacing="3" 
-              textAnchor="middle"
-            >
-              EUROPE
-            </text>
-          </g>
         </g>
 
         {/* International Boundaries */}
@@ -771,89 +687,31 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
           opacity="0.6"
         />
 
-        {/* Historic Navigational Rivers (Americas) */}
+        {/* Historic Navigational Rivers (Accurately calibrated on European, African, and American landmasses) */}
         <g stroke={isLight ? "#2563EB" : "#0284C7"} strokeWidth="1.1" fill="none" opacity={isLight ? "0.65" : "0.75"} strokeLinecap="round">
-          {HISTORIC_RIVERS.filter(r => !['tagus_river', 'loire_river', 'seine_river', 'thames_river', 'rhine_river', 'niger_river', 'congo_river', 'senegal_river', 'gambia_river', 'zambezi_river'].includes(r.id)).map(river => (
+          {HISTORIC_RIVERS.map(river => (
             <path key={river.id} d={river.path} />
           ))}
         </g>
 
-        {/* CONTINENTAL VECTORS: AFRICA (Encapsulated Vector Paths, Rivers, Ports, and Labels) */}
-        <g id="hydroAfrica" className="pointer-events-auto">
-          {/* Authoritative African Continent Vector */}
-          <AfricaVectorContinent
-            x="555"
-            y="136"
-            width="421"
-            height="406"
-            mode="countries"
-            theme={isLight ? "parchment" : "dark"}
-            strokeWidth={1.2}
-            strokeColor={isLight ? "#8C7E64" : "#38bdf8"}
-            opacity={0.95}
-          />
+        {/* Authoritative African Continent Vector */}
+        <AfricaVectorContinent
+          x="555"
+          y="136"
+          width="421"
+          height="406"
+          mode="countries"
+          theme={isLight ? "parchment" : "dark"}
+          strokeWidth={1.2}
+          strokeColor={isLight ? "#8C7E64" : "#38bdf8"}
+          opacity={0.95}
+        />
 
-          {/* African Navigational Rivers */}
-          <g stroke={isLight ? "#2563EB" : "#0284C7"} strokeWidth="1.1" fill="none" opacity={isLight ? "0.65" : "0.75"} strokeLinecap="round">
-            {HISTORIC_RIVERS.filter(r => ['niger_river', 'congo_river', 'senegal_river', 'gambia_river', 'zambezi_river'].includes(r.id)).map(river => (
-              <path key={river.id} d={river.path} />
-            ))}
-          </g>
-
-          {/* African Ports */}
-          {NAUTICAL_PORTS.filter(p => p.type === 'african-port').map((port) => {
-            const [cx, cy] = port.svgCoord || projectCoord(port.lat, port.lng);
-            const isHovered = hoveredPort?.name === port.name;
-
-            return (
-              <g
-                key={port.name}
-                className="cursor-pointer group"
-                onMouseEnter={() => setHoveredPort(port)}
-                onMouseLeave={() => setHoveredPort(null)}
-              >
-                <circle
-                  cx={cx}
-                  cy={cy}
-                  r={isHovered ? 7.5 : 4}
-                  fill="#059669"
-                  stroke={isLight ? "#FAF7F2" : "#020617"}
-                  strokeWidth="1.5"
-                  className="transition-all duration-150"
-                />
-                {isHovered && (
-                  <circle
-                    cx={cx}
-                    cy={cy}
-                    r={13}
-                    fill="none"
-                    stroke="#10B981"
-                    strokeWidth="1.5"
-                    strokeDasharray="3 3"
-                    className="animate-spin-slow"
-                  />
-                )}
-                <text
-                  x={cx + 7}
-                  y={cy + 3.5}
-                  fill={isHovered ? (isLight ? "#0F172A" : "#FFFFFF") : (isLight ? "#065F46" : "#A7F3D0")}
-                  fontSize={isHovered ? "9.5" : "8"}
-                  fontFamily="monospace"
-                  fontWeight="bold"
-                  stroke={isLight ? "#FFFFFF" : "#020617"}
-                  strokeWidth="2px"
-                  style={{ paintOrder: 'stroke fill' }}
-                >
-                  {port.name}
-                </text>
-              </g>
-            );
-          })}
-
-          {/* AFRICA Typographic Continent Label */}
+        {/* Topographic Typography Labels (Placed ON TOP of the continents, not beside them) */}
+        <g className="pointer-events-none select-none font-serif" style={{ paintOrder: 'stroke fill' }}>
           <text 
-            x="765" 
-            y="340" 
+            x="750" 
+            y="350" 
             fill={isLight ? "#1C1917" : "#ECFDF5"} 
             stroke={isLight ? "#FAF7F2" : "#020617"} 
             strokeWidth="3.5px" 
@@ -862,15 +720,25 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
             fontWeight="900" 
             letterSpacing="4" 
             textAnchor="middle"
-            className="pointer-events-none select-none font-serif"
-            style={{ paintOrder: 'stroke fill' }}
           >
             AFRICA
           </text>
-        </g>
 
-        {/* Topographic Typography Labels (Americas & Oceans) */}
-        <g className="pointer-events-none select-none font-serif" style={{ paintOrder: 'stroke fill' }}>
+          <text 
+            x="660" 
+            y="65" 
+            fill={isLight ? "#1C1917" : "#FEF3C7"} 
+            stroke={isLight ? "#FAF7F2" : "#020617"} 
+            strokeWidth="3.5px" 
+            strokeLinejoin="round"
+            fontSize="14" 
+            fontWeight="900" 
+            letterSpacing="3" 
+            textAnchor="middle"
+          >
+            EUROPE
+          </text>
+
           <text 
             x="355" 
             y="410" 
@@ -937,9 +805,9 @@ export const OceanCurrentParticleCanvas: React.FC<OceanCurrentParticleCanvasProp
           </text>
         </g>
 
-        {/* Coastal Anchors & Nautical Ports (American Coastlines) */}
+        {/* Coastal Anchors & Nautical Ports (Accurately calibrated on coastlines) */}
         <g id="nauticalPortsLayer" className="pointer-events-auto">
-          {NAUTICAL_PORTS.filter(port => port.type === 'american-port').map((port) => {
+          {NAUTICAL_PORTS.map((port) => {
             const [cx, cy] = port.svgCoord || projectCoord(port.lat, port.lng);
             const isHovered = hoveredPort?.name === port.name;
             const isAfrican = port.type === 'african-port';

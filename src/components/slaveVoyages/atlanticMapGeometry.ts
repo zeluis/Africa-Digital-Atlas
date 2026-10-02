@@ -82,6 +82,27 @@ export function coordsToPath(coords: [number, number][], closePath = true): stri
   return coordsToSmoothPath(coords, closePath, 0.22);
 }
 
+// Convert direct [x, y] coordinates into a smooth Catmull-Rom cubic Bézier SVG Path
+export function directPointsToSmoothPath(pts: [number, number][], tension = 0.22): string {
+  const n = pts.length;
+  if (n < 2) return '';
+  if (n === 2) return `M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)} L ${pts[1][0].toFixed(1)} ${pts[1][1].toFixed(1)}`;
+  let d = `M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+  const factor = (1 - tension) / 6;
+  for (let i = 0; i < n - 1; i++) {
+    const pPrev = pts[Math.max(i - 1, 0)];
+    const pCurr = pts[i];
+    const pNext = pts[i + 1];
+    const pNext2 = pts[Math.min(i + 2, n - 1)];
+    const cp1x = pCurr[0] + (pNext[0] - pPrev[0]) * factor;
+    const cp1y = pCurr[1] + (pNext[1] - pPrev[1]) * factor;
+    const cp2x = pNext[0] - (pNext2[0] - pCurr[0]) * factor;
+    const cp2y = pNext[1] - (pNext2[1] - pCurr[1]) * factor;
+    d += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${pNext[0].toFixed(1)} ${pNext[1].toFixed(1)}`;
+  }
+  return d;
+}
+
 /**
  * 1. AFRICAN CONTINENT OUTLINE (High fidelity coastline)
  * Traces Morocco, Mediterranean, Red Sea, Horn of Africa, East Coast, Cape of Good Hope, West Central Africa, Gulf of Guinea, Senegambia.
@@ -519,41 +540,41 @@ export const HISTORIC_RIVERS: HistoricRiver[] = [
       [47.6, 7.6], [49.0, 8.4], [50.1, 8.3], [50.9, 6.9], [51.9, 4.2]
     ], false, 0.2)
   },
-  // Africa
+  // Africa (Calibrated to the authentic African continental geometry)
   {
     id: 'niger_river',
     name: 'Niger River & Delta',
-    path: coordsToSmoothPath([
-      [9.5, -10.5], [12.0, -8.0], [13.8, -4.0], [16.8, -0.05], [16.0, 3.0], [13.0, 4.5], [8.0, 6.7], [5.3, 6.2], [4.3, 6.0]
-    ], false, 0.25)
+    path: directPointsToSmoothPath([
+      [628, 292], [635, 280], [655, 258], [670, 250], [695, 272], [708, 290], [720, 305], [728, 322]
+    ], 0.25)
   },
   {
     id: 'congo_river',
     name: 'Congo River (Zaire)',
-    path: coordsToSmoothPath([
-      [-11.5, 26.0], [-5.0, 26.5], [0.5, 25.0], [2.1, 22.5], [1.0, 18.0], [-2.0, 16.2], [-4.3, 15.3], [-5.9, 12.4]
-    ], false, 0.25)
+    path: directPointsToSmoothPath([
+      [812, 420], [822, 385], [828, 355], [822, 338], [805, 336], [785, 348], [770, 365], [752, 372]
+    ], 0.25)
   },
   {
     id: 'senegal_river',
     name: 'Senegal River',
-    path: coordsToSmoothPath([
-      [12.5, -11.0], [14.4, -12.2], [15.2, -14.0], [16.5, -15.0], [16.0, -16.5]
-    ], false, 0.2)
+    path: directPointsToSmoothPath([
+      [668, 265], [660, 250], [645, 245], [625, 252], [606, 260]
+    ], 0.2)
   },
   {
     id: 'gambia_river',
     name: 'Gambia River',
-    path: coordsToSmoothPath([
-      [12.0, -12.0], [13.3, -13.8], [13.5, -15.2], [13.4, -16.7]
-    ], false, 0.2)
+    path: directPointsToSmoothPath([
+      [648, 277], [635, 276], [622, 274], [612, 273]
+    ], 0.2)
   },
   {
     id: 'zambezi_river',
     name: 'Zambezi River',
-    path: coordsToSmoothPath([
-      [-11.5, 24.3], [-15.0, 23.0], [-17.8, 25.8], [-15.7, 29.5], [-16.0, 33.5], [-18.8, 36.2]
-    ], false, 0.25)
+    path: directPointsToSmoothPath([
+      [775, 430], [788, 448], [815, 450], [845, 452], [865, 465]
+    ], 0.25)
   }
 ];
 
