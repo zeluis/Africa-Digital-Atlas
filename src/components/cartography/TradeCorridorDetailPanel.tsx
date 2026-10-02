@@ -115,7 +115,10 @@ export const TradeCorridorDetailPanel: React.FC<TradeCorridorDetailPanelProps> =
   const transportInfo = getTransportBadge(corridor.transportMode);
   const TransportIcon = transportInfo.icon;
 
-  const filmstripOffsetClass = isFilmstripOpen ? 'lg:left-[246px]' : 'lg:left-6';
+  // Filmstrip responsive offset: right at the edge of the thumbnail filmstrip (230px + 16px) or at left edge
+  const filmstripOffsetClass = isFilmstripOpen
+    ? 'left-[246px]'
+    : 'left-4 sm:left-6';
 
   return (
     <motion.div
@@ -123,7 +126,7 @@ export const TradeCorridorDetailPanel: React.FC<TradeCorridorDetailPanelProps> =
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 35, scale: 0.96 }}
       transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-      className={`fixed bottom-4 left-3 sm:left-4 ${filmstripOffsetClass} z-30 w-[360px] sm:w-[440px] md:w-[480px] max-w-[calc(100vw-24px)] max-h-[calc(100vh-140px)] rounded-3xl bg-[#FAF7F2]/96 dark:bg-[#181614]/96 text-stone-900 dark:text-stone-100 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_40px_rgba(75,55,35,0.22)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.7)] backdrop-blur-2xl overflow-hidden flex flex-col font-sans select-none`}
+      className={`absolute bottom-4 ${filmstripOffsetClass} z-30 w-[360px] sm:w-[420px] md:w-[450px] max-w-[calc(100vw-32px)] max-h-[min(72vh,560px)] rounded-3xl bg-[#FAF7F2]/96 dark:bg-[#181614]/96 text-stone-900 dark:text-stone-100 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_40px_rgba(75,55,35,0.22)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.7)] backdrop-blur-2xl overflow-hidden flex flex-col font-sans select-none transition-[left,width,max-width] duration-300 ease-out`}
       style={{
         boxShadow: `0 20px 50px -10px ${corridor.color}33, 0 0 0 1px ${corridor.color}40`
       }}

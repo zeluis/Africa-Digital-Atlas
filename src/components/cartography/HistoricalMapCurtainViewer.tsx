@@ -154,16 +154,16 @@ const CHRONOLOGY_MILESTONES: { year: number; title: string; desc: string }[] = [
 ];
 
 const KINGDOM_SPATIAL_COORDINATES: Record<string, { zoom: number; panOffset: { x: number; y: number } }> = {
-  'axum-empire': { zoom: 2.2, panOffset: { x: -750, y: 280 } },
-  'kanem-bornu': { zoom: 2.2, panOffset: { x: -100, y: 300 } },
-  'benin-kingdom': { zoom: 2.3, panOffset: { x: 380, y: 80 } },
-  'great-zimbabwe': { zoom: 2.3, panOffset: { x: -550, y: -750 } },
-  'mali-empire': { zoom: 2.2, panOffset: { x: 750, y: 250 } },
-  'oyo-empire': { zoom: 2.3, panOffset: { x: 420, y: 120 } },
-  'kongo-kingdom': { zoom: 2.2, panOffset: { x: 100, y: -280 } },
-  'songhai-empire': { zoom: 2.2, panOffset: { x: 500, y: 400 } },
-  'dahomey-kingdom': { zoom: 2.4, panOffset: { x: 480, y: 120 } },
-  'ashanti-empire': { zoom: 2.3, panOffset: { x: 580, y: 100 } }
+  'axum-empire': { zoom: 1.40, panOffset: { x: 15, y: 65 } },
+  'kanem-bornu': { zoom: 1.38, panOffset: { x: 110, y: 65 } },
+  'benin-kingdom': { zoom: 1.45, panOffset: { x: 155, y: 30 } },
+  'great-zimbabwe': { zoom: 1.38, panOffset: { x: 30, y: -125 } },
+  'mali-empire': { zoom: 1.38, panOffset: { x: 215, y: 65 } },
+  'oyo-empire': { zoom: 1.45, panOffset: { x: 160, y: 40 } },
+  'kongo-kingdom': { zoom: 1.38, panOffset: { x: 110, y: -45 } },
+  'songhai-empire': { zoom: 1.38, panOffset: { x: 195, y: 85 } },
+  'dahomey-kingdom': { zoom: 1.45, panOffset: { x: 170, y: 42 } },
+  'ashanti-empire': { zoom: 1.45, panOffset: { x: 185, y: 35 } }
 };
 
 interface HistoricalMapCurtainViewerProps {
@@ -531,10 +531,10 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
   // Pre-colonial kingdom spatial focus and centering handler
   const focusOnEntity = useCallback((entity: PreColonialEntity) => {
     const custom = KINGDOM_SPATIAL_COORDINATES[entity.id];
-    const zoom = custom?.zoom || 2.25;
+    const zoom = custom?.zoom || 1.40;
     const pan = custom?.panOffset || {
-      x: (2898 - entity.svgCoordinates[0]) * 0.55,
-      y: (2933 - entity.svgCoordinates[1]) * 0.55
+      x: Math.max(-180, Math.min(240, -((entity.svgCoordinates[0] - 2778) * 0.075) + 120)),
+      y: Math.max(-150, Math.min(150, -((entity.svgCoordinates[1] - 2933) * 0.075)))
     };
 
     setShowPreColonialKingdoms(true);
@@ -558,26 +558,26 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
     setIsDossierOpen(false);
     setIsFilmstripOpen(false); // Close Filmstrip to prevent viewport collision
     if (corridor.points.length > 0) {
-      const sumX = corridor.points.reduce((acc, p) => acc + p[0], 0);
-      const sumY = corridor.points.reduce((acc, p) => acc + p[1], 0);
-      const avgX = sumX / corridor.points.length;
-      const avgY = sumY / corridor.points.length;
-
-      // Dynamic zoom based on geographic bounding box extent
       const xs = corridor.points.map(p => p[0]);
       const ys = corridor.points.map(p => p[1]);
-      const spanX = Math.max(...xs) - Math.min(...xs);
-      const spanY = Math.max(...ys) - Math.min(...ys);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+      const avgX = (minX + maxX) / 2;
+      const avgY = (minY + maxY) / 2;
+      const spanX = maxX - minX;
+      const spanY = maxY - minY;
       const maxSpan = Math.max(spanX, spanY);
 
-      let zoom = 2.15;
-      if (maxSpan > 2200) zoom = 1.65;
-      else if (maxSpan > 1200) zoom = 1.85;
-      else if (maxSpan < 600) zoom = 2.35;
+      let zoom = 1.35;
+      if (maxSpan > 2000) zoom = 1.20;
+      else if (maxSpan > 1000) zoom = 1.28;
+      else if (maxSpan < 600) zoom = 1.42;
 
       const pan = {
-        x: (2898 - avgX) * 0.55,
-        y: (2933 - avgY) * 0.55
+        x: Math.max(-160, Math.min(220, -((avgX - 2778) * 0.065) + 110)),
+        y: Math.max(-130, Math.min(130, -((avgY - 2933) * 0.065)))
       };
       setZoomLevel(zoom);
       setPlateZoom(zoom);

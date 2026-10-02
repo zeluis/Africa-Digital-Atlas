@@ -101,10 +101,10 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
     } catch {}
   };
 
-  // Filmstrip responsive offset
+  // Filmstrip responsive offset: right at the edge of the thumbnail filmstrip (230px + 16px) or at left edge
   const filmstripOffsetClass = isFilmstripOpen
-    ? 'lg:left-[246px]'
-    : 'lg:left-6';
+    ? 'left-[246px]'
+    : 'left-4 sm:left-6';
 
   return (
     <motion.div
@@ -117,11 +117,11 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
         opacity: { duration: 0.2 },
         y: { type: 'spring', damping: 26, stiffness: 320 }
       }}
-      className={`fixed bottom-4 left-3 sm:left-4 ${filmstripOffsetClass} z-30 ${
+      className={`absolute bottom-4 ${filmstripOffsetClass} z-30 ${
         isMinimized
           ? 'w-auto max-w-[340px] sm:max-w-[400px] rounded-2xl'
-          : 'w-[360px] sm:w-[440px] md:w-[480px] max-w-[calc(100vw-24px)] max-h-[calc(100vh-140px)] rounded-3xl'
-      } flex flex-col bg-[#FAF7F2]/96 dark:bg-[#181614]/96 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_40px_rgba(75,55,35,0.22)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.7)] backdrop-blur-2xl overflow-hidden transition-[width,max-width,border-radius] duration-300 ease-out select-none`}
+          : 'w-[360px] sm:w-[420px] md:w-[450px] max-w-[calc(100vw-32px)] max-h-[min(72vh,560px)] rounded-3xl'
+      } flex flex-col bg-[#FAF7F2]/96 dark:bg-[#181614]/96 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_40px_rgba(75,55,35,0.22)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.7)] backdrop-blur-2xl overflow-hidden transition-[left,width,max-width,border-radius] duration-300 ease-out select-none`}
       id="rich-kingdom-bottom-panel"
     >
       {/* 1. Header Bar with Kingdom Pagination */}
