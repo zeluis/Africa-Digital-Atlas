@@ -590,6 +590,43 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     });
   }, [containerRef, setFitScale, setZoom, setPos, resetTerritoryDisplacements]);
 
+  // Molecular Migration Overlay Toggle Handler
+  // On Activate: Centers on view and toggles all layer filters (Lineage Nodes, Lineage Branches, Text labels, TAST layer) OFF
+  // On Exit/Close: Resets view to initial Full Tree overview with all layers toggled back ON
+  const handleToggleMolecularOverlay = useCallback(() => {
+    setIsMolecularOverlayOpen(prev => {
+      const next = !prev;
+      if (next) {
+        resetTerritoryDisplacements();
+        setSelectedEntity(null);
+        panToCoordinates(CX, CY, 1.15, { xOffset: 0 });
+        setLayerVisibility({
+          nodes: false,
+          branches: false,
+          crucibles: false,
+          labels: false,
+          tastCohorts: false,
+        });
+        setActiveTastLayer(null);
+        setLiveAnnouncement('Molecular Migration & Genetics Overlay activated: centered on continental divergence hub, layers toggled off');
+      } else {
+        setSelectedMolecularNode(null);
+        resetTerritoryDisplacements();
+        fitView();
+        setLayerVisibility({
+          nodes: true,
+          branches: true,
+          crucibles: true,
+          labels: true,
+          tastCohorts: true,
+        });
+        setActiveTastLayer('all');
+        setLiveAnnouncement('Molecular Migration Overlay closed: reset to Full Tree overview with all layers toggled ON');
+      }
+      return next;
+    });
+  }, [panToCoordinates, resetTerritoryDisplacements, fitView]);
+
   // Prominent view: Zoom and center directly on the Cabo Verde Maritime Crucible ellipse node & lineages
   const panToCrucible = useCallback(() => {
     resetTerritoryDisplacements();
@@ -1876,7 +1913,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
           {/* 4. Molecular Migration Overlay */}
           <button
             type="button"
-            onClick={() => setIsMolecularOverlayOpen(prev => !prev)}
+            onClick={handleToggleMolecularOverlay}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[10px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 border ${
               isMolecularOverlayOpen
                 ? 'bg-[#E67E48] text-white shadow-[#E67E48]/30 border-[#E67E48]'
@@ -2776,6 +2813,13 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                 display: none !important;
               }
             ` : ''}
+
+            /* Molecular Migration Mode Active: Subordinate underlying SVG pointer events to prevent selection conflicts */
+            ${isMolecularOverlayOpen ? `
+              #africalia-master-sovereign-svg * {
+                pointer-events: none !important;
+              }
+            ` : ''}
           `}</style>
 
           {/* Africa UN Geo Scheme Visibility Toggle Rule */}
@@ -2876,18 +2920,26 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
           )}
 
           {/* Molecular Anthropology & Genetic Migration Canvas Vector Layer (Scaled in lockstep with VBW x VBH coordinate space) */}
-          <MolecularMigrationCanvasLayer
-            isVisible={isMolecularOverlayOpen}
-            selectedNode={selectedMolecularNode}
-            onSelectNode={setSelectedMolecularNode}
-            zoomToCoords={(x, y) => panToCoordinates(x, y, 2.2, { xOffset: 0 })}
-          />
+          {isMolecularOverlayOpen && (
+            <svg 
+              style={{ width: `${VBW}px`, height: `${VBH}px`, pointerEvents: 'auto' }}
+              className="absolute inset-0 pointer-events-auto z-50 overflow-visible"
+              viewBox={`0 0 ${VBW} ${VBH}`}
+            >
+              <MolecularMigrationCanvasLayer
+                isVisible={isMolecularOverlayOpen}
+                selectedNode={selectedMolecularNode}
+                onSelectNode={setSelectedMolecularNode}
+                zoomToCoords={(x, y) => panToCoordinates(x, y, 2.2, { xOffset: 0 })}
+              />
+            </svg>
+          )}
         </div>
 
         {/* Floating Screen-Space Migration Drawer & Information Card */}
         <MolecularMigrationDrawer
           isVisible={isMolecularOverlayOpen}
-          onToggle={() => setIsMolecularOverlayOpen(prev => !prev)}
+          onToggle={handleToggleMolecularOverlay}
           selectedNode={selectedMolecularNode}
           onSelectNode={setSelectedMolecularNode}
           zoomToCoords={(x, y) => panToCoordinates(x, y, 2.2, { xOffset: 0 })}
