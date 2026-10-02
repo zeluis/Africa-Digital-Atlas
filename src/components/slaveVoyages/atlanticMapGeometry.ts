@@ -540,40 +540,40 @@ export const HISTORIC_RIVERS: HistoricRiver[] = [
       [47.6, 7.6], [49.0, 8.4], [50.1, 8.3], [50.9, 6.9], [51.9, 4.2]
     ], false, 0.2)
   },
-  // Africa (Calibrated to the authentic African continental geometry)
+  // Africa (Calibrated to the authentic African continental geometry aligned at the Strait of Gibraltar x=513.4, y=142.1)
   {
     id: 'niger_river',
     name: 'Niger River & Delta',
     path: directPointsToSmoothPath([
-      [628, 292], [635, 280], [655, 258], [670, 250], [695, 272], [708, 290], [720, 305], [728, 322]
+      [586, 298], [593, 286], [613, 264], [628, 256], [653, 278], [666, 296], [678, 311], [686, 328]
     ], 0.25)
   },
   {
     id: 'congo_river',
     name: 'Congo River (Zaire)',
     path: directPointsToSmoothPath([
-      [812, 420], [822, 385], [828, 355], [822, 338], [805, 336], [785, 348], [770, 365], [752, 372]
+      [770, 426], [780, 391], [786, 361], [780, 344], [763, 342], [743, 354], [728, 371], [710, 378]
     ], 0.25)
   },
   {
     id: 'senegal_river',
     name: 'Senegal River',
     path: directPointsToSmoothPath([
-      [668, 265], [660, 250], [645, 245], [625, 252], [606, 260]
+      [626, 271], [618, 256], [603, 251], [583, 258], [564, 266]
     ], 0.2)
   },
   {
     id: 'gambia_river',
     name: 'Gambia River',
     path: directPointsToSmoothPath([
-      [648, 277], [635, 276], [622, 274], [612, 273]
+      [606, 283], [593, 282], [580, 280], [570, 279]
     ], 0.2)
   },
   {
     id: 'zambezi_river',
     name: 'Zambezi River',
     path: directPointsToSmoothPath([
-      [775, 430], [788, 448], [815, 450], [845, 452], [865, 465]
+      [733, 436], [746, 454], [773, 456], [803, 458], [823, 471]
     ], 0.25)
   }
 ];

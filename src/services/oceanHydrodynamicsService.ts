@@ -427,70 +427,122 @@ export function evaluateOceanCurrentVector(
 
 /**
  * Evaluates the atmospheric trade winds vector field at (lat, lng)
+ * Formulated with C1 continuity (smooth latitudinal and longitudinal transitions)
+ * to ensure wind particles flow freely across Europe and the Atlantic without bunching,
+ * stops, or artificial vertical shear lines.
  */
 export function evaluateTradeWindVector(
   lat: number,
   lng: number,
   season: HydrodynamicSeasonId
 ): FlowVectorResult {
-  // 1. Southwest African Monsoon Surge (Prominent in Q3 across Gulf of Guinea into Sahel)
-  if (season === 'q3' && lat >= 1 && lat <= 16 && lng >= -22 && lng <= 14) {
-    return {
-      vx: 4.20,
-      vy: -2.20,
-      type: 2,
-      force: 2.50,
-      isWarm: false,
-      name: 'Southwest African Monsoon Surge'
-    };
+  // 1. Summer Southwest African Monsoon Surge (Q3 surge into Gulf of Guinea & Sahel)
+  // Formulated with a 2D smooth Gaussian envelope to blend seamlessly into the background flow
+  let monsoonVx = 0;
+  let monsoonVy = 0;
+  let monsoonWeight = 0;
+
+  if (season === 'q3') {
+    const latDist = (lat - 7.5) / 5.5;
+    const lngDist = (lng - (-3.0)) / 14.0;
+    const distSq = latDist * latDist + lngDist * lngDist;
+    if (distSq < 2.5) {
+      monsoonWeight = Math.exp(-distSq * 0.85);
+      monsoonVx = 4.0;
+      monsoonVy = -2.1;
+    }
   }
 
-  // 2. Northeast Trade Winds & Saharan Harmattan (Blowing from NW Africa / Sahara across North Atlantic)
-  if (lat >= 5 && lat <= 33 && lng >= -86 && lng <= -10) {
-    const isQ1 = season === 'q1';
-    return {
-      vx: isQ1 ? -3.90 : -2.60,
-      vy: isQ1 ? 1.65 : 0.95,
-      type: 2,
-      force: isQ1 ? 2.40 : 1.55,
-      isWarm: false,
-      name: 'Northeast Trade Winds & Harmattan'
-    };
+  // 2. Mid-Latitude Westerlies (blowing eastward across North Atlantic and Europe)
+  // Standard Ferrel cell circulation from 30°N to 65°N+ with natural synoptic wave curvature
+  const westerliesVx = 3.80 + 0.35 * Math.sin((lng + 30) * 0.04);
+  const westerliesVy = -0.75 + 0.25 * Math.cos((lat - 45) * 0.1);
+
+  // 3. Northeast Trade Winds & Saharan Harmattan (Tropical North Atlantic 5°N to 26°N)
+  // Blowing west-southwest across the Atlantic basin toward the Caribbean and Guianas
+  const isQ1 = season === 'q1';
+  // Harmattan boost over West Africa & eastern tropical Atlantic in Q1
+  const harmattanInfluence = (isQ1 && lat >= 6 && lat <= 22 && lng >= -25 && lng <= 15) ? 0.35 : 0;
+  const neTradesVx = isQ1 ? -3.85 - harmattanInfluence : -2.85;
+  const neTradesVy = isQ1 ? 1.45 + harmattanInfluence * 0.5 : 0.85;
+
+  // 4. Southeast Trade Winds (0° to 35°S)
+  // Blowing steadily northwestward from Southern Africa across South Atlantic into Brazil
+  const isQ3 = season === 'q3';
+  const seTradesVx = isQ3 ? -4.10 : -3.00;
+  const seTradesVy = isQ3 ? -1.95 : -1.30;
+
+  // 5. Southern Roaring Forties (lat < -35°S)
+  const southernWesterliesVx = 4.30;
+  const southernWesterliesVy = -0.30;
+
+  // Seamless latitudinal blending function (smoothstep)
+  let vx: number;
+  let vy: number;
+  let windName: string;
+  let force: number;
+
+  if (lat >= 34) {
+    // Pure Mid-Latitude Westerlies (across North Atlantic, UK, France, Spain, Central Europe)
+    vx = westerliesVx;
+    vy = westerliesVy;
+    windName = 'Mid-Latitude Westerlies';
+    force = 2.1;
+  } else if (lat >= 22) {
+    // Subtropical High Pressure Ridge / Horse Latitudes (smooth transition between Trades & Westerlies)
+    const t = (lat - 22) / 12;
+    const smoothT = t * t * (3 - 2 * t); // Hermite smoothstep
+    vx = neTradesVx * (1 - smoothT) + westerliesVx * smoothT;
+    vy = neTradesVy * (1 - smoothT) + westerliesVy * smoothT;
+    windName = smoothT > 0.5 ? 'Mid-Latitude Westerlies' : 'Subtropical Transition (Horse Latitudes)';
+    force = 1.4 + 0.7 * smoothT;
+  } else if (lat >= 4) {
+    // Northeast Trade Winds & Harmattan
+    vx = neTradesVx;
+    vy = neTradesVy;
+    windName = isQ1 ? 'Northeast Trades & Saharan Harmattan' : 'Northeast Trade Winds';
+    force = isQ1 ? 2.3 : 1.6;
+  } else if (lat >= -4) {
+    // Intertropical Convergence Zone (ITCZ / Doldrums transition)
+    const t = (lat - (-4)) / 8;
+    const smoothT = t * t * (3 - 2 * t);
+    vx = seTradesVx * (1 - smoothT) + neTradesVx * smoothT;
+    vy = seTradesVy * (1 - smoothT) + neTradesVy * smoothT;
+    windName = 'Equatorial Doldrums (ITCZ)';
+    force = 0.95;
+  } else if (lat >= -34) {
+    // Southeast Trade Winds
+    vx = seTradesVx;
+    vy = seTradesVy;
+    windName = 'Southeast Trade Winds';
+    force = isQ3 ? 2.5 : 1.7;
+  } else {
+    // Transition to Southern Westerlies
+    const t = Math.max(0, Math.min(1, (-34 - lat) / 6));
+    const smoothT = t * t * (3 - 2 * t);
+    vx = seTradesVx * (1 - smoothT) + southernWesterliesVx * smoothT;
+    vy = seTradesVy * (1 - smoothT) + southernWesterliesVy * smoothT;
+    windName = 'Southern Ocean Westerlies';
+    force = 2.2;
   }
 
-  // 3. Southeast Trade Winds (Roaring from Southern Africa across South Atlantic into Brazil)
-  if (lat >= -36 && lat <= 4 && lng >= -50 && lng <= 18) {
-    const isQ3 = season === 'q3';
-    return {
-      vx: isQ3 ? -4.10 : -2.80,
-      vy: isQ3 ? -2.10 : -1.35,
-      type: 2,
-      force: isQ3 ? 2.60 : 1.70,
-      isWarm: false,
-      name: 'Southeast Trade Winds'
-    };
+  // Apply monsoon surge if active in Q3
+  if (monsoonWeight > 0.01) {
+    vx = vx * (1 - monsoonWeight) + monsoonVx * monsoonWeight;
+    vy = vy * (1 - monsoonWeight) + monsoonVy * monsoonWeight;
+    if (monsoonWeight > 0.45) {
+      windName = 'Southwest African Monsoon Surge';
+      force = Math.max(force, 2.4);
+    }
   }
 
-  // 4. Mid-Latitude Westerlies (North Atlantic sailing highway)
-  if (lat >= 34 && lat <= 58 && lng >= -85 && lng <= 5) {
-    return {
-      vx: 4.10,
-      vy: -1.25,
-      type: 2,
-      force: 2.10,
-      isWarm: false,
-      name: 'Mid-Latitude Westerlies'
-    };
-  }
-
-  // General tropical atmospheric flow
   return {
-    vx: -1.80,
-    vy: lat > 0 ? 0.35 : -0.35,
+    vx,
+    vy,
     type: 2,
-    force: 1.10,
+    force,
     isWarm: false,
-    name: 'Tropical Trade Wind Stream'
+    name: windName
   };
 }
 
