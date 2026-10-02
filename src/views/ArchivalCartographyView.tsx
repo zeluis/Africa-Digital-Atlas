@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   HISTORICAL_MAP_PLATES, 
@@ -11,7 +11,7 @@ import {
   SeasonalWindRegime 
 } from '../data/archivalCartographyData';
 import { HistoricalMapCurtainViewer } from '../components/cartography/HistoricalMapCurtainViewer';
-import { OceanCurrentParticleCanvas } from '../components/cartography/OceanCurrentParticleCanvas';
+import { OceanCurrentParticleCanvas, TelemetryData } from '../components/cartography/OceanCurrentParticleCanvas';
 import { AntiquePlateCanvas } from '../components/cartography/AntiquePlateCanvas';
 import { KingdomDynasticTreeModal } from '../components/cartography/KingdomDynasticTreeModal';
 import { KingdomArtifact3DViewerModal } from '../components/cartography/KingdomArtifact3DViewerModal';
@@ -96,9 +96,16 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
   const [showCurrents, setShowCurrents] = useState<boolean>(true);
   const [showWinds, setShowWinds] = useState<boolean>(true);
   const [isStreamlinesPlaying, setIsStreamlinesPlaying] = useState<boolean>(true);
+  const [speedMultiplier, setSpeedMultiplier] = useState<number>(1.0);
+  const [particleDensity, setParticleDensity] = useState<'low' | 'medium' | 'high'>('medium');
   const [streamlineDrawer, setStreamlineDrawer] = useState<'none' | 'diagnostics' | 'corridors' | 'commentary' | 'legend'>('none');
   const [streamlinesTheme, setStreamlinesTheme] = useState<'dark' | 'light'>('dark');
   const [copiedCitation, setCopiedCitation] = useState<string | null>(null);
+  const [telemetry, setTelemetry] = useState<TelemetryData | null>(null);
+
+  const handleTelemetryChange = useCallback((data: TelemetryData | null) => {
+    setTelemetry(data);
+  }, []);
 
   const activeSeason = SEASONAL_WIND_REGIMES.find(s => s.id === activeSeasonId) || SEASONAL_WIND_REGIMES[0];
   const activeHydroMetrics = SEASONAL_HYDRO_METRICS[activeSeasonId];
@@ -147,7 +154,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
           streamlinesTheme === 'dark' ? 'bg-[#040914]' : 'bg-[#FAF7F2]'
         }`}>
           {/* Main Top Floating Workbench & Attached Multi-Row HUD Unit */}
-          <div className="fixed top-[72px] sm:top-[76px] left-1/2 -translate-x-1/2 z-40 pointer-events-none flex flex-col items-center gap-1.5 w-[96%] max-w-[1240px]">
+          <div className="fixed top-[72px] sm:top-[76px] left-1/2 -translate-x-1/2 z-40 pointer-events-none flex flex-col items-center gap-1.5 w-[96%] max-w-[1440px]">
             {/* 1. Main Floating Switcher Bar */}
             <motion.div 
               layout
@@ -213,7 +220,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
               </div>
             </motion.div>
 
-            {/* 2. Directly Attached Multi-Row Unified HUD (Seamlessly positioned right below the main bar) */}
+            {/* 2. Directly Attached 3-Row Unified HUD (Seamlessly positioned right below the main bar) */}
             <motion.div 
               layout
               initial={{ opacity: 0, y: -8 }}
@@ -221,224 +228,357 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
               className={`pointer-events-auto w-full rounded-2xl backdrop-blur-2xl p-3 sm:p-3.5 flex flex-col gap-2.5 no-drag select-none transition-colors duration-300 ${
                 streamlinesTheme === 'light'
-                  ? 'bg-[#FAF7F2]/96 border border-[#DED6C9] shadow-[0_16px_45px_rgba(75,55,35,0.18)] text-stone-900'
-                  : 'bg-[#060D1A]/95 dark:bg-[#060D1A]/98 border border-cyan-500/35 shadow-[0_16px_45px_rgba(0,0,0,0.75)] text-slate-100'
+                  ? 'bg-white/98 border-2 border-stone-400 shadow-[0_16px_45px_rgba(0,0,0,0.18)] text-stone-950'
+                  : 'bg-[#060D1A]/98 border-2 border-cyan-500/60 shadow-[0_16px_45px_rgba(0,0,0,0.85)] text-slate-100'
               }`}
             >
-              {/* ROW 1: Quarter Selectors (Left) + Sliding Panel Toggles & Vector Controls (Right) */}
+              {/* ROW 1: Quarter Selectors + Drawer Toggles (Left) & Speed, Density & Vector Controls (Right) */}
               <div className="flex flex-wrap lg:flex-nowrap items-center justify-between gap-2.5">
-                {/* Left: Quarter Selector Tabs Q1 - Q4 */}
-                <div className={`flex items-center gap-1 p-0.5 rounded-xl text-[11px] font-mono shrink-0 border ${
-                  streamlinesTheme === 'light' ? 'bg-stone-200/80 border-stone-300' : 'bg-black/60 border-slate-800'
-                }`}>
-                  {SEASONAL_WIND_REGIMES.map(regime => (
-                    <button
-                      key={regime.id}
-                      type="button"
-                      onClick={() => setActiveSeasonId(regime.id as 'q1' | 'q2' | 'q3' | 'q4')}
-                      className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                        activeSeasonId === regime.id
-                          ? streamlinesTheme === 'light'
-                            ? 'bg-stone-900 text-amber-100 font-black shadow-xs'
-                            : 'bg-cyan-500 text-slate-950 font-black shadow-[0_0_14px_rgba(6,182,212,0.65)]'
-                          : streamlinesTheme === 'light'
-                            ? 'text-stone-700 hover:text-stone-950 hover:bg-white/60'
-                            : 'text-slate-400 hover:text-slate-100 hover:bg-white/5'
-                      }`}
-                      title={regime.seasonName}
-                    >
-                      <span className="font-extrabold">{regime.id.toUpperCase()}</span>
-                      <span className="text-[10px] opacity-85 font-normal">
-                        ({regime.months.split(' ')[0]})
-                      </span>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Right: Info Drawer Trigger Pills + Layer Controls */}
+                {/* Left Group: Quarterly Selectors + Info Panel Drawer Toggles */}
                 <div className="flex flex-wrap items-center gap-2 shrink-0">
-                  {/* Sliding Info Panel Pills */}
-                  <div className={`flex items-center gap-0.5 p-0.5 rounded-xl text-[10.5px] font-mono border ${
-                    streamlinesTheme === 'light' ? 'bg-stone-200/80 border-stone-300' : 'bg-black/50 border-slate-800'
+                  {/* Quarter Selector Tabs: Q1, Q2, Q3, Q4 */}
+                  <div className={`flex items-center gap-1 p-1 rounded-xl text-[11px] font-mono shrink-0 border-2 ${
+                    streamlinesTheme === 'light' ? 'bg-stone-100 border-stone-400' : 'bg-slate-900 border-slate-700'
+                  }`}>
+                    {SEASONAL_WIND_REGIMES.map(regime => (
+                      <button
+                        key={regime.id}
+                        type="button"
+                        onClick={() => setActiveSeasonId(regime.id as 'q1' | 'q2' | 'q3' | 'q4')}
+                        className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                          activeSeasonId === regime.id
+                            ? streamlinesTheme === 'light'
+                              ? 'bg-stone-950 text-amber-200 font-black shadow-xs'
+                              : 'bg-cyan-500 text-slate-950 font-black shadow-[0_0_14px_rgba(6,182,212,0.65)]'
+                            : streamlinesTheme === 'light'
+                              ? 'text-stone-900 hover:text-black hover:bg-stone-300/80 font-black'
+                              : 'text-slate-100 hover:text-white hover:bg-white/20 font-black'
+                        }`}
+                        title={regime.seasonName}
+                      >
+                        <span className="font-black text-xs tracking-wide">{regime.id.toUpperCase()}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className={`w-[1px] h-5 mx-0.5 hidden sm:block ${streamlinesTheme === 'light' ? 'bg-stone-400' : 'bg-slate-700'}`} />
+
+                  {/* Sliding Info Panel Drawer Toggles right beside quarterly selectors */}
+                  <div className={`flex items-center gap-1 p-1 rounded-xl text-[10.5px] font-mono shrink-0 border-2 ${
+                    streamlinesTheme === 'light' ? 'bg-stone-100 border-stone-400' : 'bg-slate-900 border-slate-700'
                   }`}>
                     <button
                       type="button"
-                      onClick={() => setStreamlineDrawer(p => p === 'diagnostics' ? 'none' : 'diagnostics')}
-                      className={`px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                      onClick={() => setStreamlineDrawer(curr => curr === 'diagnostics' ? 'none' : 'diagnostics')}
+                      className={`px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
                         streamlineDrawer === 'diagnostics'
                           ? streamlinesTheme === 'light'
-                            ? 'bg-cyan-100 text-cyan-950 border border-cyan-400 shadow-2xs'
-                            : 'bg-cyan-900/80 text-cyan-200 border border-cyan-400/50 shadow-xs'
+                            ? 'bg-stone-950 text-amber-200 border-stone-950 shadow-2xs font-black'
+                            : 'bg-cyan-500 text-slate-950 border-cyan-400 font-black shadow-xs'
                           : streamlinesTheme === 'light'
-                            ? 'text-stone-700 hover:text-stone-950 hover:bg-white/50'
-                            : 'text-slate-300 hover:text-white hover:bg-white/5'
+                            ? 'bg-white text-stone-950 hover:bg-stone-200 border-stone-400 font-black shadow-2xs'
+                            : 'bg-slate-800 text-slate-100 hover:bg-slate-700 hover:text-white border-slate-600 font-black shadow-xs'
                       }`}
-                      title="Dynamic TAST Meteorological & Mortality Badges"
+                      title="Toggle TAST Hydrodynamic Indices & Mortality Correlates"
                     >
-                      <Gauge className="w-3.5 h-3.5 text-cyan-500" />
+                      <Activity className={`w-3.5 h-3.5 shrink-0 ${
+                        streamlineDrawer === 'diagnostics'
+                          ? (streamlinesTheme === 'light' ? 'text-amber-200' : 'text-slate-950')
+                          : (streamlinesTheme === 'light' ? 'text-cyan-700' : 'text-cyan-300')
+                      }`} />
                       <span>TAST Indices</span>
                     </button>
 
                     <button
                       type="button"
-                      onClick={() => setStreamlineDrawer(p => p === 'corridors' ? 'none' : 'corridors')}
-                      className={`px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                      onClick={() => setStreamlineDrawer(curr => curr === 'corridors' ? 'none' : 'corridors')}
+                      className={`px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
                         streamlineDrawer === 'corridors'
                           ? streamlinesTheme === 'light'
-                            ? 'bg-emerald-100 text-emerald-950 border border-emerald-400 shadow-2xs'
-                            : 'bg-emerald-900/80 text-emerald-200 border border-emerald-400/50 shadow-xs'
+                            ? 'bg-stone-950 text-amber-200 border-stone-950 shadow-2xs font-black'
+                            : 'bg-cyan-500 text-slate-950 border-cyan-400 font-black shadow-xs'
                           : streamlinesTheme === 'light'
-                            ? 'text-stone-700 hover:text-stone-950 hover:bg-white/50'
-                            : 'text-slate-300 hover:text-white hover:bg-white/5'
+                            ? 'bg-white text-stone-950 hover:bg-stone-200 border-stone-400 font-black shadow-2xs'
+                            : 'bg-slate-800 text-slate-100 hover:bg-slate-700 hover:text-white border-slate-600 font-black shadow-xs'
                       }`}
-                      title="Passage Duration Matrix (4 Unified Corridors)"
+                      title="Toggle Transatlantic Sailing Corridors & Durations"
                     >
-                      <Clock className="w-3.5 h-3.5 text-emerald-500" />
+                      <Compass className={`w-3.5 h-3.5 shrink-0 ${
+                        streamlineDrawer === 'corridors'
+                          ? (streamlinesTheme === 'light' ? 'text-amber-200' : 'text-slate-950')
+                          : (streamlinesTheme === 'light' ? 'text-emerald-700' : 'text-emerald-300')
+                      }`} />
                       <span>Corridors</span>
                     </button>
 
                     <button
                       type="button"
-                      onClick={() => setStreamlineDrawer(p => p === 'commentary' ? 'none' : 'commentary')}
-                      className={`px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                      onClick={() => setStreamlineDrawer(curr => curr === 'commentary' ? 'none' : 'commentary')}
+                      className={`px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
                         streamlineDrawer === 'commentary'
                           ? streamlinesTheme === 'light'
-                            ? 'bg-indigo-100 text-indigo-950 border border-indigo-400 shadow-2xs'
-                            : 'bg-indigo-900/80 text-indigo-200 border border-indigo-400/50 shadow-xs'
+                            ? 'bg-stone-950 text-amber-200 border-stone-950 shadow-2xs font-black'
+                            : 'bg-cyan-500 text-slate-950 border-cyan-400 font-black shadow-xs'
                           : streamlinesTheme === 'light'
-                            ? 'text-stone-700 hover:text-stone-950 hover:bg-white/50'
-                            : 'text-slate-300 hover:text-white hover:bg-white/5'
+                            ? 'bg-white text-stone-950 hover:bg-stone-200 border-stone-400 font-black shadow-2xs'
+                            : 'bg-slate-800 text-slate-100 hover:bg-slate-700 hover:text-white border-slate-600 font-black shadow-xs'
                       }`}
-                      title="Prevailing Circulation & Hydrodynamic Determinism"
+                      title="Toggle Prevailing Oceanic Circulation Dynamics"
                     >
-                      <Activity className="w-3.5 h-3.5 text-indigo-500" />
+                      <Wind className={`w-3.5 h-3.5 shrink-0 ${
+                        streamlineDrawer === 'commentary'
+                          ? (streamlinesTheme === 'light' ? 'text-amber-200' : 'text-slate-950')
+                          : (streamlinesTheme === 'light' ? 'text-indigo-700' : 'text-cyan-300')
+                      }`} />
                       <span>Circulation</span>
                     </button>
 
                     <button
                       type="button"
-                      onClick={() => setStreamlineDrawer(p => p === 'legend' ? 'none' : 'legend')}
-                      className={`px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                      onClick={() => setStreamlineDrawer(curr => curr === 'legend' ? 'none' : 'legend')}
+                      className={`px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
                         streamlineDrawer === 'legend'
                           ? streamlinesTheme === 'light'
-                            ? 'bg-amber-100 text-amber-950 border border-amber-400 shadow-2xs'
-                            : 'bg-amber-900/80 text-amber-200 border border-amber-400/50 shadow-xs'
+                            ? 'bg-stone-950 text-amber-200 border-stone-950 shadow-2xs font-black'
+                            : 'bg-cyan-500 text-slate-950 border-cyan-400 font-black shadow-xs'
                           : streamlinesTheme === 'light'
-                            ? 'text-stone-700 hover:text-stone-950 hover:bg-white/50'
-                            : 'text-slate-300 hover:text-white hover:bg-white/5'
+                            ? 'bg-white text-stone-950 hover:bg-stone-200 border-stone-400 font-black shadow-2xs'
+                            : 'bg-slate-800 text-slate-100 hover:bg-slate-700 hover:text-white border-slate-600 font-black shadow-xs'
                       }`}
-                      title="Streamlines Taxonomy & Meteorological Legend"
+                      title="Toggle Hydrodynamic & Cartographic Legend"
                     >
-                      <Layers className="w-3.5 h-3.5 text-amber-500" />
+                      <Layers className={`w-3.5 h-3.5 shrink-0 ${
+                        streamlineDrawer === 'legend'
+                          ? (streamlinesTheme === 'light' ? 'text-amber-200' : 'text-slate-950')
+                          : (streamlinesTheme === 'light' ? 'text-amber-700' : 'text-amber-300')
+                      }`} />
                       <span>Legend</span>
                     </button>
                   </div>
+                </div>
 
-                  <div className={`w-[1px] h-5 mx-0.5 hidden sm:block ${streamlinesTheme === 'light' ? 'bg-stone-300' : 'bg-slate-800'}`} />
+                {/* Right Group: Simulation Controls (Speed, Density, Currents, Winds, Play/Pause) */}
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
+                  {/* Speed Multiplier Pills */}
+                  <div className={`flex items-center gap-0.5 p-0.5 rounded-xl text-[10.5px] font-mono border-2 ${
+                    streamlinesTheme === 'light' ? 'bg-stone-100 border-stone-400' : 'bg-slate-900 border-slate-700'
+                  }`}>
+                    <span className={`text-[9.5px] px-1.5 font-black uppercase tracking-wider ${
+                      streamlinesTheme === 'light' ? 'text-stone-950' : 'text-slate-200'
+                    }`}>Speed:</span>
+                    {[0.5, 1.0, 1.5, 2.0].map(s => (
+                      <button
+                        key={`top-speed-${s}`}
+                        type="button"
+                        onClick={() => setSpeedMultiplier(s)}
+                        className={`px-2 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                          speedMultiplier === s
+                            ? streamlinesTheme === 'light'
+                              ? 'bg-amber-700 text-white shadow-2xs font-black'
+                              : 'bg-amber-500 text-slate-950 font-black shadow-xs'
+                            : streamlinesTheme === 'light'
+                              ? 'text-stone-900 hover:text-black hover:bg-stone-300/80 font-black'
+                              : 'text-slate-200 hover:text-white hover:bg-white/20 font-black'
+                        }`}
+                        title={`Set particle velocity to ${s}x`}
+                      >
+                        {s}x
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Particle Density Pills */}
+                  <div className={`flex items-center gap-0.5 p-0.5 rounded-xl text-[10.5px] font-mono border-2 ${
+                    streamlinesTheme === 'light' ? 'bg-stone-100 border-stone-400' : 'bg-slate-900 border-slate-700'
+                  }`}>
+                    <span className={`text-[9.5px] px-1.5 font-black uppercase tracking-wider ${
+                      streamlinesTheme === 'light' ? 'text-stone-950' : 'text-slate-200'
+                    }`}>Density:</span>
+                    {(['low', 'medium', 'high'] as const).map(d => (
+                      <button
+                        key={`top-density-${d}`}
+                        type="button"
+                        onClick={() => setParticleDensity(d)}
+                        className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer capitalize ${
+                          particleDensity === d
+                            ? streamlinesTheme === 'light'
+                              ? 'bg-stone-950 text-amber-200 shadow-2xs font-black'
+                              : 'bg-cyan-500 text-slate-950 font-black shadow-xs'
+                            : streamlinesTheme === 'light'
+                              ? 'text-stone-900 hover:text-black hover:bg-stone-300/80 font-black'
+                              : 'text-slate-200 hover:text-white hover:bg-white/20 font-black'
+                        }`}
+                        title={`Set particle density to ${d}`}
+                      >
+                        {d === 'medium' ? 'Med' : d}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className={`w-[1px] h-5 mx-0.5 hidden sm:block ${streamlinesTheme === 'light' ? 'bg-stone-400' : 'bg-slate-700'}`} />
 
                   {/* Vector Layer Toggles: Currents / Trade Winds / Play-Pause */}
                   <div className="flex items-center gap-1.5 shrink-0">
                     <button
                       type="button"
                       onClick={() => setShowCurrents(v => !v)}
-                      className={`px-2.5 py-1.5 rounded-xl text-[10.5px] font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
+                      className={`px-2.5 py-1.5 rounded-xl text-[10.5px] font-mono font-black flex items-center gap-1.5 transition-all cursor-pointer border-2 ${
                         showCurrents
                           ? streamlinesTheme === 'light'
-                            ? 'bg-cyan-50 text-cyan-900 border-cyan-400 shadow-2xs'
-                            : 'bg-cyan-500/20 text-cyan-300 border-cyan-400/50 shadow-xs'
+                            ? 'bg-cyan-100 text-cyan-950 border-cyan-600 shadow-xs'
+                            : 'bg-cyan-500/30 text-cyan-200 border-cyan-400 shadow-xs'
                           : streamlinesTheme === 'light'
-                            ? 'bg-stone-100 text-stone-400 border-transparent line-through opacity-60'
-                            : 'bg-black/30 text-slate-500 border-transparent line-through opacity-60'
+                            ? 'bg-stone-100 text-stone-500 border-stone-300 line-through opacity-70'
+                            : 'bg-slate-900 text-slate-400 border-slate-700 line-through opacity-70'
                       }`}
                       title="Toggle Ocean Currents Vectors"
                     >
-                      <Waves className="w-3.5 h-3.5 text-cyan-500" />
+                      <Waves className="w-3.5 h-3.5 text-cyan-700 dark:text-cyan-400 shrink-0" />
                       <span>Currents</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setShowWinds(v => !v)}
-                      className={`px-2.5 py-1.5 rounded-xl text-[10.5px] font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
+                      className={`px-2.5 py-1.5 rounded-xl text-[10.5px] font-mono font-black flex items-center gap-1.5 transition-all cursor-pointer border-2 ${
                         showWinds
                           ? streamlinesTheme === 'light'
-                            ? 'bg-emerald-50 text-emerald-900 border-emerald-400 shadow-2xs'
-                            : 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50 shadow-xs'
+                            ? 'bg-emerald-100 text-emerald-950 border-emerald-600 shadow-xs'
+                            : 'bg-emerald-500/30 text-emerald-200 border-emerald-400 shadow-xs'
                           : streamlinesTheme === 'light'
-                            ? 'bg-stone-100 text-stone-400 border-transparent line-through opacity-60'
-                            : 'bg-black/30 text-slate-500 border-transparent line-through opacity-60'
+                            ? 'bg-stone-100 text-stone-500 border-stone-300 line-through opacity-70'
+                            : 'bg-slate-900 text-slate-400 border-slate-700 line-through opacity-70'
                       }`}
                       title="Toggle Atmospheric Trade Winds Vectors"
                     >
-                      <Wind className="w-3.5 h-3.5 text-emerald-500" />
+                      <Wind className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
                       <span>Winds</span>
                     </button>
 
+                    {/* Play/Pause Button */}
                     <button
                       type="button"
                       onClick={() => setIsStreamlinesPlaying(v => !v)}
-                      className={`p-1.5 rounded-xl transition-all cursor-pointer border ${
+                      className={`p-1.5 rounded-xl transition-all cursor-pointer border-2 ${
                         streamlinesTheme === 'light'
-                          ? 'bg-stone-100 hover:bg-stone-200 text-stone-800 border-stone-300'
-                          : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                          ? 'bg-white hover:bg-stone-100 text-stone-950 border-stone-400 shadow-2xs'
+                          : 'bg-slate-900 hover:bg-slate-800 text-slate-100 border-slate-600 shadow-xs'
                       }`}
                       title={isStreamlinesPlaying ? 'Pause Hydrodynamic Simulation' : 'Resume Hydrodynamic Simulation'}
                     >
-                      {isStreamlinesPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 text-cyan-500" />}
+                      {isStreamlinesPlaying ? (
+                        <Pause className={`w-3.5 h-3.5 ${streamlinesTheme === 'light' ? 'text-stone-950' : 'text-slate-100'}`} />
+                      ) : (
+                        <Play className="w-3.5 h-3.5 text-cyan-500" />
+                      )}
                     </button>
                   </div>
                 </div>
               </div>
 
-              {/* ROW 2: FULL DEDICATED ROW - Seasonal Period Title & ITCZ / Climate Indices */}
-              <div className={`pt-2.5 border-t flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 text-xs ${
-                streamlinesTheme === 'light' ? 'border-stone-200' : 'border-slate-800/80'
+              {/* ROW 2: Seasonal Title & High-Contrast Live Coordinates / Winds Telemetry */}
+              <div className={`pt-2.5 border-t flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5 text-xs ${
+                streamlinesTheme === 'light' ? 'border-stone-300' : 'border-slate-800'
               }`}>
                 {/* Left: Seasonal Title & Months */}
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-mono text-[10.5px] font-bold border shrink-0 ${
+                <div className="flex items-center gap-2.5 min-w-0 shrink-0">
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-mono text-[11px] font-black border-2 shrink-0 ${
                     streamlinesTheme === 'light' 
-                      ? 'bg-cyan-100 text-cyan-900 border-cyan-300' 
-                      : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                      ? 'bg-cyan-100 text-cyan-950 border-cyan-500' 
+                      : 'bg-cyan-500/30 text-cyan-200 border-cyan-400'
                   }`}>
-                    <Sparkles className="w-3 h-3 text-cyan-500" />
+                    <Sparkles className={`w-3.5 h-3.5 ${streamlinesTheme === 'light' ? 'text-cyan-700' : 'text-cyan-300'}`} />
                     {activeSeason.id.toUpperCase()} • {activeSeason.months}
                   </span>
-                  <h2 className={`font-serif font-bold text-sm sm:text-base tracking-tight truncate ${
-                    streamlinesTheme === 'light' ? 'text-stone-900' : 'text-slate-100'
+                  <h2 className={`font-serif font-black text-sm sm:text-base tracking-tight truncate ${
+                    streamlinesTheme === 'light' ? 'text-stone-950' : 'text-white'
                   }`}>
                     {activeSeason.seasonName}
                   </h2>
                 </div>
 
-                {/* Right: Meteorological Indices Chips */}
-                <div className={`flex flex-wrap items-center gap-2 text-[10.5px] font-mono shrink-0 ${
-                  streamlinesTheme === 'light' ? 'text-stone-700' : 'text-slate-300'
-                }`}>
-                  <span className={`px-2 py-0.5 rounded-lg border flex items-center gap-1.5 ${
-                    streamlinesTheme === 'light' ? 'bg-stone-100 border-stone-300' : 'bg-black/40 border-slate-800'
+                {/* Right: High-Contrast Live Cursor Coordinates & Current/Wind Flow Telemetry Badge */}
+                <div className="flex items-center gap-2 shrink-0 font-mono text-[11px]">
+                  <div className={`px-3.5 py-1.5 rounded-xl border-2 flex items-center gap-2.5 transition-colors ${
+                    streamlinesTheme === 'light' 
+                      ? 'bg-white border-stone-400 text-stone-950 shadow-sm font-black' 
+                      : 'bg-slate-900 border-cyan-400 text-white shadow-sm font-black'
                   }`}>
-                    <span className="w-2 h-2 rounded-full bg-cyan-400 shrink-0 animate-pulse" />
-                    <span>ITCZ: <strong className={streamlinesTheme === 'light' ? "text-cyan-800 font-bold" : "text-cyan-300 font-bold"}>{activeSeason.itczPosition}</strong></span>
-                  </span>
+                    <span className={`flex items-center gap-1.5 font-black shrink-0 ${
+                      streamlinesTheme === 'light' ? 'text-stone-950' : 'text-cyan-300'
+                    }`}>
+                      <Compass className={`w-3.5 h-3.5 ${streamlinesTheme === 'light' ? 'text-cyan-700' : 'text-cyan-300'}`} />
+                      <span>
+                        {telemetry 
+                          ? `${Math.abs(telemetry.lat).toFixed(1)}°${telemetry.lat >= 0 ? 'N' : 'S'}, ${Math.abs(telemetry.lng).toFixed(1)}°${telemetry.lng >= 0 ? 'E' : 'W'}` 
+                          : 'Coordinates: Hover Canvas'}
+                      </span>
+                    </span>
 
-                  <span className={`px-2 py-0.5 rounded-lg border flex items-center gap-1.5 ${
-                    streamlinesTheme === 'light' ? 'bg-stone-100 border-stone-300' : 'bg-black/40 border-slate-800'
-                  }`}>
-                    <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                    <span>Harmattan: <strong className={streamlinesTheme === 'light' ? "text-amber-800 font-bold" : "text-amber-300 font-bold"}>{activeSeason.harmattanIntensity}</strong></span>
-                  </span>
+                    {telemetry?.currentName && (
+                      <>
+                        <span className="opacity-40">•</span>
+                        <span className={`truncate max-w-[170px] font-black ${
+                          streamlinesTheme === 'light' ? 'text-blue-950' : 'text-sky-300'
+                        }`}>{telemetry.currentName}</span>
+                      </>
+                    )}
 
-                  <span className={`px-2 py-0.5 rounded-lg border flex items-center gap-1.5 max-w-sm sm:max-w-md truncate ${
-                    streamlinesTheme === 'light' ? 'bg-stone-100 border-stone-300' : 'bg-black/40 border-slate-800'
-                  }`}>
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                    <span className="truncate">Trades: <strong className={streamlinesTheme === 'light' ? "text-emerald-800 font-bold" : "text-emerald-300 font-bold"}>{activeSeason.tradeWindsBehavior.split(';')[0]}</strong></span>
-                  </span>
+                    {telemetry?.windName && (
+                      <>
+                        <span className="opacity-40">•</span>
+                        <span className={`truncate max-w-[170px] font-black ${
+                          streamlinesTheme === 'light' ? 'text-emerald-950' : 'text-emerald-300'
+                        }`}>{telemetry.windName}</span>
+                      </>
+                    )}
+
+                    {telemetry?.flowSpeed && (
+                      <>
+                        <span className="opacity-40">•</span>
+                        <span className={`font-black ${
+                          streamlinesTheme === 'light' ? 'text-amber-950' : 'text-amber-300'
+                        }`}>{telemetry.flowSpeed}</span>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* ROW 3: Expandable Info Drawers */}
+              {/* ROW 3: Dedicated Row for ITCZ, Harmattan, and Trade Winds Meteorological Indicators */}
+              <div className={`pt-2.5 border-t flex flex-wrap items-center justify-between gap-2.5 text-xs font-mono ${
+                streamlinesTheme === 'light' ? 'border-stone-300' : 'border-slate-800'
+              }`}>
+                {/* Left: ITCZ & Harmattan Indicators */}
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
+                  <span className={`px-3 py-1.5 rounded-xl border-2 flex items-center gap-2 font-bold ${
+                    streamlinesTheme === 'light' ? 'bg-white border-cyan-500 text-stone-950 shadow-sm' : 'bg-slate-900 border-cyan-400 text-white shadow-sm'
+                  }`}>
+                    <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 shrink-0 animate-pulse" />
+                    <span className={`font-bold ${streamlinesTheme === 'light' ? 'text-stone-950' : 'text-slate-200'}`}>ITCZ Position:</span>
+                    <strong className={streamlinesTheme === 'light' ? "text-cyan-950 font-black" : "text-cyan-300 font-black"}>{activeSeason.itczPosition}</strong>
+                  </span>
+
+                  <span className={`px-3 py-1.5 rounded-xl border-2 flex items-center gap-2 font-bold ${
+                    streamlinesTheme === 'light' ? 'bg-white border-amber-500 text-stone-950 shadow-sm' : 'bg-slate-900 border-amber-400 text-white shadow-sm'
+                  }`}>
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" />
+                    <span className={`font-bold ${streamlinesTheme === 'light' ? 'text-stone-950' : 'text-slate-200'}`}>Harmattan Outflow:</span>
+                    <strong className={streamlinesTheme === 'light' ? "text-amber-950 font-black" : "text-amber-300 font-black"}>{activeSeason.harmattanIntensity}</strong>
+                  </span>
+                </div>
+
+                {/* Right: Prevailing Trade Winds Regime */}
+                <div className={`px-3 py-1.5 rounded-xl border-2 flex items-center gap-2 max-w-xl truncate font-bold ${
+                  streamlinesTheme === 'light' ? 'bg-white border-emerald-600 text-stone-950 shadow-sm' : 'bg-slate-900 border-emerald-400 text-white shadow-sm'
+                }`}>
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
+                  <span className={`font-bold shrink-0 ${streamlinesTheme === 'light' ? 'text-stone-950' : 'text-slate-200'}`}>Prevailing Winds:</span>
+                  <strong className={`truncate ${streamlinesTheme === 'light' ? "text-emerald-950 font-black" : "text-emerald-300 font-black"}`}>{activeSeason.tradeWindsBehavior}</strong>
+                </div>
+              </div>
+
+              {/* Expandable Info Drawers (High-Contrast, Explicit theme text, Editorial Corridors typography) */}
               <AnimatePresence mode="wait">
                 {streamlineDrawer === 'diagnostics' && (
                   <motion.div
@@ -447,50 +587,84 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                     animate={{ opacity: 1, height: 'auto', y: 0 }}
                     exit={{ opacity: 0, height: 0, y: -6 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                    className={`overflow-hidden pt-2.5 border-t text-xs ${streamlinesTheme === 'light' ? 'border-stone-200' : 'border-slate-800/80'}`}
+                    className={`overflow-hidden pt-2.5 border-t text-xs font-sans ${streamlinesTheme === 'light' ? 'border-stone-300' : 'border-slate-800'}`}
                   >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 font-mono">
-                      <div className={`p-3 rounded-xl border ${
-                        streamlinesTheme === 'light' ? 'bg-cyan-50/80 border-cyan-200 text-cyan-950' : 'bg-cyan-950/60 border-cyan-800/60 text-cyan-200'
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 font-sans">
+                      {/* 1. Wind Field */}
+                      <div className={`p-3.5 rounded-xl border-2 flex flex-col justify-between ${
+                        streamlinesTheme === 'light' ? 'bg-white border-cyan-500 text-stone-950 shadow-sm' : 'bg-slate-900 border-cyan-400 text-white shadow-sm'
                       }`}>
-                        <div className="text-[10px] uppercase tracking-wider text-cyan-600 dark:text-cyan-400 font-bold flex items-center gap-1.5">
-                          <Wind className="w-3.5 h-3.5" />
-                          Wind Field &amp; Regime
+                        <div>
+                          <div className={`text-xs uppercase tracking-wider font-black flex items-center gap-1.5 font-sans ${
+                            streamlinesTheme === 'light' ? 'text-stone-950' : 'text-cyan-300'
+                          }`}>
+                            <Wind className={`w-4 h-4 ${streamlinesTheme === 'light' ? 'text-cyan-700' : 'text-cyan-400'}`} />
+                            Wind Field &amp; Regime
+                          </div>
+                          <div className={`font-serif font-black text-xl sm:text-2xl mt-1 tracking-tight ${
+                            streamlinesTheme === 'light' ? 'text-stone-950' : 'text-white'
+                          }`}>{activeHydroMetrics.tastCorrelations.windSpeedDisplay}</div>
                         </div>
-                        <div className="font-bold text-sm mt-1">{activeHydroMetrics.tastCorrelations.windSpeedDisplay}</div>
-                        <div className="text-[10px] opacity-80 mt-0.5 truncate">{activeHydroMetrics.tastCorrelations.windName}</div>
+                        <div className={`text-xs font-bold mt-1.5 font-sans leading-relaxed ${
+                          streamlinesTheme === 'light' ? 'text-stone-900' : 'text-slate-200'
+                        }`}>{activeHydroMetrics.tastCorrelations.windName}</div>
                       </div>
 
-                      <div className={`p-3 rounded-xl border ${
-                        streamlinesTheme === 'light' ? 'bg-amber-50/80 border-amber-200 text-amber-950' : 'bg-amber-950/60 border-amber-800/60 text-amber-200'
+                      {/* 2. Hold Microclimate */}
+                      <div className={`p-3.5 rounded-xl border-2 flex flex-col justify-between ${
+                        streamlinesTheme === 'light' ? 'bg-white border-amber-500 text-stone-950 shadow-sm' : 'bg-slate-900 border-amber-400 text-white shadow-sm'
                       }`}>
-                        <div className="text-[10px] uppercase tracking-wider text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1.5">
-                          <Thermometer className="w-3.5 h-3.5" />
-                          Hold Microclimate &amp; Temp
+                        <div>
+                          <div className={`text-xs uppercase tracking-wider font-black flex items-center gap-1.5 font-sans ${
+                            streamlinesTheme === 'light' ? 'text-stone-950' : 'text-amber-300'
+                          }`}>
+                            <Thermometer className={`w-4 h-4 ${streamlinesTheme === 'light' ? 'text-amber-700' : 'text-amber-400'}`} />
+                            Hold Microclimate &amp; Temp
+                          </div>
+                          <div className={`font-serif font-black text-xl sm:text-2xl mt-1 tracking-tight ${
+                            streamlinesTheme === 'light' ? 'text-stone-950' : 'text-white'
+                          }`}>{activeHydroMetrics.tastCorrelations.holdTemperature}</div>
                         </div>
-                        <div className="font-bold text-sm mt-1">{activeHydroMetrics.tastCorrelations.holdTemperature}</div>
-                        <div className="text-[10px] opacity-80 mt-0.5 truncate">Severe below-deck thermal stress</div>
+                        <div className={`text-xs font-bold mt-1.5 font-sans leading-relaxed ${
+                          streamlinesTheme === 'light' ? 'text-stone-900' : 'text-slate-200'
+                        }`}>Severe below-deck thermal stress</div>
                       </div>
 
-                      <div className={`p-3 rounded-xl border ${
-                        streamlinesTheme === 'light' ? 'bg-rose-50/80 border-rose-200 text-rose-950' : 'bg-rose-950/60 border-rose-800/60 text-rose-200'
+                      {/* 3. Middle Passage Mortality Rate (Full Text Visible, No Truncation) */}
+                      <div className={`p-3.5 rounded-xl border-2 flex flex-col justify-between ${
+                        streamlinesTheme === 'light' ? 'bg-white border-rose-500 text-stone-950 shadow-sm' : 'bg-slate-900 border-rose-400 text-white shadow-sm'
                       }`}>
-                        <div className="text-[10px] uppercase tracking-wider text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1.5">
-                          <Skull className="w-3.5 h-3.5" />
-                          Middle Passage Mortality Rate
+                        <div>
+                          <div className={`text-xs uppercase tracking-wider font-black flex items-center gap-1.5 font-sans ${
+                            streamlinesTheme === 'light' ? 'text-stone-950' : 'text-rose-300'
+                          }`}>
+                            <Skull className={`w-4 h-4 ${streamlinesTheme === 'light' ? 'text-rose-700' : 'text-rose-400'}`} />
+                            Middle Passage Mortality Rate
+                          </div>
+                          <div className={`font-serif font-black text-xl sm:text-2xl mt-1 tracking-tight ${
+                            streamlinesTheme === 'light' ? 'text-stone-950' : 'text-white'
+                          }`}>{activeHydroMetrics.tastCorrelations.mortalityRate}</div>
                         </div>
-                        <div className="font-bold text-sm mt-1">{activeHydroMetrics.tastCorrelations.mortalityRate}</div>
-                        <div className="text-[10px] opacity-80 mt-0.5 truncate">Share of departures: {activeHydroMetrics.tastCorrelations.departureShare}</div>
+                        <div className={`text-xs font-bold mt-1.5 font-sans leading-relaxed ${
+                          streamlinesTheme === 'light' ? 'text-stone-900' : 'text-slate-200'
+                        }`}>Share of departures: {activeHydroMetrics.tastCorrelations.departureShare}</div>
                       </div>
 
-                      <div className={`p-3 rounded-xl border ${
-                        streamlinesTheme === 'light' ? 'bg-stone-100/90 border-stone-300 text-stone-800' : 'bg-slate-900/80 border-slate-800 text-slate-300'
+                      {/* 4. Epidemiological Determinism (Full Text Visible, No Clipping) */}
+                      <div className={`p-3.5 rounded-xl border-2 flex flex-col justify-between ${
+                        streamlinesTheme === 'light' ? 'bg-white border-stone-400 text-stone-950 shadow-sm' : 'bg-slate-900 border-slate-600 text-white shadow-sm'
                       }`}>
-                        <div className="text-[10px] uppercase tracking-wider text-stone-500 dark:text-slate-400 font-bold flex items-center gap-1.5">
-                          <Info className="w-3.5 h-3.5 text-cyan-500" />
-                          Epidemiological Determinism
+                        <div>
+                          <div className={`text-xs uppercase tracking-wider font-black flex items-center gap-1.5 font-sans ${
+                            streamlinesTheme === 'light' ? 'text-stone-950' : 'text-cyan-300'
+                          }`}>
+                            <Info className={`w-4 h-4 ${streamlinesTheme === 'light' ? 'text-cyan-700' : 'text-cyan-400'}`} />
+                            Epidemiological Determinism
+                          </div>
                         </div>
-                        <p className="text-[10px] leading-snug mt-1 opacity-90 line-clamp-2">
+                        <p className={`text-xs leading-relaxed mt-1.5 font-sans font-semibold ${
+                          streamlinesTheme === 'light' ? 'text-stone-950' : 'text-slate-100'
+                        }`}>
                           {activeHydroMetrics.tastCorrelations.climateImpactNote}
                         </p>
                       </div>
@@ -505,39 +679,103 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                     animate={{ opacity: 1, height: 'auto', y: 0 }}
                     exit={{ opacity: 0, height: 0, y: -6 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                    className={`overflow-hidden pt-2.5 border-t text-xs ${streamlinesTheme === 'light' ? 'border-stone-200' : 'border-slate-800/80'}`}
+                    className={`overflow-hidden pt-2.5 border-t text-xs font-sans ${streamlinesTheme === 'light' ? 'border-stone-300' : 'border-slate-800'}`}
                   >
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 font-mono">
-                      <div className={`p-3 rounded-xl border ${streamlinesTheme === 'light' ? 'bg-stone-100/90 border-stone-300' : 'bg-slate-900/80 border-slate-800'}`}>
-                        <div className="text-[10px] uppercase opacity-60 truncate">1. Senegambia ➔ Caribbean</div>
-                        <div className={`text-base font-serif font-black mt-1 ${streamlinesTheme === 'light' ? 'text-cyan-800' : 'text-cyan-300'}`}>
-                          {activeSeason.transatlanticPassageDurationDays.senegambiaToCaribbean} <span className="text-[10px] font-mono font-normal opacity-70">days</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 font-sans">
+                      {/* Corridor 1 */}
+                      <div className={`p-4 rounded-xl border-2 flex flex-col justify-between ${
+                        streamlinesTheme === 'light' ? 'bg-white border-cyan-500 text-stone-950 shadow-sm' : 'bg-slate-900 border-cyan-400 text-white shadow-sm'
+                      }`}>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className={`text-xs font-sans uppercase font-black tracking-wide ${
+                            streamlinesTheme === 'light' ? 'text-stone-950' : 'text-cyan-300'
+                          }`}>Senegambia ➔ Caribbean</span>
+                          <span className={`text-2xl sm:text-3xl font-serif font-black leading-none shrink-0 ${
+                            streamlinesTheme === 'light' ? 'text-stone-400' : 'text-slate-500'
+                          }`}>01</span>
                         </div>
-                        <div className="text-[9.5px] opacity-60 mt-0.5">Canary Current + NE Trades</div>
+                        <div className={`text-3xl sm:text-4xl font-serif font-black my-2 tracking-tight ${
+                          streamlinesTheme === 'light' ? 'text-cyan-950' : 'text-cyan-200'
+                        }`}>
+                          {activeSeason.transatlanticPassageDurationDays.senegambiaToCaribbean} <span className={`text-xs font-sans font-black uppercase tracking-wider ${
+                            streamlinesTheme === 'light' ? 'text-stone-700' : 'text-cyan-400'
+                          }`}>days transit</span>
+                        </div>
+                        <div className={`text-xs font-sans font-bold pt-1.5 border-t ${
+                          streamlinesTheme === 'light' ? 'border-stone-200 text-stone-900' : 'border-slate-800 text-slate-200'
+                        }`}>Canary Current + NE Trades</div>
                       </div>
 
-                      <div className={`p-3 rounded-xl border ${streamlinesTheme === 'light' ? 'bg-stone-100/90 border-stone-300' : 'bg-slate-900/80 border-slate-800'}`}>
-                        <div className="text-[10px] uppercase opacity-60 truncate">2. Benin ➔ Bahia</div>
-                        <div className={`text-base font-serif font-black mt-1 ${streamlinesTheme === 'light' ? 'text-amber-800' : 'text-amber-300'}`}>
-                          {activeSeason.transatlanticPassageDurationDays.bightOfBeninToBahia} <span className="text-[10px] font-mono font-normal opacity-70">days</span>
+                      {/* Corridor 2 */}
+                      <div className={`p-4 rounded-xl border-2 flex flex-col justify-between ${
+                        streamlinesTheme === 'light' ? 'bg-white border-amber-500 text-stone-950 shadow-sm' : 'bg-slate-900 border-amber-400 text-white shadow-sm'
+                      }`}>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className={`text-xs font-sans uppercase font-black tracking-wide ${
+                            streamlinesTheme === 'light' ? 'text-stone-950' : 'text-amber-300'
+                          }`}>Benin ➔ Bahia</span>
+                          <span className={`text-2xl sm:text-3xl font-serif font-black leading-none shrink-0 ${
+                            streamlinesTheme === 'light' ? 'text-stone-400' : 'text-slate-500'
+                          }`}>02</span>
                         </div>
-                        <div className="text-[9.5px] opacity-60 mt-0.5">Equatorial Flow Vector</div>
+                        <div className={`text-3xl sm:text-4xl font-serif font-black my-2 tracking-tight ${
+                          streamlinesTheme === 'light' ? 'text-amber-950' : 'text-amber-200'
+                        }`}>
+                          {activeSeason.transatlanticPassageDurationDays.bightOfBeninToBahia} <span className={`text-xs font-sans font-black uppercase tracking-wider ${
+                            streamlinesTheme === 'light' ? 'text-stone-700' : 'text-amber-400'
+                          }`}>days transit</span>
+                        </div>
+                        <div className={`text-xs font-sans font-bold pt-1.5 border-t ${
+                          streamlinesTheme === 'light' ? 'border-stone-200 text-stone-900' : 'border-slate-800 text-slate-200'
+                        }`}>Equatorial Flow Vector</div>
                       </div>
 
-                      <div className={`p-2.5 rounded-xl border ${streamlinesTheme === 'light' ? 'bg-emerald-50/90 border-emerald-300' : 'bg-emerald-950/60 border-emerald-700/60'}`}>
-                        <div className="text-[10px] uppercase text-emerald-700 dark:text-emerald-400 font-bold truncate">3. Angola ➔ Rio (Fastest)</div>
-                        <div className={`text-base font-serif font-black mt-1 ${streamlinesTheme === 'light' ? 'text-emerald-800' : 'text-emerald-300'}`}>
-                          {activeSeason.transatlanticPassageDurationDays.angolaToRioDeJaneiro} <span className="text-[10px] font-mono font-normal opacity-70">days</span>
+                      {/* Corridor 3 */}
+                      <div className={`p-4 rounded-xl border-2 flex flex-col justify-between ${
+                        streamlinesTheme === 'light' ? 'bg-white border-emerald-600 text-stone-950 shadow-sm' : 'bg-slate-900 border-emerald-400 text-white shadow-sm'
+                      }`}>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className={`text-xs font-sans uppercase font-black tracking-wide ${
+                            streamlinesTheme === 'light' ? 'text-stone-950' : 'text-emerald-300'
+                          }`}>Angola ➔ Rio (Fastest)</span>
+                          <span className={`text-2xl sm:text-3xl font-serif font-black leading-none shrink-0 ${
+                            streamlinesTheme === 'light' ? 'text-stone-400' : 'text-slate-500'
+                          }`}>03</span>
                         </div>
-                        <div className="text-[9.5px] text-emerald-600 dark:text-emerald-400/80 mt-0.5">South Atlantic Gyre Conveyor</div>
+                        <div className={`text-3xl sm:text-4xl font-serif font-black my-2 tracking-tight ${
+                          streamlinesTheme === 'light' ? 'text-emerald-950' : 'text-emerald-200'
+                        }`}>
+                          {activeSeason.transatlanticPassageDurationDays.angolaToRioDeJaneiro} <span className={`text-xs font-sans font-black uppercase tracking-wider ${
+                            streamlinesTheme === 'light' ? 'text-stone-700' : 'text-emerald-400'
+                          }`}>days transit</span>
+                        </div>
+                        <div className={`text-xs font-sans font-bold pt-1.5 border-t ${
+                          streamlinesTheme === 'light' ? 'border-stone-200 text-stone-900' : 'border-slate-800 text-slate-200'
+                        }`}>South Atlantic Gyre Conveyor</div>
                       </div>
 
-                      <div className={`p-3 rounded-xl border ${streamlinesTheme === 'light' ? 'bg-stone-100/90 border-stone-300' : 'bg-slate-900/80 border-slate-800'}`}>
-                        <div className="text-[10px] uppercase opacity-60 truncate">4. Mozambique ➔ Brazil</div>
-                        <div className={`text-base font-serif font-black mt-1 ${streamlinesTheme === 'light' ? 'text-rose-800' : 'text-rose-300'}`}>
-                          {activeSeason.transatlanticPassageDurationDays.mozambiqueToBrazil} <span className="text-[10px] font-mono font-normal opacity-70">days</span>
+                      {/* Corridor 4 */}
+                      <div className={`p-4 rounded-xl border-2 flex flex-col justify-between ${
+                        streamlinesTheme === 'light' ? 'bg-white border-rose-500 text-stone-950 shadow-sm' : 'bg-slate-900 border-rose-400 text-white shadow-sm'
+                      }`}>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className={`text-xs font-sans uppercase font-black tracking-wide ${
+                            streamlinesTheme === 'light' ? 'text-stone-950' : 'text-rose-300'
+                          }`}>Mozambique ➔ Brazil</span>
+                          <span className={`text-2xl sm:text-3xl font-serif font-black leading-none shrink-0 ${
+                            streamlinesTheme === 'light' ? 'text-stone-400' : 'text-slate-500'
+                          }`}>04</span>
                         </div>
-                        <div className="text-[9.5px] opacity-60 mt-0.5">Indian Ocean Cape Rounding</div>
+                        <div className={`text-3xl sm:text-4xl font-serif font-black my-2 tracking-tight ${
+                          streamlinesTheme === 'light' ? 'text-rose-950' : 'text-rose-200'
+                        }`}>
+                          {activeSeason.transatlanticPassageDurationDays.mozambiqueToBrazil} <span className={`text-xs font-sans font-black uppercase tracking-wider ${
+                            streamlinesTheme === 'light' ? 'text-stone-700' : 'text-rose-400'
+                          }`}>days transit</span>
+                        </div>
+                        <div className={`text-xs font-sans font-bold pt-1.5 border-t ${
+                          streamlinesTheme === 'light' ? 'border-stone-200 text-stone-900' : 'border-slate-800 text-slate-200'
+                        }`}>Indian Ocean Cape Rounding</div>
                       </div>
                     </div>
                   </motion.div>
@@ -550,23 +788,27 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                     animate={{ opacity: 1, height: 'auto', y: 0 }}
                     exit={{ opacity: 0, height: 0, y: -6 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                    className={`overflow-hidden pt-2.5 border-t text-xs font-mono ${streamlinesTheme === 'light' ? 'border-stone-200' : 'border-slate-800/80'}`}
+                    className={`overflow-hidden pt-2.5 border-t text-xs font-sans ${streamlinesTheme === 'light' ? 'border-stone-300' : 'border-slate-800'}`}
                   >
-                    <div className={`p-3.5 rounded-xl border flex flex-col md:flex-row items-start md:items-center justify-between gap-3 ${
-                      streamlinesTheme === 'light' ? 'bg-indigo-50/80 border-indigo-200 text-indigo-950' : 'bg-indigo-950/40 border-indigo-800/50 text-indigo-100'
+                    <div className={`p-4 rounded-xl border-2 flex flex-col md:flex-row items-start md:items-center justify-between gap-3.5 ${
+                      streamlinesTheme === 'light' ? 'bg-white border-stone-400 text-stone-950 shadow-sm' : 'bg-slate-900 border-cyan-400 text-white shadow-sm'
                     }`}>
                       <div className="space-y-1">
-                        <div className="text-[10.5px] uppercase font-bold text-indigo-600 dark:text-indigo-300 flex items-center gap-1.5">
-                          <Activity className="w-4 h-4 text-indigo-500" />
+                        <div className={`text-xs sm:text-sm uppercase font-black flex items-center gap-2 font-sans ${
+                          streamlinesTheme === 'light' ? 'text-stone-950' : 'text-cyan-300'
+                        }`}>
+                          <Activity className={`w-4 h-4 ${streamlinesTheme === 'light' ? 'text-cyan-700' : 'text-cyan-400'}`} />
                           Prevailing Circulation Dynamics &amp; Hydrodynamic Determinism
                         </div>
-                        <p className="text-[11px] leading-relaxed max-w-4xl opacity-90">
+                        <p className={`text-xs sm:text-sm leading-relaxed max-w-4xl font-semibold font-sans ${
+                          streamlinesTheme === 'light' ? 'text-stone-950' : 'text-slate-100'
+                        }`}>
                           {activeHydroMetrics.dominantVectorNote}
                         </p>
                       </div>
                       <div className="shrink-0 text-right">
-                        <span className={`px-2.5 py-1 rounded-full text-[10.5px] font-bold border ${
-                          streamlinesTheme === 'light' ? 'bg-indigo-100 text-indigo-900 border-indigo-300' : 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'
+                        <span className={`px-3 py-1.5 rounded-full text-xs font-black border-2 font-sans ${
+                          streamlinesTheme === 'light' ? 'bg-stone-100 text-stone-950 border-stone-400 shadow-2xs' : 'bg-slate-800 text-cyan-200 border-cyan-500 shadow-xs'
                         }`}>
                           Harmattan: {activeSeason.harmattanIntensity}
                         </span>
@@ -582,30 +824,33 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                     animate={{ opacity: 1, height: 'auto', y: 0 }}
                     exit={{ opacity: 0, height: 0, y: -6 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                    className={`overflow-hidden pt-2.5 border-t text-xs font-mono ${streamlinesTheme === 'light' ? 'border-stone-200' : 'border-slate-800/80'}`}
+                    className={`overflow-hidden pt-2.5 border-t text-xs font-sans ${streamlinesTheme === 'light' ? 'border-stone-300' : 'border-slate-800'}`}
                   >
-                    <div className={`flex flex-col md:flex-row items-start md:items-center justify-between gap-3 p-3 rounded-xl border ${
-                      streamlinesTheme === 'light' ? 'bg-stone-100/90 border-stone-300 text-stone-800' : 'bg-slate-900/80 border-slate-800 text-slate-300'
+                    <div className={`flex flex-col md:flex-row items-start md:items-center justify-between gap-3 p-3.5 rounded-xl border-2 ${
+                      streamlinesTheme === 'light' ? 'bg-white border-stone-400 text-stone-950 shadow-sm' : 'bg-slate-900 border-slate-600 text-white shadow-sm'
                     }`}>
-                      <div className="flex flex-wrap items-center gap-4 text-[11px]">
+                      <div className="flex flex-wrap items-center gap-4 text-xs font-sans">
                         <span className="flex items-center gap-1.5">
-                          <span className={`w-2.5 h-2.5 rounded-full ${streamlinesTheme === 'light' ? 'bg-cyan-600' : 'bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.9)]'}`} />
-                          <strong className={streamlinesTheme === 'light' ? "text-stone-900" : "text-slate-100"}>Trade Winds (Arrows):</strong> Atmospheric Vectors
+                          <span className={`w-3.5 h-3.5 rounded-full border-2 ${streamlinesTheme === 'light' ? 'bg-white border-stone-900 shadow-sm' : 'bg-white border-slate-400 shadow-[0_0_8px_rgba(255,255,255,0.9)]'}`} />
+                          <strong className={streamlinesTheme === 'light' ? "text-stone-950 font-black" : "text-white font-black"}>Trade Winds (White Arrows):</strong> 
+                          <span className={streamlinesTheme === 'light' ? "text-stone-900 font-bold" : "text-slate-200 font-bold"}>Atmospheric Vectors</span>
                         </span>
                         <span className="flex items-center gap-1.5">
-                          <span className={`w-2.5 h-2.5 rounded-full ${streamlinesTheme === 'light' ? 'bg-blue-600' : 'bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.9)]'}`} />
-                          <strong className={streamlinesTheme === 'light' ? "text-stone-900" : "text-slate-100"}>Cold Upwelling Currents:</strong> Canary &amp; Benguela
+                          <span className={`w-3.5 h-3.5 rounded-full ${streamlinesTheme === 'light' ? 'bg-cyan-600' : 'bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.9)]'}`} />
+                          <strong className={streamlinesTheme === 'light' ? "text-stone-950 font-black" : "text-white font-black"}>Cold Upwelling Swell:</strong> 
+                          <span className={streamlinesTheme === 'light' ? "text-stone-900 font-bold" : "text-slate-200 font-bold"}>Canary &amp; Benguela (Swimming)</span>
                         </span>
                         <span className="flex items-center gap-1.5">
-                          <span className={`w-2.5 h-2.5 rounded-full ${streamlinesTheme === 'light' ? 'bg-amber-600' : 'bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.9)]'}`} />
-                          <strong className={streamlinesTheme === 'light' ? "text-stone-900" : "text-slate-100"}>Warm Equatorial Currents:</strong> Guinea &amp; South Eq.
+                          <span className={`w-3.5 h-3.5 rounded-full ${streamlinesTheme === 'light' ? 'bg-amber-600' : 'bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.9)]'}`} />
+                          <strong className={streamlinesTheme === 'light' ? "text-stone-950 font-black" : "text-white font-black"}>Warm Equatorial Currents:</strong> 
+                          <span className={streamlinesTheme === 'light' ? "text-stone-900 font-bold" : "text-slate-200 font-bold"}>Guinea &amp; South Eq.</span>
                         </span>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-2 text-[10.5px] opacity-75">
-                        <span>ITCZ: <strong className={streamlinesTheme === 'light' ? "text-cyan-800" : "text-cyan-300"}>{activeSeason.itczPosition}</strong></span>
+                      <div className="flex flex-wrap items-center gap-3 text-xs font-bold font-sans">
+                        <span className={streamlinesTheme === 'light' ? "text-stone-900" : "text-slate-200"}>ITCZ: <strong className={streamlinesTheme === 'light' ? "text-cyan-950 font-black" : "text-cyan-300 font-black"}>{activeSeason.itczPosition}</strong></span>
                         <span>•</span>
-                        <span>Harmattan: <strong className={streamlinesTheme === 'light' ? "text-amber-800" : "text-amber-300"}>{activeSeason.harmattanIntensity}</strong></span>
+                        <span className={streamlinesTheme === 'light' ? "text-stone-900" : "text-slate-200"}>Harmattan: <strong className={streamlinesTheme === 'light' ? "text-amber-950 font-black" : "text-amber-300 font-black"}>{activeSeason.harmattanIntensity}</strong></span>
                       </div>
                     </div>
                   </motion.div>
@@ -619,8 +864,11 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
             showCurrents={showCurrents}
             showWinds={showWinds}
             isPlaying={isStreamlinesPlaying}
+            speedMultiplier={speedMultiplier}
+            particleDensity={particleDensity}
             theme={streamlinesTheme}
             className="w-full h-full flex-1"
+            onTelemetryChange={handleTelemetryChange}
           />
         </div>
       )}

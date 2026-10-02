@@ -37,8 +37,12 @@ export function projectCoord(lat: number, lng: number): [number, number] {
   const minLat = -38;
   const maxLat = 58;
 
-  const x = ((lng - minLng) / (maxLng - minLng)) * 1000;
-  const y = ((maxLat - lat) / (maxLat - minLat)) * 580;
+  let x = ((lng - minLng) / (maxLng - minLng)) * 1000;
+  let y = ((maxLat - lat) / (maxLat - minLat)) * 580;
+  if (lat >= 35) {
+    y += 8.0; // Shift European water/river features down by 8px
+    x -= 4.0; // Shift European water/river features left by 4px
+  }
   return [x, y];
 }
 
