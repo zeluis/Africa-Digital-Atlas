@@ -378,6 +378,7 @@ export const MolecularMigrationCanvasLayer: React.FC<{
         return (
           <g 
             key={node.id} 
+            transform={`translate(${node.coords.x}, ${node.coords.y})`}
             className="cursor-pointer pointer-events-auto group" 
             onClick={(e) => {
               e.stopPropagation();
@@ -389,8 +390,8 @@ export const MolecularMigrationCanvasLayer: React.FC<{
           >
             {/* Generous Invisible Hit Target ensuring 100% effortless selection */}
             <circle
-              cx={node.coords.x}
-              cy={node.coords.y}
+              cx={0}
+              cy={0}
               r={180}
               fill="transparent"
               pointerEvents="all"
@@ -399,8 +400,8 @@ export const MolecularMigrationCanvasLayer: React.FC<{
 
             {/* Outer Pulsing Beacon Aura */}
             <circle
-              cx={node.coords.x}
-              cy={node.coords.y}
+              cx={0}
+              cy={0}
               r={isSelected || isHovered ? 140 : 100}
               fill="none"
               stroke={isSelected ? '#E67E48' : '#3B82F6'}
@@ -410,8 +411,8 @@ export const MolecularMigrationCanvasLayer: React.FC<{
 
             {/* Secondary Radiance Halo */}
             <circle
-              cx={node.coords.x}
-              cy={node.coords.y}
+              cx={0}
+              cy={0}
               r={isSelected || isHovered ? 90 : 65}
               fill={isSelected ? 'rgba(230,126,72,0.30)' : 'rgba(59,130,246,0.22)'}
               stroke={isSelected ? '#E67E48' : '#3B82F6'}
@@ -421,8 +422,8 @@ export const MolecularMigrationCanvasLayer: React.FC<{
 
             {/* Core Node Pearl */}
             <circle
-              cx={node.coords.x}
-              cy={node.coords.y}
+              cx={0}
+              cy={0}
               r={isSelected || isHovered ? 52 : 38}
               fill={isSelected || isHovered ? '#E67E48' : '#1C1815'}
               stroke="#FAF7F2"
@@ -431,7 +432,7 @@ export const MolecularMigrationCanvasLayer: React.FC<{
             />
             
             {/* High-Contrast Haplogroup Label Badge */}
-            <g transform={`translate(${node.coords.x}, ${node.coords.y + 65})`} className="pointer-events-none">
+            <g transform="translate(0, 65)" className="pointer-events-none">
               <rect
                 x="-160"
                 y="0"
@@ -460,7 +461,7 @@ export const MolecularMigrationCanvasLayer: React.FC<{
             {/* Snappy Hover Editorial Tooltip Card (Shown on hover when not selected) */}
             {isHovered && !isSelected && (
               <foreignObject
-                x={node.id === 'h1-l0-l1' ? -100 : (node.id === 'h2-l2-west' ? -380 : -280)}
+                x={node.id === 'h1-l0-l1' ? -100 : (node.id === 'h2-l2-west' ? -380 : -240)}
                 y={node.id === 'h1-l0-l1' ? -260 : -230}
                 width="480"
                 height="190"
