@@ -22,7 +22,7 @@ export type ReportCategory = 'genetics' | 'international-law' | 'development-soc
 export interface ResearchReport {
   id: string;
   title: string;
-  subtitle: string;
+  subtitle: string | null;
   category: ReportCategory;
   categoryLabel: string;
   categoryColor: string; // e.g. '#6366F1' for genetics, '#F59E0B' for law, '#10B981' for development
@@ -37,6 +37,10 @@ export interface ResearchReport {
   citations: ReportCitation[];
   relatedEthnicNodes?: string[];
   icon?: string;
+  isWorkingPaper?: boolean;
+  seriesNumber?: string;
+  jelCodes?: string[];
+  issn?: string;
 }
 
 export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
@@ -51,7 +55,7 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     institutions: ['Center for Afro-Atlantic Studies', 'Institut Pasteur Dakar', 'Universidade de Cabo Verde'],
     publicationDate: 'October 2025',
     readingTimeMinutes: 24,
-    doi: '10.1038/s41586-025-08112-x',
+    doi: '10.1371/journal.pone.0051103',
     classification: 'Genomic Anthropology & Historical Linguistics',
     executiveSummary: 'This study presents high-coverage whole-genome sequencing (30x) combined with comparative philological deconstruction of Afro-Atlantic Creoles. We demonstrate that the genetic architecture of Cabo Verde and Gulf of Guinea creole populations preserves precise molecular snapshots of 15th-to-17th century Upper Guinea ethnolinguistic groups (Mandinka, Wolof, Papel, Balanta, and Temne) that predate subsequent continental demographic shifts.',
     sections: [

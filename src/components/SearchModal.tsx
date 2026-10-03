@@ -3,7 +3,8 @@ import { atlas } from '../data/atlas-store';
 import { AtlasEntity, IndicatorDefinition, HeritageSite } from '../data/types';
 import { SLAVE_TRADE_ILLUSTRATIONS, SlaveTradeIllustration } from '../data/slaveTradeIllustrations';
 import { CASTAS_ARCHIVE_ITEMS, CastasArchivalItem } from '../data/castasArchive';
-import { RESEARCH_REPORTS, ResearchReport } from '../data/reportsData';
+import { ResearchReport } from '../data/reportsData';
+import { getAllReports } from '../data/reportsDataLoader';
 import { CountryFlag } from './CountryFlag';
 import { useSavedEntities } from '../contexts/SavedEntitiesContext';
 import { 
@@ -122,10 +123,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       .map(item => item.indicator);
   }, [q, selectedCategory]);
 
-  // Matched Research Monographs
+  // Matched Research Monographs & Working Papers
   const matchedReports = useMemo<ResearchReport[]>(() => {
     if (selectedCategory !== 'all' && selectedCategory !== 'reports') return [];
-    const reportList = Object.values(RESEARCH_REPORTS);
+    const reportList = Object.values(getAllReports());
     if (q === '') return reportList.slice(0, 3);
     return reportList
       .map(rep => {
@@ -133,7 +134,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         const authorMatch = rep.authors.some(a => a.toLowerCase().includes(q)) ? 40 : 0;
         score = Math.max(
           scoreMatch(rep.title, q) * 1.6,
-          scoreMatch(rep.subtitle, q) * 1.2,
+          scoreMatch(rep.subtitle || '', q) * 1.2,
           scoreMatch(rep.categoryLabel, q),
           authorMatch
         );

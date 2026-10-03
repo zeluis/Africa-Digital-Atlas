@@ -18,7 +18,10 @@ export type AfricaliaPublicationType =
   | 'research_monograph'
   | 'research_dossier'
   | 'scholarly_essay'
-  | 'working_paper';
+  | 'working_paper'
+  | 'policy_brief'
+  | 'research_note'
+  | 'research_proposal';
 
 export type AfricaliaCitationStyle = 
   | 'chicago-author-date'
@@ -33,10 +36,12 @@ export type AfricaliaAuthorRole =
   | 'editor'
   | 'researcher'
   | 'contributor'
-  | 'translator';
+  | 'translator'
+  | string;
 
 export type AfricaliaSection = 
   | 'reports'
+  | 'working-papers'
   | 'history'
   | 'regions'
   | 'analytics'
@@ -48,6 +53,7 @@ export type AfricaliaSection =
 export type AfricaliaPillar = 
   | 'genetics'
   | 'law'
+  | 'development'
   | 'macroeconomics'
   | 'history'
   | 'heritage'
@@ -208,6 +214,10 @@ export interface AfricaliaReport {
   institutions: string[];
   relatedEthnicNodes?: string[];
   icon?: string;
+  isWorkingPaper?: boolean;
+  seriesNumber?: string;
+  jelCodes?: string[];
+  issn?: string;
 }
 
 /**
@@ -248,6 +258,11 @@ export const CONTROLLED_PILLARS: Record<AfricaliaPillar, { label: string; color:
     label: 'International Law & Sovereignty',
     color: '#F59E0B',
     canonicalCategory: 'international-law'
+  },
+  development: {
+    label: 'Development & Historical Economics',
+    color: '#10B981',
+    canonicalCategory: 'development-sociology'
   },
   macroeconomics: {
     label: 'Macroeconomics & Trade',

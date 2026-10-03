@@ -40,35 +40,20 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isIngestionModalOpen, setIsIngestionModalOpen] = useState<boolean>(false);
-  const [customReports, setCustomReports] = useState<Record<string, ResearchReport>>(() => {
-    try {
-      const saved = localStorage.getItem('africalia_custom_reports');
-      return saved ? JSON.parse(saved) : {};
-    } catch {
-      return {};
-    }
-  });
+  const [ingestionTargetMode, setIngestionTargetMode] = useState<'reports' | 'working-papers'>('reports');
+  const [refreshTick, setRefreshTick] = useState<number>(0);
 
-  const handleReportIngested = (newReport: ResearchReport, result: IngestionResult) => {
-    // Add to in-memory catalog
+  useEffect(() => {
+    const handleUpdate = () => setRefreshTick(t => t + 1);
+    window.addEventListener('africalia-publications-updated', handleUpdate);
+    return () => window.removeEventListener('africalia-publications-updated', handleUpdate);
+  }, []);
+
+  const handleReportIngested = (newReport: ResearchReport) => {
     RESEARCH_REPORTS[newReport.id] = newReport;
-    const updated = { ...customReports, [newReport.id]: newReport };
-    setCustomReports(updated);
-    try {
-      localStorage.setItem('africalia_custom_reports', JSON.stringify(updated));
-    } catch (e) {
-      console.error('Failed to persist custom report:', e);
-    }
-    // Automatically select and view newly ingested report
+    setRefreshTick(t => t + 1);
     onSelectReport(newReport.id);
   };
-
-  // Load custom reports into global store on mount
-  useEffect(() => {
-    Object.values(customReports).forEach(rep => {
-      RESEARCH_REPORTS[rep.id] = rep;
-    });
-  }, [customReports]);
 
   // Master historical reports included in the directory
   const masterLegacyReports = [
@@ -102,14 +87,16 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
 
   const allReportsList = useMemo(() => {
     return Object.values(getAllReports());
-  }, [customReports]);
+  }, [refreshTick]);
 
   const filteredReports = useMemo(() => {
     return allReportsList.filter(rep => {
-      const matchesCategory = selectedCategory === 'all' || rep.category === selectedCategory;
+      const matchesCategory =
+        selectedCategory === 'all' ||
+        (selectedCategory === 'working-papers' ? Boolean(rep.isWorkingPaper) : rep.category === selectedCategory);
       const matchesSearch = !searchQuery.trim() || 
         rep.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        rep.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (rep.subtitle || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         rep.authors.some(a => a.toLowerCase().includes(searchQuery.toLowerCase())) ||
         rep.executiveSummary.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
@@ -136,15 +123,31 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0 self-start md:self-auto flex-wrap">
+          <div className="flex items-center gap-2.5 shrink-0 self-start md:self-auto flex-wrap">
             <button
               type="button"
-              onClick={() => setIsIngestionModalOpen(true)}
+              onClick={() => {
+                setIngestionTargetMode('reports');
+                setIsIngestionModalOpen(true);
+              }}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition-all cursor-pointer shadow-md"
-              title="Import Google Notebook Markdown or .md report with automatic classification"
+              title="Import Google Notebook Markdown or .md report into content/reports"
             >
               <Upload className="w-4 h-4" />
-              <span>Import Notebook Report</span>
+              <span>Import Report (.md)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIngestionTargetMode('working-papers');
+                setIsIngestionModalOpen(true);
+              }}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all cursor-pointer shadow-md"
+              title="Import Africalia Working Paper (.md) into content/working-papers"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>Import Working Paper (.md)</span>
             </button>
 
             {onNavigateToEthnicTree && (
@@ -179,7 +182,8 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
               { id: 'all', label: 'All Disciplines' },
               { id: 'genetics', label: 'Genetics & Admixture' },
               { id: 'international-law', label: 'International Law' },
-              { id: 'development-sociology', label: 'Development & Economics' }
+              { id: 'development-sociology', label: 'Development & Economics' },
+              { id: 'working-papers', label: 'Africalia Working Papers' }
             ].map(pill => (
               <button
                 key={pill.id}
@@ -259,21 +263,28 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
               className="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-lg transition-all cursor-pointer group flex flex-col justify-between"
             >
               <div className="space-y-3">
-                <div className="flex items-center justify-between gap-2">
-                  <span 
-                    className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md inline-flex items-center gap-1.5"
-                    style={{ 
-                      backgroundColor: `${rep.categoryColor}15`, 
-                      color: rep.categoryColor,
-                      border: `1px solid ${rep.categoryColor}30`
-                    }}
-                  >
-                    <DynamicIcon 
-                      icon={rep.icon || (rep.category === 'genetics' ? 'lucide:dna' : rep.category === 'international-law' ? 'lucide:scale' : 'lucide:trending-up')} 
-                      className="w-3 h-3" 
-                    />
-                    <span>{rep.categoryLabel}</span>
-                  </span>
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span 
+                      className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md inline-flex items-center gap-1.5"
+                      style={{ 
+                        backgroundColor: `${rep.categoryColor}15`, 
+                        color: rep.categoryColor,
+                        border: `1px solid ${rep.categoryColor}30`
+                      }}
+                    >
+                      <DynamicIcon 
+                        icon={rep.icon || (rep.category === 'genetics' ? 'lucide:dna' : rep.category === 'international-law' ? 'lucide:scale' : 'lucide:trending-up')} 
+                        className="w-3 h-3" 
+                      />
+                      <span>{rep.categoryLabel}</span>
+                    </span>
+                    {rep.isWorkingPaper && (
+                      <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                        {rep.seriesNumber ? rep.seriesNumber.replace('Africalia ', '') : 'Working Paper'}
+                      </span>
+                    )}
+                  </div>
                   <span className="text-[11px] text-zinc-400 flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     <span>{rep.readingTimeMinutes} min</span>
@@ -302,11 +313,12 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
         </div>
       </div>
 
-      {/* Google NotebookLM Markdown Ingestion Modal */}
+      {/* Universal Markdown Ingestion Modal */}
       <NotebookIngestionModal
         isOpen={isIngestionModalOpen}
         onClose={() => setIsIngestionModalOpen(false)}
-        onReportIngested={handleReportIngested}
+        defaultTargetPipeline={ingestionTargetMode}
+        onIngestComplete={handleReportIngested}
       />
     </div>
   );

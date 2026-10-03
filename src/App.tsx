@@ -15,6 +15,7 @@ import { Globe, Database } from 'lucide-react';
 import { DynamicIcon } from './components/DynamicIcon';
 import { getPageInfo } from './utils/navigationTitles';
 import { initArchivalPrecache } from './utils/imagePrecache';
+import { isReportOrPaperTab } from './data/reportsDataLoader';
 
 // Lazy-load modals on demand to preserve instant initial First Contentful Paint
 const SearchModal = lazyWithRetry(() => import('./components/SearchModal').then(m => ({ default: m.SearchModal })), 'SearchModal');
@@ -194,7 +195,7 @@ function AppContent() {
     }
     if (
       ['molecular-legacies', 'african-development-foundations', 'ethnic-tree', 'languages', 'research-directory'].includes(currentTab) ||
-      (typeof currentTab === 'string' && currentTab.startsWith('report-'))
+      (typeof currentTab === 'string' && isReportOrPaperTab(currentTab))
     ) {
       return 'academic';
     }
@@ -753,7 +754,7 @@ function AppContent() {
                     />
                   )}
 
-                  {typeof currentTab === 'string' && currentTab.startsWith('report-') && (
+                  {typeof currentTab === 'string' && isReportOrPaperTab(currentTab) && (
                     <ResearchReportArticleView
                       reportId={currentTab}
                       onBackToDirectory={() => handleSelectTab('research-directory')}
@@ -849,6 +850,10 @@ function AppContent() {
             isOpen={isWorkingPapersOpen}
             onClose={() => setIsWorkingPapersOpen(false)}
             onOpenCitationModal={() => setIsCitationModalOpen(true)}
+            onSelectReport={(reportId) => {
+              setIsWorkingPapersOpen(false);
+              handleSelectTab(reportId as CanonicalNavTab);
+            }}
           />
         </Suspense>
       )}

@@ -32,17 +32,53 @@ export interface NotebookMetadataHeader {
   title?: string;
   subtitle?: string | null;
   date?: string;
+  version?: string;
   category?: ReportCategory | string;
   categoryLabel?: string;
   categoryColor?: string;
+  author?: {
+    name?: string;
+    type?: string;
+    role?: string;
+    platform?: string;
+    affiliation?: string;
+  } | string;
   authors?: string[] | string | AfricaliaAuthor[];
   institutions?: string[] | string;
+  publication?: {
+    series?: string;
+    type?: string;
+    status?: string;
+    edition?: string;
+    language?: string;
+    citationStyle?: string;
+    category?: string;
+    seriesNumber?: string;
+    issn?: string;
+    jelCodes?: string[];
+  };
+  research?: {
+    disciplines?: string[];
+    methodology?: string | string[];
+    jelCodes?: string[];
+    temporal_scope?: string;
+    geographic_scope?: string;
+  };
+  ai_assistance?: {
+    enabled?: boolean;
+    system?: string;
+    role?: string[];
+    status?: string;
+    disclosure?: string;
+    accountability?: string;
+  };
   publicationDate?: string;
   readingTimeMinutes?: number;
+  readTimeMinutes?: number;
   doi?: string;
   classification?: string;
-  section?: AfricaliaSection;
-  pillar?: AfricaliaPillar;
+  section?: AfricaliaSection | string;
+  pillar?: AfricaliaPillar | string;
   disciplines?: string[];
   regions?: string[];
   countries?: string[];
@@ -53,6 +89,9 @@ export interface NotebookMetadataHeader {
   icon?: string;
   featured?: boolean;
   publication_type?: AfricaliaPublicationType;
+  seriesNumber?: string;
+  jelCodes?: string[];
+  issn?: string;
 }
 
 export interface IngestionResult {
@@ -137,6 +176,11 @@ const PILLAR_KEYWORD_WEIGHTS: Record<AfricaliaPillar, string[]> = {
     'international law', 'decolonization', 'jurisdiction', 'un charter', 'african union',
     'arbitration', 'legal', 'doctrine', 'statute', 'chattel', 'berlin conference'
   ],
+  development: [
+    'development', 'counterfactual', 'industrialization', 'divergence', 'capital accumulation',
+    'value added', 'net surplus', 'colonial extraction', 'econometric', 'shapley',
+    'productivity', 'manufacturing', 'wages', 'general-equilibrium', 'economic growth'
+  ],
   macroeconomics: [
     'macroeconomics', 'gdp', 'debt', 'trade', 'currency', 'monetary', 'inflation',
     'ecowas', 'afcfta', 'structural adjustment', 'fiscal', 'imf', 'world bank',
@@ -174,6 +218,52 @@ const PILLAR_KEYWORD_WEIGHTS: Record<AfricaliaPillar, string[]> = {
 };
 
 /**
+ * Normalizes any pillar or category string from YAML frontmatter into a canonical AfricaliaPillar
+ */
+export function normalizePillarKey(rawPillar?: string, rawCategory?: string): AfricaliaPillar | null {
+  const candidates = [rawPillar, rawCategory].filter(Boolean).map(s => String(s).trim().toLowerCase());
+  for (const val of candidates) {
+    if (val in CONTROLLED_PILLARS) {
+      return val as AfricaliaPillar;
+    }
+    if (['development', 'economic-development', 'development-sociology', 'economics', 'historical-economics', 'political-economy'].includes(val)) {
+      return 'development';
+    }
+    if (['macroeconomics', 'trade', 'finance', 'monetary'].includes(val)) {
+      return 'macroeconomics';
+    }
+    if (['law', 'international-law', 'international law', 'jurisprudence', 'reparations', 'sovereignty', 'legal'].includes(val)) {
+      return 'law';
+    }
+    if (['genetics', 'genomics', 'dna', 'admixture', 'paleogenomics', 'archaeogenomics', 'molecular'].includes(val)) {
+      return 'genetics';
+    }
+    if (['history', 'atlantic-history', 'african-history', 'historical-sociology', 'slave-trade', 'tast'].includes(val)) {
+      return 'history';
+    }
+    if (['heritage', 'bioarchaeology', 'archaeology', 'cultural-heritage'].includes(val)) {
+      return 'heritage';
+    }
+    if (['climate', 'environment', 'ecology', 'anthropocene'].includes(val)) {
+      return 'climate';
+    }
+    if (['demography', 'population', 'voyages'].includes(val)) {
+      return 'demography';
+    }
+    if (['migration', 'diaspora'].includes(val)) {
+      return 'migration';
+    }
+    if (['culture', 'linguistics', 'languages'].includes(val)) {
+      return 'culture';
+    }
+    if (['geography', 'cartography', 'spatial'].includes(val)) {
+      return 'geography';
+    }
+  }
+  return null;
+}
+
+/**
  * Fast deterministic source hash for audit and provenance fingerprinting
  */
 function computeDeterministicHash(content: string): string {
@@ -190,64 +280,118 @@ function computeDeterministicHash(content: string): string {
   return `sha256:${hashHex}${hashHex}`.slice(0, 71);
 }
 
+function parseYamlValue(valStr: string): any {
+  if (valStr === '' || valStr === '[' || valStr === '[]') {
+    return [];
+  }
+  if (valStr.startsWith('[') && valStr.endsWith(']')) {
+    return valStr
+      .slice(1, -1)
+      .split(',')
+      .map(s => s.trim().replace(/^["']|["']$/g, ''))
+      .filter(Boolean);
+  }
+  const cleanVal = valStr.replace(/^["']|["']$/g, '');
+  if (!isNaN(Number(cleanVal)) && cleanVal !== '') {
+    return Number(cleanVal);
+  }
+  if (cleanVal.toLowerCase() === 'true') return true;
+  if (cleanVal.toLowerCase() === 'false') return false;
+  if (cleanVal.toLowerCase() === 'null') return null;
+  return cleanVal;
+}
+
 /**
- * Parses YAML-like frontmatter between leading --- delimiters
+ * Parses YAML frontmatter between leading --- delimiters.
+ * Supports both flat key-value frontmatter and nested YAML blocks (author, publication, research, ai_assistance).
  */
 export function parseFrontmatter(rawText: string): { frontmatter: Partial<NotebookMetadataHeader>; body: string } {
-  const frontmatterRegex = /^---\s*[\r\n]+([\s\S]*?)[\r\n]+---\s*[\r\n]+([\s\S]*)$/;
-  const match = rawText.match(frontmatterRegex);
+  // Clean any accidental leading code fence before ---
+  const cleanedRaw = rawText.replace(/^\s*```[a-zA-Z]*\s*[\r\n]+(?=---)/, '');
+  const frontmatterRegex = /^---\s*[\r\n]+([\s\S]*?)[\r\n]+---\s*(?:[\r\n]+```[a-zA-Z]*\s*)?[\r\n]+([\s\S]*)$/;
+  const match = cleanedRaw.match(frontmatterRegex);
 
   if (!match) {
-    return { frontmatter: {}, body: rawText };
+    return { frontmatter: {}, body: cleanedRaw };
   }
 
   const rawYaml = match[1];
-  const body = match[2];
+  const body = match[2].replace(/^\s*```\s*[\r\n]+/, '');
   const frontmatter: Record<string, any> = {};
 
   const lines = rawYaml.split('\n');
-  let currentKey: string | null = null;
+  let topKey: string | null = null;
+  let subKey: string | null = null;
 
-  for (const line of lines) {
+  for (const rawLine of lines) {
+    const line = rawLine.replace(/\r$/, '');
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith('#')) continue;
 
-    // Check for array item under current key
-    if (trimmed.startsWith('- ') && currentKey) {
-      const val = trimmed.replace(/^- \s*/, '').replace(/^["']|["']$/g, '');
-      if (!Array.isArray(frontmatter[currentKey])) {
-        frontmatter[currentKey] = [];
+    const indent = line.search(/\S/);
+
+    // 1. List item (- value)
+    if (trimmed.startsWith('- ')) {
+      const val = trimmed.replace(/^-\s*/, '').replace(/^["']|["']$/g, '').trim();
+      if (topKey && subKey && frontmatter[topKey] && typeof frontmatter[topKey] === 'object' && !Array.isArray(frontmatter[topKey])) {
+        if (!Array.isArray(frontmatter[topKey][subKey])) {
+          frontmatter[topKey][subKey] = [];
+        }
+        frontmatter[topKey][subKey].push(val);
+      } else if (topKey) {
+        if (!Array.isArray(frontmatter[topKey])) {
+          frontmatter[topKey] = [];
+        }
+        frontmatter[topKey].push(val);
       }
-      frontmatter[currentKey].push(val);
       continue;
     }
 
-    // Check for key: value
+    // 2. Indented nested key (e.g., under author:, publication:, research:, ai_assistance:)
+    if (indent >= 2 && topKey) {
+      const subMatch = trimmed.match(/^([a-zA-Z0-9_-]+):\s*(.*)$/);
+      if (subMatch) {
+        subKey = subMatch[1].trim();
+        const valStr = subMatch[2].trim();
+        if (!frontmatter[topKey] || Array.isArray(frontmatter[topKey]) || typeof frontmatter[topKey] !== 'object') {
+          frontmatter[topKey] = {};
+        }
+        frontmatter[topKey][subKey] = valStr === '' ? [] : parseYamlValue(valStr);
+        continue;
+      }
+    }
+
+    // 3. Top-level key (indent 0)
     const kvMatch = line.match(/^([a-zA-Z0-9_-]+):\s*(.*)$/);
     if (kvMatch) {
-      currentKey = kvMatch[1].trim();
+      topKey = kvMatch[1].trim();
+      subKey = null;
       const valStr = kvMatch[2].trim();
+      frontmatter[topKey] = valStr === '' ? [] : parseYamlValue(valStr);
+    }
+  }
 
-      if (valStr === '' || valStr === '[' || valStr === '[]') {
-        frontmatter[currentKey] = [];
-      } else if (valStr.startsWith('[') && valStr.endsWith(']')) {
-        frontmatter[currentKey] = valStr
-          .slice(1, -1)
-          .split(',')
-          .map(s => s.trim().replace(/^["']|["']$/g, ''))
-          .filter(Boolean);
-      } else {
-        const cleanVal = valStr.replace(/^["']|["']$/g, '');
-        if (!isNaN(Number(cleanVal)) && cleanVal !== '') {
-          frontmatter[currentKey] = Number(cleanVal);
-        } else if (cleanVal.toLowerCase() === 'true') {
-          frontmatter[currentKey] = true;
-        } else if (cleanVal.toLowerCase() === 'false') {
-          frontmatter[currentKey] = false;
-        } else {
-          frontmatter[currentKey] = cleanVal;
-        }
-      }
+  // Normalize nested structures onto top-level convenience fields if not already set
+  if (frontmatter.readTimeMinutes && !frontmatter.readingTimeMinutes) {
+    frontmatter.readingTimeMinutes = Number(frontmatter.readTimeMinutes);
+  }
+  if (frontmatter.research && typeof frontmatter.research === 'object' && !Array.isArray(frontmatter.research)) {
+    if (Array.isArray(frontmatter.research.disciplines) && !frontmatter.disciplines) {
+      frontmatter.disciplines = frontmatter.research.disciplines;
+    }
+    if (Array.isArray(frontmatter.research.jelCodes) && !frontmatter.jelCodes) {
+      frontmatter.jelCodes = frontmatter.research.jelCodes;
+    }
+  }
+  if (frontmatter.publication && typeof frontmatter.publication === 'object' && !Array.isArray(frontmatter.publication)) {
+    if (frontmatter.publication.seriesNumber && !frontmatter.seriesNumber) {
+      frontmatter.seriesNumber = frontmatter.publication.seriesNumber;
+    }
+    if (frontmatter.publication.issn && !frontmatter.issn) {
+      frontmatter.issn = frontmatter.publication.issn;
+    }
+    if (Array.isArray(frontmatter.publication.jelCodes) && !frontmatter.jelCodes) {
+      frontmatter.jelCodes = frontmatter.publication.jelCodes;
     }
   }
 
@@ -265,38 +409,39 @@ export function extractAndSemantifyCitations(content: string): {
   const citations: ReportCitation[] = [];
   const citationMap = new Map<string, string>();
 
-  // 1. Separate body and references section if present
-  const refSectionRegex = /(?:^|\n)##\s+(?:References|Bibliography|Sources|Works Cited)[\s\S]*$/i;
+  // 1. Separate body and references section if present (supports both # References and ## References)
+  const refSectionRegex = /(?:^|\n)#{1,2}\s+(?:References|Bibliography|Sources|Works Cited)\s*\n[\s\S]*$/i;
   const refMatch = content.match(refSectionRegex);
   const mainBody = refMatch ? content.slice(0, refMatch.index).trim() : content;
   const refText = refMatch ? refMatch[0] : '';
 
-  // 2. Parse formal bibliography entries if present in ## References
+  // 2. Parse formal bibliography entries if present in # References or ## References
   if (refText) {
     const bibLines = refText
-      .replace(/(?:^|\n)##\s+(?:References|Bibliography|Sources|Works Cited)\s*/i, '')
-      .split(/\n\s*[-*]?\s*(?=[A-Z\[])|\n\n+/)
+      .replace(/(?:^|\n)#{1,2}\s+(?:References|Bibliography|Sources|Works Cited)\s*/i, '')
+      .split(/\n\s*[-*]\s+|\n\n+/)
       .map(l => l.trim())
-      .filter(l => l.length > 15);
+      .filter(l => l.length > 20 && !l.startsWith('**'));
 
     bibLines.forEach((entry, idx) => {
-      const authorYearMatch = entry.match(/^([A-Za-z\s.,-]+?)\s*(?:\((\d{4})\)|,?\s*(\d{4}))/);
-      const authors = authorYearMatch ? authorYearMatch[1].trim().replace(/[.,]$/, '') : `Author ${idx + 1}`;
-      const year = authorYearMatch ? parseInt(authorYearMatch[2] || authorYearMatch[3], 10) : 2025;
+      const cleanEntry = entry.replace(/\*/g, '');
+      const authorYearMatch = cleanEntry.match(/^([A-Za-zÀ-ÿ\s.,&-]+?)\s*(?:\((\d{4})[^)]*\)|,?\s*(\d{4}))/);
+      const authors = authorYearMatch ? authorYearMatch[1].trim().replace(/[.,]$/, '') : `Source ${idx + 1}`;
+      const year = authorYearMatch ? parseInt(authorYearMatch[2] || authorYearMatch[3], 10) : 2026;
 
       const doiMatch = entry.match(/(?:https?:\/\/doi\.org\/|doi:\s*)(10\.\d{4,9}\/[-._;()/:A-Za-z0-9]+)/i) ||
                        entry.match(/(10\.\d{4,9}\/[-._;()/:A-Za-z0-9]+)/i) ||
                        entry.match(/https?:\/\/[^\s)]+/i);
       const doiOrUrl = doiMatch ? resolveDoi(doiMatch[1] || doiMatch[0]) : '';
 
-      const titleMatch = entry.match(/(?:\(\d{4}\)\.|\d{4}\.)\s*([^.]+)\./);
-      const title = titleMatch ? titleMatch[1].trim() : entry.slice(0, 80);
+      const titleMatch = cleanEntry.match(/(?:\(\d{4}[^)]*\)\.|\d{4}\.)\s*([^.]+)\./);
+      const title = titleMatch ? titleMatch[1].trim() : cleanEntry.slice(0, 95);
 
-      const pubMatch = entry.match(/\.\s*([A-Za-z\s]+(?:Journal|Review|Press|Studies|Oxford|Nature|Lancet|PNAS|AJHG)[^.,]*)/i);
+      const pubMatch = cleanEntry.match(/\.\s*([A-Za-z\s]+(?:Journal|Review|Press|Studies|Oxford|Nature|Lancet|PNAS|AJHG|Working Paper|Economics)[^.,]*)/i);
       const journalOrPublisher = pubMatch ? pubMatch[1].trim() : 'Academic Repository';
 
-      const firstAuthorWord = authors.split(/[\s,]+/)[0].toLowerCase();
-      const citId = `cit-${firstAuthorWord}-${year}-${idx + 1}`;
+      const firstAuthorWord = authors.split(/[\s,]+/)[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+      const citId = `cit-${firstAuthorWord || 'ref'}-${year}-${idx + 1}`;
 
       citations.push({
         id: citId,
@@ -313,18 +458,18 @@ export function extractAndSemantifyCitations(content: string): {
 
   // 3. Transform in-text citations like "(Author et al., 2020)" or "(Author, 2024)" into [REF:cit-id]
   let refTagCount = 0;
-  const processedBody = mainBody.replace(/\(([A-Za-z\s]+?)(?:\s+et\s+al\.?)?,?\s+(\d{4})\)/g, (fullMatch, authorPart, yearPart) => {
-    const authorKey = authorPart.trim().split(/[\s,]+/)[0].toLowerCase();
+  const processedBody = mainBody.replace(/\(([A-Za-zÀ-ÿ\s&]+?)(?:\s+et\s+al\.?)?,?\s+(\d{4})\)/g, (fullMatch, authorPart, yearPart) => {
+    const authorKey = authorPart.trim().split(/[\s,]+/)[0].toLowerCase().replace(/[^a-z0-9]/g, '');
     const key = `${authorKey}-${yearPart}`;
     
     let targetId = citationMap.get(key);
     if (!targetId) {
-      targetId = `cit-${authorKey}-${yearPart}`;
+      targetId = `cit-${authorKey || 'ref'}-${yearPart}`;
       citations.push({
         id: targetId,
         authors: authorPart.trim() + (fullMatch.includes('et al') ? ' et al.' : ''),
         year: parseInt(yearPart, 10),
-        title: `Study by ${authorPart.trim()} (${yearPart})`,
+        title: `Scholarly Reference: ${authorPart.trim()} (${yearPart})`,
         journalOrPublisher: 'Peer-Reviewed Literature',
         doiOrUrl: ''
       });
@@ -344,59 +489,134 @@ export function extractAndSemantifyCitations(content: string): {
 
 /**
  * Converts ingested markdown into structured ReportSection[] elements.
+ * Supports both H1 (# 0., # 1.) and H2 (## 1., ## Section) top-level section conventions.
  */
-export function partitionMarkdownSections(rawMarkdown: string): { 
+export function partitionMarkdownSections(
+  rawMarkdown: string,
+  docTitle?: string,
+  docSubtitle?: string | null
+): { 
   executiveSummary: string; 
   sections: ReportSection[] 
 } {
   const sections: ReportSection[] = [];
   let executiveSummary = '';
 
-  const execSummaryMatch = rawMarkdown.match(/(?:^|\n)##?\s*(?:Executive Summary|Abstract|Core Findings)\s*\n([\s\S]*?)(?=(?:\n##|\n#|$))/i);
-  if (execSummaryMatch) {
-    executiveSummary = execSummaryMatch[1].trim();
+  // Remove leading # Title and ## Subtitle if they duplicate the frontmatter title/subtitle
+  let cleanedMarkdown = rawMarkdown.trim();
+  const leadingH1Match = cleanedMarkdown.match(/^#\s+([^\n]+)\n+/);
+  if (leadingH1Match) {
+    const h1Text = leadingH1Match[1].trim();
+    if (!docTitle || h1Text.toLowerCase() === docTitle.toLowerCase() || !/^\d+[.)]/.test(h1Text)) {
+      if (!/^(?:Executive Summary|Abstract|Introduction|0\.|1\.)/i.test(h1Text)) {
+        cleanedMarkdown = cleanedMarkdown.slice(leadingH1Match[0].length).trim();
+      }
+    }
+  }
+  const leadingH2Match = cleanedMarkdown.match(/^##\s+([^\n]+)\n+/);
+  if (leadingH2Match) {
+    const h2Text = leadingH2Match[1].trim();
+    if (docSubtitle && h2Text.toLowerCase() === docSubtitle.toLowerCase()) {
+      cleanedMarkdown = cleanedMarkdown.slice(leadingH2Match[0].length).trim();
+    }
   }
 
-  const h2Parts = rawMarkdown.split(/(?:^|\n)##\s+/);
-
-  if (h2Parts.length <= 1) {
-    sections.push({
-      id: 'sec-primary',
-      title: '1. Primary Monograph Analysis',
-      content: rawMarkdown.trim()
-    });
+  // Extract Executive Summary / Abstract
+  const execSummaryMatch = cleanedMarkdown.match(/(?:^|\n)#{1,2}\s*(?:Executive Summary|Abstract|Core Findings)\s*\n([\s\S]*?)(?=(?:\n#{1,2}\s+|$))/i);
+  if (execSummaryMatch) {
+    executiveSummary = execSummaryMatch[1].trim();
   } else {
-    if (!executiveSummary && h2Parts[0].trim()) {
-      executiveSummary = h2Parts[0].replace(/^#\s+[^\n]+\n+/, '').trim();
+    const purposeMatch = cleanedMarkdown.match(/\*\*Purpose:\*\*\s*([^\n]+)/i);
+    if (purposeMatch) {
+      executiveSummary = purposeMatch[1].trim();
+    }
+  }
+
+  // Determine if the document uses multiple H1 (# ) headings for primary sections (e.g. # 0. Normative..., # 1. Research Questions)
+  const h1SectionMatches = cleanedMarkdown.match(/(?:^|\n)#\s+[^\n]+/g) || [];
+
+  const buildSectionRecord = (rawTitle: string, rawContent: string, idx: number): ReportSection | null => {
+    const title = rawTitle.trim();
+    const content = rawContent.trim();
+    if (/^(?:References|Bibliography|Sources|Works Cited)$/i.test(title)) {
+      return null;
+    }
+    const quoteMatch = content.match(/(?:^|\n)>\s*["“]?([^"”\n]+)["”]?/);
+    const pullQuote = quoteMatch ? quoteMatch[1].trim() : undefined;
+
+    const takeawayMatch = content.match(/\*\*(?:Key Takeaway|Core Finding|Finding|Symmetry rule|Key conceptual distinction)[.:]*\*\*\s*([^\n]+)/i);
+    const keyTakeaway = takeawayMatch ? takeawayMatch[1].trim() : undefined;
+
+    const hasLeadingNumber = /^\d+[.)]\s*/.test(title);
+    const formattedTitle = hasLeadingNumber ? title : `${idx + 1}. ${title}`;
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 28);
+
+    return {
+      id: `sec-${idx + 1}-${slug || 'section'}`,
+      title: formattedTitle,
+      content,
+      keyTakeaway,
+      pullQuote
+    };
+  };
+
+  if (h1SectionMatches.length >= 2) {
+    // Document uses # H1 for major sections (and ## H2 for subsections or preamble)
+    const h1Parts = cleanedMarkdown.split(/(?:^|\n)#\s+/);
+    const preamble = h1Parts[0].trim();
+
+    if (preamble) {
+      // Split preamble by ## if it contains ## Revision summary, ## Abstract, etc.
+      const preambleH2Parts = preamble.split(/(?:^|\n)##\s+/);
+      if (preambleH2Parts[0].trim() && !executiveSummary) {
+        executiveSummary = preambleH2Parts[0].trim();
+      }
+      preambleH2Parts.slice(1).forEach((part) => {
+        const firstLineEnd = part.indexOf('\n');
+        const title = firstLineEnd !== -1 ? part.slice(0, firstLineEnd).trim() : 'Overview';
+        const content = firstLineEnd !== -1 ? part.slice(firstLineEnd).trim() : '';
+        if (content && !/^(?:Abstract|Executive Summary)$/i.test(title)) {
+          const sec = buildSectionRecord(title, content, sections.length);
+          if (sec) sections.push(sec);
+        }
+      });
     }
 
-    h2Parts.slice(1).forEach((part, idx) => {
+    h1Parts.slice(1).forEach((part) => {
       const firstLineEnd = part.indexOf('\n');
-      const title = firstLineEnd !== -1 ? part.slice(0, firstLineEnd).trim() : `Section ${idx + 1}`;
+      const title = firstLineEnd !== -1 ? part.slice(0, firstLineEnd).trim() : `Section ${sections.length + 1}`;
       const content = firstLineEnd !== -1 ? part.slice(firstLineEnd).trim() : '';
+      if (!content && /^(?:Executive Summary|Abstract)$/i.test(title)) return;
+      const sec = buildSectionRecord(title, content, sections.length);
+      if (sec) sections.push(sec);
+    });
+  } else {
+    // Standard ## H2 sectioning
+    const h2Parts = cleanedMarkdown.split(/(?:^|\n)##\s+/);
 
-      if (/^(?:References|Bibliography|Sources|Works Cited)/i.test(title)) {
-        return;
+    if (h2Parts.length <= 1) {
+      sections.push({
+        id: 'sec-primary',
+        title: '1. Primary Monograph Analysis',
+        content: cleanedMarkdown
+      });
+    } else {
+      if (!executiveSummary && h2Parts[0].trim()) {
+        executiveSummary = h2Parts[0].replace(/^#\s+[^\n]+\n+/, '').trim();
       }
 
-      const quoteMatch = content.match(/(?:^|\n)>\s*["“]?([^"”\n]+)["”]?/);
-      const pullQuote = quoteMatch ? quoteMatch[1].trim() : undefined;
-
-      const takeawayMatch = content.match(/\*\*(?:Key Takeaway|Core Finding|Finding):\*\*\s*([^\n]+)/i);
-      const keyTakeaway = takeawayMatch ? takeawayMatch[1].trim() : undefined;
-
-      sections.push({
-        id: `sec-${idx + 1}-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 24)}`,
-        title: `${idx + 1}. ${title}`,
-        content,
-        keyTakeaway,
-        pullQuote
+      h2Parts.slice(1).forEach((part) => {
+        const firstLineEnd = part.indexOf('\n');
+        const title = firstLineEnd !== -1 ? part.slice(0, firstLineEnd).trim() : `Section ${sections.length + 1}`;
+        const content = firstLineEnd !== -1 ? part.slice(firstLineEnd).trim() : '';
+        const sec = buildSectionRecord(title, content, sections.length);
+        if (sec) sections.push(sec);
       });
-    });
+    }
   }
 
   if (!executiveSummary) {
-    executiveSummary = sections[0]?.content.slice(0, 320).replace(/\n+/g, ' ') + '...' || 'Research monograph synthesis.';
+    executiveSummary = sections[0]?.content.slice(0, 360).replace(/\n+/g, ' ') + '...' || 'Research monograph synthesis.';
   }
 
   return { executiveSummary, sections };
@@ -465,29 +685,59 @@ export function extractGeographicMetadata(text: string, frontmatter: Partial<Not
 export function classifyPillarAndPublication(
   body: string, 
   title: string, 
-  frontmatter: Partial<NotebookMetadataHeader>
+  frontmatter: Partial<NotebookMetadataHeader>,
+  sourcePath: string = ''
 ): {
   pillar: AfricaliaPillar;
   publicationType: AfricaliaPublicationType;
   disciplines: string[];
   pillarConfidence: number;
   pubTypeConfidence: number;
+  isWorkingPaper: boolean;
 } {
-  // 1. Check explicit pillar in frontmatter
-  if (frontmatter.pillar && CONTROLLED_PILLARS[frontmatter.pillar]) {
-    const pubType = frontmatter.publication_type || inferPublicationType(body);
+  const pubObj = frontmatter.publication && typeof frontmatter.publication === 'object' ? frontmatter.publication : undefined;
+  const rawPubTypeStr = String(pubObj?.type || frontmatter.publication_type || '').toLowerCase();
+  const rawPubCategoryStr = String(pubObj?.category || pubObj?.series || '').toLowerCase();
+  const rawSectionStr = String(frontmatter.section || '').toLowerCase();
+
+  const isWorkingPaper = Boolean(
+    sourcePath.includes('working-papers') ||
+    rawSectionStr === 'working-papers' ||
+    rawSectionStr === 'working_papers' ||
+    rawPubTypeStr.includes('working_paper') ||
+    rawPubTypeStr.includes('working-paper') ||
+    rawPubTypeStr.includes('working paper') ||
+    rawPubTypeStr.includes('policy_brief') ||
+    rawPubTypeStr.includes('policy brief') ||
+    rawPubTypeStr.includes('research_note') ||
+    rawPubTypeStr.includes('research note') ||
+    rawPubTypeStr.includes('proposal') ||
+    rawPubCategoryStr.includes('working paper') ||
+    rawPubCategoryStr.includes('policy brief') ||
+    String(frontmatter.subtitle || '').toLowerCase().includes('research proposal') ||
+    String(frontmatter.id || '').startsWith('wp-')
+  );
+
+  let pubType: AfricaliaPublicationType = isWorkingPaper
+    ? (rawPubTypeStr.includes('policy') ? 'policy_brief' : rawPubTypeStr.includes('note') ? 'research_note' : 'working_paper')
+    : (frontmatter.publication_type || inferPublicationType(body));
+
+  // 1. Check explicit pillar or category in frontmatter via normalizePillarKey
+  const normalizedPillar = normalizePillarKey(frontmatter.pillar, frontmatter.category);
+  if (normalizedPillar && CONTROLLED_PILLARS[normalizedPillar]) {
     return {
-      pillar: frontmatter.pillar,
+      pillar: normalizedPillar,
       publicationType: pubType,
-      disciplines: frontmatter.disciplines || inferDisciplines(frontmatter.pillar),
+      disciplines: frontmatter.disciplines || inferDisciplines(normalizedPillar),
       pillarConfidence: 0.98,
-      pubTypeConfidence: 0.92
+      pubTypeConfidence: 0.95,
+      isWorkingPaper
     };
   }
 
   // 2. Score text against weighted pillar dictionary
   const corpus = `${title} ${frontmatter.subtitle || ''} ${body.slice(0, 5000)}`.toLowerCase();
-  let bestPillar: AfricaliaPillar = 'history';
+  let bestPillar: AfricaliaPillar = 'development';
   let maxScore = 0;
 
   for (const [pillar, keywords] of Object.entries(PILLAR_KEYWORD_WEIGHTS)) {
@@ -503,14 +753,14 @@ export function classifyPillarAndPublication(
   }
 
   const pillarConfidence = maxScore > 5 ? 0.94 : (maxScore > 0 ? 0.78 : 0.65);
-  const pubType = frontmatter.publication_type || inferPublicationType(body);
 
   return {
     pillar: bestPillar,
     publicationType: pubType,
     disciplines: frontmatter.disciplines || inferDisciplines(bestPillar),
     pillarConfidence,
-    pubTypeConfidence: 0.90
+    pubTypeConfidence: 0.90,
+    isWorkingPaper
   };
 }
 
@@ -528,6 +778,8 @@ function inferDisciplines(pillar: AfricaliaPillar): string[] {
       return ['Population Genetics', 'Paleogenomics', 'Bioarchaeology', 'Human Evolutionary Biology'];
     case 'law':
       return ['International Law', 'Human Rights Law', 'Postcolonial Jurisprudence', 'Diplomatic History'];
+    case 'development':
+      return ['Historical Economics', 'Development Economics', 'Atlantic Economy', 'Quantitative Economic History'];
     case 'macroeconomics':
       return ['Development Economics', 'Political Economy', 'Monetary Policy', 'Trade Integration'];
     case 'history':
@@ -545,45 +797,66 @@ function inferDisciplines(pillar: AfricaliaPillar): string[] {
   }
 }
 
+function inferJelCodes(pillar: AfricaliaPillar): string[] {
+  switch (pillar) {
+    case 'development':
+    case 'macroeconomics':
+      return ['N17', 'O10', 'O43', 'F54'];
+    case 'law':
+      return ['K33', 'N47', 'F53', 'P48'];
+    case 'genetics':
+    case 'demography':
+      return ['J15', 'N37', 'I15', 'Z13'];
+    default:
+      return ['N17', 'O55', 'Z13'];
+  }
+}
+
 /**
  * Universal Ingestion Pipeline Engine
  * 
- * Transforms arbitrary Markdown monographs into typed, normalized, 
+ * Transforms arbitrary Markdown monographs & working papers into typed, normalized, 
  * machine-readable `AfricaliaReport` records conforming to the 1.0.0 canonical publication schema.
  */
 export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string = 'reports/monograph.md'): IngestionResult {
   const { frontmatter, body } = parseFrontmatter(rawMarkdown);
 
-  // 1. Citations & Semantic In-text [REF:id] tags
-  const { processedContent, citations, refTagCount } = extractAndSemantifyCitations(body);
-
-  // 2. Sections & Summary partitioning
-  const { executiveSummary, sections } = partitionMarkdownSections(processedContent);
-
-  // 3. Document Metrics
-  const words = body.split(/\s+/).filter(Boolean);
-  const wordCount = words.length;
-  const readTimeMinutes = frontmatter.readingTimeMinutes || Math.max(5, Math.ceil(wordCount / 220));
-
-  // 4. Title & Subtitle Extraction
+  // 1. Title & Subtitle Extraction
   const h1Match = body.match(/^#\s+(.+)$/m);
   const extractedTitle = frontmatter.title || (h1Match ? h1Match[1].trim() : 'Contemporary African Scholarly Monograph');
   const extractedSubtitle = frontmatter.subtitle || null;
 
-  // 5. Taxonomy & Pillar Classification
-  const { pillar, publicationType, disciplines, pillarConfidence, pubTypeConfidence } = classifyPillarAndPublication(body, extractedTitle, frontmatter);
-  const pillarPreset = CONTROLLED_PILLARS[pillar] || CONTROLLED_PILLARS.genetics;
+  // 2. Citations & Semantic In-text [REF:id] tags
+  const { processedContent, citations, refTagCount } = extractAndSemantifyCitations(body);
+
+  // 3. Sections & Summary partitioning
+  const { executiveSummary, sections } = partitionMarkdownSections(processedContent, extractedTitle, extractedSubtitle);
+
+  // 4. Document Metrics
+  const words = body.split(/\s+/).filter(Boolean);
+  const wordCount = words.length;
+  const readTimeMinutes = frontmatter.readingTimeMinutes || frontmatter.readTimeMinutes || Math.max(5, Math.ceil(wordCount / 220));
+
+  // 5. Taxonomy, Pillar & Working Paper Classification
+  const { pillar, publicationType, disciplines, pillarConfidence, pubTypeConfidence, isWorkingPaper } = classifyPillarAndPublication(
+    body,
+    extractedTitle,
+    frontmatter,
+    sourcePath
+  );
+  const pillarPreset = CONTROLLED_PILLARS[pillar] || CONTROLLED_PILLARS.development;
 
   // 6. Geographic Extraction & Normalization
   const geography = extractGeographicMetadata(body, frontmatter);
 
   // 7. Stable Identifier & Slugs
   const cleanTitleSlug = extractedTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 36).replace(/^-|-$/g, '');
-  const reportId = frontmatter.id || `rep-${pillar}-${cleanTitleSlug}`;
+  const prefix = isWorkingPaper ? 'wp' : 'report';
+  const reportId = frontmatter.id || `${prefix}-${pillar}-${cleanTitleSlug}`;
 
-  // 8. Authors Normalization
+  // 8. Authors & Institution Normalization (supports both `authors:` list and `author:` nested object)
   const authors: AfricaliaAuthor[] = [];
-  if (Array.isArray(frontmatter.authors)) {
+  if (Array.isArray(frontmatter.authors) && frontmatter.authors.length > 0) {
     frontmatter.authors.forEach(a => {
       if (typeof a === 'string') {
         authors.push({ name: a, role: 'author', institution: 'Africalia Research Platform' });
@@ -591,9 +864,20 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
         authors.push(a);
       }
     });
-  } else if (typeof frontmatter.authors === 'string') {
-    authors.push({ name: frontmatter.authors, role: 'author', institution: 'Africalia Research Platform' });
-  } else {
+  } else if (typeof frontmatter.authors === 'string' && frontmatter.authors.trim()) {
+    authors.push({ name: frontmatter.authors.trim(), role: 'author', institution: 'Africalia Research Platform' });
+  } else if (frontmatter.author) {
+    if (typeof frontmatter.author === 'string') {
+      authors.push({ name: frontmatter.author, role: 'author', institution: 'Africalia Research Platform' });
+    } else if (typeof frontmatter.author === 'object' && frontmatter.author.name) {
+      authors.push({
+        name: frontmatter.author.name,
+        role: frontmatter.author.role || 'Institutional / Project Author',
+        institution: frontmatter.author.platform || frontmatter.author.affiliation || 'Africalia Research Platform'
+      });
+    }
+  }
+  if (authors.length === 0) {
     authors.push({ name: 'Africalia Research Consortium', role: 'author', institution: 'Africalia Research Platform' });
   }
 
@@ -604,15 +888,35 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
 
   // 10. DOI Resolution
   const rawDoi = frontmatter.doi || (body.match(/(?:https?:\/\/doi\.org\/|doi:\s*)(10\.\d{4,9}\/[-._;()/:A-Za-z0-9]+)/i)?.[1] ?? null);
-  const normalizedDoi = rawDoi ? resolveDoi(rawDoi).replace('https://doi.org/', '') : `10.1038/africalia.${reportId}`;
+  const normalizedDoi = rawDoi ? resolveDoi(rawDoi).replace('https://doi.org/', '') : `10.5281/zenodo.africalia.${reportId}`;
 
-  // 11. Keywords & Tags
-  const keywords = frontmatter.keywords || [
-    pillarPreset.label,
-    ...geography.regions.slice(0, 2),
-    ...disciplines.slice(0, 3)
-  ];
-  const tags = frontmatter.tags || [pillar, ...geography.countries.slice(0, 4)];
+  // 11. Keywords, Tags & Working Paper Series Metadata
+  const keywords = Array.isArray(frontmatter.keywords) && frontmatter.keywords.length > 0
+    ? frontmatter.keywords
+    : [
+        pillarPreset.label,
+        ...geography.regions.slice(0, 2),
+        ...disciplines.slice(0, 3)
+      ];
+  const tags = Array.isArray(frontmatter.tags) && frontmatter.tags.length > 0
+    ? frontmatter.tags
+    : [pillar, ...geography.countries.slice(0, 4)];
+
+  const pubObj = frontmatter.publication && typeof frontmatter.publication === 'object' ? frontmatter.publication : undefined;
+  const seriesName = pubObj?.series || pubObj?.category || (isWorkingPaper ? 'Africalia Working Paper & Policy Brief Series' : 'Africalia Scholarly Research Reports');
+  const seriesNumber = frontmatter.seriesNumber || pubObj?.seriesNumber || (isWorkingPaper ? 'Africalia Working Paper No. 08' : undefined);
+  const jelCodes = frontmatter.jelCodes || pubObj?.jelCodes || inferJelCodes(pillar);
+  const issn = frontmatter.issn || pubObj?.issn || 'ISSN 2983-4921 (Online Archive)';
+
+  const institutionsList = Array.isArray(frontmatter.institutions) && frontmatter.institutions.length > 0
+    ? frontmatter.institutions
+    : typeof frontmatter.institutions === 'string' && frontmatter.institutions.trim()
+      ? [frontmatter.institutions]
+      : (typeof frontmatter.author === 'object' && frontmatter.author?.platform
+          ? [frontmatter.author.platform]
+          : ['Africalia Research Platform']);
+
+  const aiObj = frontmatter.ai_assistance && typeof frontmatter.ai_assistance === 'object' ? frontmatter.ai_assistance : undefined;
 
   // 12. Provenance Fingerprinting
   const sourceHash = computeDeterministicHash(rawMarkdown);
@@ -627,25 +931,25 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
     title: extractedTitle,
     subtitle: extractedSubtitle,
     date: publicationDate,
-    version: '1.0',
+    version: String(frontmatter.version || '1.0'),
     status: 'published',
     institution: {
-      name: 'Africalia',
-      type: 'Interdisciplinary Research & Knowledge Initiative',
-      role: 'Institutional / Project Author',
-      platform: 'Africalia Research Platform'
+      name: typeof frontmatter.author === 'object' && frontmatter.author?.name ? frontmatter.author.name : 'Africalia',
+      type: typeof frontmatter.author === 'object' && frontmatter.author?.type ? frontmatter.author.type : 'Interdisciplinary Research & Knowledge Initiative',
+      role: typeof frontmatter.author === 'object' && frontmatter.author?.role ? frontmatter.author.role : 'Institutional / Project Author',
+      platform: typeof frontmatter.author === 'object' && frontmatter.author?.platform ? frontmatter.author.platform : 'Africalia Research Platform'
     },
     publication: {
-      series: 'Africalia Scholarly Research Reports',
+      series: seriesName,
       type: publicationType,
-      edition: 'Research Edition',
-      language: 'en',
+      edition: pubObj?.edition || pubObj?.status || 'Research Edition',
+      language: pubObj?.language || 'en',
       citation_style: 'chicago-author-date'
     },
     authors: rawAuthorNames,
     author_details: authors,
     classification: {
-      section: frontmatter.section || 'reports',
+      section: isWorkingPaper ? 'working-papers' : ((frontmatter.section as AfricaliaSection) || 'reports'),
       pillar,
       disciplines,
       confidence: {
@@ -664,15 +968,19 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
     identifiers: {
       doi: normalizedDoi,
       isbn: null,
-      issn: null,
+      issn,
       external_url: null,
       source_url: null
     },
     research: {
-      methodology: ['comparative_analysis', 'archival_research', 'digital_humanities'],
+      methodology: Array.isArray(frontmatter.research?.methodology)
+        ? frontmatter.research.methodology
+        : typeof frontmatter.research?.methodology === 'string'
+          ? [frontmatter.research.methodology]
+          : ['comparative_analysis', 'archival_research', 'digital_humanities'],
       disciplines,
-      temporal_scope: 'Historical to Contemporary',
-      geographic_scope: geography.regions.join(', ') || 'Continental Africa'
+      temporal_scope: frontmatter.research?.temporal_scope || 'Historical to Contemporary',
+      geographic_scope: geography.regions.join(', ') || 'Continental Africa & Atlantic Basin'
     },
     reading: {
       read_time_minutes: readTimeMinutes,
@@ -686,11 +994,11 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
       layout: 'article'
     },
     ai_assistance: {
-      enabled: true,
-      system: 'Africalia Ingestion Engine',
-      role: ['source_organization', 'metadata_extraction', 'classification', 'semantic_citation_tagging'],
-      disclosure: 'Scholarly synthesis and computational cross-referencing against primary archives.',
-      accountability: 'Africalia'
+      enabled: aiObj?.enabled ?? true,
+      system: aiObj?.system || 'Africalia Ingestion Engine',
+      role: Array.isArray(aiObj?.role) ? aiObj.role : ['source_organization', 'metadata_extraction', 'classification', 'semantic_citation_tagging'],
+      disclosure: aiObj?.disclosure || aiObj?.status || 'Scholarly synthesis and computational cross-referencing against primary archives.',
+      accountability: aiObj?.accountability || 'Africalia'
     },
     provenance: {
       source_file: sourcePath,
@@ -721,16 +1029,18 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
     sections,
     citations,
     category: pillarPreset.canonicalCategory,
-    categoryLabel: pillarPreset.label,
-    categoryColor: pillarPreset.color,
+    categoryLabel: frontmatter.categoryLabel || pillarPreset.label,
+    categoryColor: frontmatter.categoryColor || pillarPreset.color,
     publicationDate,
     readingTimeMinutes: readTimeMinutes,
     doi: normalizedDoi,
-    institutions: Array.isArray(frontmatter.institutions) 
-      ? frontmatter.institutions 
-      : (typeof frontmatter.institutions === 'string' ? [frontmatter.institutions] : ['Africalia Academic Repository']),
+    institutions: institutionsList,
     relatedEthnicNodes: frontmatter.relatedEthnicNodes || [],
-    icon: frontmatter.icon
+    icon: frontmatter.icon,
+    isWorkingPaper,
+    seriesNumber,
+    jelCodes,
+    issn
   };
 
   const summaryJson = JSON.stringify(report, null, 2);

@@ -2,7 +2,7 @@ import React from 'react';
 import { CanonicalNavTab } from '../components/NavigationDrawer';
 import { AfricanRegion } from '../data/types';
 import { atlas } from '../data/atlas-store';
-import { getAllReports } from '../data/reportsDataLoader';
+import { getAllReports, isReportOrPaperTab } from '../data/reportsDataLoader';
 import {
   Compass,
   Map as MapIcon,
@@ -256,8 +256,8 @@ export function getPageInfo(
       };
 
     default: {
-      // Dynamic research reports check
-      if (typeof tab === 'string' && (tab.startsWith('report-') || tab.includes('report'))) {
+      // Dynamic research reports & working papers check
+      if (typeof tab === 'string' && isReportOrPaperTab(tab)) {
         const reports = getAllReports();
         const report = reports[tab];
         if (report) {
@@ -266,7 +266,7 @@ export function getPageInfo(
             title: report.title,
             shortTitle: reportShortTitle,
             fullTitle: report.title,
-            category: 'Research Monograph',
+            category: report.isWorkingPaper ? 'Africalia Working Paper' : 'Research Monograph',
             Icon: FileText
           };
         }

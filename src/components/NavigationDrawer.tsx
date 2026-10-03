@@ -35,7 +35,7 @@ import {
 import { UN_REGIONAL_SILHOUETTES } from '../data/svgGeographySystem';
 import { AfricanRegion } from '../data/types';
 import { getRegionTonalPalette } from '../data/unGeoschemeColors';
-import { getCategorizedReports, NavReportGroup } from '../data/reportsDataLoader';
+import { getCategorizedReports, getAllReports, isReportOrPaperTab, NavReportGroup } from '../data/reportsDataLoader';
 import { DynamicIcon } from './DynamicIcon';
 import { AfricaUnLogo } from './AfricaUnLogo';
 
@@ -168,7 +168,7 @@ const getActiveSubmenuFromTab = (tab: CanonicalNavTab): SubmenuKey | null => {
     tab === 'iconography' ||
     tab === 'archival-cartography'
   ) return 'history';
-  if (tab === 'research-directory' || (typeof tab === 'string' && tab.startsWith('report-'))) return 'reports';
+  if (tab === 'research-directory' || (typeof tab === 'string' && isReportOrPaperTab(tab))) return 'reports';
   if (tab === 'regions' || tab === 'languages') return 'regions';
   if (tab === 'analytics' || tab === 'map') return 'analytics';
   return null;
@@ -218,7 +218,7 @@ const getSelectedLinkColor = (tab: CanonicalNavTab, activeRegion?: AfricanRegion
   if (tab === 'research-directory') {
     return { thumb: '#6366F1', hover: '#4F46E5' }; // Indigo
   }
-  if (typeof tab === 'string' && tab.startsWith('report-')) {
+  if (typeof tab === 'string' && isReportOrPaperTab(tab)) {
     return { thumb: '#F59E0B', hover: '#D97706' }; // Amber
   }
 
@@ -274,7 +274,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     currentTab === 'archival-cartography';
   const isReportsGroupActive = 
     currentTab === 'research-directory' || 
-    (typeof currentTab === 'string' && currentTab.startsWith('report-'));
+    (typeof currentTab === 'string' && isReportOrPaperTab(currentTab));
   const isRegionsGroupActive = currentTab === 'regions' || currentTab === 'languages';
   const isAnalyticsGroupActive = currentTab === 'analytics' || currentTab === 'map';
 
@@ -423,15 +423,16 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     { id: 'map', label: 'Map', icon: 'gis:search-globe', badge: 'Spatial GIS' }
   ];
 
-  // Dynamic submenu categorized items for Reports (from static + drop-in markdown + custom)
-  const reportsSubGroups = React.useMemo(() => getCategorizedReports(), []);
-  const totalReportsCount = React.useMemo(() => {
-    return reportsSubGroups.reduce((acc, group) => {
-      // Exclude overview/directory item from count to show actual reports count
-      const count = group.categoryKey === 'overview' ? 0 : group.items.length;
-      return acc + count;
-    }, 0);
-  }, [reportsSubGroups]);
+  // Dynamic submenu categorized items for Reports & Working Papers (from static + drop-in markdown + custom)
+  const [publicationsVersion, setPublicationsVersion] = useState(0);
+  useEffect(() => {
+    const handleUpdate = () => setPublicationsVersion(v => v + 1);
+    window.addEventListener('africalia-publications-updated', handleUpdate);
+    return () => window.removeEventListener('africalia-publications-updated', handleUpdate);
+  }, []);
+
+  const reportsSubGroups = React.useMemo(() => getCategorizedReports(), [publicationsVersion]);
+  const totalReportsCount = React.useMemo(() => Object.keys(getAllReports()).length, [publicationsVersion]);
 
   // Section 2: Regions - Using Regional SVG Silhouettes
   const regionNavItems: NavItemDef[] = [

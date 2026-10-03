@@ -1,35 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   FileText, 
-  Download, 
   Copy, 
   Check, 
-  ExternalLink, 
   BookOpen, 
   X, 
   Sparkles, 
   Award,
-  Layers,
   Printer,
-  ChevronRight
+  Upload,
+  ArrowRight
 } from 'lucide-react';
-import { WORKING_PAPERS_SERIES, WorkingPaperEntry } from '../data/methodologyDossierData';
+import { WorkingPaperEntry } from '../data/methodologyDossierData';
+import { getUnifiedWorkingPaperEntries } from '../data/reportsDataLoader';
+import { NotebookIngestionModal } from './NotebookIngestionModal';
 import { AfricaUnLogo } from './AfricaUnLogo';
 
 interface WorkingPapersModalProps {
   isOpen: boolean;
   onClose: () => void;
   onOpenCitationModal?: () => void;
+  onSelectReport?: (reportId: string) => void;
 }
 
 export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
   isOpen,
   onClose,
-  onOpenCitationModal
+  onSelectReport
 }) => {
-  const [selectedPaper, setSelectedPaper] = useState<WorkingPaperEntry>(WORKING_PAPERS_SERIES[0]);
+  const [refreshTick, setRefreshTick] = useState(0);
+  const [isIngestionOpen, setIsIngestionOpen] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleUpdate = () => setRefreshTick(t => t + 1);
+    window.addEventListener('africalia-publications-updated', handleUpdate);
+    return () => window.removeEventListener('africalia-publications-updated', handleUpdate);
+  }, []);
+
+  const allPapers = useMemo(() => getUnifiedWorkingPaperEntries(), [refreshTick]);
+  const [selectedPaperId, setSelectedPaperId] = useState<string>(() => allPapers[0]?.id || '');
+
+  const selectedPaper = useMemo(
+    () => allPapers.find(p => p.id === selectedPaperId) || allPapers[0],
+    [allPapers, selectedPaperId]
+  );
 
   const handleCopy = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
@@ -41,7 +57,7 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
     window.print();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !selectedPaper) return null;
 
   return (
     <AnimatePresence>
@@ -64,7 +80,7 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
           className="relative w-full max-w-5xl max-h-[92vh] bg-[#FAF8F5] dark:bg-stone-950 rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden flex flex-col z-10"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 shrink-0">
+          <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 shrink-0">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-700 dark:text-amber-400">
                 <FileText className="w-5 h-5" />
@@ -74,12 +90,20 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
                   Africalia Working Paper & Policy Brief Series
                 </h2>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
-                  ISSN-Ready Academic Monographs & Applied Econometric Research Notes
+                  ISSN-Ready Academic Monographs & Applied Econometric Research Notes ({allPapers.length} Papers)
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsIngestionOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-bold transition-all shadow-xs cursor-pointer"
+                title="Upload or Ingest a Markdown (.md) Working Paper"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                <span>Ingest Working Paper (.md)</span>
+              </button>
               <button
                 onClick={handlePrint}
                 className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-semibold transition-colors cursor-pointer"
@@ -101,19 +125,22 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
           {/* Paper Selector Pill Bar */}
           <div className="bg-white/95 dark:bg-stone-900/95 border-b border-stone-200 dark:border-stone-800 px-6 py-3 shrink-0 shadow-xs">
             <div className="p-1 rounded-2xl bg-stone-100 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 flex flex-wrap items-center gap-1">
-              {WORKING_PAPERS_SERIES.map((paper) => {
+              {allPapers.map((paper) => {
                 const isSelected = selectedPaper.id === paper.id;
+                const shortSeries = paper.seriesNumber.split('No.')[1]
+                  ? `No.${paper.seriesNumber.split('No.')[1]}`
+                  : paper.seriesNumber;
                 return (
                   <button
                     key={paper.id}
-                    onClick={() => setSelectedPaper(paper)}
+                    onClick={() => setSelectedPaperId(paper.id)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                       isSelected
                         ? 'bg-amber-600 text-white shadow-xs font-bold'
                         : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
                     }`}
                   >
-                    <span className="font-mono">{paper.seriesNumber.split('No.')[1] ? `No.${paper.seriesNumber.split('No.')[1]}` : paper.seriesNumber}</span>
+                    <span className="font-mono">{shortSeries}</span>
                     <span className="opacity-90 truncate max-w-[160px] sm:max-w-[220px]">{paper.title}</span>
                   </button>
                 );
@@ -145,8 +172,20 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
               </div>
 
               <div className="pt-4 space-y-2">
-                <div className="inline-block px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-800 dark:text-amber-300 font-mono text-[11px] font-bold uppercase tracking-wider">
-                  {selectedPaper.type}
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="inline-block px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-800 dark:text-amber-300 font-mono text-[11px] font-bold uppercase tracking-wider">
+                    {selectedPaper.type}
+                  </div>
+                  {selectedPaper.isIngestedMarkdown && selectedPaper.reportId && onSelectReport && (
+                    <button
+                      onClick={() => onSelectReport(selectedPaper.reportId!)}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-sans font-bold text-xs shadow-sm transition-all cursor-pointer"
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span>Read Full Interactive Working Paper</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-950 dark:text-stone-50 font-serif leading-tight">
                   {selectedPaper.title}
@@ -182,7 +221,7 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
             <div className="space-y-4 font-sans">
               <h3 className="text-base font-bold font-serif text-stone-900 dark:text-stone-100 flex items-center gap-2">
                 <Award className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                <span>Key Empirical Findings & Policy Implications</span>
+                <span>Key Empirical Sections & Methodological Architecture</span>
               </h3>
               <ul className="space-y-2.5 text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed list-disc pl-5">
                 {selectedPaper.keyFindings.map((finding, idx) => (
@@ -216,9 +255,17 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
           {/* Footer */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 shrink-0">
             <span className="text-xs text-stone-500 font-mono text-center sm:text-left">
-              Published by Africalia Cartographic & Econometric Observatory • CC-BY 4.0
+              Published by Africalia Cartographic & Econometric Observatory • Drop-in dir: <code className="text-amber-600 dark:text-amber-400">/src/content/working-papers/*.md</code>
             </span>
             <div className="flex items-center gap-2">
+              {selectedPaper.isIngestedMarkdown && selectedPaper.reportId && onSelectReport && (
+                <button
+                  onClick={() => onSelectReport(selectedPaper.reportId!)}
+                  className="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Open Full Monograph View
+                </button>
+              )}
               <button
                 onClick={handlePrint}
                 className="px-3.5 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold transition-colors cursor-pointer"
@@ -235,6 +282,17 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
             </div>
           </div>
         </motion.div>
+
+        {/* Working Paper Markdown Ingestion Modal */}
+        <NotebookIngestionModal
+          isOpen={isIngestionOpen}
+          onClose={() => setIsIngestionOpen(false)}
+          defaultTargetPipeline="working-papers"
+          onIngestComplete={(newWp) => {
+            setRefreshTick(t => t + 1);
+            setSelectedPaperId(newWp.id);
+          }}
+        />
       </div>
     </AnimatePresence>
   );
