@@ -171,7 +171,7 @@ export const exportHighDpiPlatePDF = async (
       doc.setLineWidth(0.3);
       doc.rect(imgX - 1, currentY - 1, imgWidth + 2, imgHeight + 2);
 
-      doc.addImage(img, 'WEBP', imgX, currentY, imgWidth, imgHeight);
+      doc.addImage(img, 'JPEG', imgX, currentY, imgWidth, imgHeight);
       currentY += imgHeight + 8;
     } catch {
       // Fallback if CORS prevents canvas export
