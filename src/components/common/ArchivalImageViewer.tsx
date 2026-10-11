@@ -394,21 +394,21 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
     const source = illustration.source;
     const regId = illustration.regId;
     const accessDate = 'September 2026';
-    const url = illustration.slaveryImagesPage || `http://www.slaveryimages.org/s/slaveryimages/item/${illustration.objectId}`;
+    const url = illustration.slaveryImagesPage || `https://zeluis.github.io/Africa-Digital-Atlas/castas/${illustration.objectId}`;
 
     switch (style) {
       case 'chicago':
-        return `${authors}. "${title}." ${source} (${illustration.date || 'n.d.'}). Historical engraving, Plate ID: ${regId}. Slavery Images: A Visual Record of the African Slave Trade, accessed ${accessDate}, ${url}.`;
+        return `${authors}. "${title}." ${source} (${illustration.date || 'n.d.'}). Historical engraving, Plate ID: ${regId}. Archival Iconography: A Visual Record of the Castas & Colonial Archive, accessed ${accessDate}, ${url}.`;
       case 'apa':
-        return `${authors} (${year}). ${title} [Historical plate ${regId}]. In ${source}. Retrieved ${accessDate}, from Slavery Images Database: ${url}`;
+        return `${authors} (${year}). ${title} [Historical plate ${regId}]. In ${source}. Retrieved ${accessDate}, from Archival Iconography Database: ${url}`;
       case 'harvard':
         return `${authors} (${year}) '${title}', Plate ${regId}. In ${source}. Available at: ${url} (Accessed: ${accessDate}).`;
       case 'bibtex':
-        return `@misc{slaveryimages_${illustration.objectId},
+        return `@misc{Archival Iconography_${illustration.objectId},
   author = {${authors}},
   title = {${title}},
   year = {${year}},
-  howpublished = {Slavery Images: A Visual Record of the African Slave Trade},
+  howpublished = {Archival Iconography: A Visual Record of Castas & Colonial Archive},
   note = {Plate ID: ${regId}, Identifier: ${illustration.identifier || regId}},
   url = {${url}}
 }`;
