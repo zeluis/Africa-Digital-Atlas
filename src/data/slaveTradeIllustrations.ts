@@ -1,5 +1,33 @@
 const recordsJsonAssetUrl = new URL('./records-with-descriptions.json', import.meta.url).href;
 
+export interface UnescoSiteMetadata {
+  idNumber: number;
+  site: string;
+  category: 'Cultural' | 'Natural' | 'Mixed';
+  criteriaTxt: string;
+  dateInscribed: number;
+  secondaryDates?: string;
+  danger?: boolean;
+  dangerDates?: string;
+  states: string;
+  region: 'Africa' | 'Arab States' | string;
+  isoCode?: string;
+  udnpCode?: string;
+  entityId?: string;
+  transboundary?: boolean;
+  latitude?: number;
+  longitude?: number;
+  areaHectares?: number | string;
+  location?: string;
+  shortDescription?: string;
+  longDescription?: string;
+  historicalDescription?: string;
+  justification?: string;
+  httpUrl?: string;
+  imageUrl?: string;
+  uniqueNumber?: number;
+}
+
 export interface SlaveTradeIllustration {
   objectId: number;
   sourceFile: string;
@@ -25,6 +53,7 @@ export interface SlaveTradeIllustration {
   coordinates?: number[];
   collectionIds: number[];
   collectionNames: string[];
+  unescoMeta?: UnescoSiteMetadata;
 }
 
 export const BASE_SLAVE_TRADE_ILLUSTRATIONS: SlaveTradeIllustration[] = [

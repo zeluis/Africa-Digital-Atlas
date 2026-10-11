@@ -43,6 +43,8 @@ import {
 } from '../../utils/academicExport';
 import { resolveAssetPath, getAssetCandidateUrls } from '../../utils/assetPath';
 
+export type AcademiaVariant = 'slavery-images' | 'castas' | 'unesco';
+
 interface ArchivalImageViewerProps {
   illustration: SlaveTradeIllustration | null;
   illustrationsList?: SlaveTradeIllustration[];
@@ -51,6 +53,7 @@ interface ArchivalImageViewerProps {
   mode?: 'modal' | 'embedded' | 'fullscreen';
   showThumbnails?: boolean;
   onOpenModal?: () => void;
+  academiaVariant?: AcademiaVariant;
 }
 
 type CitationStyle = 'chicago' | 'apa' | 'harvard' | 'bibtex';
@@ -63,8 +66,19 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
   onClose,
   mode = 'modal',
   showThumbnails = true,
-  onOpenModal
+  onOpenModal,
+  academiaVariant
 }) => {
+  const resolvedAcademiaVariant: AcademiaVariant =
+    academiaVariant ||
+    (illustration?.unescoMeta ||
+    illustration?.regId?.startsWith('WHC-') ||
+    illustration?.itemSets?.includes('UNESCO World Heritage Registry')
+      ? 'unesco'
+      : illustration?.regId?.startsWith('C-') ||
+        illustration?.itemSets?.includes('Castas & Colonial Visual Archive')
+      ? 'castas'
+      : 'slavery-images');
   // Zoom & Pan state
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -917,7 +931,9 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                 <div className="space-y-5">
                   <div className="space-y-2">
                     <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
-                      Catalog Entry {illustration.regId}
+                      {illustration.unescoMeta
+                        ? `UNESCO World Heritage Property • WHC #${illustration.unescoMeta.idNumber}`
+                        : `Catalog Entry ${illustration.regId}`}
                     </span>
                     <h3 className="text-[clamp(1.05rem,1.4vw,1.35rem)] font-serif font-bold text-stone-900 dark:text-stone-100 leading-snug">
                       {illustration.title}
@@ -935,13 +951,79 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                     </div>
                   </div>
 
+                  {/* Structured UNESCO XML Metadata Grid when viewing a UNESCO site */}
+                  {illustration.unescoMeta && (
+                    <div className="grid grid-cols-2 gap-2.5 p-3.5 rounded-2xl bg-stone-100/90 dark:bg-stone-900/80 border border-stone-200/90 dark:border-stone-800 text-xs font-mono">
+                      <div className="space-y-0.5">
+                        <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block">UNESCO Region</span>
+                        <span className="font-bold text-stone-900 dark:text-stone-100">{illustration.unescoMeta.region}</span>
+                      </div>
+                      <div className="space-y-0.5">
+                        <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block">State Party</span>
+                        <span className="font-bold text-stone-900 dark:text-stone-100">{illustration.unescoMeta.states}</span>
+                      </div>
+                      <div className="space-y-0.5">
+                        <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block">Category &amp; Criteria</span>
+                        <span className="font-bold text-amber-900 dark:text-amber-400">
+                          {illustration.unescoMeta.category} {illustration.unescoMeta.criteriaTxt}
+                        </span>
+                      </div>
+                      <div className="space-y-0.5">
+                        <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block">Conservation Status</span>
+                        <span className={`font-bold ${illustration.unescoMeta.danger ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
+                          {illustration.unescoMeta.danger ? 'In Danger List' : 'Regular Standing'}
+                        </span>
+                      </div>
+                      {(illustration.unescoMeta.latitude !== undefined && illustration.unescoMeta.longitude !== undefined) && (
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block">Coordinates</span>
+                          <span className="font-semibold text-stone-800 dark:text-stone-200">
+                            {illustration.unescoMeta.latitude.toFixed(4)}°, {illustration.unescoMeta.longitude.toFixed(4)}°
+                          </span>
+                        </div>
+                      )}
+                      {illustration.unescoMeta.areaHectares !== undefined && illustration.unescoMeta.areaHectares !== '' && (
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block">Inscribed Area</span>
+                          <span className="font-semibold text-stone-800 dark:text-stone-200">
+                            {Number(illustration.unescoMeta.areaHectares) > 0
+                              ? `${Number(illustration.unescoMeta.areaHectares).toLocaleString()} ha`
+                              : String(illustration.unescoMeta.areaHectares)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {illustration.description && (
                     <div className="space-y-2 p-4 sm:p-5 rounded-2xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 shadow-2xs">
                       <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
-                        Historical Note &amp; Significance
+                        {illustration.unescoMeta ? 'Official UNESCO Property Synthesis' : 'Historical Note & Significance'}
                       </span>
                       <p className="text-[clamp(0.85rem,1.15vw,0.975rem)] font-serif text-stone-800 dark:text-stone-200 leading-[1.7] whitespace-pre-line">
                         {illustration.description}
+                      </p>
+                    </div>
+                  )}
+
+                  {illustration.unescoMeta?.historicalDescription && (
+                    <div className="space-y-2 p-4 sm:p-5 rounded-2xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 shadow-2xs">
+                      <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                        Historical Context &amp; Chronology
+                      </span>
+                      <p className="text-[clamp(0.85rem,1.15vw,0.975rem)] font-serif text-stone-800 dark:text-stone-200 leading-[1.7] whitespace-pre-line">
+                        {illustration.unescoMeta.historicalDescription}
+                      </p>
+                    </div>
+                  )}
+
+                  {illustration.unescoMeta?.justification && (
+                    <div className="space-y-2 p-4 sm:p-5 rounded-2xl bg-amber-900/5 dark:bg-amber-950/25 border border-amber-900/15 dark:border-amber-500/25 shadow-2xs">
+                      <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                        Justification for Inscription (OUV)
+                      </span>
+                      <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-800 dark:text-stone-200 leading-[1.7] whitespace-pre-line">
+                        {illustration.unescoMeta.justification}
                       </p>
                     </div>
                   )}
@@ -969,7 +1051,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                       Research Provenance
                     </span>
                     <div className="space-y-1.5 text-[clamp(0.8rem,1.05vw,0.9rem)] font-mono text-stone-600 dark:text-stone-400">
-                      <p><strong className="text-stone-900 dark:text-stone-300">Curators / Artists:</strong> {illustration.researchers.join(', ')}</p>
+                      <p><strong className="text-stone-900 dark:text-stone-300">{illustration.unescoMeta ? 'Authority / State Party:' : 'Curators / Artists:'}</strong> {illustration.researchers.join(', ')}</p>
                       <p><strong className="text-stone-900 dark:text-stone-300">Identifier:</strong> {illustration.identifier || `SI-OB-${illustration.objectId}`}</p>
                     </div>
                   </div>
@@ -982,7 +1064,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white dark:bg-stone-100 dark:hover:bg-stone-200 dark:text-stone-900 text-xs font-mono font-bold transition-all w-full justify-center shadow-sm"
                       >
-                        <span>View in External Repository</span>
+                        <span>{illustration.unescoMeta ? 'View Official UNESCO WHC Dossier' : 'View in External Repository'}</span>
                         <ExternalLink className="w-3.5 h-3.5" />
                       </a>
                     </div>
@@ -1100,261 +1182,528 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                 </div>
               )}
 
-              {/* TAB 3: ACADEMIA & CURATORIAL DOSSIER — FLUID & INVITING READABILITY */}
+              {/* TAB 3: ACADEMIA & CURATORIAL DOSSIER — CONTEXT-SPECIFIC BY VIEW */}
               {activeTab === 'academia' && (
                 <div className="space-y-7 text-left">
                   
-                  {/* Lead Summary Section with Prominent Lead Paragraph */}
-                  <div className="space-y-4 p-5 sm:p-6 rounded-3xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 shadow-xs relative overflow-hidden">
-                  {/* Top Accent Pill */}
-                    <div className="flex items-center gap-2">
-                      <div className="p-1 rounded-lg bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20">
-                        <Scroll className="w-4 h-4 text-amber-800 dark:text-amber-400" />
-                      </div>
-                      <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
-                        Lead Summary &amp; Historical Proposition
-                      </span>
-                    </div>
+                  {/* =====================================================================
+                      VARIANT 1: SLAVERY IMAGES ARCHIVAL PLATES ('slavery-images')
+                     ===================================================================== */}
+                  {resolvedAcademiaVariant === 'slavery-images' && (
+                    <>
+                      {/* Lead Summary Section with Prominent Lead Paragraph */}
+                      <div className="space-y-4 p-5 sm:p-6 rounded-3xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 shadow-xs relative overflow-hidden">
+                        {/* Top Accent Pill */}
+                        <div className="flex items-center gap-2">
+                          <div className="p-1 rounded-lg bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20">
+                            <Scroll className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+                          </div>
+                          <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                            Lead Summary &amp; Historical Proposition
+                          </span>
+                        </div>
 
-                    {/* PROMINENT MAIN LEAD PARAGRAPH */}
-                    <div className="border-l-3 border-amber-800/80 dark:border-amber-400/80 pl-4 py-1">
-                      <h3 className="text-[clamp(0.98rem,1.35vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100 leading-snug py-1">
-                        Slavery Images: A Visual Record of the African Slave Trade and Slave Life in the Early African Diaspora
-                      </h3>
-                      <p className="text-[clamp(0.95rem,1.25vw,1.1rem)] font-serif font-medium leading-[1.75] text-stone-900 dark:text-stone-100 tracking-tight">
-                        This educational resource is a two-part website created for teachers, researchers, students and the general public. It exists to assist anyone interested in visualizing the experiences of Africans and their descendants who were enslaved and transported to slave societies around the world.
-                      </p>
-                    </div>
-
-                    {/* Contextual Elaboration Paragraphs */}
-                    <p className="text-[clamp(0.875rem,1.15vw,0.985rem)] font-serif leading-[1.75] text-stone-700 dark:text-stone-300">
-                      As part of the UNESCO's Routes of Enslaved Peoples project, supported by University of Colorado Boulder, Virginia Humanities, University of Virginia, SSHRC, Mellon Foundation, and NEH, SlaveyImages is an educational resource for teachers, researchers, students, and the general public. The new website visually captures the experiences of Africans and their descendants who were enslaved and transported to slave societies around the world.
-                    </p>
-
-                    <p className="text-[clamp(0.875rem,1.15vw,0.985rem)] font-serif leading-[1.75] text-stone-700 dark:text-stone-300">
-                      One of the pioneering projects in the field and created by Jerome Handler and Michael Tuite, the SlaveryImages digital archive offers open-source access to historical images, paintings, lithographs, and photographs illustrating enslaved Africans and their descendants before c. 1900. Since 2007 SlaveryImages has attracted over 1.5 million new users and averaged about 15,000 per month, while page views totaled above 12 million hits and has become a very important digital project across all humanities research.
-                    </p>
-                  </div>
-                  <div className="space-y-4 p-5 sm:p-6 rounded-3xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 shadow-xs relative overflow-hidden">
-                    
-                    {/* Top Accent Pill */}
-                    <div className="flex items-center gap-2">
-                      <div className="p-1 rounded-lg bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20">
-                        <Scroll className="w-4 h-4 text-amber-800 dark:text-amber-400" />
-                      </div>
-                      <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
-                        Lead Summary &amp; Historical Proposition
-                      </span>
-                    </div>
-
-                    {/* PROMINENT MAIN LEAD PARAGRAPH */}
-                    <div className="border-l-3 border-amber-800/80 dark:border-amber-400/80 pl-4 py-1">
-                      <h3 className="text-[clamp(0.98rem,1.35vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100 leading-snug py-1">
-                        Castas & Colonial Visual Archive
-                      </h3>
-                      <p className="text-[clamp(0.95rem,1.25vw,1.1rem)] font-serif font-medium leading-[1.75] text-stone-900 dark:text-stone-100 tracking-tight">
-                        This Iconographic Historical Archive starts with the proposition that race has a history and that the historical experience of the peoples of Latin America is crucial to understanding the ways we use &ldquo;race&rdquo; today.
-                      </p>
-                    </div>
-
-                    {/* Contextual Elaboration Paragraphs */}
-                    <p className="text-[clamp(0.875rem,1.15vw,0.985rem)] font-serif leading-[1.75] text-stone-700 dark:text-stone-300">
-                      This collection of paintings examines how and why ideologies of difference involving purity and blood (and &ldquo;purity of blood,&rdquo; <em>pureza de sangre</em>) took hold and changed, from the Caribbean cultural collisions of 1492 to the nineteenth-century breakup of Iberian colonialism. What kinds of categories and power relations took shape around such notions, and what effects did they have in people&rsquo;s lives? What did it mean to be &ldquo;mestiza,&rdquo; &ldquo;criollo,&rdquo; etc.?
-                    </p>
-
-                    <p className="text-[clamp(0.875rem,1.15vw,0.985rem)] font-serif leading-[1.75] text-stone-700 dark:text-stone-300">
-                      They serve as a launchpad to examine the late nineteenth-century rise of <em>cient&iacute;ficos</em> (scientists: read &ldquo;Positivists&rdquo;) and intertwining ideologies of race and nation, paying special attention to Guatemala and Brazil. They serve as a comparative lens on other criteria of difference&mdash;by gender, class or social &ldquo;estate,&rdquo; or ethnicity&mdash;also used to draw distinctions and create hierarchy.
-                    </p>
-                  </div>
-
-                  {/* Academic Summary & Key Themes */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <div className="p-1 rounded-lg bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20">
-                        <BookOpen className="w-4 h-4 text-amber-800 dark:text-amber-400" />
-                      </div>
-                      <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
-                        Academic Summary &amp; Core Themes
-                      </span>
-                    </div>
-
-                    <div className="p-5 rounded-2xl bg-amber-900/5 dark:bg-amber-950/25 border border-amber-900/15 dark:border-amber-500/25 space-y-2.5">
-                      <h4 className="text-[clamp(0.95rem,1.25vw,1.1rem)] font-serif font-bold text-stone-900 dark:text-stone-100 leading-snug">
-                        The History of Race in Latin America
-                      </h4>
-                      <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-800 dark:text-stone-200 leading-[1.7]">
-                        A foundational historical framework and university course curriculum—such as those developed and taught by historian <strong>Dr. Kathryn Burns</strong> at the University of North Carolina at Chapel Hill—examining how racial categories, social stratification, and cultural mixing evolved from the colonial era to the modern day.
-                      </p>
-                    </div>
-
-                    {/* Key Themes Cards */}
-                    <div className="space-y-3">
-                      <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">
-                        Key Historical Pillars
-                      </span>
-
-                      <div className="space-y-3">
-                        <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
-                          <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
-                            Colonial Hierarchies (Casta System)
-                          </strong>
-                          <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
-                            Spanish and Portuguese colonizers established complex legal classifications based on ancestry, blood purity (<em>limpieza de sangre</em>), and religious conversion during the 16th and 17th centuries.
+                        {/* PROMINENT MAIN LEAD PARAGRAPH */}
+                        <div className="border-l-3 border-amber-800/80 dark:border-amber-400/80 pl-4 py-1">
+                          <h3 className="text-[clamp(0.98rem,1.35vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100 leading-snug py-1">
+                            Slavery Images: A Visual Record of the African Slave Trade and Slave Life in the Early African Diaspora
+                          </h3>
+                          <p className="text-[clamp(0.95rem,1.25vw,1.1rem)] font-serif font-medium leading-[1.75] text-stone-900 dark:text-stone-100 tracking-tight">
+                            This educational resource is a two-part website created for teachers, researchers, students and the general public. It exists to assist anyone interested in visualizing the experiences of Africans and their descendants who were enslaved and transported to slave societies around the world.
                           </p>
                         </div>
 
-                        <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
-                          <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
-                            Mestizaje (Racial Mixing)
-                          </strong>
-                          <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
-                            Unlike rigid binary or segregation models seen elsewhere, Latin American societies heavily integrated intermarriage and cultural blending as foundational elements of national identity.
-                          </p>
-                        </div>
+                        {/* Contextual Elaboration Paragraphs */}
+                        <p className="text-[clamp(0.875rem,1.15vw,0.985rem)] font-serif leading-[1.75] text-stone-700 dark:text-stone-300">
+                          As part of the UNESCO&rsquo;s Routes of Enslaved Peoples project, supported by University of Colorado Boulder, Virginia Humanities, University of Virginia, SSHRC, Mellon Foundation, and NEH, SlaveryImages is an educational resource for teachers, researchers, students, and the general public. The website visually captures the experiences of Africans and their descendants who were enslaved and transported to slave societies around the world.
+                        </p>
 
-                        <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
-                          <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
-                            Sociocultural Status &amp; Literacy
-                          </strong>
-                          <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
-                            Racial identity in Latin America was historically tied not just to skin color or phenotype but also to language skills, dress, wealth, and formal education.
-                          </p>
-                        </div>
-
-                        <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
-                          <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
-                            Policies of Whitening (Blanqueamiento)
-                          </strong>
-                          <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
-                            During the 19th and 20th centuries, many Latin American nations promoted European immigration to socially and physically whiten their populations while marginalizing Indigenous and Afro-descendant heritages.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Scholarly Profile: Dr. Kathryn Burns */}
-                  <div className="space-y-4 pt-2 border-t border-stone-200 dark:border-stone-800">
-                    <div className="flex items-center gap-2">
-                      <div className="p-1 rounded-lg bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20">
-                        <Award className="w-4 h-4 text-amber-800 dark:text-amber-400" />
-                      </div>
-                      <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
-                        Lead Scholar &amp; Academic Authority
-                      </span>
-                    </div>
-
-                    <div className="p-5 rounded-3xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 space-y-4 shadow-xs">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <div>
-                          <h4 className="text-[clamp(1.05rem,1.4vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100">
-                            Jerome S. Handler, Senior Scholar, Virginia Humanities.
-                          </h4>
-                          <p className="text-[clamp(0.85rem,1.1vw,0.95rem)] font-serif text-amber-900 dark:text-amber-400 font-semibold pt-0.5">
-                            Slave Images Website Creator
-                          </p>
-                        </div>                        
-                      </div>
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <div>
-                          <h4 className="text-[clamp(1.05rem,1.4vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100">
-                            Henry Lovejoy, Director of the Digital Slavery Research Lab.
-                          </h4>
-                          <p className="text-[clamp(0.85rem,1.1vw,0.95rem)] font-serif text-amber-900 dark:text-amber-400 font-semibold pt-0.5">
-                            Associate Professor of History, University of Colorado Boulder
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <div>
-                          <h4 className="text-[clamp(1.05rem,1.4vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100">
-                            Leidy Marcela Alpízar-Alpízar, Profesora, Departamento de Historia y Sección de Humanidades.
-                          </h4>
-                          <p className="text-[clamp(0.85rem,1.1vw,0.95rem)] font-serif text-amber-900 dark:text-amber-400 font-semibold pt-0.5">
-                            Sede del Caribe, Universidad de Costa Rica
-                          </p>
-                        </div>
-                      </div>
-
-                    </div>
-
-                    <div className="p-5 rounded-3xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 space-y-4 shadow-xs">
-                      
-
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <div>
-                          <h4 className="text-[clamp(1.05rem,1.4vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100">
-                            Kathryn Burns, Ph.D.
-                          </h4>
-                          <p className="text-[clamp(0.85rem,1.1vw,0.95rem)] font-serif text-amber-900 dark:text-amber-400 font-semibold pt-0.5">
-                            Professor Emerita of History, UNC Chapel Hill
-                          </p>
-                        </div>
-
-                        {/* External Faculty Profile Link */}
-                        <a
-                          href="https://history.unc.edu/person/kathryn-j-burns/"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-mono font-semibold transition-all border border-stone-200 dark:border-stone-700 shrink-0 self-start sm:self-auto"
-                        >
-                          <span>UNC Faculty Profile</span>
-                          <ExternalLink className="w-3.5 h-3.5 text-amber-800 dark:text-amber-400" />
-                        </a>
-                      </div>
-
-                      {/* Education Background */}
-                      <div className="space-y-1.5 pt-2 border-t border-stone-200/80 dark:border-stone-800">
-                        <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">
-                          Education &amp; Academic Degrees
-                        </span>
-                        <ul className="text-[clamp(0.825rem,1.1vw,0.925rem)] font-mono text-stone-700 dark:text-stone-300 space-y-1 pl-1">
-                          <li>• <strong>B.A.</strong>, Princeton University (1981)</li>
-                          <li>• <strong>M.A.</strong>, University of Texas at Austin (1984)</li>
-                          <li>• <strong>M.A.</strong>, Harvard University (1988)</li>
-                          <li>• <strong>Ph.D.</strong>, Harvard University (1993)</li>
-                        </ul>
-                      </div>
-
-                      {/* Research Interests */}
-                      <div className="space-y-2 pt-2 border-t border-stone-200/80 dark:border-stone-800">
-                        <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">
-                          Research Interests &amp; Notarial Archives
-                        </span>
-                        <p className="text-[clamp(0.85rem,1.15vw,0.965rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.75]">
-                          Kathryn Burns works on colonial Latin America, especially the history of mestizaje, property, and literacy in the colonial Andes. Her first book examined nuns, production, and reproduction in Cuzco. Her second traces the practices of the Spanish American <em>escribanos</em> who shaped notarial truth and generated vast colonial archives.
+                        <p className="text-[clamp(0.875rem,1.15vw,0.985rem)] font-serif leading-[1.75] text-stone-700 dark:text-stone-300">
+                          One of the pioneering projects in the field and created by Jerome Handler and Michael Tuite, the SlaveryImages digital archive offers open-source access to historical images, paintings, lithographs, and photographs illustrating enslaved Africans and their descendants before c. 1900. Since 2007 SlaveryImages has attracted over 1.5 million new users and averaged about 15,000 per month, while page views totaled above 12 million hits and has become a very important digital project across all humanities research.
                         </p>
                       </div>
 
-                      {/* Major Publications */}
-                      <div className="space-y-2 pt-2 border-t border-stone-200/80 dark:border-stone-800">
-                        <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">
-                          Major Publications by Kathryn Burns
-                        </span>
-                        <ul className="text-[clamp(0.85rem,1.15vw,0.965rem)] font-serif text-stone-800 dark:text-stone-200 space-y-2.5 list-disc pl-5 leading-[1.65]">
-                          <li>
-                            <em>Into the Archive: Writing and Power in Colonial Peru</em> (Duke University Press, 2010)
-                          </li>
-                          <li>
-                            &ldquo;Unfixing Race,&rdquo; in <em>Rereading the Black Legend: The Discourses of Religious and Racial Difference in the Renaissance Empires</em>, eds. Margaret R. Greer, Walter D. Mignolo, and Maureen Quilligan (University of Chicago, 2007), 188–202
-                          </li>
-                          <li>
-                            <em>Colonial Habits: Convents and the Spiritual Economy of Cuzco, Peru</em> (Duke University Press, 1999)
-                          </li>
-                          <li>
-                            &ldquo;Dentro de la ciudad letrada: La producción de la escritura pública en el Perú colonial,&rdquo; <em>Histórica</em> [Lima, Peru] 29:1 (July 2005), 43–68
-                          </li>
-                          <li>
-                            &ldquo;Notaries, Truth, and Consequences,&rdquo; <em>American Historical Review</em> 110:2 (April 2005), 350–379
-                          </li>
-                        </ul>
+                      {/* Academic Summary & Core Themes for Slavery Images */}
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1 rounded-lg bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20">
+                            <BookOpen className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+                          </div>
+                          <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                            Academic Summary &amp; Core Themes
+                          </span>
+                        </div>
+
+                        <div className="p-5 rounded-2xl bg-amber-900/5 dark:bg-amber-950/25 border border-amber-900/15 dark:border-amber-500/25 space-y-2.5">
+                          <h4 className="text-[clamp(0.95rem,1.25vw,1.1rem)] font-serif font-bold text-stone-900 dark:text-stone-100 leading-snug">
+                            Visualizing the Transatlantic Crossing &amp; Early African Diaspora
+                          </h4>
+                          <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-800 dark:text-stone-200 leading-[1.7]">
+                            Curated through rigorous archival provenance by <strong>Jerome S. Handler</strong> and <strong>Henry Lovejoy</strong>, the 1,220-plate corpus documents pre-colonial African societies, capture and coastal confinement, the Middle Passage, plantation labor regimes, and enslaved resistance across the Atlantic world.
+                          </p>
+                        </div>
+
+                        {/* Key Themes Cards */}
+                        <div className="space-y-3">
+                          <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">
+                            Key Historical Pillars
+                          </span>
+
+                          <div className="space-y-3">
+                            <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
+                              <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
+                                Pre-Colonial African Polities &amp; Material Culture
+                              </strong>
+                              <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
+                                Period engravings and maps depicting West, Central, and East African kingdoms, urban settlements, architecture, metallurgy, and diplomatic court life prior to and during European contact.
+                              </p>
+                            </div>
+
+                            <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
+                              <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
+                                Coffles, Coastal Forts &amp; The Middle Passage
+                              </strong>
+                              <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
+                                Primary visual testimony of inland enslavement, coastal barracoons and castles, naval stowage diagrams, and shipboard revolts across the Atlantic crossing.
+                              </p>
+                            </div>
+
+                            <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
+                              <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
+                                Plantation Economies &amp; Cultural Survival
+                              </strong>
+                              <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
+                                Illustrations of sugar, coffee, cotton, and mining regimes alongside domestic life, musical instruments, religious practices, and market traditions retained by Afro-descendant communities.
+                              </p>
+                            </div>
+
+                            <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
+                              <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
+                                Marronage, Rebellion &amp; Emancipation
+                              </strong>
+                              <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
+                                Visual records of autonomous Maroon communities (<em>quilombos</em>, <em>palenques</em>), the Haitian Revolution, abolitionist broadsides, and post-emancipation society.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+
+                      {/* Scholarly Profiles: Handler, Lovejoy, Alpízar-Alpízar */}
+                      <div className="space-y-4 pt-2 border-t border-stone-200 dark:border-stone-800">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1 rounded-lg bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20">
+                            <Award className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+                          </div>
+                          <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                            Lead Scholars &amp; Academic Authorities
+                          </span>
+                        </div>
+
+                        <div className="p-5 rounded-3xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 space-y-4 shadow-xs">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-stone-200/80 dark:border-stone-800">
+                            <div>
+                              <h4 className="text-[clamp(1.05rem,1.4vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100">
+                                Jerome S. Handler, Senior Scholar, Virginia Humanities.
+                              </h4>
+                              <p className="text-[clamp(0.85rem,1.1vw,0.95rem)] font-serif text-amber-900 dark:text-amber-400 font-semibold pt-0.5">
+                                Slave Images Website Creator
+                              </p>
+                            </div>
+                            <a
+                              href="https://www.slaveryimages.org"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-mono font-semibold transition-all border border-stone-200 dark:border-stone-700 shrink-0 self-start sm:self-auto"
+                            >
+                              <span>SlaveryImages.org</span>
+                              <ExternalLink className="w-3.5 h-3.5 text-amber-800 dark:text-amber-400" />
+                            </a>
+                          </div>
+
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-stone-200/80 dark:border-stone-800">
+                            <div>
+                              <h4 className="text-[clamp(1.05rem,1.4vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100">
+                                Henry Lovejoy, Director of the Digital Slavery Research Lab.
+                              </h4>
+                              <p className="text-[clamp(0.85rem,1.1vw,0.95rem)] font-serif text-amber-900 dark:text-amber-400 font-semibold pt-0.5">
+                                Associate Professor of History, University of Colorado Boulder
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                            <div>
+                              <h4 className="text-[clamp(1.05rem,1.4vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100">
+                                Leidy Marcela Alpízar-Alpízar, Profesora, Departamento de Historia y Sección de Humanidades.
+                              </h4>
+                              <p className="text-[clamp(0.85rem,1.1vw,0.95rem)] font-serif text-amber-900 dark:text-amber-400 font-semibold pt-0.5">
+                                Sede del Caribe, Universidad de Costa Rica
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* =====================================================================
+                      VARIANT 2: CASTAS & COLONIAL VISUAL ARCHIVE ('castas')
+                     ===================================================================== */}
+                  {resolvedAcademiaVariant === 'castas' && (
+                    <>
+                      <div className="space-y-4 p-5 sm:p-6 rounded-3xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 shadow-xs relative overflow-hidden">
+                        {/* Top Accent Pill */}
+                        <div className="flex items-center gap-2">
+                          <div className="p-1 rounded-lg bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20">
+                            <Scroll className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+                          </div>
+                          <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                            Lead Summary &amp; Historical Proposition
+                          </span>
+                        </div>
+
+                        {/* PROMINENT MAIN LEAD PARAGRAPH */}
+                        <div className="border-l-3 border-amber-800/80 dark:border-amber-400/80 pl-4 py-1">
+                          <h3 className="text-[clamp(0.98rem,1.35vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100 leading-snug py-1">
+                            Castas &amp; Colonial Visual Archive
+                          </h3>
+                          <p className="text-[clamp(0.95rem,1.25vw,1.1rem)] font-serif font-medium leading-[1.75] text-stone-900 dark:text-stone-100 tracking-tight">
+                            This Iconographic Historical Archive starts with the proposition that race has a history and that the historical experience of the peoples of Latin America is crucial to understanding the ways we use &ldquo;race&rdquo; today.
+                          </p>
+                        </div>
+
+                        {/* Contextual Elaboration Paragraphs */}
+                        <p className="text-[clamp(0.875rem,1.15vw,0.985rem)] font-serif leading-[1.75] text-stone-700 dark:text-stone-300">
+                          This collection of paintings examines how and why ideologies of difference involving purity and blood (and &ldquo;purity of blood,&rdquo; <em>pureza de sangre</em>) took hold and changed, from the Caribbean cultural collisions of 1492 to the nineteenth-century breakup of Iberian colonialism. What kinds of categories and power relations took shape around such notions, and what effects did they have in people&rsquo;s lives? What did it mean to be &ldquo;mestiza,&rdquo; &ldquo;criollo,&rdquo; etc.?
+                        </p>
+
+                        <p className="text-[clamp(0.875rem,1.15vw,0.985rem)] font-serif leading-[1.75] text-stone-700 dark:text-stone-300">
+                          They serve as a launchpad to examine the late nineteenth-century rise of <em>cient&iacute;ficos</em> (scientists: read &ldquo;Positivists&rdquo;) and intertwining ideologies of race and nation, paying special attention to Guatemala and Brazil. They serve as a comparative lens on other criteria of difference&mdash;by gender, class or social &ldquo;estate,&rdquo; or ethnicity&mdash;also used to draw distinctions and create hierarchy.
+                        </p>
+                      </div>
+
+                      {/* Academic Summary & Key Themes */}
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1 rounded-lg bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20">
+                            <BookOpen className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+                          </div>
+                          <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                            Academic Summary &amp; Core Themes
+                          </span>
+                        </div>
+
+                        <div className="p-5 rounded-2xl bg-amber-900/5 dark:bg-amber-950/25 border border-amber-900/15 dark:border-amber-500/25 space-y-2.5">
+                          <h4 className="text-[clamp(0.95rem,1.25vw,1.1rem)] font-serif font-bold text-stone-900 dark:text-stone-100 leading-snug">
+                            The History of Race in Latin America
+                          </h4>
+                          <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-800 dark:text-stone-200 leading-[1.7]">
+                            A foundational historical framework and university course curriculum—such as those developed and taught by historian <strong>Dr. Kathryn Burns</strong> at the University of North Carolina at Chapel Hill—examining how racial categories, social stratification, and cultural mixing evolved from the colonial era to the modern day.
+                          </p>
+                        </div>
+
+                        {/* Key Themes Cards */}
+                        <div className="space-y-3">
+                          <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">
+                            Key Historical Pillars
+                          </span>
+
+                          <div className="space-y-3">
+                            <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
+                              <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
+                                Colonial Hierarchies (Casta System)
+                              </strong>
+                              <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
+                                Spanish and Portuguese colonizers established complex legal classifications based on ancestry, blood purity (<em>limpieza de sangre</em>), and religious conversion during the 16th and 17th centuries.
+                              </p>
+                            </div>
+
+                            <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
+                              <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
+                                Mestizaje (Racial Mixing)
+                              </strong>
+                              <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
+                                Unlike rigid binary or segregation models seen elsewhere, Latin American societies heavily integrated intermarriage and cultural blending as foundational elements of national identity.
+                              </p>
+                            </div>
+
+                            <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
+                              <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
+                                Sociocultural Status &amp; Literacy
+                              </strong>
+                              <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
+                                Racial identity in Latin America was historically tied not just to skin color or phenotype but also to language skills, dress, wealth, and formal education.
+                              </p>
+                            </div>
+
+                            <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
+                              <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
+                                Policies of Whitening (Blanqueamiento)
+                              </strong>
+                              <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
+                                During the 19th and 20th centuries, many Latin American nations promoted European immigration to socially and physically whiten their populations while marginalizing Indigenous and Afro-descendant heritages.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Scholarly Profile: Dr. Kathryn Burns */}
+                      <div className="space-y-4 pt-2 border-t border-stone-200 dark:border-stone-800">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1 rounded-lg bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20">
+                            <Award className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+                          </div>
+                          <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                            Lead Scholar &amp; Academic Authority
+                          </span>
+                        </div>
+
+                        <div className="p-5 rounded-3xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 space-y-4 shadow-xs">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                            <div>
+                              <h4 className="text-[clamp(1.05rem,1.4vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100">
+                                Kathryn Burns, Ph.D.
+                              </h4>
+                              <p className="text-[clamp(0.85rem,1.1vw,0.95rem)] font-serif text-amber-900 dark:text-amber-400 font-semibold pt-0.5">
+                                Professor Emerita of History, UNC Chapel Hill
+                              </p>
+                            </div>
+
+                            {/* External Faculty Profile Link */}
+                            <a
+                              href="https://history.unc.edu/person/kathryn-j-burns/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-mono font-semibold transition-all border border-stone-200 dark:border-stone-700 shrink-0 self-start sm:self-auto"
+                            >
+                              <span>UNC Faculty Profile</span>
+                              <ExternalLink className="w-3.5 h-3.5 text-amber-800 dark:text-amber-400" />
+                            </a>
+                          </div>
+
+                          {/* Education Background */}
+                          <div className="space-y-1.5 pt-2 border-t border-stone-200/80 dark:border-stone-800">
+                            <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">
+                              Education &amp; Academic Degrees
+                            </span>
+                            <ul className="text-[clamp(0.825rem,1.1vw,0.925rem)] font-mono text-stone-700 dark:text-stone-300 space-y-1 pl-1">
+                              <li>• <strong>B.A.</strong>, Princeton University (1981)</li>
+                              <li>• <strong>M.A.</strong>, University of Texas at Austin (1984)</li>
+                              <li>• <strong>M.A.</strong>, Harvard University (1988)</li>
+                              <li>• <strong>Ph.D.</strong>, Harvard University (1993)</li>
+                            </ul>
+                          </div>
+
+                          {/* Research Interests */}
+                          <div className="space-y-2 pt-2 border-t border-stone-200/80 dark:border-stone-800">
+                            <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">
+                              Research Interests &amp; Notarial Archives
+                            </span>
+                            <p className="text-[clamp(0.85rem,1.15vw,0.965rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.75]">
+                              Kathryn Burns works on colonial Latin America, especially the history of mestizaje, property, and literacy in the colonial Andes. Her first book examined nuns, production, and reproduction in Cuzco. Her second traces the practices of the Spanish American <em>escribanos</em> who shaped notarial truth and generated vast colonial archives.
+                            </p>
+                          </div>
+
+                          {/* Major Publications */}
+                          <div className="space-y-2 pt-2 border-t border-stone-200/80 dark:border-stone-800">
+                            <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">
+                              Major Publications by Kathryn Burns
+                            </span>
+                            <ul className="text-[clamp(0.85rem,1.15vw,0.965rem)] font-serif text-stone-800 dark:text-stone-200 space-y-2.5 list-disc pl-5 leading-[1.65]">
+                              <li>
+                                <em>Into the Archive: Writing and Power in Colonial Peru</em> (Duke University Press, 2010)
+                              </li>
+                              <li>
+                                &ldquo;Unfixing Race,&rdquo; in <em>Rereading the Black Legend: The Discourses of Religious and Racial Difference in the Renaissance Empires</em>, eds. Margaret R. Greer, Walter D. Mignolo, and Maureen Quilligan (University of Chicago, 2007), 188–202
+                              </li>
+                              <li>
+                                <em>Colonial Habits: Convents and the Spiritual Economy of Cuzco, Peru</em> (Duke University Press, 1999)
+                              </li>
+                              <li>
+                                &ldquo;Dentro de la ciudad letrada: La producción de la escritura pública en el Perú colonial,&rdquo; <em>Histórica</em> [Lima, Peru] 29:1 (July 2005), 43–68
+                              </li>
+                              <li>
+                                &ldquo;Notaries, Truth, and Consequences,&rdquo; <em>American Historical Review</em> 110:2 (April 2005), 350–379
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* =====================================================================
+                      VARIANT 3: UNESCO WORLD HERITAGE ARCHIVE ('unesco')
+                     ===================================================================== */}
+                  {resolvedAcademiaVariant === 'unesco' && (
+                    <>
+                      <div className="space-y-4 p-5 sm:p-6 rounded-3xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 shadow-xs relative overflow-hidden">
+                        {/* Top Accent Pill */}
+                        <div className="flex items-center gap-2">
+                          <div className="p-1 rounded-lg bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20">
+                            <Scroll className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+                          </div>
+                          <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                            Lead Summary &amp; Convention Framework
+                          </span>
+                        </div>
+
+                        {/* PROMINENT MAIN LEAD PARAGRAPH */}
+                        <div className="border-l-3 border-amber-800/80 dark:border-amber-400/80 pl-4 py-1">
+                          <h3 className="text-[clamp(0.98rem,1.35vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100 leading-snug py-1">
+                            UNESCO World Heritage Convention (1972) — Africa &amp; Arab States Priority Archive
+                          </h3>
+                          <p className="text-[clamp(0.95rem,1.25vw,1.1rem)] font-serif font-medium leading-[1.75] text-stone-900 dark:text-stone-100 tracking-tight">
+                            Adopted by the General Conference of UNESCO on 16 November 1972, the World Heritage Convention links into a single canonical framework the concepts of nature conservation and the preservation of cultural properties of Outstanding Universal Value (OUV).
+                          </p>
+                        </div>
+
+                        {/* Contextual Elaboration Paragraphs */}
+                        <p className="text-[clamp(0.875rem,1.15vw,0.985rem)] font-serif leading-[1.75] text-stone-700 dark:text-stone-300">
+                          In UNESCO&rsquo;s official geopolitical taxonomy, the African continent and the Middle East are structured across two primary regional bureaus: the <strong>Africa Region</strong> (encompassing Sub-Saharan African States Parties) and the <strong>Arab States Region</strong> (encompassing North African Maghreb and Nile Basin States Parties—Algeria, Egypt, Libya, Mauritania, Morocco, Sudan, and Tunisia—alongside the Arabian Peninsula and Fertile Crescent).
+                        </p>
+
+                        <p className="text-[clamp(0.875rem,1.15vw,0.985rem)] font-serif leading-[1.75] text-stone-700 dark:text-stone-300">
+                          Together, these two regions safeguard humanity&rsquo;s earliest hominid fossil beds in the East African Rift and South African limestone caves, the monumental Pharaonic, Nubian, Punic, Roman, and Islamic urban medinas of North Africa and the Levant, earthen Sudano-Sahelian mosques, Swahili coral-stone trading ports, and continental biosphere sanctuaries.
+                        </p>
+                      </div>
+
+                      {/* Academic Summary & Core Themes for UNESCO */}
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1 rounded-lg bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20">
+                            <BookOpen className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+                          </div>
+                          <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                            Operational Guidelines &amp; Selection Criteria
+                          </span>
+                        </div>
+
+                        <div className="p-5 rounded-2xl bg-amber-900/5 dark:bg-amber-950/25 border border-amber-900/15 dark:border-amber-500/25 space-y-2.5">
+                          <h4 className="text-[clamp(0.95rem,1.25vw,1.1rem)] font-serif font-bold text-stone-900 dark:text-stone-100 leading-snug">
+                            Outstanding Universal Value (Criteria i–x)
+                          </h4>
+                          <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-800 dark:text-stone-200 leading-[1.7]">
+                            To be inscribed on the World Heritage List, sites must meet at least one of ten selection criteria—<strong>Criteria (i)–(vi)</strong> for Cultural heritage and <strong>Criteria (vii)–(x)</strong> for Natural heritage—and satisfy rigorous audits of <em>authenticity</em>, <em>integrity</em>, and statutory protection conducted by UNESCO&rsquo;s Advisory Bodies.
+                          </p>
+                        </div>
+
+                        {/* Key Themes Cards */}
+                        <div className="space-y-3">
+                          <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-stone-500 dark:text-stone-400">
+                            Key Heritage Pillars (Africa &amp; Arab States)
+                          </span>
+
+                          <div className="space-y-3">
+                            <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
+                              <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
+                                Monumental Architecture, Medinas &amp; Caravan Cities
+                              </strong>
+                              <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
+                                Encompasses ancient imperial capitals (Thebes, Memphis, Meroe, Aksum, Great Zimbabwe), fortified <em>ksour</em> and trans-Saharan oasis towns (Chinguetti, Timbuktu, Ghadamès), and historic Islamic medinas (Fez, Cairo, Damascus, Sana&rsquo;a, Kairouan).
+                              </p>
+                            </div>
+
+                            <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
+                              <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
+                                Cultural Landscapes, Rock Art &amp; Sacred Traditions
+                              </strong>
+                              <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
+                                Recognizes co-evolved human-environment landscapes, prehistoric Saharan and Southern African rock art galleries (Tassili n&rsquo;Ajjer, Tadrart Acacus, Chongoni, Twyfelfontein, uKhahlamba), and sacred groves (Osun-Osogbo, Sacred Mijikenda Kaya Forests).
+                              </p>
+                            </div>
+
+                            <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
+                              <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
+                                Paleoanthropology, Geomorphology &amp; Biodiversity Sanctuaries
+                              </strong>
+                              <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
+                                Protects irreplaceable evolutionary and ecological archives including the Awash and Omo Valleys, Lake Turkana, Ngorongoro and Serengeti, the Okavango Delta, Virunga and Kahuzi-Biega rainforests, and the Socotra Archipelago.
+                              </p>
+                            </div>
+
+                            <div className="p-4 rounded-2xl bg-white dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 space-y-1.5 shadow-2xs">
+                              <strong className="text-[clamp(0.9rem,1.2vw,1.025rem)] font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-amber-700 dark:bg-amber-400 shrink-0" />
+                                Operational Priority Africa &amp; World Heritage in Danger
+                              </strong>
+                              <p className="text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7] pl-4">
+                                Coordinates international technical assistance, anti-trafficking protocols, climate adaptation, and post-conflict reconstruction for threatened properties inscribed on the List of World Heritage in Danger under Article 11(4).
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Advisory Bodies & Institutional Authorities */}
+                      <div className="space-y-4 pt-2 border-t border-stone-200 dark:border-stone-800">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1 rounded-lg bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20">
+                            <Award className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+                          </div>
+                          <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                            Statutory Advisory Bodies &amp; Regional Authorities
+                          </span>
+                        </div>
+
+                        <div className="p-5 rounded-3xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 space-y-4 shadow-xs">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-stone-200/80 dark:border-stone-800">
+                            <div>
+                              <h4 className="text-[clamp(1.05rem,1.4vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100">
+                                UNESCO World Heritage Centre (WHC)
+                              </h4>
+                              <p className="text-[clamp(0.85rem,1.1vw,0.95rem)] font-serif text-amber-900 dark:text-amber-400 font-semibold pt-0.5">
+                                Secretariat of the 1972 World Heritage Convention • Paris, France
+                              </p>
+                            </div>
+                            <a
+                              href="https://whc.unesco.org/en/list/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-mono font-semibold transition-all border border-stone-200 dark:border-stone-700 shrink-0 self-start sm:self-auto"
+                            >
+                              <span>Official WHC Portal</span>
+                              <ExternalLink className="w-3.5 h-3.5 text-amber-800 dark:text-amber-400" />
+                            </a>
+                          </div>
+
+                          <div className="space-y-3 text-[clamp(0.85rem,1.15vw,0.95rem)] font-serif text-stone-700 dark:text-stone-300 leading-[1.7]">
+                            <div>
+                              <strong className="text-stone-900 dark:text-stone-100 font-bold block">
+                                ICOMOS (International Council on Monuments and Sites)
+                              </strong>
+                              <span>Evaluates cultural and mixed nominations for authenticity, conservation management, and comparative historical value.</span>
+                            </div>
+                            <div className="pt-2 border-t border-stone-200/60 dark:border-stone-800/60">
+                              <strong className="text-stone-900 dark:text-stone-100 font-bold block">
+                                IUCN (International Union for Conservation of Nature)
+                              </strong>
+                              <span>Monitors natural and mixed World Heritage properties across biodiversity, geological processes, and ecological integrity.</span>
+                            </div>
+                            <div className="pt-2 border-t border-stone-200/60 dark:border-stone-800/60">
+                              <strong className="text-stone-900 dark:text-stone-100 font-bold block">
+                                African World Heritage Fund (AWHF) &amp; ARC-WH
+                              </strong>
+                              <span>Category 2 Regional Centres under the auspices of UNESCO (Midrand, South Africa &amp; Manama, Bahrain) supporting nomination dossiers, conservation training, and state-of-conservation reporting across Africa and the Arab States.</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
 
                 </div>
               )}

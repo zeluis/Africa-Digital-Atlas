@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ArchivalImageViewer } from '../common/ArchivalImageViewer';
+import { ArchivalImageViewer, AcademiaVariant } from '../common/ArchivalImageViewer';
 import { SlaveTradeIllustration } from '../../data/slaveTradeIllustrations';
 import { resolveAssetPath } from '../../utils/assetPath';
 
@@ -8,6 +8,7 @@ interface ArchivalLoupeModalProps {
   onClose: () => void;
   illustrationsList?: SlaveTradeIllustration[];
   onSelectIllustration?: (item: SlaveTradeIllustration) => void;
+  academiaVariant?: AcademiaVariant;
 }
 
 /**
@@ -29,7 +30,8 @@ export const ArchivalLoupeModal: React.FC<ArchivalLoupeModalProps> = ({
   illustration,
   onClose,
   illustrationsList = [],
-  onSelectIllustration
+  onSelectIllustration,
+  academiaVariant
 }) => {
   const [currentIllustration, setCurrentIllustration] = useState<SlaveTradeIllustration | null>(() =>
     sanitizeIllustration(illustration)
@@ -62,6 +64,7 @@ export const ArchivalLoupeModal: React.FC<ArchivalLoupeModalProps> = ({
       onClose={onClose}
       mode="modal"
       showThumbnails={true}
+      academiaVariant={academiaVariant}
     />
   );
 };

@@ -860,6 +860,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
         illustrationsList={filteredIllustrations}
         onSelectIllustration={(item) => setActiveIllustration(item)}
         onClose={() => setActiveIllustration(null)}
+        academiaVariant="slavery-images"
       />
     </div>
   );

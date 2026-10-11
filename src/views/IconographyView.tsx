@@ -204,6 +204,7 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
             onOpenModal={() => setInspectedIllustration(activeCastasItem)}
             mode="embedded"
             showThumbnails={true}
+            academiaVariant="castas"
           />
         </div>
 
@@ -216,6 +217,7 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
             setActiveCastasItem(item);
           }}
           onClose={() => setInspectedIllustration(null)}
+          academiaVariant="castas"
         />
       </div>
     );
@@ -380,6 +382,7 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
           setInspectedIllustration(item);
         }}
         onClose={() => setInspectedIllustration(null)}
+        academiaVariant="slavery-images"
       />
     </div>
   );
