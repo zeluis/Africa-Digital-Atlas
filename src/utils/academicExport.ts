@@ -148,7 +148,7 @@ export const exportHighDpiPlatePDF = async (
   currentY += 6;
 
   // Try to render image into PDF
-  const imageUrl = illustration.imageUrls?.[0] || 'https://zeluis.github.io/Africa-Digital-Atlas/castas/castaS1o-a.webp';
+  const imageUrl = illustration.imageUrls?.[0];
   if (imageUrl) {
     try {
       const img = new Image();
