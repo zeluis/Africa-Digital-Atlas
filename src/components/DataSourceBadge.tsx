@@ -84,7 +84,7 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
           {/* Source Attribution & Provenance */}
           <div className="space-y-3">
             <h4 className="text-sm font-medium text-zinc-300 flex items-center gap-2">
-              <Database className="w-4 h-4 text-emerald-400" /> Authoritative Data Source
+              <Database className="w-4 h-4 text-emerald-400" /> Curated Data Source
             </h4>
             <div className="rounded-xl border border-zinc-800/80 bg-zinc-800/30 p-4 space-y-2.5 text-sm">
               <div className="flex justify-between items-start">

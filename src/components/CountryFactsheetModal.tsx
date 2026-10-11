@@ -206,7 +206,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
 
   <!-- Footer Provenance Stamp -->
   <rect x="40" y="1480" width="1120" height="80" fill="#f3f4f6" rx="12" />
-  <text x="65" y="1525" style="font-size: 13px; fill: #6b7280;">Authoritative Data Sources: World Bank WDI (2024), IMF World Economic Outlook, UN DESA WPP, UNESCO World Heritage Centre.</text>
+  <text x="65" y="1525" style="font-size: 13px; fill: #6b7280;">Curated Data Sources: World Bank WDI (2024), IMF World Economic Outlook, UN DESA WPP, UNESCO World Heritage Centre.</text>
   <text x="65" y="1545" style="font-size: 12px; fill: #9ca3af; font-family: monospace;">Africalia Platform Document ID: AFRICALIA-FACTSHEET-${country.id}-2024 • ISO 3166-1 alpha-3: ${country.id}</text>
 </svg>`;
 

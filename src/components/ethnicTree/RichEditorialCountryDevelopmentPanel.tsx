@@ -137,7 +137,7 @@ export const RichEditorialCountryDevelopmentPanel: React.FC<RichEditorialCountry
         </div>
       </div>
 
-      {/* 3. Authoritative Editorial Lead Paragraph */}
+      {/* 3. Curated Editorial Lead Paragraph */}
       {isExpanded && (
         <div className="space-y-3 pt-1">
           <div className="p-3 rounded-xl bg-white/70 dark:bg-black/30 border border-[#E5DDD0]/70 dark:border-[#38322B]/70 shadow-2xs">

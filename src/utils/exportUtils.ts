@@ -46,7 +46,8 @@ export function exportCountriesToCsv(selectedIndicatorIds?: string[]): void {
     const pop = atlas.getIndicatorValue(entity.id, 'SP.POP.TOTL');
     const indicatorValues = indicatorsToExport.map(ind => {
       const obs = atlas.getLatestObservation(entity.id, ind.id);
-      return obs && obs.value !== null ? obs.value : '';
+      if (!obs || obs.value === null) return '';
+      return obs.status && obs.status !== 'observed' ? `${obs.value} [${obs.status}]` : obs.value;
     });
 
     const langStr = entity.languages?.official?.join('; ') || '';
@@ -83,14 +84,16 @@ export function exportCountriesToJson(selectedIndicatorIds?: string[]): void {
     : allIndicators;
 
   const dataset = entities.map(entity => {
-    const metrics: Record<string, { value: number | null; unit: string; period?: number; sourceId?: string }> = {};
+    const metrics: Record<string, { value: number | null; unit: string; period?: number; sourceId?: string; status?: string; notes?: string }> = {};
     indicatorsToExport.forEach(ind => {
       const obs = atlas.getLatestObservation(entity.id, ind.id);
       metrics[ind.id] = {
         value: obs && obs.value !== null ? obs.value : null,
         unit: ind.unit,
         period: obs?.period,
-        sourceId: obs?.sourceId || ind.preferredSource
+        sourceId: obs?.sourceId || ind.preferredSource,
+        status: obs?.status || 'observed',
+        ...(obs?.notes ? { notes: obs.notes } : {})
       };
     });
 
@@ -216,12 +219,38 @@ export function exportSlaveVoyagesToCsv(): void {
  */
 export function exportAcademicBibtex(reportKey?: 'atlas' | 'molecular' | 'nunn'): void {
   const bibtexEntries: Record<string, string> = {
-    atlas: `@misc{africa_data_atlas_2026,
-  title = {Pan-African Socioeconomic & Geographic Data Atlas},
-  author = {{Africa Data Atlas Collaborative}},
+    atlas: `@software{correia_africa_atlas_2026,
+  title = {Africa Data Atlas \\& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
+  author = {Correia, Z{\\'e}Luis F.},
   year = {2026},
-  howpublished = {\\url{https://africa-atlas.org}},
-  note = {Synthesizing World Bank WDI 2024, IMF WEO, and UNDP Data}
+  publisher = {Africalia},
+  doi = {10.6084/m9.figshare.34065711},
+  url = {https://doi.org/10.6084/m9.figshare.34065711},
+  note = {Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555; 2015-2024 curated indicator snapshot for 54 African states, SlaveVoyages summary (1514-1866), and ethnic-group cartography}
+}
+
+@article{bird2023dense,
+  title = {Dense sampling of ethnic groups within African countries reveals fine-scale genetic structure and extensive historical admixture},
+  author = {Bird, Nancy and others},
+  journal = {Science Advances},
+  volume = {9},
+  number = {13},
+  pages = {eabq2616},
+  year = {2023},
+  doi = {10.1126/sciadv.abq2616},
+  note = {Co-authored; clustering framework only}
+}
+
+@article{tishkoff2009genetic,
+  title = {The genetic structure and history of Africans and African Americans},
+  author = {Tishkoff, Sarah A. and others},
+  journal = {Science},
+  volume = {324},
+  number = {5930},
+  pages = {1035--1044},
+  year = {2009},
+  doi = {10.1126/science.1172257},
+  note = {Co-authored; clustering framework only}
 }`,
     molecular: `@article{micheletti2020genetic,
   title = {Genetic Consequences of the Transatlantic Slave Trade in the Americas},

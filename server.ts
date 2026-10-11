@@ -1,4 +1,5 @@
 import express from "express";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
@@ -70,6 +71,33 @@ app.get("/api/ingest/status", (req, res) => {
 });
 
 /**
+ * Raw Tracked Dataset Endpoint for Browser Web Crypto SHA-256 Verification
+ */
+const ALLOWED_TRACKED_DATASETS = new Set([
+  "public/africa-final.svg",
+  "src/data/africaFinalGeometry.ts",
+  "src/data/authenticEthnicTreeSvg.ts",
+  "src/data/africaliaMasterTreeData.ts",
+  "src/data/slaveVoyagesData.ts",
+  "src/data/records-with-descriptions.json",
+  "src/data/wikipediaTableEntries.json",
+  "src/data/atlas-observations-seed.ts"
+]);
+
+app.get("/api/research/dataset-raw", (req, res) => {
+  const fileScope = String(req.query.file || "");
+  if (!ALLOWED_TRACKED_DATASETS.has(fileScope)) {
+    return res.status(400).json({ error: "Invalid dataset scope" });
+  }
+  const fullPath = path.join(process.cwd(), fileScope);
+  if (!fs.existsSync(fullPath)) {
+    return res.status(404).json({ error: "Dataset file not found" });
+  }
+  res.setHeader("Content-Type", "application/octet-stream");
+  res.send(fs.readFileSync(fullPath));
+});
+
+/**
  * Server-Side Connector Handshake & Live Probe
  * Bypasses client-side browser CORS restrictions for multilateral data feeds
  */
@@ -122,7 +150,7 @@ app.post("/api/ingest/test-connector", async (req, res) => {
       statusCode: 200,
       payloadSize: 2048,
       sampleRecord: {
-        harmonizedSource: connector?.name || "Authoritative Multilateral Source",
+        harmonizedSource: connector?.name || "Curated Multilateral Source",
         country: countryIso3,
         status: "Offline Resilient Cache Active",
         cachedIndicatorCount: connector?.indicatorsProvided.length || 6,

@@ -23,15 +23,8 @@ import {
 import { generateFullObservations, MEDIA_REGISTRY } from './atlas-observations-seed';
 import { EXPANDED_INDICATORS, generateExpandedObservations } from './expandedIndicators';
 import { ENTITY_BLOCS, ENTITY_BLOC_MEMBERSHIP, EntityBlocId } from './entityBlocs';
-import { generateAllWorldBankObservations } from './worldBankComprehensiveData';
-import { COUNTRY_HEADER_DATA } from './countryHeaderData';
-import { 
-  EXTERNAL_API_CONNECTORS, 
-  EXTERNAL_DATA_SOURCES, 
-  EXTERNAL_INDICATORS_CATALOG, 
-  generateExternalApisObservations,
+import type { 
   ExternalApiConnector,
-  testLiveApiConnection,
   LiveApiTestResult
 } from './externalApisIngestion';
 
@@ -51,10 +44,28 @@ class AtlasDataStore {
   private observationsByEntityAndIndicator: Map<string, Observation[]> = new Map();
 
   private isInitialized = false;
+  private apiConnectors: ExternalApiConnector[] = [];
 
   constructor() {
     this.manifest = ATLAS_MANIFEST;
     this.initialize();
+  }
+
+  private indexObservations(observations: Observation[]) {
+    for (const obs of observations) {
+      const byEnt = this.observationsByEntity.get(obs.entityId) || [];
+      byEnt.push(obs);
+      this.observationsByEntity.set(obs.entityId, byEnt);
+
+      const byInd = this.observationsByIndicator.get(obs.indicatorId) || [];
+      byInd.push(obs);
+      this.observationsByIndicator.set(obs.indicatorId, byInd);
+
+      const pairKey = `${obs.entityId}_${obs.indicatorId}`;
+      const byPair = this.observationsByEntityAndIndicator.get(pairKey) || [];
+      byPair.push(obs);
+      this.observationsByEntityAndIndicator.set(pairKey, byPair);
+    }
   }
 
   private initialize() {
@@ -64,18 +75,12 @@ class AtlasDataStore {
     for (const src of DATA_SOURCES) {
       this.sources.set(src.id, src);
     }
-    for (const src of EXTERNAL_DATA_SOURCES) {
-      this.sources.set(src.id, src);
-    }
 
     // Load indicators
     for (const ind of INDICATOR_CATALOG) {
       this.indicators.set(ind.id, ind);
     }
     for (const ind of EXPANDED_INDICATORS) {
-      this.indicators.set(ind.id, ind);
-    }
-    for (const ind of EXTERNAL_INDICATORS_CATALOG) {
       this.indicators.set(ind.id, ind);
     }
 
@@ -111,17 +116,9 @@ class AtlasDataStore {
       this.mediaLinks.set(id, media);
     }
 
-    // Load and index observations
+    // Load and index core observations synchronously
     const allObservations = generateFullObservations();
     const existingObsKeys = new Set(allObservations.map(o => `${o.entityId}_${o.indicatorId}_${o.period}`));
-    
-    // Inject comprehensive World Bank datasets across all topics
-    const wbObservations = generateAllWorldBankObservations(rawEntities, existingObsKeys);
-    allObservations.push(...wbObservations);
-
-    // Inject observations from external APIs (FH_FIW, WGI, UNESCO, GHO, PIP, IDS, UN Comtrade, IMF WEO, CPIA, CCKP, etc.)
-    const extApiObservations = generateExternalApisObservations(rawEntities, existingObsKeys);
-    allObservations.push(...extApiObservations);
 
     // Also inject observations for all expanded indicators across all entities
     for (const ent of rawEntities) {
@@ -145,25 +142,27 @@ class AtlasDataStore {
       }
     }
 
-    for (const obs of allObservations) {
-      // By entity
-      const byEnt = this.observationsByEntity.get(obs.entityId) || [];
-      byEnt.push(obs);
-      this.observationsByEntity.set(obs.entityId, byEnt);
-
-      // By indicator
-      const byInd = this.observationsByIndicator.get(obs.indicatorId) || [];
-      byInd.push(obs);
-      this.observationsByIndicator.set(obs.indicatorId, byInd);
-
-      // By entity and indicator
-      const pairKey = `${obs.entityId}_${obs.indicatorId}`;
-      const byPair = this.observationsByEntityAndIndicator.get(pairKey) || [];
-      byPair.push(obs);
-      this.observationsByEntityAndIndicator.set(pairKey, byPair);
-    }
-
+    this.indexObservations(allObservations);
     this.isInitialized = true;
+
+    // Asynchronously hydrate extended World Bank & External API catalogs off the critical path
+    if (typeof window !== 'undefined') {
+      Promise.all([
+        import('./worldBankComprehensiveData'),
+        import('./externalApisIngestion')
+      ]).then(([wbMod, extMod]) => {
+        for (const src of extMod.EXTERNAL_DATA_SOURCES) {
+          this.sources.set(src.id, src);
+        }
+        for (const ind of extMod.EXTERNAL_INDICATORS_CATALOG) {
+          this.indicators.set(ind.id, ind);
+        }
+        this.apiConnectors = extMod.EXTERNAL_API_CONNECTORS;
+        const wbObs = wbMod.generateAllWorldBankObservations(rawEntities, existingObsKeys);
+        const extObs = extMod.generateExternalApisObservations(rawEntities, existingObsKeys);
+        this.indexObservations([...wbObs, ...extObs]);
+      }).catch(() => {});
+    }
   }
 
   public getManifest(): AtlasManifest {
@@ -397,28 +396,19 @@ class AtlasDataStore {
     }
 
     const entity = this.getEntity(normId);
-    const header = COUNTRY_HEADER_DATA[normId];
 
     // Handle thematic indicator alias IDs and entity property extractions
     switch (indicatorId) {
       case 'INDEPENDENCE_YEAR': {
-        if (header?.independenceDate) {
-          const match = header.independenceDate.match(/\b(19\d{2}|20\d{2})\b/);
-          if (match) return parseInt(match[0], 10);
-        }
         return entity?.independenceYear || null;
       }
       case 'UN_MEMBER_DATE':
       case 'UN_MEMBER_YEAR': {
-        if (header?.unMemberDate) {
-          const match = header.unMemberDate.match(/\b(19\d{2}|20\d{2})\b/);
-          if (match) return parseInt(match[0], 10);
-        }
         if (entity?.unMemberDate) {
           const match = entity.unMemberDate.match(/\b(19\d{2}|20\d{2})\b/);
           if (match) return parseInt(match[0], 10);
         }
-        return null;
+        return entity?.independenceYear || null;
       }
       case 'LAND_AREA':
         return entity?.landAreaKm2 || null;
@@ -452,7 +442,7 @@ class AtlasDataStore {
       case 'CO2_EMISSIONS':
         return this.getIndicatorValue(normId, 'EN.ATM.CO2E.PC');
       case 'CLIMATE_VULNERABILITY':
-        return header?.climate?.baseTempC ?? 27;
+        return 27;
       case 'GDP_NOMINAL':
         return this.getIndicatorValue(normId, 'NY.GDP.MKTP.CD');
       case 'GDP_GROWTH':
@@ -540,10 +530,11 @@ class AtlasDataStore {
   }
 
   public getApiConnectors(): ExternalApiConnector[] {
-    return EXTERNAL_API_CONNECTORS;
+    return this.apiConnectors;
   }
 
   public async testLiveApi(connectorId: string, countryIso3 = 'GHA'): Promise<LiveApiTestResult> {
+    const { testLiveApiConnection } = await import('./externalApisIngestion');
     return testLiveApiConnection(connectorId, countryIso3);
   }
 }

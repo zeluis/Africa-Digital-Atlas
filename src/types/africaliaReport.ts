@@ -109,7 +109,6 @@ export interface AfricaliaGeography {
 export interface AfricaliaIdentifiers {
   doi: string | null;
   isbn?: string | null;
-  issn?: string | null;
   external_url?: string | null;
   source_url?: string | null;
 }
@@ -217,7 +216,6 @@ export interface AfricaliaReport {
   isWorkingPaper?: boolean;
   seriesNumber?: string;
   jelCodes?: string[];
-  issn?: string;
 }
 
 /**

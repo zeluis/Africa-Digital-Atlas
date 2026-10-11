@@ -1,11 +1,10 @@
 /**
  * svgMaps.ts - Accurate Geographic SVG Map Paths for Africa
  * Aligned to the United Nations Geoscheme for Africa (M49 standard)
- * 54 Sovereign African States + Western Sahara mapped dynamically to the authoritative vector model.
+ * 54 Sovereign African States + Western Sahara mapped dynamically to the curated vector model.
  */
 
 import { AFRICA_FINAL_MAP, AfricaFinalCountryPath } from './africaFinalGeometry';
-import { atlas } from './atlas-store';
 
 export interface CountrySvgPath {
   id: string; // ISO3
@@ -106,7 +105,6 @@ export const AFRICA_UN_REGIONS_STRUCTURED: Record<'Northern Africa' | 'Western A
 };
 
 function buildCountrySvgPath(c: AfricaFinalCountryPath): CountrySvgPath {
-  const entity = atlas.getEntity(c.id);
   const bbox = c.bbox || { minX: 0, minY: 0, maxX: 400, maxY: 400 };
   const w = (bbox.maxX || 400) - (bbox.minX || 0);
   const h = (bbox.maxY || 400) - (bbox.minY || 0);
@@ -116,14 +114,14 @@ function buildCountrySvgPath(c: AfricaFinalCountryPath): CountrySvgPath {
 
   return {
     id: c.id,
-    name: c.name || entity?.name || c.id,
-    iso2: entity?.iso2 || c.id.slice(0, 2),
+    name: c.name || c.id,
+    iso2: c.id.slice(0, 2),
     unRegion: c.unRegion as any,
     path,
     islands: [],
     centroid: c.centroid || { x: (bbox.minX || 0) + w / 2, y: (bbox.minY || 0) + h / 2 },
     capital: {
-      name: entity?.capital || '',
+      name: '',
       x: c.centroid?.x || (bbox.minX || 0) + w / 2,
       y: c.centroid?.y || (bbox.minY || 0) + h / 2
     },

@@ -573,7 +573,7 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-[10px] font-mono uppercase font-bold text-stone-500 dark:text-stone-400">
-                      Authoritative Academic Publications
+                      Curated Academic Publications
                     </span>
                     <button
                       type="button"

@@ -1,7 +1,7 @@
 /**
  * akpCulturalReserves.ts - UNESCO World Heritage & Continental Sanctuaries
  * Coordinate Space: 5796 x 5867 Native SVG Space
- * Authoritative Sources: UNESCO World Heritage Centre, IUCN, UNEP-WCMC BIOPAMA
+ * Curated Sources: UNESCO World Heritage Centre, IUCN, UNEP-WCMC BIOPAMA
  */
 
 export type HeritageType = 'cultural' | 'natural' | 'mixed';

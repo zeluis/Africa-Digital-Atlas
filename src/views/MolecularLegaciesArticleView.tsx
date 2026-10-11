@@ -284,7 +284,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
               “For centuries, the human cost of the Transatlantic Slave Trade was mediated almost exclusively through the sanitized bookkeeping of enslavers—shipping manifests, bill of sale ledgers, and probate inventories. Modern genome-wide sequencing, high-resolution ancient DNA (aDNA), and skeletal bioarchaeology have opened a biological counter-archive that cannot be expunged.”
             </p>
             <p className="font-sans font-light text-sm sm:text-[0.938rem] text-[#55554E] dark:text-[#C5C1B4] leading-relaxed pt-1">
-              By analyzing <strong>haplotype deconvolution</strong> across 50,000+ modern genomes alongside forensic bioarchaeology from the <strong>New York African Burial Ground</strong> and <strong>St. Helena Liberated African graveyards</strong>, this synthesis reveals how demographic dismemberment, extreme sexual violence, and structural capital accumulation transformed human bodies into the biological ledger of empire.
+              By analyzing <strong>haplotype deconvolution</strong> across 50,000+ modern genomes alongside osteological bioarchaeology from the <strong>New York African Burial Ground</strong> and <strong>St. Helena Liberated African graveyards</strong>, this synthesis reveals how demographic dismemberment, extreme sexual violence, and structural capital accumulation transformed human bodies into the biological ledger of empire.
             </p>
           </div>
         </div>
@@ -328,7 +328,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
               </p>
             </div>
 
-            {/* Pill 4: Skeletal Forensic Archive */}
+            {/* Pill 4: Skeletal Bioarchaeological Archive */}
             <div className="p-5 rounded-2xl bg-[#F6F4ED] dark:bg-[#1B1D19] border border-[#DCD9CE] dark:border-[#2C2E2A] flex flex-col justify-between shadow-2xs hover:border-[#96672E]/40 transition-all relative overflow-hidden">
               <div className="absolute top-0 left-0 w-1 h-full bg-[#96672E] dark:bg-[#D1A268]" />
               <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-[#DCD9CE]/60 dark:border-[#2C2E2A] pl-1">
@@ -432,7 +432,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
                   </p>
                 </div>
                 <div className="p-5 rounded-xl bg-[#FFFFFF] dark:bg-[#20231F] border border-[#DCD9CE] dark:border-[#2C2E2A] space-y-2 shadow-2xs">
-                  <span className="font-serif font-semibold text-sm sm:text-base text-[#1A1A18] dark:text-[#E6E3DB] block">3. Forensic Bioarchaeology</span>
+                  <span className="font-serif font-semibold text-sm sm:text-base text-[#1A1A18] dark:text-[#E6E3DB] block">3. Skeletal Bioarchaeology</span>
                   <p className="text-xs text-[#55554E] dark:text-[#A8A499] leading-relaxed font-light">
                     Osteological pathology, strontium isotopes, and mortuary cosmograms. Documents the direct biomechanical trauma of labor and cultural resistance encoded in burials.
                   </p>
@@ -755,7 +755,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
                 06 // The Skeletal Counter-Archive
               </span>
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#1A1A18] dark:text-[#E6E3DB] tracking-tight leading-snug">
-                Forensic Bioarchaeology of the New York African Burial Ground
+                Skeletal Bioarchaeology of the New York African Burial Ground
               </h2>
             </div>
 
@@ -764,7 +764,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
                 Excavated in lower Manhattan between 1991 and 1992 under the scientific direction of Dr. Michael L. Blakey (Howard University), the <strong>{NY_AFRICAN_BURIAL_GROUND.siteName}</strong> represents the most significant bioarchaeological discovery of the African diaspora in North America.
               </p>
               <p>
-                Containing over {NY_AFRICAN_BURIAL_GROUND.individualsAnalyzed} analyzed burials, the skeletal remains provided forensic proof of brutal biomechanical strain, extreme juvenile mortality, and deeply preserved West African cosmological rituals.
+                Containing over {NY_AFRICAN_BURIAL_GROUND.individualsAnalyzed} analyzed burials, the skeletal remains provided osteological proof of brutal biomechanical strain, extreme juvenile mortality, and deeply preserved West African cosmological rituals.
               </p>
             </div>
 

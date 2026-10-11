@@ -84,7 +84,7 @@ export const MolecularLegaciesView: React.FC = () => {
           The Molecular and Material Legacies of Slavery
         </h2>
         <p className="text-sm md:text-base text-zinc-300 leading-relaxed max-w-4xl">
-          An interdisciplinary synthesis integrating <strong>population genomics</strong> (haplotype deconvolution & IBD sharing), <strong>bioarchaeology</strong> (skeletal trauma & cultural counter-archives), and <strong>historical archival records</strong>. Transforming abstract shipping manifests into a forensic accounting of structural exploitation, biological survival, and resistance.
+          An interdisciplinary synthesis integrating <strong>population genomics</strong> (haplotype deconvolution & IBD sharing), <strong>bioarchaeology</strong> (skeletal trauma & cultural counter-archives), and <strong>historical archival records</strong>. Transforming abstract shipping manifests into a detailed empirical accounting of structural exploitation, biological survival, and resistance.
         </p>
 
         {/* Quick Highlights Strip */}
@@ -190,7 +190,7 @@ export const MolecularLegaciesView: React.FC = () => {
                   <h4 className="font-extrabold text-sm text-zinc-900 dark:text-zinc-100">2. Bioarchaeological Records</h4>
                 </div>
                 <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Skeletal remains preserve forensic proof of occupational trauma, nutritional deprivation (enamel hypoplasia), and intentional cultural persistence (ritual dental modifications).
+                  Skeletal remains preserve osteological proof of occupational trauma, nutritional deprivation (enamel hypoplasia), and intentional cultural persistence (ritual dental modifications).
                 </p>
               </div>
 
@@ -227,7 +227,7 @@ export const MolecularLegaciesView: React.FC = () => {
             </div>
 
             <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-              Population genetics, specifically the application of <strong>haplotype deconvolution</strong> and <strong>Identity by Descent (IBD) sharing</strong>, functions as a vital forensic tool. By identifying shared chromosomal segments inherited from a common ancestor, researchers validate and interrogate shipping documents with unprecedented precision.
+              Population genetics, specifically the application of <strong>haplotype deconvolution</strong> and <strong>Identity by Descent (IBD) sharing</strong>, functions as a vital analytical tool. By identifying shared chromosomal segments inherited from a common ancestor, researchers validate and interrogate shipping documents with sub-regional resolution.
             </p>
 
             {/* IBD Concordance Chart */}
@@ -356,7 +356,7 @@ export const MolecularLegaciesView: React.FC = () => {
               </span>
               <div>
                 <span className="text-xs font-mono uppercase tracking-wider text-rose-600 dark:text-rose-400 font-bold">
-                  Section II-B • Biomolecular Forensics
+                  Section II-B • Biomolecular Evidence
                 </span>
                 <h3 className="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-100">
                   The Biological Ledger of Sexual Violence: Sex-Biased Gene Flow

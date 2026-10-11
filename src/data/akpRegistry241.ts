@@ -1,6 +1,6 @@
 /**
  * akpRegistry241.ts - European Commission Africa Knowledge Platform (JRC AKP)
- * Authoritative 241 Datasets Master Registry
+ * Curated 241 Datasets Master Registry
  * Sourced from EC JRC, BIOPAMA, Copernicus, Eurostat, World Bank, WHO, UNESCO, FAO, UNEP, ACLED, ITU & AfDB.
  */
 
@@ -480,7 +480,7 @@ export const AKP_REGISTRY_241_DATASETS: AkpDatasetRecord[] = [
     unit: 'Geocoded Monuments',
     spatialResolution: 'Point / Facility',
     coverage: 'All African UNESCO State Parties',
-    description: 'Authoritative spatial register of Outstanding Universal Value monuments (Lalibela, Giza, Djenné, Great Zimbabwe, Kruger, Serengeti, Victoria Falls).',
+    description: 'Curated spatial register of Outstanding Universal Value monuments (Lalibela, Giza, Djenné, Great Zimbabwe, Kruger, Serengeti, Victoria Falls).',
     tags: ['unesco', 'heritage', 'lalibela', 'giza', 'monuments', 'sanctuaries'],
     downloadFormats: ['GeoJSON', 'CSV', 'KML']
   },

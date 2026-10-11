@@ -3,8 +3,7 @@
  * Generates standardized bibliographic files (.bib, .ris, .json) and printable High-DPI PDFs.
  */
 
-import { jsPDF } from 'jspdf';
-import { SlaveTradeIllustration } from '../data/slaveTradeIllustrations';
+import type { SlaveTradeIllustration } from '../data/slaveTradeIllustrations';
 
 /**
  * Downloads a string as a formatted academic reference file
@@ -100,6 +99,7 @@ export const exportHighDpiPlatePDF = async (
   illustration: SlaveTradeIllustration,
   citationText: string
 ): Promise<void> => {
+  const { jsPDF } = await import('jspdf');
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',

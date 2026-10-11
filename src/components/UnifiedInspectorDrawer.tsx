@@ -244,10 +244,10 @@ export const UnifiedInspectorDrawer: React.FC<UnifiedInspectorDrawerProps> = ({
             </div>
           </div>
 
-          {/* Authoritative Source Citations (UN DESA, World Bank, IMF, UNESCO) */}
+          {/* Curated Source Citations (UN DESA, World Bank, IMF, UNESCO) */}
           <div className="p-2.5 rounded-xl bg-stone-100/70 dark:bg-stone-950/60 border border-stone-200/80 dark:border-stone-800 text-[10px] space-y-1 text-stone-600 dark:text-stone-400">
             <span className="font-mono uppercase font-bold text-stone-500 dark:text-stone-400 block tracking-wider">
-              Authoritative Source Citations
+              Curated Source Citations
             </span>
             <div className="flex flex-col gap-0.5">
               <span>• <strong>UN DESA</strong>: Population Division (2024 Revision)</span>

@@ -40,7 +40,7 @@ export interface AfricaFinalCountryPath {
 
 const parsedMap = rawData as unknown as Record<string, AfricaFinalCountryPath>;
 
-// Ensure all countries in the authoritative map have their canonical colors mapped
+// Ensure all countries in the curated map have their canonical colors mapped
 for (const country of Object.values(parsedMap)) {
   const canonical = getCanonicalCountryColor(country.id) || getCanonicalCountryColor(country.name);
   if (canonical) {

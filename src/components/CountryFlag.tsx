@@ -38,9 +38,12 @@ export const CountryFlag: React.FC<CountryFlagProps> = ({
           <img
             src={flagUrl}
             alt={`Flag of ${entity?.name || entityId}`}
+            width={32}
+            height={24}
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
             loading="lazy"
+            decoding="async"
             onError={() => setHasError(true)}
           />
         ) : (

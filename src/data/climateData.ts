@@ -1,6 +1,6 @@
 /**
  * Africa Data Atlas - Climate & Ecology System
- * Authoritative climatology, precipitation cycles, multi-decadal historical warming trends,
+ * Curated climatology, precipitation cycles, multi-decadal historical warming trends,
  * temperature anomaly trajectories, ND-GAIN vulnerability indices, and ecological resilience narratives.
  */
 

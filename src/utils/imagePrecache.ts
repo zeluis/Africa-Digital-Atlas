@@ -4,23 +4,26 @@
  * using requestIdleCallback to ensure zero main-thread jank.
  */
 
-import { CASTAS_ARCHIVE_ITEMS } from '../data/castasArchive';
-
 const CACHE_NAME = 'africa-archival-plates-v1';
 
 // Gather the top 100 critical archival thumbnail URLs
 export const getTopArchivalImageUrls = async (): Promise<string[]> => {
   const urls: string[] = [];
 
-  // 1. Castas 32 plates and thumbnails
-  CASTAS_ARCHIVE_ITEMS.forEach(item => {
-    if (item.thumbnailUrl && !urls.includes(item.thumbnailUrl)) {
-      urls.push(item.thumbnailUrl);
-    }
-    if (item.imageUrl && !urls.includes(item.imageUrl)) {
-      urls.push(item.imageUrl);
-    }
-  });
+  // 1. Castas 32 plates and thumbnails (loaded on demand)
+  try {
+    const { CASTAS_ARCHIVE_ITEMS } = await import('../data/castasArchive');
+    CASTAS_ARCHIVE_ITEMS.forEach(item => {
+      if (item.thumbnailUrl && !urls.includes(item.thumbnailUrl)) {
+        urls.push(item.thumbnailUrl);
+      }
+      if (item.imageUrl && !urls.includes(item.imageUrl)) {
+        urls.push(item.imageUrl);
+      }
+    });
+  } catch {
+    // Ignore dynamic import deferral
+  }
 
   // 2. Pre-packaged local archive fallbacks
   const localArchiveIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 36, 46, 50, 536, 802, 1042];
@@ -31,18 +34,12 @@ export const getTopArchivalImageUrls = async (): Promise<string[]> => {
     }
   });
 
-  // 2. Transatlantic Slave Trade Illustrations top plates (dynamically loaded to prevent startup blocking)
-  try {
-    const { SLAVE_TRADE_ILLUSTRATIONS } = await import('../data/slaveTradeIllustrations');
-    SLAVE_TRADE_ILLUSTRATIONS.forEach(item => {
-      if (item.imageUrls && item.imageUrls[0] && !urls.includes(item.imageUrls[0])) {
-        if (urls.length < 100) {
-          urls.push(item.imageUrls[0]);
-        }
-      }
-    });
-  } catch (err) {
-    console.warn('[PWA] Archival precache dataset deferral:', err);
+  // 3. Transatlantic Slave Trade Illustrations top plates (deterministic URLs without pulling 2.5 MB dataset)
+  for (let id = 1; id <= 40 && urls.length < 100; id++) {
+    const remoteUrl = `https://si.regeneratedidentities.org/project/DataFiles/SI-OB-${id}/${id}-4.jpg`;
+    if (!urls.includes(remoteUrl)) {
+      urls.push(remoteUrl);
+    }
   }
 
   return urls;

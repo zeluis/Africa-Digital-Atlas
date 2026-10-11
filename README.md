@@ -1,6 +1,6 @@
-# 🌍 Africa Data Atlas & Geopolitical Intelligence Platform
+# 🌍 Africa Data Atlas & Cartographic Observatory
 
-An authoritative, real-time socioeconomic data platform, interactive vector cartography suite, historical trade flow visualizer, and comparative analytics engine covering all 54 African sovereign nations and associated territories.
+An interactive atlas of geography, curated socioeconomic indicators (2015–2024), and historical trade flows covering all 54 African sovereign nations across 8 thematic pillars.
 
 [![React 19](https://img.shields.io/badge/React-19.0-blue?style=flat-square&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
@@ -9,8 +9,8 @@ An authoritative, real-time socioeconomic data platform, interactive vector cart
 [![PWA Ready](https://img.shields.io/badge/PWA-Offline_Enabled-success?style=flat-square&logo=pwa)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 [![Data Charter: FAIR & Open Science](https://img.shields.io/badge/Data_Charter-FAIR_&_Open_Science-059669?style=flat-square)](https://www.go-fair.org/fair-principles/)
 [![Privacy: Zero Tracker GDPR](https://img.shields.io/badge/Privacy-Zero_Tracker_•_GDPR_Compliant-10b981?style=flat-square)](https://zeluis.github.io/Africa-Digital-Atlas/)
-[![Data License: CC BY--NC--SA 4.0](https://img.shields.io/badge/Data_License-CC_BY--NC--SA_4.0-amber.svg?style=flat-square)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-[![License: MIT](https://img.shields.io/badge/Code_License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Assets License: CC BY 4.0](https://img.shields.io/badge/Assets_License-CC_BY_4.0-amber.svg?style=flat-square)](./LICENSE-ASSETS)
+[![Code License: MIT](https://img.shields.io/badge/Code_License-MIT-yellow.svg?style=flat-square)](./LICENSE-CODE)
 
 ---
 
@@ -72,12 +72,12 @@ Understanding Africa's demographic and economic trajectory is critical for polic
 
 ### Scope at a Glance:
 - **54 Sovereign Nations & Island States**: Complete geospatial and statistical coverage across Northern, Western, Central, Eastern, and Southern Africa.
-- **Over 90 Harmonized Indicators & 6 Thematic Portals**: Spanning macroeconomic accounts, poverty lines, external debt stocks, governance ratings, gender equity, climate projections, and trade balances.
-- **36,000+ Documented Historical Voyages**: 3D globe and spatiotemporal flow visualizer charting the transatlantic slave trade from 1501 to 1867.
+- **8 Thematic Pillars & 90+ Harmonized Indicators (2015–2024 Curated Snapshot)**: Spanning history & deep time, demographics & peoples, macroeconomy & trade, society/health/education, climate/ecology/energy, governance & geopolitics, infrastructure & corridors, and tourism & cultural heritage, with per-value status flags (`observed`, `estimated`, `forecast`, `derived`).
+- **36,108 Documented Historical Voyages (1514–1866)**: 3D globe and spatiotemporal flow visualizer summarizing the SlaveVoyages trans-Atlantic database (2024.1 release; demographic estimates 1501–1866), alongside **18 individually curated voyage dossiers** linked to their source records.
 - **1,252 Archival Visual Records & Castas Series Studio**: Direct scrutiny archival engine with hand-indexed historical plates, 32 colonial castas series, non-passive wheel zoom isolation, and full mobile two-finger pinch-to-zoom.
 - **Archival Cartography & Ocean Winds Engine**: Interactive comparison curtain viewer for antique cartographic plates (1688–1851), real-time particle animation of 8 major ocean currents, and monsoon seasonal wind regimes.
 - **African Development Foundations Master Report & 10 Econometric Treatises**: Comprehensive 7-epoch developmental synthesis examining deep genomic diversity gradients, Nathan Nunn extraction models, Tadei colonial monopsonies, and contemporary geopolitical alignments.
-- **African Ethnic Tree & Deep Ancestral Lineages**: Interactive anthropological and phylogenetic taxonomy mapping African linguistic phyla (*Niger-Congo*, *Afroasiatic*, *Nilo-Saharan*, *Khoisan*) and deep genetic population structures.
+- **African Ethnic Tree & Clustering Framework**: Interactive anthropological and linguistic cartography covering 310 contemporary ethnic groups from Wikipedia's *List of contemporary ethnic groups of Africa* (retrieved 2026-01), using the clustering framework of Bird et al. (2023) and Tishkoff et al. (2009) without reproducing their samples or genetic data.
 - **Sovereign Privacy, Zero Surveillance & GDPR Right to Erasure**: Complete client-side state minimization, zero commercial advertising cookies or tracking pixels, stateless neural speech audio, and a live client-side `localStorage` inspector with one-click wipe.
 - **100% Offline-Capable PWA**: Service Worker caching of vector geometries, baseline observations, and styling for low-bandwidth field environments.
 
@@ -121,7 +121,7 @@ A dedicated historical research subsystem visualizing the historical transatlant
 
 - **Interactive 3D Orthographic Globe**: Built with canvas-based orthographic geodesic projections allowing researchers to rotate, pitch, and inspect intercontinental maritime trajectories connecting African coastal embarkation zones (e.g., Bight of Benin, Gold Coast, Senegambia, West Central Africa) to destination ports in Brazil, the Caribbean, and North America.
 - **Animated Great-Circle Flow Arcs**: Dynamic, particle-animated bezier flow vectors whose stroke width and velocity represent total documented captive volumes over selected historical epochs.
-- **Spatiotemporal Timeline Scrubber**: Interactive historical filter covering four centuries (**1501–1600**, **1601–1700**, **1701–1800**, **1801–1867**), allowing users to observe the geopolitical rise and decline of various imperial flag carriers (Portugal/Brazil, Great Britain, France, Netherlands, Spain, USA).
+- **Spatiotemporal Timeline Scrubber**: Interactive historical filter covering four centuries (**1514–1600**, **1601–1700**, **1701–1800**, **1801–1866**, with continental demographic estimates spanning **1501–1866**), allowing users to observe the geopolitical rise and decline of various imperial flag carriers (Portugal/Brazil, Great Britain, France, Netherlands, Spain, USA).
 - **Academic Export Workbench**: Instant generation and download of raw voyage data in **CSV** format and complete academic literature citations in **BibTeX** format.
 
 ```
@@ -152,7 +152,7 @@ A dedicated historical visual scrutiny workspace engineered for researchers, cur
   - **Isolated Citation & Metadata Drawer**: Features `overscroll-behavior: contain` (`overscroll-contain`) with native boundary clamping. Scrolling through extensive historical footnotes, notarial research essays by Prof. Kathryn Burns, or bibliographic references never chains scroll momentum to the underlying document.
   - **Filmstrip Horizontal Wheel Translation**: Vertical mouse wheel input over the bottom thumbnail tray is dynamically converted to smooth horizontal carousel scrolling.
 - **Unified Workbench & Zero-Layout-Shift Geometry**:
-  - Shared authoritative exhibition hero banner with curatorial kicker and high-resolution plate rotation.
+  - Shared curated exhibition hero banner with curatorial kicker and high-resolution plate rotation.
   - Symmetric 64px sticky toolbars for both the Registry and Castas tabs with anchored segmented mode controls, ensuring 0px layout shifts during navigation.
   - Fullscreen Loupe Modal with deep-zoom pan controls and one-click citation exports (APA, Chicago, BibTeX).
 
@@ -169,15 +169,17 @@ An interactive cartographic lab examining the geographic and meteorological real
 ---
 
 ### 5. Thematic Pillars & Multidimensional Country Portals
-A multi-lens developmental diagnostic tool organizing continental indicators into six core developmental pillars:
+A multi-lens developmental diagnostic tool organizing continental indicators and encyclopedic dossiers into **8 core thematic pillars**:
 
-- **6 Structured Thematic Pillars**:
-  1. **Macroeconomic Architecture & Trade (AfCFTA)**: GDP trajectories, sovereign debt sustainability, external reserves, intra-African trade shares, and economic diversification indices.
-  2. **Human Capital & Demographics**: Youth demographic dividends, fertility trends, urban migration corridors, life expectancy, and basic social protections.
-  3. **Energy Transition & Infrastructure**: Grid electrification rates, off-grid solar deployments, renewable potential (hydro, geothermal, solar), and logistics connectivity.
-  4. **Governance, Peace & Institutions**: Mo Ibrahim Index indicators, rule of law, anti-corruption performance, civic space, and state fragility scores.
-  5. **Digital Transformation & Innovation**: Mobile money penetration, fiber broadband density, fintech capital inflows, and digital public infrastructure.
-  6. **Climate Vulnerability & Ecological Resilience**: ND-GAIN climate vulnerability rankings, carbon footprints, agricultural rainfall anomalies, and biodiversity conservation areas.
+- **8 Structured Thematic Pillars**:
+  1. **History & Deep Time**: Pre-colonial states, archaeological heritage, and historical trajectories.
+  2. **Demographics & Peoples**: Population structure, urbanization, and linguistic/cultural heritage.
+  3. **Macroeconomy & Trade (AfCFTA)**: GDP trajectories, sovereign debt sustainability, external reserves, intra-African trade shares, and economic diversification indices.
+  4. **Society, Health & Education**: Healthcare access, literacy, education equity, and basic social protections.
+  5. **Climate, Ecology & Energy**: Climate vulnerability rankings, ecological biomes, grid electrification, and renewable energy transition.
+  6. **Governance & Geopolitics**: Rule of law, institutional capacity, peace & security, and regional economic blocs.
+  7. **Infrastructure & Corridors**: Transport networks, maritime ports, digital connectivity, and power grids.
+  8. **Tourism & Cultural Heritage**: UNESCO World Heritage sites, conservation reserves, and cultural landmarks.
 - **Deep Country Integration**: Dynamic country silhouette vectors, curated landmark photography, live Wikipedia academic narratives with automated fallbacks, and multi-country benchmarking cards.
 
 ---
@@ -246,11 +248,11 @@ A dedicated API ingestion subsystem standardizes data feeds from 16 internationa
 ---
 
 ### 11. Data Provenance, Quality Audits & Cryptographic Verification
-To ensure academic credibility and transparency, the platform includes a **Provenance & Data Quality Console**:
+To ensure academic credibility and transparency, the platform includes a **Provenance & Data Quality Console** and **Methodology & Data Provenance Dossier**:
 
 - **Real-Time Automated Integrity Audits**: Verifies all 54 sovereign entities against the indicator store, detecting potential statistical anomalies, missing values, or outlier bounds.
-- **Cryptographic Hash Verification**: Calculates deterministic SHA-256 integrity hashes for indicator subsets, guaranteeing that data records have not been tampered with or corrupted during runtime execution.
-- **Quality Flags & Footnotes**: Flags observations that rely on modeled statistical estimates, imputation, or lagged census reporting.
+- **Dataset Checksum Verification (SHA-256)**: Each foundational dataset has a published SHA-256 checksum computed at build time so you can confirm your copy matches the release in your browser using the Web Crypto API.
+- **Status Flags & Footnotes**: Every observation carries one of four flags (`observed`, `estimated`, `forecast`, or `derived`), with back-filled or derived rules recorded in `notes`.
 - **Academic Citation Generator**: Generates formatted citations for APA, Harvard, Chicago, and BibTeX standards for any dataset or national profile.
 
 ---
@@ -269,14 +271,14 @@ The UI adheres to a refined **Japandi aesthetic**—blending Japanese minimalism
 ---
 
 ### 13. African Ethnic Tree & Ancestral Lineages Explorer
-An interactive anthropological, linguistic, and genomic taxonomy explorer mapping Africa's living heritage:
-- **Hierarchical Phyla & Macro-Families**: Visualizes deep linguistic lineages rooted in four principal continental phyla:
+An interactive anthropological and linguistic taxonomy explorer mapping Africa's living heritage:
+- **Wikipedia Ethnic Group Baseline (310 Entries)**: The ethnic groups come from Wikipedia's *List of contemporary ethnic groups of Africa* (310 entries, retrieved 2026-01).
+- **Hierarchical Phyla & Macro-Families**: Organizes linguistic lineages across four principal continental phyla:
   - **Niger-Congo**: Atlantic-Congo, Bantu dispersal, Volta-Niger, and Mande expansions.
   - **Afroasiatic**: Semitic, Berber/Tamazight, Cushitic, and Chadic branches.
   - **Nilo-Saharan**: Nilotic pastoralist corridors, Central Sudanic, and Saharan traditions.
   - **Khoisan**: Juu-ǂHoan, Tuu, and Khoe-Kwadi click-consonant phonological lineages.
-- **Population Genetics & Admixture Integration**: Connects archaeological evidence with modern genomic research on Out-of-Africa migrations, agricultural dispersals, and Atlantic creolization.
-- **UNESCO Memory of the World Alignment**: Preserves indigenous self-determination and scholarly rigor by rejecting colonial tribal essentialisms in favor of living, evolving cultural taxonomies.
+- **Population-Genetic Clustering Framework**: The cartography is inspired by **Bird et al. (2023)** and **Tishkoff et al. (2009)**, used only for their clustering framework (how genetic clusters relate to ethnicity, language, and geography). It does not reproduce their samples or genetic data, and treats genetic ancestry, language, cultural identity, and political classification as related but separate categories.
 
 ---
 
@@ -398,7 +400,7 @@ The Africa Data Atlas is configured as a fully compliant **Progressive Web App (
 | Pure SVG Path Topology   |   | Recharts Data Visualizer |   | Canvas Orthographic  |   | 1,252 Visual Plates  |
 | Geodesic Island Anchors  |   | Bi-Variable Scatter & $r$|   | Great-Circle Vectors |   | Wheel Zoom Isolation |
 | Curtain Map Plate Slider |   | Radar Pillar Comparisons |   | Time Scrubber Engine |   | Touch Pinch/Pan Lab  |
-| Ocean Streamline Canvas  |   | 6 Thematic Pillar Panels |   | CSV & BibTeX Exports |   | 32 Castas Series     |
+| Ocean Streamline Canvas  |   | 8 Thematic Pillar Panels |   | CSV & BibTeX Exports |   | 32 Castas Series     |
 +──────────────────────────+   +──────────────────────────+   +──────────────────────+   +──────────────────────+
        │                                 │                                │                             │
        └─────────────────────────────────┴────────────────┬───────────────┴─────────────────────────────┘
@@ -499,10 +501,10 @@ CMD ["npm", "start"]
 
 ## 📚 Academic Citations & Data Governance
 
-### Dual Licensing Matrix
-The Africa Data Atlas operates under a dual-licensing charter to support open scholarly inquiry while ensuring proper attribution and reproducible open science:
-- **Codebase & Software Architecture**: Released under the **[MIT License](https://opensource.org/licenses/MIT)**. Free for modification, reuse, and deployment.
-- **Empirical Research Data & Synthesis**: Licensed under **[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/)**. Free for academic, classroom, policy research, and student use with attribution.
+### Dual Licensing Matrix (`LICENSE-CODE` & `LICENSE-ASSETS`)
+The Africa Data Atlas operates under an explicit two-file dual-licensing charter at the repository root:
+- **Source Code (`LICENSE-CODE`)**: Released under the **[MIT License](./LICENSE-CODE)** (`Copyright (c) 2026 ZéLuis F. Correia`). Free for modification, reuse, and deployment.
+- **Creative Assets, SVG Maps & Visualizations (`LICENSE-ASSETS`)**: Licensed under **[Creative Commons Attribution 4.0 International (CC BY 4.0)](./LICENSE-ASSETS)**. **ZéLuis F. Correia** is the author of all SVG maps and the Ethnic Tree Visualization and SVG. Unless stated otherwise, all graphics and visualizations have the same author.
 
 ### Open Data Licensing & Attribution
 Statistical indicators and geospatial data aggregated by the platform remain subject to the respective open data licenses and attribution policies of their sponsoring institutions:
@@ -518,23 +520,24 @@ Statistical indicators and geospatial data aggregated by the platform remain sub
 The Africa Data Atlas is an independent academic, educational, and public-interest platform. Scholars, universities, and multilateral bodies referenced throughout the application (such as Prof. Nathan Nunn, Harvard University, the American Economic Review, Quarterly Journal of Economics, UNESCO, and the SlaveVoyages Consortium) are cited for empirical provenance and historiographical documentation under scholarly fair use. They are not commercial sponsors, institutional partners, or endorsers of this platform.
 
 ### Standardized Citation Formats:
-When citing the Africa Data Atlas in academic papers, working dossiers, or syllabi:
+When citing the Africa Data Atlas in academic papers, working dossiers, or syllabi (also see [`CITATION.cff`](./CITATION.cff)):
 
 **APA 7th Edition:**
-> Africalia Academic Atlas Consortium. (2026). *The Africa Data Atlas: Sovereign Socio-Economic, Genomic, and Geospatial Synthesis*. Open Science Repository Africa. https://github.com/zeluis/Africa-Digital-Atlas
+> Correia, Z. F. (2026). *Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows*. Africalia. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555)
 
 **Chicago 17th Edition (Author-Date):**
-> Africalia Academic Atlas Consortium. 2026. "The Africa Data Atlas: Sovereign Socio-Economic, Genomic, and Geospatial Synthesis." Open Science Repository Africa. https://github.com/zeluis/Africa-Digital-Atlas.
+> Correia, ZéLuis F. 2026. "Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows." Africalia. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555).
 
 **Academic BibTeX Citation:**
 ```bibtex
-@misc{africa_data_atlas_2026,
-  author       = {Africa Digital Atlas Development Consortium},
-  title        = {Africa Data Atlas: Multilateral Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform},
+@software{correia_africa_atlas_2026,
+  author       = {Correia, Z{\'e}Luis F.},
+  title        = {Africa Data Atlas \& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
   year         = {2026},
-  publisher    = {GitHub},
-  howpublished = {\url{https://zeluis.github.io/Africa-Digital-Atlas/}},
-  note         = {Covering 54 Sovereign African States across 16 Multilateral APIs, Anthropological Lineages, and Historical Maritime Voyages}
+  publisher    = {Africalia},
+  doi          = {10.6084/m9.figshare.34065711},
+  url          = {https://doi.org/10.6084/m9.figshare.34065711},
+  note         = {Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555}
 }
 ```
 
@@ -576,13 +579,14 @@ The Africa Data Atlas incorporates **pure mathematical, scalable vector SVG comp
 If you utilize the Africa Data Atlas or its harmonized datasets in academic publications, policy papers, or educational curricula, please cite:
 
 ```bibtex
-@misc{africa_data_atlas_2026,
-  author       = {Africa Digital Atlas Development Consortium},
-  title        = {Africa Data Atlas: Multilateral Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform},
+@software{correia_africa_atlas_2026,
+  author       = {Correia, Z{\'e}Luis F.},
+  title        = {Africa Data Atlas \& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
   year         = {2026},
-  publisher    = {GitHub},
-  howpublished = {\url{https://zeluis.github.io/Africa-Digital-Atlas/}},
-  note         = {Covering 54 Sovereign African States across 16 Multilateral APIs and Historical Maritime Voyages}
+  publisher    = {Africalia},
+  doi          = {10.6084/m9.figshare.34065711},
+  url          = {https://doi.org/10.6084/m9.figshare.34065711},
+  note         = {Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555}
 }
 ```
 

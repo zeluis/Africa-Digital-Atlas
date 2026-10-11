@@ -25,7 +25,8 @@ export const CitePublicationModal: React.FC<CitePublicationModalProps> = ({
     : [String(report.authors)];
   const authorsStr = authorsList.join(', ');
   const year = report.publicationDate?.split(' ').pop() || new Date().getFullYear().toString();
-  const doi = report.doi || '10.5281/zenodo.africalia.001';
+  const hasDoi = true;
+  const doi = (report.doi && !report.doi.includes('africalia')) ? report.doi : '10.6084/m9.figshare.34065711';
   const doiUrl = doi.startsWith('http') ? doi : `https://doi.org/${doi}`;
   const title = report.title;
   const subtitle = report.subtitle ? `: ${report.subtitle}` : '';
@@ -33,33 +34,33 @@ export const CitePublicationModal: React.FC<CitePublicationModalProps> = ({
   const generateCitationText = (targetStyle = style) => {
     switch (targetStyle) {
       case 'chicago':
-        return `${authorsStr}. ${year}. "${title}${subtitle}." Africalia: Pan-African Research Repository. ${doiUrl}.`;
+        return `${authorsStr}. ${year}. "${title}${subtitle}." Africalia: Africa Data Atlas & Cartographic Observatory. ${doiUrl} (ORCID: https://orcid.org/0000-0001-9421-6555).`;
       case 'apa':
-        return `${authorsStr} (${year}). ${title}${subtitle}. Africalia: Pan-African Research Repository. ${doiUrl}`;
+        return `${authorsStr} (${year}). ${title}${subtitle}. Africalia: Africa Data Atlas & Cartographic Observatory. ${doiUrl} (ORCID: https://orcid.org/0000-0001-9421-6555)`;
       case 'mla':
-        return `${authorsStr}. "${title}${subtitle}." Africalia: Pan-African Research Repository, ${year}, ${doiUrl}. Accessed ${new Date().toLocaleDateString('en-GB')}.`;
+        return `${authorsStr}. "${title}${subtitle}." Africalia: Africa Data Atlas & Cartographic Observatory, ${year}, ${doiUrl}. ORCID: 0000-0001-9421-6555.`;
       case 'harvard':
-        return `${authorsStr}, ${year}. ${title}${subtitle}. Africalia Research Repository. Available at: <${doiUrl}> [Accessed ${new Date().toLocaleDateString('en-GB')}].`;
+        return `${authorsStr}, ${year}. ${title}${subtitle}. Africalia: Africa Data Atlas & Cartographic Observatory. Available at: <${doiUrl}> (ORCID: 0000-0001-9421-6555).`;
       case 'bibtex': {
         const citeKey = report.id.replace(/[^a-zA-Z0-9]/g, '_') + '_' + year;
         return `@article{${citeKey},
   title={${title}},
   subtitle={${report.subtitle || ''}},
   author={${authorsList.join(' and ')}},
-  journal={Africalia: Pan-African Research Repository},
-  year={${year}},
-  doi={${doi}},
-  url={${doiUrl}}
+  journal={Africalia: Africa Data Atlas \\& Cartographic Observatory},
+  year={${year}},${hasDoi ? `\n  doi={${doi}},` : ''}
+  url={${doiUrl}},
+  note={Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555}
 }`;
       }
       case 'ris':
         return `TY  - JOUR
 TI  - ${title}${subtitle}
 ${authorsList.map(a => `AU  - ${a}`).join('\n')}
-JO  - Africalia: Pan-African Research Repository
-PY  - ${year}
-DO  - ${doi}
+JO  - Africalia: Africa Data Atlas & Cartographic Observatory
+PY  - ${year}${hasDoi ? `\nDO  - ${doi}` : ''}
 UR  - ${doiUrl}
+N1  - ORCID: https://orcid.org/0000-0001-9421-6555
 ER  - `;
       case 'jsonld': {
         const schema = {
@@ -70,14 +71,15 @@ ER  - `;
           "description": report.executiveSummary,
           "author": authorsList.map(a => ({
             "@type": "Person",
-            "name": a
+            "name": a,
+            "sameAs": "https://orcid.org/0000-0001-9421-6555"
           })),
           "datePublished": report.publicationDate,
           "identifier": doiUrl,
           "publisher": {
             "@type": "Organization",
-            "name": "Africalia: African Data Atlas & Research Repository",
-            "url": "https://africalia.atlas"
+            "name": "Africalia: Africa Data Atlas & Cartographic Observatory",
+            "url": "https://zeluis.github.io/Africa-Digital-Atlas/"
           }
         };
         return JSON.stringify(schema, null, 2);
@@ -217,8 +219,8 @@ ER  - `;
         {/* Actions Footer */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
           <div className="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
-            <span>DOI:</span>
-            <span className="font-mono font-medium text-zinc-700 dark:text-zinc-300">{doi}</span>
+            <span>{hasDoi ? 'DOI:' : 'ORCID:'}</span>
+            <span className="font-mono font-medium text-zinc-700 dark:text-zinc-300">{hasDoi ? doi : '0000-0001-9421-6555'}</span>
           </div>
 
           <div className="flex items-center gap-2">

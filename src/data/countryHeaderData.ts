@@ -1,5 +1,5 @@
 /**
- * countryHeaderData.ts - Authoritative Country Header Metadata for African Nations
+ * countryHeaderData.ts - Curated Country Header Metadata for African Nations
  * Detailed records for all 54 sovereign African states + Western Sahara:
  * - Capital city (with administrative/legislative distinctions if applicable)
  * - Type of government

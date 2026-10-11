@@ -1,3 +1,3 @@
 export * from './types';
-export * from './translations';
-export * from './LanguageContext';
+export { TRANSLATIONS } from './translations';
+export { LanguageProvider, useTranslation, LANGUAGE_OPTIONS } from './LanguageContext';

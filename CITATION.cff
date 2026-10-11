@@ -1,0 +1,49 @@
+cff-version: 1.2.0
+message: "If you use this software or its data, please cite it using the metadata below."
+type: software
+title: "Africa Data Atlas & Cartographic Observatory"
+abstract: >-
+  An independent research platform combining interactive cartography, a curated
+  2015-2024 indicator snapshot for 54 African states, summary statistics from the
+  SlaveVoyages trans-Atlantic database (1514-1866), and ethnic-group cartography.
+authors:
+  - family-names: Correia
+    given-names: "ZéLuis F."
+    orcid: "https://orcid.org/0000-0001-9421-6555"
+repository-code: "https://github.com/zeluis/Africa-Digital-Atlas"
+url: "https://zeluis.github.io/Africa-Digital-Atlas/"
+license: MIT
+doi: "10.6084/m9.figshare.34065711"
+version: "2026.1"
+date-released: "2026-04-04"
+keywords:
+  - Africa
+  - historical cartography
+  - data atlas
+  - transatlantic slave trade
+  - digital humanities
+references:
+  - type: article
+    authors:
+      - family-names: Bird
+        given-names: Nancy
+    title: "Dense sampling of ethnic groups within African countries reveals fine-scale genetic structure and extensive historical admixture"
+    journal: "Science Advances"
+    volume: 9
+    issue: 13
+    year: 2023
+    doi: "10.1126/sciadv.abq2616"
+    notes: "Co-authored; clustering framework only."
+  - type: article
+    authors:
+      - family-names: Tishkoff
+        given-names: Sarah A.
+    title: "The genetic structure and history of Africans and African Americans"
+    journal: "Science"
+    volume: 324
+    issue: 5930
+    start: 1035
+    end: 1044
+    year: 2009
+    doi: "10.1126/science.1172257"
+    notes: "Co-authored; clustering framework only."

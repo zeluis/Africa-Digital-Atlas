@@ -79,7 +79,7 @@ export const INSTITUTIONAL_EXTERNAL_REGISTRY: Record<string, ExternalLinkEntry> 
     url: 'https://databank.worldbank.org/source/world-development-indicators',
     archiveUrl: 'https://web.archive.org/web/https://databank.worldbank.org/source/world-development-indicators',
     category: 'multilateral',
-    description: 'Tier 1 authoritative multilateral dataset covering all 54 African sovereign economies.'
+    description: 'Tier 1 curated multilateral dataset covering all 54 African sovereign economies.'
   },
   'imf-weo': {
     id: 'imf-weo',
@@ -104,7 +104,7 @@ export const INSTITUTIONAL_EXTERNAL_REGISTRY: Record<string, ExternalLinkEntry> 
     organization: 'UNESCO',
     url: 'https://whc.unesco.org/en/list/',
     category: 'un-agency',
-    description: 'Authoritative registry of Cultural, Natural, and Mixed World Heritage Sites across Africa.'
+    description: 'Curated registry of Cultural, Natural, and Mixed World Heritage Sites across Africa.'
   },
   'who-gho': {
     id: 'who-gho',

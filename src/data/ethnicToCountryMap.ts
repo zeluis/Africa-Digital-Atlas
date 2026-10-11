@@ -1,5 +1,5 @@
 /**
- * Authoritative mapping of all ethnic slugs, branch designations,
+ * Curated mapping of all ethnic slugs, branch designations,
  * and label texts to their sovereign African nation.
  */
 export const AUTHENTIC_ETHNIC_TO_COUNTRY_MAP: Record<string, string> = {
@@ -407,7 +407,7 @@ export const AUTHENTIC_ETHNIC_TO_COUNTRY_MAP: Record<string, string> = {
   "susu": "Guinea"
 };
 
-export function getAuthoritativeCountryForEthnic(identifier: string): string | null {
+export function getCanonicalCountryForEthnic(identifier: string): string | null {
   if (!identifier) return null;
   const clean = identifier.trim().toLowerCase();
   if (AUTHENTIC_ETHNIC_TO_COUNTRY_MAP[clean]) {

@@ -564,6 +564,14 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
         </div>
       </div>
 
+      {/* Content Note before archive images of captivity */}
+      <div className="px-4 py-2.5 rounded-xl bg-stone-100/90 dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 flex items-center gap-2.5 text-xs text-stone-600 dark:text-stone-400">
+        <Info className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
+        <span>
+          <strong className="font-semibold text-stone-800 dark:text-stone-200">Content note:</strong> Historical engravings and archival plates in this registry depict captivity, the Middle Passage, and colonial violence. Records are presented with original provenance for historical research.
+        </span>
+      </div>
+
       {/* Grid or List View Container */}
       <div ref={galleryTopRef} className="scroll-mt-36">
         {filteredIllustrations.length === 0 ? (

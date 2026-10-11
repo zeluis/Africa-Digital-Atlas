@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
+import { lazyWithRetry } from '../utils/lazyWithRetry';
 import { atlas } from '../data/atlas-store';
 import { runAtlasIntegrityAudit, IntegrityAuditResult } from '../data/atlas-diagnostics';
 import { INITIAL_PIPELINE_STEPS, PipelineStep } from '../data/atlas-pipeline';
@@ -12,11 +13,12 @@ import {
 } from '../utils/exportUtils';
 import { ExternalApiConnector, LiveApiTestResult } from '../data/externalApisIngestion';
 import { OrganizationLogo } from '../components/OrganizationLogo';
-import { AkpCatalogueModal } from '../components/AkpCatalogueModal';
-import { MethodologyAuditModal } from '../components/MethodologyAuditModal';
-import { CartographicColophonModal } from '../components/CartographicColophonModal';
-import { AcademicExportModal } from '../components/AcademicExportModal';
 import { DATASET_INTEGRITY_HASHES } from '../data/methodologyDossierData';
+
+const AkpCatalogueModal = lazyWithRetry(() => import('../components/AkpCatalogueModal').then(m => ({ default: m.AkpCatalogueModal })), 'AkpCatalogueModal');
+const MethodologyAuditModal = lazyWithRetry(() => import('../components/MethodologyAuditModal').then(m => ({ default: m.MethodologyAuditModal })), 'MethodologyAuditModal');
+const CartographicColophonModal = lazyWithRetry(() => import('../components/CartographicColophonModal').then(m => ({ default: m.CartographicColophonModal })), 'CartographicColophonModal');
+const AcademicExportModal = lazyWithRetry(() => import('../components/AcademicExportModal').then(m => ({ default: m.AcademicExportModal })), 'AcademicExportModal');
 import { 
   Database, 
   ShieldCheck, 
@@ -122,7 +124,7 @@ export const ProvenanceQualityView: React.FC = () => {
   const geoPipelineStages = [
     { title: 'World Atlas / Natural Earth', desc: '1:10m high-resolution boundary vectors with topological consistency', tech: 'EPSG:4326 WGS84' },
     { title: 'ISO Normalization', desc: 'Alignment to ISO-3166-1 alpha-2, alpha-3 standard naming convention', tech: 'ISO 3166-1' },
-    { title: 'Numeric Country IDs', desc: 'Authoritative UN M49 numeric codes (e.g., 566 Nigeria, 710 South Africa)', tech: 'UN M49 Numeric' },
+    { title: 'Numeric Country IDs', desc: 'Curated UN M49 numeric codes (e.g., 566 Nigeria, 710 South Africa)', tech: 'UN M49 Numeric' },
     { title: 'Africa Extraction', desc: 'Isolated 54 AU sovereign states + 4 islands and geopolitical territories', tech: 'Continental Bounding' },
     { title: 'UN M49 Classification', desc: 'Categorization into 5 regions: Northern (015), Western (011), Central (017), Eastern (014), Southern (018)', tech: 'UN Geoscheme' },
     { title: 'Geometry Simplification', desc: 'Visvalingam-Whyatt area-preserving polygon reduction for ultra-fast vector render', tech: 'VW Algorithm' },
@@ -323,7 +325,7 @@ export const ProvenanceQualityView: React.FC = () => {
           style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs text-zinc-500 font-medium">Authoritative Sources</span>
+            <span className="text-xs text-zinc-500 font-medium">Curated Sources</span>
             <FileCode className="w-4 h-4 text-amber-500" />
           </div>
           <div className="text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-mono">
@@ -609,30 +611,40 @@ export const ProvenanceQualityView: React.FC = () => {
         </div>
       </div>
 
-      <AkpCatalogueModal isOpen={isAkpModalOpen} onClose={() => setIsAkpModalOpen(false)} />
+      <Suspense fallback={null}>
+        {isAkpModalOpen && (
+          <AkpCatalogueModal isOpen={isAkpModalOpen} onClose={() => setIsAkpModalOpen(false)} />
+        )}
 
-      {/* Multilateral Harmonization & Quality Audit Dossier Modal */}
-      <MethodologyAuditModal
-        isOpen={isMethodologyModalOpen}
-        onClose={() => setIsMethodologyModalOpen(false)}
-        onOpenCitationModal={() => setIsCitationModalOpen(true)}
-      />
+        {/* Multilateral Harmonization & Quality Audit Dossier Modal */}
+        {isMethodologyModalOpen && (
+          <MethodologyAuditModal
+            isOpen={isMethodologyModalOpen}
+            onClose={() => setIsMethodologyModalOpen(false)}
+            onOpenCitationModal={() => setIsCitationModalOpen(true)}
+          />
+        )}
 
-      {/* Cartographic Colophon & Imprint Modal */}
-      <CartographicColophonModal
-        isOpen={isColophonModalOpen}
-        onClose={() => setIsColophonModalOpen(false)}
-        onOpenCitationModal={() => setIsCitationModalOpen(true)}
-        onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
-      />
+        {/* Cartographic Colophon & Imprint Modal */}
+        {isColophonModalOpen && (
+          <CartographicColophonModal
+            isOpen={isColophonModalOpen}
+            onClose={() => setIsColophonModalOpen(false)}
+            onOpenCitationModal={() => setIsCitationModalOpen(true)}
+            onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
+          />
+        )}
 
-      {/* Academic Citation Modal */}
-      <AcademicExportModal
-        isOpen={isCitationModalOpen}
-        onClose={() => setIsCitationModalOpen(false)}
-        title="Africa Data Atlas & Cartographic Observatory"
-        sourceContext="Methodological Audit & Provenance Verification Subsystem"
-      />
+        {/* Academic Citation Modal */}
+        {isCitationModalOpen && (
+          <AcademicExportModal
+            isOpen={isCitationModalOpen}
+            onClose={() => setIsCitationModalOpen(false)}
+            title="Africa Data Atlas & Cartographic Observatory"
+            sourceContext="Methodological Audit & Provenance Verification Subsystem"
+          />
+        )}
+      </Suspense>
     </div>
   );
 };

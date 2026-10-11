@@ -122,7 +122,6 @@ publication:
   language: "en"
   citationStyle: "Chicago Author-Date"
   category: "Africalia Working Paper & Policy Brief Series"
-  issn: "ISSN 2983-4921 (Online Archive)"
   jelCodes:
     - "N17"
     - "O10"

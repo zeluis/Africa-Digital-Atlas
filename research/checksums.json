@@ -1,0 +1,69 @@
+{
+  "_readme": "Build-time SHA-256 checksums for the 8 foundational datasets listed in research/datasets.json. Re-verify with `npm run research:integrity` or update with `node scripts/research-integrity.mjs --update-checksums`.",
+  "generatedAt": "2026-10-04T23:31:51.432Z",
+  "algorithm": "SHA-256",
+  "datasets": {
+    "public/africa-final.svg": {
+      "datasetName": "Master Continental Vector Cartography SVG",
+      "recordCount": 1071,
+      "bytes": 2484848,
+      "sha256": "72ca7fdd5e125eeac27b9db7b4900bcd5a54ae47bac371a446620493fdd0c85f",
+      "license": "CC-BY-4.0 (LICENSE-ASSETS)",
+      "author": "ZéLuis F. Correia"
+    },
+    "src/data/africaFinalGeometry.ts": {
+      "datasetName": "Continental Geodesy & Centroid Geometry Bounds",
+      "recordCount": 54,
+      "bytes": 1959,
+      "sha256": "1cb8e2603cc86863124c2048fd476e716d8c12171c569ea13f471a37ad0df86a",
+      "license": "CC-BY-4.0 (LICENSE-ASSETS)",
+      "author": "ZéLuis F. Correia"
+    },
+    "src/data/authenticEthnicTreeSvg.ts": {
+      "datasetName": "Ethnic Tree of Life Vector Conduits & Nodes SVG",
+      "recordCount": 2000,
+      "bytes": 759745,
+      "sha256": "b126f58bec726356e633e0538d6e5d2796e359cb879b6214aaf6a2287f51fcbe",
+      "license": "CC-BY-4.0 (LICENSE-ASSETS)",
+      "author": "ZéLuis F. Correia"
+    },
+    "src/data/africaliaMasterTreeData.ts": {
+      "datasetName": "Linguistic & Ethnolinguistic Tree Hierarchy",
+      "recordCount": 310,
+      "bytes": 51739,
+      "sha256": "bb752f45f13d126e2bf37d7483abddf8d4f046f58d387d6e056ced316d56aacc",
+      "license": "CC-BY-4.0 (LICENSE-ASSETS)",
+      "author": "ZéLuis F. Correia"
+    },
+    "src/data/slaveVoyagesData.ts": {
+      "datasetName": "SlaveVoyages Summary & 18 Curated Dossiers",
+      "recordCount": 36108,
+      "bytes": 65317,
+      "sha256": "1796e3d21910ec261f09086cb7a72a361328c318ae303f34bbee763ac6ff7d02",
+      "license": "SlaveVoyages Attribution Terms",
+      "source": "SlaveVoyages trans-Atlantic database (2024.1 release)"
+    },
+    "src/data/records-with-descriptions.json": {
+      "datasetName": "Archival Visual Plates & Curatorial Descriptions",
+      "recordCount": 1220,
+      "bytes": 2930535,
+      "sha256": "985dce6cff9419389ac56ea1db3d249217d9aaca3e936e7d31cfae1cee0673a6",
+      "license": "Archival Source Terms"
+    },
+    "src/data/wikipediaTableEntries.json": {
+      "datasetName": "Wikipedia Contemporary Ethnic Groups Table (310 Entries)",
+      "recordCount": 310,
+      "bytes": 79806,
+      "sha256": "73010b2e9f6d612ab9bd87c96cc4b13afb3fc1b9ce4ee95d278d9f5c057f3f1e",
+      "license": "CC-BY-SA-4.0",
+      "source": "Wikipedia: List of contemporary ethnic groups of Africa (retrieved 2026-01)"
+    },
+    "src/data/atlas-observations-seed.ts": {
+      "datasetName": "Socioeconomic Indicators Snapshot Seed (2015–2024)",
+      "recordCount": 54,
+      "bytes": 46812,
+      "sha256": "ed18972d310f48b070395eafba990068ba22a93f2bc15f9540f18edac71637dc",
+      "license": "Multilateral Open Data Terms"
+    }
+  }
+}

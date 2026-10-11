@@ -224,7 +224,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({ onSelectPort }
             <line x1="30" y1="613" x2="930" y2="613" stroke="#78716c" strokeWidth="0.5" strokeDasharray="2 4" opacity="0.3" />
             <text x="40" y="609" fill="#78716c" fontSize="8" fontFamily="serif" opacity="0.5">Tropic of Capricorn (23.5° S)</text>
 
-            {/* Authoritative African Continent Vector Map (5,796 × 5,867 Native Precision) */}
+            {/* Curated African Continent Vector Map (5,796 × 5,867 Native Precision) */}
             <AfricaVectorContinent
               x="60"
               y="20"

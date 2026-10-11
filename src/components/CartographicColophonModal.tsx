@@ -24,8 +24,6 @@ import {
 import { AfricaUnLogo } from './AfricaUnLogo';
 import { CartographicCartouche } from './CartographicCartouche';
 import { prewarmArchivalImageCache, checkArchivalCacheReadiness, type CacheReadinessReport } from '../utils/imagePrecache';
-import { ALL_TRADE_CORRIDORS } from '../data/preColonialKingdomsDetailed';
-import { PRE_COLONIAL_ENTITIES } from '../data/archivalCartographyData';
 
 interface CartographicColophonModalProps {
   isOpen: boolean;
@@ -186,7 +184,7 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                         Official Continental Cartouche Plaque
                       </h4>
                       <p className="text-[11px] text-stone-600 dark:text-stone-400 font-sans">
-                        Authoritative geodesy, coordinate topology, dual graphic scale bar, and multilateral statistical attribution.
+                        Curated geodesy, coordinate topology, dual graphic scale bar, and multilateral statistical attribution.
                       </p>
                     </div>
                   </div>
@@ -234,14 +232,14 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                   </div>
                   <div className="p-3.5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
                     <span className="text-[10px] font-mono text-stone-500 block">Permanent DOI</span>
-                    <span className="font-bold text-stone-900 dark:text-stone-100 text-xs font-mono">10.5281/zenodo...</span>
-                    <span className="text-[10px] text-indigo-600 dark:text-indigo-400 block mt-0.5">CERN / OpenAIRE</span>
+                    <span className="font-bold text-stone-900 dark:text-stone-100 text-[11px] font-mono">10.6084/m9.figshare.34065711</span>
+                    <span className="text-[10px] text-indigo-600 dark:text-indigo-400 block mt-0.5">Figshare / OpenAIRE</span>
                   </div>
                 </div>
               </div>
             ) : activeTab === 'narrative' ? (
               /* ========================================================================= */
-              /* 2. SCHOLARLY NARRATIVE COLOPHON & AUTHORITATIVE STATEMENT                 */
+              /* 2. SCHOLARLY NARRATIVE COLOPHON & CURATED STATEMENT                 */
               /* ========================================================================= */
               <div className="space-y-6">
                 {/* Masthead Banner */}
@@ -285,7 +283,7 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                       <span className="text-stone-500 dark:text-stone-400 block font-mono text-[11px]">Institutional Observatory:</span>
                       <span className="font-bold text-stone-900 dark:text-stone-100 text-sm">Africalia Open Science Repository</span>
                       <p className="text-stone-600 dark:text-stone-400 text-[11px] mt-0.5 leading-relaxed">
-                        Lisbon / Praia / Pan-African Geospatial Network. Registered under CERN / OpenAIRE / Zenodo Open Science Archival standard.
+                        Lisbon / Praia / Pan-African Geospatial Network. Registered under Figshare / OpenAIRE Open Science Archival standard (DOI: 10.6084/m9.figshare.34065711).
                       </p>
                     </div>
                   </div>
@@ -329,12 +327,12 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                     <div className="flex items-center gap-2">
                       <ShieldCheck className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                       <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200">
-                        3. Canonical Legal Notice &amp; Dual-Licensing Standard
+                        3. Dual-Licensing Standard (LICENSE-ASSETS &amp; LICENSE-CODE)
                       </h3>
                     </div>
                     <button
                       onClick={() => handleCopy(
-                        `Cartography & Phylogenetic Vector Topology © 2024–2026 Africalia. Authored and engineered by Zéluis F. Correia. All rights reserved.\nProprietary SVG coordinate topologies, derived Admin-1 spatial boundaries, and genealogical taxonomy vectors are protected under international copyright treaties (Berne Convention) and may not be reproduced, republished, or extracted for commercial exploitation without prior written authorization from Africalia.\nResearch & Classroom Fair Use: Free to display, cite, and inspect for academic scholarship with required attribution: Cartographic visualization courtesy of Africalia / Zéluis F. Correia (Africa Data Atlas).`,
+                        `ZéLuis F. Correia is the author of all SVG maps and the Ethnic Tree Visualization and SVG. Unless stated otherwise, all graphics and visualizations have the same author.\nCreative Assets License (LICENSE-ASSETS): Creative Commons Attribution 4.0 International (CC BY 4.0).\nSource Code License (LICENSE-CODE): MIT License.\nDOI: https://doi.org/10.6084/m9.figshare.34065711`,
                         'colophon-legal'
                       )}
                       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-900 dark:text-amber-200 text-[11px] font-mono font-semibold transition-colors cursor-pointer"
@@ -345,28 +343,28 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                   </div>
 
                   <blockquote className="text-xs font-serif leading-relaxed text-stone-800 dark:text-stone-200 pl-3 border-l-2 border-amber-600 dark:border-amber-400">
-                    &ldquo;Cartography &amp; Phylogenetic Vector Topology © 2024–2026 Africalia. Authored and engineered by Zéluis F. Correia. All rights reserved. Proprietary SVG coordinate topologies, derived Admin-1 spatial boundaries, and genealogical taxonomy vectors are protected under international copyright treaties (Berne Convention) and may not be reproduced, republished, or extracted for commercial exploitation without prior written authorization from Africalia.&rdquo;
+                    &ldquo;ZéLuis F. Correia is the author of all SVG maps and the Ethnic Tree Visualization and SVG. Unless stated otherwise, all graphics and visualizations have the same author. Creative assets are licensed under Creative Commons Attribution 4.0 International (CC BY 4.0, see LICENSE-ASSETS), and source code is licensed under the MIT License (see LICENSE-CODE).&rdquo;
                   </blockquote>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs">
                     <div className="p-3 rounded-xl bg-white/80 dark:bg-stone-900/80 border border-stone-200/80 dark:border-stone-800">
                       <span className="font-bold text-emerald-800 dark:text-emerald-300 block mb-1">
-                        ✓ Research &amp; Classroom Fair Use
+                        ✓ Creative Assets: CC BY 4.0 (LICENSE-ASSETS)
                       </span>
                       <p className="text-stone-600 dark:text-stone-400 text-[11px] leading-relaxed">
-                        Free to display, screenshot, cite, and project in academic papers, university lectures, planning ministry briefs, and journalistic reporting with attribution: <br />
+                        All SVG maps, the Ethnic Tree Visualization and SVG, and all graphics and visualizations (unless stated otherwise) are authored by <strong>ZéLuis F. Correia</strong> and licensed under <strong>CC BY 4.0</strong>. Please attribute: <br />
                         <em className="text-stone-800 dark:text-stone-200 font-medium">
-                          &quot;Cartographic visualization courtesy of Africalia / Zéluis F. Correia (Africa Data Atlas).&quot;
+                          &quot;Cartographic visualization by ZéLuis F. Correia (Africalia: Africa Data Atlas, CC BY 4.0, https://doi.org/10.6084/m9.figshare.34065711).&quot;
                         </em>
                       </p>
                     </div>
 
                     <div className="p-3 rounded-xl bg-white/80 dark:bg-stone-900/80 border border-stone-200/80 dark:border-stone-800">
                       <span className="font-bold text-amber-800 dark:text-amber-300 block mb-1">
-                        ⚖ Commercial &amp; Derivative Rights
+                        ⚖ Source Code: MIT License (LICENSE-CODE)
                       </span>
                       <p className="text-stone-600 dark:text-stone-400 text-[11px] leading-relaxed">
-                        Strictly reserved by Africalia / Zéluis F. Correia. Automated bulk scraping or extraction of raw vector geometry matrices for commercial repackaging requires prior written authorization.
+                        The application software, React/TypeScript components, and cartographic rendering engine are released under the <strong>MIT License</strong> (<code className="font-mono">LICENSE-CODE</code>). Underlying statistical datasets remain subject to the licenses of their originating institutions.
                       </p>
                     </div>
                   </div>
@@ -489,7 +487,7 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                         Pre-Colonial Corridors &amp; Dynasties
                       </h4>
                       <p className="text-[11px] font-mono text-stone-500 dark:text-stone-400 pt-0.5">
-                        {ALL_TRADE_CORRIDORS.length} Conduits • {PRE_COLONIAL_ENTITIES.length} Kingdoms
+                        18 Conduits • 10 Kingdoms
                       </p>
                     </div>
                     <p className="text-[11px] text-stone-600 dark:text-stone-400 leading-snug">

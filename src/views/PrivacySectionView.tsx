@@ -142,17 +142,19 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
     setTimeout(() => setCopiedCitation(null), 3000);
   };
 
-  const bibtexText = `@misc{africalia2026,
-  author = {Africalia Academic Atlas Consortium},
-  title = {The Africa Data Atlas: Sovereign Socio-Economic and Genomic Synthesis},
+  const bibtexText = `@software{correia_africa_atlas_2026,
+  author = {Correia, Z{\\'e}Luis F.},
+  title = {Africa Data Atlas \\& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
   year = {2026},
-  publisher = {Open Science Repository Africa},
-  url = {https://github.com/zeluis/Africa-Digital-Atlas}
+  publisher = {Africalia},
+  doi = {10.6084/m9.figshare.34065711},
+  url = {https://doi.org/10.6084/m9.figshare.34065711},
+  note = {Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555}
 }`;
 
-  const apaText = `Africalia Academic Atlas Consortium. (2026). The Africa Data Atlas: Sovereign Socio-Economic and Genomic Synthesis. Open Science Repository Africa. https://github.com/zeluis/Africa-Digital-Atlas`;
+  const apaText = `Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Africalia. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555)`;
 
-  const chicagoText = `Africalia Academic Atlas Consortium. 2026. "The Africa Data Atlas: Sovereign Socio-Economic and Genomic Synthesis." Open Science Repository Africa. https://github.com/zeluis/Africa-Digital-Atlas.`;
+  const chicagoText = `Correia, ZéLuis F. 2026. "Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows." Africalia. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555).`;
 
   // Material Design 3 inspired tab definitions with warm tonal active tokens
   const TAB_ITEMS: { id: PillarTab; label: string; subtitle: string; icon: React.FC<{ className?: string }> }[] = [
@@ -171,7 +173,7 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
     {
       id: 'licensing',
       label: '3. Open Access & Provenance',
-      subtitle: 'CC BY-NC-SA 4.0 & 16 APIs',
+      subtitle: 'CC BY 4.0 • MIT • 16 APIs',
       icon: BookOpen
     },
     {
@@ -550,33 +552,33 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
                       Dual Licensing Model & Academic Citation Protocols
                     </h2>
                     <p className="text-xs font-mono text-zinc-500">
-                      Open Data • CC BY-NC-SA 4.0 • MIT Open Source Software
+                      CC BY 4.0 Creative Assets (LICENSE-ASSETS) • MIT Source Code (LICENSE-CODE)
                     </p>
                   </div>
                 </div>
 
                 <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                  The Africa Digital Atlas operates under a dual-licensing framework to support non-commercial educational use while safeguarding open scientific contribution:
+                  The Africa Data Atlas operates under an explicit two-file dual-licensing framework at the repository root (<code className="font-mono text-xs">LICENSE-ASSETS</code> and <code className="font-mono text-xs">LICENSE-CODE</code>):
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 space-y-2">
                     <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-mono text-xs font-bold uppercase">
                       <Globe2 className="w-4 h-4" />
-                      <span>Empirical Data & Synthesis</span>
+                      <span>Creative Assets &amp; Visualizations (LICENSE-ASSETS)</span>
                     </div>
                     <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                      Licensed under <strong>Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</strong>. Free for classroom, non-commercial research, policy analysis, and student use with attribution.
+                      Licensed under <strong>Creative Commons Attribution 4.0 International (CC BY 4.0)</strong>. <strong>ZéLuis F. Correia</strong> is the author of all SVG maps and the Ethnic Tree Visualization and SVG. Unless stated otherwise, all graphics and visualizations have the same author.
                     </p>
                   </div>
 
                   <div className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 space-y-2">
                     <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-mono text-xs font-bold uppercase">
                       <FileCode className="w-4 h-4" />
-                      <span>Codebase & Software Architecture</span>
+                      <span>Source Code &amp; Software (LICENSE-CODE)</span>
                     </div>
                     <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                      The application software, cartography rendering engine, and VitePress documentation framework are distributed under the <strong>MIT License</strong>.
+                      The application source code, cartography rendering engine, and documentation framework are distributed under the <strong>MIT License</strong> (<code className="font-mono">LICENSE-CODE</code>). Underlying datasets remain subject to the licenses of their originating institutions.
                     </p>
                   </div>
                 </div>

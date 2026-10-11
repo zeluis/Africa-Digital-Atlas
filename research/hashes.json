@@ -1,0 +1,34 @@
+{
+  "public/africa-final.svg": {
+    "sha256": "72ca7fdd5e125eeac27b9db7b4900bcd5a54ae47bac371a446620493fdd0c85f",
+    "bytes": 2484848
+  },
+  "src/data/africaFinalGeometry.ts": {
+    "sha256": "1cb8e2603cc86863124c2048fd476e716d8c12171c569ea13f471a37ad0df86a",
+    "bytes": 1959
+  },
+  "src/data/authenticEthnicTreeSvg.ts": {
+    "sha256": "b126f58bec726356e633e0538d6e5d2796e359cb879b6214aaf6a2287f51fcbe",
+    "bytes": 759745
+  },
+  "src/data/africaliaMasterTreeData.ts": {
+    "sha256": "bb752f45f13d126e2bf37d7483abddf8d4f046f58d387d6e056ced316d56aacc",
+    "bytes": 51739
+  },
+  "src/data/slaveVoyagesData.ts": {
+    "sha256": "1796e3d21910ec261f09086cb7a72a361328c318ae303f34bbee763ac6ff7d02",
+    "bytes": 65317
+  },
+  "src/data/records-with-descriptions.json": {
+    "sha256": "985dce6cff9419389ac56ea1db3d249217d9aaca3e936e7d31cfae1cee0673a6",
+    "bytes": 2930535
+  },
+  "src/data/wikipediaTableEntries.json": {
+    "sha256": "73010b2e9f6d612ab9bd87c96cc4b13afb3fc1b9ce4ee95d278d9f5c057f3f1e",
+    "bytes": 79806
+  },
+  "src/data/atlas-observations-seed.ts": {
+    "sha256": "ed18972d310f48b070395eafba990068ba22a93f2bc15f9540f18edac71637dc",
+    "bytes": 46812
+  }
+}

@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, Suspense } from 'react';
+import { lazyWithRetry } from '../../utils/lazyWithRetry';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   ZoomIn, 
@@ -34,8 +35,8 @@ import {
   Quote,
   Award
 } from 'lucide-react';
-import { AcademicExportModal } from '../AcademicExportModal';
-import { CartographicColophonModal } from '../CartographicColophonModal';
+const AcademicExportModal = lazyWithRetry(() => import('../AcademicExportModal').then(m => ({ default: m.AcademicExportModal })), 'AcademicExportModal');
+const CartographicColophonModal = lazyWithRetry(() => import('../CartographicColophonModal').then(m => ({ default: m.CartographicColophonModal })), 'CartographicColophonModal');
 import { MolecularMigrationDrawer, MolecularMigrationCanvasLayer, MolecularDivergenceNode } from './MolecularMigrationOverlay';
 import { 
   VBW, 
@@ -46,7 +47,6 @@ import {
   AfricaliaCountryConduit
 } from '../../data/africaliaMasterTreeData';
 import { AFRICALIA_REGIONS } from '../../data/africaliaSourceData';
-import { AUTHENTIC_ETHNIC_TREE_RAW_SVG } from '../../data/authenticEthnicTreeSvg';
 import { WikipediaEthnicDossier } from './WikipediaEthnicDossier';
 import { RichEditorialCountryDevelopmentPanel } from './RichEditorialCountryDevelopmentPanel';
 import { getMajorLinguisticFamilies } from '../../services/wikipediaService';
@@ -54,7 +54,7 @@ import { findWikipediaEntry, WIKIPEDIA_TABLE_ENTRIES } from '../../data/wikipedi
 import { ALL_ADMIN1_SUBDIVISIONS } from '../../data/africaliaGeographyData';
 import { RadialTreeSkeleton } from './RadialTreeSkeleton';
 import { useCanvasViewport } from '../../hooks/useCanvasViewport';
-import { getAuthoritativeCountryForEthnic } from '../../data/ethnicToCountryMap';
+import { getCanonicalCountryForEthnic } from '../../data/ethnicToCountryMap';
 import type { WorkerSearchRequest, WorkerSearchResponse } from '../../workers/ethnicAtlasWorker';
 
 interface AfricaliaExplorerProps {
@@ -350,8 +350,8 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     }, 450);
 
     const base = (import.meta.env?.BASE_URL || './').replace(/\/$/, '');
-    const assetUrl = `${base}/africalia-ethnic-tree.svg?t=${Date.now()}`;
-    fetch(assetUrl, { cache: 'no-store' })
+    const assetUrl = `${base}/africalia-ethnic-tree.svg`;
+    fetch(assetUrl)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.text();
@@ -362,12 +362,11 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         }
       })
       .catch(err => {
-        console.info('Using bundled authentic master SVG:', err);
+        console.info('Fallback SVG fetch warning:', err);
       })
       .finally(() => {
         if (isMounted) {
-          // Elegant continuous progression to allow fluid animation to seamlessly crossfade
-          setTimeout(() => setIsSvgLoading(false), 900);
+          setIsSvgLoading(false);
         }
       });
     return () => {
@@ -378,22 +377,22 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
   // Active raw SVG markup displayed in DOM with guaranteed ID and provenance metadata
   const rawSvgToDisplay = useMemo(() => {
-    let svg = customSvgMarkup || AUTHENTIC_ETHNIC_TREE_RAW_SVG;
+    let svg = customSvgMarkup || '';
     if (svg) {
       if (!svg.includes('id="africalia-master-sovereign-svg"')) {
         svg = svg.replace('<svg ', '<svg id="africalia-master-sovereign-svg" ');
       }
       if (!svg.includes('data-author=')) {
-        svg = svg.replace('<svg ', '<svg data-author="Zéluis F. Correia" data-curator="Africalia" data-copyright="© 2024-2026 Africalia. All Rights Reserved." data-doi="10.5281/zenodo.10842918" ');
+        svg = svg.replace('<svg ', '<svg data-author="ZéLuis F. Correia" data-curator="Africalia" data-license="CC BY 4.0 (LICENSE-ASSETS)" data-copyright="© 2024-2026 ZéLuis F. Correia (Africalia). Licensed under CC BY 4.0." data-doi="10.6084/m9.figshare.34065711" ');
       }
       if (!svg.includes('AFRICALIA CARTOGRAPHIC OBSERVATORY')) {
         const comment = `<!--
   ============================================================================
   AFRICALIA CARTOGRAPHIC OBSERVATORY — VECTOR TOPOLOGY ARCHITECTURE
-  Author & Cartographer: Zéluis F. Correia
-  Copyright (c) 2024-2026 Africalia. All Rights Reserved.
+  Author & Cartographer: ZéLuis F. Correia
+  License: CC BY 4.0 (LICENSE-ASSETS) • Code: MIT (LICENSE-CODE)
   Coordinate Space: 2000 x 2000 Sovereign Ethnic Radial Topology
-  DOI: 10.5281/zenodo.10842918 • Open Science Archive
+  DOI: 10.6084/m9.figshare.34065711 • Open Science Archive
   ============================================================================
 -->\n`;
         svg = comment + svg;
@@ -480,7 +479,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
     if (!conduit) return;
 
-    // Direct authoritative lookup of the country polygon group in #geo--Africa--un-geoscheme
+    // Direct curated lookup of the country polygon group in #geo--Africa--un-geoscheme
     const targetGeoId = getGeoCountryId(countryName) || getGeoCountryId(conduit.name);
     
     let targetEl: SVGGraphicsElement | null = null;
@@ -723,7 +722,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     if (!containerRef.current || !countryName) return;
     
     // Resolve canonical country name if an ethnic or regional name was passed
-    const authorCountry = getAuthoritativeCountryForEthnic(countryName);
+    const authorCountry = getCanonicalCountryForEthnic(countryName);
     const canonicalCountry = authorCountry || countryName;
 
     const cleanSlug = canonicalCountry.toLowerCase()
@@ -1182,16 +1181,16 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         .replace(/[-_]\d+$/, '')
         .trim();
 
-      // Infallible Authoritative Country Resolution
-      const authorCountry = getAuthoritativeCountryForEthnic(ethnicSlug) ||
-                            getAuthoritativeCountryForEthnic(cleanName) ||
-                            getAuthoritativeCountryForEthnic(baseEthnicName);
+      // Infallible Curated Country Resolution
+      const authorCountry = getCanonicalCountryForEthnic(ethnicSlug) ||
+                            getCanonicalCountryForEthnic(cleanName) ||
+                            getCanonicalCountryForEthnic(baseEthnicName);
       
       if (authorCountry && !countrySlug) {
         countrySlug = authorCountry.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       }
 
-      // If country is not in the node/label ID itself, query the SVG DOM for its authoritative branch with --country--
+      // If country is not in the node/label ID itself, query the SVG DOM for its curated branch with --country--
       if (!countrySlug && containerRef.current) {
         const branchEl = containerRef.current.querySelector<SVGGraphicsElement>(`[id*="branch--ethnic--${ethnicSlug}--country--"]`) ||
                          containerRef.current.querySelector<SVGGraphicsElement>(`[id*="--ethnic--${ethnicSlug}--country--"]`);
@@ -1237,7 +1236,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         );
       }
 
-      // Resolve country from authoritative mapping, conduit, or Wikipedia homeland
+      // Resolve country from curated mapping, conduit, or Wikipedia homeland
       let resolvedCountry = authorCountry || conduit?.name || (countrySlug === 'cabo-verde' ? 'Cabo Verde' : undefined);
       if (!resolvedCountry && wiki?.homeland) {
         const homelandCountry = wiki.homeland.split('(')[0].split(',')[0].trim();
@@ -1320,7 +1319,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     if (element) {
       const textContent = element.textContent?.trim();
       if (textContent && textContent.length > 1 && textContent.length < 50 && !textContent.startsWith('100%') && !textContent.startsWith('TAST')) {
-        const authorCountry = getAuthoritativeCountryForEthnic(textContent);
+        const authorCountry = getCanonicalCountryForEthnic(textContent);
 
         // Check if this text matches a country conduit
         const countryMatch = AFRICALIA_COUNTRY_CONDUITS.find(c => 
@@ -1998,7 +1997,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             type="button"
             onClick={() => setIsExportModalOpen(true)}
             className="flex px-2 py-1 rounded-xl text-[10px] font-bold items-center gap-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition-colors cursor-pointer shadow-xs active:scale-95"
-            title="Cite this Research Platform (DOI: 10.5281/zenodo.10842918)"
+            title="Cite this Research Platform (DOI: 10.6084/m9.figshare.34065711)"
           >
             <Quote className="w-3 h-3 text-[#E67E48]" />
             <span>Cite (DOI)</span>
@@ -3305,28 +3304,36 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       </AnimatePresence>
 
       {/* Academic Citation & Vector Export Modal */}
-      <AcademicExportModal
-        isOpen={isExportModalOpen}
-        onClose={() => setIsExportModalOpen(false)}
-        title="Africalia Sovereign Ethnic Tree of Life"
-        sourceContext="Africalia Sovereign Lineage Vector Atlas & Harvard / Wikipedia Anthropological Corpus"
-        citationMetadata={{
-          authors: ['Zéluis F. Correia', 'Africalia Cartographic Observatory'],
-          year: 2026,
-          datasetName: 'Pan-African Ethno-Linguistic Continuum and Conduit Lineages',
-          url: typeof window !== 'undefined' ? window.location.href : 'https://africalia.org/#ethnic-tree',
-          doi: '10.5281/zenodo.10842918',
-          version: '2026.2'
-        }}
-        svgContainerId="africalia-master-sovereign-svg"
-      />
+      {isExportModalOpen && (
+        <Suspense fallback={null}>
+          <AcademicExportModal
+            isOpen={isExportModalOpen}
+            onClose={() => setIsExportModalOpen(false)}
+            title="Africalia Sovereign Ethnic Tree of Life"
+            sourceContext="Africalia Sovereign Lineage Vector Atlas & Harvard / Wikipedia Anthropological Corpus"
+            citationMetadata={{
+              authors: ['Zéluis F. Correia', 'Africalia Cartographic Observatory'],
+              year: 2026,
+              datasetName: 'Pan-African Ethno-Linguistic Continuum and Conduit Lineages',
+              url: typeof window !== 'undefined' ? window.location.href : 'https://africalia.org/#ethnic-tree',
+              doi: '10.6084/m9.figshare.34065711',
+              version: '2026.2'
+            }}
+            svgContainerId="africalia-master-sovereign-svg"
+          />
+        </Suspense>
+      )}
 
       {/* Cartographic Colophon & Imprint Modal */}
-      <CartographicColophonModal
-        isOpen={isColophonOpen}
-        onClose={() => setIsColophonOpen(false)}
-        onOpenCitationModal={() => setIsExportModalOpen(true)}
-      />
+      {isColophonOpen && (
+        <Suspense fallback={null}>
+          <CartographicColophonModal
+            isOpen={isColophonOpen}
+            onClose={() => setIsColophonOpen(false)}
+            onOpenCitationModal={() => setIsExportModalOpen(true)}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

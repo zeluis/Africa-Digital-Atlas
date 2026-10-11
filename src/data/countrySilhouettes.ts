@@ -1,6 +1,6 @@
 /**
  * countrySilhouettes.ts - High-Precision Geographic Silhouette Vectors for African Nations
- * Unified vector contours dynamically mapped to the authoritative African continental vector model.
+ * Unified vector contours dynamically mapped to the curated African continental vector model.
  * Covering all 54 sovereign African states + Western Sahara.
  */
 

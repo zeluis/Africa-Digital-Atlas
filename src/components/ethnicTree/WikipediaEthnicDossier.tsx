@@ -275,6 +275,10 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
             <img 
               src={dossier.thumbnail} 
               alt={dossier.name}
+              width={360}
+              height={240}
+              loading="lazy"
+              decoding="async"
               referrerPolicy="no-referrer"
               onError={() => setImageFailed(true)}
               className="w-full h-auto block object-contain"

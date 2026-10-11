@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, Suspense } from 'react';
+import { lazyWithRetry } from '../utils/lazyWithRetry';
 import { 
   CANONICAL_VOYAGES, 
   SLAVEVOYAGES_METADATA, 
@@ -30,8 +31,8 @@ import { VoyageDossierModal } from '../components/slaveVoyages/VoyageDossierModa
 import { QueryBuilderPanel } from '../components/slaveVoyages/QueryBuilderPanel';
 import { MolecularLegaciesView } from '../components/slaveVoyages/MolecularLegaciesView';
 import { AfricanDevelopmentMasterReportView } from './AfricanDevelopmentMasterReportView';
-import { AcademicExportModal } from '../components/AcademicExportModal';
 import { AfricanPortsMap } from '../components/slaveVoyages/AfricanPortsMap';
+const AcademicExportModal = lazyWithRetry(() => import('../components/AcademicExportModal').then(m => ({ default: m.AcademicExportModal })), 'AcademicExportModal');
 import { SlaveVoyagesEssaysViewer } from '../components/slaveVoyages/SlaveVoyagesEssaysViewer';
 import { StorytellingGallery } from '../components/slaveVoyages/StorytellingGallery';
 import { SlaveTradeIconography } from '../components/slaveVoyages/SlaveTradeIconography';
@@ -185,7 +186,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
               Atlantic Slave Trade Data Atlas
             </h1>
             <p className="type-body-archival font-serif-book text-[#57534E] dark:text-[#D6D3D1] leading-relaxed max-w-3xl">
-              An authoritative research repository and geospatial analytics engine documenting four centuries of forced trans-Atlantic and intra-American maritime migrations (1514–1866), grounded in surviving archival records and rigorous statistical imputation.
+              An curated research repository and geospatial analytics engine documenting four centuries of forced trans-Atlantic and intra-American maritime migrations (1514–1866), grounded in surviving archival records and rigorous statistical imputation.
             </p>
           </div>
 
@@ -1138,21 +1139,25 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
       />
 
       {/* Academic Citation & Vector Export Modal */}
-      <AcademicExportModal
-        isOpen={isExportOpen}
-        onClose={() => setIsExportOpen(false)}
-        title="Atlantic Slave Trade Data Atlas & Maritime Flow Corridors"
-        sourceContext="SlaveVoyages Consortium (api.slavevoyages.org), TAST Database v2026.1"
-        citationMetadata={{
-          authors: ['SlaveVoyages Consortium', 'Africalia Historical Analytics Group', 'Eltis et al.'],
-          year: 2026,
-          datasetName: 'Trans-Atlantic and Intra-American Slave Trade Databases',
-          url: window?.location?.href || 'https://africalia.org/#slave-trade',
-          doi: '10.5281/zenodo.slavevoyages.2026',
-          version: SLAVEVOYAGES_METADATA.version
-        }}
-        svgContainerId="atlantic-flow-map-svg"
-      />
+      {isExportOpen && (
+        <Suspense fallback={null}>
+          <AcademicExportModal
+            isOpen={isExportOpen}
+            onClose={() => setIsExportOpen(false)}
+            title="Atlantic Slave Trade Data Atlas & Maritime Flow Corridors"
+            sourceContext="SlaveVoyages Consortium (api.slavevoyages.org), TAST Database v2026.1"
+            citationMetadata={{
+              authors: ['SlaveVoyages Consortium', 'Africalia Historical Analytics Group', 'Eltis et al.'],
+              year: 2026,
+              datasetName: 'Trans-Atlantic and Intra-American Slave Trade Databases',
+              url: window?.location?.href || 'https://africalia.org/#slave-trade',
+              doi: '10.6084/m9.figshare.34065711',
+              version: SLAVEVOYAGES_METADATA.version
+            }}
+            svgContainerId="atlantic-flow-map-svg"
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

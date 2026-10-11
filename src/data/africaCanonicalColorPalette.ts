@@ -2,7 +2,7 @@
  * africaCanonicalColorPalette.ts
  * 
  * Canonical Single Source of Truth (SSOT) for Africa Countries, Territories,
- * and Admin-1 Subdivisions color assignments based on the authoritative M49 palette.
+ * and Admin-1 Subdivisions color assignments based on the curated M49 palette.
  */
 
 import canonicalColorsData from './africaCanonicalColors.json';
@@ -191,7 +191,7 @@ for (const [iso3, hex] of Object.entries(ISO3_ALIASES)) {
 }
 
 /**
- * Get the authoritative canonical color for any Country (by ISO3, ISO2, or full Name)
+ * Get the curated canonical color for any Country (by ISO3, ISO2, or full Name)
  */
 export function getCanonicalCountryColor(countryIdOrName: string): string {
   if (!countryIdOrName) return '#10b981';
@@ -215,7 +215,7 @@ export function getCanonicalCountryColor(countryIdOrName: string): string {
 }
 
 /**
- * Get the authoritative canonical color for an Admin-1 SVG path ID
+ * Get the curated canonical color for an Admin-1 SVG path ID
  */
 export function getCanonicalAdmin1PathColor(pathId: string, fallbackCountryId?: string): string {
   if (pathId && PATH_CANONICAL_HEX[pathId]) {

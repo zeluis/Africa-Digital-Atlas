@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback, Suspense } from 'react';
+import { lazyWithRetry } from '../utils/lazyWithRetry';
 import { motion, AnimatePresence } from 'motion/react';
 import { atlas } from '../data/atlas-store';
 import { AfricanRegion, AtlasEntity } from '../data/types';
@@ -68,8 +69,6 @@ import {
   Landmark,
   Columns
 } from 'lucide-react';
-import { CartographicColophonModal } from './CartographicColophonModal';
-import { AcademicExportModal } from './AcademicExportModal';
 import { getAdmin1ForCountry, searchAdmin1Subdivisions, ALL_ADMIN1_SUBDIVISIONS } from '../data/africaliaGeographyData';
 import { AfricaliaAdmin1 } from '../data/types';
 import { getCanonicalCountryColor } from '../data/africaCanonicalColorPalette';
@@ -78,8 +77,11 @@ import { UnifiedInspectorDrawer } from './UnifiedInspectorDrawer';
 import { AfricaUnLogo } from './AfricaUnLogo';
 import { useAfricaFinalMap } from '../utils/svgMapLoader';
 import { ThematicLayerDeck } from './ThematicLayerDeck';
-import { AkpCatalogueModal } from './AkpCatalogueModal';
 import { BivariateMapTray, BIVARIATE_PRESETS, BIVARIATE_MATRIX_COLORS, BivariateThresholds } from './BivariateMapTray';
+
+const CartographicColophonModal = lazyWithRetry(() => import('./CartographicColophonModal').then(m => ({ default: m.CartographicColophonModal })), 'CartographicColophonModal');
+const AcademicExportModal = lazyWithRetry(() => import('./AcademicExportModal').then(m => ({ default: m.AcademicExportModal })), 'AcademicExportModal');
+const AkpCatalogueModal = lazyWithRetry(() => import('./AkpCatalogueModal').then(m => ({ default: m.AkpCatalogueModal })), 'AkpCatalogueModal');
 import { ChoroplethTimelineScrubber } from './ChoroplethTimelineScrubber';
 import {
   ThematicOverlaysLayer,
@@ -667,7 +669,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       let val: number | null = null;
 
       if (choroplethYear === 2024) {
-        // Authoritative AKP or atlas latest value
+        // Curated AKP or atlas latest value
         val = getAkpCountryValue(id, activeMetric);
         if (val === null) {
           if (activeMetric === 'NY.GDP.PCAP.CD') {
@@ -948,7 +950,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       return baseColor;
     }
 
-    // 3. Authentic Final Map (Canonical authoritative vector colors)
+    // 3. Authentic Final Map (Canonical curated vector colors)
     if (mapMode === 'antique_parchment') {
       const canonicalColor = getCanonicalCountryColor(country.id);
       if (isHovered || isSelected) return '#b45309';
@@ -1265,10 +1267,11 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       clonedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
       clonedSvg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
       clonedSvg.setAttribute('version', '1.1');
-      clonedSvg.setAttribute('data-author', 'Zéluis F. Correia');
+      clonedSvg.setAttribute('data-author', 'ZéLuis F. Correia');
       clonedSvg.setAttribute('data-curator', 'Africalia');
-      clonedSvg.setAttribute('data-copyright', '© 2024-2026 Africalia. All Rights Reserved.');
-      clonedSvg.setAttribute('data-doi', '10.5281/zenodo.10842918');
+      clonedSvg.setAttribute('data-license', 'CC BY 4.0 (LICENSE-ASSETS)');
+      clonedSvg.setAttribute('data-copyright', '© 2024-2026 ZéLuis F. Correia (Africalia). Licensed under CC BY 4.0.');
+      clonedSvg.setAttribute('data-doi', '10.6084/m9.figshare.34065711');
 
       // Add background rect if solid
       if (bgChoice !== 'transparent') {
@@ -1314,11 +1317,11 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       const provenanceHeader = `<!--
   ============================================================================
   AFRICALIA CARTOGRAPHIC OBSERVATORY — VECTOR TOPOLOGY ARCHITECTURE
-  Author & Cartographer: Zéluis F. Correia
-  Copyright (c) 2024-2026 Africalia. All Rights Reserved.
+  Author & Cartographer: ZéLuis F. Correia
+  License: CC BY 4.0 (LICENSE-ASSETS) • Code: MIT (LICENSE-CODE)
   Coordinate Space: 5796 x 5867 High-Precision Vector Grid
   Derived Admin-1 Subdivisions & Hydrographic Coastline Calibrations
-  DOI: 10.5281/zenodo.10842918 • Open Science Archive
+  DOI: 10.6084/m9.figshare.34065711 • Open Science Archive
   ============================================================================
 -->\n`;
       if (!svgString.startsWith('<!--')) {
@@ -1390,7 +1393,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                     ? 'text-white font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                 }`}
-                title="Authoritative original colors extracted from vector atlas"
+                title="Curated original colors extracted from vector atlas"
               >
                 {mapMode === 'authentic_palette' && (
                   <motion.div
@@ -1782,7 +1785,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               type="button"
               onClick={() => setIsCitationModalOpen(true)}
               className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/25 text-[11px] font-semibold transition-all cursor-pointer shrink-0"
-              title="Cite this Research Platform (DOI: 10.5281/zenodo.10842918)"
+              title="Cite this Research Platform (DOI: 10.6084/m9.figshare.34065711)"
             >
               <Quote className="w-3 h-3 text-amber-600 dark:text-amber-400" />
               <span>Cite (DOI)</span>
@@ -2339,10 +2342,11 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           height="100%"
           preserveAspectRatio="xMidYMid meet"
           xmlns="http://www.w3.org/2000/svg"
-          data-author="Zéluis F. Correia"
+          data-author="ZéLuis F. Correia"
           data-curator="Africalia"
-          data-copyright="© 2024-2026 Africalia. All Rights Reserved."
-          data-doi="10.5281/zenodo.10842918"
+          data-license="CC BY 4.0 (LICENSE-ASSETS)"
+          data-copyright="© 2024-2026 ZéLuis F. Correia (Africalia). Licensed under CC BY 4.0."
+          data-doi="10.6084/m9.figshare.34065711"
           role="region"
           aria-label="Interactive Map of the African Continent"
           className="w-full h-full cursor-grab active:cursor-grabbing select-none block touch-none"
@@ -2538,7 +2542,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
                 <div className="pt-2.5 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400">
                   <div className="flex flex-col min-w-0 pr-2">
-                    <span className="text-[9px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">Authoritative Source</span>
+                    <span className="text-[9px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">Curated Source</span>
                     <span className="text-[10px] font-medium text-zinc-700 dark:text-zinc-300 truncate">{info.source}</span>
                   </div>
                   <button
@@ -2755,35 +2759,43 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         )}
       </div>
 
-      {/* European Commission AKP 241-Dataset Catalogue Browser Modal */}
-      <AkpCatalogueModal
-        isOpen={isCatalogueModalOpen}
-        onClose={() => setIsCatalogueModalOpen(false)}
-        onSelectMetric={(metricId) => {
-          if (onActiveMetricChange) {
-            onActiveMetricChange(metricId);
-          } else {
-            setInternalMetric(metricId);
-          }
-          handleSelectMode('choropleth');
-        }}
-        currentChoroplethMetricId={activeMetric}
-      />
+      <Suspense fallback={null}>
+        {/* European Commission AKP 241-Dataset Catalogue Browser Modal */}
+        {isCatalogueModalOpen && (
+          <AkpCatalogueModal
+            isOpen={isCatalogueModalOpen}
+            onClose={() => setIsCatalogueModalOpen(false)}
+            onSelectMetric={(metricId) => {
+              if (onActiveMetricChange) {
+                onActiveMetricChange(metricId);
+              } else {
+                setInternalMetric(metricId);
+              }
+              handleSelectMode('choropleth');
+            }}
+            currentChoroplethMetricId={activeMetric}
+          />
+        )}
 
-      {/* Cartographic Colophon, Geodesy & Official Imprint Modal */}
-      <CartographicColophonModal
-        isOpen={isColophonOpen}
-        onClose={() => setIsColophonOpen(false)}
-        onOpenCitationModal={() => setIsCitationModalOpen(true)}
-      />
+        {/* Cartographic Colophon, Geodesy & Official Imprint Modal */}
+        {isColophonOpen && (
+          <CartographicColophonModal
+            isOpen={isColophonOpen}
+            onClose={() => setIsColophonOpen(false)}
+            onOpenCitationModal={() => setIsCitationModalOpen(true)}
+          />
+        )}
 
-      {/* Academic Citation & Platform Reference Modal */}
-      <AcademicExportModal
-        isOpen={isCitationModalOpen}
-        onClose={() => setIsCitationModalOpen(false)}
-        title="Africa Data Atlas & Cartographic Observatory"
-        sourceContext="High-Precision Continental Vector Cartography (5,796 × 5,867 Grid)"
-      />
+        {/* Academic Citation & Platform Reference Modal */}
+        {isCitationModalOpen && (
+          <AcademicExportModal
+            isOpen={isCitationModalOpen}
+            onClose={() => setIsCitationModalOpen(false)}
+            title="Africa Data Atlas & Cartographic Observatory"
+            sourceContext="High-Precision Continental Vector Cartography (5,796 × 5,867 Grid)"
+          />
+        )}
+      </Suspense>
     </div>
   );
 };

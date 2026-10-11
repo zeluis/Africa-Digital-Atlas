@@ -40,7 +40,6 @@ export interface ResearchReport {
   isWorkingPaper?: boolean;
   seriesNumber?: string;
   jelCodes?: string[];
-  issn?: string;
 }
 
 export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
@@ -288,7 +287,7 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     sections: [
       {
         id: 'sec-bank-balance-sheets',
-        title: '1. Forensic Tracing into Central Banking Infrastructure',
+        title: '1. Archival Tracing into Central Banking Infrastructure',
         content: 'The Bank of England, Barclays, Lloyds, and Royal Bank of Scotland trace foundational capital reserves to plantation mortgages and slave voyage insurance consortia. This institutional entanglement converts private tort liability into direct sovereign state responsibility.'
       },
       {
@@ -362,7 +361,7 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     readingTimeMinutes: 38,
     doi: '10.1257/aer.2025.1402',
     classification: 'Cliometrics & Historical Political Economy',
-    executiveSummary: 'An authoritative accredited econometric treatise combining slave voyages shipping manifests, local ethnographic surveys, and modern satellite night-light GDP data. We confirm that African ethnic groups that suffered the highest per-capita slave trade extraction exhibit significantly lower levels of interpersonal trust, weaker local governance, and depressed income per capita today.',
+    executiveSummary: 'A curated econometric treatise combining slave voyages shipping manifests, local ethnographic surveys, and modern satellite night-light GDP data. We confirm that African ethnic groups that suffered the highest per-capita slave trade extraction exhibit significantly lower levels of interpersonal trust, weaker local governance, and depressed income per capita today.',
     sections: [
       {
         id: 'sec-econometric-proof',

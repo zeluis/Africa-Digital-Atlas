@@ -67,7 +67,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
               Universal Style Guide & Living Systems Matrix
             </h1>
             <p className="text-stone-600 dark:text-stone-300 text-sm sm:text-base leading-relaxed">
-              An authoritative architectural manual unifying cartographic coordinate standards, the Japandi-Sahel visual design system, the 16 multilateral API ingestion pipeline, and scholarly attribution frameworks curated by <strong className="text-stone-900 dark:text-stone-100 font-semibold">Zéluis F. Correia</strong>.
+              An curated architectural manual unifying cartographic coordinate standards, the Japandi-Sahel visual design system, the 16 multilateral API ingestion pipeline, and scholarly attribution frameworks curated by <strong className="text-stone-900 dark:text-stone-100 font-semibold">Zéluis F. Correia</strong>.
             </p>
           </div>
 
@@ -146,30 +146,30 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
               <div className="p-6 rounded-3xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-600 dark:text-rose-400">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                       <Lock className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">Vector Topology Copyright</h3>
-                      <p className="text-xs text-stone-500 dark:text-stone-400">Berne Convention & International Treaties</p>
+                      <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">Dual Licensing: CC BY 4.0 &amp; MIT</h3>
+                      <p className="text-xs text-stone-500 dark:text-stone-400">LICENSE-ASSETS (CC BY 4.0) • LICENSE-CODE (MIT)</p>
                     </div>
                   </div>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/20">
-                    PROTECTED
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
+                    CC BY 4.0 / MIT
                   </span>
                 </div>
                 <div className="p-4 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 text-xs font-mono text-stone-700 dark:text-stone-300 space-y-2">
-                  <p className="font-bold text-rose-800 dark:text-rose-300">
-                    Cartography & Phylogenetic Vector Topology © 2024–2026 Africalia. Authored and engineered by Zéluis F. Correia.
+                  <p className="font-bold text-emerald-800 dark:text-emerald-300">
+                    ZéLuis F. Correia is the author of all SVG maps and the Ethnic Tree Visualization and SVG. Unless stated otherwise, all graphics and visualizations have the same author.
                   </p>
                   <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-relaxed font-sans">
-                    All original SVG geometries, Admin-1 boundary topologies (1,017 subdivisions), and the Ethnic Tree of Life are protected. Non-commercial scholarly citation and classroom use is permitted with explicit attribution.
+                    Creative assets (SVG maps, Admin-1 boundary topologies, Ethnic Tree Visualization &amp; SVG, and visualizations) are licensed under <strong>CC BY 4.0</strong> (<code>LICENSE-ASSETS</code>). Source code is licensed under the <strong>MIT License</strong> (<code>LICENSE-CODE</code>).
                   </p>
                 </div>
                 <div className="flex items-center justify-between pt-1 text-xs">
-                  <span className="text-stone-500">Required Citation Form:</span>
+                  <span className="text-stone-500">Required Attribution Form:</span>
                   <button
-                    onClick={() => handleCopy('Cartographic visualization courtesy of Africalia / Zéluis F. Correia (Africa Data Atlas, 2026).', 'legal-cite')}
+                    onClick={() => handleCopy('Cartographic visualization by ZéLuis F. Correia (Africalia: Africa Data Atlas, CC BY 4.0, https://doi.org/10.6084/m9.figshare.34065711).', 'legal-cite')}
                     className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 text-stone-700 dark:text-stone-300 text-[11px] font-medium transition-colors cursor-pointer"
                   >
                     {copiedKey === 'legal-cite' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
@@ -187,7 +187,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
             <div className="p-6 rounded-3xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 space-y-4">
               <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
                 <Palette className="w-4 h-4 text-amber-500" />
-                <span>UN M49 Macro-Geoscheme Authoritative Regional Palette</span>
+                <span>UN M49 Macro-Geoscheme Curated Regional Palette</span>
               </h3>
               <p className="text-xs text-stone-500 dark:text-stone-400">
                 To preserve geopolitical neutrality and eliminate projection bias, the five UN M49 macro-regions are strictly mapped to distinct, calm regional hues:
@@ -440,7 +440,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono font-bold text-stone-700 dark:text-stone-300">APA 7th Edition Citation</span>
                   <button
-                    onClick={() => handleCopy('Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform. Africalia Open Science Repository. https://zeluis.github.io/Africa-Digital-Atlas/', 'apa-cite')}
+                    onClick={() => handleCopy('Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Africalia. https://doi.org/10.6084/m9.figshare.34065711', 'apa-cite')}
                     className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 text-[10px] font-medium transition-colors cursor-pointer"
                   >
                     {copiedKey === 'apa-cite' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
@@ -448,7 +448,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                   </button>
                 </div>
                 <p className="text-xs font-serif text-stone-600 dark:text-stone-400 italic">
-                  Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform. Africalia Open Science Repository.
+                  Correia, Z. F. (2026). Africa Data Atlas &amp; Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Africalia. https://doi.org/10.6084/m9.figshare.34065711
                 </p>
               </div>
 
@@ -456,12 +456,14 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono font-bold text-stone-700 dark:text-stone-300">BibTeX Citation Entry</span>
                   <button
-                    onClick={() => handleCopy(`@misc{correia_africa_atlas_2026,
-  author = {Correia, Z{\\'e}luis F.},
-  title = {Africa Data Atlas \\& Cartographic Observatory},
+                    onClick={() => handleCopy(`@software{correia_africa_atlas_2026,
+  author = {Correia, Z{\\'e}Luis F.},
+  title = {Africa Data Atlas \\& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
   year = {2026},
-  publisher = {Africalia Open Science},
-  howpublished = {\\url{https://zeluis.github.io/Africa-Digital-Atlas/}}
+  publisher = {Africalia},
+  doi = {10.6084/m9.figshare.34065711},
+  url = {https://doi.org/10.6084/m9.figshare.34065711},
+  note = {ORCID: 0000-0001-9421-6555}
 }`, 'bibtex-cite')}
                     className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 text-[10px] font-medium transition-colors cursor-pointer"
                   >
@@ -470,12 +472,14 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                   </button>
                 </div>
                 <pre className="text-[11px] font-mono text-stone-600 dark:text-stone-400 overflow-x-auto p-2 bg-stone-100 dark:bg-stone-900 rounded-xl">
-{`@misc{correia_africa_atlas_2026,
-  author = {Correia, Z{\\'e}luis F.},
-  title = {Africa Data Atlas & Cartographic Observatory},
+{`@software{correia_africa_atlas_2026,
+  author = {Correia, Z{\\'e}Luis F.},
+  title = {Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
   year = {2026},
-  publisher = {Africalia Open Science},
-  howpublished = {\\url{https://zeluis.github.io/Africa-Digital-Atlas/}}
+  publisher = {Africalia},
+  doi = {10.6084/m9.figshare.34065711},
+  url = {https://doi.org/10.6084/m9.figshare.34065711},
+  note = {ORCID: 0000-0001-9421-6555}
 }`}
                 </pre>
               </div>

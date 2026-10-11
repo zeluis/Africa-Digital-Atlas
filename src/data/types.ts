@@ -1,6 +1,6 @@
 /**
  * Africa Data Atlas v1.2 - Core TypeScript Definitions
- * Authoritative schema for entities, indicators, observations, facts,
+ * Curated schema for entities, indicators, observations, facts,
  * classifications, heritage sites, provenance, media, and pipeline records.
  */
 
@@ -228,7 +228,7 @@ export interface DataSource {
   name: string;
   organization: string;
   url: string;
-  reliabilityTier: 'Tier 1 (Authoritative/Multilateral)' | 'Tier 2 (Specialized Index)' | 'Tier 3 (Derived/Aggregated)';
+  reliabilityTier: 'Tier 1 (Institutional/Multilateral)' | 'Tier 2 (Specialized Index)' | 'Tier 3 (Derived/Aggregated)';
   coverageSummary: string;
   lastSyncDate: string;
   datasets: string[];

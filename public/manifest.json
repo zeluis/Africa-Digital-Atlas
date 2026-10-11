@@ -2,7 +2,7 @@
   "id": "/",
   "name": "Africalia: Africa Data Atlas",
   "short_name": "Africalia",
-  "description": "Authoritative Pan-African data platform featuring 54 sovereign nations, Atlantic Slave Trade research database, ethnic tree cartography, 8 thematic pillars, and investigative monographs.",
+  "description": "An interactive atlas of geography, curated socioeconomic indicators (2015–2024), and historical trade flows covering all 54 sovereign African nations across 8 thematic pillars, with SlaveVoyages trans-Atlantic summary data (1514–1866) and ethnic tree cartography.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

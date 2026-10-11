@@ -111,6 +111,8 @@ export const AntiquePlateCanvas: React.FC<AntiquePlateCanvasProps> = ({
         }}
         src={currentSrc}
         alt={plate.shortTitle || plate.title}
+        width={isThumbnail ? 320 : 1600}
+        height={isThumbnail ? 240 : 1200}
         loading={isThumbnail ? "lazy" : "eager"}
         fetchPriority={isThumbnail ? "auto" : "high"}
         decoding="async"

@@ -1,6 +1,6 @@
 /**
  * slaveVoyagesEssays.ts
- * Authoritative Historiographical Essays & Introductory Scholarship
+ * Curated Historiographical Essays & Introductory Scholarship
  * Grounded in the SlaveVoyages Consortium corpus (Eltis, Richardson, Klein, Lovejoy, Ferreira, Marques)
  */
 
@@ -39,17 +39,17 @@ export const SLAVEVOYAGES_ESSAYS: SlaveVoyagesEssay[] = [
     authorTitle: 'Professors of Economic History, Emory University & Hull University',
     citation: 'Eltis, D., & Richardson, D. (2020). Atlas of the Transatlantic Slave Trade. Yale University Press.',
     readingTimeMin: 12,
-    periodCovered: '1501–1867',
+    periodCovered: '1514–1866 (estimates 1501–1866)',
     primaryRegions: ['All African Coastal Regions', 'Americas', 'Europe'],
-    pullQuote: 'Between 1501 and 1867, more than 12.5 million enslaved Africans were embarked on 36,000 maritime voyages. For every European who crossed the Atlantic before 1820, approximately four Africans arrived.',
+    pullQuote: 'Between 1501 and 1866, an estimated 12.5 million enslaved Africans were embarked across the Atlantic, with 36,108 documented voyages recorded between 1514 and 1866. For every European who crossed the Atlantic before 1820, approximately four Africans arrived.',
     leadParagraph: 'For more than three and a half centuries, the Atlantic slave trade formed the central demographic axis binding Europe, Africa, and the Americas into a violent, interconnected imperial economy. Between the departure of the first recorded slaving vessel from Seville in the early sixteenth century and the final landing of captives in western Cuba in the late 1860s, European maritime carriers forced an estimated 12,521,300 African men, women, and children onto oceangoing vessels. Approximately 10,702,600 survived the horrifying ordeal of the Middle Passage to disembark in the plantations, mines, and urban centers of the Western Hemisphere.',
     sections: [
       {
         heading: 'The Three Epistemic Eras of the Trade',
         paragraphs: [
           'The historical trajectory of the trade unfolded across three distinct structural epochs. The first, extending from 1501 to roughly 1650, was dominated by the Iberian crowns of Portugal and Habsburg Spain. Captives were dispatched initially via Seville and Lisbon, and soon directly from the Upper Guinea coast and the Kingdom of Kongo to the silver mines of Potosí and Zacatecas and the nascent sugar fazendas of Bahia and Pernambuco.',
-          'The second epoch, spanning from 1650 to the British abolition of 1807, witnessed the explosive growth of the plantation complex in the Caribbean and North America. British, French, and Dutch merchant syndicates constructed fortified coastal trading castles, mobilizing unprecedented capital, marine insurance, and industrialized naval architecture. Great Britain alone carried over 3.25 million captives during this peak century, anchoring its imperial wealth in the brutal sugar monocultures of Jamaica and Barbados.',
-          'The third epoch, running from 1808 to 1867, constituted the era of illegal and covert traffic. Despite bilateral anti-slaving treaties and British Royal Navy patrols, soaring global industrial demand for Brazilian coffee and Cuban sugar drove captive imports to unprecedented heights. Over three million Africans were transported during this illicit phase, crammed into faster, purpose-built clippers and steamships operating beyond the pale of international law.'
+          'The second epoch, spanning from 1650 to the British abolition of 1807, witnessed the explosive growth of the plantation complex in the Caribbean and North America. British, French, and Dutch merchant syndicates constructed fortified coastal trading castles, mobilizing large-scale capital, marine insurance, and industrialized naval architecture. Great Britain alone carried over 3.25 million captives during this peak century, anchoring its imperial wealth in the brutal sugar monocultures of Jamaica and Barbados.',
+          'The third epoch, running from 1808 to 1866, constituted the era of illegal and covert traffic. Despite bilateral anti-slaving treaties and British Royal Navy patrols, soaring global industrial demand for Brazilian coffee and Cuban sugar drove captive imports to nineteenth-century peaks. Over three million Africans were transported during this illicit phase, crammed into faster, purpose-built clippers and steamships operating beyond the pale of international law.'
         ],
         figure: {
           caption: 'Consensus calculation of total forced embarkations across the entire Atlantic basin',
@@ -153,10 +153,10 @@ export const SLAVEVOYAGES_ESSAYS: SlaveVoyagesEssay[] = [
     authorTitle: 'Professors of Latin American History & Atlantic Studies, Columbia University & Victoria University',
     citation: 'Klein, H. S. (2010). The Middle Passage: Comparative Studies in the Atlantic Slave Trade. Princeton University Press.',
     readingTimeMin: 11,
-    periodCovered: '1501–1867',
+    periodCovered: '1514–1866',
     primaryRegions: ['Atlantic Ocean Basin', 'Mid-Atlantic Shipping Corridors'],
     pullQuote: 'The slave ship was simultaneously an oceanic merchantman, a floating prison, and an incubator of virulent epidemic disease. More than 1.8 million Africans died before ever sighting American shores.',
-    leadParagraph: 'The maritime crossing between Africa and the Americas—christened the "Middle Passage" as the second leg of the classic triangular voyage—remains one of the most thoroughly analyzed chapters of oceanic and medical history. Between the sixteenth and nineteenth centuries, European naval architects transformed commercial merchant hulls into specialized instruments of mass human confinement. The conditions below deck generated unprecedented epidemiological environments that claimed the lives of nearly one out of every eight embarked captives.',
+    leadParagraph: 'The maritime crossing between Africa and the Americas—christened the "Middle Passage" as the second leg of the classic triangular voyage—remains one of the most thoroughly analyzed chapters of oceanic and medical history. Between the sixteenth and nineteenth centuries, European naval architects transformed commercial merchant hulls into specialized instruments of mass human confinement. The conditions below deck generated extreme epidemiological environments that claimed the lives of nearly one out of every eight embarked captives.',
     sections: [
       {
         heading: 'Architecture of Confinement',
@@ -249,7 +249,7 @@ export const SLAVEVOYAGES_ESSAYS: SlaveVoyagesEssay[] = [
     authorTitle: 'Professors of Colonial American History, UC Santa Cruz & UC Irvine',
     citation: 'O\'Malley, G. E. (2014). Final Passages: The Intercolonial Slave Trade of British America, 1619–1807. UNC Press.',
     readingTimeMin: 12,
-    periodCovered: '1550–1867',
+    periodCovered: '1550–1866',
     primaryRegions: ['Caribbean', 'North America', 'Rio de la Plata', 'Spanish Main'],
     pullQuote: 'At least 1.5 million enslaved Africans survived the trans-Atlantic crossing only to be forced onto a second, intercolonial sea voyage. Caribbean islands were not just terminal destinations; they were redistribution hubs.',
     leadParagraph: 'A central contribution of contemporary digital humanities research has been the unearthing of the massive Intra-American slave trade. Historians long treated the port of initial disembarkation in the Americas as the final destination of enslaved Africans. In reality, islands across the West Indies and maritime hubs in Brazil functioned as commercial clearinghouses, where surviving captives were seasoned, purchased by coastal merchants, and forced onto secondary maritime voyages destined for secondary colonies across the continent.',
@@ -292,15 +292,15 @@ export const SLAVEVOYAGES_ESSAYS: SlaveVoyagesEssay[] = [
     id: 'essay-abolition-illicit',
     slug: 'abolition-naval-interdiction-illicit-traffic',
     title: 'Abolition, Naval Interdiction, and the Illicit 19th-Century Traffic',
-    subtitle: 'The paradox of abolition: Surging illicit volumes to Brazil and Cuba (1808–1867)',
+    subtitle: 'The paradox of abolition: Surging illicit volumes to Brazil and Cuba (1808–1866)',
     author: 'Leonardo Marques & David Eltis',
     authorTitle: 'Professors of Atlantic Economic History, Universidade Federal Fluminense & Emory University',
     citation: 'Marques, L. (2016). The United States and the Transatlantic Slave Trade to the Americas, 1776–1867. Cambridge University Press.',
     readingTimeMin: 13,
-    periodCovered: '1807–1867',
+    periodCovered: '1807–1866',
     primaryRegions: ['West Africa', 'Brazil', 'Cuba', 'Bight of Benin', 'West Central Africa'],
     pullQuote: 'More than 3.3 million Africans were embarked after Great Britain and the United States made the trade illegal in 1807. The nineteenth century was the era of the industrial clandestine slaver.',
-    leadParagraph: 'When Great Britain and the United States passed legislation in 1807 prohibiting their subjects from participating in the trans-Atlantic slave trade from January 1, 1808, contemporaries believed the commerce had received its death blow. In reality, the nineteenth century witnessed the most concentrated, intensive phase of human trafficking in Atlantic history. Between 1808 and 1867, more than 3.3 million enslaved Africans were embarked on clandestine voyages, driven by the global industrial appetite for coffee, sugar, and cotton.',
+    leadParagraph: 'When Great Britain and the United States passed legislation in 1807 prohibiting their subjects from participating in the trans-Atlantic slave trade from January 1, 1808, contemporaries believed the commerce had received its death blow. In reality, the nineteenth century witnessed the most concentrated, intensive phase of human trafficking in Atlantic history. Between 1808 and 1866, more than 3.3 million enslaved Africans were embarked on clandestine voyages, driven by the global industrial appetite for coffee, sugar, and cotton.',
     sections: [
       {
         heading: 'The Rise of the Illicit Slaver',

@@ -35,7 +35,7 @@ const STORY_SLIDES: StorySlide[] = [
     title: 'The Technical Anatomy of Confinement: The Brookes Ledger',
     era: '1783 · Peak Era',
     archiveSource: 'Society for Effecting the Abolition of the Slave Trade, London (1789)',
-    image: '/assets/images/story_brookes_1790205613734.jpg',
+    image: '/assets/images/story_brookes_1790205613734.webp',
     quote: 'An influential 1789 engraving depicting the mathematical allocation of human bodies inside the cargo hold of the Liverpool slaver Brookes.',
     summary: ' Thomas Clarkson and London abolitionists turned cold ship capacities into an unforgettable, geometric visual indictment of forced human confinement.',
     narrative: [
@@ -51,12 +51,12 @@ const STORY_SLIDES: StorySlide[] = [
     title: 'The Watercolor Ledger: La Marie-Séraphique off Cabinda',
     era: '1769 · Eighteenth Century',
     archiveSource: 'Musée d\'Histoire de Nantes, Fonds Marie-Séraphique, Inv. 984.7.1',
-    image: '/assets/images/story_seraphique_1790205628063.jpg',
+    image: '/assets/images/story_seraphique_1790205628063.webp',
     quote: 'A rare set of on-site watercolors executed by officers in 1769, capturing the commercial transactions at Cabinda.',
     summary: 'Logbooks and paintings by the ship’s crew offer a rare, chillingly detailed look at coastal negotiations and cargo listings in West Central Africa.',
     narrative: [
       'La Marie-Séraphique was a 150-ton French slaving brigantin out of Nantes. During its 1769 expedition to West Central Africa, the ship’s officers kept an unusually detailed, illustrated logbook and journal.',
-      'The resulting watercolors provide historians with an unprecedented visual record of coastal commerce. They depict the ship anchored off Cabinda, the temporary wooden barracks (barracoons) constructed on shore, and the elaborate tents where French officers bartered with local rulers for human captives.',
+      'The resulting watercolors provide historians with a rare firsthand visual record of coastal commerce. They depict the ship anchored off Cabinda, the temporary wooden barracks (barracoons) constructed on shore, and the elaborate tents where French officers bartered with local rulers for human captives.',
       'A final painting in the series shows the deck packed with captives on the day of sale in Saint-Domingue, capturing the commercial mechanics of the triangular trade with disturbing, dispassionate clarity.'
     ],
     linkedVoyageId: 'sv-003',
@@ -67,7 +67,7 @@ const STORY_SLIDES: StorySlide[] = [
     title: 'The Drowned and the Saved: The Wreck of the São José',
     era: '1794 · Late Colonial Period',
     archiveSource: 'Slave Wrecks Project & Western Cape Archives, Cape Town',
-    image: '/assets/images/story_sao_jose_1790205638645.jpg',
+    image: '/assets/images/story_sao_jose_1790205638645.webp',
     quote: 'A tragic shipwreck off Cape Town in 1794, rediscovered in 2015, bridging maritime archaeology and historical archives.',
     summary: 'Scientific excavation of the Portuguese vessel São José brought to light the maritime risks and human cost of the Southeast African Indian Ocean trade.',
     narrative: [
@@ -83,7 +83,7 @@ const STORY_SLIDES: StorySlide[] = [
     title: 'The Supreme Court Mutiny: Sengbe Pieh and the Amistad',
     era: '1839 · Suppression Era',
     archiveSource: 'U.S. Supreme Court Case Files, United States v. The Amistad, 40 U.S. 518',
-    image: '/assets/images/story_amistad_1790205648070.jpg',
+    image: '/assets/images/story_amistad_1790205648070.webp',
     quote: 'Sengbe Pieh led fifty-three Mende captives in a successful high-seas revolt, triggering a historic legal battle.',
     summary: 'A dramatic shipboard insurrection on a Cuban coastal schooner culminated in a landmark US Supreme Court victory for self-emancipation.',
     narrative: [
@@ -99,7 +99,7 @@ const STORY_SLIDES: StorySlide[] = [
     title: 'The Last Vessel: The Burning of the Clotilda',
     era: '1860 · Illicit Trade Era',
     archiveSource: 'Mobile Historical Society, Journal of Captain William Foster (1860)',
-    image: '/assets/images/story_clotilda_1790205658067.jpg',
+    image: '/assets/images/story_clotilda_1790205658067.webp',
     quote: 'The last documented slaving vessel to enter the United States, burned in 1860 to conceal evidence of illegal traffic.',
     summary: 'A clandestine voyage to Ouidah and the burning of the ship in Alabama led to the creation of Africatown and a remarkable legacy of survival.',
     narrative: [
@@ -195,6 +195,10 @@ export const StorytellingGallery: React.FC<StorytellingGalleryProps> = ({
             <img 
               src={resolveAssetPath(activeStory.image)} 
               alt={activeStory.title}
+              width={960}
+              height={640}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover object-center transition-all duration-700 filter saturate-90 brightness-95"
               referrerPolicy="no-referrer"
               onError={(e) => {

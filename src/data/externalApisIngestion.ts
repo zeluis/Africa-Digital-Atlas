@@ -11,7 +11,7 @@ export interface ExternalApiConnector {
   format: 'REST / JSON' | 'OData / REST' | 'SDMX 2.1 / JSON' | 'OpenData CSV/JSON' | 'Bulk API';
   authType: 'Public Open Access' | 'API Key Optional' | 'Bearer Token';
   rateLimit: string;
-  reliabilityTier: 'Tier 1 (Authoritative/Multilateral)' | 'Tier 2 (Specialized Index)' | 'Tier 3 (Derived/Aggregated)';
+  reliabilityTier: 'Tier 1 (Institutional/Multilateral)' | 'Tier 2 (Specialized Index)' | 'Tier 3 (Derived/Aggregated)';
   coverageSummary: string;
   sampleEndpoint: string;
   indicatorsProvided: string[];
@@ -45,7 +45,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     format: 'REST / JSON',
     authType: 'Public Open Access',
     rateLimit: '300 req/min',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Six aggregate governance dimensions: Voice and Accountability, Political Stability, Government Effectiveness, Regulatory Quality, Rule of Law, and Control of Corruption.',
     sampleEndpoint: 'https://api.worldbank.org/v2/country/GHA/indicator/VA.PER.RNK?format=json',
     indicatorsProvided: ['WGI.VA.PER', 'WGI.PS.PER', 'WGI.GE.PER', 'WGI.RQ.PER', 'WGI.RL.PER', 'WGI.CC.PER']
@@ -77,7 +77,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     format: 'REST / JSON',
     authType: 'Public Open Access',
     rateLimit: '300 req/min',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Disaggregated indicators on female economic opportunities, maternal healthcare, parliamentary representation, and Women, Business & the Law (WBL) indices.',
     sampleEndpoint: 'https://api.worldbank.org/v2/country/KEN/indicator/SG.LAW.INDX?format=json',
     indicatorsProvided: ['WB.GEN.WBL', 'WB.GEN.FLFP', 'WB.GEN.PARL', 'WB.GEN.SECR']
@@ -93,7 +93,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     format: 'REST / JSON',
     authType: 'Public Open Access',
     rateLimit: '120 req/min',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Results-based development impact metrics: climate resilience provisioning, private capital mobilization, crisis preparedness, and employment generation.',
     sampleEndpoint: 'https://scorecard.worldbank.org/api/v1/country/{iso3}/summary',
     indicatorsProvided: ['WBG.CS.CLIM.RESIL', 'WBG.CS.PRIV.CAP', 'WBG.CS.CRISIS.PREP', 'WBG.CS.JOB.CREAT']
@@ -109,7 +109,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     format: 'REST / JSON',
     authType: 'Public Open Access',
     rateLimit: '100 req/min',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Community oversight, citizen scorecards in health and primary education, and local public grievance redress performance.',
     sampleEndpoint: 'https://api.worldbank.org/v2/gsap/{iso3}/governance',
     indicatorsProvided: ['GSAP.CIT.ENGAGE', 'GSAP.COMM.HEALTH', 'GSAP.GRIEV.REDRESS']
@@ -125,7 +125,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     format: 'REST / JSON',
     authType: 'Public Open Access',
     rateLimit: '300 req/min',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Social safety net coverage, cash transfer recipients, active labor market program participation, and shock-responsive social assistance.',
     sampleEndpoint: 'https://api.worldbank.org/v2/country/SEN/indicator/SP.SPL.COV.TOTL?format=json',
     indicatorsProvided: ['SPID.SSN.COV', 'SPID.ALMP.PART', 'SPID.CASH.TRANS']
@@ -141,7 +141,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     format: 'OData / REST',
     authType: 'Public Open Access',
     rateLimit: '200 req/min',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Universal health coverage (UHC) index, physician and nursing density, premature NCD mortality, tuberculosis and malaria incidence.',
     sampleEndpoint: 'https://ghoapi.azureedge.net/api/UHC_INDEX_REPORTED',
     indicatorsProvided: ['WHO.GHO.UHC.SCI', 'WHO.GHO.NCD.MORT', 'WHO.GHO.PHYS.DENS', 'WHO.GHO.NURS.DENS', 'WHO.GHO.MAL.INC']
@@ -157,7 +157,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     format: 'SDMX 2.1 / JSON',
     authType: 'API Key Optional',
     rateLimit: '240 req/min',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Learning poverty rates, out-of-school populations, pupil-to-trained-teacher ratios, and female/male STEM university graduates.',
     sampleEndpoint: 'https://api.uis.unesco.org/sdmx/v2/data/UNESCO,EDU_NON_FINANCE/all',
     indicatorsProvided: ['UIS.LEARN.POV', 'UIS.OOS.RATE.PRIM', 'UIS.STEM.GRAD', 'UIS.PUPIL.TEACH']
@@ -173,7 +173,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     format: 'REST / JSON',
     authType: 'Public Open Access',
     rateLimit: '300 req/min',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Dynamic international poverty line measurements ($2.15, $3.65, $6.85 2017 PPP), Poverty Gap, Palma Ratio, and Shared Prosperity metrics.',
     sampleEndpoint: 'https://api.worldbank.org/pip/v1/pip?country=RWA&year=2022&format=json',
     indicatorsProvided: ['WB.PIP.POV215', 'WB.PIP.POV365', 'WB.PIP.POV685', 'WB.PIP.POVGAP', 'WB.PIP.PALMA']
@@ -189,7 +189,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     format: 'REST / JSON',
     authType: 'Public Open Access',
     rateLimit: '300 req/min',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Adequacy of social assistance transfers, benefit incidence among the poorest 20% quintile, and formal social insurance participation.',
     sampleEndpoint: 'https://api.worldbank.org/v2/country/UGA/indicator/per_sa_allsa.adq_pop_tot?format=json',
     indicatorsProvided: ['ASPIRE.ASST.ADEQ', 'ASPIRE.BEN.Q1', 'ASPIRE.SOC.INSUR']
@@ -205,7 +205,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     format: 'REST / JSON',
     authType: 'Public Open Access',
     rateLimit: '300 req/min',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'External public and publicly guaranteed (PPG) debt stocks, debt service to export ratios, concessional creditor share, and PV of debt to GNI.',
     sampleEndpoint: 'https://api.worldbank.org/v2/country/ZMB/indicator/DT.DOD.DECT.CD?format=json',
     indicatorsProvided: ['WB.IDS.DOD.TOTL', 'WB.IDS.SVC.XPT', 'WB.IDS.CONC.SHAR', 'WB.IDS.PV.GNI']
@@ -221,7 +221,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     format: 'REST / JSON',
     authType: 'Public Open Access',
     rateLimit: '100 req/min',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Bilateral merchandise trade flows, intra-African AfCFTA trade volumes, agricultural trade balances, and commodity export diversification.',
     sampleEndpoint: 'https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=566&period=2023',
     indicatorsProvided: ['UNCT.TRADE.INTRA', 'UNCT.AGRI.BAL', 'UNCT.HITECH.EXP', 'UNCT.DIV.INDEX']
@@ -237,7 +237,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     format: 'SDMX 2.1 / JSON',
     authType: 'Public Open Access',
     rateLimit: '150 req/min',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Multi-year macroeconomic forecasts: real GDP growth, general government gross debt % of GDP, current account balance, and consumer price inflation.',
     sampleEndpoint: 'https://dataservices.imf.org/REST/SDMX_JSON.svc/CompactData/WEO/A.NGA.NGDP_RPCH.pcht',
     indicatorsProvided: ['IMF.WEO.NGDP_RPCH_F25', 'IMF.WEO.GGXWDG_NGDP', 'IMF.WEO.BCA_NGDPD', 'IMF.WEO.PCPIPCH']
@@ -253,7 +253,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     format: 'REST / JSON',
     authType: 'Public Open Access',
     rateLimit: '300 req/min',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'IDA allocation assessment (scale 1–6): Economic Management, Structural Policies, Policies for Social Inclusion/Equity, and Public Sector Management.',
     sampleEndpoint: 'https://api.worldbank.org/v2/country/ETH/indicator/IQ.CPA.OVRL.XQ?format=json',
     indicatorsProvided: ['WB.CPIA.OVERALL', 'WB.CPIA.ECON.MGT', 'WB.CPIA.STRUCT', 'WB.CPIA.SOC.INCL', 'WB.CPIA.PUB.SECT']
@@ -269,7 +269,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     format: 'REST / JSON',
     authType: 'Public Open Access',
     rateLimit: '200 req/min',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'High-resolution CMIP6 climate anomaly pathways, historical precipitation variability, ND-GAIN vulnerability indices, and renewable capacity shares.',
     sampleEndpoint: 'https://climateknowledgeportal.worldbank.org/api/data/v1/cru-x0.5/climatology/tas/1991-2020/country/{iso3}',
     indicatorsProvided: ['WB.CLIM.TEMP.ANOM', 'WB.CLIM.PRECIP.VAR', 'WB.CLIM.VULN.NDGAIN', 'WB.CLIM.RENEW.CAP']
@@ -285,7 +285,7 @@ export const EXTERNAL_API_CONNECTORS: ExternalApiConnector[] = [
     format: 'OpenData CSV/JSON',
     authType: 'Public Open Access',
     rateLimit: '250 req/min',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'European Commission JRC Master Registry of 241 spatial and statistical datasets spanning 5 thematic pillars: Demographics & Health, Energy & Telecom, Environment & Climate, Agriculture & Water, and Macroeconomics across all 54 African states.',
     sampleEndpoint: 'https://africa-knowledge-platform.ec.europa.eu/api/v1/datasets/AKP-241/summary',
     indicatorsProvided: ['AKP.DEMO.POP', 'AKP.ENER.GRID', 'AKP.ENV.BIODIV', 'AKP.AGRI.CROP', 'AKP.ECON.TRADE']

@@ -1,6 +1,6 @@
 /**
  * akpTelecomCables.ts - Subsea Oceanic Fiber-Optic Cables & Landing Stations
- * Authoritative Coordinate Engine: 5796 x 5867 Native SVG Space
+ * Curated Coordinate Engine: 5796 x 5867 Native SVG Space
  * Data Sources: ITU, Submarine Cable Map, TeleGeography & EC JRC AKP
  */
 

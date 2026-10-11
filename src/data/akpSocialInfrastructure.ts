@@ -1,7 +1,7 @@
 /**
  * akpSocialInfrastructure.ts - Hospitals, Referral Centers & Educational Clusters
  * Coordinate Space: 5796 x 5867 Native SVG Space
- * Authoritative Sources: WHO Global Health Observatory, UNESCO UIS, healthsites.io & World Bank
+ * Curated Sources: WHO Global Health Observatory, UNESCO UIS, healthsites.io & World Bank
  */
 
 export type SocialFacilityType = 'hospital' | 'school_university';

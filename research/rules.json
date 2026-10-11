@@ -1,0 +1,27 @@
+{
+  "_readme": "error = fails CI. warn = printed only. Matching is case-insensitive over src/, docs/, documentation/, help-center/, api-reference/, home/ and README.md (.ts .tsx .md .mts). Add a rule whenever a correction is made, so the same error cannot return.",
+  "errors": [
+    { "match": "zero manual tampering", "fix": "Say what is checked: 'each dataset has a published checksum so you can confirm your copy matches the release.'" },
+    { "match": "Universal SHA-256 Checksum Verified", "fix": "Only show a checksum state that was actually computed; otherwise remove." },
+    { "match": "Sovereign Geospatial Intelligence", "fix": "Use a descriptive subtitle, e.g. 'An interactive atlas of geography, indicators and historical trade flows'." },
+    { "match": "doesn't invent its own statistics", "fix": "State that indicators are a curated snapshot with per-value status flags." },
+    { "match": "1501–1867", "fix": "Use 1514–1866 for voyages; 1501–1866 only for demographic estimates." },
+    { "match": "6 Thematic Pillar", "fix": "The app has 8 thematic pillars (see research/facts.json)." },
+    { "match": "ISSN", "fix": "Remove ISSN references; use the universal DOI (https://doi.org/10.6084/m9.figshare.34065711)." }
+  ],
+  "warnings": [
+    { "match": "authoritative", "fix": "Prefer 'curated', 'documented' or name the source." },
+    { "match": "unprecedented", "fix": "Cut, or give the comparison that makes it true." },
+    { "match": "definitive", "fix": "Use 'current best', 'consistent with', or name the limit." },
+    { "match": "forensic", "fix": "Use 'detailed' or describe the method." },
+    { "match": "flawless", "fix": "Cut." },
+    { "match": "scientific reproducibility", "fix": "Say what can be reproduced, and how." }
+  ],
+  "codePatterns": [
+    {
+      "regex": "Math\\.round\\(\\s*p\\.\\w+\\s*\\*\\s*0\\.\\d+",
+      "level": "error",
+      "message": "Values back-filled by scaling a 2024 figure must not be presented as observed. Tag them status:'derived' (or remove) and cite the rule in notes."
+    }
+  ]
+}

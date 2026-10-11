@@ -1,0 +1,115 @@
+{
+  "_readme": "Canonical registry of primary sources, clustering frameworks, and licensing terms for the Africa Data Atlas & Cartographic Observatory.",
+  "platform": {
+    "title": "Africa Data Atlas & Cartographic Observatory",
+    "subtitle": "An interactive atlas of geography, indicators and historical trade flows",
+    "publisher": "Africalia",
+    "author": {
+      "name": "ZéLuis F. Correia",
+      "orcid": "0000-0001-9421-6555",
+      "orcidUrl": "https://orcid.org/0000-0001-9421-6555",
+      "statement": "ZéLuis F. Correia is the author of all SVG maps and the Ethnic Tree Visualization and SVG. Unless stated otherwise, all graphics and visualizations have the same author."
+    },
+    "doi": "10.6084/m9.figshare.34065711",
+    "doiUrl": "https://doi.org/10.6084/m9.figshare.34065711",
+    "repository": "https://github.com/zeluis/Africa-Digital-Atlas",
+    "liveUrl": "https://zeluis.github.io/Africa-Digital-Atlas/",
+    "licenses": {
+      "code": {
+        "spdx": "MIT",
+        "file": "LICENSE-CODE",
+        "scope": "Application source code, React/TypeScript components, build scripts, and documentation framework"
+      },
+      "assets": {
+        "spdx": "CC-BY-4.0",
+        "file": "LICENSE-ASSETS",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "scope": "All SVG maps (public/africa-final.svg, src/data/africaFinalGeometry.ts), the Ethnic Tree Visualization and SVG (src/data/authenticEthnicTreeSvg.ts, src/data/africaliaMasterTreeData.ts), and all graphics and visualizations unless stated otherwise"
+      }
+    }
+  },
+  "primaryDomains": {
+    "slaveVoyages": {
+      "id": "slavevoyages-2024-1",
+      "name": "Trans-Atlantic Slave Trade Database",
+      "organization": "SlaveVoyages Consortium",
+      "release": "2024.1",
+      "url": "https://www.slavevoyages.org/",
+      "documentedVoyages": 36108,
+      "curatedDossiers": 18,
+      "layers": {
+        "observed": {
+          "years": "1514–1866",
+          "description": "Documented voyages recorded directly in surviving archival logbooks, port ledgers, manifests, and vice-admiralty court records."
+        },
+        "imputed": {
+          "years": "1514–1866",
+          "description": "Documented voyages with missing values (captives embarked/disembarked, vessel tonnage, rig) filled in by statistical imputation."
+        },
+        "estimated": {
+          "years": "1501–1866",
+          "description": "Continental-level demographic models accounting for unrecorded voyages across the full 1501–1866 transatlantic period."
+        }
+      },
+      "citation": "SlaveVoyages Consortium. (2024). Trans-Atlantic Slave Trade Database (2024.1 release). https://www.slavevoyages.org/"
+    },
+    "ethnicGroups": {
+      "id": "wikipedia-african-ethnic-groups",
+      "name": "List of contemporary ethnic groups of Africa",
+      "organization": "Wikipedia, The Free Encyclopedia",
+      "entries": 310,
+      "retrieved": "2026-01",
+      "revisionId": null,
+      "url": "https://en.wikipedia.org/wiki/List_of_contemporary_ethnic_groups_of_Africa",
+      "license": "CC-BY-SA-4.0",
+      "clusteringFrameworkReferences": [
+        {
+          "id": "bird-2023",
+          "authors": "Bird, N., Ormond, L., Awah, P., Caldwell, E. F., Connell, B., Elamin, M., ... & Hellenthal, G.",
+          "year": 2023,
+          "title": "Dense sampling of ethnic groups within African countries reveals fine-scale genetic structure and extensive historical admixture",
+          "journal": "Science Advances",
+          "volume": "9(13)",
+          "pages": "eabq2616",
+          "doi": "10.1126/sciadv.abq2616",
+          "usageRole": "clustering_framework_only",
+          "note": "Cited for clustering framework only (how genetic clusters relate to ethnicity, language, and geography). The Atlas does not reproduce biological samples or genotype data."
+        },
+        {
+          "id": "tishkoff-2009",
+          "authors": "Tishkoff, S. A., Reed, F. A., Friedlaender, F. R., Ehret, C., Ranciaro, A., Froment, A., ... & Williams, S. M.",
+          "year": 2009,
+          "title": "The genetic structure and history of Africans and African Americans",
+          "journal": "Science",
+          "volume": "324(5930)",
+          "pages": "1035–1044",
+          "doi": "10.1126/science.1172257",
+          "usageRole": "clustering_framework_only",
+          "note": "Cited for clustering framework only (how genetic clusters relate to ethnicity, language, and geography). The Atlas does not reproduce biological samples or genotype data."
+        }
+      ]
+    },
+    "socioeconomicIndicators": {
+      "period": "2015–2024",
+      "states": 54,
+      "pillars": 8,
+      "nature": "curated snapshot with per-value status flags",
+      "statusFlags": ["observed", "estimated", "forecast", "derived"],
+      "institutions": [
+        { "id": "wb-wdi", "name": "World Bank World Development Indicators (WDI)", "url": "https://databank.worldbank.org/source/world-development-indicators", "license": "CC-BY-4.0" },
+        { "id": "imf-weo", "name": "IMF World Economic Outlook (WEO)", "url": "https://www.imf.org/en/Publications/WEO", "license": "IMF Copyright & Usage Terms" },
+        { "id": "un-desa", "name": "UN DESA World Population Prospects", "url": "https://population.un.org/wpp/", "license": "CC-BY-3.0-IGO" },
+        { "id": "who-gho", "name": "WHO Global Health Observatory (GHO)", "url": "https://www.who.int/data/gho", "license": "CC-BY-NC-SA-3.0-IGO" },
+        { "id": "unesco-uis", "name": "UNESCO Institute for Statistics (UIS) & World Heritage Centre", "url": "https://uis.unesco.org/", "license": "CC-BY-SA-3.0-IGO" },
+        { "id": "un-comtrade", "name": "UN Comtrade Database", "url": "https://comtradeplus.un.org/", "license": "UN Open Data Terms" },
+        { "id": "undp-hdr", "name": "UNDP Human Development Reports (HDR)", "url": "https://hdr.undp.org/", "license": "CC-BY-3.0-IGO" },
+        { "id": "unhcr", "name": "UNHCR Refugee Data Finder", "url": "https://www.unhcr.org/refugee-statistics/", "license": "CC-BY-4.0" },
+        { "id": "ilo-ilostat", "name": "ILOSTAT (International Labour Organization)", "url": "https://ilostat.ilo.org/", "license": "CC-BY-4.0" },
+        { "id": "fao-faostat", "name": "FAOSTAT (Food and Agriculture Organization)", "url": "https://www.fao.org/faostat/", "license": "CC-BY-NC-SA-3.0-IGO" },
+        { "id": "itu", "name": "ITU DataHub (International Telecommunication Union)", "url": "https://datahub.itu.int/", "license": "CC-BY-4.0" },
+        { "id": "wb-wgi", "name": "World Bank Worldwide Governance Indicators (WGI)", "url": "https://www.govindicators.org/", "license": "CC-BY-4.0" },
+        { "id": "freedom-house", "name": "Freedom House (Freedom in the World)", "url": "https://freedomhouse.org/", "license": "Fair Use / Attribution" }
+      ]
+    }
+  }
+}

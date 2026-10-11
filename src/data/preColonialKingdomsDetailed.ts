@@ -823,7 +823,7 @@ export const DETAILED_KINGDOMS_DATA: Record<string, KingdomDetailedRecord> = {
         currentLocation: "Bibliothèque nationale de France (BnF, Paris)",
         description: "Illuminated vellum map folio depicting Mansa Musa enthroned in royal robes holding a solid golden orb and golden scepter, illustrating the immense prestige of Malian gold.",
         materialDetails: "Fine calfskin vellum illuminated with 24K gold leaf, lapis lazuli, vermilion, and malachite pigments.",
-        historicalSignificance: "The definitive medieval cartographic proof connecting West African sovereign wealth directly to the Mediterranean world.",
+        historicalSignificance: "A landmark medieval cartographic record connecting West African sovereign wealth directly to the Mediterranean world.",
         shaderType: "aged_manuscript",
         accentColor: "#d97706"
       },

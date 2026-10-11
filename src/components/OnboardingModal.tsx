@@ -947,6 +947,10 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                                 <img 
                                   src={resolveAssetPath('/africalia-ethnic-tree.svg')} 
                                   alt="Ethnic Tree of Life Vector Diagram" 
+                                  width={640}
+                                  height={360}
+                                  loading="lazy"
+                                  decoding="async"
                                   className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-500"
                                   onError={(e) => {
                                     (e.currentTarget as HTMLElement).style.display = 'none';
@@ -1009,8 +1013,12 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
                               <div className="relative w-full h-44 sm:h-48 md:h-52 rounded-2xl overflow-hidden bg-stone-100 border border-emerald-200/80 flex items-center justify-center mb-3">
                                 <img 
-                                  src={resolveAssetPath('/hero-preview.jpg')} 
+                                  src={resolveAssetPath('/hero-preview.webp')} 
                                   alt="Digital Data Atlas Continental Overview Screenshot" 
+                                  width={640}
+                                  height={360}
+                                  loading="lazy"
+                                  decoding="async"
                                   className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-500"
                                   onError={(e) => {
                                     (e.currentTarget as HTMLElement).style.display = 'none';
@@ -1022,7 +1030,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                                 <div className="absolute bottom-2.5 right-2.5 px-3 py-1 rounded-xl bg-white/95 text-stone-800 border border-stone-200 text-xs font-medium flex items-center gap-1.5 shadow-sm backdrop-blur-md">
                                   <Globe2 className="w-3.5 h-3.5 text-emerald-600" />
                                   <span className="font-semibold text-stone-900">54 Nations GIS</span>
-                                  <span className="text-stone-500">| Real-time Data</span>
+                                  <span className="text-stone-500">| 2015–2024 Snapshot</span>
                                 </div>
                               </div>
 
@@ -1032,7 +1040,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                                   <span>Multilateral Indicators & AfCFTA Corridor</span>
                                 </div>
                                 <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
-                                  Engage with Africa's definitive geospatial and econometric intelligence engine — real-time multilateral indicator feeds, 54 sovereign country dossiers, $3.4T AfCFTA trade corridors, and AU Agenda 2063 benchmarks.
+                                  Explore curated 2015–2024 multilateral indicator snapshots with per-value status flags, 54 sovereign country dossiers across 8 thematic pillars, $3.4T AfCFTA trade corridors, and AU Agenda 2063 benchmarks.
                                 </p>
                               </div>
                             </div>

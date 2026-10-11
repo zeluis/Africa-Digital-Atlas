@@ -2144,13 +2144,14 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                     </button>
 
                     <a
-                      href={selectedPlate.fallbackUrls?.[0] || selectedPlate.imageUrl}
+                      href={selectedPlate.imageUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 rounded-xl border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-colors"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-2 rounded-xl border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs font-mono font-semibold transition-colors shrink-0"
                       title="Open Full-Resolution Plate Scan"
                     >
-                      <ExternalLink className="w-4 h-4" />
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Open full resolution</span>
                     </a>
                   </div>
 

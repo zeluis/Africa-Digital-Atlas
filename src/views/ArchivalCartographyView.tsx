@@ -940,7 +940,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                   Pre-Colonial State Formations &amp; Polities Matrix
                 </span>
                 <h2 className="text-xl font-serif font-bold text-stone-900 dark:text-stone-100">
-                  Authoritative Civilizations ({PRE_COLONIAL_ENTITIES.length} Historical Kingdoms)
+                  Curated Civilizations ({PRE_COLONIAL_ENTITIES.length} Historical Kingdoms)
                 </h2>
               </div>
               <p className="text-xs font-sans text-stone-600 dark:text-stone-400 max-w-md text-left sm:text-right leading-relaxed">

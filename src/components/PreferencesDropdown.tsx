@@ -17,7 +17,7 @@ import {
 import { useDensity, DensityMode } from '../contexts/DensityContext';
 import { useTranslation } from '../i18n/LanguageContext';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
-import { CanonicalNavTab } from './NavigationDrawer';
+import type { CanonicalNavTab } from './NavigationDrawer';
 
 interface PreferencesDropdownProps {
   theme: 'dark' | 'light';

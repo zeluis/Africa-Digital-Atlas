@@ -308,8 +308,9 @@ export function generateFullObservations(): Observation[] {
     addObs('MO.IIAG.SCORE', p.gov, 'Score (0-100)', 'mo_ibrahim', 'IIAG_SCORECARD_2024', 'observed');
     addObs('IEP.GPI.SCORE', p.peace, 'Score (1-5)', 'iep', 'GPI_REPORT_2024', 'observed');
 
-    // Also populate past years (2020, 2022) to enable historical trend lines
-    const addHistorical = (indId: string, val: number | null, unit: string, source: string, dataset: string, period: number) => {
+    // Also populate past years (2020, 2022) to enable historical trend lines; tagged as 'derived' with explicit rule notes
+    const scaleBaseline = (baseValue: number, ratio: number) => Math.round(baseValue * ratio * 100) / 100;
+    const addHistorical = (indId: string, val: number | null, unit: string, source: string, dataset: string, period: number, notes: string) => {
       const key = `${entityId}_${indId}_${period}`;
       if (!existingKeys.has(key) && val !== null) {
         observations.push({
@@ -320,19 +321,20 @@ export function generateFullObservations(): Observation[] {
           unit,
           sourceId: source,
           datasetId: dataset,
-          status: 'observed'
+          status: 'derived',
+          notes
         });
         existingKeys.add(key);
       }
     };
 
-    addHistorical('NY.GDP.MKTP.CD', Math.round(p.gdp * 0.88 * 100) / 100, 'USD Billion', 'world_bank', 'WDI_2024', 2020);
-    addHistorical('NY.GDP.MKTP.CD', Math.round(p.gdp * 0.94 * 100) / 100, 'USD Billion', 'world_bank', 'WDI_2024', 2022);
-    addHistorical('SP.POP.TOTL', Math.round(p.pop * 0.91 * 100) / 100, 'People (Million)', 'undesa', 'WPP_REVISION_2024', 2020);
-    addHistorical('SP.POP.TOTL', Math.round(p.pop * 0.95 * 100) / 100, 'People (Million)', 'undesa', 'WPP_REVISION_2024', 2022);
-    addHistorical('UNDP.HDI.INDEX', Math.round(Math.max(0.3, p.hdi - 0.015) * 1000) / 1000, 'Index (0-1)', 'undp', 'HDR_COMPOSITE_2024', 2020);
-    addHistorical('UNDP.HDI.INDEX', Math.round(Math.max(0.3, p.hdi - 0.006) * 1000) / 1000, 'Index (0-1)', 'undp', 'HDR_COMPOSITE_2024', 2022);
-    addHistorical('EG.ELC.ACCS.ZS', Math.round(Math.max(5, p.elec - 4.5) * 10) / 10, '%', 'world_bank', 'WDI_2024', 2020);
+    addHistorical('NY.GDP.MKTP.CD', scaleBaseline(p.gdp, 0.88), 'USD Billion', 'world_bank', 'WDI_2024', 2020, 'Back-filled by scaling 2024 baseline figure (×0.88) where multi-year seed observation is absent.');
+    addHistorical('NY.GDP.MKTP.CD', scaleBaseline(p.gdp, 0.94), 'USD Billion', 'world_bank', 'WDI_2024', 2022, 'Back-filled by scaling 2024 baseline figure (×0.94) where multi-year seed observation is absent.');
+    addHistorical('SP.POP.TOTL', scaleBaseline(p.pop, 0.91), 'People (Million)', 'undesa', 'WPP_REVISION_2024', 2020, 'Back-filled by scaling 2024 baseline figure (×0.91) where multi-year seed observation is absent.');
+    addHistorical('SP.POP.TOTL', scaleBaseline(p.pop, 0.95), 'People (Million)', 'undesa', 'WPP_REVISION_2024', 2022, 'Back-filled by scaling 2024 baseline figure (×0.95) where multi-year seed observation is absent.');
+    addHistorical('UNDP.HDI.INDEX', Math.round(Math.max(0.3, p.hdi - 0.015) * 1000) / 1000, 'Index (0-1)', 'undp', 'HDR_COMPOSITE_2024', 2020, 'Back-filled by fixed offset (−0.015) from 2024 baseline figure.');
+    addHistorical('UNDP.HDI.INDEX', Math.round(Math.max(0.3, p.hdi - 0.006) * 1000) / 1000, 'Index (0-1)', 'undp', 'HDR_COMPOSITE_2024', 2022, 'Back-filled by fixed offset (−0.006) from 2024 baseline figure.');
+    addHistorical('EG.ELC.ACCS.ZS', Math.round(Math.max(5, p.elec - 4.5) * 10) / 10, '%', 'world_bank', 'WDI_2024', 2020, 'Back-filled by fixed offset (−4.5 pp) from 2024 baseline figure.');
   }
 
   return observations;

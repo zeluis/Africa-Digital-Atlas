@@ -319,6 +319,10 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
                 <img 
                   src={resolveAssetPath(heroState.url)} 
                   alt={heroState.title}
+                  width={288}
+                  height={216}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover grayscale contrast-110 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
                   onError={(e) => {
                     const el = e.currentTarget;

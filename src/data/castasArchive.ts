@@ -22,8 +22,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I (Oil on Canvas)',
     description: 'First plate from an 18th-century casta painting series depicting racial mixing (mestizaje) in colonial New Spain. It portrays a Spanish gentleman in silk frock, an Indigenous woman in an embroidered huipil, and their mestiza child with native flora and basketry.',
     historicalSignificance: 'Casta paintings served as visual encyclopedias of racial and social hierarchy commissioned by colonial elites to classify the demographic complexity of the Spanish American viceroyalties.',
-    imageUrl: '/castas/castaS1o-a.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-a.jpg'
+    imageUrl: '/castas/castaS1o-a.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-a.webp'
   },
   {
     id: 'casta-1o-b',
@@ -34,8 +34,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I',
     description: 'Illustrating the offspring of a mestizo and a Spaniard (yielding a castiza). The figures are depicted with refined colonial attire, ornate lace collars, and fine porcelain dining ware.',
     historicalSignificance: 'Reflects the Enlightenment-era Spanish obsession with taxonomy and racial categorization, merging scientific inquiry with colonial social control.',
-    imageUrl: '/castas/castaS1o-b.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-b.jpg'
+    imageUrl: '/castas/castaS1o-b.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-b.webp'
   },
   {
     id: 'casta-1o-c',
@@ -46,8 +46,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I',
     description: 'Depicts a Spanish father and African mother with their mulata child in a bustling marketplace surrounded by tropical fruits (papayas, pineapples) and woven baskets.',
     historicalSignificance: 'Highlights the vital economic and cultural presence of Afro-descendant populations in urban colonial centers such as Mexico City, Puebla, and Veracruz.',
-    imageUrl: '/castas/castaS1o-c.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-c.jpg'
+    imageUrl: '/castas/castaS1o-c.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-c.webp'
   },
   {
     id: 'casta-1o-d',
@@ -58,8 +58,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I',
     description: 'Detailed interior study showing familial interaction, artisanal textile weaving, and domestic ornamentation characteristic of 18th-century viceregal households.',
     historicalSignificance: 'Demonstrates the sophisticated artistic output of colonial academies and the codification of skin tone gradations into official legal and social categories.',
-    imageUrl: '/castas/castaS1o-d.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-d.jpg'
+    imageUrl: '/castas/castaS1o-d.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-d.webp'
   },
   {
     id: 'casta-1o-e',
@@ -70,8 +70,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I',
     description: 'Portrays the complex categorization resulting from the union of a Spaniard and a morisca. Features elaborate velvet garments, gold filigree buttons, and silver jewelry.',
     historicalSignificance: 'Illustrates how colonial painters used elaborate costume and domestic backdrops to signal wealth, regional provenance, and social hierarchy.',
-    imageUrl: '/castas/castaS1o-e.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-e.jpg'
+    imageUrl: '/castas/castaS1o-e.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-e.webp'
   },
   {
     id: 'casta-1o-f',
@@ -82,8 +82,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I',
     description: 'Depicts the "tornaatrás" / "tente en el aire" category with outdoor market stalls, cacao bean trading, artisanal sweets, and indigenous ceramics.',
     historicalSignificance: 'Provides historians with invaluable material culture evidence regarding 18th-century diet, currency exchange, and street commerce in New Spain.',
-    imageUrl: '/castas/castaS1o-f.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-f.jpg'
+    imageUrl: '/castas/castaS1o-f.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-f.webp'
   },
   {
     id: 'casta-1o-g',
@@ -94,8 +94,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I',
     description: 'Depicts the union between an African male and an Indigenous female, highlighting artisanal labor roles, blacksmithing tools, and rural domestic settings.',
     historicalSignificance: 'Documents Afro-Indigenous alliances, labor stratification, and syncretic cultural traditions in colonial hinterlands and mining camps.',
-    imageUrl: '/castas/castaS1o-g.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-g.jpg'
+    imageUrl: '/castas/castaS1o-g.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-g.webp'
   },
   {
     id: 'casta-1o-h',
@@ -106,8 +106,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I',
     description: 'Portrays the colloquial "coyote" classification in a pastoral setting with livestock, maguey plants, and traditional backstrap weaving apparatus.',
     historicalSignificance: 'Examines rural labor strata and vernacular naming conventions used in provincial parish baptismal and matrimonial registries.',
-    imageUrl: '/castas/castaS1o-h.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-h.jpg'
+    imageUrl: '/castas/castaS1o-h.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-h.webp'
   },
   {
     id: 'casta-1o-i',
@@ -118,8 +118,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I',
     description: 'Shows an artisan workshop setting with leather tanning, saddle-making tools, and domestic pottery indicative of provincial trades.',
     historicalSignificance: 'Records the everyday material culture, clothing textiles, and manual crafts practiced by mixed-lineage families.',
-    imageUrl: '/castas/castaS1o-i.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-i.jpg'
+    imageUrl: '/castas/castaS1o-i.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-i.webp'
   },
   {
     id: 'casta-1o-j',
@@ -130,8 +130,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I',
     description: 'Depicts a family tending to an orchard of avocados and nopales with woven carrying crates and ceramic water vessels.',
     historicalSignificance: 'Demonstrates botanical accuracy and agrarian practices in central Mexican valleys during the late Bourbon era.',
-    imageUrl: '/castas/castaS1o-j.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-j.jpg'
+    imageUrl: '/castas/castaS1o-j.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-j.webp'
   },
   {
     id: 'casta-1o-k',
@@ -142,8 +142,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I',
     description: 'Illustrates the albarazado casta within a rustic kitchen setting, preparing maize tortillas on a traditional clay comal.',
     historicalSignificance: 'Illuminates domestic gastronomy, gender labor divisions, and culinary continuities across indigenous and African households.',
-    imageUrl: '/castas/castaS1o-k.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-k.jpg'
+    imageUrl: '/castas/castaS1o-k.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-k.webp'
   },
   {
     id: 'casta-1o-l',
@@ -154,8 +154,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I',
     description: 'Features textile dyeing with cochineal and indigo vats, showcasing regional chemical craft and fabric production.',
     historicalSignificance: 'Documents the crucial economic contribution of non-elite laborers to the global trade in New World dyes and textiles.',
-    imageUrl: '/castas/castaS1o-l.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-l.jpg'
+    imageUrl: '/castas/castaS1o-l.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-l.webp'
   },
   {
     id: 'casta-1o-m',
@@ -166,8 +166,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I',
     description: 'Depicts a family in a rural homestead cultivating chili peppers and squash with traditional agricultural implements.',
     historicalSignificance: 'Reveals the deep integration of indigenous agricultural heritage with evolving multi-ethnic colonial demographics.',
-    imageUrl: '/castas/castaS1o-m.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-m.jpg'
+    imageUrl: '/castas/castaS1o-m.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-m.webp'
   },
   {
     id: 'casta-1o-n',
@@ -178,8 +178,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I',
     description: 'Depicts the jíbaro categorization in a woodland environment with woodcutting tools, clay pipes, and vernacular garments.',
     historicalSignificance: 'Illustrates the expansive linguistic taxonomy utilized by colonial authorities to track demographic expansion into frontier zones.',
-    imageUrl: '/castas/castaS1o-n.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-n.jpg'
+    imageUrl: '/castas/castaS1o-n.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-n.webp'
   },
   {
     id: 'casta-1o-o',
@@ -190,8 +190,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I',
     description: 'Shows musical recreation with a baroque guitar (vihuela) and percussive gourds inside a town dwelling.',
     historicalSignificance: 'Preserves rare visual documentation of Afro-diasporic and criollo musical instruments and shared cultural pastimes.',
-    imageUrl: '/castas/castaS1o-o.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-o.jpg'
+    imageUrl: '/castas/castaS1o-o.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-o.webp'
   },
   {
     id: 'casta-1o-p',
@@ -202,8 +202,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series I (Frontier Tribes)',
     description: 'Final plate of Series 1 depicting unconquered northern nomadic indigenous groups (Chichimecas / Apaches) with traditional bows, feather headpieces, and skin quivers.',
     historicalSignificance: 'Reflects the geopolitical anxieties of the Spanish Crown regarding imperial frontiers and unassimilated sovereign indigenous nations.',
-    imageUrl: '/castas/castaS1o-p.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS1o-p.jpg'
+    imageUrl: '/castas/castaS1o-p.webp',
+    thumbnailUrl: '/castas/thumbs/castaS1o-p.webp'
   },
 
   // --- SERIES 2 (Plates A through N - 14 Full Plates) ---
@@ -216,8 +216,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series II',
     description: 'Opening plate of Series II depicting a Spanish hidalgo in embroidered tricorne hat, an indigenous mother in fine cotton textiles, and their mestizo son carrying books.',
     historicalSignificance: 'Emphasizes formal literacy and elite social status attainable by early-generation mestizos within urban viceregal society.',
-    imageUrl: '/castas/castaS2o-a.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS2o-a.jpg'
+    imageUrl: '/castas/castaS2o-a.webp',
+    thumbnailUrl: '/castas/thumbs/castaS2o-a.webp'
   },
   {
     id: 'casta-2o-b',
@@ -228,8 +228,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series II',
     description: 'Portrayal of a merchant household with ledgers, imported porcelain teaware, and velvet cloaks.',
     historicalSignificance: 'Illustrates the progression towards "restored" Spanish status (limpieza de sangre) across successive generations.',
-    imageUrl: '/castas/castaS2o-b.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS2o-b.jpg'
+    imageUrl: '/castas/castaS2o-b.webp',
+    thumbnailUrl: '/castas/thumbs/castaS2o-b.webp'
   },
   {
     id: 'casta-2o-c',
@@ -240,8 +240,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series II',
     description: 'Shows an aristocratic drawing room with gilded mirrors, European musical scores, and silk tapestries.',
     historicalSignificance: 'Demonstrates the legal doctrine of castizo offspring returning legally to full Spanish categorization.',
-    imageUrl: '/castas/castaS2o-c.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS2o-c.jpg'
+    imageUrl: '/castas/castaS2o-c.webp',
+    thumbnailUrl: '/castas/thumbs/castaS2o-c.webp'
   },
   {
     id: 'casta-2o-d',
@@ -252,8 +252,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series II',
     description: 'Portrays a prosperous urban mercantile courtyard with tobacco bundles, scale weights, and lace mantillas.',
     historicalSignificance: 'Highlights the commercial vitality and civic role of Afro-descendant entrepreneurs in capital markets.',
-    imageUrl: '/castas/castaS2o-d.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS2o-d.jpg'
+    imageUrl: '/castas/castaS2o-d.webp',
+    thumbnailUrl: '/castas/thumbs/castaS2o-d.webp'
   },
   {
     id: 'casta-2o-e',
@@ -264,8 +264,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series II',
     description: 'Detailed study of an artisan silver workshop, displaying delicate repoussé plates and engraving tools.',
     historicalSignificance: 'Affirms the prominent role of mixed-descent master craftsmen in the renowned silversmith guilds of New Spain.',
-    imageUrl: '/castas/castaS2o-e.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS2o-e.jpg'
+    imageUrl: '/castas/castaS2o-e.webp',
+    thumbnailUrl: '/castas/thumbs/castaS2o-e.webp'
   },
   {
     id: 'casta-2o-f',
@@ -276,8 +276,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series II',
     description: 'Interior depicting an apothecary and botanist residence with glass alembics, herbal specimens, and leatherbound codices.',
     historicalSignificance: 'Reflects Enlightenment natural science and botanical interest during royal scientific expeditions in the Americas.',
-    imageUrl: '/castas/castaS2o-f.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS2o-f.jpg'
+    imageUrl: '/castas/castaS2o-f.webp',
+    thumbnailUrl: '/castas/thumbs/castaS2o-f.webp'
   },
   {
     id: 'casta-2o-g',
@@ -288,8 +288,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series II',
     description: 'Shows a family on an elevated balcony overlooking colonial aqueducts and bell towers.',
     historicalSignificance: 'Provides architectural panoramas of 18th-century Mexican civic infrastructure alongside demographic taxonomy.',
-    imageUrl: '/castas/castaS2o-g.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS2o-g.jpg'
+    imageUrl: '/castas/castaS2o-g.webp',
+    thumbnailUrl: '/castas/thumbs/castaS2o-g.webp'
   },
   {
     id: 'casta-2o-h',
@@ -300,8 +300,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series II',
     description: 'Shows a weaver working a pedal loom alongside woven serapes and dyed wool coils.',
     historicalSignificance: 'Exemplifies the foundational labor of Afro-Indigenous weavers in the textile industries of southern Mexico.',
-    imageUrl: '/castas/castaS2o-h.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS2o-h.jpg'
+    imageUrl: '/castas/castaS2o-h.webp',
+    thumbnailUrl: '/castas/thumbs/castaS2o-h.webp'
   },
   {
     id: 'casta-2o-i',
@@ -312,8 +312,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series II',
     description: 'Depicts an artisanal ceramics pottery kiln with polychrome talavera tiles and glazed earthenware.',
     historicalSignificance: 'Documents the renowned Puebla ceramic tradition and the multicultural artisan guilds producing iconic colonial wares.',
-    imageUrl: '/castas/castaS2o-i.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS2o-i.jpg'
+    imageUrl: '/castas/castaS2o-i.webp',
+    thumbnailUrl: '/castas/thumbs/castaS2o-i.webp'
   },
   {
     id: 'casta-2o-j',
@@ -324,8 +324,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series II',
     description: 'Set in a tropical maritime wharf with fishing nets, drying salt cod, and mangrove scenery.',
     historicalSignificance: 'Visualizes coastal Afro-Mexican seafaring traditions, dockside labor, and fishing economies along the Gulf coast.',
-    imageUrl: '/castas/castaS2o-j.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS2o-j.jpg'
+    imageUrl: '/castas/castaS2o-j.webp',
+    thumbnailUrl: '/castas/thumbs/castaS2o-j.webp'
   },
   {
     id: 'casta-2o-k',
@@ -336,8 +336,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series II',
     description: 'Illustrates lacquered wooden batea trays, gourd craftsmanship, and copper cauldrons from Santa Clara del Cobre.',
     historicalSignificance: 'Celebrates indigenous Purépecha and Afro-descendant lacquerware and metallurgical traditions.',
-    imageUrl: '/castas/castaS2o-k.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS2o-k.jpg'
+    imageUrl: '/castas/castaS2o-k.webp',
+    thumbnailUrl: '/castas/thumbs/castaS2o-k.webp'
   },
   {
     id: 'casta-2o-l',
@@ -348,8 +348,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series II',
     description: 'Shows family preparing hot drinking chocolate with carved wooden molinillo whisks and copper chocolateras.',
     historicalSignificance: 'Captures the widespread ritual and social centrality of cacao consumption across all strata of New Spain.',
-    imageUrl: '/castas/castaS2o-l.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS2o-l.jpg'
+    imageUrl: '/castas/castaS2o-l.webp',
+    thumbnailUrl: '/castas/thumbs/castaS2o-l.webp'
   },
   {
     id: 'casta-2o-m',
@@ -360,8 +360,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series II',
     description: 'Portrayal of a saddlery shop with leather chaps, spurs, and vaquero horse tack.',
     historicalSignificance: 'Traces the origins of Mexican equestrian (charrería) traditions rooted in multi-ethnic rural labor.',
-    imageUrl: '/castas/castaS2o-m.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS2o-m.jpg'
+    imageUrl: '/castas/castaS2o-m.webp',
+    thumbnailUrl: '/castas/thumbs/castaS2o-m.webp'
   },
   {
     id: 'casta-2o-n',
@@ -372,8 +372,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Castas Painting Series II',
     description: 'Depicts the colloquial "Ahí te estás" ("there you stay") casta designation in an open-air marketplace with tropical birds (macaws, parakeets).',
     historicalSignificance: 'Marks the outer linguistic bounds of casta taxonomy, where painters recorded colloquial phrases describing intricate ancestral mixtures.',
-    imageUrl: '/castas/castaS2o-n.jpg',
-    thumbnailUrl: '/castas/thumbs/castaS2o-n.jpg'
+    imageUrl: '/castas/castaS2o-n.webp',
+    thumbnailUrl: '/castas/thumbs/castaS2o-n.webp'
   },
 
   // --- SPECIAL HISTORICAL & INQUISITION ARCHIVES ---
@@ -386,8 +386,8 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Inquisition Trials & Folklore',
     description: 'Judicial dossier and witness illustration regarding the legendary healer and artist known as the Mulata de Córdoba, accused of witchcraft and miraculous drawing upon prison cell walls.',
     historicalSignificance: 'Opens a window into gender dynamics, autonomy, and the persecution of traditional healers of African and mixed descent by the colonial Inquisition.',
-    imageUrl: '/castas/Mulata_o-short.JPG',
-    thumbnailUrl: '/castas/thumbs/Mulata_o-short.JPG'
+    imageUrl: '/castas/Mulata_o-short.webp',
+    thumbnailUrl: '/castas/thumbs/Mulata_o-short.webp'
   },
   {
     id: 'test-plate-4',
@@ -398,7 +398,7 @@ export const CASTAS_ARCHIVE_ITEMS: CastasArchivalItem[] = [
     category: 'Hydrographic & Demographic Survey',
     description: 'Comprehensive coastal and demographic survey plate charting port fortifications, mining centers (Guanajuato, Zacatecas), and indigenous tribute populations.',
     historicalSignificance: 'Represents late 18th-century Bourbon reforms in colonial administration, combining military engineering with rigorous statistical census-taking.',
-    imageUrl: '/castas/test4.jpg',
-    thumbnailUrl: '/castas/thumbs/test4.jpg'
+    imageUrl: '/castas/test4.webp',
+    thumbnailUrl: '/castas/thumbs/test4.webp'
   }
 ];

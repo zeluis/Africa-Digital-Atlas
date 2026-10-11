@@ -54,7 +54,6 @@ export interface NotebookMetadataHeader {
     citationStyle?: string;
     category?: string;
     seriesNumber?: string;
-    issn?: string;
     jelCodes?: string[];
   };
   research?: {
@@ -91,7 +90,6 @@ export interface NotebookMetadataHeader {
   publication_type?: AfricaliaPublicationType;
   seriesNumber?: string;
   jelCodes?: string[];
-  issn?: string;
 }
 
 export interface IngestionResult {
@@ -386,9 +384,6 @@ export function parseFrontmatter(rawText: string): { frontmatter: Partial<Notebo
   if (frontmatter.publication && typeof frontmatter.publication === 'object' && !Array.isArray(frontmatter.publication)) {
     if (frontmatter.publication.seriesNumber && !frontmatter.seriesNumber) {
       frontmatter.seriesNumber = frontmatter.publication.seriesNumber;
-    }
-    if (frontmatter.publication.issn && !frontmatter.issn) {
-      frontmatter.issn = frontmatter.publication.issn;
     }
     if (Array.isArray(frontmatter.publication.jelCodes) && !frontmatter.jelCodes) {
       frontmatter.jelCodes = frontmatter.publication.jelCodes;
@@ -888,7 +883,7 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
 
   // 10. DOI Resolution
   const rawDoi = frontmatter.doi || (body.match(/(?:https?:\/\/doi\.org\/|doi:\s*)(10\.\d{4,9}\/[-._;()/:A-Za-z0-9]+)/i)?.[1] ?? null);
-  const normalizedDoi = rawDoi ? resolveDoi(rawDoi).replace('https://doi.org/', '') : `10.5281/zenodo.africalia.${reportId}`;
+  const normalizedDoi = rawDoi ? resolveDoi(rawDoi).replace('https://doi.org/', '') : '10.6084/m9.figshare.34065711';
 
   // 11. Keywords, Tags & Working Paper Series Metadata
   const keywords = Array.isArray(frontmatter.keywords) && frontmatter.keywords.length > 0
@@ -906,7 +901,6 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
   const seriesName = pubObj?.series || pubObj?.category || (isWorkingPaper ? 'Africalia Working Paper & Policy Brief Series' : 'Africalia Scholarly Research Reports');
   const seriesNumber = frontmatter.seriesNumber || pubObj?.seriesNumber || (isWorkingPaper ? 'Africalia Working Paper No. 08' : undefined);
   const jelCodes = frontmatter.jelCodes || pubObj?.jelCodes || inferJelCodes(pillar);
-  const issn = frontmatter.issn || pubObj?.issn || 'ISSN 2983-4921 (Online Archive)';
 
   const institutionsList = Array.isArray(frontmatter.institutions) && frontmatter.institutions.length > 0
     ? frontmatter.institutions
@@ -968,7 +962,6 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
     identifiers: {
       doi: normalizedDoi,
       isbn: null,
-      issn,
       external_url: null,
       source_url: null
     },
@@ -1039,8 +1032,7 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
     icon: frontmatter.icon,
     isWorkingPaper,
     seriesNumber,
-    jelCodes,
-    issn
+    jelCodes
   };
 
   const summaryJson = JSON.stringify(report, null, 2);

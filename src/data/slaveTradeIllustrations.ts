@@ -1,4 +1,4 @@
-import recordsWithDescriptionsData from './records-with-descriptions.json';
+const recordsJsonAssetUrl = new URL('./records-with-descriptions.json', import.meta.url).href;
 
 export interface SlaveTradeIllustration {
   objectId: number;
@@ -842,9 +842,8 @@ interface RawRecordItem {
 }
 
 // Programmatic generation to guarantee all images with authentic archive descriptions are accessible
-const generateAllIllustrations = (): SlaveTradeIllustration[] => {
+const buildIllustrationsFromRaw = (rawRecords: RawRecordItem[]): SlaveTradeIllustration[] => {
   const result: SlaveTradeIllustration[] = [];
-  const rawRecords = (recordsWithDescriptionsData as unknown as { records: RawRecordItem[] }).records || [];
   
   const recordsMap = new Map<number, RawRecordItem>();
   rawRecords.forEach(rec => {
@@ -979,4 +978,35 @@ const generateAllIllustrations = (): SlaveTradeIllustration[] => {
   return result;
 };
 
-export const SLAVE_TRADE_ILLUSTRATIONS: SlaveTradeIllustration[] = generateAllIllustrations();
+export const SLAVE_TRADE_ILLUSTRATIONS: SlaveTradeIllustration[] = buildIllustrationsFromRaw([]);
+
+let hydrationPromise: Promise<SlaveTradeIllustration[]> | null = null;
+const hydrationListeners = new Set<() => void>();
+
+export function subscribeSlaveTradeIllustrations(listener: () => void): () => void {
+  hydrationListeners.add(listener);
+  return () => {
+    hydrationListeners.delete(listener);
+  };
+}
+
+export function ensureSlaveTradeIllustrationsHydrated(): Promise<SlaveTradeIllustration[]> {
+  if (hydrationPromise) return hydrationPromise;
+  if (typeof window === 'undefined' || typeof fetch === 'undefined') {
+    return Promise.resolve(SLAVE_TRADE_ILLUSTRATIONS);
+  }
+  hydrationPromise = fetch(recordsJsonAssetUrl)
+    .then(res => (res.ok ? res.json() : { records: [] }))
+    .then((data: { records?: RawRecordItem[] }) => {
+      const hydrated = buildIllustrationsFromRaw(data.records || []);
+      SLAVE_TRADE_ILLUSTRATIONS.splice(0, SLAVE_TRADE_ILLUSTRATIONS.length, ...hydrated);
+      hydrationListeners.forEach(fn => fn());
+      return SLAVE_TRADE_ILLUSTRATIONS;
+    })
+    .catch(() => SLAVE_TRADE_ILLUSTRATIONS);
+  return hydrationPromise;
+}
+
+if (typeof window !== 'undefined') {
+  ensureSlaveTradeIllustrationsHydrated();
+}

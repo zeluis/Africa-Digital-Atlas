@@ -159,7 +159,7 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 mt-0.5 max-w-3xl leading-relaxed">
-                Aggregating authoritative macroeconomic, governance, health, trade, and climate series across 54 sovereign African states.
+                Aggregating curated macroeconomic, governance, health, trade, and climate series across 54 sovereign African states.
               </p>
             </div>
           </div>
@@ -417,8 +417,6 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
               <ShieldCheck className="w-4 h-4" />
               16 Multilateral Connectors Synchronized
             </span>
-            <span className="hidden md:inline">•</span>
-            <span className="hidden md:inline">Universal SHA-256 Checksum Verified</span>
           </div>
 
           <div className="flex items-center gap-1 text-stone-800 dark:text-stone-300 font-medium">

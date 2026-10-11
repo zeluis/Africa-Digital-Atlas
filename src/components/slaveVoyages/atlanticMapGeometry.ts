@@ -266,7 +266,7 @@ const MADAGASCAR_COORDS: [number, number][] = [
 export const MADAGASCAR_PATH = coordsToPath(MADAGASCAR_COORDS);
 
 /**
- * Authoritative, high-fidelity landmasses mapped directly from the Natural Earth 50m TopoJSON.
+ * Curated, high-fidelity landmasses mapped directly from the Natural Earth 50m TopoJSON.
  */
 export const SOUTH_AMERICA_PATH = NATURAL_EARTH_SOUTH_AMERICA_PATH;
 export const NORTH_AMERICA_PATH = NATURAL_EARTH_NORTH_AMERICA_PATH;

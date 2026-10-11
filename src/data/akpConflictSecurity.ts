@@ -1,7 +1,7 @@
 /**
  * akpConflictSecurity.ts - Conflict, Security & Stability Beacons
  * Native SVG Coordinate Engine: 5796 x 5867
- * Authoritative Sources: ACLED, UCDP (Uppsala Conflict Data Program), IIAG, AU Peace & Security Council, UN Peacekeeping
+ * Curated Sources: ACLED, UCDP (Uppsala Conflict Data Program), IIAG, AU Peace & Security Council, UN Peacekeeping
  */
 
 export type ConflictCategory = 'battle' | 'civilian_violence' | 'remote_strike' | 'resource_dispute';

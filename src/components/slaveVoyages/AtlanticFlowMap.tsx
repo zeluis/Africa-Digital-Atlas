@@ -517,7 +517,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                 <path d={SARDINIA_CORSICA_PATH} fill="#E8DFCE" className="dark:[fill:#18181b]" stroke="#D8CCB5" strokeWidth="1" />
                 <path d={SICILY_PATH} fill="#E8DFCE" className="dark:[fill:#18181b]" stroke="#D8CCB5" strokeWidth="1" />
 
-                {/* Africa Landmass & Madagascar via authoritative AfricaVectorContinent */}
+                {/* Africa Landmass & Madagascar via curated AfricaVectorContinent */}
                 <AfricaVectorContinent
                   x="555"
                   y="125"

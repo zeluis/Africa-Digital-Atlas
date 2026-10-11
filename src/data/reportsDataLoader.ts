@@ -182,7 +182,6 @@ export function getUnifiedWorkingPaperEntries(): Array<WorkingPaperEntry & { rep
       affiliation: wp.institutions?.[0] || 'Africalia Interdisciplinary Research & Knowledge Initiative',
       date: wp.publicationDate,
       jelCodes: wp.jelCodes || ['N17', 'O10', 'N37', 'F54'],
-      issnPlaceholder: wp.issn || 'ISSN 2983-4921 (Online Archive)',
       abstract: wp.executiveSummary.replace(/\[REF:[^|\]]+(?:\|([^\]]+))?\]/g, '($1)'),
       keyFindings: keyFindings.length > 0 ? keyFindings : [wp.executiveSummary],
       citationApa: `${authorStr} (${yearStr}). ${wp.title}: ${wp.subtitle || wp.categoryLabel}. ${seriesNum}. Africalia Research Platform. https://doi.org/${wp.doi.replace('https://doi.org/', '')}`,

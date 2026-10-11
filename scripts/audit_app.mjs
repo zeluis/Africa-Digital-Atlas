@@ -32,6 +32,7 @@ allSrc.forEach(f => {
   let match;
   while ((match = urlRegex.exec(content)) !== null) {
     let u = match[0].replace(/[,\);]+$/, '');
+    if (u.includes('${')) continue;
     if (u.match(/\.(png|jpg|jpeg|svg|webp|gif)/i) || u.includes('images.unsplash.com') || u.includes('upload.wikimedia.org')) {
       if (!urlMap.has(u)) urlMap.set(u, []);
       urlMap.get(u).push(f);

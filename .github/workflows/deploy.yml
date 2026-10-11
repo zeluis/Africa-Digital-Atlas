@@ -73,6 +73,11 @@ jobs:
             npm install
           fi
 
+      - name: Verify Research & Dataset Integrity
+        run: |
+          npm run research:check
+          npm run research:integrity
+
       - name: Build project
         run: npm run build
 

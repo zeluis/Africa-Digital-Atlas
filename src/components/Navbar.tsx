@@ -1,11 +1,10 @@
 import React from 'react';
-import { atlas } from '../data/atlas-store';
 import { LanguageSelector } from './LanguageSelector';
 import { VoiceWelcomeFab } from './VoiceWelcomeFab';
 import { TOP_BAR_UI_GREETINGS } from '../utils/africaliaVoiceEngine';
 import { useTranslation } from '../i18n/LanguageContext';
 import { JapandiTooltip } from './JapandiTooltip';
-import { CanonicalNavTab } from './NavigationDrawer';
+import type { CanonicalNavTab } from './NavigationDrawer';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { AfricaUnLogo } from './AfricaUnLogo';
 import { PreferencesDropdown } from './PreferencesDropdown';
@@ -59,7 +58,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const { t, language, currentLanguageOption } = useTranslation();
   const isOnline = useNetworkStatus();
-  const manifest = atlas.getManifest();
+  const manifest = { atlasVersion: '1.2.0' };
 
   const currentGreeting = TOP_BAR_UI_GREETINGS[language] || TOP_BAR_UI_GREETINGS['en'];
   const activePageInfo = getPageInfo(

@@ -1,6 +1,6 @@
 /**
  * akpDatasets.ts - European Commission Africa Knowledge Platform (AKP / JRC)
- * Authoritative Continental Datasets, Indicators, Infrastructure & Conservation Points
+ * Curated Continental Datasets, Indicators, Infrastructure & Conservation Points
  * Ingested from JRC, BIOPAMA, Copernicus, World Bank & ESDAC.
  */
 

@@ -23,7 +23,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
   en: {
     // Brand & Header
     'app.title': 'AFRICA DATA ATLAS',
-    'app.subtitle': 'Authoritative Pan-African Socio-Economic Platform • 54 Sovereign Nations',
+    'app.subtitle': 'Curated Pan-African Socio-Economic Platform • 54 Sovereign Nations',
     'app.live_data': 'LIVE DATA',
     'app.live_data_tooltip': 'Real-time synchronized data feeds: World Bank, IMF, UN DESA & UNESCO',
     'app.quick_search': 'Quick Search...',

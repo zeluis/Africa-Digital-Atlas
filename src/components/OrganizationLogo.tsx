@@ -62,7 +62,7 @@ export const ORG_METADATA: Record<string, {
   IMF: {
     name: 'International Monetary Fund',
     acronym: 'IMF',
-    wikimediaUrl: 'https://commons.wikimedia.org/wiki/File:International_Monetary_Fund_logo.svg',
+    wikimediaUrl: 'https://www.imf.org/',
     brandColor: '#004c97',
     publicDomainStatus: 'Official Corporate Logo / Wikimedia Commons'
   },
@@ -76,14 +76,14 @@ export const ORG_METADATA: Record<string, {
   AU: {
     name: 'African Union',
     acronym: 'AU',
-    wikimediaUrl: 'https://commons.wikimedia.org/wiki/File:Emblem_of_the_African_Union.svg',
+    wikimediaUrl: 'https://au.int/',
     brandColor: '#006633',
     publicDomainStatus: 'Official Emblem of the African Union'
   },
   AfDB: {
     name: 'African Development Bank Group',
     acronym: 'AfDB',
-    wikimediaUrl: 'https://commons.wikimedia.org/wiki/File:African_Development_Bank_logo.svg',
+    wikimediaUrl: 'https://www.afdb.org/',
     brandColor: '#008751',
     publicDomainStatus: 'Official Multilateral Bank Logo'
   },
@@ -97,7 +97,7 @@ export const ORG_METADATA: Record<string, {
   ASEAN: {
     name: 'Association of Southeast Asian Nations',
     acronym: 'ASEAN',
-    wikimediaUrl: 'https://commons.wikimedia.org/wiki/File:Emblem_of_ASEAN.svg',
+    wikimediaUrl: 'https://asean.org/',
     brandColor: '#da251d',
     publicDomainStatus: 'Official Emblem / Public Domain in ASEAN'
   },
@@ -111,14 +111,14 @@ export const ORG_METADATA: Record<string, {
   ILO: {
     name: 'International Labour Organization',
     acronym: 'ILO',
-    wikimediaUrl: 'https://commons.wikimedia.org/wiki/File:International_Labour_Organization_Logo.svg',
+    wikimediaUrl: 'https://www.ilo.org/',
     brandColor: '#003366',
     publicDomainStatus: 'Official UN Agency Emblem'
   },
   FREEDOM_HOUSE: {
     name: 'Freedom House',
     acronym: 'FH',
-    wikimediaUrl: 'https://commons.wikimedia.org/wiki/File:Freedom_House_logo.svg',
+    wikimediaUrl: 'https://freedomhouse.org/',
     brandColor: '#1a365d',
     publicDomainStatus: 'Non-profit Logo / Fair Use'
   },
@@ -139,14 +139,14 @@ export const ORG_METADATA: Record<string, {
   ECOWAS: {
     name: 'Economic Community of West African States',
     acronym: 'ECOWAS',
-    wikimediaUrl: 'https://commons.wikimedia.org/wiki/File:Flag_of_ECOWAS.svg',
+    wikimediaUrl: 'https://www.ecowas.int/',
     brandColor: '#008751',
     publicDomainStatus: 'Regional Economic Community Emblem'
   },
   EAC: {
     name: 'East African Community',
     acronym: 'EAC',
-    wikimediaUrl: 'https://commons.wikimedia.org/wiki/File:Flag_of_the_East_African_Community.svg',
+    wikimediaUrl: 'https://www.eac.int/',
     brandColor: '#0099ff',
     publicDomainStatus: 'Regional Economic Community Emblem'
   },
@@ -160,7 +160,7 @@ export const ORG_METADATA: Record<string, {
   COMESA: {
     name: 'Common Market for Eastern and Southern Africa',
     acronym: 'COMESA',
-    wikimediaUrl: 'https://commons.wikimedia.org/wiki/File:Flag_of_COMESA.svg',
+    wikimediaUrl: 'https://www.comesa.int/',
     brandColor: '#006600',
     publicDomainStatus: 'Regional Economic Community Emblem'
   },

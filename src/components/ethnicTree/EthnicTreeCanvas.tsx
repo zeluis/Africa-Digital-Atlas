@@ -475,10 +475,11 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
         viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
         preserveAspectRatio="xMidYMid meet"
         xmlns="http://www.w3.org/2000/svg"
-        data-author="Zéluis F. Correia"
+        data-author="ZéLuis F. Correia"
         data-curator="Africalia"
-        data-copyright="© 2024-2026 Africalia. All Rights Reserved."
-        data-doi="10.5281/zenodo.10842918"
+        data-license="CC BY 4.0 (LICENSE-ASSETS)"
+        data-copyright="© 2024-2026 ZéLuis F. Correia (Africalia). Licensed under CC BY 4.0."
+        data-doi="10.6084/m9.figshare.34065711"
         style={{
           transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
           transformOrigin: 'center center',
@@ -488,10 +489,10 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
         {/* 
           ============================================================================
           AFRICALIA CARTOGRAPHIC OBSERVATORY — VECTOR TOPOLOGY ARCHITECTURE
-          Author & Cartographer: Zéluis F. Correia
-          Copyright (c) 2024-2026 Africalia. All Rights Reserved.
+          Author & Cartographer: ZéLuis F. Correia
+          License: CC BY 4.0 (LICENSE-ASSETS) • Code: MIT (LICENSE-CODE)
           Coordinate Space: 2000 x 2000 Sovereign Ethnic Radial Topology
-          DOI: 10.5281/zenodo.10842918 • Open Science Archive
+          DOI: 10.6084/m9.figshare.34065711 • Open Science Archive
           ============================================================================
         */}
         <defs>

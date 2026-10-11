@@ -213,7 +213,7 @@ export const CartographicCartouche: React.FC<CartographicCartoucheProps> = ({
         <g transform="translate(1230, 0)">
           <rect x="0" y="0" width="390" height="82" rx="16" fill={accentBadgeBg} stroke={accentColor} strokeWidth="2" />
           <text x="24" y="30" fill={accentColor} fontSize="16" fontWeight="800" fontFamily="monospace" letterSpacing="1.2">RESEARCH DOI</text>
-          <text x="24" y="62" fill={headerColor} fontSize="22" fontWeight="900" fontFamily="monospace">10.5281/zenodo.10842918</text>
+          <text x="24" y="62" fill={headerColor} fontSize="19" fontWeight="900" fontFamily="monospace">10.6084/m9.figshare.34065711</text>
         </g>
       </g>
 
@@ -332,7 +332,7 @@ export const CartographicCartouche: React.FC<CartographicCartoucheProps> = ({
           fontWeight="800"
           fontFamily="serif"
         >
-          Cartography &amp; Spatial Vector Topology © 2024–2026 Africalia. Authored and engineered by Zéluis F. Correia. All Rights Reserved.
+          ZéLuis F. Correia is the author of all SVG maps and the Ethnic Tree Visualization &amp; SVG (CC BY 4.0 • LICENSE-ASSETS).
         </text>
         {/* Intellectual Property & Licensing Guidance */}
         <text
@@ -343,7 +343,7 @@ export const CartographicCartouche: React.FC<CartographicCartoucheProps> = ({
           fontFamily="sans-serif"
           fontWeight="600"
         >
-          Academic Fair Use: Authorized to cite &amp; project with attribution. Automated vector scraping and uncredited extraction prohibited under the Berne Convention.
+          Unless stated otherwise, all graphics and visualizations are authored by ZéLuis F. Correia (CC BY 4.0). Source code: MIT License (LICENSE-CODE).
         </text>
       </g>
     </g>

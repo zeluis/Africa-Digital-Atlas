@@ -145,6 +145,19 @@ export const getAssetCandidateUrls = (path: string | undefined | null): string[]
     }
   }
 
+  // Candidate 5: WebP <-> JPG extension fallback for local optimized plates
+  if (clean.endsWith('.jpg') || clean.endsWith('.jpeg')) {
+    const webpPath = resolveAssetPath(clean.replace(/\.(jpe?g)$/i, '.webp'));
+    if (!candidates.includes(webpPath)) {
+      candidates.unshift(webpPath);
+    }
+  } else if (clean.endsWith('.webp')) {
+    const jpgPath = resolveAssetPath(clean.replace(/\.webp$/i, '.jpg'));
+    if (!candidates.includes(jpgPath)) {
+      candidates.push(jpgPath);
+    }
+  }
+
   return candidates;
 };
 

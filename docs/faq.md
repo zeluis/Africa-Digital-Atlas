@@ -6,15 +6,15 @@ Yes. Africa Digital Atlas is a Progressive Web App (PWA). Once you've loaded it 
 
 ### How often is the data updated?
 
-It depends on the source. Most institutional connectors (World Bank, IMF, WHO, UNESCO, and similar) publish updates annually; a few (trade and health-surveillance data) update quarterly. Each country dossier and indicator shows data-quality flags where a figure is modeled, imputed, or based on a lagged census.
+Socioeconomic indicators in the Atlas form a curated 2015–2024 snapshot drawn from institutional sources (World Bank, IMF, UN DESA, WHO, UNESCO, and others). Every observation carries an explicit status flag (`observed`, `estimated`, `forecast`, or `derived`) and records its originating source and dataset.
 
 ### Can I trust the numbers for academic work?
 
-The Atlas is a visualization and aggregation layer over primary data from 16 multilateral institutions — it doesn't invent its own statistics. Use the built-in **Provenance & Data Quality** console to check a given figure's source, and the citation generator to produce a properly formatted reference (APA, Harvard, Chicago, or BibTeX). See [Data & Methodology](/data/data-sources-catalog) for the full source catalog.
+The Atlas is a visualization and aggregation layer over primary data from 16 multilateral institutions; indicators are a curated snapshot (2015–2024) with per-value status flags rather than a live feed. Use the built-in **Provenance & Data Quality** console to check any figure's source and status before relying on it, and use the citation generator to produce a formatted reference (APA, Harvard, Chicago, or BibTeX). Always cite the original source for any figure you rely on. See [Data & Methodology](/data/data-sources-catalog) for the full source catalog.
 
 ### What's the Transatlantic Slave Voyages globe based on?
 
-It's derived from the Slave Voyages research consortium's database of over 36,000 documented voyages (1501–1867). See [Citations & Licensing](/data/citations-licensing) for the attribution required if you use this data in research.
+Headline totals come from the SlaveVoyages trans-Atlantic database (2024.1 release): **36,108 documented voyages** between **1514–1866** (with continental demographic estimates covering **1501–1866**), alongside **18 individually curated voyage dossiers** linked to their source records. See [Citations & Licensing](/data/citations-licensing) for the attribution required if you use this data in research.
 
 ### What languages is the Atlas available in?
 
@@ -26,4 +26,4 @@ Open an issue on the [GitHub repository](https://github.com/zeluis/Africa-Digita
 
 ### Is the project open source?
 
-Yes, the code is MIT licensed. The underlying statistical and geospatial data remain subject to the licenses of their originating institutions.
+Yes. The project uses dual licensing at the repository root: the source code is released under the **MIT License** (`LICENSE-CODE`), and creative assets (all SVG maps, the Ethnic Tree Visualization and SVG, and unless stated otherwise, all graphics and visualizations, authored by **ZéLuis F. Correia**) are licensed under **CC BY 4.0** (`LICENSE-ASSETS`). The underlying statistical and historical datasets remain subject to the licenses of their originating institutions.

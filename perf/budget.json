@@ -1,0 +1,38 @@
+{
+  "_readme": "ceilings = fail CI when exceeded (set from the measured build +5%: run `node scripts/perf-budget.mjs --init` after a clean build). targets = where to get to. Lower ceilings as you win; never raise one without a note in the PR.",
+  "ceilings": {
+    "startupJsGzipKB": 606.9,
+    "startupChunkCount": 11.6,
+    "entryRawKB": 935.6,
+    "cssRawKB": 443.1,
+    "totalJsRawMB": 8.9,
+    "largestImageKB": 2548.4,
+    "precacheTransferMB": 4.8,
+    "precacheStorageMB": 14.3
+  },
+  "targets": {
+    "startupJsGzipKB": 250,
+    "startupChunkCount": 4,
+    "entryRawKB": 500,
+    "cssRawKB": 250,
+    "totalJsRawMB": 6,
+    "largestImageKB": 300,
+    "precacheTransferMB": 3.0,
+    "precacheStorageMB": 9
+  },
+  "measuredBaseline_2026_10_04": {
+    "entryRawKB": 891,
+    "startupChunks": 11,
+    "cssRawKB": 422,
+    "totalJsRawMB": 8.5,
+    "largestImageKB": 2427,
+    "buildSeconds": 22,
+    "tscErrors": 0,
+    "startupJsGzipKB": 578,
+    "imageMB_public_assets_images": 6.9,
+    "webpTestSaving": "6.9 MB -> 1.1 MB on the 8 files in public/assets/images",
+    "precacheTransferMB": 4.6,
+    "precacheStorageMB": 13.9
+  },
+  "_note": "precacheTransferMB is what a first-time visitor downloads (gzip where the server compresses). precacheStorageMB is what it occupies on disk. Do not lower either by dropping code or data from the precache; see SKILL.md section A."
+}

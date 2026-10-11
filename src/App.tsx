@@ -1,21 +1,19 @@
 import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Navbar } from './components/Navbar';
-import { NavigationDrawer, CanonicalNavTab } from './components/NavigationDrawer';
+import type { CanonicalNavTab } from './components/NavigationDrawer';
 import { MainContentSkeleton } from './components/MainContentSkeleton';
-import { Footer } from './components/Footer';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { DensityProvider } from './contexts/DensityContext';
 import { SavedEntitiesProvider } from './contexts/SavedEntitiesContext';
-import { OverviewView } from './views/OverviewView';
 import { AfricanRegion } from './data/types';
-import { atlas } from './data/atlas-store';
 import { lazyWithRetry, ViewErrorBoundary } from './utils/lazyWithRetry';
-import { Globe, Database } from 'lucide-react';
-import { DynamicIcon } from './components/DynamicIcon';
-import { getPageInfo } from './utils/navigationTitles';
-import { initArchivalPrecache } from './utils/imagePrecache';
-import { isReportOrPaperTab } from './data/reportsDataLoader';
+import { PanelLeftOpen } from 'lucide-react';
+import { getPageInfo, isReportOrPaperTab } from './utils/navigationTitles';
+
+const NavigationDrawer = lazyWithRetry(() => import('./components/NavigationDrawer').then(m => ({ default: m.NavigationDrawer })), 'NavigationDrawer');
+const Footer = lazyWithRetry(() => import('./components/Footer').then(m => ({ default: m.Footer })), 'Footer');
+const OverviewView = lazyWithRetry(() => import('./views/OverviewView').then(m => ({ default: m.OverviewView })), 'OverviewView');
 
 // Lazy-load modals on demand to preserve instant initial First Contentful Paint
 const SearchModal = lazyWithRetry(() => import('./components/SearchModal').then(m => ({ default: m.SearchModal })), 'SearchModal');
@@ -202,42 +200,7 @@ function AppContent() {
     return 'economics';
   }, [currentTab]);
 
-  // Background idle preloader for views to make navigation instantaneous
-  useEffect(() => {
-    const idlePreload = () => {
-      const viewsToPreload = [
-        ExploreView,
-        AnalyticsView,
-        MapView,
-        SlaveTradeView,
-        ThematicPillarsView,
-        LanguagesView,
-        HeritageView,
-        CompareView,
-        EthnicTreeOfLifeView,
-        ResearchReportsDirectoryView,
-      ];
-      for (const view of viewsToPreload) {
-        try {
-          const promise = view.preload?.();
-          if (promise && typeof promise.catch === 'function') {
-            promise.catch(() => {});
-          }
-        } catch {
-          // Safe catch
-        }
-      }
-    };
-
-    if (typeof window !== 'undefined') {
-      initArchivalPrecache();
-      if ('requestIdleCallback' in window) {
-        (window as any).requestIdleCallback(idlePreload, { timeout: 2500 });
-      } else {
-        setTimeout(idlePreload, 1200);
-      }
-    }
-  }, []);
+  // Keep startup lean: views and archival assets load on demand when navigated to
 
   // Synchronize theme with <html> class, data-theme attribute, and localStorage
   useEffect(() => {
@@ -543,7 +506,7 @@ function AppContent() {
             title="Expand Navigation Drawer (⌘B)"
             aria-label="Expand Navigation Drawer"
           >
-            <DynamicIcon icon="codicon:layout-sidebar-right-dock" className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />
+            <PanelLeftOpen className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />
           </button>
         )}
 
@@ -553,27 +516,29 @@ function AppContent() {
           className="lg:hidden fixed bottom-5 left-4 z-40 p-3 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-900/95 text-zinc-800 dark:text-zinc-200 shadow-xl backdrop-blur-md flex items-center gap-2 text-xs font-mono font-bold cursor-pointer hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           aria-label="Open Navigation Menu"
         >
-          <DynamicIcon icon="codicon:layout-sidebar-right-dock" className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+          <PanelLeftOpen className="w-4 h-4 text-amber-600 dark:text-amber-400" />
           <span>Menu</span>
         </button>
 
         {/* Desktop Navigation Drawer (Starts open, 272px width, doesn't close on tab clicks) + Mobile Bottom Sheet */}
-        <NavigationDrawer
-          currentTab={currentTab}
-          activeRegion={activeRegion}
-          onSelectTab={handleSelectTab}
-          isDesktopOpen={isDesktopDrawerOpen}
-          onToggleDesktop={handleToggleMenu}
-          isMobileOpen={isMobileNavOpen}
-          onCloseMobile={() => setIsMobileNavOpen(false)}
-          onOpenOnboarding={() => setIsOnboardingOpen(true)}
-          onOpenColophon={() => setIsColophonOpen(true)}
-          onOpenCitationModal={() => setIsCitationModalOpen(true)}
-          onOpenWorkingPapers={() => setIsWorkingPapersOpen(true)}
-          onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
-          onOpenAfcftaSimulator={() => setIsAfcftaSimulatorOpen(true)}
-          isIconographyIngestion={isIconographyIngestion}
-        />
+        <Suspense fallback={<div className="hidden lg:block w-[272px] shrink-0" />}>
+          <NavigationDrawer
+            currentTab={currentTab}
+            activeRegion={activeRegion}
+            onSelectTab={handleSelectTab}
+            isDesktopOpen={isDesktopDrawerOpen}
+            onToggleDesktop={handleToggleMenu}
+            isMobileOpen={isMobileNavOpen}
+            onCloseMobile={() => setIsMobileNavOpen(false)}
+            onOpenOnboarding={() => setIsOnboardingOpen(true)}
+            onOpenColophon={() => setIsColophonOpen(true)}
+            onOpenCitationModal={() => setIsCitationModalOpen(true)}
+            onOpenWorkingPapers={() => setIsWorkingPapersOpen(true)}
+            onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
+            onOpenAfcftaSimulator={() => setIsAfcftaSimulatorOpen(true)}
+            isIconographyIngestion={isIconographyIngestion}
+          />
+        </Suspense>
 
         {/* Main Content Area */}
         <main
@@ -887,20 +852,22 @@ function AppContent() {
             isOpen={isCitationModalOpen}
             onClose={() => setIsCitationModalOpen(false)}
             title="Africa Data Atlas & Cartographic Observatory"
-            sourceContext="Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform"
+            sourceContext="An interactive atlas of geography, indicators and historical trade flows"
           />
         </Suspense>
       )}
 
       {/* Structured Credibility Footer (Hidden on map, ethnic tree, archival cartography & iconography ingestion workbench) */}
       {currentTab !== 'map' && currentTab !== 'ethnic-tree' && currentTab !== 'archival-cartography' && !(currentTab === 'iconography' && isIconographyIngestion) && (
-        <Footer 
-          onNavigateTab={handleSelectTab}
-          onOpenColophon={() => setIsColophonOpen(true)}
-          onOpenCitationModal={() => setIsCitationModalOpen(true)}
-          onOpenWorkingPapers={() => setIsWorkingPapersOpen(true)}
-          onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
-        />
+        <Suspense fallback={null}>
+          <Footer 
+            onNavigateTab={handleSelectTab}
+            onOpenColophon={() => setIsColophonOpen(true)}
+            onOpenCitationModal={() => setIsCitationModalOpen(true)}
+            onOpenWorkingPapers={() => setIsWorkingPapersOpen(true)}
+            onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
+          />
+        </Suspense>
       )}
 
       {/* Offline Status Toast / Banner */}

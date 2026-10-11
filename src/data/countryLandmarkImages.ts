@@ -1,5 +1,5 @@
 /**
- * countryLandmarkImages.ts - Authoritative African Landmark, Geography & Nature Imagery
+ * countryLandmarkImages.ts - Curated African Landmark, Geography & Nature Imagery
  * Strictly curated photography: landscapes, national parks, geographical features, natural reserves,
  * ancient monuments, satellite topography, and capital cities across all 54 sovereign African states.
  * (No flags, coats of arms, or political logos).

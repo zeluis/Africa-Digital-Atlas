@@ -80,7 +80,7 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
         {activeQuestion === 'what' && (
           <div className="space-y-3">
             <h3 className="text-xl md:text-2xl font-bold font-display text-zinc-900 dark:text-zinc-100">
-              The Definitive Open Statistical Platform for the African Continent
+              An Open Statistical &amp; Cartographic Platform for the African Continent
             </h3>
             <p className="text-sm md:text-base text-zinc-600 dark:text-zinc-300 leading-relaxed max-w-4xl">
               The Africa Data Atlas harmonizes multidimensional demographic, macroeconomic, environmental, linguistic, and cultural heritage data across all 54 sovereign African states and affiliated island territories into a single, high-fidelity spatial engine.

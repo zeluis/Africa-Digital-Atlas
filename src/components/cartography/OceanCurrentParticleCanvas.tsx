@@ -1041,7 +1041,7 @@ const OceanCurrentParticleCanvasComponent: React.FC<OceanCurrentParticleCanvasPr
           ))}
         </g>
 
-        {/* Authoritative African Continent Vector — Calibrated flawlessly to Europe at the Strait of Gibraltar (Tangier x=625.7, y=150.1) */}
+        {/* Curated African Continent Vector — Calibrated to Europe at the Strait of Gibraltar (Tangier x=625.7, y=150.1) */}
         <AfricaVectorContinent
           x="514.2"
           y="142.1"

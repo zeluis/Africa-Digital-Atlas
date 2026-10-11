@@ -228,7 +228,7 @@ export const STRUCTURAL_UNDERDEVELOPMENT_DATA = {
   plantationDemographicSink: {
     commodityCrops: ['Sugar Cane (Brazil, Caribbean)', 'Cotton (US South)', 'Tobacco (Chesapeake)', 'Coffee (Brazil)', 'Rice & Indigo (Lowcountry)'],
     mortalityAttrition: 'In Caribbean sugar plantations, mortality exceeded birth rates continuously, requiring an endless influx of "replacement" captives—a true demographic sink.',
-    regimeComparison: 'US South established an unprecedented domestic breeding regime post-1808 federal abolition of international importation, driving massive domestic slave trade (1+ million marched south).'
+    regimeComparison: 'US South established an intensive domestic demographic reproduction regime post-1808 federal abolition of international importation, driving massive domestic slave trade (1+ million marched south).'
   },
   globalCapitalAccumulation: {
     financialInstitutions: 'Barclays, Lloyds, Bank of England, and Wall Street merchant banks originated as insurers and creditors for slave ships and plantation mortgages.',
@@ -308,7 +308,7 @@ export const MOLECULAR_RESEARCH_CITATIONS: ResearchCitation[] = [
     title: 'The New York African Burial Ground: Skeletal Biology Final Report',
     journal: 'Howard University / U.S. General Services Administration',
     doiOrUrl: 'https://www.nps.gov/afbg/learn/historyculture/index.htm',
-    keyFinding: 'Forensic bioarchaeological accounting of 419 individuals; revealed physical trauma, ritual dental filing, and cultural resistance in colonial New York, establishing the Public Archaeology descendant-empowerment paradigm.',
+    keyFinding: 'Detailed bioarchaeological accounting of 419 individuals; revealed physical trauma, ritual dental filing, and cultural resistance in colonial New York, establishing the Public Archaeology descendant-empowerment paradigm.',
     category: 'Bioarchaeology'
   },
   {

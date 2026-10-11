@@ -18,7 +18,7 @@ The dev server starts via Vite, with hot module reload enabled by default.
 
 ## Common scripts
 
-Check `package.json` for the authoritative list, but typically:
+Check `package.json` for the curated list, but typically:
 
 - `npm run dev` — start the local dev server
 - `npm run build` — produce a production build

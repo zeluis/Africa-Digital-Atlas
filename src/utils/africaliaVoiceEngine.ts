@@ -279,7 +279,7 @@ export function stopAfricaliaSpeech() {
 
 /**
  * Speaks an academic narrative (primary source quote, historical chronicle, or kingdom profile)
- * with rhythmic cadence, clean pronunciation, authoritative un-distorted tone, and singleton safety.
+ * with rhythmic cadence, clean pronunciation, curated un-distorted tone, and singleton safety.
  */
 export function speakAcademicNarration(config: {
   text: string;
@@ -327,7 +327,7 @@ export function speakAcademicNarration(config: {
       utterance.lang = langCode;
     }
 
-    // Authoritative, dignified academic pacing (0.92x prevents slurred fast synthesis)
+    // Curated, dignified academic pacing (0.92x prevents slurred fast synthesis)
     utterance.rate = 0.92;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;

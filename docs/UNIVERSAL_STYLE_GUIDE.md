@@ -11,19 +11,19 @@
 ### 1.1 Institutional Identity & Purpose
 **Africalia** is an independent, non-partisan cartographic and econometric research observatory founded by **Zéluis F. Correia**. The **Africa Data Atlas** serves as a digital public good and scientific synthesis platform bridging the gap between fragmented multilateral statistics, deep ancestral phylogenetic lineages, historical trade extractions, and contemporary geopolitical transformations across all 54 sovereign African nations.
 
-### 1.2 Cartographic Copyright & Vector Intellectual Property
-All proprietary vector topologies, geographic coordinate matrices, and phylogenetic tree geometries published within the Africa Data Atlas are original intellectual creations:
+### 1.2 Dual Licensing & Creative Assets Authorship
+The Africa Data Atlas applies explicit dual licensing at its repository root (`LICENSE-CODE` and `LICENSE-ASSETS`):
 
-> **CARTOGRAPHIC & VECTOR TOPOLOGY DECLARATION**  
-> **Copyright © 2024–2026 Africalia. Authored, calibrated, and engineered by Zéluis F. Correia. All Rights Reserved.**  
+> **AUTHORSHIP & DUAL-LICENSING DECLARATION**  
+> **ZéLuis F. Correia is the author of all SVG maps and the Ethnic Tree Visualization and SVG. Unless stated otherwise, all graphics and visualizations have the same author.**  
 > 
-> *The $5796 \times 5867$ High-Precision Vector Continental Engine (`africa-final.svg` / `AfricaMapFinalLayer.tsx`), the 1,017 Admin-1 provincial subdivision boundaries, the Geodesic SIDS Coordinate Callout Arrays, and the Sovereign African Ethnic Tree of Life Vector Topology (`AfricaliaExplorer.tsx` / `authenticEthnicTreeSvg.ts`) constitute proprietary intellectual property protected under the Berne Convention for the Protection of Literary and Artistic Works, the WIPO Copyright Treaty (WCT), and international copyright statutes.*
+> *The $5796 \times 5867$ High-Precision Vector Continental Map (`africa-final.svg` / `AfricaMapFinalLayer.tsx`), the 1,017 Admin-1 provincial subdivision boundaries, the Geodesic SIDS Coordinate Callout Arrays, and the Ethnic Tree Visualization and SVG (`AfricaliaExplorer.tsx` / `authenticEthnicTreeSvg.ts`) are licensed under **Creative Commons Attribution 4.0 International (CC BY 4.0)** (`LICENSE-ASSETS`). Application source code is licensed under the **MIT License** (`LICENSE-CODE`).*
 
-#### Permitted Academic & Educational Fair Use:
-- **Scholarly Citation & Classroom Instruction**: Researchers, faculty, students, and journalists are granted non-exclusive permission to inspect, screenshot, cite, and project these maps for non-commercial educational, scientific, and journalistic analysis.
-- **Mandatory Attribution**: Any reproduction, visual citation, or academic paper utilizing these geometries must state:  
-  `"Cartographic visualization courtesy of Africalia / Zéluis F. Correia (Africa Data Atlas, 2026)."`
-- **Commercial Restrictions**: Vector extraction, programmatic cloning, scraping, or commercial resale of the SVG path coordinate topologies without prior formal written consent from Africalia is strictly prohibited.
+#### License Terms & Attribution:
+- **Creative Assets (`LICENSE-ASSETS` — CC BY 4.0)**: You are free to share and adapt the SVG maps, Ethnic Tree Visualization and SVG, and graphics for any purpose, provided you give appropriate credit to **ZéLuis F. Correia**, link to the CC BY 4.0 license, and indicate if changes were made.
+- **Required Attribution**:  
+  `"Cartographic visualization by ZéLuis F. Correia (Africalia: Africa Data Atlas, CC BY 4.0, https://doi.org/10.6084/m9.figshare.34065711)."`
+- **Source Code (`LICENSE-CODE` — MIT License)**: The software codebase is released under the standard MIT License (`Copyright (c) 2026 ZéLuis F. Correia`).
 
 ---
 
@@ -32,7 +32,7 @@ All proprietary vector topologies, geographic coordinate matrices, and phylogene
 ### 2.1 Aesthetic Philosophy
 The visual architecture of Africalia departs from generic tech-startup conventions ("AI slop", neon purple gradients, floating glassmorphism). Instead, it adopts a **Japandi-Sahel Synthesis**—blending Japanese minimalism (*wabi-sabi*, optical breathing room, respect for negative space) with Scandinavian functionalism (*lagom*, ergonomic typography) and warm, dignified African earthen pigmentations.
 
-### 2.2 Color Constellation & Authoritative Palettes
+### 2.2 Color Constellation & Curated Palettes
 
 #### Canvas Foundations:
 - **Museum Light Canvas (Primary Default)**: `#FAF8F5` (Soft warm parchment with 0% eye-fatigue)
@@ -40,7 +40,7 @@ The visual architecture of Africalia departs from generic tech-startup conventio
 - **Card & Surface Background (Light)**: `#FFFFFF` with hairline border `rgba(230, 225, 218, 0.85)`
 - **Card & Surface Background (Dark)**: `#1A1916` with hairline border `rgba(255, 255, 255, 0.08)`
 
-#### Authoritative African Tonal Accents:
+#### Curated African Tonal Accents:
 - **Terracotta & Sahel Ochre**: `#D97706` / `#E67E48` (Primary brand accent, energetic lineages)
 - **Nile Silt & Botanical Sage**: `#059669` / `#10B981` (Macroeconomic growth, ecological resilience)
 - **Saharan Indigo & Maritime Azure**: `#0284C7` / `#2563EB` (Hydrography, ocean winds, trade flows)
@@ -112,7 +112,7 @@ All multilateral emblems are embedded as mathematical inline vector components. 
 8. **World Health Organization (WHO)**: Rod of Asclepius with coiled serpent in UN laurel ([Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Flag_of_the_World_Health_Organization.svg))
 9. **Food & Agriculture Organization (FAO)**: Wheat stalk over global meridian net ([Wikimedia Commons](https://commons.wikimedia.org/wiki/File:FAO_logo.svg))
 10. **Freedom House (FH)**: Torch of Liberty & typographic plinth ([Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Freedom_House_logo.svg))
-11. **ECOWAS, EAC, SADC, COMESA**: Authoritative seals of the 8 African Union Recognized RECs.
+11. **ECOWAS, EAC, SADC, COMESA**: Curated seals of the 8 African Union Recognized RECs.
 
 ### 4.2 Archival Iconography & Castas Series (1,252 Visual Plates)
 - **1,220 Middle Passage Illustrations**: Naval architectural plans of slave ships (e.g., *Brookes* 1788), plantation manifests, court documents, and insurrection portraits.
@@ -142,8 +142,8 @@ The platform continuously harmonizes statistical indicators across 16 internatio
 16. **SlaveVoyages Research Consortium**: 36,000+ documented historical Middle Passage voyage records.
 
 ### 5.2 Deterministic Cryptographic Immutability
-- **SHA-256 Verification Engine**: Client-side checksum calculations verify data payloads against cryptographic fingerprints stored in `ProvenanceQualityView.tsx`, guaranteeing zero unauthorized alterations to statistical series during execution.
-- **Imputation Transparency**: Every observation explicitly flags whether it represents direct empirical census data, modeled statistical projections, or lagged reporting.
+- **SHA-256 Verification Engine**: Each foundational dataset has a published SHA-256 checksum computed at build time so you can confirm your copy matches the release via the Web Crypto API verifier in the Methodology & Provenance Dossier.
+- **Imputation & Status Transparency**: Every observation explicitly flags its status (`observed`, `estimated`, `forecast`, or `derived`), with back-filled or derived rules recorded in `notes`.
 
 ---
 
@@ -155,23 +155,24 @@ The platform continuously harmonizes statistical indicators across 16 internatio
 - **Stateless Neural Audio Pipeline**: Text-to-speech audio executes through the client's native Web Speech API or transient in-memory buffers; zero voice recordings or acoustic fingerprints are stored on remote disks.
 
 ### 6.2 Standardized Academic Citations
-When citing the Africa Data Atlas, its cartographic layers, or econometric working papers:
+When citing the Africa Data Atlas, its cartographic layers, or econometric working papers (also see [`CITATION.cff`](https://github.com/zeluis/Africa-Digital-Atlas/blob/main/CITATION.cff)):
 
 #### APA 7th Edition:
-> Correia, Z. F. (2026). *Africa Data Atlas & Cartographic Observatory: Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform*. Africalia Open Science Repository. https://zeluis.github.io/Africa-Digital-Atlas/
+> Correia, Z. F. (2026). *Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows*. Africalia. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555)
 
 #### Chicago 17th Edition (Author-Date):
-> Correia, Zéluis F. 2026. *Africa Data Atlas & Cartographic Observatory: Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform*. Lisbon and Praia: Africalia Open Science Repository. https://zeluis.github.io/Africa-Digital-Atlas/.
+> Correia, ZéLuis F. 2026. *Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows*. Africalia. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555).
 
 #### Academic BibTeX Entry:
 ```bibtex
-@misc{correia_africa_atlas_2026,
-  author       = {Correia, Z{\'e}luis F.},
-  title        = {Africa Data Atlas \& Cartographic Observatory: Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform},
+@software{correia_africa_atlas_2026,
+  author       = {Correia, Z{\'e}Luis F.},
+  title        = {Africa Data Atlas \& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
   year         = {2026},
-  publisher    = {Africalia Open Science},
-  howpublished = {\url{https://zeluis.github.io/Africa-Digital-Atlas/}},
-  note         = {Covering 54 Sovereign African States, 1,017 Admin-1 Subdivisions, 16 Multilateral Data APIs, and 1,252 Archival Visual Plates}
+  publisher    = {Africalia},
+  doi          = {10.6084/m9.figshare.34065711},
+  url          = {https://doi.org/10.6084/m9.figshare.34065711},
+  note         = {Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555}
 }
 ```
 

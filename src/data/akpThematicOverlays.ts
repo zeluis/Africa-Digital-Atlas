@@ -2,7 +2,7 @@
  * akpThematicOverlays.ts
  * Georeferenced Thematic Corridors, Infrastructure Arteries & Dynamic Assets
  * Native SVG Coordinate Space: 5796 x 5867
- * Authoritative Data Sources: EC JRC AKP, AU AfCFTA, Copernicus, UNEP, IRENA, GHSL
+ * Curated Data Sources: EC JRC AKP, AU AfCFTA, Copernicus, UNEP, IRENA, GHSL
  */
 
 export interface ThematicPath {

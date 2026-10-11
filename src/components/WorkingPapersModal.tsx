@@ -90,7 +90,7 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
                   Africalia Working Paper & Policy Brief Series
                 </h2>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
-                  ISSN-Ready Academic Monographs & Applied Econometric Research Notes ({allPapers.length} Papers)
+                  Academic Monographs & Applied Econometric Research Notes ({allPapers.length} Papers)
                 </p>
               </div>
             </div>
@@ -160,7 +160,7 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
                       Africalia Open Science Repository
                     </span>
                     <span className="font-mono text-[10px] text-stone-500">
-                      {selectedPaper.issnPlaceholder} • Lisbon / Praia / Pan-African Network
+                      DOI: 10.6084/m9.figshare.34065711 • Lisbon / Praia / Pan-African Network
                     </span>
                   </div>
                 </div>

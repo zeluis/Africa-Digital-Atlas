@@ -1,5 +1,5 @@
 /**
- * Authoritative Canonical Dataset for the Atlantic Slave Trade Data Atlas
+ * Curated Canonical Dataset for the Atlantic Slave Trade Data Atlas
  * Synthesized from the SlaveVoyages Database (api.slavevoyages.org),
  * Trans-Atlantic Database (36,108 expanded records), Intra-American Database (11,400+ voyages),
  * African Origins Names Database, and Eltis & Richardson Historical Estimates.

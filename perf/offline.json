@@ -1,0 +1,13 @@
+{
+  "_readme": "Files that must be in the service-worker precache so the app works offline after one visit. Regexes are matched against precache URLs. Add a line whenever a view is meant to work offline.",
+  "mustPrecache": [
+    "^index\\.html$",
+    "^assets/index-.*\\.js$",
+    "^assets/SlaveTradeView-.*\\.js$",
+    "^assets/data-slave-voyages-.*\\.js$",
+    "^assets/data-ethnic-tree-.*\\.js$",
+    "^assets/data-atlas-raw-.*\\.js$",
+    "^assets/i18n-translations-.*\\.js$",
+    "^africa-final\\.svg$"
+  ]
+}

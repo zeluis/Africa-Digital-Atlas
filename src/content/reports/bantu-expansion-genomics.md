@@ -43,7 +43,7 @@ Prior to agricultural expansion, diverse hunter-gatherer populations occupied th
 **Key Takeaway:** Admixture with indigenous forager groups contributed critical immune-system alleles (HLA variations) vital for survival in novel ecological micro-niches.
 
 ## 3. Methodological Convergence: Molecular Clocks and Glottochronology
-Combining Bayesian phylolinguistic trees of Niger-Congo languages with coalescence-time estimates from whole-genome sequences yields an unprecedented temporal alignment. The timing of linguistic divergence between Western and Eastern Bantu sub-branches (circa 1500 BCE) aligns precisely with the major surge in effective population size (Ne) inferred from genomic identity-by-descent (IBD) sharing.
+Combining Bayesian phylolinguistic trees of Niger-Congo languages with coalescence-time estimates from whole-genome sequences yields a close temporal alignment. The timing of linguistic divergence between Western and Eastern Bantu sub-branches (circa 1500 BCE) aligns precisely with the major surge in effective population size (Ne) inferred from genomic identity-by-descent (IBD) sharing.
 
 ## References
 - Micheletti, S. J. (2020). Genetic Consequences of the Transatlantic Slave Trade in the Americas. The American Journal of Human Genetics. https://doi.org/10.1016/j.ajhg.2020.06.012

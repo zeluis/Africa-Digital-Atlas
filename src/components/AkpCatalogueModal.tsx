@@ -103,7 +103,7 @@ export const AkpCatalogueModal: React.FC<AkpCatalogueModalProps> = ({
                 </span>
               </div>
               <p className="text-[11px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1 sm:line-clamp-none">
-                Authoritative indicators from JRC, BIOPAMA, Copernicus, World Bank, WHO, UNESCO, and ACLED
+                Curated indicators from JRC, BIOPAMA, Copernicus, World Bank, WHO, UNESCO, and ACLED
               </p>
             </div>
           </div>
@@ -173,7 +173,7 @@ export const AkpCatalogueModal: React.FC<AkpCatalogueModalProps> = ({
             </div>
           </div>
 
-          {/* All 6 Thematic Pillar Selector Cards (Full Width, Fully Visible, Never Cropped) */}
+          {/* All 6 AKP Domain Selector Cards (Full Width, Fully Visible, Never Cropped) */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-2.5 w-full">
             {/* 1. All 241 Datasets Card */}
             <button

@@ -216,13 +216,6 @@ export async function loadAfricaFinalCountryMap(): Promise<Record<string, Africa
   return parseAfricaFinalCountryMap(svgText);
 }
 
-// Eagerly trigger background loading of map data in browser environments
-if (typeof window !== 'undefined') {
-  loadAfricaFinalCountryMap().catch((err) => {
-    console.warn('Background vector map preloading deferred:', err);
-  });
-}
-
 function checkIsMapLoaded(): boolean {
   if (parsedCountryMapCache) return true;
   const loadedCount = Object.values(AFRICA_FINAL_MAP).filter(c => c.admin1 && c.admin1.length > 0).length;

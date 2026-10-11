@@ -82,7 +82,7 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
 
             <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-sm">
-              Authoritative Pan-African Socio-Economic Platform. Unified geospatial intelligence, multi-temporal indicators, and cultural taxonomy across 54 sovereign nations.
+              Curated Pan-African Socio-Economic Platform. Unified geospatial intelligence, multi-temporal indicators, and cultural taxonomy across 54 sovereign nations.
             </p>
 
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] font-mono text-zinc-600 dark:text-zinc-300">
@@ -248,7 +248,7 @@ export const Footer: React.FC<FooterProps> = ({
                   Under the scientific direction and cartographic curation of <strong className="text-stone-900 dark:text-stone-100 font-semibold">Zéluis F. Correia</strong>. Dedicated to African data sovereignty, open scientific inquiry, and the rigorous preservation of continental heritage.
                 </p>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono mt-1">
-                  Cartography &amp; Phylogenetic Vector Topology © 2024–2026 Africalia. Authored and engineered by Zéluis F. Correia. All Rights Reserved.
+                  ZéLuis F. Correia is the author of all SVG maps and the Ethnic Tree Visualization and SVG. Unless stated otherwise, all graphics and visualizations have the same author. Dual-licensed: CC BY 4.0 (creative assets, LICENSE-ASSETS) • MIT License (source code, LICENSE-CODE).
                 </p>
               </div>
 
@@ -274,7 +274,7 @@ export const Footer: React.FC<FooterProps> = ({
                     onClick={onOpenCitationModal}
                     className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-colors cursor-pointer"
                   >
-                    Cite (DOI: 10.5281/zenodo.10842918)
+                    Cite (DOI: 10.6084/m9.figshare.34065711)
                   </button>
                 )}
               </div>
@@ -284,7 +284,7 @@ export const Footer: React.FC<FooterProps> = ({
               <div className="flex items-center gap-2">
                 <span>Observatory Edition 2026.1</span>
                 <span>•</span>
-                <span>Permanent DOI: 10.5281/zenodo.10842918</span>
+                <span>Permanent DOI: 10.6084/m9.figshare.34065711</span>
               </div>
 
               <div className="flex items-center gap-3">

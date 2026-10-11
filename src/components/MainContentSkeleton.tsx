@@ -1,5 +1,7 @@
-import React from 'react';
-import { RadialTreeSkeleton } from './ethnicTree/RadialTreeSkeleton';
+import React, { Suspense } from 'react';
+import { lazyWithRetry } from '../utils/lazyWithRetry';
+
+const RadialTreeSkeleton = lazyWithRetry(() => import('./ethnicTree/RadialTreeSkeleton').then(m => ({ default: m.RadialTreeSkeleton })), 'RadialTreeSkeleton');
 
 interface MainContentSkeletonProps {
   viewType?: string;
@@ -10,7 +12,9 @@ export const MainContentSkeleton: React.FC<MainContentSkeletonProps> = ({ viewTy
   if (viewType === 'ethnic-tree') {
     return (
       <div className="w-full h-[calc(100vh-64px)] min-h-[640px] flex-1 overflow-hidden">
-        <RadialTreeSkeleton />
+        <Suspense fallback={<div className="w-full h-full animate-pulse bg-zinc-100 dark:bg-zinc-900" />}>
+          <RadialTreeSkeleton />
+        </Suspense>
       </div>
     );
   }

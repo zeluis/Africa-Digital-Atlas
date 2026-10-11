@@ -44,7 +44,7 @@ function generatePathString(points: [number, number][]): string {
 
 /**
  * SVG-Native precision trade corridor layer designed to live directly inside the
- * authoritative 5796x5867 SVG coordinate space with transform translate(-216.0198 -66.614).
+ * curated 5796x5867 SVG coordinate space with transform translate(-216.0198 -66.614).
  * Guarantees zero distortion, perfect coordinate locks across all aspect ratios, and snappy interactivity.
  */
 export const TradeCorridorVectorLayer: React.FC<TradeCorridorVectorLayerProps> = ({

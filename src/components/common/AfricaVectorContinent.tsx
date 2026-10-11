@@ -2,7 +2,7 @@
  * AfricaVectorContinent.tsx
  * Canonical Reusable Africa Vector Cartographic Engine
  * 
- * Powered by authoritative geometry from public/africa-final.svg (5,796 × 5,867 native coordinate space).
+ * Powered by curated geometry from public/africa-final.svg (5,796 × 5,867 native coordinate space).
  * Designed for universal reuse across Atlantic Slave Trade visualizations, historical maps,
  * macroeconomic charts, and thematic data stories.
  */
@@ -200,12 +200,12 @@ export const AfricaVectorContinent: React.FC<AfricaVectorContinentProps> = ({
 
   const content = (
     <g
-      id="africa-authoritative-vector-continent"
+      id="africa-canonical-vector-continent"
       transform={transform || AFRICA_FINAL_TRANSFORM}
       className={`africa-vector-group transition-opacity duration-300 ${className}`}
       opacity={opacity}
     >
-      {/* 1. Complete vector boundaries from authoritative map */}
+      {/* 1. Complete vector boundaries from curated map */}
       {countries.map((country) => {
         const fill = resolveCountryFill(country.id);
         const isHovered = activeCountry === country.id;

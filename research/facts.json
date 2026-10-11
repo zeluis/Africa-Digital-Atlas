@@ -1,0 +1,25 @@
+{
+  "_readme": "Single source of truth for headline facts. UI strings, README and docs should import or copy from here. Update here first, then run `npm run research:check`.",
+  "name": "Africa Data Atlas & Cartographic Observatory",
+  "states": 54,
+  "pillars": 8,
+  "voyages": {
+    "documented": 36108,
+    "curatedDossiers": 18,
+    "yearsObserved": "1514–1866",
+    "yearsEstimates": "1501–1866",
+    "database": "SlaveVoyages trans-Atlantic, 2024.1 release"
+  },
+  "ethnicGroupList": {
+    "source": "Wikipedia: List of contemporary ethnic groups of Africa",
+    "entries": 310,
+    "revisionId": null,
+    "retrieved": "2026-01"
+  },
+  "indicators": {
+    "period": "2015–2024",
+    "nature": "curated snapshot with per-value status flags"
+  },
+  "doi": "10.6084/m9.figshare.34065711",
+  "orcid": "0000-0001-9421-6555"
+}

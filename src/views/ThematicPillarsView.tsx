@@ -229,7 +229,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
             formattedValue: dateStr,
             subtext: fromStr,
             source: 'Official State Gazette / UN Treaty',
-            status: 'Authoritative'
+            status: 'Documented'
           };
         }
 
@@ -285,7 +285,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
             formattedValue: `${currentEntity.landAreaKm2.toLocaleString()} km²`,
             subtext: `Morphology: ${currentEntity.geographicType} (${currentEntity.subregion})`,
             source: 'UN Statistics Division / FAO',
-            status: 'Authoritative'
+            status: 'Documented'
           };
         }
 
@@ -372,7 +372,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
             formattedValue: val.toFixed(3),
             subtext: `Classification: ${currentEntity.incomeLevel}`,
             source: 'UNDP Human Development Report',
-            status: 'Authoritative'
+            status: 'Documented'
           };
         }
 
@@ -386,7 +386,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
             formattedValue: langs,
             subtext: `${currentEntity.languages.official.length} Constitutionally recognized`,
             source: 'National Constitution',
-            status: 'Authoritative'
+            status: 'Documented'
           };
         }
 
@@ -415,7 +415,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
             formattedValue: `${count} Inscribed`,
             subtext: sitesStr,
             source: 'UNESCO World Heritage Centre',
-            status: 'Authoritative'
+            status: 'Documented'
           };
         }
 
@@ -486,7 +486,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
             formattedValue: `$${val.toFixed(2)}B`,
             subtext: `GDP per capita: $${perCap.toLocaleString()}`,
             source: 'World Bank WDI / IMF WEO',
-            status: 'Authoritative'
+            status: 'Documented'
           };
         }
 
@@ -847,6 +847,10 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                       key={`${currentEntity.id}-${activePillar}-${editorialImage.imageUrl}`}
                       src={editorialImage.imageUrl}
                       alt={editorialImage.title}
+                      width={960}
+                      height={320}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       referrerPolicy="no-referrer"
                     />
@@ -1058,7 +1062,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                 </div>
               </div>
               <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
-                Live Data
+                2015–2024 Snapshot
               </span>
             </div>
 

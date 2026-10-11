@@ -719,6 +719,8 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                 <img
                   src={imageUrl}
                   alt={illustration.title}
+                  width={1200}
+                  height={900}
                   loading="eager"
                   fetchPriority="high"
                   decoding="async"
@@ -797,6 +799,10 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                         <img 
                           src={thumb} 
                           alt={item.title} 
+                          width={80}
+                          height={64}
+                          loading="lazy"
+                          decoding="async"
                           className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                           onError={(e) => {
                             const el = e.currentTarget;

@@ -167,27 +167,27 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
                     <strong>Africalia</strong> is an independent, non-partisan cartographic and econometric research observatory founded by <strong>Zéluis F. Correia</strong>. The <strong>Africa Data Atlas</strong> serves as a digital public good and scientific synthesis platform bridging the gap between fragmented multilateral statistics, deep ancestral phylogenetic lineages, historical trade extractions, and contemporary geopolitical transformations across all 54 sovereign African nations.
                   </p>
 
-                  <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 font-serif pt-2">1.2 Cartographic Copyright & Vector Intellectual Property</h3>
+                  <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 font-serif pt-2">1.2 Dual Licensing &amp; Creative Assets Authorship</h3>
                   <p>
-                    All proprietary vector topologies, geographic coordinate matrices, and phylogenetic tree geometries published within the Africa Data Atlas are original intellectual creations:
+                    The Africa Data Atlas applies explicit dual licensing across its repository root (<code className="bg-stone-200 dark:bg-stone-800 px-1 py-0.5 rounded font-mono text-xs">LICENSE-CODE</code> and <code className="bg-stone-200 dark:bg-stone-800 px-1 py-0.5 rounded font-mono text-xs">LICENSE-ASSETS</code>):
                   </p>
 
                   <div className="my-4 p-5 rounded-2xl bg-amber-500/[0.06] dark:bg-amber-500/[0.1] border-l-4 border-amber-600 dark:border-amber-500 text-xs sm:text-sm font-sans space-y-2">
-                    <strong className="block text-amber-900 dark:text-amber-300 font-bold">CARTOGRAPHIC & VECTOR TOPOLOGY DECLARATION</strong>
+                    <strong className="block text-amber-900 dark:text-amber-300 font-bold">AUTHORSHIP &amp; DUAL-LICENSING DECLARATION</strong>
                     <p className="text-stone-700 dark:text-stone-300">
-                      <strong>Copyright © 2024–2026 Africalia. Authored, calibrated, and engineered by Zéluis F. Correia. All Rights Reserved.</strong>
+                      <strong>ZéLuis F. Correia is the author of all SVG maps and the Ethnic Tree Visualization and SVG. Unless stated otherwise, all graphics and visualizations have the same author.</strong>
                     </p>
                     <p className="text-stone-600 dark:text-stone-400 text-xs leading-relaxed">
-                      The $5796 \times 5867$ High-Precision Vector Continental Engine (<code className="bg-stone-200 dark:bg-stone-800 px-1 py-0.5 rounded">africa-final.svg</code> / <code className="bg-stone-200 dark:bg-stone-800 px-1 py-0.5 rounded">AfricaMapFinalLayer.tsx</code>), the 1,017 Admin-1 provincial subdivision boundaries, the Geodesic SIDS Coordinate Callout Arrays, and the Sovereign African Ethnic Tree of Life Vector Topology constitute proprietary intellectual property protected under the Berne Convention for the Protection of Literary and Artistic Works, the WIPO Copyright Treaty (WCT), and international copyright statutes.
+                      The $5796 \times 5867$ High-Precision Vector Continental Map (<code className="bg-stone-200 dark:bg-stone-800 px-1 py-0.5 rounded">africa-final.svg</code> / <code className="bg-stone-200 dark:bg-stone-800 px-1 py-0.5 rounded">AfricaMapFinalLayer.tsx</code>), the 1,017 Admin-1 provincial subdivision boundaries, the Geodesic SIDS Coordinate Callout Arrays, and the Ethnic Tree Visualization and SVG (<code className="bg-stone-200 dark:bg-stone-800 px-1 py-0.5 rounded">authenticEthnicTreeSvg.ts</code>) are licensed under <strong>Creative Commons Attribution 4.0 International (CC BY 4.0)</strong> (<code className="bg-stone-200 dark:bg-stone-800 px-1 py-0.5 rounded">LICENSE-ASSETS</code>). Application source code is licensed under the <strong>MIT License</strong> (<code className="bg-stone-200 dark:bg-stone-800 px-1 py-0.5 rounded">LICENSE-CODE</code>).
                     </p>
                   </div>
 
-                  <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100 font-serif pt-2">Permitted Academic & Educational Fair Use:</h4>
+                  <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100 font-serif pt-2">License Terms &amp; Attribution:</h4>
                   <ul className="list-disc pl-5 space-y-2">
-                    <li><strong>Scholarly Citation & Classroom Instruction</strong>: Researchers, faculty, students, and journalists are granted non-exclusive permission to inspect, screenshot, cite, and project these maps for non-commercial educational, scientific, and journalistic analysis.</li>
-                    <li><strong>Mandatory Attribution</strong>: Any reproduction, visual citation, or academic paper utilizing these geometries must state: <br/>
-                    <em className="text-amber-800 dark:text-amber-300 font-medium">"Cartographic visualization courtesy of Africalia / Zéluis F. Correia (Africa Data Atlas, 2026)."</em></li>
-                    <li><strong>Commercial Restrictions</strong>: Vector extraction, programmatic cloning, scraping, or commercial resale of the SVG path coordinate topologies without prior formal written consent from Africalia is strictly prohibited.</li>
+                    <li><strong>Creative Assets (<code className="font-mono text-xs">LICENSE-ASSETS</code> — CC BY 4.0)</strong>: You are free to share and adapt the SVG maps, Ethnic Tree Visualization and SVG, and graphics for any purpose, provided you give appropriate credit to <strong>ZéLuis F. Correia</strong>, link to the CC BY 4.0 license, and indicate if changes were made.</li>
+                    <li><strong>Required Attribution</strong>: <br/>
+                    <em className="text-amber-800 dark:text-amber-300 font-medium">"Cartographic visualization by ZéLuis F. Correia (Africalia: Africa Data Atlas, CC BY 4.0, https://doi.org/10.6084/m9.figshare.34065711)."</em></li>
+                    <li><strong>Source Code (<code className="font-mono text-xs">LICENSE-CODE</code> — MIT License)</strong>: The software codebase is released under the standard MIT License (`Copyright (c) 2026 ZéLuis F. Correia`).</li>
                   </ul>
                 </div>
               </section>
@@ -209,7 +209,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
                     The visual architecture of Africalia departs from generic tech-startup conventions (&quot;AI slop&quot;, neon purple gradients, floating glassmorphism). Instead, it adopts a <strong>Japandi-Sahel Synthesis</strong>—blending Japanese minimalism (<i>wabi-sabi</i>, optical breathing room, respect for negative space) with Scandinavian functionalism (<i>lagom</i>, ergonomic typography) and warm, dignified African earthen pigmentations.
                   </p>
 
-                  <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 font-serif pt-2">2.2 Color Constellation & Authoritative Palettes</h3>
+                  <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 font-serif pt-2">2.2 Color Constellation & Curated Palettes</h3>
                   <p><strong>Canvas Foundations:</strong></p>
                   <ul className="list-disc pl-5 space-y-1">
                     <li><strong>Museum Light Canvas (Primary Default)</strong>: <code className="bg-stone-100 dark:bg-stone-800 px-1 py-0.5 rounded font-mono text-xs">#FAF8F5</code> (Soft warm parchment with 0% eye-fatigue)</li>
@@ -361,7 +361,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-mono font-bold text-stone-700 dark:text-stone-300">APA 7th Edition Citation</span>
                       <button
-                        onClick={() => handleCopy('Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform. Africalia Open Science Repository.', 'apa-cite')}
+                        onClick={() => handleCopy('Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Africalia. https://doi.org/10.6084/m9.figshare.34065711', 'apa-cite')}
                         className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 text-[11px] font-medium transition-colors cursor-pointer"
                       >
                         {copiedKey === 'apa-cite' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
@@ -369,7 +369,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
                       </button>
                     </div>
                     <p className="text-xs font-serif text-stone-600 dark:text-stone-400 italic">
-                      Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: Sovereign Geospatial Intelligence, Macroeconomic Indicators, and Historical Trade Flow Platform. Africalia Open Science Repository.
+                      Correia, Z. F. (2026). Africa Data Atlas &amp; Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Africalia. https://doi.org/10.6084/m9.figshare.34065711
                     </p>
                   </div>
                 </div>

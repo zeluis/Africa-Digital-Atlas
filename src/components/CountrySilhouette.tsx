@@ -308,7 +308,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
                   </span>
                 </div>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                  Authoritative SVG geometry mapped with 1,017 Admin-1 provincial subdivisions
+                  Curated SVG geometry mapped with 1,017 Admin-1 provincial subdivisions
                 </p>
               </div>
 

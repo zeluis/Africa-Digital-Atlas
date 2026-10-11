@@ -1,6 +1,6 @@
 /**
  * SlaveVoyagesEssaysViewer.tsx
- * Scholarly Reading Room for Authoritative Historiographical Essays
+ * Scholarly Reading Room for Curated Historiographical Essays
  * Built with Museum & Editorial aesthetics, drop caps, Chicago citations, and pull quotes.
  */
 
@@ -56,7 +56,7 @@ export const SlaveVoyagesEssaysViewer: React.FC<SlaveVoyagesEssaysViewerProps> =
               Introduction Essays & Historical Context
             </h2>
             <p className="text-xs sm:text-sm font-serif text-stone-600 dark:text-stone-400 mt-1 max-w-3xl">
-              Authoritative scholarship from leading Atlantic historians explaining the demographic scale, regional African geography, Middle Passage physiology, and shipboard resistance.
+              Curated scholarship from leading Atlantic historians explaining the demographic scale, regional African geography, Middle Passage physiology, and shipboard resistance.
             </p>
           </div>
 
@@ -179,7 +179,7 @@ export const SlaveVoyagesEssaysViewer: React.FC<SlaveVoyagesEssaysViewerProps> =
         <div className="mt-14 pt-8 border-t-2 border-stone-300 dark:border-stone-800">
           <div className="flex items-center gap-2 text-xs font-sans uppercase tracking-widest text-stone-500 mb-3">
             <FileText className="w-3.5 h-3.5" />
-            <span>Authoritative Archival Citations & Bibliography</span>
+            <span>Curated Archival Citations & Bibliography</span>
           </div>
 
           <div className="text-xs font-serif text-stone-600 dark:text-stone-400 mb-4 italic">

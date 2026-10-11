@@ -1,0 +1,21 @@
+name: Performance budget
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  budget:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+      - run: npm install --no-audit --no-fund
+      - run: npx tsc --noEmit
+      - run: npx vite build
+      - name: Bundle and asset budget
+        run: node scripts/perf-budget.mjs
+      - name: Feature inventory (nothing silently removed)
+        run: node scripts/feature-inventory.mjs --check
+      - name: Offline readiness (app works with no network after one visit)
+        run: node scripts/offline-audit.mjs --check

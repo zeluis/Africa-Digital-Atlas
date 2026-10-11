@@ -1116,14 +1116,14 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 if (isMobile) onCloseMobile();
                 onOpenWorkingPapers();
               }}
-              title="Working Papers & Policy Briefs (ISSN-Ready)"
+              title="Working Papers & Policy Briefs"
               className={`w-full flex items-center ${
                 isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
               } text-left rounded-xl transition-all cursor-pointer text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-900 mt-1`}
             >
               <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
                 <FileText className="w-4 h-4 text-amber-600 dark:text-amber-500 shrink-0" />
-                {!isDesktopCollapsed && <span>Working Papers (ISSN)</span>}
+                {!isDesktopCollapsed && <span>Working Papers</span>}
               </div>
               {!isDesktopCollapsed && (
                 <span className="text-[10px] font-mono uppercase bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-800 dark:text-amber-300">
@@ -1188,7 +1188,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 if (isMobile) onCloseMobile();
                 onOpenCitationModal();
               }}
-              title="Cite this Research Platform (DOI: 10.5281/zenodo.10842918)"
+              title="Cite this Research Platform (DOI: 10.6084/m9.figshare.34065711)"
               className={`w-full flex items-center ${
                 isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
               } text-left rounded-xl transition-all cursor-pointer text-amber-700 dark:text-amber-300 hover:bg-amber-500/10 dark:hover:bg-amber-500/15 mt-1 font-medium`}

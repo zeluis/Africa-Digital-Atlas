@@ -1,6 +1,6 @@
 /**
  * SlaveVoyages 2-Tier Offline Storage & Cache Engine
- * Tier 1: Authoritative Bundled In-Memory Core (zero network dependency)
+ * Tier 1: Curated Bundled In-Memory Core (zero network dependency)
  * Tier 2: IndexedDB Local Database (persistent cache for queried voyages & custom filters)
  */
 

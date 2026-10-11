@@ -52,19 +52,21 @@ The Atlas aggregates indicators from 16 verified multilateral and academic repos
 | Natural Earth / Cartography Engine | Internal GeoJSON / TopoJSON | Coastlines, borders, and regional economic communities (RECs) |
 
 ### Dual Licensing Model
-- **Empirical Research Data & Synthesis**: Licensed under [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/).
-- **Source Code & Software Architecture**: Licensed under the [MIT License](https://opensource.org/licenses/MIT).
+- **Creative Assets & Visualizations (`LICENSE-ASSETS`)**: Licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/). **ZéLuis F. Correia** is the author of all SVG maps and the Ethnic Tree Visualization and SVG. Unless stated otherwise, all graphics and visualizations have the same author.
+- **Source Code & Software Architecture (`LICENSE-CODE`)**: Licensed under the [MIT License](https://opensource.org/licenses/MIT) (`Copyright (c) 2026 ZéLuis F. Correia`).
 
 ### Citation Protocol
-When citing the Africa Digital Atlas in scholarly work, please include the permanent repository citation:
+When citing the Africa Data Atlas in scholarly work, please include the permanent repository citation:
 
 ```bibtex
-@misc{africalia2026,
-  author = {Africalia Academic Atlas Consortium},
-  title = {The Africa Data Atlas: Sovereign Socio-Economic and Genomic Synthesis},
-  year = {2026},
-  publisher = {Open Science Repository Africa},
-  url = {https://github.com/zeluis/Africa-Digital-Atlas}
+@software{correia_africa_atlas_2026,
+  author       = {Correia, Z{\'e}Luis F.},
+  title        = {Africa Data Atlas \& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
+  year         = {2026},
+  publisher    = {Africalia},
+  doi          = {10.6084/m9.figshare.34065711},
+  url          = {https://doi.org/10.6084/m9.figshare.34065711},
+  note         = {Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555}
 }
 ```
 

@@ -35,7 +35,7 @@ export const DATA_SOURCES: DataSource[] = [
     name: 'World Development Indicators (WDI)',
     organization: 'World Bank Group',
     url: 'https://databank.worldbank.org/source/world-development-indicators',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Comprehensive coverage of 54 African economies across macroeconomic, demographic, and infrastructure indicators.',
     lastSyncDate: '2025-01-10',
     datasets: ['WDI_2024', 'GLOBAL_ECONOMIC_PROSPECTS']
@@ -45,7 +45,7 @@ export const DATA_SOURCES: DataSource[] = [
     name: 'World Economic Outlook (WEO)',
     organization: 'International Monetary Fund',
     url: 'https://www.imf.org/en/Publications/WEO',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Fiscal, monetary, inflation, debt-to-GDP, and balance of payments indicators.',
     lastSyncDate: '2025-01-12',
     datasets: ['WEO_OCT_2024', 'IFS_MONTHLY']
@@ -55,7 +55,7 @@ export const DATA_SOURCES: DataSource[] = [
     name: 'Human Development Report Office',
     organization: 'United Nations Development Programme (UNDP)',
     url: 'https://hdr.undp.org/data-center',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Human Development Index (HDI), Inequality-adjusted HDI, Gender Development Index.',
     lastSyncDate: '2024-12-20',
     datasets: ['HDR_COMPOSITE_2024']
@@ -65,7 +65,7 @@ export const DATA_SOURCES: DataSource[] = [
     name: 'World Heritage Center & Institute for Statistics',
     organization: 'UNESCO',
     url: 'https://whc.unesco.org/en/list/',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Official registry of African cultural, natural, and mixed World Heritage properties and education metrics.',
     lastSyncDate: '2024-11-30',
     datasets: ['WHC_OFFICIAL_REGISTRY', 'UIS_EDUCATION_2024']
@@ -75,7 +75,7 @@ export const DATA_SOURCES: DataSource[] = [
     name: 'Global Health Observatory',
     organization: 'World Health Organization',
     url: 'https://www.who.int/data/gho',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Maternal mortality, under-5 child mortality, physician density, vaccination coverage.',
     lastSyncDate: '2024-12-15',
     datasets: ['GHO_HEALTH_STATS']
@@ -85,7 +85,7 @@ export const DATA_SOURCES: DataSource[] = [
     name: 'World Population Prospects',
     organization: 'UN Department of Economic and Social Affairs',
     url: 'https://population.un.org/wpp/',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Demographic forecasts, fertility rates, median age, population momentum.',
     lastSyncDate: '2024-10-18',
     datasets: ['WPP_REVISION_2024']
@@ -125,7 +125,7 @@ export const DATA_SOURCES: DataSource[] = [
     name: 'African Economic Outlook',
     organization: 'African Development Bank Group',
     url: 'https://www.afdb.org/en/knowledge/publications/african-economic-outlook',
-    reliabilityTier: 'Tier 1 (Authoritative/Multilateral)',
+    reliabilityTier: 'Tier 1 (Institutional/Multilateral)',
     coverageSummary: 'Continental and regional economic convergence, infrastructure integration and AfCFTA dynamics.',
     lastSyncDate: '2024-12-01',
     datasets: ['AEO_CONTINENTAL_2024']

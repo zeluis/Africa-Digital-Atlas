@@ -1,8 +1,7 @@
 import React from 'react';
-import { CanonicalNavTab } from '../components/NavigationDrawer';
+import type { CanonicalNavTab } from '../components/NavigationDrawer';
 import { AfricanRegion } from '../data/types';
-import { atlas } from '../data/atlas-store';
-import { getAllReports, isReportOrPaperTab } from '../data/reportsDataLoader';
+import { AFRICA_FINAL_MAP } from '../data/africaFinalGeometry';
 import {
   Compass,
   Map as MapIcon,
@@ -22,6 +21,70 @@ import {
   MapPin,
   LucideIcon
 } from 'lucide-react';
+
+const KNOWN_REPORTS_META: Record<string, { title: string; shortTitle: string; isWorkingPaper?: boolean }> = {
+  'report-genetic-linguistic-blueprints': {
+    title: 'Genetic and Linguistic Blueprints of the African Atlantic Creole',
+    shortTitle: 'Creole Blueprints'
+  },
+  'report-genetic-social-structure-cape-verde': {
+    title: 'Genetic and Social Structure of Cape Verde',
+    shortTitle: 'Cape Verde Genetics'
+  },
+  'report-creole-admixture-cabo-verde': {
+    title: 'The Trans-Atlantic Slave Trade and Creole Admixture: Cabo Verde & São Tomé',
+    shortTitle: 'Creole Admixture'
+  },
+  'report-latest-developments-genetic-legacy': {
+    title: 'Latest Developments: Genetic Legacy of Transatlantic Slave Trade',
+    shortTitle: 'Genetic Legacy'
+  },
+  'report-slavery-international-law-reparatory': {
+    title: 'Scholarly Analysis: Slavery, International Law, and Reparatory Justice',
+    shortTitle: 'Reparatory Justice'
+  },
+  'report-sovereign-responsibility-reparations': {
+    title: 'Sovereign Responsibility and the Jurisprudence of Global Reparations',
+    shortTitle: 'Sovereign Responsibility'
+  },
+  'report-reparations-debt-anthropocene': {
+    title: 'Reparations, Debt & Anthropocene Report',
+    shortTitle: 'Anthropocene Debt'
+  },
+  'report-ancestry-ideology-underdevelopment': {
+    title: 'Ancestry, Ideology, and Underdevelopment',
+    shortTitle: 'Ancestry & Development'
+  },
+  'report-rao-model-socioeconomic': {
+    title: 'Research: RAO Model and African Socioeconomic Legacies',
+    shortTitle: 'RAO Model'
+  },
+  'report-sociological-origins-racism': {
+    title: 'Sociological Origins of Racism and African Underdevelopment',
+    shortTitle: 'Sociological Origins'
+  },
+  'report-bantu-expansion-genomics': {
+    title: 'Archaeogenomics of the Bantu Expansion & Continental Demography',
+    shortTitle: 'Bantu Expansion'
+  },
+  'report-trans-saharan-jurisprudence': {
+    title: 'Trans-Saharan Commercial Jurisprudence & Timbuktu Manuscript Charters',
+    shortTitle: 'Trans-Saharan Law'
+  },
+  'rep-economics-europe-atlantic-2026': {
+    title: 'Atlantic Extraction and European Capital Accumulation (1500–1850)',
+    shortTitle: 'Atlantic Capital',
+    isWorkingPaper: true
+  }
+};
+
+export function isReportOrPaperTab(tabId: string): boolean {
+  if (!tabId) return false;
+  if (tabId.startsWith('report-') || tabId.startsWith('rep-') || tabId.startsWith('wp-')) {
+    return true;
+  }
+  return Boolean(KNOWN_REPORTS_META[tabId]);
+}
 
 export interface PageInfo {
   title: string;
@@ -59,13 +122,13 @@ export function getPageInfo(
 
   // Country Dossier
   if (tab === 'countries') {
-    const entity = selectedEntityId ? atlas.getEntity(selectedEntityId) : null;
+    const entity = selectedEntityId ? AFRICA_FINAL_MAP[selectedEntityId] : null;
     if (entity) {
       return {
         title: entity.name,
         shortTitle: entity.name,
         fullTitle: `${entity.name} (${entity.id}) — Sovereign Country Dossier`,
-        category: `${entity.region} • ${entity.id}`,
+        category: `${entity.unRegion} • ${entity.id}`,
         Icon: MapPin,
         badge: entity.id
       };
@@ -133,7 +196,7 @@ export function getPageInfo(
       return {
         title: 'Atlantic Slave Trade',
         shortTitle: 'Slave Trade',
-        fullTitle: 'Transatlantic & Regional Slave Trade Legacies (1501–1867)',
+        fullTitle: 'Transatlantic & Regional Slave Trade Legacies (1514–1866)',
         category: 'Historical Legacies',
         Icon: Anchor
       };
@@ -258,15 +321,13 @@ export function getPageInfo(
     default: {
       // Dynamic research reports & working papers check
       if (typeof tab === 'string' && isReportOrPaperTab(tab)) {
-        const reports = getAllReports();
-        const report = reports[tab];
-        if (report) {
-          const reportShortTitle = (report as { shortTitle?: string }).shortTitle || report.title;
+        const meta = KNOWN_REPORTS_META[tab];
+        if (meta) {
           return {
-            title: report.title,
-            shortTitle: reportShortTitle,
-            fullTitle: report.title,
-            category: report.isWorkingPaper ? 'Africalia Working Paper' : 'Research Monograph',
+            title: meta.title,
+            shortTitle: meta.shortTitle,
+            fullTitle: meta.title,
+            category: meta.isWorkingPaper ? 'Africalia Working Paper' : 'Research Monograph',
             Icon: FileText
           };
         }

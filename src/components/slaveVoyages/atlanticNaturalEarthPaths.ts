@@ -1,6 +1,6 @@
 /**
  * atlanticNaturalEarthPaths.ts
- * Authoritative, high-fidelity SVG paths extracted directly from Natural Earth 1:50m (countries-50m.json).
+ * Curated, high-fidelity SVG paths extracted directly from Natural Earth 1:50m (countries-50m.json).
  * Geographically calibrated to the 1000x580 Equirectangular canvas covering:
  * Latitudes -38° to +58°, Longitudes -105° to +52°.
  * 
