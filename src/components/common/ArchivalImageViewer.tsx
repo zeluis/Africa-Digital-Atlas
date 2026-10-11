@@ -405,7 +405,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
       case 'harvard':
         return `${authors} (${year}) '${title}', Plate ${regId}. In ${source}. Available at: ${url} (Accessed: ${accessDate}).`;
       case 'bibtex':
-        return `@misc{Archival Iconography_${illustration.ideId},
+        return `@misc{Archival Iconography_${illustration.regId},
   author = {${authors}},
   title = {${title}},
   year = {${year}},

@@ -148,7 +148,7 @@ export const exportHighDpiPlatePDF = async (
   currentY += 6;
 
   // Try to render image into PDF
-  const imageUrl = illustration.imageUrls?.[0];
+  const imageUrl = illustration.imageUrls?.[0] || 'https://zeluis.github.io/Africa-Digital-Atlas/castas/castaS1o-a.webp';
   if (imageUrl) {
     try {
       const img = new Image();
@@ -171,7 +171,7 @@ export const exportHighDpiPlatePDF = async (
       doc.setLineWidth(0.3);
       doc.rect(imgX - 1, currentY - 1, imgWidth + 2, imgHeight + 2);
 
-      doc.addImage(img, 'JPEG', imgX, currentY, imgWidth, imgHeight);
+      doc.addImage(img, 'WEBP', imgX, currentY, imgWidth, imgHeight);
       currentY += imgHeight + 8;
     } catch {
       // Fallback if CORS prevents canvas export
