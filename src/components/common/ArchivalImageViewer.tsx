@@ -393,8 +393,9 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
     const title = illustration.title;
     const source = illustration.source;
     const regId = illustration.regId;
+    const ideId = illustration.identifier;
     const accessDate = 'September 2026';
-    const url = illustration.slaveryImagesPage || `https://zeluis.github.io/Africa-Digital-Atlas/castas/${illustration.regId}`;
+    const url = illustration.slaveryImagesPage || `https://zeluis.github.io/Africa-Digital-Atlas/castas/${ideId}`;
 
     switch (style) {
       case 'chicago':
@@ -404,12 +405,12 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
       case 'harvard':
         return `${authors} (${year}) '${title}', Plate ${regId}. In ${source}. Available at: ${url} (Accessed: ${accessDate}).`;
       case 'bibtex':
-        return `@misc{Archival Iconography_${illustration.regId},
+        return `@misc{Archival Iconography_${illustration.ideId},
   author = {${authors}},
   title = {${title}},
   year = {${year}},
   howpublished = {Archival Iconography: A Visual Record of Castas & Colonial Archive},
-  note = {Plate ID: ${regId}, Identifier: ${illustration.identifier || regId}},
+  note = {Plate ID: ${regId}, Identifier: ${illustration.identifier || ideId}},
   url = {${url}}
 }`;
       default:
