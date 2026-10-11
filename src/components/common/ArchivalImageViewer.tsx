@@ -1106,6 +1106,36 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                   
                   {/* Lead Summary Section with Prominent Lead Paragraph */}
                   <div className="space-y-4 p-5 sm:p-6 rounded-3xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 shadow-xs relative overflow-hidden">
+                  {/* Top Accent Pill */}
+                    <div className="flex items-center gap-2">
+                      <div className="p-1 rounded-lg bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20">
+                        <Scroll className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+                      </div>
+                      <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                        Lead Summary &amp; Historical Proposition
+                      </span>
+                    </div>
+
+                    {/* PROMINENT MAIN LEAD PARAGRAPH */}
+                    <div className="border-l-3 border-amber-800/80 dark:border-amber-400/80 pl-4 py-1">
+                      <h3 className="text-[clamp(0.98rem,1.35vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100 leading-snug py-1">
+                        Slavery Images: A Visual Record of the African Slave Trade and Slave Life in the Early African Diaspora
+                      </h3>
+                      <p className="text-[clamp(0.95rem,1.25vw,1.1rem)] font-serif font-medium leading-[1.75] text-stone-900 dark:text-stone-100 tracking-tight">
+                        This educational resource is a two-part website created for teachers, researchers, students and the general public. It exists to assist anyone interested in visualizing the experiences of Africans and their descendants who were enslaved and transported to slave societies around the world.
+                      </p>
+                    </div>
+
+                    {/* Contextual Elaboration Paragraphs */}
+                    <p className="text-[clamp(0.875rem,1.15vw,0.985rem)] font-serif leading-[1.75] text-stone-700 dark:text-stone-300">
+                      As part of the UNESCO's Routes of Enslaved Peoples project, supported by University of Colorado Boulder, Virginia Humanities, University of Virginia, SSHRC, Mellon Foundation, and NEH, SlaveyImages is an educational resource for teachers, researchers, students, and the general public. The new website visually captures the experiences of Africans and their descendants who were enslaved and transported to slave societies around the world.
+                    </p>
+
+                    <p className="text-[clamp(0.875rem,1.15vw,0.985rem)] font-serif leading-[1.75] text-stone-700 dark:text-stone-300">
+                      One of the pioneering projects in the field and created by Jerome Handler and Michael Tuite, the SlaveryImages digital archive offers open-source access to historical images, paintings, lithographs, and photographs illustrating enslaved Africans and their descendants before c. 1900. Since 2007 SlaveryImages has attracted over 1.5 million new users and averaged about 15,000 per month, while page views totaled above 12 million hits and has become a very important digital project across all humanities research.
+                    </p>
+                  </div>
+                  <div className="space-y-4 p-5 sm:p-6 rounded-3xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 shadow-xs relative overflow-hidden">
                     
                     {/* Top Accent Pill */}
                     <div className="flex items-center gap-2">
@@ -1119,7 +1149,10 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
 
                     {/* PROMINENT MAIN LEAD PARAGRAPH */}
                     <div className="border-l-3 border-amber-800/80 dark:border-amber-400/80 pl-4 py-1">
-                      <p className="text-[clamp(0.98rem,1.35vw,1.15rem)] font-serif font-medium leading-[1.75] text-stone-900 dark:text-stone-100 tracking-tight">
+                      <h3 className="text-[clamp(0.98rem,1.35vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100 leading-snug py-1">
+                        Castas & Colonial Visual Archive
+                      </h3>
+                      <p className="text-[clamp(0.95rem,1.25vw,1.1rem)] font-serif font-medium leading-[1.75] text-stone-900 dark:text-stone-100 tracking-tight">
                         This Iconographic Historical Archive starts with the proposition that race has a history and that the historical experience of the peoples of Latin America is crucial to understanding the ways we use &ldquo;race&rdquo; today.
                       </p>
                     </div>
@@ -1216,6 +1249,42 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                     </div>
 
                     <div className="p-5 rounded-3xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 space-y-4 shadow-xs">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                          <h4 className="text-[clamp(1.05rem,1.4vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100">
+                            Jerome S. Handler, Senior Scholar, Virginia Humanities.
+                          </h4>
+                          <p className="text-[clamp(0.85rem,1.1vw,0.95rem)] font-serif text-amber-900 dark:text-amber-400 font-semibold pt-0.5">
+                            Slave Images Website Creator
+                          </p>
+                        </div>                        
+                      </div>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                          <h4 className="text-[clamp(1.05rem,1.4vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100">
+                            Henry Lovejoy, Director of the Digital Slavery Research Lab.
+                          </h4>
+                          <p className="text-[clamp(0.85rem,1.1vw,0.95rem)] font-serif text-amber-900 dark:text-amber-400 font-semibold pt-0.5">
+                            Associate Professor of History, University of Colorado Boulder
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                          <h4 className="text-[clamp(1.05rem,1.4vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100">
+                            Leidy Marcela Alpízar-Alpízar, Profesora, Departamento de Historia y Sección de Humanidades.
+                          </h4>
+                          <p className="text-[clamp(0.85rem,1.1vw,0.95rem)] font-serif text-amber-900 dark:text-amber-400 font-semibold pt-0.5">
+                            Sede del Caribe, Universidad de Costa Rica
+                          </p>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div className="p-5 rounded-3xl bg-white dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 space-y-4 shadow-xs">
+                      
+
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <div>
                           <h4 className="text-[clamp(1.05rem,1.4vw,1.25rem)] font-serif font-bold text-stone-900 dark:text-stone-100">
