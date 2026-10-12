@@ -27,6 +27,7 @@ import {
 
 interface HeritageViewProps {
   onSelectCountry: (entityId: string) => void;
+  initialSiteId?: number;
 }
 
 type RegionFilter = 'All' | 'Africa' | 'Arab States';
@@ -36,7 +37,8 @@ type ViewMode = 'viewer' | 'directory';
 const UNESCO_CUSTOM_XML_STORAGE_KEY = 'africalia_unesco_xml_sites_v1';
 
 export const HeritageView: React.FC<HeritageViewProps> = ({
-  onSelectCountry
+  onSelectCountry,
+  initialSiteId
 }) => {
   // Load either custom ingested XML rows from localStorage or the curated Africa + Arab States registry
   const [unescoSites, setUnescoSites] = useState<UnescoSiteMetadata[]>(() => {
@@ -96,21 +98,39 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
     return filteredSites.map(unescoSiteToIllustration);
   }, [filteredSites]);
 
-  const [activeIllustration, setActiveIllustration] = useState<SlaveTradeIllustration | null>(
-    () => illustrationsList[0] || null
-  );
+  const [activeIllustration, setActiveIllustration] = useState<SlaveTradeIllustration | null>(() => {
+    if (initialSiteId) {
+      const match = INITIAL_UNESCO_HERITAGE_SITES.find(s => s.idNumber === initialSiteId);
+      if (match) return unescoSiteToIllustration(match);
+    }
+    return null;
+  });
   const [inspectedModalIllustration, setInspectedModalIllustration] = useState<SlaveTradeIllustration | null>(null);
 
-  // Keep activeIllustration synced when filter changes
+  // Deep-linking: Automatically select and open initialSiteId if requested via search / URL / map
+  useEffect(() => {
+    if (!initialSiteId) return;
+    const match = unescoSites.find(s => s.idNumber === initialSiteId);
+    if (match) {
+      const target = unescoSiteToIllustration(match);
+      setActiveIllustration(prev => (prev?.objectId === target.objectId ? prev : target));
+      setViewMode(prev => (prev === 'viewer' ? prev : 'viewer'));
+    }
+  }, [initialSiteId, unescoSites]);
+
+  // Keep activeIllustration valid when filters or dataset change
   useEffect(() => {
     if (illustrationsList.length === 0) {
       setActiveIllustration(null);
       return;
     }
-    if (!activeIllustration || !illustrationsList.some(item => item.objectId === activeIllustration.objectId)) {
-      setActiveIllustration(illustrationsList[0]);
-    }
-  }, [illustrationsList, activeIllustration]);
+    setActiveIllustration(prev => {
+      if (prev && illustrationsList.some(item => item.objectId === prev.objectId)) {
+        return prev;
+      }
+      return illustrationsList[0];
+    });
+  }, [illustrationsList]);
 
   // Counts for badges
   const africaCount = useMemo(() => unescoSites.filter(s => s.region === 'Africa').length, [unescoSites]);

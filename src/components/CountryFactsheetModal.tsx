@@ -3,6 +3,7 @@ import { atlas } from '../data/atlas-store';
 import { CountryFlag } from './CountryFlag';
 import { CountrySilhouette } from './CountrySilhouette';
 import { UN_M49_NUMERIC_CODES, getEntityGeographyMetadata } from '../data/svgGeographySystem';
+import { ENTITY_BLOC_MEMBERSHIP } from '../data/entityBlocs';
 import { COUNTRY_HEADER_DATA } from '../data/countryHeaderData';
 import { getCountryHistoricalDevelopmentDossier } from '../data/countryHistoricalDevelopmentData';
 import { 
@@ -66,6 +67,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
   const geo = getEntityGeographyMetadata(entityId);
   const hist = getCountryHistoricalDevelopmentDossier(country.name || entityId);
   const heritageSites = atlas.getHeritageSites(entityId);
+  const memberBlocs = (ENTITY_BLOC_MEMBERSHIP[entityId.toUpperCase()] || ['AU']) as string[];
 
   // Indicators
   const pop = atlas.getIndicatorValue(entityId, 'SP.POP.TOTL') || 0;
@@ -202,7 +204,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
   <text x="65" y="950" class="label">UNESCO World Heritage Sites (${heritageSites.length} Documented)</text>
   <text x="65" y="985" style="font-size: 16px; fill: #374151;">${heritageSites.slice(0, 5).map(s => s.name).join(' • ') || 'None formally registered'}</text>
   <text x="65" y="1030" class="label">Regional Economic Blocs</text>
-  <text x="65" y="1055" style="font-size: 16px; fill: #059669; font-weight: bold;">${(geo?.memberBlocs || ['AU']).join(' • ')}</text>
+  <text x="65" y="1055" style="font-size: 16px; fill: #059669; font-weight: bold;">${memberBlocs.join(' • ')}</text>
 
   <!-- Footer Provenance Stamp -->
   <rect x="40" y="1480" width="1120" height="80" fill="#f3f4f6" rx="12" />
@@ -270,7 +272,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
     <div class="label">UNESCO World Heritage Sites (${heritageSites.length})</div>
     <div style="font-size: 12px; margin-top: 4px;">${heritageSites.slice(0, 6).map(s => s.name).join(' • ') || 'None formally registered'}</div>
     <div class="label" style="margin-top: 8px;">Regional Blocs</div>
-    <div style="font-size: 12px; font-weight: bold; color: #059669;">${(geo?.memberBlocs || ['AU']).join(' • ')}</div>
+    <div style="font-size: 12px; font-weight: bold; color: #059669;">${memberBlocs.join(' • ')}</div>
   </div>
 
   <div class="footer">
@@ -540,7 +542,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
                 <div>
                   <span className="text-[10px] text-zinc-500 block font-medium">Regional Economic Blocs (RECs)</span>
                   <div className="flex flex-wrap gap-1.5 mt-1">
-                    {(geo?.memberBlocs || ['AU']).map(bloc => (
+                    {memberBlocs.map(bloc => (
                       <span key={bloc} className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-emerald-700 dark:text-emerald-300">
                         {bloc}
                       </span>

@@ -67,7 +67,8 @@ import {
   Hospital,
   GraduationCap,
   Landmark,
-  Columns
+  Columns,
+  AlertTriangle
 } from 'lucide-react';
 import { getAdmin1ForCountry, searchAdmin1Subdivisions, ALL_ADMIN1_SUBDIVISIONS } from '../data/africaliaGeographyData';
 import { AfricaliaAdmin1 } from '../data/types';
@@ -93,6 +94,10 @@ import { SubseaCablePath, CableLandingStation } from '../data/akpTelecomCables';
 import { ConflictBeacon, CONFLICT_CATEGORY_CONFIG } from '../data/akpConflictSecurity';
 import { SocialInfrastructureFacility } from '../data/akpSocialInfrastructure';
 import { HeritageSanctuarySite } from '../data/akpCulturalReserves';
+import { UnescoSiteMetadata } from '../data/slaveTradeIllustrations';
+import { INITIAL_UNESCO_HERITAGE_SITES } from '../data/unescoHeritageRegistry';
+import { UnescoSiteDetailModal } from './cartography/UnescoSiteDetailModal';
+import { prewarmUnescoHeritageCache } from '../utils/imagePrecache';
 import {
   AKP_CHOROPLETH_METRICS,
   AKP_CATEGORIES,
@@ -123,6 +128,9 @@ export interface AfricaMapProps {
   activeMetric?: string;
   onActiveMetricChange?: (metric: string) => void;
   initialCartographySource?: 'authentic_final' | 'schematic';
+  showUnescoSites?: boolean;
+  onToggleUnescoSites?: () => void;
+  onNavigateToHeritage?: (siteId: number) => void;
 }
 
 export type MapDisplayMode = 'authentic_palette' | 'un_geoscheme' | 'choropleth' | 'bivariate' | 'antique_parchment';
@@ -179,7 +187,10 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   onMapModeChange,
   activeMetric: externalMetric,
   onActiveMetricChange,
-  initialCartographySource = 'authentic_final'
+  initialCartographySource = 'authentic_final',
+  showUnescoSites: externalShowUnescoSites,
+  onToggleUnescoSites,
+  onNavigateToHeritage
 }) => {
   const handleSelectCountry = onSelectCountry || onSelectEntity || (() => {});
   const activeRegionFilter = selectedRegionFilter || regionFilter || 'All';
@@ -318,6 +329,33 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   const [hoveredThematicItem, setHoveredThematicItem] = useState<AnyThematicItem | null>(null);
   const [selectedThematicItem, setSelectedThematicItem] = useState<AnyThematicItem | null>(null);
   const [hoveredAkpNode, setHoveredAkpNode] = useState<AkpInfrastructurePoint | AkpProtectedArea | null>(null);
+
+  // UNESCO Heritage Layer State (Togglable layer from JSON data)
+  const [internalShowUnescoSites, setInternalShowUnescoSites] = useState<boolean>(true);
+  const showUnescoSites = externalShowUnescoSites !== undefined ? externalShowUnescoSites : internalShowUnescoSites;
+  const handleToggleUnescoSites = onToggleUnescoSites || (() => setInternalShowUnescoSites(prev => !prev));
+
+  const [unescoSites] = useState<UnescoSiteMetadata[]>(() => {
+    try {
+      const saved = localStorage.getItem('africalia_unesco_xml_sites_v1');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {
+      // Storage unavailable fallback
+    }
+    return INITIAL_UNESCO_HERITAGE_SITES;
+  });
+  const [selectedUnescoSite, setSelectedUnescoSite] = useState<UnescoSiteMetadata | null>(null);
+  const [hoveredUnescoSite, setHoveredUnescoSite] = useState<UnescoSiteMetadata | null>(null);
+
+  // Pre-warm UNESCO image cache in background when layer is active
+  useEffect(() => {
+    if (showUnescoSites) {
+      prewarmUnescoHeritageCache().catch(() => {});
+    }
+  }, [showUnescoSites]);
 
   const handleToggleLayer = (key: keyof LayerVisibilityState) => {
     setLayerVisibility(prev => ({
@@ -1636,6 +1674,26 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             </button>
           )}
 
+          {/* UNESCO World Heritage Sites Layer Toggle */}
+          {isFinalMode && (
+            <button
+              type="button"
+              onClick={handleToggleUnescoSites}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer shrink-0 ${
+                showUnescoSites
+                  ? 'bg-amber-500/15 border-amber-500/40 text-amber-800 dark:text-amber-300 ring-1 ring-amber-500/30'
+                  : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+              }`}
+              title="Toggle UNESCO World Heritage Sites Layer (37 Inscribed African & Arab States Properties from JSON data)"
+            >
+              <Landmark className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+              <span>UNESCO Sites ({showUnescoSites ? 'ON' : 'OFF'})</span>
+              <span className="text-[10px] font-mono font-bold px-1 rounded bg-amber-500/20 text-amber-800 dark:text-amber-300">
+                {unescoSites.length}
+              </span>
+            </button>
+          )}
+
           {/* AKP Clean Energy & Dams Overlay Toggle */}
           {isFinalMode && (
             <button
@@ -2410,6 +2468,12 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 onClickThematicItem={(item) => setSelectedThematicItem(item)}
                 hoveredAkpNode={hoveredAkpNode}
                 onHoverAkpNode={(node) => setHoveredAkpNode(node)}
+                showUnescoSites={showUnescoSites}
+                unescoSites={unescoSites}
+                selectedUnescoSite={selectedUnescoSite}
+                hoveredUnescoSite={hoveredUnescoSite}
+                onHoverUnescoSite={(site) => setHoveredUnescoSite(site)}
+                onSelectUnescoSite={(site) => setSelectedUnescoSite(site)}
                 visibleRegions={visibleRegions}
                 activeRegionFilter={activeRegionFilter}
                 activeBlocFilter={selectedBlocId}
@@ -2618,6 +2682,43 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           </div>
         )}
 
+        {/* Interactive Hover Card for UNESCO World Heritage Sites */}
+        {hoveredUnescoSite && !selectedUnescoSite && !hoveredThematicItem && !selectedThematicItem && (
+          <div
+            style={{
+              left: `${Math.min(window.innerWidth - 340, Math.max(20, cursorPos.x + 18))}px`,
+              top: `${Math.max(20, Math.min(window.innerHeight - 260, cursorPos.y - 120))}px`,
+            }}
+            className="absolute z-40 pointer-events-none w-80 p-3.5 rounded-2xl bg-white/98 dark:bg-stone-900/98 text-stone-900 dark:text-stone-100 border border-stone-200/90 dark:border-stone-800/90 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
+          >
+            <div className="flex items-center justify-between gap-1.5 mb-1.5">
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30">
+                WHC #{hoveredUnescoSite.idNumber} • {hoveredUnescoSite.category} Heritage
+              </span>
+              {hoveredUnescoSite.danger && (
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 flex items-center gap-1">
+                  <AlertTriangle className="w-2.5 h-2.5" />
+                  <span>In Danger</span>
+                </span>
+              )}
+            </div>
+            <h4 className="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 leading-snug mb-1">
+              {hoveredUnescoSite.site}
+            </h4>
+            <div className="flex items-center gap-2 text-xs font-mono text-stone-500 dark:text-stone-400 mb-1.5">
+              <span>{hoveredUnescoSite.states}</span>
+              <span>• Inscribed {hoveredUnescoSite.dateInscribed}</span>
+            </div>
+            <p className="text-[11px] font-serif text-stone-600 dark:text-stone-300 line-clamp-2 leading-relaxed">
+              {hoveredUnescoSite.shortDescription}
+            </p>
+            <div className="mt-2 pt-1.5 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between text-[10px] font-mono text-amber-800 dark:text-amber-400 font-semibold">
+              <span>Click pin to inspect</span>
+              <span>UNESCO Archive</span>
+            </div>
+          </div>
+        )}
+
         {/* Top-Docked Unified Tactical Inspector Drawer (Parchment / Editorial Light Theme) */}
         {activeTooltipEntityId && (
           <UnifiedInspectorDrawer
@@ -2793,6 +2894,16 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             onClose={() => setIsCitationModalOpen(false)}
             title="Africa Data Atlas & Cartographic Observatory"
             sourceContext="High-Precision Continental Vector Cartography (5,796 × 5,867 Grid)"
+          />
+        )}
+
+        {/* UNESCO World Heritage Site Detail Modal */}
+        {selectedUnescoSite && (
+          <UnescoSiteDetailModal
+            site={selectedUnescoSite}
+            onClose={() => setSelectedUnescoSite(null)}
+            onSelectCountry={handleSelectCountry}
+            onNavigateToHeritage={onNavigateToHeritage}
           />
         )}
       </Suspense>

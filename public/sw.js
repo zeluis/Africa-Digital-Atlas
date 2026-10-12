@@ -1,13 +1,14 @@
 // Africa Data Atlas - Progressive Web App Service Worker
 // Multi-Tier Caching Strategies with full Chrome-Extension & Offline Safety
 
-const VERSION = 'v1.3';
+const VERSION = 'v1.4';
 const CACHE_STATIC = `africa-atlas-static-${VERSION}`;
 const CACHE_IMMUTABLE = `africa-atlas-immutable-${VERSION}`;
 const CACHE_FONTS = `africa-atlas-fonts-${VERSION}`;
 const CACHE_DATA = `africa-atlas-data-${VERSION}`;
+const CACHE_HERITAGE = `africa-atlas-heritage-${VERSION}`;
 
-const CURRENT_CACHES = [CACHE_STATIC, CACHE_IMMUTABLE, CACHE_FONTS, CACHE_DATA];
+const CURRENT_CACHES = [CACHE_STATIC, CACHE_IMMUTABLE, CACHE_FONTS, CACHE_DATA, CACHE_HERITAGE];
 
 // Essential core precache assets (App Shell & Metadata)
 const PRECACHE_ASSETS = [
@@ -56,12 +57,45 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Listen for explicit SKIP_WAITING message from client
+// Listen for messages from client (SKIP_WAITING and proactive pre-caching)
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+
+  // Proactively fetch and store images for UNESCO Heritage sites during idle periods
+  if (event.data && event.data.type === 'PRECACHE_UNESCO_HERITAGE') {
+    const urls = Array.isArray(event.data.urls) ? event.data.urls : [];
+    event.waitUntil(
+      caches.open(CACHE_HERITAGE).then(async (cache) => {
+        for (const url of urls) {
+          if (!url || typeof url !== 'string') continue;
+          try {
+            const existing = await cache.match(url);
+            if (!existing) {
+              const res = await fetch(url, { mode: 'no-cors' });
+              if (res && (res.status === 200 || res.type === 'opaque')) {
+                await cache.put(url, res);
+              }
+            }
+          } catch (err) {
+            console.debug('[SW] Proactive UNESCO image cache skip:', url, err);
+          }
+        }
+      })
+    );
+  }
 });
+
+// Helper: Determine if request is for UNESCO World Heritage images or assets
+function isUnescoHeritageRequest(url) {
+  return (
+    url.hostname === 'whc.unesco.org' ||
+    url.hostname.includes('unesco.org') ||
+    url.pathname.includes('/uploads/sites/') ||
+    url.pathname.includes('/unesco/')
+  );
+}
 
 // Helper: Determine if request is for Google Fonts
 function isFontRequest(url) {
@@ -191,6 +225,12 @@ self.addEventListener('fetch', (event) => {
   // 1. Google Fonts (Cache-First)
   if (isFontRequest(url)) {
     event.respondWith(cacheFirstStrategy(request, CACHE_FONTS));
+    return;
+  }
+
+  // 1b. UNESCO World Heritage Sites (Cache-First with high-quality offline storage)
+  if (isUnescoHeritageRequest(url)) {
+    event.respondWith(cacheFirstStrategy(request, CACHE_HERITAGE));
     return;
   }
 

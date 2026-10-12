@@ -6,7 +6,11 @@ import '@fontsource-variable/noto-serif';
 import '@fontsource-variable/noto-sans';
 import App from './App.tsx';
 import { LanguageProvider } from './i18n/LanguageContext';
+import { initArchivalPrecache } from './utils/imagePrecache';
 import './index.css';
+
+// Proactively pre-warm UNESCO heritage sites and archival media during idle time
+initArchivalPrecache();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

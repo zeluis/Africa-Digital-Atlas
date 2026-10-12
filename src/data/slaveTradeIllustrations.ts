@@ -17,6 +17,8 @@ export interface UnescoSiteMetadata {
   transboundary?: boolean;
   latitude?: number;
   longitude?: number;
+  x?: number;
+  y?: number;
   areaHectares?: number | string;
   location?: string;
   shortDescription?: string;

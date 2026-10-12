@@ -65,10 +65,18 @@ const parseUrlHash = (): {
   indicator?: string;
   plateId?: string;
   searchQuery?: string;
+  siteId?: number;
 } => {
   if (typeof window === 'undefined') return { tab: 'overview' };
   const hash = window.location.hash.replace(/^#\/?/, '').trim();
   if (!hash) return { tab: 'overview' };
+
+  if (hash.startsWith('heritage')) {
+    const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+    const idParam = params.get('id');
+    const siteId = idParam ? parseInt(idParam, 10) : undefined;
+    return { tab: 'heritage' as CanonicalNavTab, siteId: siteId && !isNaN(siteId) ? siteId : undefined };
+  }
 
   if (hash.startsWith('countries/') || hash.startsWith('country/')) {
     const parts = hash.split('/');
@@ -172,6 +180,9 @@ function AppContent() {
   const [activeIconographySearchQuery, setActiveIconographySearchQuery] = useState<string | undefined>(initialRoute.searchQuery);
   const [isIconographyIngestion, setIsIconographyIngestion] = useState(false);
 
+  // UNESCO Heritage Archive deep link target
+  const [selectedHeritageSiteId, setSelectedHeritageSiteId] = useState<number | undefined>(initialRoute.siteId);
+
   // Desktop Drawer starts open by default. It remains open on nav clicks; only Menu toggles it.
   const [isDesktopDrawerOpen, setIsDesktopDrawerOpen] = useState<boolean>(true);
   
@@ -232,13 +243,15 @@ function AppContent() {
       if (currentHash.startsWith('cartography') || currentHash.startsWith('archival-cartography')) {
         return;
       }
+    } else if (currentTab === 'heritage') {
+      targetHash = selectedHeritageSiteId ? `heritage?id=${selectedHeritageSiteId}` : 'heritage';
     }
 
     const currentHash = window.location.hash.replace(/^#\/?/, '').trim();
     if (currentHash !== targetHash) {
       window.history.replaceState(null, '', `#${targetHash}`);
     }
-  }, [currentTab, selectedEntityId, activeRegion, selectedIndicatorForAnalytics]);
+  }, [currentTab, selectedEntityId, activeRegion, selectedIndicatorForAnalytics, selectedHeritageSiteId]);
 
   // Listen to browser hash navigation (Back/Forward buttons & external hash links)
   useEffect(() => {
@@ -251,6 +264,7 @@ function AppContent() {
         if (parsed.indicator) setSelectedIndicatorForAnalytics(parsed.indicator);
         if (parsed.plateId !== undefined) setActiveIconographyPlateId(parsed.plateId);
         if (parsed.searchQuery !== undefined) setActiveIconographySearchQuery(parsed.searchQuery);
+        if (parsed.siteId !== undefined) setSelectedHeritageSiteId(parsed.siteId);
       });
     };
     window.addEventListener('hashchange', handleHashChange);
@@ -370,6 +384,11 @@ function AppContent() {
       const q = params.get('q');
       if (plate) setActiveIconographyPlateId(plate);
       if (q) setActiveIconographySearchQuery(q);
+      const heritageId = params.get('id');
+      if (heritageId) {
+        const parsedHeritageId = parseInt(heritageId, 10);
+        if (!isNaN(parsedHeritageId)) setSelectedHeritageSiteId(parsedHeritageId);
+      }
     } else if (targetTab !== 'iconography') {
       setActiveIconographyPlateId(undefined);
       setActiveIconographySearchQuery(undefined);
@@ -652,6 +671,10 @@ function AppContent() {
                     <MapView
                       onSelectCountry={handleSelectCountry}
                       selectedEntityId={selectedEntityId}
+                      onNavigateToHeritage={(siteId) => {
+                        setSelectedHeritageSiteId(siteId);
+                        handleSelectTab(`heritage?id=${siteId}`);
+                      }}
                     />
                   )}
 
@@ -664,6 +687,7 @@ function AppContent() {
                   {currentTab === 'heritage' && (
                     <HeritageView
                       onSelectCountry={handleSelectCountry}
+                      initialSiteId={selectedHeritageSiteId}
                     />
                   )}
 

@@ -5,6 +5,7 @@
 
 import { AfricanRegion } from './types';
 import { AFRICA_SVG_MAP, CountrySvgPath } from './svgMaps';
+import { COUNTRY_SILHOUETTES, CountrySilhouetteData } from './countrySilhouettes';
 
 export interface M49EntityMetadata {
   iso3: string;
@@ -19,7 +20,6 @@ export interface M49EntityMetadata {
   validationStatus: 'verified' | 'provisional';
   viewBox: string;
   pathLength: number;
-  memberBlocs?: string[];
 }
 
 export interface RegionalSilhouetteData {
@@ -51,7 +51,7 @@ export const UN_M49_REGIONS: Record<AfricanRegion, { code: string; name: string 
   'Southern Africa': { code: '018', name: 'Southern Africa' }
 };
 
-// Curated UN M49 Numeric Codes for African Nations
+// Authoritative UN M49 Numeric Codes for African Nations
 export const UN_M49_NUMERIC_CODES: Record<string, string> = {
   DZA: '012', AGO: '024', BEN: '204', BWA: '072', BFA: '854',
   BDI: '108', CPV: '132', CMR: '120', CAF: '140', TCD: '148',
@@ -63,11 +63,10 @@ export const UN_M49_NUMERIC_CODES: Record<string, string> = {
   MOZ: '508', NAM: '516', NER: '562', NGA: '566', RWA: '646',
   STP: '678', SEN: '686', SYC: '690', SLE: '694', SOM: '706',
   ZAF: '710', SSD: '728', SDN: '729', TZA: '834', TGO: '768',
-  TUN: '788', UGA: '800', ESH: '732', ZMB: '894', ZWE: '716',
-  XSL: '900'
+  TUN: '788', UGA: '800', ESH: '732', ZMB: '894', ZWE: '716'
 };
 
-// Curated UN M49 Regional Silhouettes
+// Authoritative UN M49 Regional Silhouettes
 export const UN_REGIONAL_SILHOUETTES: Record<AfricanRegion, RegionalSilhouetteData> = {
   "Northern Africa": {
     "region": "Northern Africa",
@@ -90,11 +89,11 @@ export const UN_REGIONAL_SILHOUETTES: Record<AfricanRegion, RegionalSilhouetteDa
       "y": 280.8
     },
     "palette": {
-      "primary": "#1802FF",
-      "light": "#4B5EFC",
-      "dark": "#1E1B4B",
-      "border": "#1802FF",
-      "glow": "rgba(24, 2, 255, 0.25)"
+      "primary": "#2563EB",
+      "light": "#60A5FA",
+      "dark": "#1D4ED8",
+      "border": "#1D4ED8",
+      "glow": "#2563EB40"
     },
     "keyCapitals": [
       {
@@ -154,11 +153,11 @@ export const UN_REGIONAL_SILHOUETTES: Record<AfricanRegion, RegionalSilhouetteDa
       "y": 316
     },
     "palette": {
-      "primary": "#00FF00",
-      "light": "#33FF33",
-      "dark": "#065F46",
-      "border": "#00C800",
-      "glow": "rgba(0, 255, 0, 0.25)"
+      "primary": "#16A34A",
+      "light": "#4ADE80",
+      "dark": "#15803D",
+      "border": "#15803D",
+      "glow": "#16A34A40"
     },
     "keyCapitals": [
       {
@@ -211,11 +210,11 @@ export const UN_REGIONAL_SILHOUETTES: Record<AfricanRegion, RegionalSilhouetteDa
       "y": 328.1
     },
     "palette": {
-      "primary": "#FF00FE",
-      "light": "#FF55FE",
-      "dark": "#86198F",
-      "border": "#FF00FE",
-      "glow": "rgba(255, 0, 254, 0.25)"
+      "primary": "#C026D3",
+      "light": "#E879F9",
+      "dark": "#9333EA",
+      "border": "#9333EA",
+      "glow": "#C026D340"
     },
     "keyCapitals": [
       {
@@ -257,7 +256,6 @@ export const UN_REGIONAL_SILHOUETTES: Record<AfricanRegion, RegionalSilhouetteDa
       "DJI",
       "ETH",
       "SOM",
-      "XSL",
       "SSD",
       "UGA",
       "KEN",
@@ -278,11 +276,11 @@ export const UN_REGIONAL_SILHOUETTES: Record<AfricanRegion, RegionalSilhouetteDa
       "y": 302.5
     },
     "palette": {
-      "primary": "#FFA500",
-      "light": "#FFB84A",
-      "dark": "#C2410C",
-      "border": "#FFA500",
-      "glow": "rgba(255, 165, 0, 0.25)"
+      "primary": "#EAB308",
+      "light": "#FDE047",
+      "dark": "#CA8A04",
+      "border": "#CA8A04",
+      "glow": "#EAB30840"
     },
     "keyCapitals": [
       {
@@ -331,11 +329,11 @@ export const UN_REGIONAL_SILHOUETTES: Record<AfricanRegion, RegionalSilhouetteDa
       "y": 171.1
     },
     "palette": {
-      "primary": "#FF0A0A",
-      "light": "#FF4D4D",
-      "dark": "#991B1B",
-      "border": "#FF0A0A",
-      "glow": "rgba(255, 10, 10, 0.25)"
+      "primary": "#DC2626",
+      "light": "#F87171",
+      "dark": "#B91C1C",
+      "border": "#B91C1C",
+      "glow": "#DC262640"
     },
     "keyCapitals": [
       {
@@ -372,20 +370,6 @@ export function getRegionalSilhouette(region: AfricanRegion): RegionalSilhouette
   return UN_REGIONAL_SILHOUETTES[region];
 }
 
-// Lightweight Shape Type classification without importing heavy geometry paths
-const ENTITY_SHAPE_TYPES: Record<string, 'continental' | 'archipelago' | 'island' | 'landlocked' | 'coastal'> = {
-  MAR: 'coastal', ESH: 'coastal', DZA: 'coastal', TUN: 'coastal', LBY: 'coastal', EGY: 'coastal', SDN: 'coastal',
-  MRT: 'coastal', SEN: 'coastal', GMB: 'coastal', GNB: 'coastal', GIN: 'coastal', SLE: 'coastal', LBR: 'coastal',
-  CIV: 'coastal', MLI: 'landlocked', BFA: 'landlocked', GHA: 'coastal', TGO: 'coastal', BEN: 'coastal',
-  NER: 'landlocked', NGA: 'coastal', CPV: 'island', TCD: 'landlocked', CMR: 'coastal', CAF: 'landlocked',
-  GNQ: 'coastal', GAB: 'coastal', COG: 'coastal', COD: 'coastal', AGO: 'coastal', STP: 'island',
-  ERI: 'coastal', DJI: 'coastal', ETH: 'landlocked', SOM: 'coastal', SSD: 'landlocked', UGA: 'landlocked',
-  KEN: 'coastal', RWA: 'landlocked', BDI: 'landlocked', TZA: 'coastal', MWI: 'landlocked', ZMB: 'landlocked',
-  MOZ: 'coastal', ZWE: 'landlocked', MDG: 'coastal', COM: 'island', SYC: 'island', MUS: 'island',
-  NAM: 'coastal', BWA: 'landlocked', ZAF: 'coastal', LSO: 'landlocked', SWZ: 'landlocked',
-  XSL: 'coastal'
-};
-
 export const M49_ENTITIES: M49EntityMetadata[] = Object.values(AFRICA_SVG_MAP).map(item => ({
   iso3: item.id,
   iso2: item.iso2,
@@ -393,11 +377,11 @@ export const M49_ENTITIES: M49EntityMetadata[] = Object.values(AFRICA_SVG_MAP).m
   name: item.name,
   unRegion: item.unRegion as AfricanRegion,
   unRegionCode: UN_M49_REGIONS[item.unRegion as AfricanRegion]?.code || '000',
-  shapeType: ENTITY_SHAPE_TYPES[item.id] || 'continental',
+  shapeType: COUNTRY_SILHOUETTES[item.id]?.shapeType || 'continental',
   vertexCount: item.path.split(/[MLZ]/).length,
   simplificationMethod: 'Natural Earth 50m Vector Pipeline',
   validationStatus: 'verified',
-  viewBox: '0 0 400 400',
+  viewBox: COUNTRY_SILHOUETTES[item.id]?.viewBox || '0 0 400 400',
   pathLength: item.path.length
 }));
 

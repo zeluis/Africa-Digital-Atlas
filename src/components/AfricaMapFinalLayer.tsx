@@ -5,6 +5,8 @@ import { AfricanRegion } from '../data/types';
 import { AKP_INFRASTRUCTURE_POINTS, AKP_PROTECTED_AREAS, AkpInfrastructurePoint, AkpProtectedArea, AkpCategory } from '../data/akpDatasets';
 import { ThematicOverlaysLayer, AnyThematicItem, LayerVisibilityState } from './ThematicOverlaysLayer';
 import { CartographicCartouche } from './CartographicCartouche';
+import { UnescoHeritageMapLayer } from './cartography/UnescoHeritageMapLayer';
+import { UnescoSiteMetadata } from '../data/slaveTradeIllustrations';
 
 export interface AfricaMapFinalLayerProps {
   mapData?: Record<string, AfricaFinalCountryPath>;
@@ -27,6 +29,12 @@ export interface AfricaMapFinalLayerProps {
   onClickThematicItem?: (item: AnyThematicItem, event?: React.MouseEvent) => void;
   hoveredAkpNode?: AkpInfrastructurePoint | AkpProtectedArea | null;
   onHoverAkpNode?: (node: AkpInfrastructurePoint | AkpProtectedArea | null, event?: React.MouseEvent) => void;
+  showUnescoSites?: boolean;
+  unescoSites?: UnescoSiteMetadata[];
+  selectedUnescoSite?: UnescoSiteMetadata | null;
+  hoveredUnescoSite?: UnescoSiteMetadata | null;
+  onHoverUnescoSite?: (site: UnescoSiteMetadata | null, event?: React.MouseEvent) => void;
+  onSelectUnescoSite?: (site: UnescoSiteMetadata, event?: React.MouseEvent) => void;
   visibleRegions: Set<AfricanRegion>;
   activeRegionFilter: string;
   activeBlocFilter?: string | null;
@@ -61,6 +69,12 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
   onClickThematicItem,
   hoveredAkpNode,
   onHoverAkpNode,
+  showUnescoSites = false,
+  unescoSites = [],
+  selectedUnescoSite = null,
+  hoveredUnescoSite = null,
+  onHoverUnescoSite,
+  onSelectUnescoSite,
   visibleRegions,
   activeRegionFilter,
   activeBlocFilter,
@@ -715,6 +729,17 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
           hoveredThematicItem={hoveredThematicItem}
           onHoverThematicItem={onHoverThematicItem}
           onClickThematicItem={onClickThematicItem}
+        />
+      )}
+
+      {/* Togglable UNESCO World Heritage Sites Layer */}
+      {showUnescoSites && unescoSites && unescoSites.length > 0 && (
+        <UnescoHeritageMapLayer
+          sites={unescoSites}
+          selectedSite={selectedUnescoSite}
+          hoveredSite={hoveredUnescoSite}
+          onHoverSite={onHoverUnescoSite || (() => {})}
+          onSelectSite={onSelectUnescoSite || (() => {})}
         />
       )}
 

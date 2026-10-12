@@ -5,6 +5,114 @@
  */
 
 const CACHE_NAME = 'africa-archival-plates-v1';
+export const UNESCO_CACHE_NAME = 'africa-atlas-heritage-v1.4';
+
+/**
+ * Gather all image URLs for UNESCO World Heritage sites from JSON data
+ * and any user-ingested XML storage for offline pre-warming.
+ */
+export const getUnescoHeritageImageUrls = async (): Promise<string[]> => {
+  const urls: string[] = [];
+  try {
+    const { INITIAL_UNESCO_HERITAGE_SITES } = await import('../data/unescoHeritageRegistry');
+    INITIAL_UNESCO_HERITAGE_SITES.forEach(site => {
+      if (site.imageUrl && !urls.includes(site.imageUrl)) {
+        urls.push(site.imageUrl);
+      }
+      const officialSiteImg = `https://whc.unesco.org/uploads/sites/site_${site.idNumber}.jpg`;
+      if (!urls.includes(officialSiteImg)) {
+        urls.push(officialSiteImg);
+      }
+    });
+
+    if (typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem('africalia_unesco_xml_sites_v1');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          parsed.forEach((site: { imageUrl?: string; idNumber?: number }) => {
+            if (site.imageUrl && !urls.includes(site.imageUrl)) {
+              urls.push(site.imageUrl);
+            }
+          });
+        }
+      }
+    }
+  } catch {
+    // Ignore dynamic import deferral
+  }
+  return urls;
+};
+
+/**
+ * Pre-warms the UNESCO heritage sites image cache using requestIdleCallback
+ * and signals the service worker to proactively store images for high-quality offline viewing.
+ */
+export const prewarmUnescoHeritageCache = async (): Promise<{ cached: number; total: number }> => {
+  if (typeof window === 'undefined' || !('caches' in window)) {
+    return { cached: 0, total: 0 };
+  }
+
+  const urlsToCache = await getUnescoHeritageImageUrls();
+  if (urlsToCache.length === 0) {
+    return { cached: 0, total: 0 };
+  }
+
+  // Signal the active service worker to proactively fetch and store in CACHE_HERITAGE
+  if (typeof navigator !== 'undefined' && navigator.serviceWorker && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: 'PRECACHE_UNESCO_HERITAGE',
+      urls: urlsToCache
+    });
+  }
+
+  let cachedCount = 0;
+  try {
+    const cache = await caches.open(UNESCO_CACHE_NAME);
+
+    const cacheBatch = async (batch: string[]) => {
+      await Promise.allSettled(
+        batch.map(async url => {
+          try {
+            const existing = await cache.match(url);
+            if (!existing) {
+              const res = await fetch(url, { mode: 'no-cors' });
+              if (res.status === 200 || res.type === 'opaque') {
+                await cache.put(url, res);
+                cachedCount++;
+              }
+            } else {
+              cachedCount++;
+            }
+          } catch {
+            // Silently ignore offline / transient fetch misses
+          }
+        })
+      );
+    };
+
+    // Process in batches of 4 with requestIdleCallback scheduling for zero main-thread jank
+    const batchSize = 4;
+    for (let i = 0; i < urlsToCache.length; i += batchSize) {
+      const chunk = urlsToCache.slice(i, i + batchSize);
+      if ('requestIdleCallback' in window) {
+        await new Promise<void>(resolve => {
+          window.requestIdleCallback(async () => {
+            await cacheBatch(chunk);
+            resolve();
+          }, { timeout: 2500 });
+        });
+      } else {
+        await cacheBatch(chunk);
+        await new Promise(r => setTimeout(r, 90));
+      }
+    }
+  } catch {
+    // CacheStorage non-fatal handler
+  }
+
+  return { cached: cachedCount, total: urlsToCache.length };
+};
 
 // Gather the top 100 critical archival thumbnail URLs
 export const getTopArchivalImageUrls = async (): Promise<string[]> => {
@@ -111,9 +219,17 @@ export const initArchivalPrecache = () => {
 
   const startPrewarm = () => {
     if (navigator.onLine) {
-      setTimeout(() => {
-        prewarmArchivalImageCache();
-      }, 2500); // 2.5s post-boot delay so initial render is instantaneous
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(() => {
+          prewarmUnescoHeritageCache();
+          prewarmArchivalImageCache();
+        }, { timeout: 3000 });
+      } else {
+        setTimeout(() => {
+          prewarmUnescoHeritageCache();
+          prewarmArchivalImageCache();
+        }, 2200);
+      }
     }
   };
 
