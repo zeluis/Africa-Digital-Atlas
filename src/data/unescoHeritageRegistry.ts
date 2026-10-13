@@ -1,5 +1,6 @@
 import { SlaveTradeIllustration, UnescoSiteMetadata } from './slaveTradeIllustrations';
 import rawUnescoSitesJson from './unescoHeritageSites.json';
+import rawPhotoRegistry from './unescoPhotoRegistry.json';
 
 /**
  * ISO-2 to ISO-3 mapping for African & Arab States Parties
@@ -19,18 +20,61 @@ export const ISO2_TO_ISO3_MAP: Record<string, string> = {
   qa: 'QAT', sa: 'SAU', sy: 'SYR', ae: 'ARE', ye: 'YEM'
 };
 
+const photoMap = new Map<number, any>();
+if (rawPhotoRegistry && (rawPhotoRegistry as any).sites) {
+  for (const s of (rawPhotoRegistry as any).sites) {
+    photoMap.set(s.whcId, s);
+  }
+}
+
+/**
+ * Enriches UNESCO site metadata with curated photo registry metadata (photographer, licenses, attribution, URLs).
+ */
+export const enrichWithPhotoRegistry = (site: UnescoSiteMetadata): UnescoSiteMetadata => {
+  const photoData = photoMap.get(site.idNumber);
+  const hero = photoData?.suggestedHero;
+  const author = hero?.author || site.photographer || 'UNESCO Photobank / Official Inscription Archives';
+  const copyright = hero?.copyright || 'UNESCO';
+  const licenseShort = hero?.licenseShort || site.license || 'CC BY-SA 3.0 IGO';
+  const licenseUrl = hero?.licenseUrl || site.licenseUrl || 'https://creativecommons.org/licenses/by-sa/3.0/igo/';
+  const rightsStatement = site.rightsStatement || 'https://rightsstatements.org/vocab/InC-EDU/1.0/';
+  const attributionText = hero?.attribution || site.attributionText || `Photo © ${copyright} / WHC (${site.states}) • WHC #${site.idNumber} (${licenseShort})`;
+  const institution = site.institution || 'UNESCO World Heritage Centre';
+  const creator = hero?.author ? `${hero.author}, ${copyright}` : (site.creator || `UNESCO / State Party of ${site.states}`);
+  const photographer = author;
+  const authorRole = site.authorRole || 'Official UNESCO Documentation & Inscription Registry';
+  const collectionOrRegistryId = site.collectionOrRegistryId || `WHC-${site.idNumber}`;
+  const primaryUrl = hero?.fileUrl || site.primaryUrl || site.httpUrl;
+  const highResDownloadUrl = hero?.fileUrl || site.highResDownloadUrl || site.imageUrl;
+  const imageUrl = hero?.thumbUrl || hero?.fileUrl || site.imageUrl;
+
+  return {
+    ...site,
+    imageUrl,
+    creator,
+    photographer,
+    authorRole,
+    attributionText,
+    institution,
+    collectionOrRegistryId,
+    license: licenseShort,
+    licenseUrl,
+    rightsStatement,
+    primaryUrl,
+    highResDownloadUrl
+  };
+};
+
 /**
  * Helper to strip HTML tags & decode common entities from UNESCO XML fields.
  */
 export const cleanUnescoHtml = (raw?: string | null): string => {
   if (!raw) return '';
   let str = String(raw);
-  // Decode XML-encoded markup tags first
   str = str.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
   str = str.replace(/<\/p>\s*<p[^>]*>/gi, '\n\n');
   str = str.replace(/<br\s*\/?>/gi, '\n');
   str = str.replace(/<[^>]+>/g, '');
-  // Unescape standard XML and named/numeric HTML entities
   str = str
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')
@@ -58,8 +102,7 @@ export const normalizeUnescoUrl = (url?: string | null): string => {
 };
 
 /**
- * Parses an official UNESCO World Heritage XML string (<query><row>...</row></query>)
- * and extracts all rows belonging to the "Africa" and "Arab States" regions.
+ * Parses an official UNESCO World Heritage XML string and extracts rows.
  */
 export const parseUnescoXmlRows = (xmlString: string): UnescoSiteMetadata[] => {
   if (typeof window === 'undefined' || !xmlString.trim()) return [];
@@ -119,7 +162,7 @@ export const parseUnescoXmlRows = (xmlString: string): UnescoSiteMetadata[] => {
       }
     }
 
-    extracted.push({
+    const baseMeta: UnescoSiteMetadata = {
       idNumber,
       uniqueNumber: parseInt(getText('unique_number') || String(idNumber), 10),
       site: cleanUnescoHtml(getText('site')),
@@ -145,7 +188,6 @@ export const parseUnescoXmlRows = (xmlString: string): UnescoSiteMetadata[] => {
       justification: cleanUnescoHtml(getText('justification')) || undefined,
       httpUrl,
       imageUrl: rawImg,
-      // Expanded attribution & licensing metadata
       creator: `UNESCO / State Party of ${statesClean}`,
       photographer: 'UNESCO Photobank / Official Inscription Archives',
       authorRole: 'Official UNESCO Documentation & Inscription Registry',
@@ -157,7 +199,9 @@ export const parseUnescoXmlRows = (xmlString: string): UnescoSiteMetadata[] => {
       rightsStatement: 'https://rightsstatements.org/vocab/InC-EDU/1.0/',
       primaryUrl: httpUrl,
       highResDownloadUrl: rawImg
-    });
+    };
+
+    extracted.push(enrichWithPhotoRegistry(baseMeta));
   }
 
   return extracted.sort((a, b) => a.idNumber - b.idNumber);
@@ -176,8 +220,19 @@ export const unescoSiteToIllustration = (site: UnescoSiteMetadata): SlaveTradeIl
   }
 
   const officialSiteImg = `https://whc.unesco.org/uploads/sites/site_${site.idNumber}.jpg`;
+  const photoData = photoMap.get(site.idNumber);
+  const hero = photoData?.suggestedHero;
+
+  const imageCandidates: string[] = [site.imageUrl, hero?.fileUrl, hero?.thumbUrl, officialSiteImg];
+  if (photoData?.otherOpenCandidates) {
+    for (const cand of photoData.otherOpenCandidates) {
+      if (cand.fileUrl) imageCandidates.push(cand.fileUrl);
+      if (cand.thumbUrl) imageCandidates.push(cand.thumbUrl);
+    }
+  }
+
   const candidateImages = Array.from(
-    new Set([site.imageUrl, officialSiteImg].filter((u): u is string => Boolean(u && u.trim())))
+    new Set(imageCandidates.filter((u): u is string => Boolean(u && u.trim())))
   );
 
   return {
@@ -217,7 +272,6 @@ export const unescoSiteToIllustration = (site: UnescoSiteMetadata): SlaveTradeIl
         ? [site.longitude, site.latitude]
         : undefined,
     unescoMeta: site,
-    // Expanded attribution & licensing fields
     creator: site.creator || `UNESCO / State Party of ${site.states}`,
     photographer: site.photographer || 'UNESCO Photobank / Official Inscription Archives',
     authorRole: site.authorRole || 'Official UNESCO Documentation & Inscription Registry',
@@ -233,7 +287,6 @@ export const unescoSiteToIllustration = (site: UnescoSiteMetadata): SlaveTradeIl
 };
 
 /**
- * Curated initial UNESCO World Heritage registry covering Africa and Arab States
- * (Ready to be expanded or replaced with the full UNESCO XML export rows).
+ * Curated initial UNESCO World Heritage registry covering Africa and Arab States enriched with photo registry metadata.
  */
-export const INITIAL_UNESCO_HERITAGE_SITES: UnescoSiteMetadata[] = rawUnescoSitesJson as UnescoSiteMetadata[];
+export const INITIAL_UNESCO_HERITAGE_SITES: UnescoSiteMetadata[] = (rawUnescoSitesJson as UnescoSiteMetadata[]).map(enrichWithPhotoRegistry);

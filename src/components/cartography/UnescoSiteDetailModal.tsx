@@ -258,11 +258,11 @@ export const UnescoSiteDetailModal: React.FC<UnescoSiteDetailModalProps> = ({
                 </span>
               </div>
 
-              {/* Authoritative Attribution Callout with Copy Action */}
+              {/* Curated Attribution Callout with Copy Action */}
               <div className="p-3.5 rounded-xl bg-white/90 dark:bg-stone-900/90 border border-amber-900/15 dark:border-amber-500/20 space-y-2 shadow-2xs">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-amber-900 dark:text-amber-400">
-                    Authoritative Attribution Notice
+                    Curated Attribution Notice
                   </span>
                   <button
                     type="button"

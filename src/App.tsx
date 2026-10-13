@@ -881,8 +881,8 @@ function AppContent() {
         </Suspense>
       )}
 
-      {/* Structured Credibility Footer (Hidden on map, ethnic tree, archival cartography & iconography ingestion workbench) */}
-      {currentTab !== 'map' && currentTab !== 'ethnic-tree' && currentTab !== 'archival-cartography' && !(currentTab === 'iconography' && isIconographyIngestion) && (
+      {/* Structured Credibility Footer (Hidden on map, ethnic tree, archival cartography, heritage & iconography ingestion workbench) */}
+      {currentTab !== 'map' && currentTab !== 'ethnic-tree' && currentTab !== 'archival-cartography' && currentTab !== 'heritage' && !(currentTab === 'iconography' && isIconographyIngestion) && (
         <Suspense fallback={null}>
           <Footer 
             onNavigateTab={handleSelectTab}

@@ -48,7 +48,7 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
   strokeColor,
   strokeWidth = 0,
   glow = false,
-  showIslands = true,
+  showIslands = false,
   children
 }) => {
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
