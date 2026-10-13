@@ -64,6 +64,13 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
 
   const admin1Paths = countryMapItem?.admin1 || [];
   const hasAdmin1 = admin1Paths.length > 0;
+  const useAdmin1 = showSubdivisions && hasAdmin1 && Boolean(countryMapItem?.bbox);
+  const activeViewBox = useAdmin1 && countryMapItem?.bbox
+    ? `${countryMapItem.bbox.minX - 30} ${countryMapItem.bbox.minY - 30} ${countryMapItem.bbox.maxX - countryMapItem.bbox.minX + 60} ${countryMapItem.bbox.maxY - countryMapItem.bbox.minY + 60}`
+    : silhouette.viewBox;
+  const capitalPos = useAdmin1 && countryMapItem?.centroid
+    ? { x: countryMapItem.centroid.x, y: countryMapItem.centroid.y }
+    : silhouette.capital;
 
   const handleDownloadSVG = () => {
     const svgElement = document.getElementById(`silhouette-svg-${entityId}`);
@@ -87,7 +94,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
   };
 
   const handleCopySvgPath = () => {
-    const combinedPath = hasAdmin1 
+    const combinedPath = useAdmin1 
       ? admin1Paths.map(a => a.d).join(' ')
       : silhouette?.path;
 
@@ -116,19 +123,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
             </linearGradient>
           </defs>
 
-          {hasAdmin1 ? (
-            admin1Paths.map((sub) => (
-              <path
-                key={sub.id}
-                d={sub.d}
-                fill={`url(#${gradId})`}
-                stroke={themeStyles.stroke}
-                strokeWidth="1.2"
-                strokeLinejoin="round"
-                strokeLinecap="round"
-              />
-            ))
-          ) : silhouette.path ? (
+          {silhouette.path ? (
             <path
               d={silhouette.path}
               fill={`url(#${gradId})`}
@@ -208,7 +203,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
           {/* Scalable Silhouette SVG */}
           <svg
             id={`silhouette-svg-${entityId}`}
-            viewBox={silhouette.viewBox}
+            viewBox={activeViewBox}
             width="100%"
             height="100%"
             preserveAspectRatio="xMidYMid meet"
@@ -223,7 +218,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
             </defs>
 
             {/* Render authentic Admin-1 Subdivisions or boundary contour */}
-            {hasAdmin1 ? (
+            {useAdmin1 ? (
               admin1Paths.map((sub) => (
                 <path
                   key={sub.id}
@@ -250,13 +245,13 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
               />
             ) : (
               <g className="animate-pulse opacity-40">
-                <circle cx={silhouette.capital.x} cy={silhouette.capital.y} r="35" fill={themeStyles.stroke} opacity="0.3" />
+                <circle cx={capitalPos.x} cy={capitalPos.y} r="35" fill={themeStyles.stroke} opacity="0.3" />
               </g>
             )}
 
             {/* Capital City Beacon Pin Point */}
-            {showCapital && silhouette.capital && (
-              <g transform={`translate(${silhouette.capital.x}, ${silhouette.capital.y})`} className="pointer-events-none">
+            {showCapital && capitalPos && (
+              <g transform={`translate(${capitalPos.x}, ${capitalPos.y})`} className="pointer-events-none">
                 <circle r="9" fill={themeStyles.stroke} opacity="0.3" className="animate-ping" />
                 <circle r="4.5" fill={themeStyles.stroke} opacity="0.8" />
                 <circle r="2" fill="#ffffff" />
@@ -323,7 +318,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
             {/* Modal Vector Display */}
             <div className="relative h-72 w-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 overflow-hidden">
               <svg
-                viewBox={silhouette.viewBox}
+                viewBox={activeViewBox}
                 width="100%"
                 height="100%"
                 preserveAspectRatio="xMidYMid meet"
@@ -337,7 +332,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
                   </linearGradient>
                 </defs>
 
-                {hasAdmin1 ? (
+                {useAdmin1 ? (
                   admin1Paths.map((sub) => (
                     <path
                       key={sub.id}
@@ -360,8 +355,8 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
                   />
                 )}
 
-                {showCapital && silhouette.capital && (
-                  <g transform={`translate(${silhouette.capital.x}, ${silhouette.capital.y})`}>
+                {showCapital && capitalPos && (
+                  <g transform={`translate(${capitalPos.x}, ${capitalPos.y})`}>
                     <circle r="12" fill={themeStyles.stroke} opacity="0.3" className="animate-ping" />
                     <circle r="6" fill={themeStyles.stroke} opacity="0.9" />
                     <circle r="2.5" fill="#ffffff" />
@@ -384,6 +379,20 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
                 >
                   Capital Beacon: {showCapital ? 'Visible' : 'Hidden'}
                 </button>
+
+                {hasAdmin1 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowSubdivisions(prev => !prev)}
+                    className={`px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+                      showSubdivisions 
+                        ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 border-transparent' 
+                        : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800'
+                    }`}
+                  >
+                    Subdivisions: {showSubdivisions ? 'Visible' : 'Hidden'}
+                  </button>
+                )}
               </div>
 
               <div className="flex items-center gap-2">

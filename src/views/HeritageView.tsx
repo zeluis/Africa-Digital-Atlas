@@ -22,7 +22,8 @@ import {
   Check,
   AlertTriangle,
   Globe2,
-  Eye
+  Eye,
+  Camera
 } from 'lucide-react';
 
 interface HeritageViewProps {
@@ -414,6 +415,17 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                         <span>In Danger</span>
                       </div>
                     )}
+                    {/* Photographer & License Pill on Thumbnail */}
+                    <div className="absolute bottom-2.5 right-2.5 z-10 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md text-amber-300 font-mono text-[9px] font-bold flex items-center gap-1.5 border border-white/20 shadow-md">
+                      <Camera className="w-3 h-3 text-amber-400 shrink-0" />
+                      <span className="truncate max-w-[120px] sm:max-w-[160px] text-stone-200">
+                        {meta.photographer || 'UNESCO Photobank'}
+                      </span>
+                      <span className="w-1 h-1 rounded-full bg-stone-400" />
+                      <span className="px-1 py-0.2 rounded bg-amber-400/20 text-amber-300 font-bold text-[8.5px]">
+                        {meta.license || 'CC BY-SA 3.0 IGO'}
+                      </span>
+                    </div>
                     <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <span className="px-3 py-1.5 rounded-xl bg-stone-900/90 text-amber-300 font-mono text-xs font-bold flex items-center gap-1.5 shadow-md">
                         <Eye className="w-3.5 h-3.5" />

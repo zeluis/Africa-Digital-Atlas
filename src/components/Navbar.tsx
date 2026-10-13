@@ -101,7 +101,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <AfricaUnLogo 
                   className="shrink-0 drop-shadow-[0_1px_4px_rgba(217,119,6,0.2)] dark:drop-shadow-[0_1px_6px_rgba(251,191,36,0.2)]" 
-                  size={36}
+                  size={54}
                   activeRegion={activeRegion}
                   onSelectRegion={(reg) => {
                     const regTabMap: Record<string, CanonicalNavTab> = {

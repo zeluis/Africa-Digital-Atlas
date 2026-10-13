@@ -31,7 +31,9 @@ import {
   FileDown,
   Download,
   Loader2,
-  Compass
+  Compass,
+  Camera,
+  ShieldCheck
 } from 'lucide-react';
 import { DynamicIcon } from '../DynamicIcon';
 import { SlaveTradeIllustration } from '../../data/slaveTradeIllustrations';
@@ -99,6 +101,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
   // Citation Generator state
   const [activeCitationStyle, setActiveCitationStyle] = useState<CitationStyle>('chicago');
   const [hasCopied, setHasCopied] = useState<boolean>(false);
+  const [hasCopiedAttribution, setHasCopiedAttribution] = useState<boolean>(false);
   const [isExportingPDF, setIsExportingPDF] = useState<boolean>(false);
   const [imageLoadError, setImageLoadError] = useState<boolean>(false);
   const [candidateIndex, setCandidateIndex] = useState<number>(0);
@@ -516,6 +519,37 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
     }
   };
 
+  const isUnesco = Boolean(
+    illustration.unescoMeta ||
+    illustration.regId?.startsWith('WHC-') ||
+    illustration.itemSets?.includes('UNESCO World Heritage Registry')
+  );
+
+  const meta = illustration.unescoMeta;
+  const resolvedLicense = illustration.license || meta?.license || meta?.licenseShort || (isUnesco ? 'CC BY-SA 3.0 IGO' : undefined);
+  const resolvedLicenseUrl = illustration.licenseUrl || meta?.licenseUrl || (isUnesco ? 'https://creativecommons.org/licenses/by-sa/3.0/igo/' : undefined);
+  const resolvedRightsStatement = illustration.rightsStatement || meta?.rightsStatement || (isUnesco ? 'https://rightsstatements.org/vocab/InC-EDU/1.0/' : undefined);
+  const resolvedAttributionText = illustration.attributionText || meta?.attributionText || meta?.attribution || (isUnesco && meta ? `Photo © UNESCO / WHC (${meta.states}) • WHC #${meta.idNumber} (CC BY-SA 3.0 IGO)` : undefined);
+  const resolvedInstitution = illustration.institution || meta?.institution || meta?.copyright || (isUnesco ? 'UNESCO World Heritage Centre' : undefined);
+  const resolvedCreator = illustration.creator || meta?.creator || (isUnesco && meta ? `UNESCO / State Party of ${meta.states}` : undefined);
+  const resolvedPhotographer = illustration.photographer || illustration.author || meta?.photographer || meta?.author || (isUnesco ? 'UNESCO Photobank / Official Inscription Archives' : undefined);
+  const resolvedAuthorRole = illustration.authorRole || meta?.authorRole || (isUnesco ? 'Official UNESCO Documentation & Inscription Registry' : undefined);
+  const resolvedRegistryId = illustration.collectionOrRegistryId || meta?.collectionOrRegistryId || (isUnesco && meta ? `WHC-${meta.idNumber}` : illustration.regId);
+  const resolvedPrimaryUrl = illustration.primaryUrl || meta?.primaryUrl || meta?.fileUrl || meta?.httpUrl || illustration.slaveryImagesPage || (isUnesco && meta ? `https://whc.unesco.org/en/list/${meta.idNumber}` : undefined);
+  const resolvedHighResDownloadUrl = illustration.highResDownloadUrl || meta?.highResDownloadUrl || meta?.fileUrl || meta?.imageUrl || imageUrl;
+
+  const copyAttribution = async () => {
+    if (!resolvedAttributionText) return;
+    try {
+      await navigator.clipboard.writeText(resolvedAttributionText);
+      setHasCopiedAttribution(true);
+      setTimeout(() => setHasCopiedAttribution(false), 2500);
+    } catch {
+      setHasCopiedAttribution(true);
+      setTimeout(() => setHasCopiedAttribution(false), 2500);
+    }
+  };
+
   const contentUI = (
     <div 
       ref={rootRef}
@@ -714,6 +748,30 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
             }}
           />
 
+          {/* Photographer & License Archival Overlay Pill (in the vein of zoom/drag and keyboard controls) */}
+          {(resolvedPhotographer || resolvedLicense) && (
+            <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 pointer-events-auto">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMetadataOpen(true);
+                  setActiveTab('metadata');
+                }}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-900/85 dark:bg-stone-950/90 backdrop-blur-md border border-white/25 dark:border-stone-700/80 text-stone-100 shadow-xl text-[11px] font-mono transition-all hover:bg-stone-900 hover:border-amber-400/60 hover:scale-[1.02] active:scale-[0.98] cursor-pointer group/pill"
+                title="Archival Photography & Rights Attribution • Click to open complete metadata card"
+              >
+                <Camera className="w-3.5 h-3.5 text-amber-400 group-hover/pill:text-amber-300 shrink-0" />
+                <span className="font-semibold text-stone-200 group-hover/pill:text-white truncate max-w-[150px] sm:max-w-[240px] md:max-w-[340px]">
+                  {resolvedPhotographer || 'UNESCO Photobank / Official Inscription Archives'}
+                </span>
+                <span className="w-1 h-1 rounded-full bg-stone-500 shrink-0" />
+                <span className="px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30 font-bold text-[9.5px] shrink-0">
+                  {resolvedLicense || 'CC BY-SA 3.0 IGO'}
+                </span>
+              </button>
+            </div>
+          )}
+
           {/* Interactive Zoomable Viewport — Occupies Full Available Area Above Caption Bar & Filmstrip */}
           <div 
             ref={containerRef}
@@ -795,8 +853,27 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
               )}
             </div>
 
-            {/* Navigation Information Label / Pill (Positioned outside the zoom window) */}
-            <div className="flex items-center gap-1.5 shrink-0 text-[10px] font-mono text-stone-600 dark:text-stone-400">
+            {/* Navigation Information Label / Pill & Photographer / License Pill */}
+            <div className="flex items-center gap-2 shrink-0 text-[10px] font-mono text-stone-600 dark:text-stone-400 flex-wrap">
+              {(resolvedPhotographer || resolvedLicense) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMetadataOpen(true);
+                    setActiveTab('metadata');
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20 text-amber-950 dark:text-amber-200 shadow-2xs hover:bg-amber-900/15 dark:hover:bg-amber-400/20 transition-all cursor-pointer"
+                  title="View complete attribution and rights metadata card"
+                >
+                  <Camera className="w-3 h-3 text-amber-700 dark:text-amber-400" />
+                  <span className="font-semibold truncate max-w-[180px]">{resolvedPhotographer}</span>
+                  <span className="w-1 h-1 rounded-full bg-amber-400/60" />
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-900/15 dark:bg-amber-400/20 font-bold">
+                    {resolvedLicense}
+                  </span>
+                </button>
+              )}
+
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-200/80 dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700/80 text-stone-700 dark:text-stone-300 shadow-2xs">
                 <Compass className="w-3 h-3 text-amber-700 dark:text-amber-400" />
                 <span>Scroll wheel: Zoom · Drag: Pan · Alt + ← / →: Step plates</span>
@@ -1088,69 +1165,220 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                     </div>
                   </div>
 
-                  {/* Expanded Attribution & Licensing Metadata Section */}
-                  {(illustration.license || illustration.unescoMeta?.license) && (
-                    <div className="space-y-2.5 p-3.5 sm:p-4 rounded-2xl bg-amber-900/5 dark:bg-amber-950/20 border border-amber-900/15 dark:border-amber-500/25">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
-                          Attribution &amp; Licensing
-                        </span>
-                        <span className="px-2 py-0.5 rounded-md bg-amber-900/10 dark:bg-amber-400/10 text-amber-900 dark:text-amber-300 font-mono text-[10px] font-bold border border-amber-900/20 dark:border-amber-400/20">
-                          {illustration.license || illustration.unescoMeta?.license}
-                        </span>
+                  {/* Expanded Attribution & Rights Metadata Card */}
+                  {(resolvedLicense || resolvedAttributionText || resolvedPhotographer) && (
+                    <div className="space-y-3.5 p-4 sm:p-5 rounded-2xl bg-amber-900/5 dark:bg-amber-950/20 border border-amber-900/20 dark:border-amber-500/25 shadow-xs">
+                      {/* Card Header with Badges */}
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-lg bg-amber-900/10 dark:bg-amber-400/15 border border-amber-900/20 dark:border-amber-400/25 flex items-center justify-center text-amber-900 dark:text-amber-400">
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                          </div>
+                          <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-950 dark:text-amber-400">
+                            Attribution &amp; Licensing Metadata
+                          </span>
+                        </div>
+                        {resolvedLicense && (
+                          <div className="flex items-center gap-1">
+                            <span 
+                              className="px-2.5 py-0.5 rounded-full bg-amber-900/15 dark:bg-amber-400/15 text-amber-950 dark:text-amber-300 font-mono text-[10px] font-bold border border-amber-900/25 dark:border-amber-400/30"
+                              title="Creative Commons Attribution-ShareAlike 3.0 Intergovernmental Organizations"
+                            >
+                              {resolvedLicense}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
-                      <div className="space-y-2 text-xs font-mono">
-                        {(illustration.attributionText || illustration.unescoMeta?.attributionText) && (
-                          <div>
-                            <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block font-sans">Attribution Notice</span>
-                            <span className="text-stone-800 dark:text-stone-200 select-all font-serif text-[12.5px] leading-relaxed block mt-0.5">
-                              {illustration.attributionText || illustration.unescoMeta?.attributionText}
+                      {/* Primary Attribution Callout with Emphasis on Photographer */}
+                      <div className="p-3.5 rounded-xl bg-white/90 dark:bg-stone-900/90 border border-amber-900/15 dark:border-amber-500/20 space-y-2.5 shadow-2xs">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                            Authoritative Attribution Notice
+                          </span>
+                          {resolvedAttributionText && (
+                            <button
+                              type="button"
+                              onClick={copyAttribution}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-[10px] font-mono font-semibold text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 transition-colors cursor-pointer"
+                              title="Copy formal attribution notice"
+                            >
+                              {hasCopiedAttribution ? (
+                                <>
+                                  <Check className="w-3 h-3 text-emerald-500" />
+                                  <span className="text-emerald-700 dark:text-emerald-400 font-bold">Copied!</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="w-3 h-3 text-stone-500" />
+                                  <span>Copy Notice</span>
+                                </>
+                              )}
+                            </button>
+                          )}
+                        </div>
+
+                        {resolvedAttributionText && (
+                          <div className="p-3 rounded-lg bg-amber-50/70 dark:bg-stone-950/70 border border-amber-200/70 dark:border-stone-800 font-serif text-[13px] text-stone-900 dark:text-stone-100 leading-relaxed select-all">
+                            {resolvedAttributionText}
+                          </div>
+                        )}
+
+                        {/* Photographer & Archival Documentation Credits Emphasis */}
+                        {resolvedPhotographer && (
+                          <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-amber-500/10 dark:bg-amber-400/10 border border-amber-500/20 text-xs font-mono">
+                            <span className="p-1 rounded-md bg-amber-500/20 text-amber-900 dark:text-amber-300 shrink-0 mt-0.5">
+                              <Camera className="w-3.5 h-3.5" />
+                            </span>
+                            <div className="min-w-0">
+                              <span className="text-[10px] uppercase text-amber-900 dark:text-amber-300 font-bold block">
+                                Photographer / Inscription Photo Credits (Official Attribution)
+                              </span>
+                              <span className="font-bold text-stone-900 dark:text-stone-100 block text-[12.5px] mt-0.5">
+                                {resolvedPhotographer}
+                              </span>
+                              {resolvedAuthorRole && (
+                                <span className="text-[10.5px] text-stone-600 dark:text-stone-400 block mt-0.5 font-sans">
+                                  Role: {resolvedAuthorRole}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Expanded Rights & Provenance Data Grid */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+                        {resolvedCreator && (
+                          <div className="p-2.5 rounded-xl bg-white/70 dark:bg-stone-900/60 border border-stone-200/70 dark:border-stone-800">
+                            <span className="text-[9.5px] uppercase font-sans font-semibold text-stone-500 dark:text-stone-400 block">
+                              Creator / State Party
+                            </span>
+                            <span className="text-stone-900 dark:text-stone-100 font-semibold block truncate mt-0.5" title={resolvedCreator}>
+                              {resolvedCreator}
                             </span>
                           </div>
                         )}
 
-                        <div className="grid grid-cols-2 gap-2 pt-1 border-t border-amber-900/10 dark:border-amber-500/20">
-                          <div>
-                            <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block font-sans">Institution</span>
-                            <span className="text-stone-800 dark:text-stone-200 font-semibold block truncate">
-                              {illustration.institution || illustration.unescoMeta?.institution || 'UNESCO World Heritage Centre'}
+                        {resolvedInstitution && (
+                          <div className="p-2.5 rounded-xl bg-white/70 dark:bg-stone-900/60 border border-stone-200/70 dark:border-stone-800">
+                            <span className="text-[9.5px] uppercase font-sans font-semibold text-stone-500 dark:text-stone-400 block">
+                              Institution
+                            </span>
+                            <span className="text-stone-900 dark:text-stone-100 font-semibold block truncate mt-0.5" title={resolvedInstitution}>
+                              {resolvedInstitution}
                             </span>
                           </div>
+                        )}
 
-                          <div>
-                            <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block font-sans">Registry ID</span>
-                            <span className="text-stone-800 dark:text-stone-200 font-semibold block truncate">
-                              {illustration.collectionOrRegistryId || illustration.unescoMeta?.collectionOrRegistryId || `WHC-${illustration.unescoMeta?.idNumber}`}
+                        {resolvedAuthorRole && (
+                          <div className="p-2.5 rounded-xl bg-white/70 dark:bg-stone-900/60 border border-stone-200/70 dark:border-stone-800">
+                            <span className="text-[9.5px] uppercase font-sans font-semibold text-stone-500 dark:text-stone-400 block">
+                              Author Role / Inscription Agency
+                            </span>
+                            <span className="text-stone-900 dark:text-stone-100 font-semibold block truncate mt-0.5" title={resolvedAuthorRole}>
+                              {resolvedAuthorRole}
+                            </span>
+                          </div>
+                        )}
+
+                        {resolvedRegistryId && (
+                          <div className="p-2.5 rounded-xl bg-white/70 dark:bg-stone-900/60 border border-stone-200/70 dark:border-stone-800">
+                            <span className="text-[9.5px] uppercase font-sans font-semibold text-stone-500 dark:text-stone-400 block">
+                              Collection or Registry ID
+                            </span>
+                            <span className="text-stone-900 dark:text-stone-100 font-semibold block truncate mt-0.5">
+                              {resolvedRegistryId}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* License & Rights Statement Descriptions */}
+                      <div className="p-3 rounded-xl bg-white/80 dark:bg-stone-900/70 border border-stone-200/80 dark:border-stone-800 space-y-2.5 text-xs font-mono">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[9.5px] uppercase font-sans font-semibold text-stone-500 dark:text-stone-400">
+                            License Specification
+                          </span>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-stone-900 dark:text-stone-100 font-bold">
+                              {resolvedLicense || 'CC BY-SA 3.0 IGO'}
+                            </span>
+                            <span className="text-stone-600 dark:text-stone-400 text-[11px]">
+                              (Creative Commons Attribution-ShareAlike 3.0 Intergovernmental Organizations)
                             </span>
                           </div>
                         </div>
 
-                        {(illustration.licenseUrl || illustration.unescoMeta?.licenseUrl || illustration.rightsStatement || illustration.unescoMeta?.rightsStatement) && (
-                          <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-amber-900/10 dark:border-amber-500/20">
-                            {(illustration.licenseUrl || illustration.unescoMeta?.licenseUrl) && (
-                              <a
-                                href={illustration.licenseUrl || illustration.unescoMeta?.licenseUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-[11px] text-amber-800 hover:text-amber-950 dark:text-amber-400 dark:hover:text-amber-300 underline underline-offset-2 transition-colors"
-                              >
-                                <span>License Details</span>
-                                <ExternalLink className="w-3 h-3" />
-                              </a>
-                            )}
-                            {(illustration.rightsStatement || illustration.unescoMeta?.rightsStatement) && (
-                              <a
-                                href={illustration.rightsStatement || illustration.unescoMeta?.rightsStatement}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-[11px] text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200 underline underline-offset-2 transition-colors"
-                              >
-                                <span>Rights Statement</span>
-                                <ExternalLink className="w-3 h-3" />
-                              </a>
-                            )}
+                        {resolvedRightsStatement && (
+                          <div className="flex flex-col gap-1 pt-2 border-t border-stone-200/60 dark:border-stone-800">
+                            <span className="text-[9.5px] uppercase font-sans font-semibold text-stone-500 dark:text-stone-400">
+                              Rights Statement
+                            </span>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-stone-900 dark:text-stone-100 font-bold">
+                                In Copyright - Educational Use Permitted
+                              </span>
+                              <span className="font-mono text-[10px] text-stone-500 dark:text-stone-400 truncate">
+                                ({resolvedRightsStatement})
+                              </span>
+                            </div>
                           </div>
+                        )}
+                      </div>
+
+                      {/* Outbound Archival & Registry Links */}
+                      <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-amber-900/10 dark:border-amber-500/20">
+                        {resolvedPrimaryUrl && (
+                          <a
+                            href={resolvedPrimaryUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white dark:bg-stone-100 dark:hover:bg-stone-200 dark:text-stone-900 text-xs font-mono font-bold transition-all shadow-2xs"
+                            title="Canonical UNESCO World Heritage listing"
+                          >
+                            <span>Canonical UNESCO WHC Listing</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+
+                        {resolvedHighResDownloadUrl && (
+                          <a
+                            href={resolvedHighResDownloadUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            download
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-900/15 hover:bg-amber-900/25 dark:bg-amber-400/15 dark:hover:bg-amber-400/25 text-amber-950 dark:text-amber-200 border border-amber-900/25 dark:border-amber-400/30 text-xs font-mono font-bold transition-all shadow-2xs"
+                            title="Download high-resolution archival image"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            <span>Archival Image Asset</span>
+                            <ExternalLink className="w-3 h-3 opacity-60" />
+                          </a>
+                        )}
+
+                        {resolvedLicenseUrl && (
+                          <a
+                            href={resolvedLicenseUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[11px] font-mono text-amber-900 dark:text-amber-400 hover:underline px-2 py-1"
+                          >
+                            <span>CC BY-SA 3.0 IGO Terms</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+
+                        {resolvedRightsStatement && (
+                          <a
+                            href={resolvedRightsStatement}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[11px] font-mono text-stone-600 dark:text-stone-400 hover:underline px-2 py-1"
+                          >
+                            <span>RightsStatements.org</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
                         )}
                       </div>
                     </div>

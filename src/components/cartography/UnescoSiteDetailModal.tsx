@@ -15,7 +15,11 @@ import {
   Globe2,
   CheckCircle2,
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Camera,
+  Copy,
+  Check,
+  Download
 } from 'lucide-react';
 import { UNESCO_CATEGORY_PALETTES } from './UnescoHeritageMapLayer';
 
@@ -32,6 +36,7 @@ export const UnescoSiteDetailModal: React.FC<UnescoSiteDetailModalProps> = ({
   onSelectCountry,
   onNavigateToHeritage
 }) => {
+  const [hasCopiedAttribution, setHasCopiedAttribution] = React.useState(false);
   if (!site) return null;
 
   const palette = UNESCO_CATEGORY_PALETTES[site.category] || UNESCO_CATEGORY_PALETTES.Cultural;
@@ -123,6 +128,16 @@ export const UnescoSiteDetailModal: React.FC<UnescoSiteDetailModalProps> = ({
                 <span className="px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-white font-mono text-[10px] font-bold flex items-center gap-1.5 border border-white/20">
                   <ShieldCheck className="w-3 h-3 text-emerald-400" />
                   <span>Proactive Offline Cache Ready</span>
+                </span>
+              </div>
+
+              {/* Photographer & License Pill on Image */}
+              <div className="absolute top-3 right-3 flex items-center gap-2">
+                <span className="px-3 py-1 rounded-full bg-black/75 backdrop-blur-md text-amber-300 font-mono text-[10px] font-bold flex items-center gap-1.5 border border-white/20 shadow-md">
+                  <Camera className="w-3 h-3 text-amber-400 shrink-0" />
+                  <span className="truncate max-w-[140px] sm:max-w-[220px]">{site.photographer || 'UNESCO Photobank / Official Inscription Archives'}</span>
+                  <span className="w-1 h-1 rounded-full bg-stone-400" />
+                  <span className="px-1.5 py-0.2 rounded bg-amber-400/20 text-amber-200 font-bold text-[9px]">{site.license || 'CC BY-SA 3.0 IGO'}</span>
                 </span>
               </div>
 
@@ -223,31 +238,202 @@ export const UnescoSiteDetailModal: React.FC<UnescoSiteDetailModalProps> = ({
               </div>
             </div>
 
-            {/* Licensing & Attribution Citation */}
-            {(site.license || site.attributionText) && (
-              <div className="p-3.5 rounded-2xl bg-amber-900/5 dark:bg-amber-950/20 border border-amber-900/10 dark:border-amber-500/20 flex flex-wrap items-center justify-between gap-2.5 text-xs font-mono">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[10px] uppercase font-bold text-amber-900 dark:text-amber-400">Attribution</span>
-                  <span className="px-2 py-0.5 rounded-md bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-200 border border-stone-200 dark:border-stone-700 font-bold text-[11px]">
-                    {site.license || 'CC BY-SA 3.0 IGO'}
+            {/* Comprehensive Attribution & Licensing Metadata Card */}
+            <div className="space-y-3 p-4 sm:p-5 rounded-2xl bg-amber-900/5 dark:bg-amber-950/20 border border-amber-900/15 dark:border-amber-500/25 shadow-xs">
+              {/* Card Header with Badges */}
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-lg bg-amber-900/10 dark:bg-amber-400/15 border border-amber-900/20 dark:border-amber-400/25 flex items-center justify-center text-amber-900 dark:text-amber-400">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-950 dark:text-amber-400">
+                    Attribution &amp; Licensing Metadata
                   </span>
-                  <span className="text-stone-600 dark:text-stone-300 text-[11px]">
+                </div>
+                <span 
+                  className="px-2.5 py-0.5 rounded-full bg-amber-900/15 dark:bg-amber-400/15 text-amber-950 dark:text-amber-300 font-mono text-[10px] font-bold border border-amber-900/25 dark:border-amber-400/30"
+                  title="Creative Commons Attribution-ShareAlike 3.0 Intergovernmental Organizations"
+                >
+                  {site.license || 'CC BY-SA 3.0 IGO'}
+                </span>
+              </div>
+
+              {/* Authoritative Attribution Callout with Copy Action */}
+              <div className="p-3.5 rounded-xl bg-white/90 dark:bg-stone-900/90 border border-amber-900/15 dark:border-amber-500/20 space-y-2 shadow-2xs">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                    Authoritative Attribution Notice
+                  </span>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const text = site.attributionText || `Photo © UNESCO / WHC (${site.states}) • WHC #${site.idNumber} (CC BY-SA 3.0 IGO)`;
+                      try {
+                        await navigator.clipboard.writeText(text);
+                        setHasCopiedAttribution(true);
+                        setTimeout(() => setHasCopiedAttribution(false), 2500);
+                      } catch {
+                        setHasCopiedAttribution(true);
+                        setTimeout(() => setHasCopiedAttribution(false), 2500);
+                      }
+                    }}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-[10px] font-mono font-semibold text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 transition-colors cursor-pointer"
+                    title="Copy formal attribution notice"
+                  >
+                    {hasCopiedAttribution ? (
+                      <>
+                        <Check className="w-3 h-3 text-emerald-500" />
+                        <span className="text-emerald-700 dark:text-emerald-400 font-bold">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3 text-stone-500" />
+                        <span>Copy Notice</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="p-2.5 rounded-lg bg-amber-50/70 dark:bg-stone-950/70 border border-amber-200/70 dark:border-stone-800 font-serif text-[12.5px] text-stone-900 dark:text-stone-100 leading-relaxed select-all">
+                  {site.attributionText || `Photo © UNESCO / WHC (${site.states}) • WHC #${site.idNumber} (CC BY-SA 3.0 IGO)`}
+                </div>
+
+                {/* Photographer & Archival Documentation Credits Emphasis */}
+                <div className="flex items-start gap-2.5 p-2 rounded-lg bg-amber-500/10 dark:bg-amber-400/10 border border-amber-500/20 text-xs font-mono">
+                  <span className="p-1 rounded-md bg-amber-500/20 text-amber-900 dark:text-amber-300 shrink-0 mt-0.5">
+                    <Camera className="w-3.5 h-3.5" />
+                  </span>
+                  <div className="min-w-0">
+                    <span className="text-[10px] uppercase text-amber-900 dark:text-amber-300 font-bold block">
+                      Photographer / Inscription Photo Credits (Official Attribution)
+                    </span>
+                    <span className="font-bold text-stone-900 dark:text-stone-100 block text-[12px] mt-0.5">
+                      {site.photographer || 'UNESCO Photobank / Official Inscription Archives'}
+                    </span>
+                    <span className="text-[10.5px] text-stone-600 dark:text-stone-400 block mt-0.5 font-sans">
+                      Role: {site.authorRole || 'Official UNESCO Documentation & Inscription Registry'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Provenance & Rights Registry Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+                <div className="p-2.5 rounded-xl bg-white/70 dark:bg-stone-900/60 border border-stone-200/70 dark:border-stone-800">
+                  <span className="text-[9.5px] uppercase font-sans font-semibold text-stone-500 dark:text-stone-400 block">
+                    Creator / State Party
+                  </span>
+                  <span className="text-stone-900 dark:text-stone-100 font-semibold block truncate mt-0.5">
+                    {site.creator || `UNESCO / State Party of ${site.states}`}
+                  </span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-white/70 dark:bg-stone-900/60 border border-stone-200/70 dark:border-stone-800">
+                  <span className="text-[9.5px] uppercase font-sans font-semibold text-stone-500 dark:text-stone-400 block">
+                    Institution
+                  </span>
+                  <span className="text-stone-900 dark:text-stone-100 font-semibold block truncate mt-0.5">
                     {site.institution || 'UNESCO World Heritage Centre'}
                   </span>
                 </div>
-                {site.licenseUrl && (
-                  <a
-                    href={site.licenseUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[11px] text-amber-800 dark:text-amber-400 hover:underline font-semibold"
-                  >
-                    <span>License Terms</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
+
+                <div className="p-2.5 rounded-xl bg-white/70 dark:bg-stone-900/60 border border-stone-200/70 dark:border-stone-800">
+                  <span className="text-[9.5px] uppercase font-sans font-semibold text-stone-500 dark:text-stone-400 block">
+                    Collection / Registry ID
+                  </span>
+                  <span className="text-stone-900 dark:text-stone-100 font-semibold block truncate mt-0.5">
+                    {site.collectionOrRegistryId || `WHC-${site.idNumber}`}
+                  </span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-white/70 dark:bg-stone-900/60 border border-stone-200/70 dark:border-stone-800">
+                  <span className="text-[9.5px] uppercase font-sans font-semibold text-stone-500 dark:text-stone-400 block">
+                    Author Role
+                  </span>
+                  <span className="text-stone-900 dark:text-stone-100 font-semibold block truncate mt-0.5">
+                    {site.authorRole || 'Official UNESCO Documentation & Inscription Registry'}
+                  </span>
+                </div>
               </div>
-            )}
+
+              {/* License & Rights Descriptions */}
+              <div className="p-3 rounded-xl bg-white/80 dark:bg-stone-900/70 border border-stone-200/80 dark:border-stone-800 space-y-2 text-xs font-mono">
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[9.5px] uppercase font-sans font-semibold text-stone-500 dark:text-stone-400">
+                    License Specification
+                  </span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-stone-900 dark:text-stone-100 font-bold">
+                      {site.license || 'CC BY-SA 3.0 IGO'}
+                    </span>
+                    <span className="text-stone-600 dark:text-stone-400 text-[11px]">
+                      (Creative Commons Attribution-ShareAlike 3.0 Intergovernmental Organizations)
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-0.5 pt-1.5 border-t border-stone-200/60 dark:border-stone-800">
+                  <span className="text-[9.5px] uppercase font-sans font-semibold text-stone-500 dark:text-stone-400">
+                    Rights Statement
+                  </span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-stone-900 dark:text-stone-100 font-bold">
+                      In Copyright - Educational Use Permitted
+                    </span>
+                    <span className="font-mono text-[10px] text-stone-500 dark:text-stone-400 truncate">
+                      ({site.rightsStatement || 'https://rightsstatements.org/vocab/InC-EDU/1.0/'})
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Outbound Archival & Rights Links */}
+              <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-amber-900/10 dark:border-amber-500/20">
+                <a
+                  href={site.primaryUrl || site.httpUrl || `https://whc.unesco.org/en/list/${site.idNumber}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white dark:bg-stone-100 dark:hover:bg-stone-200 dark:text-stone-900 text-xs font-mono font-bold transition-all shadow-2xs"
+                  title="Canonical UNESCO World Heritage listing"
+                >
+                  <span>Canonical Listing</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+
+                <a
+                  href={site.highResDownloadUrl || site.imageUrl || displayImage}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-900/15 hover:bg-amber-900/25 dark:bg-amber-400/15 dark:hover:bg-amber-400/25 text-amber-950 dark:text-amber-200 border border-amber-900/25 dark:border-amber-400/30 text-xs font-mono font-bold transition-all shadow-2xs"
+                  title="Download archival high-resolution image"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Archival Image</span>
+                  <ExternalLink className="w-3 h-3 opacity-60" />
+                </a>
+
+                <a
+                  href={site.licenseUrl || 'https://creativecommons.org/licenses/by-sa/3.0/igo/'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-mono text-amber-900 dark:text-amber-400 hover:underline px-2 py-1"
+                >
+                  <span>CC BY-SA 3.0 IGO Terms</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+
+                <a
+                  href={site.rightsStatement || 'https://rightsstatements.org/vocab/InC-EDU/1.0/'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-mono text-stone-600 dark:text-stone-400 hover:underline px-2 py-1"
+                >
+                  <span>RightsStatements.org</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
           </div>
 
           {/* Bottom Action Footer with Link to Full UNESCO Viewer */}

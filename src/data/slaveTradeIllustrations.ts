@@ -31,15 +31,22 @@ export interface UnescoSiteMetadata {
   // Expanded Attribution & Rights Fields
   creator?: string;
   photographer?: string;
+  author?: string;
   authorRole?: string;
   attributionText?: string;
+  attribution?: string;
   institution?: string;
+  copyright?: string;
   collectionOrRegistryId?: string;
   license?: string;
+  licenseShort?: string;
   licenseUrl?: string;
   rightsStatement?: string;
   primaryUrl?: string;
   highResDownloadUrl?: string;
+  fileUrl?: string;
+  thumbUrl?: string;
+  year?: string;
 }
 
 export interface SlaveTradeIllustration {
@@ -71,15 +78,22 @@ export interface SlaveTradeIllustration {
   // Expanded Attribution & Licensing Fields
   creator?: string;
   photographer?: string;
+  author?: string;
   authorRole?: string;
   attributionText?: string;
+  attribution?: string;
   institution?: string;
+  copyright?: string;
   collectionOrRegistryId?: string;
   license?: string;
+  licenseShort?: string;
   licenseUrl?: string;
   rightsStatement?: string;
   primaryUrl?: string;
   highResDownloadUrl?: string;
+  fileUrl?: string;
+  thumbUrl?: string;
+  year?: string;
 }
 
 export const BASE_SLAVE_TRADE_ILLUSTRATIONS: SlaveTradeIllustration[] = [

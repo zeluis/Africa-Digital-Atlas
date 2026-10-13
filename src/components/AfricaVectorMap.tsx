@@ -15,7 +15,6 @@ import {
   formatCurrency,
   parseNumberString
 } from '../data/africaData';
-import { useAfricaFinalMap } from '../utils/svgMapLoader';
 
 interface AfricaVectorMapProps {
   onSelectRegion: (region: UNRegionName) => void;
@@ -33,7 +32,6 @@ export const AfricaVectorMap: React.FC<AfricaVectorMapProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
-  const { mapData } = useAfricaFinalMap();
 
   const isInteractingWithTooltipRef = useRef<boolean>(false);
   const [pinnedRegion, setPinnedRegion] = useState<UNRegionName | null>(null);
@@ -204,8 +202,8 @@ export const AfricaVectorMap: React.FC<AfricaVectorMapProps> = ({
                   if (containerRef.current) {
                     const rect = containerRef.current.getBoundingClientRect();
                     setTooltipPos({
-                      x: (regStructure.labelX / 6036) * rect.width,
-                      y: (regStructure.labelY / 5867) * rect.height
+                      x: (regStructure.labelX / 1000) * rect.width,
+                      y: (regStructure.labelY / 1100) * rect.height
                     });
                   }
                   handleRegionHover(regName);
@@ -221,36 +219,13 @@ export const AfricaVectorMap: React.FC<AfricaVectorMapProps> = ({
               >
                 {/* Member Country SVG Paths */}
                 {regStructure.countryIds.map(iso3 => {
-                  const item = mapData[iso3] || AFRICA_SVG_MAP[iso3];
-                  if (!item) return null;
-
-                  const adminPaths = (item as any).admin1;
-                  if (adminPaths && adminPaths.length > 0) {
-                    return (
-                      <g key={iso3}>
-                        {adminPaths.map((adm: any) => (
-                          <path
-                            key={adm.id}
-                            d={adm.d}
-                            fill={activeColor}
-                            fillOpacity={opacity}
-                            stroke={strokeColor}
-                            strokeWidth={strokeWidth}
-                            strokeLinejoin="round"
-                            className="transition-all duration-200"
-                          />
-                        ))}
-                      </g>
-                    );
-                  }
-
-                  const pathStr = (item as any).path;
-                  if (!pathStr) return null;
+                  const item = AFRICA_SVG_MAP[iso3];
+                  if (!item || !item.path) return null;
 
                   return (
                     <path
                       key={iso3}
-                      d={pathStr}
+                      d={item.path}
                       fill={activeColor}
                       fillOpacity={opacity}
                       stroke={strokeColor}

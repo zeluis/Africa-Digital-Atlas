@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { AFRICA_SVG_MAP, AFRICA_UN_REGIONS_STRUCTURED, AFRICA_REGIONS_VIEWBOX } from '../data/svgMaps';
 import { UN_REGIONS, REGION_META } from '../data/africaData';
 import { AfricanRegion } from '../data/types';
-import { useAfricaFinalMap } from '../utils/svgMapLoader';
 
 export interface AfricaUnLogoProps {
   className?: string;
@@ -30,6 +29,7 @@ export interface AfricaUnLogoProps {
  * 
  * Renders the clean, unified African continent with official UN Geoscheme regional colors.
  * Subdivisions are omitted to keep the logo clean, crisp, and contained across all viewports.
+ * Aligned to the 1000x1100 AFRICA_REGIONS_VIEWBOX coordinate space.
  */
 export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({ 
   className = "w-9 h-9",
@@ -52,7 +52,6 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
   children
 }) => {
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
-  const { mapData } = useAfricaFinalMap();
 
   // Normalize activeRegion
   const resolvedActive = React.useMemo(() => {
@@ -72,7 +71,7 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
       return AFRICA_REGIONS_VIEWBOX;
     }
     const trimmed = viewBox.trim();
-    if (trimmed === '0 0 400 400' || trimmed === '0 0 970 1040') {
+    if (trimmed === '0 0 400 400' || trimmed === '0 0 970 1040' || trimmed.includes('5796') || trimmed.includes('6036')) {
       return AFRICA_REGIONS_VIEWBOX;
     }
     return viewBox;
@@ -148,8 +147,8 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
                 }}
               >
                 {region.countryIds.map((iso3) => {
-                  const item = mapData[iso3] || AFRICA_SVG_MAP[iso3];
-                  if (!item) return null;
+                  const item = AFRICA_SVG_MAP[iso3];
+                  if (!item || !item.path) return null;
 
                   const isCountryHighlighted = highlightedCountries?.includes(iso3);
                   const countryFill = isCountryHighlighted 
@@ -157,19 +156,11 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
                     : (customColorMap?.[iso3] || color);
 
                   const resolvedFill = variant === 'outline' ? 'transparent' : countryFill;
-                  const adminPaths = (item as any).admin1;
-
-                  // Merge all internal paths for a clean country shape without subdivision strokes in logo
-                  const combinedPath = adminPaths && adminPaths.length > 0
-                    ? adminPaths.map((adm: any) => adm.d).join(' ')
-                    : (item as any).path;
-
-                  if (!combinedPath) return null;
 
                   return (
                     <path
                       key={iso3}
-                      d={combinedPath}
+                      d={item.path}
                       fill={resolvedFill}
                       fillOpacity={resolvedFill !== 'transparent' ? effectiveFillOpacity : undefined}
                       stroke={strokeColor || (effectiveStrokeWidth > 0 ? '#FFFFFF' : 'none')}
