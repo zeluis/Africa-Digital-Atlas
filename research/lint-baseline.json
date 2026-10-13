@@ -1,18 +1,18 @@
 {
   "_readme": "Ratchet baseline for warning rules in research/rules.json. CI fails if any warning count exceeds its maxFiles baseline. Update downward via `node scripts/research-check.mjs --update-baseline`.",
-  "updatedAt": "2026-10-13T00:00:00.000Z",
+  "updatedAt": "2026-10-13T21:28:04.086Z",
   "warnings": {
     "authoritative": {
-      "maxFiles": 2,
-      "maxOccurrences": 3
+      "maxFiles": 0,
+      "maxOccurrences": 0
     },
     "unprecedented": {
       "maxFiles": 0,
       "maxOccurrences": 0
     },
     "definitive": {
-      "maxFiles": 0,
-      "maxOccurrences": 0
+      "maxFiles": 1,
+      "maxOccurrences": 1
     },
     "forensic": {
       "maxFiles": 0,
