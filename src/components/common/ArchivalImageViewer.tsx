@@ -748,29 +748,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
             }}
           />
 
-          {/* Photographer & License Archival Overlay Pill (in the vein of zoom/drag and keyboard controls) */}
-          {(resolvedPhotographer || resolvedLicense) && (
-            <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 pointer-events-auto">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsMetadataOpen(true);
-                  setActiveTab('metadata');
-                }}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-900/85 dark:bg-stone-950/90 backdrop-blur-md border border-white/25 dark:border-stone-700/80 text-stone-100 shadow-xl text-[11px] font-mono transition-all hover:bg-stone-900 hover:border-amber-400/60 hover:scale-[1.02] active:scale-[0.98] cursor-pointer group/pill"
-                title="Archival Photography & Rights Attribution • Click to open complete metadata card"
-              >
-                <Camera className="w-3.5 h-3.5 text-amber-400 group-hover/pill:text-amber-300 shrink-0" />
-                <span className="font-semibold text-stone-200 group-hover/pill:text-white truncate max-w-[150px] sm:max-w-[240px] md:max-w-[340px]">
-                  {resolvedPhotographer || 'UNESCO Photobank / Official Inscription Archives'}
-                </span>
-                <span className="w-1 h-1 rounded-full bg-stone-500 shrink-0" />
-                <span className="px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30 font-bold text-[9.5px] shrink-0">
-                  {resolvedLicense || 'CC BY-SA 3.0 IGO'}
-                </span>
-              </button>
-            </div>
-          )}
+
 
           {/* Interactive Zoomable Viewport — Occupies Full Available Area Above Caption Bar & Filmstrip */}
           <div 
