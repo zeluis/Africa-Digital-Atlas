@@ -71,7 +71,7 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
       return AFRICA_REGIONS_VIEWBOX;
     }
     const trimmed = viewBox.trim();
-    if (trimmed === '0 0 400 400' || trimmed === '0 0 970 1040' || trimmed.includes('5796') || trimmed.includes('6036')) {
+    if (trimmed === '0 0 400 400' || trimmed === '0 0 970 1040') {
       return AFRICA_REGIONS_VIEWBOX;
     }
     return viewBox;

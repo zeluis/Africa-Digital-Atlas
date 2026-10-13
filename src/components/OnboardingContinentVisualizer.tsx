@@ -1,5 +1,6 @@
 import React from 'react';
-import { AfricaUnLogo } from './AfricaUnLogo';
+import { AFRICA_FINAL_MAP, AFRICA_FINAL_VIEWBOX, AFRICA_FINAL_TRANSFORM } from '../data/africaFinalGeometry';
+import { useAfricaFinalMap } from '../utils/svgMapLoader';
 import { 
   Anchor, 
   Globe2, 
@@ -255,45 +256,71 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
 
         {/* Right Side: Prominent Continent Stage (Fills all available height) */}
         <div className="lg:col-span-7 relative flex items-center justify-center min-h-[380px] sm:min-h-[440px] md:min-h-[480px] lg:min-h-[520px] h-full w-full order-1 lg:order-2 overflow-visible py-[5px] my-0">
-          <AfricaUnLogo
-            className="w-full h-full max-h-[540px] drop-shadow-[0_8px_24px_rgba(0,0,0,0.08)] select-none transition-all duration-700"
-            interactive={false}
-            glow={false}
-            viewBox="-240 0 6036 5867"
-            strokeColor="#ffffff"
-            strokeWidth={1}
-            customColorMap={currentColorMap}
-          >
-            <defs>
-              <linearGradient id="overlayTradeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#3f6c58" />
-                <stop offset="50%" stopColor="#4e856c" />
-                <stop offset="100%" stopColor="#d4a373" />
-              </linearGradient>
+          {(() => {
+            const { mapData: streamedMap } = useAfricaFinalMap();
+            const finalMap = streamedMap || AFRICA_FINAL_MAP;
+            return (
+              <svg
+                viewBox={AFRICA_FINAL_VIEWBOX}
+                xmlns="http://www.w3.org/2000/svg"
+                preserveAspectRatio="xMidYMid meet"
+                className="w-full h-full max-h-[540px] drop-shadow-[0_8px_24px_rgba(0,0,0,0.08)] select-none transition-all duration-700"
+                aria-label="African Continent Cartographic Observatory"
+                role="img"
+              >
+                <defs>
+                  <linearGradient id="overlayTradeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#3f6c58" />
+                    <stop offset="50%" stopColor="#4e856c" />
+                    <stop offset="100%" stopColor="#d4a373" />
+                  </linearGradient>
 
-              <linearGradient id="overlayDiasporaGrad" x1="100%" y1="50%" x2="0%" y2="50%">
-                <stop offset="0%" stopColor="#427896" stopOpacity="0.95" />
-                <stop offset="50%" stopColor="#b87446" stopOpacity="0.95" />
-                <stop offset="100%" stopColor="#9e4c56" stopOpacity="0.95" />
-              </linearGradient>
+                  <linearGradient id="overlayDiasporaGrad" x1="100%" y1="50%" x2="0%" y2="50%">
+                    <stop offset="0%" stopColor="#427896" stopOpacity="0.95" />
+                    <stop offset="50%" stopColor="#b87446" stopOpacity="0.95" />
+                    <stop offset="100%" stopColor="#9e4c56" stopOpacity="0.95" />
+                  </linearGradient>
 
-              <linearGradient id="prominentStreamGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#e07a5f" />
-                <stop offset="50%" stopColor="#d48b50" />
-                <stop offset="100%" stopColor="#b85c38" />
-              </linearGradient>
+                  <linearGradient id="prominentStreamGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#e07a5f" />
+                    <stop offset="50%" stopColor="#d48b50" />
+                    <stop offset="100%" stopColor="#b85c38" />
+                  </linearGradient>
 
-              <linearGradient id="mozambiqueStreamGrad" x1="100%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#b85c38" />
-                <stop offset="60%" stopColor="#9e4c56" />
-                <stop offset="100%" stopColor="#427896" />
-              </linearGradient>
-            </defs>
+                  <linearGradient id="mozambiqueStreamGrad" x1="100%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#b85c38" />
+                    <stop offset="60%" stopColor="#9e4c56" />
+                    <stop offset="100%" stopColor="#427896" />
+                  </linearGradient>
+                </defs>
 
-            {/* ========================================================================= */}
-            {/* THEME 1: TAST ARCHIVAL VECTOR STREAM                                      */}
-            {/* ========================================================================= */}
-            {theme === 'history' && (
+                <g transform={AFRICA_FINAL_TRANSFORM}>
+                  {Object.values(finalMap).map(country => {
+                    const regionName = country.unRegion;
+                    const fillColor = currentColorMap[regionName] || '#e2e8f0';
+                    return (
+                      <g key={country.id}>
+                        {country.admin1 && country.admin1.length > 0 ? (
+                          country.admin1.map(sub => (
+                            <path
+                              key={sub.id}
+                              d={sub.d}
+                              fill={fillColor}
+                              stroke="#ffffff"
+                              strokeWidth={2}
+                              strokeLinejoin="round"
+                              strokeLinecap="round"
+                            />
+                          ))
+                        ) : null}
+                      </g>
+                    );
+                  })}
+
+                  {/* ========================================================================= */}
+                  {/* TAST, AfCFTA, & INNOVATION VECTOR OVERLAY ANIMATIONS                      */}
+                  {/* ========================================================================= */}
+                  {theme === 'history' && (
               <g className="animate-in fade-in duration-500">
                 {/* 1. SENEGAL TO CABO VERDE AND EXTENDED TRANSATLANTIC STREAM */}
                 {/* Senegal (720, 1920) to Cabo Verde (315, 1820) */}
@@ -881,7 +908,10 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                 </text>
               </g>
             )}
-          </AfricaUnLogo>
+                </g>
+              </svg>
+            );
+          })()}
         </div>
       </div>
     </div>
