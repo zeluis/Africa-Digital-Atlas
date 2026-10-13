@@ -51,7 +51,7 @@ export const UN_M49_REGIONS: Record<AfricanRegion, { code: string; name: string 
   'Southern Africa': { code: '018', name: 'Southern Africa' }
 };
 
-// Authoritative UN M49 Numeric Codes for African Nations
+// Curated UN M49 Numeric Codes for African Nations
 export const UN_M49_NUMERIC_CODES: Record<string, string> = {
   DZA: '012', AGO: '024', BEN: '204', BWA: '072', BFA: '854',
   BDI: '108', CPV: '132', CMR: '120', CAF: '140', TCD: '148',
@@ -66,7 +66,7 @@ export const UN_M49_NUMERIC_CODES: Record<string, string> = {
   TUN: '788', UGA: '800', ESH: '732', ZMB: '894', ZWE: '716'
 };
 
-// Authoritative UN M49 Regional Silhouettes
+// Documented UN M49 Regional Silhouettes
 export const UN_REGIONAL_SILHOUETTES: Record<AfricanRegion, RegionalSilhouetteData> = {
   "Northern Africa": {
     "region": "Northern Africa",

@@ -28,6 +28,18 @@ export interface UnescoSiteMetadata {
   httpUrl?: string;
   imageUrl?: string;
   uniqueNumber?: number;
+  // Expanded Attribution & Rights Fields
+  creator?: string;
+  photographer?: string;
+  authorRole?: string;
+  attributionText?: string;
+  institution?: string;
+  collectionOrRegistryId?: string;
+  license?: string;
+  licenseUrl?: string;
+  rightsStatement?: string;
+  primaryUrl?: string;
+  highResDownloadUrl?: string;
 }
 
 export interface SlaveTradeIllustration {
@@ -56,6 +68,18 @@ export interface SlaveTradeIllustration {
   collectionIds: number[];
   collectionNames: string[];
   unescoMeta?: UnescoSiteMetadata;
+  // Expanded Attribution & Licensing Fields
+  creator?: string;
+  photographer?: string;
+  authorRole?: string;
+  attributionText?: string;
+  institution?: string;
+  collectionOrRegistryId?: string;
+  license?: string;
+  licenseUrl?: string;
+  rightsStatement?: string;
+  primaryUrl?: string;
+  highResDownloadUrl?: string;
 }
 
 export const BASE_SLAVE_TRADE_ILLUSTRATIONS: SlaveTradeIllustration[] = [

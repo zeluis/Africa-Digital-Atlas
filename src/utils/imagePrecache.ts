@@ -4,6 +4,8 @@
  * using requestIdleCallback to ensure zero main-thread jank.
  */
 
+import { resolveAssetPath } from './assetPath';
+
 const CACHE_NAME = 'africa-archival-plates-v1';
 export const UNESCO_CACHE_NAME = 'africa-atlas-heritage-v1.4';
 
@@ -133,10 +135,10 @@ export const getTopArchivalImageUrls = async (): Promise<string[]> => {
     // Ignore dynamic import deferral
   }
 
-  // 2. Pre-packaged local archive fallbacks
+  // 2. Pre-packaged local archive fallbacks (resolved via resolveAssetPath)
   const localArchiveIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 36, 46, 50, 536, 802, 1042];
   localArchiveIds.forEach(id => {
-    const localUrl = `/assets/archives/SI-OB-${id}.jpg`;
+    const localUrl = resolveAssetPath(`assets/archives/SI-OB-${id}.jpg`);
     if (!urls.includes(localUrl)) {
       urls.push(localUrl);
     }
@@ -212,12 +214,22 @@ export const prewarmArchivalImageCache = async (): Promise<{ cached: number; tot
 };
 
 /**
- * Hook or helper to trigger pre-warming when network is idle
+ * Hook or helper to trigger pre-warming when network is idle,
+ * respecting user Data Saver settings and connection constraints (Africalia Lean item I).
  */
 export const initArchivalPrecache = () => {
   if (typeof window === 'undefined') return;
 
   const startPrewarm = () => {
+    // Respect user's Data-Saver preference or 2G network constraints
+    const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+    if (conn?.saveData) {
+      return;
+    }
+    if (conn?.effectiveType === 'slow-2g' || conn?.effectiveType === '2g') {
+      return;
+    }
+
     if (navigator.onLine) {
       if ('requestIdleCallback' in window) {
         window.requestIdleCallback(() => {

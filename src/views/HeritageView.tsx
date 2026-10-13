@@ -40,13 +40,13 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
   onSelectCountry,
   initialSiteId
 }) => {
-  // Load either custom ingested XML rows from localStorage or the curated Africa + Arab States registry
+  // Load either custom ingested XML rows from localStorage or the complete 210 Africa + Arab States registry
   const [unescoSites, setUnescoSites] = useState<UnescoSiteMetadata[]>(() => {
     try {
       const saved = localStorage.getItem(UNESCO_CUSTOM_XML_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed) && parsed.length >= INITIAL_UNESCO_HERITAGE_SITES.length && parsed[0]?.license) {
           return parsed;
         }
       }
@@ -469,7 +469,12 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                         </span>
                       )}
 
-                      <div className="flex items-center gap-1 text-[11px] font-mono text-stone-500 truncate max-w-[160px]">
+                      <div className="flex items-center gap-1.5 text-[11px] font-mono text-stone-500 truncate max-w-[170px]">
+                        {meta.license && (
+                          <span className="px-1.5 py-0.5 rounded bg-amber-900/10 dark:bg-amber-400/10 text-amber-900 dark:text-amber-300 text-[9.5px] font-bold border border-amber-900/15 dark:border-amber-400/20">
+                            {meta.license}
+                          </span>
+                        )}
                         <MapPin className="w-3 h-3 text-amber-700 dark:text-amber-400 shrink-0" />
                         <span className="truncate">{meta.location || meta.region}</span>
                       </div>

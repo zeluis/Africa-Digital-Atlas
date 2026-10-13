@@ -127,7 +127,7 @@ export default defineConfig(({ command }) => {
           id: './',
           name: 'Africalia: Africa Data Atlas',
           short_name: 'Africalia',
-          description: 'Authoritative Pan-African data platform featuring 54 sovereign nations, Atlantic Slave Trade research database, ethnic tree cartography, 8 thematic pillars, and investigative monographs.',
+          description: 'Curated Pan-African data platform featuring 54 sovereign nations, Atlantic Slave Trade research database, ethnic tree cartography, 8 thematic pillars, and investigative monographs.',
           theme_color: '#4e5e51',
           background_color: '#18181b',
           display: 'standalone',
@@ -299,6 +299,104 @@ export default defineConfig(({ command }) => {
                 expiration: {
                   maxEntries: 200,
                   maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            {
+              urlPattern: /^https:\/\/whc\.unesco\.org\/.*/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'unesco-heritage-cache',
+                expiration: {
+                  maxEntries: 250,
+                  maxAgeSeconds: 60 * 60 * 24 * 60, // 60 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            {
+              urlPattern: /^https:\/\/api\.worldbank\.org\/.*/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'worldbank-api-cache',
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 60 * 60 * 24 * 14,
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            {
+              urlPattern: /^https:\/\/data\.worldbank\.org\/.*/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'worldbank-data-cache',
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 60 * 60 * 24 * 14,
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            {
+              urlPattern: /^https:\/\/api\.slavevoyages\.org\/.*/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'slavevoyages-api-cache',
+                expiration: {
+                  maxEntries: 60,
+                  maxAgeSeconds: 60 * 60 * 24 * 30,
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            {
+              urlPattern: /^https:\/\/www\.wikidata\.org\/.*/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'wikidata-api-cache',
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 60 * 60 * 24 * 30,
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            {
+              urlPattern: /^https:\/\/www\.imf\.org\/.*/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'imf-data-cache',
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 60 * 60 * 24 * 30,
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            {
+              urlPattern: /^https:\/\/au\.int\/.*/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'au-portal-cache',
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 60 * 60 * 24 * 30,
                 },
                 cacheableResponse: {
                   statuses: [0, 200],

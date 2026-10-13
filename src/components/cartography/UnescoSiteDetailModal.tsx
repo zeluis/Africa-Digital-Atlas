@@ -222,6 +222,32 @@ export const UnescoSiteDetailModal: React.FC<UnescoSiteDetailModalProps> = ({
                 </div>
               </div>
             </div>
+
+            {/* Licensing & Attribution Citation */}
+            {(site.license || site.attributionText) && (
+              <div className="p-3.5 rounded-2xl bg-amber-900/5 dark:bg-amber-950/20 border border-amber-900/10 dark:border-amber-500/20 flex flex-wrap items-center justify-between gap-2.5 text-xs font-mono">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] uppercase font-bold text-amber-900 dark:text-amber-400">Attribution</span>
+                  <span className="px-2 py-0.5 rounded-md bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-200 border border-stone-200 dark:border-stone-700 font-bold text-[11px]">
+                    {site.license || 'CC BY-SA 3.0 IGO'}
+                  </span>
+                  <span className="text-stone-600 dark:text-stone-300 text-[11px]">
+                    {site.institution || 'UNESCO World Heritage Centre'}
+                  </span>
+                </div>
+                {site.licenseUrl && (
+                  <a
+                    href={site.licenseUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[11px] text-amber-800 dark:text-amber-400 hover:underline font-semibold"
+                  >
+                    <span>License Terms</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Bottom Action Footer with Link to Full UNESCO Viewer */}

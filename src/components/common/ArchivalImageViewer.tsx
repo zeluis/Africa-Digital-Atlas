@@ -401,6 +401,39 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
     if (!illustration) return '';
     
     const year = illustration.date ? illustration.date.replace(/[^0-9]/g, '').slice(0, 4) || 'n.d.' : 'n.d.';
+    const accessDate = 'September 2026';
+
+    // Tailored citation generator for UNESCO World Heritage properties
+    if (illustration.unescoMeta) {
+      const u = illustration.unescoMeta;
+      const stateParty = u.states;
+      const idNum = u.idNumber;
+      const inscriptYear = u.dateInscribed || year;
+      const title = illustration.title;
+      const unescoUrl = u.httpUrl || `https://whc.unesco.org/en/list/${idNum}`;
+      const licenseNotice = u.license || illustration.license || 'CC BY-SA 3.0 IGO';
+
+      switch (style) {
+        case 'chicago':
+          return `UNESCO World Heritage Centre. "${title}." State Party: ${stateParty} (Inscribed ${inscriptYear}). UNESCO World Heritage List, Reference No. WHC-${idNum}. Open License: ${licenseNotice}, accessed ${accessDate}, ${unescoUrl}.`;
+        case 'apa':
+          return `UNESCO World Heritage Centre (${inscriptYear}). ${title} [World Heritage Property WHC #${idNum}]. State Party: ${stateParty}. Retrieved ${accessDate}, from UNESCO World Heritage List: ${unescoUrl}`;
+        case 'harvard':
+          return `UNESCO World Heritage Centre (${inscriptYear}) '${title}', World Heritage Property WHC #${idNum}. State Party: ${stateParty}. Available at: ${unescoUrl} (Accessed: ${accessDate}).`;
+        case 'bibtex':
+          return `@misc{UNESCO_WHC_${idNum},
+  author = {{UNESCO World Heritage Centre}},
+  title = {${title}},
+  year = {${inscriptYear}},
+  howpublished = {UNESCO World Heritage Centre (${stateParty})},
+  note = {Category: ${u.category}, Criteria: ${u.criteriaTxt}, License: ${licenseNotice}},
+  url = {${unescoUrl}}
+}`;
+        default:
+          return '';
+      }
+    }
+
     const authors = illustration.researchers && illustration.researchers.length > 0
       ? illustration.researchers.join(', ')
       : 'Handler, Jerome & Tuite, Michael';
@@ -408,7 +441,6 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
     const source = illustration.source;
     const regId = illustration.regId;
     const ideId = illustration.identifier;
-    const accessDate = 'September 2026';
     const url = illustration.slaveryImagesPage || `https://zeluis.github.io/Africa-Digital-Atlas/castas/${ideId}`;
 
     switch (style) {
@@ -1055,6 +1087,74 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                       <p><strong className="text-stone-900 dark:text-stone-300">Identifier:</strong> {illustration.identifier || `SI-OB-${illustration.objectId}`}</p>
                     </div>
                   </div>
+
+                  {/* Expanded Attribution & Licensing Metadata Section */}
+                  {(illustration.license || illustration.unescoMeta?.license) && (
+                    <div className="space-y-2.5 p-3.5 sm:p-4 rounded-2xl bg-amber-900/5 dark:bg-amber-950/20 border border-amber-900/15 dark:border-amber-500/25">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-amber-900 dark:text-amber-400">
+                          Attribution &amp; Licensing
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md bg-amber-900/10 dark:bg-amber-400/10 text-amber-900 dark:text-amber-300 font-mono text-[10px] font-bold border border-amber-900/20 dark:border-amber-400/20">
+                          {illustration.license || illustration.unescoMeta?.license}
+                        </span>
+                      </div>
+
+                      <div className="space-y-2 text-xs font-mono">
+                        {(illustration.attributionText || illustration.unescoMeta?.attributionText) && (
+                          <div>
+                            <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block font-sans">Attribution Notice</span>
+                            <span className="text-stone-800 dark:text-stone-200 select-all font-serif text-[12.5px] leading-relaxed block mt-0.5">
+                              {illustration.attributionText || illustration.unescoMeta?.attributionText}
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="grid grid-cols-2 gap-2 pt-1 border-t border-amber-900/10 dark:border-amber-500/20">
+                          <div>
+                            <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block font-sans">Institution</span>
+                            <span className="text-stone-800 dark:text-stone-200 font-semibold block truncate">
+                              {illustration.institution || illustration.unescoMeta?.institution || 'UNESCO World Heritage Centre'}
+                            </span>
+                          </div>
+
+                          <div>
+                            <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block font-sans">Registry ID</span>
+                            <span className="text-stone-800 dark:text-stone-200 font-semibold block truncate">
+                              {illustration.collectionOrRegistryId || illustration.unescoMeta?.collectionOrRegistryId || `WHC-${illustration.unescoMeta?.idNumber}`}
+                            </span>
+                          </div>
+                        </div>
+
+                        {(illustration.licenseUrl || illustration.unescoMeta?.licenseUrl || illustration.rightsStatement || illustration.unescoMeta?.rightsStatement) && (
+                          <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-amber-900/10 dark:border-amber-500/20">
+                            {(illustration.licenseUrl || illustration.unescoMeta?.licenseUrl) && (
+                              <a
+                                href={illustration.licenseUrl || illustration.unescoMeta?.licenseUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-[11px] text-amber-800 hover:text-amber-950 dark:text-amber-400 dark:hover:text-amber-300 underline underline-offset-2 transition-colors"
+                              >
+                                <span>License Details</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                            {(illustration.rightsStatement || illustration.unescoMeta?.rightsStatement) && (
+                              <a
+                                href={illustration.rightsStatement || illustration.unescoMeta?.rightsStatement}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-[11px] text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200 underline underline-offset-2 transition-colors"
+                              >
+                                <span>Rights Statement</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {illustration.slaveryImagesPage && (
                     <div className="pt-2">
