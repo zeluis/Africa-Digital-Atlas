@@ -500,7 +500,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
 
       {/* TAB 02: AFRICAN EMBARKATION PORTS & FORTS MAP */}
       {activeSubTab === 'ports' && (
-        <div className="space-y-6">
+        <div className="w-full flex-1 min-h-[calc(100vh-140px)] flex flex-col">
           <AfricanPortsMap />
         </div>
       )}

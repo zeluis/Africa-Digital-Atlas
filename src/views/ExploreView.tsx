@@ -386,3 +386,5 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
     </div>
   );
 };
+
+export default ExploreView;

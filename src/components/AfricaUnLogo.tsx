@@ -173,16 +173,17 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
                 {/* Sovereign island indicators */}
                 {showIslands && region.islandCircles?.map((isl, idx) => {
                   const circleFill = variant === 'outline' ? 'transparent' : color;
+                  const islandRadius = isl.r ? Math.min(isl.r, 8) : 6;
                   return (
                     <circle
                       key={`logo-circle-${regionName}-${idx}`}
                       cx={isl.cx}
                       cy={isl.cy}
-                      r={Math.max(isl.r * 1.5, 30)}
+                      r={islandRadius}
                       fill={circleFill}
                       fillOpacity={circleFill !== 'transparent' ? effectiveFillOpacity : undefined}
-                      stroke={strokeColor || (effectiveStrokeWidth > 0 ? '#FFFFFF' : 'none')}
-                      strokeWidth={effectiveStrokeWidth}
+                      stroke={strokeColor || (effectiveStrokeWidth > 0 ? '#FFFFFF' : '#FFFFFF')}
+                      strokeWidth={effectiveStrokeWidth > 0 ? effectiveStrokeWidth : 1.5}
                     />
                   );
                 })}

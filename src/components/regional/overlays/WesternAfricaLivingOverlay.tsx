@@ -23,84 +23,42 @@ export const WesternAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
         <g className="tast-history-layer">
           {/* Western Africa Coastal Base Translucent Underglow */}
           <path
-            d="M 1000,2420 C 1400,2900 1700,3200 1350,3350 L 750,3550 C 1500,3800 2200,3500 2520,2720 Z"
+            d="M 147 326 C 200 400 280 435 386 416 L 430 435 C 320 465 200 440 100 360 Z"
             fill="#b85c38"
-            opacity="0.14"
+            opacity="0.12"
           />
 
           {/* Senegambia to Cabo Verde & Outward Stream */}
           <path
-            d="M 720,1920 C 580,1880 440,1850 315,1820"
+            d="M 147 326 C 115 320 95 315 79 313"
             fill="none"
             stroke="#d48b50"
-            strokeWidth="24"
-            strokeDasharray="45,25"
-            strokeLinecap="round"
-            className="animate-dash-fast"
-          />
-          <path
-            d="M 315,1820 C 100,1800 -200,1750 -600,1650"
-            fill="none"
-            stroke="#c4895c"
-            strokeWidth="22"
-            strokeDasharray="45,30"
-            opacity="0.85"
-            className="animate-dash-med"
-          />
-
-          {/* Sierra Leone -> Gulf of Guinea Confluence */}
-          <path
-            d="M 1000,2420 C 1100,2700 1250,3000 1350,3350"
-            fill="none"
-            stroke="#b85c38"
-            strokeWidth="28"
-            strokeDasharray="50,28"
+            strokeWidth="2.5"
+            strokeDasharray="6 4"
             strokeLinecap="round"
             className="animate-dash-fast"
           />
 
-          {/* Elmina & Cape Coast (Ghana) -> Confluence */}
+          {/* Elmina & Cape Coast (Ghana) -> Atlantic Stream */}
           <path
-            d="M 1850,2690 C 1700,2900 1500,3150 1350,3350"
+            d="M 322 424 C 300 450 250 480 180 500"
             fill="none"
             stroke="#9e4c56"
-            strokeWidth="34"
-            strokeDasharray="55,28"
+            strokeWidth="3"
+            strokeDasharray="7 4"
             strokeLinecap="round"
             className="animate-dash-fast"
           />
 
-          {/* Ouidah (Benin) -> Confluence */}
+          {/* Ouidah & Lagos -> Atlantic Confluence */}
           <path
-            d="M 2110,2580 C 1900,2850 1600,3150 1350,3350"
+            d="M 386 416 C 360 455 300 485 220 515"
             fill="none"
             stroke="#b85c38"
-            strokeWidth="32"
-            strokeDasharray="55,28"
+            strokeWidth="3"
+            strokeDasharray="7 4"
             strokeLinecap="round"
             className="animate-dash-fast"
-          />
-
-          {/* Bight of Biafra (Bonny & Calabar) -> Confluence */}
-          <path
-            d="M 2520,2720 C 2150,2950 1750,3200 1350,3350"
-            fill="none"
-            stroke="#b87446"
-            strokeWidth="36"
-            strokeDasharray="52,28"
-            strokeLinecap="round"
-            className="animate-dash-fast"
-          />
-
-          {/* Transatlantic Outward Trunk */}
-          <path
-            d="M 1350,3350 L 750,3550 C 350,3800 -150,4100 -700,4400"
-            fill="none"
-            stroke="#c45d3e"
-            strokeWidth="46"
-            strokeDasharray="65,35"
-            strokeLinecap="round"
-            className="animate-dash-slow"
           />
 
           {/* Historic Embarkation Nodes */}
@@ -114,9 +72,10 @@ export const WesternAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
               countryCode: "SEN"
             })}
           >
-            <circle cx="720" cy="1920" r="100" fill="none" stroke="#b87446" strokeWidth="12" opacity="0.8" className="animate-radar-pulse" />
-            <circle cx="720" cy="1920" r="46" fill="#b87446" stroke="#ffffff" strokeWidth="12" />
-            <text x="790" y="1900" fill="#1c1917" fontSize="82" fontWeight="800" fontFamily="sans-serif">Gorée (Dakar)</text>
+            <circle cx="147" cy="326" r="15" fill="none" stroke="#b87446" strokeWidth="2" opacity="0.8" className="animate-radar-pulse" />
+            <circle cx="147" cy="326" r="5.5" fill="#b87446" stroke="#ffffff" strokeWidth="1.8" />
+            <rect x="75" y="338" width="105" height="18" rx="4" fill="#ffffff" fillOpacity="0.92" stroke="#b87446" strokeWidth="1" />
+            <text x="127" y="350" textAnchor="middle" fill="#1c1917" fontSize="9" fontWeight="800" fontFamily="sans-serif">Gorée (Dakar)</text>
           </g>
 
           <g 
@@ -129,9 +88,10 @@ export const WesternAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
               countryCode: "CPV"
             })}
           >
-            <circle cx="315" cy="1820" r="90" fill="none" stroke="#c4895c" strokeWidth="11" opacity="0.8" className="animate-radar-pulse" />
-            <circle cx="315" cy="1820" r="42" fill="#c4895c" stroke="#ffffff" strokeWidth="11" />
-            <text x="380" y="1800" fill="#1c1917" fontSize="80" fontWeight="800" fontFamily="sans-serif">Cabo Verde</text>
+            <circle cx="79" cy="313" r="14" fill="none" stroke="#c4895c" strokeWidth="1.8" opacity="0.8" className="animate-radar-pulse" />
+            <circle cx="79" cy="313" r="5" fill="#c4895c" stroke="#ffffff" strokeWidth="1.8" />
+            <rect x="25" y="292" width="85" height="17" rx="3.5" fill="#ffffff" fillOpacity="0.92" stroke="#c4895c" strokeWidth="1" />
+            <text x="67" y="304" textAnchor="middle" fill="#1c1917" fontSize="8.5" fontWeight="800" fontFamily="sans-serif">Cabo Verde</text>
           </g>
 
           <g 
@@ -144,8 +104,9 @@ export const WesternAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
               countryCode: "GHA"
             })}
           >
-            <circle cx="1850" cy="2690" r="46" fill="#9e4c56" stroke="#ffffff" strokeWidth="11" />
-            <text x="1460" y="2800" fill="#1c1917" fontSize="76" fontWeight="800" fontFamily="sans-serif">Elmina (Gold Coast)</text>
+            <circle cx="322" cy="424" r="5.5" fill="#9e4c56" stroke="#ffffff" strokeWidth="1.8" />
+            <rect x="250" y="438" width="125" height="18" rx="4" fill="#ffffff" fillOpacity="0.92" stroke="#9e4c56" strokeWidth="1" />
+            <text x="312" y="450" textAnchor="middle" fill="#1c1917" fontSize="8.5" fontWeight="800" fontFamily="sans-serif">Elmina (Gold Coast)</text>
           </g>
         </g>
       )}
@@ -155,34 +116,22 @@ export const WesternAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
       {/* ========================================================================= */}
       {showTech && (
         <g className="tech-innovation-layer">
-          {/* Radiant Diaspora Return Stream (Reversing the Atlantic Flow with Vibrant Emerald & Gold) */}
-          <path
-            d="M -500,3200 C 500,3300 1500,3000 2250,2600"
-            fill="none"
-            stroke="#10b981"
-            strokeWidth="30"
-            strokeDasharray="60,30"
-            strokeLinecap="round"
-            className="animate-dash-reverse"
-          />
-
           {/* West African Tech Triangle: Lagos <-> Accra <-> Dakar */}
           <path
-            d="M 2250,2600 L 1850,2690 L 720,1920 Z"
+            d="M 386 416 L 328 423 L 147 326 Z"
             fill="none"
             stroke="#059669"
-            strokeWidth="38"
-            strokeDasharray="65,30"
+            strokeWidth="3.2"
+            strokeDasharray="8 4"
             strokeLinecap="round"
             className="animate-dash-fast"
           />
-          {/* Inner Glowing Core */}
           <path
-            d="M 2250,2600 L 1850,2690 L 720,1920 Z"
+            d="M 386 416 L 328 423 L 147 326 Z"
             fill="none"
             stroke="#fef08a"
-            strokeWidth="16"
-            strokeDasharray="30,65"
+            strokeWidth="1.5"
+            strokeDasharray="4 8"
             strokeLinecap="round"
             className="animate-dash-fast"
           />
@@ -198,10 +147,11 @@ export const WesternAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
               countryCode: "NGA"
             })}
           >
-            <circle cx="2250" cy="2600" r="120" fill="none" stroke="#10b981" strokeWidth="14" opacity="0.85" className="animate-radar-pulse" />
-            <circle cx="2250" cy="2600" r="54" fill="#059669" stroke="#ffffff" strokeWidth="15" />
-            <text x="2330" y="2610" fill="#065f46" fontSize="96" fontWeight="900" fontFamily="sans-serif">Lagos FinTech Capital</text>
-            <text x="2330" y="2710" fill="#047857" fontSize="64" fontWeight="700" fontFamily="sans-serif">Yaba • $2.5B Ecosystem</text>
+            <circle cx="386" cy="416" r="18" fill="none" stroke="#10b981" strokeWidth="2" opacity="0.85" className="animate-radar-pulse" />
+            <circle cx="386" cy="416" r="6" fill="#059669" stroke="#ffffff" strokeWidth="2" />
+            <rect x="382" y="388" width="128" height="23" rx="4" fill="#ffffff" fillOpacity="0.92" stroke="#059669" strokeWidth="1" />
+            <text x="446" y="399" textAnchor="middle" fill="#065f46" fontSize="9.5" fontWeight="900" fontFamily="sans-serif">Lagos FinTech Capital</text>
+            <text x="446" y="408" textAnchor="middle" fill="#047857" fontSize="7.5" fontWeight="700" fontFamily="sans-serif">Yaba • $2.5B Ecosystem</text>
           </g>
 
           {/* Accra Tech Cluster */}
@@ -215,9 +165,10 @@ export const WesternAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
               countryCode: "GHA"
             })}
           >
-            <circle cx="1850" cy="2690" r="95" fill="none" stroke="#3b82f6" strokeWidth="11" opacity="0.8" className="animate-radar-pulse" />
-            <circle cx="1850" cy="2690" r="44" fill="#2563eb" stroke="#ffffff" strokeWidth="12" />
-            <text x="1870" y="2640" fill="#1e40af" fontSize="76" fontWeight="800" fontFamily="sans-serif">Accra Tech & AI</text>
+            <circle cx="328" cy="423" r="14" fill="none" stroke="#3b82f6" strokeWidth="1.8" opacity="0.8" className="animate-radar-pulse" />
+            <circle cx="328" cy="423" r="5.5" fill="#2563eb" stroke="#ffffff" strokeWidth="1.8" />
+            <rect x="260" y="405" width="98" height="16" rx="3.5" fill="#ffffff" fillOpacity="0.92" stroke="#2563eb" strokeWidth="1" />
+            <text x="309" y="416" textAnchor="middle" fill="#1e40af" fontSize="8.5" fontWeight="800" fontFamily="sans-serif">Accra Tech & AI</text>
           </g>
 
           {/* Dakar Digital City */}
@@ -231,8 +182,8 @@ export const WesternAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
               countryCode: "SEN"
             })}
           >
-            <circle cx="720" cy="1920" r="95" fill="none" stroke="#10b981" strokeWidth="11" opacity="0.8" className="animate-radar-pulse" />
-            <circle cx="720" cy="1920" r="44" fill="#10b981" stroke="#ffffff" strokeWidth="12" />
+            <circle cx="147" cy="326" r="14" fill="none" stroke="#10b981" strokeWidth="1.8" opacity="0.8" className="animate-radar-pulse" />
+            <circle cx="147" cy="326" r="5" fill="#10b981" stroke="#ffffff" strokeWidth="1.8" />
           </g>
         </g>
       )}
@@ -242,24 +193,24 @@ export const WesternAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
       {/* ========================================================================= */}
       {showEnergy && (
         <g className="energy-infrastructure-layer">
-          {/* West African Power Pool (WAPP) Interconnector Artery: Dakar -> Bamako -> Ouaga -> Niamey -> Abuja -> Lagos -> Abidjan */}
+          {/* West African Power Pool (WAPP) Interconnector Artery */}
           <path
-            d="M 720,1920 L 1450,1950 L 1700,2050 L 2050,2050 L 2500,2300 L 2250,2600 L 1600,2620 Z"
+            d="M 147 326 L 246 348 L 314 351 L 352 339 L 408 386 L 386 416 L 328 423 L 280 425 Z"
             fill="none"
             stroke="#f59e0b"
-            strokeWidth="32"
-            strokeDasharray="55,30"
+            strokeWidth="2.8"
+            strokeDasharray="7 4"
             strokeLinecap="round"
             className="animate-dash-med"
           />
 
           {/* Subsea 2Africa / Equiano Optical Cable along the Coast */}
           <path
-            d="M 315,1820 C 500,2200 900,2650 1600,2750 C 1850,2780 2250,2750 2550,2850"
+            d="M 79 313 C 110 370 170 420 280 435 C 330 440 390 435 435 450"
             fill="none"
             stroke="#06b6d4"
-            strokeWidth="24"
-            strokeDasharray="40,25"
+            strokeWidth="2.2"
+            strokeDasharray="6 3"
             strokeLinecap="round"
             className="animate-dash-fast"
           />
@@ -275,8 +226,9 @@ export const WesternAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
               countryCode: "CIV"
             })}
           >
-            <circle cx="1600" cy="2620" r="44" fill="#f59e0b" stroke="#ffffff" strokeWidth="11" />
-            <text x="1350" y="2600" fill="#b45309" fontSize="76" fontWeight="800" fontFamily="sans-serif">Abidjan WAPP Grid</text>
+            <circle cx="280" cy="425" r="5.5" fill="#f59e0b" stroke="#ffffff" strokeWidth="1.8" />
+            <rect x="225" y="442" width="105" height="17" rx="3.5" fill="#ffffff" fillOpacity="0.92" stroke="#d97706" strokeWidth="1" />
+            <text x="277" y="454" textAnchor="middle" fill="#b45309" fontSize="8.5" fontWeight="800" fontFamily="sans-serif">Abidjan WAPP Grid</text>
           </g>
         </g>
       )}
@@ -288,16 +240,16 @@ export const WesternAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
         <g className="climate-biosphere-layer">
           {/* Great Green Wall Trans-Sahelian Belt: Senegal through Mali, Burkina, Niger, Nigeria */}
           <path
-            d="M 720,1800 C 1200,1850 1700,1950 2500,1950"
+            d="M 155 310 C 240 315 330 325 440 315"
             fill="none"
             stroke="#22c55e"
-            strokeWidth="48"
-            strokeDasharray="70,40"
+            strokeWidth="4"
+            strokeDasharray="9 5"
             strokeLinecap="round"
             opacity="0.85"
             className="animate-dash-slow"
           />
-          <text x="1200" y="1800" fill="#15803d" fontSize="88" fontWeight="800" fontFamily="sans-serif" letterSpacing="4">
+          <text x="290" y="305" textAnchor="middle" fill="#15803d" fontSize="9" fontWeight="800" fontFamily="sans-serif" letterSpacing="2">
             GREAT GREEN WALL BIOSPHERE
           </text>
         </g>

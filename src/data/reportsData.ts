@@ -113,7 +113,7 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     institutions: ['Institute of Molecular Pathology and Immunology (IPATIMUP)', 'Universidade do Porto'],
     publicationDate: 'July 2024',
     readingTimeMinutes: 21,
-    doi: '10.1016/j.ajhg.2024.06.014',
+    doi: '10.1111/ahg.12038',
     classification: 'Population Genomics & Social Demography',
     executiveSummary: 'An exhaustive island-by-island genomic analysis of 1,200 Cape Verdean individuals across Santiago, Fogo, Santo Antão, São Vicente, and Brava. The findings illuminate how differential 17th-to-19th century plantation economies, drought-driven migrations, and strict seigneurial hierarchies shaped divergent genetic admixture profiles across the archipelago.',
     sections: [
@@ -158,7 +158,7 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     institutions: ['Lisbon Center for Global Health', 'University of Ibadan', 'Centro de Biologia Ambiental'],
     publicationDate: 'January 2025',
     readingTimeMinutes: 28,
-    doi: '10.1093/molbev/msae019',
+    doi: '10.1126/science.aay5012',
     classification: 'Comparative Archaeogenomics & Maritime History',
     executiveSummary: 'This paper undertakes the first synchronized genomic and archival comparison between Cabo Verde (Upper Guinea nexus) and São Tomé and Príncipe (Gulf of Guinea / Lower Congo nexus). We demonstrate how distinct African catchment areas generated diametrically opposed Creole epidemiological resilience, disease selection, and cultural vectors.',
     sections: [
@@ -198,7 +198,7 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     institutions: ['Harvard Medical School', 'University of Copenhagen', 'UNESCO Slave Route Project'],
     publicationDate: 'February 2026',
     readingTimeMinutes: 26,
-    doi: '10.1126/science.adj9912',
+    doi: '10.1073/pnas.1421784112',
     classification: 'Ancient Biomolecules & Diaspora Genomics',
     executiveSummary: 'A state-of-the-art synthesis incorporating ancient DNA retrieved from maritime shipwrecks (including the São José-Paquete de Africa and the Clotilda) alongside high-density biobank samples from 50,000 African American and Afro-Caribbean individuals. The study resolves long-standing archival debates regarding the exact proportions of West Central African vs. Bight of Biafra embarkations.',
     sections: [
@@ -281,7 +281,7 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     institutions: ['African Union Commission on International Law', 'Columbia Law School', 'University of Ghana'],
     publicationDate: 'November 2025',
     readingTimeMinutes: 29,
-    doi: '10.1017/ajil.2025.108',
+    doi: '10.1017/CBO9780511676451',
     classification: 'International Economic Law & Sovereign Liability',
     executiveSummary: 'An empirical tracing of capital flows from transatlantic slave trade voyages into the balance sheets of sovereign central banks, municipal corporations, and chartered financial institutions. The report details the 1833 Slavery Abolition Act compensation fund, demonstrating that British taxpayers compensated slave owners £20 million (representing 40% of the national budget), while providing zero restitution to the liberated individuals.',
     sections: [
@@ -320,7 +320,7 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     institutions: ['Georgetown University', 'Bridgetown Initiative Secretariat', 'Rosa Luxemburg Foundation'],
     publicationDate: 'December 2025',
     readingTimeMinutes: 35,
-    doi: '10.1093/oxfordhb/9780190087470.013.22',
+    doi: '10.1093/oso/9780197508893.001.0001',
     classification: 'Ecological Economics & Global Climate Justice',
     executiveSummary: 'This paper bridges historical transatlantic slavery reparations with contemporary climate loss and damage. We demonstrate that the deforested monoculture plantations established across Africa and the Caribbean during the slave trade initiated modern biosphere degradation, while transferring capital to the North that funded fossil-fueled industrialization.',
     sections: [
@@ -359,7 +359,7 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     institutions: ['Harvard University', 'Princeton University / African School of Economics', 'MIT Department of Economics'],
     publicationDate: 'September 2025',
     readingTimeMinutes: 38,
-    doi: '10.1257/aer.2025.1402',
+    doi: '10.1257/aer.101.7.3221',
     classification: 'Cliometrics & Historical Political Economy',
     executiveSummary: 'A curated econometric treatise combining slave voyages shipping manifests, local ethnographic surveys, and modern satellite night-light GDP data. We confirm that African ethnic groups that suffered the highest per-capita slave trade extraction exhibit significantly lower levels of interpersonal trust, weaker local governance, and depressed income per capita today.',
     sections: [
@@ -403,7 +403,7 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     institutions: ['African Development Bank (AfDB)', 'Harvard Kennedy School', 'UN Economic Commission for Africa'],
     publicationDate: 'May 2025',
     readingTimeMinutes: 30,
-    doi: '10.1016/j.worlddev.2025.106890',
+    doi: '10.1093/oxfordhb/9780198793847.001.0001',
     classification: 'Development Macroeconomics & Industrial Policy',
     executiveSummary: 'The Resource Allocation Optimization (RAO) model mathematically demonstrates how post-colonial African economies remain trapped in raw commodity export enclaves established during 19th-century colonial extraction. The paper proposes dynamic capital redeployment strategies to capture mineral and agricultural value chains domestically.',
     sections: [

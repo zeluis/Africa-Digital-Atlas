@@ -864,3 +864,4 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
   );
 };
 
+export default EntityBlocsBrowser;

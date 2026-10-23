@@ -21,6 +21,9 @@ import {
   X,
   Info,
   ChevronRight,
+  ChevronLeft,
+  ChevronDown,
+  ChevronUp,
   Anchor,
   Calendar,
   Filter
@@ -120,6 +123,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
   // Seasonal meteorological states
   const [selectedSeason, setSelectedSeason] = useState<'summer' | 'autumn' | 'winter' | 'spring'>('summer');
   const [showTradeWinds, setShowTradeWinds] = useState(true);
+  const [isDrawerCollapsed, setIsDrawerCollapsed] = useState(true);
 
   // Hydrodynamic Ocean Currents Particle Streamlines Engine
   const oceanCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -464,10 +468,10 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
         ))}
       </div>
 
-      {/* 2. Split Main View (Map 9 cols / Sidebar 3 cols) */}
+      {/* 2. Split Main View (Map 11 or 9 cols / Sidebar 1 or 3 cols) */}
       <div className="grid grid-cols-1 xl:grid-cols-12 overflow-hidden">
-        {/* Left Map Viewport (9 cols) */}
-        <div className="xl:col-span-9 relative bg-[#FAF6EE] dark:bg-zinc-950 flex items-center justify-center min-h-[540px] select-none">
+        {/* Left Map Viewport (11 cols if collapsed, 9 cols if expanded) */}
+        <div className={`${isDrawerCollapsed ? 'xl:col-span-11' : 'xl:col-span-9'} relative bg-[#FAF6EE] dark:bg-zinc-950 flex items-center justify-center min-h-[540px] select-none`}>
           <svg
             viewBox="0 0 1000 580"
             className="w-full h-full block"

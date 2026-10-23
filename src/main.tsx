@@ -22,13 +22,26 @@ createRoot(document.getElementById('root')!).render(
 
 // PWA Service Worker Management
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
-  if (import.meta.env.DEV) {
-    // In development mode, actively unregister any existing service worker to prevent intercepting Vite modules
+  const isDevEnvironment = import.meta.env.DEV || 
+    window.location.hostname === 'localhost' || 
+    window.location.hostname === '127.0.0.1' || 
+    window.location.hostname.includes('run.app');
+
+  if (isDevEnvironment) {
+    // In development mode and Cloud Run preview, actively unregister any existing service worker
+    // to prevent it from intercepting dynamically imported Vite modules (.tsx/.ts)
     navigator.serviceWorker.getRegistrations().then((registrations) => {
       for (const reg of registrations) {
         reg.unregister().catch(() => {});
       }
     }).catch(() => {});
+    if ('caches' in window) {
+      caches.keys().then((keys) => {
+        for (const k of keys) {
+          if (k.startsWith('africa-atlas-')) caches.delete(k).catch(() => {});
+        }
+      }).catch(() => {});
+    }
   } else {
     // Production Service Worker registration
     window.addEventListener('load', () => {

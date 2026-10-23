@@ -260,7 +260,19 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   const { t } = useTranslation();
 
   // Determine if current page triggers auto-collapse rail mode on desktop
-  const isAutoCollapsePage = currentTab === 'ethnic-tree' || currentTab === 'map' || currentTab === 'archival-cartography' || currentTab === 'heritage' || (currentTab === 'iconography' && Boolean(isIconographyIngestion));
+  const isAutoCollapsePage = 
+    currentTab === 'ethnic-tree' || 
+    currentTab === 'map' || 
+    currentTab === 'archival-cartography' || 
+    currentTab === 'heritage' || 
+    currentTab === 'slave-trade' ||
+    (typeof currentTab === 'string' && currentTab.startsWith('slave-trade')) ||
+    currentTab === 'molecular-legacies' ||
+    (typeof currentTab === 'string' && currentTab.startsWith('molecular-legacies')) ||
+    currentTab === 'african-development-foundations' ||
+    (typeof currentTab === 'string' && currentTab.startsWith('african-development-foundations')) ||
+    (typeof currentTab === 'string' && isReportOrPaperTab(currentTab)) ||
+    (currentTab === 'iconography' && Boolean(isIconographyIngestion));
   const [isDrawerHovered, setIsDrawerHovered] = useState(false);
 
   // Active group detections

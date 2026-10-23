@@ -28,11 +28,11 @@ export const NorthernAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
               countryCode: "EGY"
             })}
           >
-            <circle cx="4300" cy="1150" r="140" fill="none" stroke="#f59e0b" strokeWidth="16" opacity="0.8" className="animate-radar-pulse" />
-            <circle cx="4300" cy="1150" r="80" fill="none" stroke="#fbbf24" strokeWidth="12" opacity="0.9" className="animate-radar-pulse" />
-            <circle cx="4300" cy="1150" r="48" fill="#f59e0b" stroke="#ffffff" strokeWidth="14" />
-            <text x="4390" y="1150" fill="#92400e" fontSize="96" fontWeight="900" fontFamily="sans-serif">Benban Solar Megaplex</text>
-            <text x="4390" y="1250" fill="#b45309" fontSize="64" fontWeight="700" fontFamily="sans-serif">1.8 GW • 37 km² Solar Field</text>
+            <circle cx="672" cy="228" r="20" fill="none" stroke="#f59e0b" strokeWidth="2" opacity="0.8" className="animate-radar-pulse" />
+            <circle cx="672" cy="228" r="6" fill="#f59e0b" stroke="#ffffff" strokeWidth="2" />
+            <rect x="605" y="238" width="134" height="23" rx="4" fill="#ffffff" fillOpacity="0.92" stroke="#d97706" strokeWidth="1" />
+            <text x="672" y="249" textAnchor="middle" fill="#92400e" fontSize="9.5" fontWeight="900" fontFamily="sans-serif">Benban Solar Megaplex</text>
+            <text x="672" y="258" textAnchor="middle" fill="#b45309" fontSize="7.5" fontWeight="700" fontFamily="sans-serif">1.8 GW • 37 km² Clean Energy</text>
           </g>
 
           {/* Noor Ouarzazate Solar Complex (Morocco - World's Largest Concentrated Solar Power) */}
@@ -46,34 +46,35 @@ export const NorthernAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
               countryCode: "MAR"
             })}
           >
-            <circle cx="1580" cy="780" r="130" fill="none" stroke="#ea580c" strokeWidth="14" opacity="0.8" className="animate-radar-pulse" />
-            <circle cx="1580" cy="780" r="50" fill="#ea580c" stroke="#ffffff" strokeWidth="14" />
-            <text x="1670" y="780" fill="#9a3412" fontSize="90" fontWeight="900" fontFamily="sans-serif">Noor Ouarzazate Solar</text>
-            <text x="1670" y="870" fill="#c2410c" fontSize="60" fontWeight="700" fontFamily="sans-serif">World's Largest CSP • Molten Salt Storage</text>
+            <circle cx="248" cy="142" r="18" fill="none" stroke="#ea580c" strokeWidth="2" opacity="0.8" className="animate-radar-pulse" />
+            <circle cx="248" cy="142" r="6" fill="#ea580c" stroke="#ffffff" strokeWidth="2" />
+            <rect x="180" y="152" width="136" height="23" rx="4" fill="#ffffff" fillOpacity="0.92" stroke="#ea580c" strokeWidth="1" />
+            <text x="248" y="163" textAnchor="middle" fill="#9a3412" fontSize="9.5" fontWeight="900" fontFamily="sans-serif">Noor Ouarzazate Solar</text>
+            <text x="248" y="172" textAnchor="middle" fill="#c2410c" fontSize="7.5" fontWeight="700" fontFamily="sans-serif">World's Largest CSP • Molten Salt</text>
           </g>
 
-          {/* Cross-Mediterranean Clean Energy Cables (Morocco -> Spain, Egypt -> Greece/Europe) */}
+          {/* Cross-Mediterranean Clean Energy Cables (Morocco -> Spain, Egypt -> Europe) */}
           <path
-            d="M 1500,480 L 1500,100"
+            d="M 258 95 L 258 40"
             fill="none"
             stroke="#06b6d4"
-            strokeWidth="32"
-            strokeDasharray="45,25"
+            strokeWidth="2.5"
+            strokeDasharray="6 4"
             strokeLinecap="round"
             className="animate-dash-fast"
           />
-          <text x="1540" y="280" fill="#0e7490" fontSize="72" fontWeight="800" fontFamily="sans-serif">Med HVDC Interconnect</text>
+          <text x="262" y="60" fill="#0e7490" fontSize="8" fontWeight="800" fontFamily="sans-serif">Med HVDC Cable</text>
 
           <path
-            d="M 3950,520 L 3950,120"
+            d="M 657 140 L 657 55"
             fill="none"
             stroke="#0284c7"
-            strokeWidth="32"
-            strokeDasharray="45,25"
+            strokeWidth="2.5"
+            strokeDasharray="6 4"
             strokeLinecap="round"
             className="animate-dash-fast"
           />
-          <text x="3990" y="300" fill="#0369a1" fontSize="72" fontWeight="800" fontFamily="sans-serif">GREGY Interconnector</text>
+          <text x="662" y="75" fill="#0369a1" fontSize="8" fontWeight="800" fontFamily="sans-serif">GREGY Interconnector</text>
         </g>
       )}
 
@@ -95,36 +96,31 @@ export const NorthernAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
           >
             {/* Orbital Radiating Arcs */}
             <path
-              d="M 3900,550 A 300,300 0 0,1 4400,550"
+              d="M 625 140 A 35 35 0 0 1 685 140"
               fill="none"
               stroke="#3b82f6"
-              strokeWidth="16"
-              strokeDasharray="30,20"
+              strokeWidth="2"
+              strokeDasharray="5 3"
               className="animate-dash-fast"
             />
-            <path
-              d="M 3800,450 A 450,450 0 0,1 4500,450"
-              fill="none"
-              stroke="#6366f1"
-              strokeWidth="14"
-              strokeDasharray="35,25"
-              className="animate-dash-fast"
-            />
-            <circle cx="4130" cy="720" r="54" fill="#2563eb" stroke="#ffffff" strokeWidth="15" />
-            <text x="3650" y="900" fill="#1e3a8a" fontSize="88" fontWeight="900" fontFamily="sans-serif">Cairo Space & AI City</text>
+            <circle cx="657" cy="152" r="16" fill="none" stroke="#2563eb" strokeWidth="2" opacity="0.8" className="animate-radar-pulse" />
+            <circle cx="657" cy="152" r="6" fill="#2563eb" stroke="#ffffff" strokeWidth="2" />
+            <rect x="590" y="165" width="134" height="23" rx="4" fill="#ffffff" fillOpacity="0.92" stroke="#2563eb" strokeWidth="1" />
+            <text x="657" y="176" textAnchor="middle" fill="#1e3a8a" fontSize="9.5" fontWeight="900" fontFamily="sans-serif">Cairo Space & AI City</text>
+            <text x="657" y="185" textAnchor="middle" fill="#1d4ed8" fontSize="7.5" fontWeight="700" fontFamily="sans-serif">AfSA HQ • Satellite Complex</text>
           </g>
 
           {/* Trans-Saharan Fiber Optic Highway: Algiers -> Tamanrasset -> Sahel */}
           <path
-            d="M 2000,450 L 2150,1250 L 2200,1650 L 2250,2050"
+            d="M 362 68 L 375 160 L 395 230 L 400 290"
             fill="none"
             stroke="#8b5cf6"
-            strokeWidth="30"
-            strokeDasharray="50,25"
+            strokeWidth="3"
+            strokeDasharray="7 4"
             strokeLinecap="round"
             className="animate-dash-fast"
           />
-          <text x="2250" y="1400" fill="#6d28d9" fontSize="76" fontWeight="800" fontFamily="sans-serif">
+          <text x="405" y="210" fill="#6d28d9" fontSize="8.5" fontWeight="800" fontFamily="sans-serif">
             TRANS-SAHARAN FIBER HIGHWAY
           </text>
 
@@ -139,8 +135,10 @@ export const NorthernAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
               countryCode: "DZA"
             })}
           >
-            <circle cx="2000" cy="450" r="44" fill="#7c3aed" stroke="#ffffff" strokeWidth="12" />
-            <text x="1750" y="420" fill="#5b21b6" fontSize="76" fontWeight="800" fontFamily="sans-serif">Algiers Tech</text>
+            <circle cx="362" cy="68" r="15" fill="none" stroke="#7c3aed" strokeWidth="2" opacity="0.8" className="animate-radar-pulse" />
+            <circle cx="362" cy="68" r="5.5" fill="#7c3aed" stroke="#ffffff" strokeWidth="1.8" />
+            <rect x="315" y="44" width="94" height="18" rx="4" fill="#ffffff" fillOpacity="0.92" stroke="#7c3aed" strokeWidth="1" />
+            <text x="362" y="56" textAnchor="middle" fill="#5b21b6" fontSize="9" fontWeight="800" fontFamily="sans-serif">Algiers Tech</text>
           </g>
         </g>
       )}
@@ -152,29 +150,31 @@ export const NorthernAfricaLivingOverlay: React.FC<RegionalOverlayProps> = ({
         <g className="history-maritime-layer">
           {/* Suez Canal Global Shipping Arterial */}
           <path
-            d="M 4200,580 L 4280,780 L 4450,1350"
+            d="M 686 138 L 688 170 L 696 220"
             fill="none"
             stroke="#0284c7"
-            strokeWidth="38"
-            strokeDasharray="60,30"
+            strokeWidth="3.5"
+            strokeDasharray="8 4"
             strokeLinecap="round"
             className="animate-dash-fast"
           />
-          <text x="4350" y="680" fill="#0369a1" fontSize="80" fontWeight="900" fontFamily="sans-serif">Suez Canal 12% World Trade</text>
+          <text x="702" y="165" fill="#0369a1" fontSize="9" fontWeight="900" fontFamily="sans-serif">
+            Suez Canal 12% World Trade
+          </text>
 
-          {/* Trans-Saharan Caravan Trail (Sijilmassa to Timbuktu & Fez) */}
+          {/* Trans-Saharan Caravan Trail (Sijilmassa to Timbuktu) */}
           <path
-            d="M 1600,650 C 1700,1100 1600,1600 1500,2000"
+            d="M 255 125 C 265 180 250 240 240 280"
             fill="none"
             stroke="#d97706"
-            strokeWidth="24"
-            strokeDasharray="40,30"
+            strokeWidth="2.5"
+            strokeDasharray="6 4"
             strokeLinecap="round"
             opacity="0.8"
             className="animate-dash-med"
           />
-          <text x="1100" y="1300" fill="#b45309" fontSize="72" fontWeight="700" fontFamily="sans-serif">
-            Historic Trans-Saharan Salt & Gold Route
+          <text x="255" y="215" fill="#b45309" fontSize="8" fontWeight="700" fontFamily="sans-serif">
+            Historic Salt & Gold Route
           </text>
         </g>
       )}

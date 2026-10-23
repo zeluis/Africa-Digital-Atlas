@@ -1,7 +1,7 @@
 // Africa Data Atlas - Progressive Web App Service Worker
 // Multi-Tier Caching Strategies with full Chrome-Extension & Offline Safety
 
-const VERSION = 'v1.4';
+const VERSION = 'v1.5';
 const CACHE_STATIC = `africa-atlas-static-${VERSION}`;
 const CACHE_IMMUTABLE = `africa-atlas-immutable-${VERSION}`;
 const CACHE_FONTS = `africa-atlas-fonts-${VERSION}`;
@@ -219,6 +219,24 @@ self.addEventListener('fetch', (event) => {
   try {
     url = new URL(urlStr);
   } catch (e) {
+    return;
+  }
+
+  // Strictly bypass Service Worker for development requests, source files, and Vite internal dev routes
+  if (
+    url.pathname.startsWith('/src/') ||
+    url.pathname.startsWith('/@') ||
+    url.pathname.startsWith('/node_modules/') ||
+    url.pathname.endsWith('.tsx') ||
+    url.pathname.endsWith('.ts') ||
+    url.pathname.endsWith('.jsx') ||
+    url.pathname.includes('vite') ||
+    url.searchParams.has('t') ||
+    url.searchParams.has('v') ||
+    url.hostname === 'localhost' ||
+    url.hostname === '127.0.0.1' ||
+    url.hostname.includes('run.app')
+  ) {
     return;
   }
 

@@ -14,6 +14,10 @@ export interface AfricanEmbarkationPort {
     lat: number;
     lng: number;
   };
+  svgCoordinates?: {
+    x: number;
+    y: number;
+  };
   fortOrType: 'Masonry Castle / Fort' | 'Factory / Roadstead' | 'River Estuary / Barracoon' | 'Island Entrepôt';
   europeanPowers: ('Portugal' | 'Great Britain' | 'France' | 'Netherlands' | 'Denmark' | 'Brandenburg/Prussia' | 'Spain' | 'United States' | 'Sweden' | 'Brazil' | 'Germany')[];
   indigenousPolity: string;
@@ -515,5 +519,445 @@ export const AFRICAN_EMBARKATION_PORTS: AfricanEmbarkationPort[] = [
     primaryDestinations: ['Mauritius', 'Réunion', 'Oman / Persian Gulf', 'French Caribbean'],
     historicalDescription: 'The hub of East African caravan routes. While predominantly serving the Indian Ocean and Swahili clove plantation trade, tens of thousands of captives were purchased by French and Portuguese traders for transatlantic transport.',
     unescoWorldHeritage: true
+  },
+
+  // ========================================================
+  // ADDITIONAL ARCHIVAL FORTS & ESTUARIES (EXPANDED CORPUS)
+  // ========================================================
+  {
+    id: 'port-cacheu',
+    name: 'Cacheu (Fortaleza de Nossa Senhora)',
+    historicalAliases: ['Cacheo', 'Rio de San Domingos'],
+    region: 'Senegambia',
+    countryModern: 'Guinea-Bissau',
+    coordinates: { lat: 12.2750, lng: -16.1667 },
+    fortOrType: 'Masonry Castle / Fort',
+    europeanPowers: ['Portugal'],
+    indigenousPolity: 'Papel & Manjaco Kingdoms',
+    activeCentury: ['16th', '17th', '18th'],
+    estimatedEmbarkations: 188000,
+    primaryEthnicGroups: ['Papel', 'Manjaco', 'Balanta', 'Bijago'],
+    primaryDestinations: ['Brazil (Maranhão, Pará)', 'Cape Verde'],
+    historicalDescription: 'One of the earliest Portuguese fortified feitorias in West Africa, established in 1588. Governed by the Companhia de Cacheu e Rios da Guiné.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-bissau',
+    name: 'Bissau (Fortaleza de São José da Amura)',
+    historicalAliases: ['Porto de Bissau', 'Amura Fort'],
+    region: 'Senegambia',
+    countryModern: 'Guinea-Bissau',
+    coordinates: { lat: 11.8594, lng: -15.5842 },
+    fortOrType: 'Masonry Castle / Fort',
+    europeanPowers: ['Portugal', 'France'],
+    indigenousPolity: 'Kingdom of Bissau (Papel)',
+    activeCentury: ['17th', '18th', '19th'],
+    estimatedEmbarkations: 142000,
+    primaryEthnicGroups: ['Balanta', 'Papel', 'Fula', 'Mandinga'],
+    primaryDestinations: ['Brazil (Maranhão)', 'Cuba'],
+    historicalDescription: 'Key naval stronghold on the Geba River estuary, fortified in 1696 to monopolize the slave trade of the Upper Guinea rivers.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-sherbro',
+    name: 'Sherbro Island & York Island',
+    historicalAliases: ['York Fort', 'Sherbro River'],
+    region: 'Sierra Leone',
+    countryModern: 'Sierra Leone',
+    coordinates: { lat: 7.5500, lng: -12.5000 },
+    fortOrType: 'Island Entrepôt',
+    europeanPowers: ['Great Britain'],
+    indigenousPolity: 'Sherbro Bullom & Caulker Chieftaincies',
+    activeCentury: ['17th', '18th', '19th'],
+    estimatedEmbarkations: 135000,
+    primaryEthnicGroups: ['Sherbro', 'Mende', 'Temne'],
+    primaryDestinations: ['Barbados', 'Jamaica', 'South Carolina'],
+    historicalDescription: 'Island base in the southern coastal estuaries of Sierra Leone, operated in part by the Anglo-African Caulker family dynasty.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-grand-bassa',
+    name: 'Grand Bassa & Bassa Cove',
+    historicalAliases: ['Bassa Cove', 'Grand Bassa Point'],
+    region: 'Windward Coast',
+    countryModern: 'Liberia',
+    coordinates: { lat: 5.8811, lng: -10.0458 },
+    fortOrType: 'Factory / Roadstead',
+    europeanPowers: ['Great Britain', 'France', 'United States'],
+    indigenousPolity: 'Bassa Confederacy',
+    activeCentury: ['18th', '19th'],
+    estimatedEmbarkations: 64000,
+    primaryEthnicGroups: ['Bassa', 'Kru'],
+    primaryDestinations: ['Saint-Domingue', 'Jamaica', 'Cuba'],
+    historicalDescription: 'Coastal trading station south of Monrovia, active in bartering salt, camwood, and captives across open roads.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-grand-bassam',
+    name: 'Grand-Bassam & Comoé Estuary',
+    historicalAliases: ['Bassam', 'Fort Nemours'],
+    region: 'Windward Coast',
+    countryModern: 'Ivory Coast',
+    coordinates: { lat: 5.2078, lng: -3.7386 },
+    fortOrType: 'Factory / Roadstead',
+    europeanPowers: ['France', 'Portugal'],
+    indigenousPolity: 'Nzema & Agni Kingdoms',
+    activeCentury: ['18th', '19th'],
+    estimatedEmbarkations: 58000,
+    primaryEthnicGroups: ['Agni', 'Baoulé', 'Nzema'],
+    primaryDestinations: ['Martinique', 'Guadeloupe', 'Saint-Domingue'],
+    historicalDescription: 'Historic maritime lagoon port situated at the mouth of the Comoé River, serving French and Iberian traders.',
+    unescoWorldHeritage: true
+  },
+  {
+    id: 'port-fort-san-antonio',
+    name: 'Fort San Antonio (Axim)',
+    historicalAliases: ['Fort Santo António de Axim', 'Axim Post'],
+    region: 'Gold Coast',
+    countryModern: 'Ghana',
+    coordinates: { lat: 4.8694, lng: -2.2422 },
+    fortOrType: 'Masonry Castle / Fort',
+    europeanPowers: ['Portugal', 'Netherlands', 'Great Britain'],
+    indigenousPolity: 'Nzema & Ahanta States',
+    activeCentury: ['16th', '17th', '18th', '19th'],
+    estimatedEmbarkations: 175000,
+    primaryEthnicGroups: ['Nzema', 'Ahanta', 'Akan'],
+    primaryDestinations: ['Suriname', 'Curaçao', 'Jamaica'],
+    historicalDescription: 'Built by the Portuguese in 1515, the second oldest European fort on the Gold Coast, captured by the Dutch West India Company in 1642.',
+    unescoWorldHeritage: true
+  },
+  {
+    id: 'port-gross-friedrichsburg',
+    name: 'Fort Gross Friedrichsburg (Princes Town)',
+    historicalAliases: ['Brandenburg Fort', 'Prince\'s Town'],
+    region: 'Gold Coast',
+    countryModern: 'Ghana',
+    coordinates: { lat: 4.7958, lng: -2.1361 },
+    fortOrType: 'Masonry Castle / Fort',
+    europeanPowers: ['Brandenburg/Prussia', 'Netherlands', 'Great Britain'],
+    indigenousPolity: 'Ahanta Kingdom (Chief John Canoe / Jan Conny)',
+    activeCentury: ['17th', '18th'],
+    estimatedEmbarkations: 92000,
+    primaryEthnicGroups: ['Ahanta', 'Akan'],
+    primaryDestinations: ['Saint Thomas (Danish West Indies)', 'Suriname'],
+    historicalDescription: 'Headquarters of the Prussian Brandenburg African Company from 1683 to 1717. Defended heroically by the African merchant prince John Canoe.',
+    unescoWorldHeritage: true
+  },
+  {
+    id: 'port-metal-cross',
+    name: 'Fort Metal Cross (Dixcove)',
+    historicalAliases: ['Dixcove Fort', 'Metaal Kruis'],
+    region: 'Gold Coast',
+    countryModern: 'Ghana',
+    coordinates: { lat: 4.7950, lng: -1.9442 },
+    fortOrType: 'Masonry Castle / Fort',
+    europeanPowers: ['Great Britain', 'Netherlands'],
+    indigenousPolity: 'Ahanta Chieftaincy',
+    activeCentury: ['17th', '18th', '19th'],
+    estimatedEmbarkations: 125000,
+    primaryEthnicGroups: ['Ahanta', 'Fante'],
+    primaryDestinations: ['Barbados', 'Jamaica', 'Virginia'],
+    historicalDescription: 'British fortified post erected in 1692 overlooking Dixcove Bay. Resisted repeated Dutch and Ahanta sieges during the Gold Coast trade wars.',
+    unescoWorldHeritage: true
+  },
+  {
+    id: 'port-fort-amsterdam',
+    name: 'Fort Amsterdam (Kormantin / Abandze)',
+    historicalAliases: ['Fort Cormantin', 'Kormantin Castle'],
+    region: 'Gold Coast',
+    countryModern: 'Ghana',
+    coordinates: { lat: 5.1989, lng: -1.0853 },
+    fortOrType: 'Masonry Castle / Fort',
+    europeanPowers: ['Great Britain', 'Netherlands'],
+    indigenousPolity: 'Fante State of Kormantin',
+    activeCentury: ['17th', '18th'],
+    estimatedEmbarkations: 245000,
+    primaryEthnicGroups: ['Fante', 'Asante'],
+    primaryDestinations: ['Jamaica (giving rise to the "Coromantee" maroon warriors)', 'Barbados'],
+    historicalDescription: 'Constructed by the English in 1638 and captured by Dutch Admiral Michiel de Ruyter in 1665. Captives from here were renowned in Jamaica as Coromantees.',
+    unescoWorldHeritage: true
+  },
+  {
+    id: 'port-fort-prinzenstein',
+    name: 'Fort Prinzenstein (Keta)',
+    historicalAliases: ['Prinsensten', 'Keta Fort'],
+    region: 'Gold Coast',
+    countryModern: 'Ghana',
+    coordinates: { lat: 5.9222, lng: 0.9931 },
+    fortOrType: 'Masonry Castle / Fort',
+    europeanPowers: ['Denmark', 'Great Britain'],
+    indigenousPolity: 'Anlo Ewe State',
+    activeCentury: ['18th', '19th'],
+    estimatedEmbarkations: 118000,
+    primaryEthnicGroups: ['Ewe', 'Anlo', 'Ada'],
+    primaryDestinations: ['Danish West Indies (Saint Croix)', 'Brazil'],
+    historicalDescription: 'Erected by Denmark in 1784 at Keta Lagoon. Served as the eastern bastion of Danish operations prior to Denmark\'s 1792/1803 abolition decree.',
+    unescoWorldHeritage: true
+  },
+  {
+    id: 'port-little-popo',
+    name: 'Little Popo (Aného)',
+    historicalAliases: ['Aného', 'Petit Popo'],
+    region: 'Bight of Benin',
+    countryModern: 'Togo',
+    coordinates: { lat: 6.2294, lng: 1.5969 },
+    fortOrType: 'Factory / Roadstead',
+    europeanPowers: ['Portugal', 'Great Britain', 'France', 'Germany'],
+    indigenousPolity: 'Guin / Mina Kingdom',
+    activeCentury: ['17th', '18th', '19th'],
+    estimatedEmbarkations: 215000,
+    primaryEthnicGroups: ['Guin', 'Ewe', 'Mina'],
+    primaryDestinations: ['Brazil (Bahia)', 'Cuba', 'Saint-Domingue'],
+    historicalDescription: 'Settled by Ga and Fante refugees from the Gold Coast who established the Mina kingdom. Major embarkation point for captives from the Mono river basin.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-grand-popo',
+    name: 'Grand-Popo & Mono Estuary',
+    historicalAliases: ['Popo Grande', 'Great Popo'],
+    region: 'Bight of Benin',
+    countryModern: 'Benin',
+    coordinates: { lat: 6.2817, lng: 1.8261 },
+    fortOrType: 'Factory / Roadstead',
+    europeanPowers: ['Portugal', 'France', 'Netherlands'],
+    indigenousPolity: 'Hula Kingdom',
+    activeCentury: ['17th', '18th', '19th'],
+    estimatedEmbarkations: 198000,
+    primaryEthnicGroups: ['Hula', 'Fon', 'Xwla'],
+    primaryDestinations: ['Brazil (Bahia)', 'Saint-Domingue', 'Cuba'],
+    historicalDescription: 'Situated at the mouth of the Mono River, serving as an alternative coastal roadstead to bypass Dahomean royal customs at Ouidah.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-gwato',
+    name: 'Gwato & Ughoton (Kingdom of Benin Port)',
+    historicalAliases: ['Gwatto', 'Ughoton', 'Port of Benin'],
+    region: 'Bight of Benin',
+    countryModern: 'Nigeria',
+    coordinates: { lat: 6.2753, lng: 5.3781 },
+    fortOrType: 'River Estuary / Barracoon',
+    europeanPowers: ['Portugal', 'Netherlands', 'Great Britain'],
+    indigenousPolity: 'Kingdom of Benin (Oba of Benin)',
+    activeCentury: ['16th', '17th', '18th'],
+    estimatedEmbarkations: 178000,
+    primaryEthnicGroups: ['Edo (Bini)', 'Urhobo', 'Itsekiri'],
+    primaryDestinations: ['Brazil (Bahia)', 'Spanish Americas', 'Saint-Domingue'],
+    historicalDescription: 'Historic river port of Great Benin on the Osse River tributary. Governed by the Uwangue and Eribo chiefs acting on behalf of the Oba of Benin.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-new-calabar',
+    name: 'New Calabar (Elem Kalabari)',
+    historicalAliases: ['Elem Kalabari', 'Rio Real Post'],
+    region: 'Bight of Biafra',
+    countryModern: 'Nigeria',
+    coordinates: { lat: 4.6542, lng: 7.0208 },
+    fortOrType: 'River Estuary / Barracoon',
+    europeanPowers: ['Great Britain', 'France', 'Portugal'],
+    indigenousPolity: 'Kalabari Kingdom (Amachree Dynasty)',
+    activeCentury: ['17th', '18th', '19th'],
+    estimatedEmbarkations: 395000,
+    primaryEthnicGroups: ['Ijaw (Kalabari)', 'Igbo'],
+    primaryDestinations: ['Jamaica', 'Barbados', 'Cuba'],
+    historicalDescription: 'Major Niger Delta trading state governed by canoe-house merchant federations. Rival of the neighboring Pepple dynasty of Bonny.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-brass',
+    name: 'Brass River & Nembe',
+    historicalAliases: ['Rio Bento', 'Nembe Brass'],
+    region: 'Bight of Biafra',
+    countryModern: 'Nigeria',
+    coordinates: { lat: 4.3122, lng: 6.2411 },
+    fortOrType: 'River Estuary / Barracoon',
+    europeanPowers: ['Great Britain', 'Portugal'],
+    indigenousPolity: 'Nembe Kingdom (Kula & Brass)',
+    activeCentury: ['18th', '19th'],
+    estimatedEmbarkations: 265000,
+    primaryEthnicGroups: ['Ijaw (Nembe)', 'Igbo'],
+    primaryDestinations: ['Cuba', 'Brazil', 'Jamaica'],
+    historicalDescription: 'Maritime outlet on the Brass River mouth through which palm oil and captives were transferred to offshore sailing vessels.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-sao-tome',
+    name: 'São Tomé Island (Forte de São Sebastião)',
+    historicalAliases: ['Ilha de São Tomé', 'Fortress of St. Sebastian'],
+    region: 'Bight of Biafra',
+    countryModern: 'São Tomé and Príncipe',
+    coordinates: { lat: 0.3361, lng: 6.7411 },
+    fortOrType: 'Masonry Castle / Fort',
+    europeanPowers: ['Portugal', 'Netherlands'],
+    indigenousPolity: 'Portuguese Colony & Maroon Enclaves (Rei Amador)',
+    activeCentury: ['16th', '17th', '18th', '19th'],
+    estimatedEmbarkations: 375000,
+    primaryEthnicGroups: ['Forros', 'Angolares', 'Bakongo'],
+    primaryDestinations: ['Brazil (Pernambuco, Bahia)', 'Spanish Americas (Santo Domingo)'],
+    historicalDescription: 'Volcanic island in the Gulf of Guinea that served as the prototype plantation economy before transmitting its sugarcane and slave system to Brazil.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-loango',
+    name: 'Loango Bay (Diosso / Pointe-Noire)',
+    historicalAliases: ['Baie de Loango', 'Port of Buali'],
+    region: 'West Central Africa',
+    countryModern: 'Republic of the Congo',
+    coordinates: { lat: -4.6481, lng: 11.8311 },
+    fortOrType: 'Factory / Roadstead',
+    europeanPowers: ['France', 'Great Britain', 'Netherlands', 'Portugal'],
+    indigenousPolity: 'Kingdom of Loango (Ma-Loango)',
+    activeCentury: ['17th', '18th', '19th'],
+    estimatedEmbarkations: 695000,
+    primaryEthnicGroups: ['Bakongo (Vili)', 'Yombe'],
+    primaryDestinations: ['Saint-Domingue (Haiti)', 'French Antilles', 'Cuba'],
+    historicalDescription: 'Premier French embarkation port north of the Congo River. Thousands of Vili caravan traders brought captives from hundreds of miles inland.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-ambriz',
+    name: 'Ambriz & Loge River',
+    historicalAliases: ['Porto do Ambriz', 'Loge Estuary'],
+    region: 'West Central Africa',
+    countryModern: 'Angola',
+    coordinates: { lat: -7.8481, lng: 13.1092 },
+    fortOrType: 'Factory / Roadstead',
+    europeanPowers: ['Portugal', 'Great Britain', 'United States', 'Brazil'],
+    indigenousPolity: 'Kingdom of Kongo / Dembos Chieftaincies',
+    activeCentury: ['18th', '19th'],
+    estimatedEmbarkations: 285000,
+    primaryEthnicGroups: ['Bakongo', 'Kimbundu'],
+    primaryDestinations: ['Brazil (Rio de Janeiro)', 'Cuba'],
+    historicalDescription: 'Active illicit slave shipping port during the 1830s–1850s, used by Brazilian and American clippers to evade British anti-slavery patrols.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-kilwa',
+    name: 'Kilwa Kisiwani',
+    historicalAliases: ['Quíloa', 'Kilwa Sultanate'],
+    region: 'Southeast Africa',
+    countryModern: 'Tanzania',
+    coordinates: { lat: -8.9581, lng: 39.5128 },
+    fortOrType: 'Masonry Castle / Fort',
+    europeanPowers: ['Portugal', 'France'],
+    indigenousPolity: 'Kilwa Sultanate & Swahili Confederation',
+    activeCentury: ['18th', '19th'],
+    estimatedEmbarkations: 105000,
+    primaryEthnicGroups: ['Makonde', 'Yao', 'Swahili'],
+    primaryDestinations: ['French Mascarenes (Mauritius, Réunion)', 'Brazil'],
+    historicalDescription: 'Ancient Swahili coral island city with the 11th-century Great Mosque and the Portuguese Gereza fort. Channeled interior caravan captives to French traders.',
+    unescoWorldHeritage: true
+  },
+  {
+    id: 'port-ibo-island',
+    name: 'Ibo Island (Quirimbas Archipelago)',
+    historicalAliases: ['Ilha do Ibo', 'Fortaleza de São João Baptista'],
+    region: 'Southeast Africa',
+    countryModern: 'Mozambique',
+    coordinates: { lat: -12.3481, lng: 40.5892 },
+    fortOrType: 'Masonry Castle / Fort',
+    europeanPowers: ['Portugal', 'France'],
+    indigenousPolity: 'Swahili & Mwani Chieftaincies',
+    activeCentury: ['18th', '19th'],
+    estimatedEmbarkations: 138000,
+    primaryEthnicGroups: ['Makua', 'Mwani', 'Yao'],
+    primaryDestinations: ['French Mascarenes', 'Brazil', 'Cuba'],
+    historicalDescription: 'Coral island fortification off Cabo Delgado. Functioned as a secluded holding depot for illicit nineteenth-century French and Brazilian slaving vessels.',
+    unescoWorldHeritage: false
   }
 ];
+
+/**
+ * Calibrated Coastal Vector Coordinates:
+ * Directly extracted from public/africa-final.svg (incorporating transform "translate(-216.0198 -66.614)").
+ * Aligns all 47 historic embarkation ports precisely on their authentic ocean coastlines, bays, and offshore islands:
+ * - Eastern African ports positioned on the Indian Ocean coast & archipelagoes (Zanzibar, Kilwa, Ibo, Mozambique Island, Quelimane)
+ * - Western African ports positioned on the Atlantic shoreline (Senegambia, Sierra Leone, Windward, Gold Coast, Bight of Benin, Bight of Biafra)
+ * - Angolan / West Central ports nudged in Y and X directly on coastal anchorages (Luanda bay, Benguela, Ambriz, Mpinda, Cabinda, Loango)
+ */
+export const CALIBRATED_PORT_SVG_COORDINATES: Record<string, { x: number; y: number }> = {
+  // 1. SENEGAMBIA
+  'port-goree': { x: 504, y: 1848 }, // Cap-Vert peninsula / Dakar / Gorée Island
+  'port-saint-louis': { x: 664, y: 1681 }, // Senegal River mouth / Ndar
+  'port-james-island': { x: 615, y: 1975 }, // Kunta Kinteh Island, Gambia River estuary
+  'port-albreda': { x: 618, y: 1972 }, // Albreda & Juffure, Gambia north bank
+  'port-cacheu': { x: 595, y: 2015 }, // Cacheu River estuary, Guinea-Bissau
+  'port-bissau': { x: 610, y: 2045 }, // Geba River estuary / Bissau, Guinea-Bissau
+
+  // 2. SIERRA LEONE & UPPER GUINEA
+  'port-rio-pongo': { x: 720, y: 2200 }, // Rio Pongo mangrove river, Guinea
+  'port-bunce-island': { x: 780, y: 2355 }, // Sierra Leone River estuary / Bunce Island
+  'port-sherbro': { x: 830, y: 2420 }, // Sherbro & York Island, Sierra Leone coast
+  'port-gallinas': { x: 885, y: 2470 }, // Gallinas River / Sulima, Sierra Leone
+
+  // 3. WINDWARD COAST
+  'port-cape-mount': { x: 940, y: 2515 }, // Cape Mount / Monrovia roadstead, Liberia
+  'port-grand-bassa': { x: 1020, y: 2565 }, // Grand Bassa & Bassa Cove, Liberia
+  'port-cape-palmas': { x: 1220, y: 2685 }, // Cape Palmas, Liberia / Ivory Coast border
+  'port-grand-bassam': { x: 1490, y: 2620 }, // Grand-Bassam & Comoé estuary, Côte d'Ivoire
+
+  // 4. GOLD COAST (GHANA)
+  'port-fort-san-antonio': { x: 1568, y: 2533 }, // Fort San Antonio, Axim
+  'port-gross-friedrichsburg': { x: 1580, y: 2538 }, // Fort Gross Friedrichsburg, Princes Town
+  'port-metal-cross': { x: 1595, y: 2542 }, // Fort Metal Cross, Dixcove
+  'port-elmina': { x: 1630, y: 2555 }, // São Jorge da Mina (Elmina Castle)
+  'port-cape-coast': { x: 1640, y: 2557 }, // Cape Coast Castle (Carolusburg)
+  'port-anomabu': { x: 1652, y: 2560 }, // Fort William, Anomabu
+  'port-fort-amsterdam': { x: 1660, y: 2562 }, // Fort Amsterdam, Kormantin / Abandze
+  'port-christiansborg': { x: 1771, y: 2568 }, // Fort Christiansborg (Osu Castle, Accra)
+  'port-fort-prinzenstein': { x: 1845, y: 2545 }, // Fort Prinzenstein, Keta Lagoon
+
+  // 5. BIGHT OF BENIN (SLAVE COAST)
+  'port-little-popo': { x: 1890, y: 2535 }, // Little Popo (Aného), Togo
+  'port-grand-popo': { x: 1920, y: 2530 }, // Grand-Popo & Mono estuary, Benin
+  'port-ouidah': { x: 1965, y: 2525 }, // Ouidah (Whydah Roadstead & Forts), Benin
+  'port-porto-novo': { x: 2005, y: 2520 }, // Porto-Novo (Hogbonu), Benin
+  'port-badagry': { x: 2020, y: 2518 }, // Badagry (Gberefu Island), Nigeria
+  'port-lagos': { x: 2034, y: 2518 }, // Lagos (Eko / Onim), Nigeria
+  'port-gwato': { x: 2150, y: 2535 }, // Gwato & Ughoton, Benin River / Kingdom of Benin
+
+  // 6. BIGHT OF BIAFRA
+  'port-brass': { x: 2114, y: 2619 }, // Brass River & Nembe, Niger Delta
+  'port-new-calabar': { x: 2235, y: 2665 }, // New Calabar (Elem Kalabari), Niger Delta
+  'port-bonny': { x: 2257, y: 2672 }, // Grand Bonny & Opobo, Niger Delta
+  'port-old-calabar': { x: 2402, y: 2514 }, // Old Calabar (Duke Town & Creek Town), Cross River
+  'port-bimbia': { x: 2540, y: 2680 }, // Bimbia & Duala River, Cameroon coast
+  'port-sao-tome': { x: 2223, y: 2965 }, // São Tomé Island (Forte de São Sebastião)
+
+  // 7. WEST CENTRAL AFRICA (CONGO & ANGOLA)
+  'port-loango': { x: 2620, y: 3340 }, // Loango Bay (Diosso / Pointe-Noire), Republic of the Congo
+  'port-cabinda': { x: 2639, y: 3393 }, // Cabinda Bay & Malembo, Angola exclave
+  'port-mpinda': { x: 2780, y: 3514 }, // Mpinda (Soyo / Congo River mouth), Angola
+  'port-ambriz': { x: 2712, y: 3655 }, // Ambriz & Loge River, Angola
+  'port-luanda': { x: 2660, y: 3792 }, // Luanda (São Paulo de Luanda), Angola (coastal bay)
+  'port-benguela': { x: 2794, y: 4028 }, // Benguela (São Filipe de Benguela), Angola (coastal roadstead)
+
+  // 8. SOUTHEAST AFRICA (EASTERN COAST & INDIAN OCEAN)
+  'port-zanzibar': { x: 4536, y: 3526 }, // Stone Town, Zanzibar (Unguja) Island, Tanzania coast
+  'port-kilwa': { x: 4555, y: 3774 }, // Kilwa Kisiwani, southern Tanzania coast
+  'port-ibo-island': { x: 4456, y: 3980 }, // Ibo Island, Quirimbas Archipelago, Cabo Delgado, Mozambique
+  'port-mozambique-island': { x: 4579, y: 4129 }, // Mozambique Island (Ilha de Moçambique), Nampula coast
+  'port-quelimane': { x: 4333, y: 4253 }  // Quelimane & Zambezi estuary, Mozambique coast
+};
+
+// Bind calibrated SVG coordinates directly onto all port objects
+for (const port of AFRICAN_EMBARKATION_PORTS) {
+  if (CALIBRATED_PORT_SVG_COORDINATES[port.id]) {
+    port.svgCoordinates = CALIBRATED_PORT_SVG_COORDINATES[port.id];
+  }
+}
+
+/**
+ * Calibrated Continental Projection:
+ * Converts Geographic (lat, lng) to the 5,796 × 5,867 Coordinate Space of public/africa-final.svg.
+ * Checks the authoritative calibrated coordinate dictionary by port ID first.
+ */
+export const projectPortToSvg = (lat: number, lng: number, portId?: string): { x: number; y: number } => {
+  if (portId && CALIBRATED_PORT_SVG_COORDINATES[portId]) {
+    return CALIBRATED_PORT_SVG_COORDINATES[portId];
+  }
+  return {
+    x: Math.round(61.8 * lng + 1804),
+    y: Math.round(-71.8 * lat + 3081)
+  };
+};
+

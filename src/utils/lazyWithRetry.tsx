@@ -10,11 +10,33 @@ export function lazyWithRetry<T extends React.ComponentType<any>>(
 ): React.LazyExoticComponent<T> & { preload: () => Promise<any> } {
   let cachedPromise: Promise<{ default: T }> | null = null;
 
-  const load = (retriesLeft = 2, delay = 400): Promise<{ default: T }> => {
+  const load = (retriesLeft = 4, delay = 250): Promise<{ default: T }> => {
     if (cachedPromise) return cachedPromise;
 
     cachedPromise = factory()
-      .then(module => ('default' in module ? module : { default: module as T }))
+      .then(module => {
+        // Robust component extraction supporting default export, named export matching componentName, or single functional export
+        let comp: any = (module as any)?.default;
+        if (!comp && (module as any)?.[componentName]) {
+          comp = (module as any)[componentName];
+        }
+        if (!comp && (typeof module === 'function' || (typeof module === 'object' && module !== null && '$$typeof' in module))) {
+          comp = module;
+        }
+        if (!comp && typeof module === 'object' && module !== null) {
+          const exportValues = Object.values(module).filter(
+            v => typeof v === 'function' || (typeof v === 'object' && v !== null && '$$typeof' in v)
+          );
+          if (exportValues.length === 1) {
+            comp = exportValues[0];
+          }
+        }
+
+        if (!comp) {
+          throw new Error(`Module "${componentName}" did not provide a valid React component export.`);
+        }
+        return { default: comp as T };
+      })
       .catch(error => {
         cachedPromise = null;
         if (retriesLeft > 0) {

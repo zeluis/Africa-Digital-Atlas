@@ -32,6 +32,9 @@ import { ReportVoiceReader } from '../components/ReportVoiceReader';
 import { resolveDoi, SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
 import { SemanticReportRenderer } from '../components/SemanticReportRenderer';
 import { CitePublicationModal } from '../components/CitePublicationModal';
+import { DoiVerificationModal } from '../components/DoiVerificationModal';
+import { getVerifiedPublicationUrl } from '../data/reportDoiConcordance';
+import { verifyDoiWithCrossref, DoiVerificationResult } from '../services/crossrefService';
 import { AfricaliaReport } from '../types/africaliaReport';
 
 interface ResearchReportArticleViewProps {
@@ -55,7 +58,23 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
   const [activeSectionId, setActiveSectionId] = useState<string>(report.sections[0]?.id || 'sec-intro');
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
   const [isCitationModalOpen, setIsCitationModalOpen] = useState<boolean>(false);
+  const [isDoiModalOpen, setIsDoiModalOpen] = useState<boolean>(false);
+  const [crossrefStatus, setCrossrefStatus] = useState<DoiVerificationResult | null>(null);
   const [readingProgress, setReadingProgress] = useState<number>(0);
+
+  // Curated verified publication concordancer
+  const verifiedPub = getVerifiedPublicationUrl(report.id, report.doi);
+
+  useEffect(() => {
+    let isMounted = true;
+    const targetDoi = verifiedPub.doi || report.doi;
+    if (targetDoi) {
+      verifyDoiWithCrossref(targetDoi, report.title).then(res => {
+        if (isMounted) setCrossrefStatus(res);
+      });
+    }
+    return () => { isMounted = false; };
+  }, [report.id, report.doi, report.title, verifiedPub.doi]);
 
   // Cast report safely to extract AfricaliaReport metadata extensions if present
   const afReport = report as Partial<AfricaliaReport>;
@@ -212,6 +231,17 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
             </button>
           </div>
 
+          {/* DOI Verification & Concordance Button */}
+          <button
+            type="button"
+            onClick={() => setIsDoiModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-900 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 font-bold transition-all cursor-pointer text-xs shadow-2xs"
+            title="Verify DOIs against Crossref API or upload custom publication mapping JSON"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>DOI / Crossref Audit</span>
+          </button>
+
           {/* Cite Monograph Button */}
           <button
             type="button"
@@ -324,16 +354,48 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
             </div>
           </div>
 
-          <div translate="no" className="notranslate flex items-center gap-2">
+          <div translate="no" className="notranslate flex flex-wrap items-center gap-2">
             <span className="font-mono text-zinc-400">DOI:</span>
             <a 
-              href={resolveDoi(report.doi)} 
+              href={verifiedPub.url || resolveDoi(report.doi)} 
               {...SAFE_EXTERNAL_LINK_PROPS}
               className="font-mono text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 font-bold"
+              title={verifiedPub.verifiedTitle ? `Verified Paper: "${verifiedPub.verifiedTitle}" (${verifiedPub.journal || 'Peer-Reviewed'})` : `DOI: ${verifiedPub.doi || report.doi}`}
             >
-              <span>{report.doi}</span>
+              <span>{verifiedPub.doi || report.doi}</span>
               <ExternalLink className="w-3 h-3" />
             </a>
+
+            {/* Dynamic Crossref Verification Badge */}
+            <button
+              type="button"
+              onClick={() => setIsDoiModalOpen(true)}
+              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold transition-all cursor-pointer ${
+                verifiedPub.isVerified || crossrefStatus?.status === 'verified'
+                  ? 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-200'
+                  : crossrefStatus?.status === 'mismatch'
+                    ? 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 hover:bg-amber-200'
+                    : 'bg-rose-100 dark:bg-rose-950/80 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-800 hover:bg-rose-200'
+              }`}
+              title="Click to inspect Crossref verification or upload custom DOI mapping JSON"
+            >
+              {verifiedPub.isVerified || crossrefStatus?.status === 'verified' ? (
+                <>
+                  <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                  <span>Crossref Verified</span>
+                </>
+              ) : crossrefStatus?.status === 'mismatch' ? (
+                <>
+                  <Sliders className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                  <span>Title Mismatch</span>
+                </>
+              ) : (
+                <>
+                  <HelpCircle className="w-3 h-3 text-rose-600 dark:text-rose-400" />
+                  <span>Verify DOI</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </header>
@@ -533,16 +595,28 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
                   <div className="text-zinc-600 dark:text-zinc-400 italic">
                     {cit.title}. <span className="not-italic">{cit.journalOrPublisher}.</span>
                   </div>
-                  {cit.doiOrUrl && (
+                  <div className="flex flex-wrap items-center gap-3 pt-1">
+                    {cit.doiOrUrl && (
+                      <a
+                        href={resolveDoi(cit.doiOrUrl)}
+                        {...SAFE_EXTERNAL_LINK_PROPS}
+                        className="inline-flex items-center gap-1 font-mono text-amber-600 dark:text-amber-400 hover:underline"
+                        title="Open canonical DOI resolver"
+                      >
+                        <span>{cit.doiOrUrl}</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
                     <a
-                      href={resolveDoi(cit.doiOrUrl)}
+                      href={`https://scholar.google.com/scholar?q=${encodeURIComponent(`${cit.title} ${cit.authors}`)}`}
                       {...SAFE_EXTERNAL_LINK_PROPS}
-                      className="inline-flex items-center gap-1 font-mono text-amber-600 dark:text-amber-400 hover:underline pt-0.5"
+                      className="inline-flex items-center gap-1 text-[11px] text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300 hover:underline"
+                      title="Search on Google Scholar for open access PDF or citations"
                     >
-                      <span>{cit.doiOrUrl}</span>
-                      <ExternalLink className="w-3 h-3" />
+                      <span>Scholar Search</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
                     </a>
-                  )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -555,6 +629,13 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
         report={report}
         isOpen={isCitationModalOpen}
         onClose={() => setIsCitationModalOpen(false)}
+      />
+
+      {/* Crossref DOI Verification & Concordance Modal */}
+      <DoiVerificationModal
+        isOpen={isDoiModalOpen}
+        onClose={() => setIsDoiModalOpen(false)}
+        initialReportId={report.id}
       />
     </div>
   );

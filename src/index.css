@@ -1057,4 +1057,11 @@ html[dir="rtl"] .font-mono {
   }
 }
 
+/* Hide App Footer when African Ports Map or immersive map view is active */
+body.hide-app-footer footer,
+body.hide-app-footer #app-footer-container {
+  display: none !important;
+}
+
+
 

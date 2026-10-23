@@ -51,11 +51,11 @@ const REGION_MEMBERS: Record<AfricanRegion, string[]> = {
  * without any cropping across all screen sizes.
  */
 export const REGIONAL_VIEWBOXES: Record<AfricanRegion, string> = {
-  'Northern Africa': '450 0 5000 2650',
-  'Western Africa': '-250 700 3700 3150',
-  'Central Africa': '1500 950 3500 3800',
-  'Eastern Africa': '3100 1350 3300 4100',
-  'Southern Africa': '2250 4250 2800 2000'
+  'Northern Africa': '110 30 660 390',
+  'Western Africa': '40 160 480 300',
+  'Central Africa': '345 200 360 500',
+  'Eastern Africa': '520 260 450 540',
+  'Southern Africa': '415 635 350 430'
 };
 
 export const RegionalLivingCanvas: React.FC<RegionalLivingCanvasProps> = ({
@@ -76,9 +76,9 @@ export const RegionalLivingCanvas: React.FC<RegionalLivingCanvasProps> = ({
   // Current active SVG viewBox: dynamically centered upon region selection
   const currentViewBox = useMemo(() => {
     if (zoomMode === 'continental') {
-      return '-240 0 6036 5867';
+      return '0 0 1000 1100';
     }
-    return REGIONAL_VIEWBOXES[region] || '-240 0 6036 5867';
+    return REGIONAL_VIEWBOXES[region] || '0 0 1000 1100';
   }, [region, zoomMode]);
 
   // Viewport Auto-Sleep IntersectionObserver: Pauses all animations when out of view (0% CPU)
@@ -127,34 +127,34 @@ export const RegionalLivingCanvas: React.FC<RegionalLivingCanvasProps> = ({
       {/* Hardware-Accelerated CSS Keyframes embedded inside the component */}
       <style>{`
         @keyframes regionalDashMove {
-          to { stroke-dashoffset: -1000; }
+          to { stroke-dashoffset: -200; }
         }
         @keyframes regionalDashReverse {
-          to { stroke-dashoffset: 1000; }
+          to { stroke-dashoffset: 200; }
         }
         @keyframes regionalRadarPulse {
-          0% { r: 40px; opacity: 0.85; }
+          0% { r: 6px; opacity: 0.9; }
           50% { opacity: 0.45; }
-          100% { r: 150px; opacity: 0; }
+          100% { r: 24px; opacity: 0; }
         }
         @keyframes regionalPulseSlow {
           0%, 100% { opacity: 0.15; }
           50% { opacity: 0.35; }
         }
         .animate-dash-fast {
-          animation: regionalDashMove 14s linear infinite;
+          animation: regionalDashMove 10s linear infinite;
         }
         .animate-dash-med {
-          animation: regionalDashMove 24s linear infinite;
+          animation: regionalDashMove 18s linear infinite;
         }
         .animate-dash-slow {
-          animation: regionalDashMove 36s linear infinite;
+          animation: regionalDashMove 28s linear infinite;
         }
         .animate-dash-reverse {
-          animation: regionalDashReverse 16s linear infinite;
+          animation: regionalDashReverse 12s linear infinite;
         }
         .animate-radar-pulse {
-          animation: regionalRadarPulse 2.8s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+          animation: regionalRadarPulse 2.4s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
         }
         .animate-pulse-slow {
           animation: regionalPulseSlow 4s ease-in-out infinite;
