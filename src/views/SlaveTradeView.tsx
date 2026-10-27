@@ -271,8 +271,12 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
         </div>
       </div>
 
-      {/* 2. Sub-Navigation Tabs Bar - Fully Wrapping */}
-      <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-zinc-200 dark:border-zinc-800">
+      {/* 2. Sub-Navigation Tabs Bar - Fully Wrapping with ARIA Tablist Semantics */}
+      <nav 
+        role="tablist" 
+        aria-label="Slave voyages research sections" 
+        className="flex flex-wrap items-center gap-2 pb-3 border-b border-zinc-200 dark:border-zinc-800"
+      >
         {[
           { id: 'overview', label: '01 — Overview & Flow Map', icon: Globe },
           { id: 'ports', label: '02 — African Forts & Enclaves Map', icon: Castle },
@@ -294,6 +298,11 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
           return (
             <button
               key={tab.id}
+              role="tab"
+              id={`slavetrade-tab-${tab.id}`}
+              aria-selected={isActive}
+              aria-controls={`slavetrade-panel-${tab.id}`}
+              tabIndex={isActive ? 0 : -1}
               onClick={() => {
                 if (tab.id === 'iconography' && onNavigateToIconography) {
                   onNavigateToIconography();
@@ -303,7 +312,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                   setActiveSubTab(tab.id as SlaveTradeSubTab);
                 }
               }}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                 isActive
                   ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-md scale-102'
                   : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800'
@@ -314,13 +323,18 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
             </button>
           );
         })}
-      </div>
+      </nav>
 
       {/* 3. Sub-Tab Views */}
 
       {/* TAB 1: OVERVIEW & FLOW MAP */}
       {activeSubTab === 'overview' && (
-        <div className="space-y-8">
+        <div 
+          role="tabpanel" 
+          id="slavetrade-panel-overview" 
+          aria-labelledby="slavetrade-tab-overview" 
+          className="space-y-8"
+        >
           {/* Interactive Atlantic Geodesic Flow Map - Edge-to-Edge Full Width Breakout */}
           <div className="space-y-3 -mx-4 sm:-mx-6 lg:-mx-8 w-[calc(100%+2rem)] sm:w-[calc(100%+3rem)] lg:w-[calc(100%+4rem)]">
             <div className="px-4 sm:px-6 lg:px-8 flex items-center justify-between">
@@ -500,7 +514,12 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
 
       {/* TAB 02: AFRICAN EMBARKATION PORTS & FORTS MAP */}
       {activeSubTab === 'ports' && (
-        <div className="w-full flex-1 min-h-[calc(100vh-140px)] flex flex-col">
+        <div 
+          role="tabpanel" 
+          id="slavetrade-panel-ports" 
+          aria-labelledby="slavetrade-tab-ports" 
+          className="w-full flex-1 min-h-[calc(100vh-140px)] flex flex-col"
+        >
           <AfricanPortsMap />
         </div>
       )}

@@ -417,6 +417,26 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
         handlePrevPort();
       } else if (e.key === 'ArrowRight' && e.altKey) {
         handleNextPort();
+      } else if (e.key === 'ArrowLeft' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        const cur = currentViewBoxRef.current;
+        const delta = Math.round(cur.w * 0.12);
+        setCurrentViewBox({ ...cur, x: Math.max(-500, cur.x - delta) });
+      } else if (e.key === 'ArrowRight' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        const cur = currentViewBoxRef.current;
+        const delta = Math.round(cur.w * 0.12);
+        setCurrentViewBox({ ...cur, x: Math.min(5500, cur.x + delta) });
+      } else if (e.key === 'ArrowUp' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        const cur = currentViewBoxRef.current;
+        const delta = Math.round(cur.h * 0.12);
+        setCurrentViewBox({ ...cur, y: Math.max(0, cur.y - delta) });
+      } else if (e.key === 'ArrowDown' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        const cur = currentViewBoxRef.current;
+        const delta = Math.round(cur.h * 0.12);
+        setCurrentViewBox({ ...cur, y: Math.min(4800, cur.y + delta) });
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -619,14 +639,15 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
   }, [currentViewBox]);
 
   return (
-    <div
+    <section
       ref={rootRef}
+      aria-label="African Embarkation Ports & Coastal Enclaves Atlas"
       className={`archival-viewer-root bg-[#FAF8F5] dark:bg-stone-950 text-stone-900 dark:text-stone-100 border border-stone-200/90 dark:border-stone-800 rounded-3xl w-full shadow-2xl relative text-left overflow-hidden flex flex-col transition-all duration-300 select-none ${
         mode === 'fullscreen' || isFullscreen ? 'fixed inset-0 z-50 rounded-none border-none h-screen' : 'h-[calc(100vh-140px)] min-h-[760px]'
       }`}
     >
       {/* 1. TOP HEADER BAR — In the vein of ArchivalImageViewer.tsx */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-stone-200/90 dark:border-stone-800 bg-[#F4EFE6]/95 dark:bg-stone-900/95 backdrop-blur-md shrink-0 z-20 gap-3">
+      <header className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-stone-200/90 dark:border-stone-800 bg-[#F4EFE6]/95 dark:bg-stone-900/95 backdrop-blur-md shrink-0 z-20 gap-3">
         {/* Left: Port Identifier, Title & Stepper Index */}
         <div className="flex items-center gap-2.5 min-w-0 pr-2">
           {activePort && (
@@ -646,7 +667,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
         </div>
 
         {/* Right Toolbar Controls: Stepper, Zoom Pill, Filmstrip, Details Toggle */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div role="toolbar" aria-label="Cartographic viewer controls" className="flex items-center gap-2 shrink-0">
           {/* Previous / Next Port Quick Stepper */}
           {filteredPorts.length > 1 && (
             <div className="flex items-center gap-0.5 bg-stone-200/70 dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700/80 rounded-xl p-0.5 mr-1">
@@ -786,7 +807,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
             </button>
           )}
         </div>
-      </div>
+      </header>
 
       {/* 2. MAIN SPLIT BODY: Canvas Viewport (7/12 or 2/3) & Metadata Drawer (5/12 or 1/3) */}
       <div className="flex-1 min-h-0 overflow-hidden relative flex flex-col lg:flex-row w-full">
@@ -1336,13 +1357,25 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
 
         {/* RIGHT COLLAPSIBLE METADATA DOSSIER DRAWER (Exactly w-full lg:w-5/12 xl:w-1/3 matching ArchivalImageViewer.tsx) */}
         {isMetadataOpen && (
-          <div className="w-full lg:w-5/12 xl:w-1/3 bg-[#FAF8F5] dark:bg-[#161413] flex flex-col justify-between shrink-0 h-full border-t lg:border-t-0 border-stone-200/90 dark:border-stone-800 text-stone-900 dark:text-stone-100 overflow-hidden relative">
+          <aside 
+            aria-label="Port Dossier and Archival Metadata"
+            className="w-full lg:w-5/12 xl:w-1/3 bg-[#FAF8F5] dark:bg-[#161413] flex flex-col justify-between shrink-0 h-full border-t lg:border-t-0 border-stone-200/90 dark:border-stone-800 text-stone-900 dark:text-stone-100 overflow-hidden relative"
+          >
             {/* Drawer Tab Headers with Dedicated Collapse Toggle */}
-            <div className="flex items-center justify-between border-b border-stone-200/90 dark:border-stone-800 bg-[#F4EFE6]/90 dark:bg-stone-950/80 px-3 pt-2 gap-1 shrink-0">
+            <div 
+              role="tablist" 
+              aria-label="Port dossier sections"
+              className="flex items-center justify-between border-b border-stone-200/90 dark:border-stone-800 bg-[#F4EFE6]/90 dark:bg-stone-950/80 px-3 pt-2 gap-1 shrink-0"
+            >
                 <div className="flex items-center gap-1 flex-1">
                   <button
+                    role="tab"
+                    id="tab-port-dossier"
+                    aria-selected={activeTab === 'dossier'}
+                    aria-controls="panel-port-dossier"
+                    tabIndex={activeTab === 'dossier' ? 0 : -1}
                     onClick={() => setActiveTab('dossier')}
-                    className={`flex-1 py-2 text-xs font-mono font-bold border-b-2 transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                    className={`flex-1 py-2 text-xs font-mono font-bold border-b-2 transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                       activeTab === 'dossier'
                         ? 'border-amber-700 text-amber-900 dark:text-amber-300 dark:border-amber-400 bg-white dark:bg-stone-900 rounded-t-xl'
                         : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-300'
@@ -1352,8 +1385,13 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                     <span>Dossier</span>
                   </button>
                   <button
+                    role="tab"
+                    id="tab-port-citation"
+                    aria-selected={activeTab === 'citation'}
+                    aria-controls="panel-port-citation"
+                    tabIndex={activeTab === 'citation' ? 0 : -1}
                     onClick={() => setActiveTab('citation')}
-                    className={`flex-1 py-2 text-xs font-mono font-bold border-b-2 transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                    className={`flex-1 py-2 text-xs font-mono font-bold border-b-2 transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                       activeTab === 'citation'
                         ? 'border-amber-700 text-amber-900 dark:text-amber-300 dark:border-amber-400 bg-white dark:bg-stone-900 rounded-t-xl'
                         : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-300'
@@ -1363,8 +1401,13 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                     <span>Cite</span>
                   </button>
                   <button
+                    role="tab"
+                    id="tab-port-network"
+                    aria-selected={activeTab === 'network'}
+                    aria-controls="panel-port-network"
+                    tabIndex={activeTab === 'network' ? 0 : -1}
                     onClick={() => setActiveTab('network')}
-                    className={`flex-1 py-2 text-xs font-mono font-bold border-b-2 transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                    className={`flex-1 py-2 text-xs font-mono font-bold border-b-2 transition-all flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                       activeTab === 'network'
                         ? 'border-amber-700 text-amber-900 dark:text-amber-300 dark:border-amber-400 bg-white dark:bg-stone-900 rounded-t-xl'
                         : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-300'
@@ -1378,7 +1421,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                 {/* Dedicated Close/Collapse Toggle on Dossier Drawer */}
                 <button
                   onClick={() => setIsMetadataOpen(false)}
-                  className="p-1.5 rounded-xl hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-colors ml-1 cursor-pointer"
+                  className="p-1.5 rounded-xl hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-colors ml-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                   title="Collapse Dossier Drawer"
                   aria-label="Collapse Dossier Drawer"
                 >
@@ -1387,7 +1430,12 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
               </div>
 
               {/* Drawer Scrollable Content */}
-              <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 scrollbar-thin scrollbar-thumb-stone-300 dark:scrollbar-thumb-stone-700">
+              <div 
+                role="tabpanel" 
+                id={`panel-port-${activeTab}`} 
+                aria-labelledby={`tab-port-${activeTab}`} 
+                className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 scrollbar-thin scrollbar-thumb-stone-300 dark:scrollbar-thumb-stone-700"
+              >
                 {activePort ? (
                   <>
                     {/* TAB 1: PORT DOSSIER & HISTORICAL CONTEXT */}
@@ -1635,9 +1683,9 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
-            </div>
+            </aside>
           )}
       </div>
-    </div>
+    </section>
   );
 };

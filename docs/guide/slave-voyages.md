@@ -1,13 +1,65 @@
-# Transatlantic Slave Voyages 3D Globe
+# Transatlantic & Intra-American Slave Voyages Atlas
 
-A dedicated historical research subsystem visualizing the transatlantic slave trade, using summary statistics and curated voyage records derived from the *SlaveVoyages* trans-Atlantic database (2024.1 release).
+A dedicated historical research subsystem and cartographic analytics suite visualizing four centuries of forced trans-Atlantic and intra-American maritime migrations (1514–1866). Grounded in 36,108 documented voyage logs from the *SlaveVoyages* trans-Atlantic database and enhanced by 1,252 archival iconography plates, paleogenomic data, and econometric models.
 
-## Features
+---
 
-- **Interactive 3D orthographic globe** — rotate, pitch, and inspect maritime trajectories connecting African coastal embarkation zones (Bight of Benin, Gold Coast, Senegambia, West Central Africa) to destination ports in Brazil, the Caribbean, and North America.
-- **Animated great-circle flow arcs** — particle-animated bezier vectors whose stroke width and velocity represent documented and estimated captive volumes over a selected period.
-- **Spatiotemporal timeline scrubber** — filter across four centuries (1514–1600, 1601–1700, 1701–1800, 1801–1866) to observe the rise and decline of different imperial flag carriers (Portugal/Brazil, Great Britain, France, Netherlands, Spain, USA).
-- **Three distinct evidentiary layers** — keeps apart **Observed** records (1514–1866), **Imputed** records (1514–1866), and **Estimated** continental totals (1501–1866).
-- **Academic export workbench** — download summary voyage data as CSV, or full literature citations in BibTeX.
+## The 14 Integrated Research Subsystems
 
-Data summarizes **36,108 documented voyages** (1514–1866) and features **18 individually curated voyage dossiers** linked to their source records. See [Citations & Licensing](../data/citations-licensing.md) for attribution terms.
+The research suite is organized into 14 specialized analytical modules accessible through an ARIA-compliant tabbed navigation system:
+
+### 01 — Overview & Geodesic Flow Map
+- **Geodesic Network Flows**: Interactive bezier arcs tracing embarkation regions in Africa to destination ports across Brazil, the Caribbean, and North America.
+- **Century-by-Century Volume Curves**: Area charts comparing observed records against statistical imputations and historical demographic estimates.
+- **Headline Aggregates**: High-contrast summary cards indexing 36,108 voyages, 12.5M embarked captives, and 10.7M disembarked survivors.
+
+### 02 — African Forts & Coastal Enclaves Map (`AfricanPortsMap.tsx`)
+- **Native $5,796 \times 5,867$ Vector Space**: Direct projection onto the canonical continental geometry of `public/africa-final.svg`.
+- **47 Calibrated Embarkation Ports**: Precise coastal coordinate anchoring across 8 historic corridors (Senegambia, Sierra Leone, Windward Coast, Gold Coast, Bight of Benin, Bight of Biafra, West Central Africa, Southeast Africa).
+- **Proportional Dual-Drawer Architecture**: Mirrors `ArchivalImageViewer.tsx` with a `w-7/12 xl:w-2/3` canvas and a flush `w-5/12 xl:w-1/3` 3-tab dossier drawer (`Dossier`, `Cite`, `Nearby`).
+- **Interactive Legend Deck & Corrected Metric**: Integrates an expandable 8-corridor deck with the **`+12M Captives`** headline badge, flag and century filter dropdowns, and instant hover-to-glow corridor highlights.
+- **Collision-Free Dynamic Radar**: Corner mini-map dynamically shifts upward (`bottom-[102px]`) when the port filmstrip is open and rests at `bottom-4` when collapsed, ensuring zero overlay collision.
+- **Universal Keyboard Controls**: Arrow keys pan the canvas, `+`/`-` zoom, `0` resets to the tight overview framing (`{ x: 300, y: 1480, w: 4550, h: 3000 }`), and `F` toggles fullscreen.
+
+### 03 — Introduction Essays & Historiography
+- Peer-reviewed historiographical essays by David Eltis, David Richardson, Stephen D. Behrendt, and Manolo Florentino contextualizing trans-Atlantic demographic estimates and shipboard conditions.
+
+### 04 — Explore Voyages Search Engine
+- Searchable query interface filtering 36,108 voyages by ship name, captain, flag nationality, embarkation port, disembarkation region, and year span.
+- Consolidated database toggle reconciling Transatlantic, Intra-American, and African Origins records.
+
+### 05 — Geographic Routes & Mortality Analysis
+- Breakdown of Middle Passage routes with comparative shipboard mortality rates (averaging 12.4% across four centuries, peaking in early 17th-century Portuguese runs).
+
+### 06 — African Origins & Names Database
+- Documentation of 91,491 liberated Africans registered in Havana and Freetown Vice-Admiralty courts, recording names, estimated ages, gender, and linguistic origins.
+
+### 07 — Enslavers & Commercial Networks
+- Biographical and financial directory documenting major trading companies (Royal African Company, Dutch West India Company, Companhia Geral de Pernambuco e Paraíba) and private syndicates.
+
+### 08 — Comparative Analytics & Demographics
+- Cross-tabulated bar and area charts displaying captive sex ratios (men, women, children), voyage duration distributions, and seasonal embarkation cycles.
+
+### 09 — Query Builder & Academic Citations
+- Multi-parameter boolean query builder generating formatted scholarly citations in **Chicago (17th Author-Date)**, **APA (7th)**, **Harvard**, and **BibTeX**.
+
+### 10 — Provenance & Epistemic Methodology
+- Methodological documentation explaining the distinction between **Observed** archival entries, **Imputed** variables, and **Historical Demographic Estimates**.
+
+### 11 — Molecular & Material Legacies of Slavery
+- Interdisciplinary synthesis uniting **50,000+ population genomes** (IBD haplotype deconvolution), **ancient DNA (Zoutsteeg c. 1660s)**, **98% Maroon retention**, sex-biased gene flow ledgers, and bioarchaeology from the **New York African Burial Ground**.
+
+### 12 — Structural and Evolutionary Foundations of African Development
+- Master Report synthesizing **Macro-Geonomics (Recent African Origin & Ashraf-Galor curve)**, **Nathan Nunn's 18M+ slave trade mistrust scar**, **Henn-Robinson pre-colonial decentralized governance**, **Tadei's colonial monopsony price-gap model**, and the **March 25, 2026 UN General Assembly Slavery Resolution (123-3)**.
+
+### 13 — Historical Iconography Archive
+- Curated repository of 1,220 Middle Passage naval architectural plans (e.g. *Brookes* 1788 slave ship stowage diagram) and 32 colonial *Pintura de Castas* masterworks by Miguel Cabrera and José de Páez.
+
+### 14 — Archival Cartography & Currents GIS
+- Interactive split-screen curtain slider comparing historical antique maps (Coronelli 1688, Delisle 1707, Bonne 1780, Tallis 1851) against modern borders, coupled with a 60fps particle simulation of the 8 major Atlantic and Indian Ocean currents.
+
+---
+
+## Data Provenance & Attribution
+
+Voyage data is harmonized from the *SlaveVoyages Consortium* ([api.slavevoyages.org](https://www.slavevoyages.org/)). High-precision vector geometries and cartographic visualizations are authored by **ZéLuis F. Correia** (licensed under CC BY 4.0). See [Universal Style Guide](../UNIVERSAL_STYLE_GUIDE.md) and [Universal Audit Specification](../UNIVERSAL_AUDIT_SPECIFICATION.md) for design and architectural standards.

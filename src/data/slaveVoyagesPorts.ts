@@ -949,7 +949,7 @@ for (const port of AFRICAN_EMBARKATION_PORTS) {
 /**
  * Calibrated Continental Projection:
  * Converts Geographic (lat, lng) to the 5,796 × 5,867 Coordinate Space of public/africa-final.svg.
- * Checks the authoritative calibrated coordinate dictionary by port ID first.
+ * Checks the curated calibrated coordinate dictionary by port ID first.
  */
 export const projectPortToSvg = (lat: number, lng: number, portId?: string): { x: number; y: number } => {
   if (portId && CALIBRATED_PORT_SVG_COORDINATES[portId]) {

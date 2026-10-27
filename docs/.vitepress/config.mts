@@ -44,7 +44,7 @@ export default defineConfig({
             { text: 'Comparative Analytics', link: '/guide/comparative-analytics' },
             { text: 'Languages & i18n', link: '/guide/languages' },
             { text: 'Provenance & Quality Audits', link: '/guide/provenance-quality' },
-            { text: 'Slave Voyages 3D Globe', link: '/guide/slave-voyages' }
+            { text: 'Slave Voyages Research Suite', link: '/guide/slave-voyages' }
           ]
         }
       ],
@@ -64,6 +64,8 @@ export default defineConfig({
           text: 'Developer Guide',
           items: [
             { text: 'Architecture & Tech Stack', link: '/developer/architecture' },
+            { text: 'Universal Audit Specification', link: '/UNIVERSAL_AUDIT_SPECIFICATION' },
+            { text: 'Universal Style Guide', link: '/UNIVERSAL_STYLE_GUIDE' },
             { text: 'Installation & Local Dev', link: '/developer/installation' },
             { text: 'Offline PWA Strategy', link: '/developer/offline-pwa' },
             { text: 'Deployment', link: '/developer/deployment' },

@@ -47,7 +47,7 @@ export const AFRICAN_HAPLOGROUPS: HaplogroupRecord[] = [
     rootOrigin: 'West/Central Africa (Bantu Expansion catalyst)',
     timeframe: '~20,000 years ago',
     distribution: 'Found in over 80% of males across West, Central, Eastern, and Southern Africa, and the primary lineage spread during the Bantu migration.',
-    significance: 'The definitive genetic hallmark of the Bantu demographic and linguistic expansion across the continent.',
+    significance: 'The documented genetic hallmark of the Bantu demographic and linguistic expansion across the continent.',
     prevalenceByGroup: [
       { group: 'Niger-Congo / Bantu', percentage: 88 },
       { group: 'West African Forest States', percentage: 84 },

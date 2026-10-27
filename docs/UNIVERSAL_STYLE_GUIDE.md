@@ -178,4 +178,16 @@ When citing the Africa Data Atlas, its cartographic layers, or econometric worki
 
 ---
 
+## 🏛️ SECTION VII: THE UNIVERSAL AUDIT & QUALITY SPECIFICATION
+
+The platform enforces a binding, five-pillar engineering and design constitution codified in [`docs/UNIVERSAL_AUDIT_SPECIFICATION.md`](./UNIVERSAL_AUDIT_SPECIFICATION.md):
+
+1. **Semantic HTML & WCAG 2.2 AAA/AA**: Mandatory semantic landmarks (`<section>`, `<header>`, `<aside>`, `<main>`), full ARIA tablist/tab/tabpanel attributes on all tabbed systems, universal keyboard cartographic controls (Arrow keys for panning, `+`/`-` zoom, `0` reset, `F` fullscreen), high-contrast `:focus-visible` rings (2px offset), and `@media (prefers-reduced-motion: reduce)`.
+2. **Spatial Math & Proportional Invariants**: Strict proportional split ratios on museum viewers (`ArchivalImageViewer`, `AfricanPortsMap`): Left Canvas `w-full lg:w-7/12 xl:w-2/3` vs. Right Dossier Drawer `w-full lg:w-5/12 xl:w-1/3` (summing exactly to 100% without margin gaps). Dynamic collision-free offsets on minimaps (`bottom-[102px]` vs. `bottom-4`).
+3. **Web Vitals & Performance**: CLS < 0.02, LCP < 1.2s, non-passive wheel isolation preventing outer scroll chaining, and 60fps pan/zoom animations via `requestAnimationFrame` with ease-out cubic interpolation.
+4. **Typographic Pairings & Anti-Slop Discipline**: Strict three-family pairing (`Noto Serif Display` serif, `Plus Jakarta Sans` sans, `JetBrains Mono` monospace). Strict Zero-Pill rule: no rounded pill enclosures around passive metadata; plain text with typographic separators (`·`). Human editorial numbering (`01. Overview`) instead of mechanical code comments.
+5. **Color Fidelity & Contrast Ratios**: WCAG AAA text contrast (>14:1 on canvas), curated vector hex preservation from `africa-final.svg` and UN Geoscheme standards, and automatic footer suppression (`hide-app-footer`) during full-viewport cartographic scrutiny.
+
+---
+
 *Authored by Zéluis F. Correia • Africalia Cartographic & Econometric Observatory • 2026*

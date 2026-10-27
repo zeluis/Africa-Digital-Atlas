@@ -37,3 +37,18 @@ When making changes, preserve GitBook sync metadata such as frontmatter, `SUMMAR
 - **Tooltip Panning & Pinning**: Clicking a country pins the interactive tooltip in place to inspect macro indicators and allows navigating to the full "Country Dossier" view via explicit CTA.
 - **Responsive Controls**: Provide instant toggle controls for Graticule & Compass Rose, Admin-1 Subdivisions, Regional Economic Blocs (ECOWAS, SADC, EAC, AMU, ECCAS, COMESA), and High-Resolution PNG export.
 
+## 4. Universal Audit & Engineering Standards (Strict Compliance)
+All views, modals, master reports, and drawer components must strictly comply with `docs/UNIVERSAL_AUDIT_SPECIFICATION.md`:
+- **Semantic HTML & ARIA**: Use `<section aria-label="...">` or `<article>` for roots; implement complete `role="tablist"` / `role="tab"` / `role="tabpanel"` on all tabbed systems; provide keyboard pan/zoom (`Arrow` keys, `+`/`-`, `0`, `F`).
+- **Focus & Motion**: Visible high-contrast `:focus-visible` rings (2px offset) and `@media (prefers-reduced-motion: reduce)` compliance.
+- **Proportions**: Split viewers (`ArchivalImageViewer`, `AfricanPortsMap`) must strictly follow `w-full lg:w-7/12 xl:w-2/3` vs `w-full lg:w-5/12 xl:w-1/3` (summing to 100% flush with zero margin gap). Minimaps must dynamically offset (`bottom-[102px]` vs `bottom-4`) to prevent collision.
+- **Zero-Pill Discipline**: No pill capsules on static text metadata. Use clean unboxed text with `·` interpuncts. Pills are reserved for interactive buttons.
+- **Web Vitals**: Prevent CLS with explicit aspect ratios or min-heights; use `decoding="async"` on images; pan/zoom must use `requestAnimationFrame`.
+
+## 5. Epistemic Provenance & Lexicon Enforcement (`research/rules.json`)
+Before modifying text or documentation in `src/`, `docs/`, `documentation/`, `help-center/`, `api-reference/`, `home/`, or `README.md`:
+- **Banned Words & Ratchet Violations**: Never use prohibited terms from `research/rules.json` ("authoritative", "definitive", "unprecedented", "forensic", "flawless", "scientific reproducibility", "zero manual tampering").
+- **Approved Substitutions**: Prefer "curated", "documented", "canonical", "current best", or cite the specific institutional source directly (e.g. World Bank, SlaveVoyages Consortium, IMF).
+- **Automated Verification**: Always verify changes by running `npm run research:check` and `npm run research:integrity` to guarantee zero errors and zero warnings against `research/lint-baseline.json`.
+
+

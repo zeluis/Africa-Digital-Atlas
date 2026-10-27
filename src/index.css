@@ -1063,5 +1063,37 @@ body.hide-app-footer #app-footer-container {
   display: none !important;
 }
 
+/* =========================================================================
+   Universal Accessibility & Motion Preferences (WCAG 2.2 Compliance)
+   ========================================================================= */
+
+/* Visible, high-contrast focus rings for keyboard navigation */
+:focus-visible {
+  outline: 2px solid #d97706 !important;
+  outline-offset: 2px !important;
+}
+
+.dark :focus-visible {
+  outline: 2px solid #fbbf24 !important;
+  outline-offset: 2px !important;
+}
+
+/* Remove default outline when mouse clicking */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Respect user system preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 
 
