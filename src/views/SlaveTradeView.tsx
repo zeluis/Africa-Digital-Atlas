@@ -736,57 +736,8 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
           role="tabpanel" 
           id="slavetrade-panel-flow-map" 
           aria-labelledby="slavetrade-tab-flow-map" 
-          className="w-full flex-1 flex flex-col space-y-2"
+          className="w-full flex-1 flex flex-col"
         >
-          <div className="flex items-center justify-between px-1">
-            <div className="flex items-center gap-2">
-              <span className="p-1.5 rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
-                <Compass className="w-4 h-4" />
-              </span>
-              <div>
-                <h3 className="text-base font-extrabold text-[#1C1917] dark:text-zinc-100 flex items-center gap-2">
-                  Interactive Atlantic Geodesic Network
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-800 dark:text-amber-300 font-bold border border-amber-500/20">
-                    Dedicated Full-Bleed View
-                  </span>
-                </h3>
-                <p className="text-xs text-[#78716C] dark:text-zinc-400">
-                  Visualizing African embarkation regions, American landing ports, and shipboard mortality rates across four centuries.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <button
-                type="button"
-                onClick={() => setIsSeasonalityOpen(prev => !prev)}
-                aria-expanded={isSeasonalityOpen}
-                aria-controls="route-seasonality-simulator-panel"
-                className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border flex items-center gap-1.5 shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C2410C] ${
-                  isSeasonalityOpen
-                    ? 'bg-[#C2410C] text-white border-[#C2410C]'
-                    : 'bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-[#57534E] dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:border-[#C2410C]/40'
-                }`}
-                title="Toggle Route Seasonality Simulator Sliding Panel"
-              >
-                <Wind className={`w-3.5 h-3.5 ${isSeasonalityOpen ? 'text-white animate-spin-slow' : 'text-[#C2410C]'}`} />
-                <span>Seasonality Simulator</span>
-                <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-mono ${
-                  isSeasonalityOpen ? 'bg-black/20 text-white' : 'bg-stone-100 dark:bg-zinc-700 text-stone-600 dark:text-zinc-300'
-                }`}>
-                  {isSeasonalityOpen ? 'Active' : 'Open'}
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveSubTab('overview')}
-                className="text-xs font-mono font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors flex items-center gap-1 cursor-pointer bg-white dark:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700"
-              >
-                <span>← Back to Overview</span>
-              </button>
-            </div>
-          </div>
-
           <div className="w-full flex-1">
             <Suspense fallback={
               <div className="w-full h-[640px] flex items-center justify-center bg-zinc-900/40 rounded-2xl border border-zinc-800">
@@ -803,6 +754,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                 onNavigateToCartography={onNavigateToCartography}
                 isSeasonalityOpen={isSeasonalityOpen}
                 onToggleSeasonality={() => setIsSeasonalityOpen(prev => !prev)}
+                onBackToOverview={() => setActiveSubTab('overview')}
               />
             </Suspense>
           </div>

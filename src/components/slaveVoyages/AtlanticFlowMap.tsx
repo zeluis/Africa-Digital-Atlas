@@ -71,6 +71,7 @@ interface AtlanticFlowMapProps {
   onNavigateToCartography?: () => void;
   isSeasonalityOpen?: boolean;
   onToggleSeasonality?: () => void;
+  onBackToOverview?: () => void;
 }
 
 // Major coastal nodes for visual geographic grounding
@@ -110,7 +111,8 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
   onYearChange,
   onNavigateToCartography,
   isSeasonalityOpen,
-  onToggleSeasonality
+  onToggleSeasonality,
+  onBackToOverview
 }) => {
   const [hoveredRoute, setHoveredRoute] = useState<RegionalRouteFlow | null>(null);
   const [hoveredNode, setHoveredNode] = useState<any | null>(null);
@@ -486,6 +488,18 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
               {selectedSeason.toUpperCase()}
             </span>
           </button>
+
+          {/* ← Back to Overview button in Map Canvas Toolbar */}
+          {onBackToOverview && (
+            <button
+              type="button"
+              onClick={onBackToOverview}
+              className="px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all border border-[#DCD3C1] dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-[#57534E] dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:border-[#C2410C]/50 flex items-center gap-1.5 shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C2410C]"
+              title="Return to Transatlantic Slave Trade Overview"
+            >
+              <span>← Back to Overview</span>
+            </button>
+          )}
         </div>
       </div>
 
