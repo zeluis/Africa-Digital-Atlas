@@ -35,9 +35,42 @@ interface SearchModalProps {
   onSelectTab?: (tab: string) => void;
 }
 
-type SearchCategory = 'all' | 'countries' | 'indicators' | 'iconography' | 'reports' | 'heritage';
+export interface AppCommandItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  tab: string;
+  iconName: string;
+  category: string;
+  shortcut?: string;
+  keywords: string[];
+}
+
+export const APP_COMMAND_REGISTRY: AppCommandItem[] = [
+  { id: 'cmd-overview', title: 'Executive Overview', subtitle: 'Continental dashboard, macro indicators & UN M49 geoscheme', tab: 'overview', iconName: 'Globe', category: 'Views', shortcut: 'G O', keywords: ['overview', 'dashboard', 'home', 'africa', 'un', 'geoscheme'] },
+  { id: 'cmd-explore', title: '54 Sovereign Nations Directory', subtitle: 'Card directory, sorting by GDP, population, land area & HDI', tab: 'explore', iconName: 'Layers', category: 'Views', shortcut: 'G E', keywords: ['explore', 'countries', 'nations', 'sovereign', 'states', 'directory'] },
+  { id: 'cmd-map', title: 'Vector Cartography Map', subtitle: '5,796 × 5,867 authentic canvas, 1,017 Admin-1 boundaries & graticules', tab: 'map', iconName: 'Compass', category: 'Views', shortcut: 'G M', keywords: ['map', 'cartography', 'admin1', 'provinces', 'gis', 'boundaries', 'graticule'] },
+  { id: 'cmd-compare', title: 'Bilateral Nation Benchmark', subtitle: 'Side-by-side KPI comparison & convergence trajectories', tab: 'compare', iconName: 'Sliders', category: 'Analytics', shortcut: 'G C', keywords: ['compare', 'benchmark', 'bilateral', 'side-by-side', 'convergence'] },
+  { id: 'cmd-analytics', title: 'Research Analytics & Regression', subtitle: 'Bivariate scatter matrix, Pearson r, R² variance & time-series', tab: 'analytics', iconName: 'TrendingUp', category: 'Analytics', shortcut: 'G A', keywords: ['analytics', 'regression', 'scatter', 'correlation', 'pearson', 'chart', 'trend'] },
+  { id: 'cmd-pillars', title: '8 Thematic Pillars Radar', subtitle: 'Strategic development pillars, radar index & macro drivers', tab: 'pillars', iconName: 'Sparkles', category: 'Analytics', shortcut: 'G P', keywords: ['pillars', 'radar', 'economy', 'infrastructure', 'governance', 'climate'] },
+  { id: 'cmd-languages', title: 'Living Languages & Mother Tongues', subtitle: '2,000+ living languages across 4 phyla & audio player', tab: 'languages', iconName: 'BookOpen', category: 'Culture', shortcut: 'G L', keywords: ['languages', 'tongues', 'swahili', 'hausa', 'bantu', 'audio', 'phonemes'] },
+  { id: 'cmd-heritage', title: 'UNESCO World Heritage Sites', subtitle: '145+ cultural, natural, mixed and in-danger monuments', tab: 'heritage', iconName: 'Landmark', category: 'Culture', shortcut: 'G H', keywords: ['heritage', 'unesco', 'monuments', 'cultural', 'natural', 'danger'] },
+  { id: 'cmd-ethnic-tree', title: 'Ancestral Tree of Life', subtitle: 'Phylogenetic cladogram, haplogroups L0–L3 and 310+ ethnic lineages', tab: 'ethnic-tree', iconName: 'Sparkles', category: 'Genomics', shortcut: 'G T', keywords: ['tree', 'ethnic', 'cladogram', 'haplogroups', 'ancestry', 'phylogeny'] },
+  { id: 'cmd-slave-trade', title: 'Middle Passage & 47 Embarkation Ports', subtitle: 'Geodesic flows, 36,108 voyage records & coastal enclaves', tab: 'slave-trade', iconName: 'Clock', category: 'History', shortcut: 'G S', keywords: ['slave-trade', 'voyages', 'middle passage', 'ports', 'routes', 'enslaved'] },
+  { id: 'cmd-iconography', title: 'Digital Iconography & Castas Archive', subtitle: '1,252 archival plates, Brookes 1788 plan & colonial paintings', tab: 'iconography', iconName: 'Palette', category: 'History', shortcut: 'G I', keywords: ['iconography', 'castas', 'plates', 'archives', 'brookes', 'prints'] },
+  { id: 'cmd-archival-cartography', title: 'Archival Cartography & Currents', subtitle: 'Antique plate curtain viewer (1688–1851) & 60fps ocean drift', tab: 'archival-cartography', iconName: 'Compass', category: 'History', shortcut: 'G K', keywords: ['archival', 'antique', 'maps', 'curtain', 'ocean', 'currents', 'winds'] },
+  { id: 'cmd-dev-foundations', title: 'African Development Foundations Monograph', subtitle: 'Synthesis of macro-geonomics, Nathan Nunn mistrust & UN resolutions', tab: 'african-development-foundations', iconName: 'FileText', category: 'Research', keywords: ['master report', 'foundations', 'development', 'nunn', 'institutions'] },
+  { id: 'cmd-molecular-legacies', title: 'Paleogenomic Molecular Legacies', subtitle: '50,000+ genomes, IBD deconvolution & African diaspora genetics', tab: 'molecular-legacies', iconName: 'FileText', category: 'Research', keywords: ['molecular', 'genetics', 'paleogenomics', 'ibd', 'dna', 'legacies'] },
+  { id: 'cmd-research-directory', title: 'Working Papers & Policy Briefs', subtitle: 'Peer-reviewed research series, DOIs & executive abstracts', tab: 'research-directory', iconName: 'FileText', category: 'Research', keywords: ['working papers', 'directory', 'doi', 'citations', 'policy'] },
+  { id: 'cmd-provenance', title: 'Epistemic Provenance & SHA-256 Verifier', subtitle: 'Cryptographic dataset hashes & 16 multilateral API connectors', tab: 'provenance', iconName: 'ShieldCheck', category: 'System', keywords: ['provenance', 'sha256', 'hash', 'integrity', 'audit', 'connectors'] },
+  { id: 'cmd-privacy', title: 'Zero-Telemetry & GDPR Article 17 Wipe', subtitle: 'Transparent privacy notice & local cache reset', tab: 'privacy', iconName: 'ShieldCheck', category: 'System', keywords: ['privacy', 'telemetry', 'gdpr', 'wipe', 'storage'] },
+  { id: 'cmd-style-guide', title: 'Universal Living Style Guide', subtitle: 'Japandi-Sahel design tokens, typography & accessibility tokens', tab: 'style-guide', iconName: 'Palette', category: 'System', keywords: ['style guide', 'design', 'tokens', 'japandi', 'theme'] },
+];
+
+type SearchCategory = 'all' | 'commands' | 'countries' | 'indicators' | 'iconography' | 'reports' | 'heritage';
 
 type SearchItemType = 
+  | { type: 'command'; data: AppCommandItem }
   | { type: 'entity'; data: AtlasEntity }
   | { type: 'indicator'; data: IndicatorDefinition }
   | { type: 'heritage'; data: HeritageSite }
@@ -79,6 +112,31 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     if (t.includes(search)) return 50;
     return 0;
   };
+
+  // Matched View/Tool Commands
+  const matchedCommands = useMemo<AppCommandItem[]>(() => {
+    if (selectedCategory !== 'all' && selectedCategory !== 'commands') return [];
+    const searchClean = q.startsWith('>') ? q.slice(1).trim() : q;
+    if (searchClean === '') return APP_COMMAND_REGISTRY.slice(0, 4);
+
+    return APP_COMMAND_REGISTRY
+      .map(cmd => {
+        let score = 0;
+        const kwMatch = cmd.keywords.some(k => k.toLowerCase().includes(searchClean)) ? 45 : 0;
+        score = Math.max(
+          scoreMatch(cmd.title, searchClean) * 1.8,
+          scoreMatch(cmd.tab, searchClean) * 1.5,
+          scoreMatch(cmd.subtitle, searchClean),
+          kwMatch
+        );
+        if (q.startsWith('>')) score += 50;
+        return { cmd, score };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 4)
+      .map(item => item.cmd);
+  }, [q, selectedCategory]);
 
   // Matched Entities with scoring
   const matchedEntities = useMemo<AtlasEntity[]>(() => {
@@ -211,9 +269,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       .map(item => item.site);
   }, [q, selectedCategory]);
 
-  // Flatten items for keyboard navigation
+  // Flatten items for keyboard navigation (Commands first if searching or if > typed)
   const flattenedItems = useMemo<SearchItemType[]>(() => {
     const list: SearchItemType[] = [];
+    matchedCommands.forEach(data => list.push({ type: 'command', data }));
     matchedEntities.forEach(data => list.push({ type: 'entity', data }));
     matchedReports.forEach(data => list.push({ type: 'report', data }));
     matchedIconography.forEach(data => list.push({ type: 'iconography', data }));
@@ -221,7 +280,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     matchedIndicators.forEach(data => list.push({ type: 'indicator', data }));
     matchedHeritage.forEach(data => list.push({ type: 'heritage', data }));
     return list;
-  }, [matchedEntities, matchedReports, matchedIconography, matchedCastas, matchedIndicators, matchedHeritage]);
+  }, [matchedCommands, matchedEntities, matchedReports, matchedIconography, matchedCastas, matchedIndicators, matchedHeritage]);
 
   // Reset selected index when results change
   useEffect(() => {
@@ -264,7 +323,15 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   }, [isOpen, selectedIndex, flattenedItems]);
 
   const handleExecuteSelection = (item: SearchItemType) => {
-    if (item.type === 'entity') {
+    if (item.type === 'command') {
+      addRecentSearch(item.data.title);
+      if (onSelectTab) {
+        onSelectTab(item.data.tab);
+      } else {
+        window.location.hash = item.data.tab;
+      }
+      onClose();
+    } else if (item.type === 'entity') {
       addRecentSearch(item.data.name);
       onSelectCountry(item.data.id);
       onClose();
@@ -347,6 +414,18 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           </button>
           <button
             type="button"
+            onClick={() => setSelectedCategory('commands')}
+            className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 ${
+              selectedCategory === 'commands'
+                ? 'bg-emerald-600 text-white font-bold shadow-xs'
+                : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800'
+            }`}
+          >
+            <Sparkles className="w-3 h-3" />
+            <span>Commands</span>
+          </button>
+          <button
+            type="button"
             onClick={() => setSelectedCategory('countries')}
             className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 ${
               selectedCategory === 'countries'
@@ -424,6 +503,11 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                 >
                   <div className="flex items-center gap-3 min-w-0 pr-3">
                     {/* Icon Column */}
+                    {item.type === 'command' && (
+                      <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                        <Sparkles className="w-4 h-4" />
+                      </div>
+                    )}
                     {item.type === 'entity' && (
                       <CountryFlag entityId={item.data.id} size="sm" />
                     )}
@@ -457,6 +541,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                     <div className="flex flex-col min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-sans font-bold text-zinc-900 dark:text-zinc-100 truncate">
+                          {item.type === 'command' && item.data.title}
                           {item.type === 'entity' && item.data.name}
                           {item.type === 'report' && item.data.title}
                           {item.type === 'iconography' && item.data.title}
@@ -464,6 +549,11 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                           {item.type === 'indicator' && item.data.name}
                           {item.type === 'heritage' && item.data.name}
                         </span>
+                        {item.type === 'command' && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold">
+                            {item.data.category}
+                          </span>
+                        )}
                         {item.type === 'entity' && (
                           <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-200/60 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
                             {item.data.id}
@@ -481,6 +571,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                         )}
                       </div>
                       <span className="text-xs font-serif text-zinc-500 dark:text-zinc-400 truncate">
+                        {item.type === 'command' && `${item.data.subtitle} (Route: #${item.data.tab})`}
                         {item.type === 'entity' && `${item.data.region} • Capital: ${item.data.capital}`}
                         {item.type === 'report' && `${item.data.categoryLabel} • ${item.data.authors[0]}`}
                         {item.type === 'iconography' && `${item.data.date || 'Historical'} • ${item.data.source}`}
@@ -492,6 +583,11 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                   </div>
 
                   <div className="flex items-center gap-1.5 text-zinc-400 shrink-0">
+                    {item.type === 'command' && item.data.shortcut && (
+                      <span className="hidden sm:inline-flex text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold">
+                        {item.data.shortcut}
+                      </span>
+                    )}
                     {isSelected && (
                       <span className="hidden sm:inline-flex text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
                         Jump ↵

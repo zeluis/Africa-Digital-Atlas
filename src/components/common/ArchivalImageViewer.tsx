@@ -33,10 +33,13 @@ import {
   Loader2,
   Compass,
   Camera,
-  ShieldCheck
+  ShieldCheck,
+  AlertTriangle,
+  Globe2
 } from 'lucide-react';
 import { DynamicIcon } from '../DynamicIcon';
 import { SlaveTradeIllustration } from '../../data/slaveTradeIllustrations';
+import { deriveSiteBiome } from '../../data/unescoHeritageRegistry';
 import { 
   exportHighDpiPlatePDF, 
   exportBibTeXFile, 
@@ -1038,6 +1041,21 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                     </div>
                   </div>
 
+                  {/* Danger Alert Banner if property is inscribed on In Danger List */}
+                  {illustration.unescoMeta?.danger && (
+                    <div className="flex items-center gap-2 p-3 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-850 dark:text-rose-350 text-xs font-mono font-bold">
+                      <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
+                      <div>
+                        <span>UNESCO Conservation Alert: Inscribed on List of World Heritage in Danger</span>
+                        {illustration.unescoMeta.dangerDates && (
+                          <span className="block text-[11px] font-normal text-rose-800/80 dark:text-rose-300/80 mt-0.5">
+                            Danger Listing Period: {illustration.unescoMeta.dangerDates}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Structured UNESCO XML Metadata Grid when viewing a UNESCO site */}
                   {illustration.unescoMeta && (
                     <div className="grid grid-cols-2 gap-2.5 p-3.5 rounded-2xl bg-stone-100/90 dark:bg-stone-900/80 border border-stone-200/90 dark:border-stone-800 text-xs font-mono">
@@ -1057,8 +1075,16 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                       </div>
                       <div className="space-y-0.5">
                         <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block">Conservation Status</span>
-                        <span className={`font-bold ${illustration.unescoMeta.danger ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
+                        <span className={`font-bold ${illustration.unescoMeta.danger ? 'text-rose-600 dark:text-rose-400 flex items-center gap-1' : 'text-emerald-700 dark:text-emerald-400'}`}>
+                          {illustration.unescoMeta.danger && <AlertTriangle className="w-3 h-3 shrink-0" />}
                           {illustration.unescoMeta.danger ? 'In Danger List' : 'Regular Standing'}
+                        </span>
+                      </div>
+                      <div className="space-y-0.5 col-span-2">
+                        <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block">Ecological Biome</span>
+                        <span className="font-bold text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
+                          <Globe2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                          {deriveSiteBiome(illustration.unescoMeta)}
                         </span>
                       </div>
                       {(illustration.unescoMeta.latitude !== undefined && illustration.unescoMeta.longitude !== undefined) && (

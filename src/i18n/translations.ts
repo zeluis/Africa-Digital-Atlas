@@ -44,6 +44,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
     'nav.pillars': '8 Thematic Pillars',
     'nav.blocs': '21 Regional Blocs',
     'nav.regions': 'Regions',
+    'nav.culture': 'Culture',
     'nav.analytics': 'Analytics',
     'nav.map': 'Map',
     'nav.languages': 'Languages',

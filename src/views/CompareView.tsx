@@ -11,10 +11,21 @@ import {
   formatHDI, 
   formatArea 
 } from '../data/atlas-formatters';
-import { GitCompare, Plus, X, ArrowRight, ShieldCheck, Check, Layers, Crosshair, Ship, DollarSign, FileText } from 'lucide-react';
+import { GitCompare, Plus, X, ArrowRight, ShieldCheck, Check, Layers, Crosshair, Ship, DollarSign, FileText, TrendingUp, Activity } from 'lucide-react';
 import { getCountryHistoricalDevelopmentDossier } from '../data/countryHistoricalDevelopmentData';
 import { MultiCountryRadarMatrix } from '../components/MultiCountryRadarMatrix';
 import { CountryFactsheetModal } from '../components/CountryFactsheetModal';
+import { 
+  ResponsiveContainer, 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  Tooltip, 
+  CartesianGrid, 
+  Legend 
+} from 'recharts';
+import { getMultiCountryTimeSeries } from '../data/atlas-selectors';
 
 interface CompareViewProps {
   onSelectCountry: (entityId: string) => void;
@@ -42,6 +53,21 @@ export const CompareView: React.FC<CompareViewProps> = ({
   const [valuationMode, setValuationMode] = useState<'nominal' | 'ppp'>('nominal');
   const [normalizationScale, setNormalizationScale] = useState<'aggregate' | 'perCapita'>('aggregate');
   const [factsheetCountryId, setFactsheetCountryId] = useState<string | null>(null);
+  const [convergenceMetricId, setConvergenceMetricId] = useState<string>('NY.GDP.MKTP.CD');
+
+  const convergenceMetrics = [
+    { id: 'NY.GDP.MKTP.CD', label: 'Nominal GDP ($B)', unit: '$B' },
+    { id: 'NY.GDP.MKTP.KD.ZG', label: 'Real GDP Growth (%)', unit: '%' },
+    { id: 'SP.DYN.LE00.IN', label: 'Life Expectancy (Years)', unit: 'yrs' },
+    { id: 'EG.ELC.ACCS.ZS', label: 'Electricity Access (%)', unit: '%' },
+    { id: 'SE.PRM.ENRR', label: 'Primary School Enrollment (%)', unit: '%' },
+  ];
+
+  const convergenceData = React.useMemo(() => {
+    return getMultiCountryTimeSeries(selectedIds, convergenceMetricId);
+  }, [selectedIds, convergenceMetricId]);
+
+  const COUNTRY_CHART_COLORS = ['#10b981', '#06b6d4', '#8b5cf6', '#f59e0b'];
 
   const allEntities = atlas.getAllEntities();
 
@@ -294,6 +320,75 @@ export const CompareView: React.FC<CompareViewProps> = ({
         countries={countries}
         onSelectCountry={onSelectCountry}
       />
+
+      {/* Historical Convergence Trajectory (2015–2024) */}
+      <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 font-display">
+                Historical Convergence Trajectory (2015–2024)
+              </h3>
+            </div>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+              Multi-year trajectory comparison tracking structural convergence between selected nations
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            {convergenceMetrics.map(m => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => setConvergenceMetricId(m.id)}
+                className={`px-3 py-1 rounded-xl text-xs font-mono font-semibold transition-all cursor-pointer border ${
+                  convergenceMetricId === m.id
+                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 border-zinc-900 dark:border-zinc-100 shadow-xs'
+                    : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
+                }`}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="h-64 sm:h-72 w-full pt-2">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={convergenceData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" className="dark:stroke-zinc-800" />
+              <XAxis dataKey="year" stroke="#71717a" fontSize={11} />
+              <YAxis stroke="#71717a" fontSize={11} />
+              <Tooltip
+                contentStyle={{ 
+                  backgroundColor: 'rgba(24, 24, 27, 0.95)', 
+                  borderColor: '#3f3f46', 
+                  borderRadius: '0.75rem', 
+                  color: '#f4f4f5',
+                  boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3)'
+                }}
+              />
+              <Legend />
+              {selectedIds.map((cId, idx) => {
+                const ent = atlas.getEntity(cId);
+                return (
+                  <Line
+                    key={cId}
+                    type="monotone"
+                    dataKey={cId}
+                    name={ent?.name || cId}
+                    stroke={COUNTRY_CHART_COLORS[idx % COUNTRY_CHART_COLORS.length]}
+                    strokeWidth={2.5}
+                    dot={{ r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                );
+              })}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
       {/* Interactive Switchers Row: Valuation (Nominal vs PPP) and Scale (Aggregate vs Per-Capita) */}
       <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white dark:bg-zinc-900/90 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { REGIONAL_ROUTE_FLOWS } from '../../data/slaveVoyagesData';
 import { RegionalRouteFlow, EpistemicMode } from '../../data/slaveVoyagesTypes';
 import { AfricaVectorContinent } from '../common/AfricaVectorContinent';
@@ -68,6 +69,8 @@ interface AtlanticFlowMapProps {
   yearRange?: [number, number];
   onYearChange?: (year: number) => void;
   onNavigateToCartography?: () => void;
+  isSeasonalityOpen?: boolean;
+  onToggleSeasonality?: () => void;
 }
 
 // Major coastal nodes for visual geographic grounding
@@ -105,7 +108,9 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
   onSelectRoute,
   yearRange,
   onYearChange,
-  onNavigateToCartography
+  onNavigateToCartography,
+  isSeasonalityOpen,
+  onToggleSeasonality
 }) => {
   const [hoveredRoute, setHoveredRoute] = useState<RegionalRouteFlow | null>(null);
   const [hoveredNode, setHoveredNode] = useState<any | null>(null);
@@ -120,10 +125,30 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
   const [showOceanCurrents, setShowOceanCurrents] = useState(true);
   const [destinationFilter, setDestinationFilter] = useState<'all' | 'Brazil' | 'British Caribbean' | 'French Caribbean' | 'Spanish Americas' | 'North America'>('all');
 
-  // Seasonal meteorological states
+  // Seasonal meteorological states & slide-panel state
   const [selectedSeason, setSelectedSeason] = useState<'summer' | 'autumn' | 'winter' | 'spring'>('summer');
   const [showTradeWinds, setShowTradeWinds] = useState(true);
-  const [isDrawerCollapsed, setIsDrawerCollapsed] = useState(true);
+  const [internalIsSeasonalityOpen, setInternalIsSeasonalityOpen] = useState(false);
+
+  const isSeasonalityActive = isSeasonalityOpen !== undefined ? isSeasonalityOpen : internalIsSeasonalityOpen;
+  const handleToggleSeasonality = () => {
+    if (onToggleSeasonality) {
+      onToggleSeasonality();
+    } else {
+      setInternalIsSeasonalityOpen(prev => !prev);
+    }
+  };
+
+  // Keyboard accessibility: dismiss panel with Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isSeasonalityActive) {
+        handleToggleSeasonality();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSeasonalityActive]);
 
   // Hydrodynamic Ocean Currents Particle Streamlines Engine
   const oceanCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -437,6 +462,30 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
             <Waves className="w-3.5 h-3.5" />
             <span>Currents: {showOceanCurrents ? 'ON' : 'OFF'}</span>
           </button>
+
+          {/* Route Seasonality Simulator Toggle Pill/Button */}
+          <button
+            type="button"
+            onClick={handleToggleSeasonality}
+            aria-expanded={isSeasonalityActive}
+            aria-controls="route-seasonality-simulator-panel"
+            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all border cursor-pointer flex items-center gap-1.5 shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C2410C] ${
+              isSeasonalityActive
+                ? 'bg-[#C2410C] text-white border-[#C2410C] shadow-sm scale-102'
+                : 'bg-white dark:bg-zinc-800/80 border-[#DCD3C1] dark:border-zinc-700 text-[#57534E] dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:border-[#C2410C]/40'
+            }`}
+            title="Toggle Route Seasonality Simulator Sliding Panel"
+          >
+            <Wind className={`w-3.5 h-3.5 ${isSeasonalityActive ? 'text-white animate-spin-slow' : 'text-[#C2410C]'}`} />
+            <span>Seasonality Simulator</span>
+            <span className={`px-1.5 py-0.2 rounded-md text-[9px] font-bold ${
+              isSeasonalityActive
+                ? 'bg-white/20 text-white'
+                : 'bg-[#C2410C]/10 text-[#C2410C] dark:bg-amber-400/15 dark:text-amber-300'
+            }`}>
+              {selectedSeason.toUpperCase()}
+            </span>
+          </button>
         </div>
       </div>
 
@@ -468,10 +517,8 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
         ))}
       </div>
 
-      {/* 2. Split Main View (Map 11 or 9 cols / Sidebar 1 or 3 cols) */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 overflow-hidden">
-        {/* Left Map Viewport (11 cols if collapsed, 9 cols if expanded) */}
-        <div className={`${isDrawerCollapsed ? 'xl:col-span-11' : 'xl:col-span-9'} relative bg-[#FAF6EE] dark:bg-zinc-950 flex items-center justify-center min-h-[540px] select-none`}>
+      {/* 2. Main Map Viewport & Sliding Seasonality Simulator Panel */}
+      <div className="relative w-full overflow-hidden bg-[#FAF6EE] dark:bg-zinc-950 flex items-center justify-center min-h-[540px] select-none">
           <svg
             viewBox="0 0 1000 580"
             className="w-full h-full block"
@@ -852,241 +899,291 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
               <p className="text-xs text-[#57534E] dark:text-zinc-300 leading-relaxed">{hoveredWind.description}</p>
             </div>
           )}
-        </div>
+        {/* Route Seasonality Simulator Sliding Drawer */}
+        <AnimatePresence>
+          {isSeasonalityActive && (
+            <>
+              {/* Responsive Dimming Backdrop on Small Viewports */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={handleToggleSeasonality}
+                className="absolute inset-0 bg-stone-900/40 backdrop-blur-[2px] z-20 sm:hidden cursor-pointer"
+                aria-hidden="true"
+              />
 
-        {/* Seasonal Animator Sidebar (3 of 12 columns on desktop) */}
-        <div className="xl:col-span-3 p-4 bg-[#FAF6EE] dark:bg-zinc-900/95 border-t xl:border-t-0 xl:border-l border-[#DCD3C1] dark:border-zinc-800 space-y-4 text-left overflow-y-auto max-h-[620px] scrollbar-thin">
-          <div className="flex items-center gap-2 border-b border-[#DCD3C1] dark:border-zinc-800 pb-2">
-            <Wind className="w-5 h-5 text-[#C2410C]" />
-            <div>
-              <h4 className="font-extrabold text-xs text-[#1C1917] dark:text-zinc-100 uppercase tracking-wider">
-                Route Seasonality Simulator
-              </h4>
-              <p className="text-[10px] text-[#78716C] dark:text-zinc-400">
-                Simulate meteorological forces on Middle Passage transits
-              </p>
-            </div>
-          </div>
-
-          {/* Interactive Season Picker */}
-          <div className="space-y-1.5">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#78716C] dark:text-zinc-400">
-              Select Departure Season:
-            </span>
-            <div className="grid grid-cols-2 gap-1.5 text-xs font-semibold">
-              {[
-                { id: 'summer', label: 'Summer ☀️', desc: 'Jun–Aug' },
-                { id: 'autumn', label: 'Autumn 🍂', desc: 'Sept–Nov' },
-                { id: 'winter', label: 'Winter ❄️', desc: 'Dec–Feb' },
-                { id: 'spring', label: 'Spring 🌱', desc: 'Mar–May' }
-              ].map(season => (
-                <button
-                  key={season.id}
-                  onClick={() => setSelectedSeason(season.id as any)}
-                  className={`p-2 rounded-xl text-left border transition-all cursor-pointer ${
-                    selectedSeason === season.id
-                      ? 'bg-amber-100 dark:bg-amber-950/40 border-amber-500 text-amber-900 dark:text-amber-200'
-                      : 'bg-white dark:bg-zinc-800 border-[#DCD3C1] dark:border-zinc-700 hover:bg-[#FAF6EE] dark:hover:bg-zinc-750 text-[#1C1917] dark:text-white'
-                  }`}
-                >
-                  <p className="font-bold text-[11px]">{season.label}</p>
-                  <p className="text-[9px] text-[#78716C] dark:text-zinc-400 font-mono">{season.desc}</p>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Wind Layer Toggle */}
-          <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-zinc-950 border border-[#DCD3C1] dark:border-zinc-800">
-            <span className="text-xs font-mono font-semibold text-[#57534E] dark:text-zinc-300">
-              Overlay Trade Winds
-            </span>
-            <button
-              onClick={() => setShowTradeWinds(!showTradeWinds)}
-              className={`px-2 py-1 rounded-md text-[10px] font-mono font-bold border transition-all cursor-pointer ${
-                showTradeWinds
-                  ? 'bg-[#DCFCE7] dark:bg-emerald-950 border-emerald-500 text-emerald-800 dark:text-emerald-300'
-                  : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-zinc-500'
-              }`}
-            >
-              {showTradeWinds ? 'ON' : 'OFF'}
-            </button>
-          </div>
-
-          {/* Seasonal Simulation Feedback */}
-          <div className="p-3 rounded-2xl bg-white dark:bg-zinc-950 border border-[#DCD3C1] dark:border-zinc-800 space-y-2.5">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#78716C] dark:text-zinc-400">
-              Active Meteorological State:
-            </span>
-            
-            <div className="space-y-1">
-              <p className="text-xs font-extrabold text-[#1C1917] dark:text-zinc-200">
-                {selectedSeason === 'summer' && "Steady Northeast Trade Winds"}
-                {selectedSeason === 'autumn' && "Doldrums & Hurricane Season"}
-                {selectedSeason === 'winter' && "Accelerated Winter Northeast Trades"}
-                {selectedSeason === 'spring' && "Moderate Equinoctial Winds"}
-              </p>
-              <p className="text-[10.5px] text-[#57534E] dark:text-zinc-400 leading-relaxed">
-                {selectedSeason === 'summer' && "High-humidity trade winds power stable westward drifts, with warm temperature profiles elevating disease risk in holding spaces."}
-                {selectedSeason === 'autumn' && "Frequent windless calms (doldrums) stall ships in the horse latitudes for weeks, while severe tropical hurricanes threaten catastrophic loss."}
-                {selectedSeason === 'winter' && "Powerful, cold, persistent trade winds accelerate transit speeds significantly, drastically lowering days spent at sea."}
-                {selectedSeason === 'spring' && "Winds are steady but mild; standard current flows present moderate navigation windows across both Hemispheres."}
-              </p>
-            </div>
-
-            <div className="pt-2 border-t border-[#DCD3C1] dark:border-zinc-800 grid grid-cols-2 gap-2 text-xs">
-              <div>
-                <p className="text-[9px] text-[#78716C] dark:text-zinc-500 font-mono uppercase">Wind Speed</p>
-                <p className="font-extrabold text-amber-600">
-                  {selectedSeason === 'summer' && "1.0x (Standard)"}
-                  {selectedSeason === 'autumn' && "0.55x (Calms)"}
-                  {selectedSeason === 'winter' && "1.55x (Strong)"}
-                  {selectedSeason === 'spring' && "0.95x (Moderate)"}
-                </p>
-              </div>
-              <div>
-                <p className="text-[9px] text-[#78716C] dark:text-zinc-500 font-mono uppercase">Holding Temp</p>
-                <p className="font-extrabold text-rose-600">
-                  {selectedSeason === 'summer' && "Very Hot (31°C)"}
-                  {selectedSeason === 'autumn' && "Extreme Heat (34°C)"}
-                  {selectedSeason === 'winter' && "Cooler (24°C)"}
-                  {selectedSeason === 'spring' && "Warm (28°C)"}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Voyage Path Simulation Matrix */}
-          <div className="p-3 rounded-2xl bg-[#FAF6EE] dark:bg-zinc-950 border border-[#DCD3C1] dark:border-zinc-800 space-y-3">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#78716C] dark:text-zinc-400 flex items-center gap-1">
-              <Navigation className="w-3.5 h-3.5" />
-              <span>Simulated Voyage Dossier</span>
-            </span>
-
-            {selectedRoute ? (
-              <div className="space-y-3">
-                <div className="text-xs font-bold text-[#1C1917] dark:text-zinc-200">
-                  {selectedRoute.sourceRegion} ➔ {selectedRoute.targetRegion}
-                </div>
-
-                {/* Duration comparison */}
-                <div className="space-y-1">
-                  <div className="flex justify-between text-[11px] font-medium text-[#78716C] dark:text-zinc-400">
-                    <span>Simulated Transit:</span>
-                    <span className="font-bold text-[#1C1917] dark:text-zinc-200">
-                      {Math.round(62 * (
-                        selectedSeason === 'summer' ? 1.0 :
-                        selectedSeason === 'autumn' ? 1.3 :
-                        selectedSeason === 'winter' ? 0.8 : 1.15
-                      ))} Days
-                    </span>
-                  </div>
-                  <div className="w-full bg-[#E8DFCE] dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        selectedSeason === 'winter' ? 'bg-emerald-500' :
-                        selectedSeason === 'autumn' ? 'bg-rose-500' : 'bg-amber-500'
-                      }`}
-                      style={{ 
-                        width: `${
-                          selectedSeason === 'winter' ? '40%' :
-                          selectedSeason === 'autumn' ? '95%' : '65%'
-                        }` 
-                      }}
-                    />
-                  </div>
-                  <p className="text-[9px] text-right text-[#78716C] dark:text-zinc-500 italic">
-                    {selectedSeason === 'winter' && "Fast winter transit reduces risk"}
-                    {selectedSeason === 'autumn' && "Trapped in calms; severe rations crisis"}
-                    {selectedSeason === 'summer' && "Standard summer middle passage duration"}
-                    {selectedSeason === 'spring' && "Typical spring navigation time"}
-                  </p>
-                </div>
-
-                {/* Mortality Rate Gradient */}
-                <div className="p-2 rounded-xl bg-[#FDFBF7] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800 text-xs">
-                  <p className="text-[9px] text-[#78716C] dark:text-zinc-500 font-mono uppercase">Expected Mortality Gradient</p>
-                  <div className="flex items-baseline gap-1.5 mt-1">
-                    <span className={`text-lg font-black ${
-                      selectedSeason === 'winter' ? 'text-emerald-600' :
-                      selectedSeason === 'autumn' ? 'text-rose-600' : 'text-amber-600'
-                    }`}>
-                      {(selectedRoute.avgMortalityRate + (
-                        selectedSeason === 'summer' ? 0.5 :
-                        selectedSeason === 'autumn' ? 4.0 :
-                        selectedSeason === 'winter' ? -1.8 : 1.0
-                      )).toFixed(1)}%
-                    </span>
-                    <span className="text-[10px] text-[#78716C] dark:text-zinc-500">
-                      (Baseline: {selectedRoute.avgMortalityRate}%)
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <p className="text-[11px] text-[#78716C] dark:text-zinc-500 italic">
-                Hover or click any transatlantic flow arc to inspect simulated crossing durations and mortality gradients under the active meteorological forces.
-              </p>
-            )}
-          </div>
-
-          {/* Real-Time Hydrodynamic Vector Stream Diagnostic Card */}
-          <div className="p-3 rounded-2xl bg-white dark:bg-zinc-950 border border-cyan-500/30 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
-                <Waves className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 animate-pulse" />
-                <span>Hydrodynamic Stream Engine</span>
-              </span>
-              <span className="text-[9.5px] font-mono px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 font-bold">
-                {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].quarterLabel.split(' ')[0]}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono pt-1">
-              <div className="p-1.5 rounded-lg bg-[#FAF6EE] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800">
-                <span className="text-stone-500 dark:text-stone-400 block text-[9px]">Wind Speed</span>
-                <strong className="text-cyan-800 dark:text-cyan-300 text-[10.5px] leading-tight block">
-                  {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].tastCorrelations.windSpeedDisplay}
-                </strong>
-              </div>
-              <div className="p-1.5 rounded-lg bg-[#FAF6EE] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800">
-                <span className="text-stone-500 dark:text-stone-400 block text-[9px]">Hold Temp &amp; Sickness</span>
-                <strong className="text-rose-700 dark:text-rose-300 text-[10.5px] leading-tight block">
-                  {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].tastCorrelations.holdTemperature}
-                </strong>
-              </div>
-            </div>
-
-            <div className="p-2 rounded-xl bg-[#FAF6EE] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800 text-[10.5px] font-mono space-y-1">
-              <div className="flex justify-between">
-                <span className="text-stone-500 dark:text-stone-400">Mortality Rate:</span>
-                <strong className="text-rose-600 dark:text-rose-400 font-bold">
-                  {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].tastCorrelations.mortalityRate}
-                </strong>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-stone-500 dark:text-stone-400">Trade Volume:</span>
-                <strong className="text-amber-700 dark:text-amber-300 font-bold">
-                  {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].tastCorrelations.departureShare}
-                </strong>
-              </div>
-            </div>
-
-            <p className="text-[10px] text-stone-600 dark:text-stone-400 leading-tight">
-              {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].tastCorrelations.climateImpactNote}
-            </p>
-
-            {onNavigateToCartography && (
-              <button
-                onClick={onNavigateToCartography}
-                className="w-full mt-1.5 px-3 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white text-[11px] font-mono font-bold flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
+              {/* Sliding Panel */}
+              <motion.aside
+                id="route-seasonality-simulator-panel"
+                role="region"
+                aria-label="Route Seasonality Simulator Panel"
+                initial={{ x: '100%', opacity: 0.6 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: '100%', opacity: 0 }}
+                transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+                className="absolute top-0 right-0 bottom-0 w-full sm:w-[390px] md:w-[420px] bg-[#FAF6EE]/98 dark:bg-zinc-900/98 backdrop-blur-md border-l border-[#DCD3C1] dark:border-zinc-800 shadow-2xl z-30 flex flex-col text-left overflow-hidden"
               >
-                <Compass className="w-3.5 h-3.5" />
-                <span>Open Cartography GIS Lab ➔</span>
-              </button>
-            )}
-          </div>
-        </div>
+                {/* Header */}
+                <div className="p-4 border-b border-[#DCD3C1] dark:border-zinc-800 flex items-center justify-between gap-3 bg-white/60 dark:bg-zinc-950/60 shrink-0">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="p-2 rounded-xl bg-orange-100 dark:bg-orange-950/60 text-[#C2410C] dark:text-orange-400 shrink-0 border border-orange-200 dark:border-orange-900/50">
+                      <Wind className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="font-extrabold text-xs text-[#1C1917] dark:text-zinc-100 uppercase tracking-wider truncate">
+                        Route Seasonality Simulator
+                      </h4>
+                      <p className="text-[10px] text-[#78716C] dark:text-zinc-400 truncate">
+                        Middle Passage meteorological dynamics
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="hidden sm:inline-block text-[9px] font-mono px-1.5 py-0.5 rounded-md bg-stone-200/70 dark:bg-zinc-800 text-stone-600 dark:text-zinc-400 border border-stone-300 dark:border-zinc-700">
+                      Esc
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleToggleSeasonality}
+                      aria-label="Close Seasonality Simulator"
+                      className="p-1.5 rounded-lg text-stone-500 hover:text-stone-800 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-stone-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Body Content */}
+                <div className="p-4 space-y-4 text-left overflow-y-auto max-h-full scrollbar-thin flex-1">
+                  {/* Interactive Season Picker */}
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#78716C] dark:text-zinc-400">
+                      Select Departure Season:
+                    </span>
+                    <div className="grid grid-cols-2 gap-1.5 text-xs font-semibold">
+                      {[
+                        { id: 'summer', label: 'Summer ☀️', desc: 'Jun–Aug' },
+                        { id: 'autumn', label: 'Autumn 🍂', desc: 'Sept–Nov' },
+                        { id: 'winter', label: 'Winter ❄️', desc: 'Dec–Feb' },
+                        { id: 'spring', label: 'Spring 🌱', desc: 'Mar–May' }
+                      ].map(season => (
+                        <button
+                          key={season.id}
+                          type="button"
+                          onClick={() => setSelectedSeason(season.id as any)}
+                          className={`p-2 rounded-xl text-left border transition-all cursor-pointer ${
+                            selectedSeason === season.id
+                              ? 'bg-amber-100 dark:bg-amber-950/40 border-amber-500 text-amber-900 dark:text-amber-200'
+                              : 'bg-white dark:bg-zinc-800 border-[#DCD3C1] dark:border-zinc-700 hover:bg-[#FAF6EE] dark:hover:bg-zinc-750 text-[#1C1917] dark:text-white'
+                          }`}
+                        >
+                          <p className="font-bold text-[11px]">{season.label}</p>
+                          <p className="text-[9px] text-[#78716C] dark:text-zinc-400 font-mono">{season.desc}</p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Wind Layer Toggle */}
+                  <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-zinc-950 border border-[#DCD3C1] dark:border-zinc-800">
+                    <span className="text-xs font-mono font-semibold text-[#57534E] dark:text-zinc-300">
+                      Overlay Trade Winds
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowTradeWinds(!showTradeWinds)}
+                      className={`px-2 py-1 rounded-md text-[10px] font-mono font-bold border transition-all cursor-pointer ${
+                        showTradeWinds
+                          ? 'bg-[#DCFCE7] dark:bg-emerald-950 border-emerald-500 text-emerald-800 dark:text-emerald-300'
+                          : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-zinc-500'
+                      }`}
+                    >
+                      {showTradeWinds ? 'ON' : 'OFF'}
+                    </button>
+                  </div>
+
+                  {/* Seasonal Simulation Feedback */}
+                  <div className="p-3 rounded-2xl bg-white dark:bg-zinc-950 border border-[#DCD3C1] dark:border-zinc-800 space-y-2.5">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#78716C] dark:text-zinc-400">
+                      Active Meteorological State:
+                    </span>
+                    
+                    <div className="space-y-1">
+                      <p className="text-xs font-extrabold text-[#1C1917] dark:text-zinc-200">
+                        {selectedSeason === 'summer' && "Steady Northeast Trade Winds"}
+                        {selectedSeason === 'autumn' && "Doldrums & Hurricane Season"}
+                        {selectedSeason === 'winter' && "Accelerated Winter Northeast Trades"}
+                        {selectedSeason === 'spring' && "Moderate Equinoctial Winds"}
+                      </p>
+                      <p className="text-[10.5px] text-[#57534E] dark:text-zinc-400 leading-relaxed">
+                        {selectedSeason === 'summer' && "High-humidity trade winds power stable westward drifts, with warm temperature profiles elevating disease risk in holding spaces."}
+                        {selectedSeason === 'autumn' && "Frequent windless calms (doldrums) stall ships in the horse latitudes for weeks, while severe tropical hurricanes threaten catastrophic loss."}
+                        {selectedSeason === 'winter' && "Powerful, cold, persistent trade winds accelerate transit speeds significantly, drastically lowering days spent at sea."}
+                        {selectedSeason === 'spring' && "Winds are steady but mild; standard current flows present moderate navigation windows across both Hemispheres."}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-[#DCD3C1] dark:border-zinc-800 grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <p className="text-[9px] text-[#78716C] dark:text-zinc-500 font-mono uppercase">Wind Speed</p>
+                        <p className="font-extrabold text-amber-600">
+                          {selectedSeason === 'summer' && "1.0x (Standard)"}
+                          {selectedSeason === 'autumn' && "0.55x (Calms)"}
+                          {selectedSeason === 'winter' && "1.55x (Strong)"}
+                          {selectedSeason === 'spring' && "0.95x (Moderate)"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] text-[#78716C] dark:text-zinc-500 font-mono uppercase">Holding Temp</p>
+                        <p className="font-extrabold text-rose-600">
+                          {selectedSeason === 'summer' && "Very Hot (31°C)"}
+                          {selectedSeason === 'autumn' && "Extreme Heat (34°C)"}
+                          {selectedSeason === 'winter' && "Cooler (24°C)"}
+                          {selectedSeason === 'spring' && "Warm (28°C)"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Voyage Path Simulation Matrix */}
+                  <div className="p-3 rounded-2xl bg-[#FAF6EE] dark:bg-zinc-950 border border-[#DCD3C1] dark:border-zinc-800 space-y-3">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#78716C] dark:text-zinc-400 flex items-center gap-1">
+                      <Navigation className="w-3.5 h-3.5" />
+                      <span>Simulated Voyage Dossier</span>
+                    </span>
+
+                    {selectedRoute ? (
+                      <div className="space-y-3">
+                        <div className="text-xs font-bold text-[#1C1917] dark:text-zinc-200">
+                          {selectedRoute.sourceRegion} ➔ {selectedRoute.targetRegion}
+                        </div>
+
+                        {/* Duration comparison */}
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-[11px] font-medium text-[#78716C] dark:text-zinc-400">
+                            <span>Simulated Transit:</span>
+                            <span className="font-bold text-[#1C1917] dark:text-zinc-200">
+                              {Math.round(62 * (
+                                selectedSeason === 'summer' ? 1.0 :
+                                selectedSeason === 'autumn' ? 1.3 :
+                                selectedSeason === 'winter' ? 0.8 : 1.15
+                              ))} Days
+                            </span>
+                          </div>
+                          <div className="w-full bg-[#E8DFCE] dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full rounded-full transition-all duration-500 ${
+                                selectedSeason === 'winter' ? 'bg-emerald-500' :
+                                selectedSeason === 'autumn' ? 'bg-rose-500' : 'bg-amber-500'
+                              }`}
+                              style={{ 
+                                width: `${
+                                  selectedSeason === 'winter' ? '40%' :
+                                  selectedSeason === 'autumn' ? '95%' : '65%'
+                                }` 
+                              }}
+                            />
+                          </div>
+                          <p className="text-[9px] text-right text-[#78716C] dark:text-zinc-500 italic">
+                            {selectedSeason === 'winter' && "Fast winter transit reduces risk"}
+                            {selectedSeason === 'autumn' && "Trapped in calms; severe rations crisis"}
+                            {selectedSeason === 'summer' && "Standard summer middle passage duration"}
+                            {selectedSeason === 'spring' && "Typical spring navigation time"}
+                          </p>
+                        </div>
+
+                        {/* Mortality Rate Gradient */}
+                        <div className="p-2 rounded-xl bg-[#FDFBF7] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800 text-xs">
+                          <p className="text-[9px] text-[#78716C] dark:text-zinc-500 font-mono uppercase">Expected Mortality Gradient</p>
+                          <div className="flex items-baseline gap-1.5 mt-1">
+                            <span className={`text-lg font-black ${
+                              selectedSeason === 'winter' ? 'text-emerald-600' :
+                              selectedSeason === 'autumn' ? 'text-rose-600' : 'text-amber-600'
+                            }`}>
+                              {(selectedRoute.avgMortalityRate + (
+                                selectedSeason === 'summer' ? 0.5 :
+                                selectedSeason === 'autumn' ? 4.0 :
+                                selectedSeason === 'winter' ? -1.8 : 1.0
+                              )).toFixed(1)}%
+                            </span>
+                            <span className="text-[10px] text-[#78716C] dark:text-zinc-500">
+                              (Baseline: {selectedRoute.avgMortalityRate}%)
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-[11px] text-[#78716C] dark:text-zinc-500 italic">
+                        Hover or click any transatlantic flow arc to inspect simulated crossing durations and mortality gradients under the active meteorological forces.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Real-Time Hydrodynamic Vector Stream Diagnostic Card */}
+                  <div className="p-3 rounded-2xl bg-white dark:bg-zinc-950 border border-cyan-500/30 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-400 flex items-center gap-1.5">
+                        <Waves className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 animate-pulse" />
+                        <span>Hydrodynamic Stream Engine</span>
+                      </span>
+                      <span className="text-[9.5px] font-mono px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 font-bold">
+                        {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].quarterLabel.split(' ')[0]}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono pt-1">
+                      <div className="p-1.5 rounded-lg bg-[#FAF6EE] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800">
+                        <span className="text-stone-500 dark:text-stone-400 block text-[9px]">Wind Speed</span>
+                        <strong className="text-cyan-800 dark:text-cyan-300 text-[10.5px] leading-tight block">
+                          {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].tastCorrelations.windSpeedDisplay}
+                        </strong>
+                      </div>
+                      <div className="p-1.5 rounded-lg bg-[#FAF6EE] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800">
+                        <span className="text-stone-500 dark:text-stone-400 block text-[9px]">Hold Temp &amp; Sickness</span>
+                        <strong className="text-rose-700 dark:text-rose-300 text-[10.5px] leading-tight block">
+                          {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].tastCorrelations.holdTemperature}
+                        </strong>
+                      </div>
+                    </div>
+
+                    <div className="p-2 rounded-xl bg-[#FAF6EE] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800 text-[10.5px] font-mono space-y-1">
+                      <div className="flex justify-between">
+                        <span className="text-stone-500 dark:text-stone-400">Mortality Rate:</span>
+                        <strong className="text-rose-600 dark:text-rose-400 font-bold">
+                          {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].tastCorrelations.mortalityRate}
+                        </strong>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-stone-500 dark:text-stone-400">Trade Volume:</span>
+                        <strong className="text-amber-700 dark:text-amber-300 font-bold">
+                          {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].tastCorrelations.departureShare}
+                        </strong>
+                      </div>
+                    </div>
+
+                    <p className="text-[10px] text-stone-600 dark:text-stone-400 leading-tight">
+                      {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].tastCorrelations.climateImpactNote}
+                    </p>
+
+                    {onNavigateToCartography && (
+                      <button
+                        type="button"
+                        onClick={onNavigateToCartography}
+                        className="w-full mt-1.5 px-3 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white text-[11px] font-mono font-bold flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                      >
+                        <Compass className="w-3.5 h-3.5" />
+                        <span>Open Cartography GIS Lab ➔</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </motion.aside>
+            </>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* 3. Temporal Timeline Controller / Scrubber */}

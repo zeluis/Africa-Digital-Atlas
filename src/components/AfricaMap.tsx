@@ -323,6 +323,9 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   const [showPowerPlants, setShowPowerPlants] = useState<boolean>(false);
   const [showProtectedAreas, setShowProtectedAreas] = useState<boolean>(false);
   const [showThematicOverlays, setShowThematicOverlays] = useState<boolean>(true);
+  const [showItcz, setShowItcz] = useState<boolean>(false);
+  const [showSolarTerminator, setShowSolarTerminator] = useState<boolean>(false);
+  const [geoCoordinatesHud, setGeoCoordinatesHud] = useState<{ lat: string; lon: string } | null>(null);
   const [activeAkpCategory, setActiveAkpCategory] = useState<AkpCategory>('all');
   const [layerVisibility, setLayerVisibility] = useState<LayerVisibilityState>(DEFAULT_LAYER_VISIBILITY);
   const [isCatalogueModalOpen, setIsCatalogueModalOpen] = useState<boolean>(false);
@@ -1160,7 +1163,36 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
-      setCursorPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      const clientX = e.clientX - rect.left;
+      const clientY = e.clientY - rect.top;
+      setCursorPos({ x: clientX, y: clientY });
+
+      // Precise Geodesic latitude/longitude computation
+      const svgW = rect.width;
+      const svgH = rect.height;
+      if (svgW > 0 && svgH > 0) {
+        const scaleX = 5796 / svgW;
+        const scaleY = 5867 / svgH;
+        const svgX = clientX * scaleX;
+        const svgY = clientY * scaleY;
+        
+        // Account for pan and zoom relative to center (2898, 2933)
+        const mapX = (svgX - panOffset.x - 2898) / zoomLevel + 2898;
+        const mapY = (svgY - panOffset.y - 2933) / zoomLevel + 2933;
+        
+        // Prime meridian 0° is at x=1500, 20°E is at x=2800 -> 65 px / degree
+        // Equator 0° is at y=3280, 23.4°N is at y=1650 -> 69.6 px / degree
+        const latDeg = (3280 - mapY) / 69.6;
+        const lonDeg = (mapX - 1500) / 65.0;
+        
+        if (latDeg >= -42 && latDeg <= 42 && lonDeg >= -28 && lonDeg <= 60) {
+          const latStr = `${Math.abs(latDeg).toFixed(2)}°${latDeg >= 0 ? 'N' : 'S'}`;
+          const lonStr = `${Math.abs(lonDeg).toFixed(2)}°${lonDeg >= 0 ? 'E' : 'W'}`;
+          setGeoCoordinatesHud({ lat: latStr, lon: lonStr });
+        } else {
+          setGeoCoordinatesHud(null);
+        }
+      }
     }
 
     if (!isDragging) return;
@@ -1624,8 +1656,13 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             })}
           </div>
 
-          {/* Unified Graticule & Cartouche Pill */}
+          {/* Unified Cartographic Extensions Pill (Graticule, ITCZ, Terminator, Cartouche) */}
           <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl shadow-2xs gap-0.5 shrink-0">
+            <div className="hidden lg:flex items-center gap-1 px-2 py-1 text-[11px] font-bold text-zinc-500 dark:text-zinc-400 select-none">
+              <Compass className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+              <span className="text-[10px] uppercase tracking-wider font-mono">Cartography:</span>
+            </div>
+
             <button
               type="button"
               onClick={() => setShowGraticuleAndCompass(prev => !prev)}
@@ -1634,11 +1671,43 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   ? 'bg-sky-500/15 text-sky-700 dark:text-sky-300 font-bold'
                   : 'text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800'
               }`}
-              title="Toggle Graticule & Compass Rose"
+              title="Toggle Graticule Coordinate Lines & Nautical Compass Rose"
             >
-              <Grid className="w-3 h-3" />
+              <Grid className="w-3 h-3 text-sky-500" />
               <span>Graticule ({showGraticuleAndCompass ? 'ON' : 'OFF'})</span>
             </button>
+
+            {isFinalMode && (
+              <button
+                type="button"
+                onClick={() => setShowItcz(prev => !prev)}
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800 ${
+                  showItcz
+                    ? 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 font-bold'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800'
+                }`}
+                title="Toggle Seasonal Intertropical Convergence Zone (ITCZ) July Monsoon & January Austral Fronts"
+              >
+                <Droplet className="w-3 h-3 text-cyan-500" />
+                <span>ITCZ ({showItcz ? 'ON' : 'OFF'})</span>
+              </button>
+            )}
+
+            {isFinalMode && (
+              <button
+                type="button"
+                onClick={() => setShowSolarTerminator(prev => !prev)}
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800 ${
+                  showSolarTerminator
+                    ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300 font-bold'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800'
+                }`}
+                title="Toggle Equinoctial Solar Terminator Day/Night Twilight Isochron Curve"
+              >
+                <SunMedium className="w-3 h-3 text-amber-500" />
+                <span>Terminator ({showSolarTerminator ? 'ON' : 'OFF'})</span>
+              </button>
+            )}
 
             {isFinalMode && (
               <button
@@ -1646,12 +1715,12 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 onClick={() => setShowCartouche(prev => !prev)}
                 className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800 ${
                   showCartouche
-                    ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300 font-bold'
+                    ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800'
                 }`}
-                title="Toggle Official Cartographic Cartouche & Scale Bar"
+                title="Toggle Official Cartographic Cartouche & Geodetic Scale Bar"
               >
-                <Compass className="w-3 h-3 text-amber-500" />
+                <Compass className="w-3 h-3 text-emerald-500" />
                 <span>Cartouche ({showCartouche ? 'ON' : 'OFF'})</span>
               </button>
             )}
@@ -1744,6 +1813,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <span>Flows ({showThematicOverlays ? 'ON' : 'OFF'})</span>
             </button>
           )}
+
 
           {/* Unified Admin-1 Inspector & Thematic Layer Deck Pill (Right beside Flows button) */}
           {isFinalMode && (
@@ -1848,6 +1918,24 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <Quote className="w-3 h-3 text-amber-600 dark:text-amber-400" />
               <span>Cite (DOI)</span>
             </button>
+
+            {/* Real-Time Precision WGS 84 Geodesic Coordinates HUD in Unified Header */}
+            <div 
+              className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-[11px] font-mono text-zinc-600 dark:text-zinc-400 shadow-2xs select-none"
+              title="Real-time WGS 84 Geodesic coordinates derived from native 5,796 × 5,867 spatial grid"
+            >
+              <Compass className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span className="font-bold text-zinc-500 dark:text-zinc-400 uppercase text-[10px] tracking-wider">WGS 84:</span>
+              {geoCoordinatesHud ? (
+                <span className="font-bold text-zinc-900 dark:text-zinc-100">
+                  {geoCoordinatesHud.lat} · {geoCoordinatesHud.lon}
+                </span>
+              ) : (
+                <span className="text-zinc-400 dark:text-zinc-500 font-medium text-[10px]">
+                  5,796 × 5,867 Coordinate Space
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Right: Docked Zoom Controls & Export Pill */}
@@ -2461,6 +2549,8 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 showPowerPlants={showPowerPlants}
                 showProtectedAreas={showProtectedAreas}
                 showThematicOverlays={showThematicOverlays}
+                showItcz={showItcz}
+                showSolarTerminator={showSolarTerminator}
                 activeThematicTheme={activeAkpCategory}
                 layerVisibility={layerVisibility}
                 hoveredThematicItem={hoveredThematicItem}
@@ -2856,6 +2946,18 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <span>Inspect Country Details</span>
               <Sparkles className="w-3.5 h-3.5 text-white/80" />
             </button>
+          </div>
+        )}
+
+        {/* Precision Geodesic Coordinates HUD (WGS 84 Readout) */}
+        {geoCoordinatesHud && (
+          <div className="absolute bottom-3 left-3 z-20 pointer-events-none flex items-center gap-2 px-2.5 py-1 rounded-lg bg-white/90 dark:bg-zinc-950/90 border border-zinc-200/90 dark:border-zinc-800/90 backdrop-blur-md shadow-xs text-[11px] font-mono text-zinc-700 dark:text-zinc-300">
+            <Compass className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span className="font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider text-[10px]">WGS 84</span>
+            <span className="text-zinc-300 dark:text-zinc-700">·</span>
+            <span className="font-bold text-zinc-900 dark:text-zinc-100">{geoCoordinatesHud.lat}</span>
+            <span className="text-zinc-300 dark:text-zinc-700">·</span>
+            <span className="font-bold text-zinc-900 dark:text-zinc-100">{geoCoordinatesHud.lon}</span>
           </div>
         )}
       </div>

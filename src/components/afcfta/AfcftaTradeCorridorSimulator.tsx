@@ -488,7 +488,113 @@ Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
           </div>
         </div>
 
-        {/* Step 4: Waypoint Breakdown & OSBP Inspection */}
+        {/* Step 4: Topographic Elevation Profile & Transit Cross-Section */}
+        <div className="p-5 rounded-2xl border border-stone-200/80 dark:border-stone-800 bg-white/60 dark:bg-stone-900/40 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 dark:border-stone-800/80 pb-3">
+            <div>
+              <h4 className="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
+                <TrendingUp className="w-4 h-4 text-emerald-600" />
+                Multimodal Corridor Topographic Cross-Section &amp; Elevation Gradient
+              </h4>
+              <p className="text-[11px] text-stone-500 font-mono">
+                Sea-Level to Highland Transit: {selectedCorridor.originPort} ➔ {selectedCorridor.destinationHub} ({selectedCorridor.distanceKm.toLocaleString()} km)
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 font-bold">
+                Max Incline: {selectedCorridor.region === 'Eastern Africa' ? '2,200m (Rift Escarpment)' : '480m (Sahelian Plateau)'}
+              </span>
+            </div>
+          </div>
+
+          {/* Procedural SVG Elevation Canvas */}
+          <div className="h-36 w-full relative bg-stone-50/80 dark:bg-stone-950/60 rounded-xl p-3 border border-stone-200/60 dark:border-stone-800/60 overflow-hidden">
+            <svg viewBox="0 0 800 120" className="w-full h-full preserve-3d" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="corridorElevationGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#10b981" stopOpacity="0.4" />
+                  <stop offset="60%" stopColor="#059669" stopOpacity="0.15" />
+                  <stop offset="100%" stopColor="#047857" stopOpacity="0.0" />
+                </linearGradient>
+              </defs>
+
+              {/* Grid Lines */}
+              <line x1="0" y1="30" x2="800" y2="30" stroke="#78716c" strokeWidth="0.5" strokeDasharray="4 4" opacity="0.3" />
+              <line x1="0" y1="70" x2="800" y2="70" stroke="#78716c" strokeWidth="0.5" strokeDasharray="4 4" opacity="0.3" />
+              <line x1="0" y1="110" x2="800" y2="110" stroke="#78716c" strokeWidth="0.8" opacity="0.4" />
+
+              {/* Dynamic Terrain Profile Path based on selected corridor */}
+              {selectedCorridor.region === 'Eastern Africa' ? (
+                // Great Rift Valley Climb: Mombasa (0m) -> Nairobi (1795m) -> Naivasha Rift (1890m) -> Mau Summit (2600m) -> Eldoret -> Malaba -> Kampala (1190m) -> Kigali (1567m)
+                <>
+                  <path
+                    d="M 0,110 Q 150,105 240,45 T 450,20 T 600,65 T 750,38 L 800,42 L 800,110 L 0,110 Z"
+                    fill="url(#corridorElevationGrad)"
+                  />
+                  <path
+                    d="M 0,110 Q 150,105 240,45 T 450,20 T 600,65 T 750,38 L 800,42"
+                    fill="none"
+                    stroke="#059669"
+                    strokeWidth="2.5"
+                  />
+                </>
+              ) : selectedCorridor.region === 'Western Africa' ? (
+                // West African Coastal Corridor: Dakar / Abidjan / Lagos -> Interior Sahel Plateau
+                <>
+                  <path
+                    d="M 0,110 Q 200,95 400,75 T 650,55 L 800,50 L 800,110 L 0,110 Z"
+                    fill="url(#corridorElevationGrad)"
+                  />
+                  <path
+                    d="M 0,110 Q 200,95 400,75 T 650,55 L 800,50"
+                    fill="none"
+                    stroke="#0284c7"
+                    strokeWidth="2.5"
+                  />
+                </>
+              ) : (
+                // Central / Southern Corridor
+                <>
+                  <path
+                    d="M 0,110 Q 220,80 420,40 T 700,50 L 800,45 L 800,110 L 0,110 Z"
+                    fill="url(#corridorElevationGrad)"
+                  />
+                  <path
+                    d="M 0,110 Q 220,80 420,40 T 700,50 L 800,45"
+                    fill="none"
+                    stroke="#7c3aed"
+                    strokeWidth="2.5"
+                  />
+                </>
+              )}
+
+              {/* Waypoint Markers */}
+              {selectedCorridor.borderPosts.map((bp, idx) => {
+                const total = selectedCorridor.borderPosts.length;
+                const posX = 150 + ((idx + 1) / (total + 1)) * 550;
+                return (
+                  <g key={bp.id} transform={`translate(${posX}, 40)`}>
+                    <line x1="0" y1="0" x2="0" y2="70" stroke="#d97706" strokeWidth="1" strokeDasharray="2 2" opacity="0.6" />
+                    <circle cx="0" cy="0" r="4" fill="#f59e0b" stroke="#ffffff" strokeWidth="1.5" />
+                    <text x="0" y="-8" textAnchor="middle" fill="#78716c" fontSize="8" fontFamily="monospace" fontWeight="bold">
+                      {bp.name.split(' ')[0]}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Origin Port & Destination Labels */}
+              <text x="8" y="102" fill="#059669" fontSize="9" fontFamily="monospace" fontWeight="900">
+                ⚓ {selectedCorridor.originPort} (0m)
+              </text>
+              <text x="792" y="32" textAnchor="end" fill="#047857" fontSize="9" fontFamily="monospace" fontWeight="900">
+                📍 {selectedCorridor.destinationHub}
+              </text>
+            </svg>
+          </div>
+        </div>
+
+        {/* Step 5: Waypoint Breakdown & OSBP Inspection */}
         <div className="p-5 rounded-2xl border border-stone-200/80 dark:border-stone-800 bg-white/60 dark:bg-stone-900/40 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>

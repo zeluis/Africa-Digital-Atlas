@@ -51,9 +51,13 @@ import {
   Trees,
   Star,
   FileText,
-  Printer
+  Printer,
+  Pickaxe,
+  BatteryCharging,
+  ArrowUpRight
 } from 'lucide-react';
 import { CountryFactsheetModal } from '../components/CountryFactsheetModal';
+import { getCountryMineralsProfile, getCountryTradeFlows } from '../data/criticalMineralsData';
 
 interface CountryViewProps {
   entityId: string;
@@ -113,6 +117,16 @@ export const CountryView: React.FC<CountryViewProps> = ({
       population: o.value
     }));
   }, [entity.id]);
+
+  // Critical Energy Transition Minerals Profile
+  const mineralsProfile = useMemo(() => {
+    return getCountryMineralsProfile(entity.id, entity.name);
+  }, [entity.id, entity.name]);
+
+  // Bilateral & Regional Trade Flow Profile
+  const tradeProfile = useMemo(() => {
+    return getCountryTradeFlows(entity.id, entity.name);
+  }, [entity.id, entity.name]);
 
   const tabs = [
     { id: 'overview' as TabType, label: t('tab.overview', 'Overview & Facts'), icon: <Globe className="w-4 h-4" /> },
@@ -598,6 +612,169 @@ export const CountryView: React.FC<CountryViewProps> = ({
                     <Bar dataKey="growth" fill="#10b981" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Critical Energy Transition Minerals Card */}
+            <div 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-5 shadow-xs transition-colors"
+              style={{ backgroundColor: countryCalmBg }}
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-200/60 dark:border-zinc-800 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-400">
+                    <Pickaxe className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                      Critical Energy Transition Minerals &amp; Geological Assets
+                    </h3>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      Geological reserves, global production rank, and clean technology value addition
+                    </p>
+                  </div>
+                </div>
+                <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
+                  IEA &amp; USGS Mineral Survey
+                </div>
+              </div>
+
+              <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed font-sans">
+                {mineralsProfile.summary}
+              </p>
+
+              {/* Minerals Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                {mineralsProfile.keyMinerals.map((item, idx) => (
+                  <div 
+                    key={idx} 
+                    className="p-3.5 rounded-xl bg-white/70 dark:bg-zinc-900/70 border border-zinc-200/70 dark:border-zinc-800/80 space-y-2 shadow-2xs"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-mono font-black flex items-center justify-center">
+                          {item.chemicalSymbol}
+                        </span>
+                        <div>
+                          <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100">
+                            {item.mineral}
+                          </div>
+                          <div className="text-[10px] text-zinc-500 font-medium">
+                            {item.category}
+                          </div>
+                        </div>
+                      </div>
+
+                      {item.globalSharePct && (
+                        <div className="text-right">
+                          <span className="font-mono font-extrabold text-sm text-emerald-700 dark:text-emerald-400">
+                            {item.globalSharePct}%
+                          </span>
+                          <span className="text-[9.5px] block font-mono text-zinc-400">
+                            Global Share
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="text-[11px] text-zinc-600 dark:text-zinc-400">
+                      <span className="text-zinc-500 font-medium">Application: </span>
+                      {item.strategicApplication}
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-zinc-200/50 dark:border-zinc-800/50 text-[10.5px]">
+                      <span className="text-zinc-500 font-medium">
+                        Mining Basin: <strong className="text-zinc-700 dark:text-zinc-300 font-semibold">{item.primaryLocations.join(', ')}</strong>
+                      </span>
+                      <span className="font-mono text-[10px] text-cyan-700 dark:text-cyan-400 font-semibold">
+                        {item.refiningStatus}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Strategic Ambition Callout */}
+              <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-xs text-amber-950 dark:text-amber-200 space-y-1">
+                <div className="font-bold flex items-center gap-1.5 text-amber-900 dark:text-amber-300">
+                  <BatteryCharging className="w-3.5 h-3.5" />
+                  <span>Domestic Beneficiation &amp; Value Addition Strategy</span>
+                </div>
+                <p className="leading-relaxed text-[11.5px] opacity-90">
+                  {mineralsProfile.refiningAmbition}
+                </p>
+              </div>
+            </div>
+
+            {/* Bilateral Trade Flow & Destination Distribution Card */}
+            <div 
+              className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-5 shadow-xs transition-colors"
+              style={{ backgroundColor: countryCalmBg }}
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-200/60 dark:border-zinc-800 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-700 dark:text-cyan-400">
+                    <ArrowUpRight className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                      Trade Destination Distribution &amp; AfCFTA Integration
+                    </h3>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      Export market shares and intra-continental economic exchange
+                    </p>
+                  </div>
+                </div>
+                <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
+                  UN Comtrade &amp; Afreximbank
+                </div>
+              </div>
+
+              {/* Visual Multi-Segment Distribution Bar */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                  <span>Export Markets Distribution (%)</span>
+                  <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                    AfCFTA Intra-African Share: {tradeProfile.intraAfricanSharePct}%
+                  </span>
+                </div>
+                <div className="h-4 w-full rounded-lg overflow-hidden flex shadow-2xs border border-zinc-200/60 dark:border-zinc-800">
+                  {tradeProfile.flows.map((flow, idx) => (
+                    <div 
+                      key={idx}
+                      style={{ width: `${flow.sharePct}%`, backgroundColor: flow.color }}
+                      title={`${flow.destination}: ${flow.sharePct}%`}
+                      className="h-full transition-all hover:opacity-85"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Trade Flow Legend Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-1">
+                {tradeProfile.flows.map((flow, idx) => (
+                  <div 
+                    key={idx}
+                    className="p-3 rounded-xl bg-white/70 dark:bg-zinc-900/70 border border-zinc-200/70 dark:border-zinc-800/80 space-y-1 text-xs"
+                  >
+                    <div className="flex items-center justify-between gap-1.5">
+                      <div className="flex items-center gap-1.5 font-bold text-zinc-900 dark:text-zinc-100 text-xs">
+                        <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: flow.color }} />
+                        <span className="truncate">{flow.destination}</span>
+                      </div>
+                      <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">
+                        {flow.sharePct}%
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-zinc-500 truncate">
+                      {flow.primaryGoods}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-2 border-t border-zinc-200/60 dark:border-zinc-800 text-[11px] text-zinc-500 dark:text-zinc-400">
+                {tradeProfile.afcftaCorridorNote}
               </div>
             </div>
           </div>

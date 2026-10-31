@@ -75,12 +75,31 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   // Correlation state
   const [corrIndicatorX, setCorrIndicatorX] = useState<string>('NY.GDP.PCAP.CD');
   const [corrIndicatorY, setCorrIndicatorY] = useState<string>('SP.DYN.LE00.IN');
+  const [bubbleSizing, setBubbleSizing] = useState<'population' | 'uniform'>('population');
+  const [showRegressionLine, setShowRegressionLine] = useState<boolean>(true);
 
   // Time Series state
   const [selectedCountries, setSelectedCountries] = useState<string[]>(['NGA', 'ZAF', 'EGY', 'KEN', 'GHA']);
 
   const allIndicators = useMemo(() => atlas.getAllIndicators(), []);
   const allEntities = useMemo(() => atlas.getAllEntities(), []);
+
+  const handleDownloadChartSvg = (filename: string) => {
+    const svgEl = document.querySelector('.recharts-surface') as SVGSVGElement | null;
+    if (!svgEl) return;
+    const serializer = new XMLSerializer();
+    let source = serializer.serializeToString(svgEl);
+    if (!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
+      source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+    }
+    const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${filename}.svg`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   // Helper to check if an indicator matches a domain
   const indicatorMatchesDomain = (ind: IndicatorDefinition, domainId: string): boolean => {
@@ -172,6 +191,28 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
 
     return { r, r2, slope, intercept, meanX, meanY, strength };
   }, [correlationData]);
+
+  // Bubble-sized or uniform correlation points
+  const effectiveCorrelationData = useMemo(() => {
+    return correlationData.map(d => ({
+      ...d,
+      size: bubbleSizing === 'population' ? d.size : 120
+    }));
+  }, [correlationData, bubbleSizing]);
+
+  // OLS Regression Trendline Points (End-to-End)
+  const trendlineData = useMemo(() => {
+    if (correlationData.length < 2 || !showRegressionLine) return [];
+    const xs = correlationData.map(d => d.x);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const y1 = correlationStats.slope * minX + correlationStats.intercept;
+    const y2 = correlationStats.slope * maxX + correlationStats.intercept;
+    return [
+      { x: minX, y: y1 },
+      { x: maxX, y: y2 }
+    ];
+  }, [correlationData, correlationStats, showRegressionLine]);
 
   // Time Series Dataset
   const timeSeriesData = useMemo(() => {
@@ -679,8 +720,63 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                   Cross-Sectional African Scatter Matrix &amp; Regression
                 </h3>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                  Click any country bubble to inspect its national dossier • Bubble size proportional to population
+                  Click any country bubble to inspect its national dossier • {bubbleSizing === 'population' ? 'Bubble size scaled to population' : 'Uniform dot mode'}
                 </p>
+              </div>
+
+              {/* Scatter Chart Controls */}
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Bubble Sizing Switcher */}
+                <div className="flex items-center rounded-xl bg-zinc-100 dark:bg-zinc-900 p-0.5 border border-zinc-200 dark:border-zinc-800 text-[11px] font-mono">
+                  <button
+                    type="button"
+                    onClick={() => setBubbleSizing('population')}
+                    className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                      bubbleSizing === 'population'
+                        ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold shadow-xs'
+                        : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                    }`}
+                  >
+                    Pop-Scaled
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBubbleSizing('uniform')}
+                    className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                      bubbleSizing === 'uniform'
+                        ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold shadow-xs'
+                        : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                    }`}
+                  >
+                    Uniform
+                  </button>
+                </div>
+
+                {/* Trendline Toggle */}
+                <button
+                  type="button"
+                  onClick={() => setShowRegressionLine(v => !v)}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-mono font-semibold transition-all border cursor-pointer ${
+                    showRegressionLine
+                      ? 'bg-amber-500/15 border-amber-500/40 text-amber-700 dark:text-amber-300'
+                      : 'bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500'
+                  }`}
+                  title="Toggle Ordinary Least Squares (OLS) Linear Regression Line"
+                >
+                  <TrendingUp className="w-3 h-3 text-amber-500" />
+                  <span>OLS Line ({showRegressionLine ? 'ON' : 'OFF'})</span>
+                </button>
+
+                {/* Vector SVG Export */}
+                <button
+                  type="button"
+                  onClick={() => handleDownloadChartSvg('africa_cross_sectional_regression')}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-mono font-semibold bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 transition-colors cursor-pointer"
+                  title="Export Chart as Pure Vector SVG"
+                >
+                  <Download className="w-3 h-3 text-emerald-500" />
+                  <span>Export SVG</span>
+                </button>
               </div>
             </div>
 
@@ -714,13 +810,23 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                     }}
                     formatter={(val: any, name: any) => [val != null && !isNaN(Number(val)) ? Number(val).toLocaleString() : '—', name]}
                   />
+                  <Legend />
                   <Scatter 
                     name="African Nations" 
-                    data={correlationData} 
+                    data={effectiveCorrelationData} 
                     fill="#10b981" 
                     onClick={(node: any) => node?.entityId && onSelectCountry(node.entityId)}
                     cursor="pointer"
                   />
+                  {showRegressionLine && trendlineData.length > 0 && (
+                    <Scatter
+                      name={`OLS Regression (r=${correlationStats.r >= 0 ? '+' : ''}${correlationStats.r.toFixed(2)}, R²=${(correlationStats.r2 * 100).toFixed(0)}%)`}
+                      data={trendlineData}
+                      line={{ stroke: '#f59e0b', strokeWidth: 2.5, strokeDasharray: '6 4' }}
+                      shape={() => null}
+                      legendType="line"
+                    />
+                  )}
                 </ScatterChart>
               </ResponsiveContainer>
             </div>

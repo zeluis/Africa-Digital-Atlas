@@ -17,6 +17,8 @@ export interface AfricaMapFinalLayerProps {
   selectedAdmin1?: { id: string; name: string; countryId?: string } | null;
   showAdmin1Borders: boolean;
   showGraticuleAndCompass?: boolean;
+  showItcz?: boolean;
+  showSolarTerminator?: boolean;
   showCartouche?: boolean;
   activeMetricName?: string;
   showPowerPlants?: boolean;
@@ -57,6 +59,8 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
   selectedAdmin1,
   showAdmin1Borders,
   showGraticuleAndCompass = true,
+  showItcz = false,
+  showSolarTerminator = false,
   showCartouche = true,
   activeMetricName,
   showPowerPlants = false,
@@ -741,6 +745,78 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
           onHoverSite={onHoverUnescoSite || (() => {})}
           onSelectSite={onSelectUnescoSite || (() => {})}
         />
+      )}
+
+      {/* Intertropical Convergence Zone (ITCZ) Seasonal Oscillation Overlay */}
+      {showItcz && (
+        <g id="itcz-oscillation-layer" className="pointer-events-none select-none">
+          {/* July Boreal Summer Monsoon Ingress Band */}
+          <path
+            d="M 100 2150 C 600 2050, 1200 1850, 1800 1800 C 2400 1750, 3100 1950, 3800 2300 C 4400 2600, 5000 2400, 5600 2200 L 5600 2350 C 5000 2550, 4400 2750, 3800 2450 C 3100 2100, 2400 1900, 1800 1950 C 1200 2000, 600 2200, 100 2300 Z"
+            fill="#06b6d4"
+            fillOpacity="0.14"
+          />
+          <path
+            d="M 100 2150 C 600 2050, 1200 1850, 1800 1800 C 2400 1750, 3100 1950, 3800 2300 C 4400 2600, 5000 2400, 5600 2200"
+            fill="none"
+            stroke="#0891b2"
+            strokeWidth="5"
+            strokeDasharray="24 14"
+            opacity="0.85"
+          />
+          <g transform="translate(1820, 1720)">
+            <rect x="0" y="0" width="480" height="52" rx="12" fill="#ffffff" stroke="#0891b2" strokeWidth="2" opacity="0.96" />
+            <text x="240" y="32" textAnchor="middle" fill="#0e7490" fontSize="22" fontFamily="monospace" fontWeight="900">
+              🌧️ ITCZ JULY REACH • BOREAL MONSOON
+            </text>
+          </g>
+
+          {/* January Austral Summer Convergence Band */}
+          <path
+            d="M 400 3100 C 1000 3150, 1600 3300, 2200 3600 C 2800 3900, 3400 4250, 4000 4400 C 4600 4550, 5100 4500, 5600 4400 L 5600 4550 C 5100 4650, 4600 4700, 4000 4550 C 3400 4400, 2800 4050, 2200 3750 C 1600 3450, 1000 3300, 400 3250 Z"
+            fill="#3b82f6"
+            fillOpacity="0.14"
+          />
+          <path
+            d="M 400 3100 C 1000 3150, 1600 3300, 2200 3600 C 2800 3900, 3400 4250, 4000 4400 C 4600 4550, 5100 4500, 5600 4400"
+            fill="none"
+            stroke="#2563eb"
+            strokeWidth="5"
+            strokeDasharray="24 14"
+            opacity="0.85"
+          />
+          <g transform="translate(2520, 4050)">
+            <rect x="0" y="0" width="490" height="52" rx="12" fill="#ffffff" stroke="#2563eb" strokeWidth="2" opacity="0.96" />
+            <text x="245" y="32" textAnchor="middle" fill="#1d4ed8" fontSize="22" fontFamily="monospace" fontWeight="900">
+              🌧️ ITCZ JAN REACH • AUSTRAL FRONT
+            </text>
+          </g>
+        </g>
+      )}
+
+      {/* Solar Terminator Twilight Isochron Curve */}
+      {showSolarTerminator && (
+        <g id="solar-terminator-layer" className="pointer-events-none select-none">
+          <path
+            d="M 1800 -1000 C 2200 500, 2600 1800, 2900 2933 C 3200 4100, 3600 5200, 4000 7000 L 7000 7000 L 7000 -1000 Z"
+            fill="#0f172a"
+            fillOpacity="0.22"
+          />
+          <path
+            d="M 1800 -1000 C 2200 500, 2600 1800, 2900 2933 C 3200 4100, 3600 5200, 4000 7000"
+            fill="none"
+            stroke="#f59e0b"
+            strokeWidth="4"
+            strokeDasharray="18 10"
+            opacity="0.9"
+          />
+          <g transform="translate(2620, 2890)">
+            <rect x="0" y="0" width="540" height="52" rx="12" fill="#0f172a" stroke="#f59e0b" strokeWidth="2" opacity="0.96" />
+            <text x="270" y="33" textAnchor="middle" fill="#fbbf24" fontSize="22" fontFamily="monospace" fontWeight="900">
+              🌓 SOLAR TERMINATOR • TWILIGHT ISOCHRON
+            </text>
+          </g>
+        </g>
       )}
 
       {/* Official Africalia Cartographic Cartouche (Title, Scale Bar, Geodesy, and Copyright Line) */}

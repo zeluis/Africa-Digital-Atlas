@@ -108,7 +108,7 @@ interface NavItemDef {
   renderIcon: (isActive: boolean) => React.ReactNode;
 }
 
-export type SubmenuKey = 'explore' | 'history' | 'reports' | 'regions' | 'analytics';
+export type SubmenuKey = 'explore' | 'history' | 'reports' | 'culture' | 'regions' | 'analytics';
 
 const ACTIVE_SUBMENU_STORAGE_KEY = 'african_geography_active_submenu_key';
 
@@ -159,7 +159,7 @@ const REGION_ID_TO_NAME: Record<RegionNavId, AfricanRegion> = {
 };
 
 const getActiveSubmenuFromTab = (tab: CanonicalNavTab): SubmenuKey | null => {
-  if (tab === 'explore' || tab === 'pillars' || tab === 'blocs' || tab === 'heritage') return 'explore';
+  if (tab === 'explore' || tab === 'pillars' || tab === 'blocs') return 'explore';
   if (
     tab === 'slave-trade' || 
     tab === 'molecular-legacies' || 
@@ -169,8 +169,8 @@ const getActiveSubmenuFromTab = (tab: CanonicalNavTab): SubmenuKey | null => {
     tab === 'archival-cartography'
   ) return 'history';
   if (tab === 'research-directory' || (typeof tab === 'string' && isReportOrPaperTab(tab))) return 'reports';
-  if (tab === 'regions' || tab === 'languages') return 'regions';
-  if (tab === 'analytics' || tab === 'map') return 'analytics';
+  if (tab === 'heritage' || tab === 'languages') return 'culture';
+  if (tab === 'analytics' || tab === 'regions' || tab === 'map') return 'analytics';
   return null;
 };
 
@@ -197,8 +197,8 @@ const getSelectedLinkColor = (tab: CanonicalNavTab, activeRegion?: AfricanRegion
     return { thumb: '#10B981', hover: '#059669' }; // Emerald
   }
 
-  // 3. Explore Group (Nations, Pillars, Blocs, Heritage - Blue active indicator)
-  if (tab === 'explore' || tab === 'pillars' || tab === 'blocs' || tab === 'heritage') {
+  // 3. Explore Group (Nations, Pillars, Blocs - Blue active indicator)
+  if (tab === 'explore' || tab === 'pillars' || tab === 'blocs') {
     return { thumb: '#3B82F6', hover: '#2563EB' }; // Blue
   }
 
@@ -222,13 +222,13 @@ const getSelectedLinkColor = (tab: CanonicalNavTab, activeRegion?: AfricanRegion
     return { thumb: '#F59E0B', hover: '#D97706' }; // Amber
   }
 
-  // 6. Regions Group (Matrix, Languages - Purple active indicator)
-  if (tab === 'regions' || tab === 'languages') {
+  // 6. Culture Group (Heritage, Languages - Purple active indicator)
+  if (tab === 'heritage' || tab === 'languages') {
     return { thumb: '#A855F7', hover: '#9333EA' }; // Purple
   }
 
-  // 7. Analytics Group (Benchmarks, Continental Map - Emerald active indicator)
-  if (tab === 'analytics' || tab === 'map') {
+  // 7. Analytics Group (Benchmarks, Matrix, Map - Emerald active indicator)
+  if (tab === 'analytics' || tab === 'regions' || tab === 'map') {
     return { thumb: '#10B981', hover: '#059669' }; // Emerald
   }
 
@@ -276,7 +276,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   const [isDrawerHovered, setIsDrawerHovered] = useState(false);
 
   // Active group detections
-  const isExploreGroupActive = currentTab === 'explore' || currentTab === 'pillars' || currentTab === 'blocs' || currentTab === 'heritage';
+  const isExploreGroupActive = currentTab === 'explore' || currentTab === 'pillars' || currentTab === 'blocs';
   const isHistoricalLegaciesGroupActive = 
     currentTab === 'slave-trade' || 
     currentTab === 'molecular-legacies' || 
@@ -287,8 +287,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   const isReportsGroupActive = 
     currentTab === 'research-directory' || 
     (typeof currentTab === 'string' && isReportOrPaperTab(currentTab));
-  const isRegionsGroupActive = currentTab === 'regions' || currentTab === 'languages';
-  const isAnalyticsGroupActive = currentTab === 'analytics' || currentTab === 'map';
+  const isCultureGroupActive = currentTab === 'heritage' || currentTab === 'languages';
+  const isAnalyticsGroupActive = currentTab === 'analytics' || currentTab === 'regions' || currentTab === 'map';
 
   // Strictly single open submenu at any time
   const [openSubmenu, setOpenSubmenu] = useState<SubmenuKey | null>(() => {
@@ -296,8 +296,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     if (tabSubmenu) return tabSubmenu;
     try {
       const stored = localStorage.getItem(ACTIVE_SUBMENU_STORAGE_KEY) as SubmenuKey | null;
-      if (stored && ['explore', 'history', 'reports', 'regions', 'analytics'].includes(stored)) {
-        return stored;
+      if (stored && ['explore', 'history', 'reports', 'culture', 'regions', 'analytics'].includes(stored)) {
+        return stored === 'regions' ? 'culture' : stored;
       }
     } catch {}
     return 'history'; // default single open submenu
@@ -334,7 +334,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   const isExploreExpanded = openSubmenu === 'explore';
   const isHistoricalLegaciesExpanded = openSubmenu === 'history';
   const isReportsExpanded = openSubmenu === 'reports';
-  const isRegionsExpanded = openSubmenu === 'regions';
+  const isCultureExpanded = openSubmenu === 'culture' || openSubmenu === 'regions';
   const isAnalyticsExpanded = openSubmenu === 'analytics';
 
   // Helper to render Region SVG Silhouettes with UN Geoscheme brand colors (in vein of AfricaUnLogo)
@@ -409,8 +409,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   const exploreSubItems = [
     { id: 'explore', label: 'African Nations', icon: 'game-icons:africa', badge: '54 Nations' },
     { id: 'pillars', label: 'Thematic Pillars', icon: Grid3X3, badge: 'Framework' },
-    { id: 'blocs', label: 'Regional Blocs', icon: Boxes, badge: 'AU, ECOWAS, EAC' },
-    { id: 'heritage', label: 'Heritage Sites', icon: Landmark, badge: 'UNESCO' }
+    { id: 'blocs', label: 'Regional Blocs', icon: Boxes, badge: 'AU, ECOWAS, EAC' }
   ];
 
   // Submenu items for History (Ultra-Minimal style)
@@ -423,15 +422,16 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     { id: 'archival-cartography', label: 'Cartography', icon: MapIcon, badge: '16th–19th C. GIS' }
   ];
 
-  // Submenu items for Regions (Ultra-Minimal style)
-  const regionsSubItems = [
-    { id: 'regions', label: 'Matrix', icon: Globe2, badge: 'Comparative' },
+  // Submenu items for Culture (Heritage Sites, Languages)
+  const cultureSubItems = [
+    { id: 'heritage', label: 'Heritage Sites', icon: Landmark, badge: 'UNESCO' },
     { id: 'languages', label: 'Languages', icon: LanguagesIcon, badge: '2,000+ Phyla' }
   ];
 
-  // Submenu items for Analytics (Ultra-Minimal style)
+  // Submenu items for Analytics (Benchmarks, Matrix, Map)
   const analyticsSubItems = [
     { id: 'analytics', label: 'Benchmarks', icon: BarChart3, badge: 'Time-series' },
+    { id: 'regions', label: 'Matrix', icon: Globe2, badge: 'Comparative' },
     { id: 'map', label: 'Map', icon: 'gis:search-globe', badge: 'Spatial GIS' }
   ];
 
@@ -826,55 +826,55 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 )}
               </div>
 
-              {/* 5. Regions (Collapsible Accordion: Regional Matrix, Languages) */}
+              {/* 5. Culture (Collapsible Accordion: Heritage Sites, Languages) */}
               <div className="pt-0.5">
                 <button
                   onClick={() => {
-                    openSubmenuExclusively('regions');
-                    onSelectTab(regionsSubItems[0].id as CanonicalNavTab);
+                    openSubmenuExclusively('culture');
+                    onSelectTab(cultureSubItems[0].id as CanonicalNavTab);
                     if (isMobile) onCloseMobile();
                   }}
-                  title={t('nav.regions', 'Regions')}
+                  title={t('nav.culture', 'Culture')}
                   className={`relative w-full flex items-center ${
                     isDesktopCollapsed ? 'justify-center p-2.5' : 'justify-between py-2.5 px-3.5 text-sm'
                   } text-left rounded-2xl transition-all cursor-pointer group ${
-                    isRegionsGroupActive
+                    isCultureGroupActive
                       ? 'bg-purple-500/10 dark:bg-purple-500/15 text-purple-800 dark:text-purple-300 font-bold border border-purple-500/25'
                       : 'text-zinc-600 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200'
                   }`}
                 >
                   <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-3'}`}>
-                    <DynamicIcon icon="streamline-freehand-color:hierarchy-web" className={`w-5 h-5 shrink-0 ${isRegionsGroupActive ? 'text-purple-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
-                    {!isDesktopCollapsed && <span>{t('nav.regions', 'Regions')}</span>}
+                    <Landmark className={`w-5 h-5 shrink-0 ${isCultureGroupActive ? 'text-purple-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                    {!isDesktopCollapsed && <span>{t('nav.culture', 'Culture')}</span>}
                   </div>
                   {!isDesktopCollapsed && (
                     <div 
                       onClick={(e) => {
                         e.stopPropagation();
-                        toggleSubmenuExclusively('regions');
+                        toggleSubmenuExclusively('culture');
                       }}
                       className="flex items-center gap-1.5 p-1 -mr-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-                      title={isRegionsExpanded ? "Collapse Regions submenu" : "Expand Regions submenu"}
+                      title={isCultureExpanded ? "Collapse Culture submenu" : "Expand Culture submenu"}
                     >
                       <span className="text-[10px] font-mono text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md">
-                        {regionsSubItems.length}
+                        {cultureSubItems.length}
                       </span>
-                      {isRegionsExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
+                      {isCultureExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
                     </div>
                   )}
                 </button>
 
                 {!isDesktopCollapsed && (
                   <AnimatePresence initial={false}>
-                    {isRegionsExpanded && (
+                    {isCultureExpanded && (
                       <motion.div
                         variants={submenuContainerVariants}
                         initial="hidden"
                         animate="visible"
                         exit="hidden"
-                        className="overflow-hidden ml-4 pl-3 border-l-2 border-zinc-200 dark:border-zinc-800/80 space-y-1 my-1.5"
+                        className="overflow-hidden ml-4 pl-3 border-l-2 border-purple-300/40 dark:border-purple-800/80 space-y-1 my-1.5"
                       >
-                        {regionsSubItems.map(sub => {
+                        {cultureSubItems.map(sub => {
                           const isSubActive = currentTab === sub.id;
                           return (
                             <motion.div key={sub.id} variants={submenuItemVariants}>
@@ -890,7 +890,14 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0 pr-1">
-                                  <DynamicIcon icon={sub.icon} className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-purple-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                                  {typeof sub.icon === 'string' ? (
+                                    <DynamicIcon icon={sub.icon} className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-purple-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                                  ) : (
+                                    (() => {
+                                      const SubIconComponent = sub.icon as any;
+                                      return <SubIconComponent className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-purple-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />;
+                                    })()
+                                  )}
                                   <div className="flex flex-col min-w-0">
                                     <span className="truncate">{sub.label}</span>
                                     <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
@@ -971,7 +978,14 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0 pr-1">
-                                  <DynamicIcon icon={sub.icon} className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-emerald-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                                  {typeof sub.icon === 'string' ? (
+                                    <DynamicIcon icon={sub.icon} className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-emerald-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                                  ) : (
+                                    (() => {
+                                      const SubIconComponent = sub.icon as any;
+                                      return <SubIconComponent className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-emerald-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />;
+                                    })()
+                                  )}
                                   <div className="flex flex-col min-w-0">
                                     <span className="truncate">{sub.label}</span>
                                     <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>

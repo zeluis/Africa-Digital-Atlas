@@ -1,4 +1,4 @@
-import React, { useState, useMemo, Suspense } from 'react';
+import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import { lazyWithRetry } from '../utils/lazyWithRetry';
 import { 
   CANONICAL_VOYAGES, 
@@ -26,16 +26,18 @@ import {
 } from '../data/slaveVoyagesTypes';
 import { filterVoyages, DEFAULT_FILTERS } from '../services/slaveVoyagesApi';
 import { EpistemicStatusBadge } from '../components/slaveVoyages/EpistemicStatusBadge';
-import { AtlanticFlowMap } from '../components/slaveVoyages/AtlanticFlowMap';
-import { VoyageDossierModal } from '../components/slaveVoyages/VoyageDossierModal';
-import { QueryBuilderPanel } from '../components/slaveVoyages/QueryBuilderPanel';
-import { MolecularLegaciesView } from '../components/slaveVoyages/MolecularLegaciesView';
-import { AfricanDevelopmentMasterReportView } from './AfricanDevelopmentMasterReportView';
-import { AfricanPortsMap } from '../components/slaveVoyages/AfricanPortsMap';
-const AcademicExportModal = lazyWithRetry(() => import('../components/AcademicExportModal').then(m => ({ default: m.AcademicExportModal })), 'AcademicExportModal');
-import { SlaveVoyagesEssaysViewer } from '../components/slaveVoyages/SlaveVoyagesEssaysViewer';
-import { StorytellingGallery } from '../components/slaveVoyages/StorytellingGallery';
-import { SlaveTradeIconography } from '../components/slaveVoyages/SlaveTradeIconography';
+
+// Lazy-load heavier GIS mapping engines, archival iconography, and scholarly monographs on demand
+const AtlanticFlowMap = lazyWithRetry(() => import('../components/slaveVoyages/AtlanticFlowMap').then(m => ({ default: m.AtlanticFlowMap || (m as any).default })), 'AtlanticFlowMap');
+const AfricanPortsMap = lazyWithRetry(() => import('../components/slaveVoyages/AfricanPortsMap').then(m => ({ default: m.AfricanPortsMap || (m as any).default })), 'AfricanPortsMap');
+const VoyageDossierModal = lazyWithRetry(() => import('../components/slaveVoyages/VoyageDossierModal').then(m => ({ default: m.VoyageDossierModal || (m as any).default })), 'VoyageDossierModal');
+const QueryBuilderPanel = lazyWithRetry(() => import('../components/slaveVoyages/QueryBuilderPanel').then(m => ({ default: m.QueryBuilderPanel || (m as any).default })), 'QueryBuilderPanel');
+const MolecularLegaciesView = lazyWithRetry(() => import('../components/slaveVoyages/MolecularLegaciesView').then(m => ({ default: m.MolecularLegaciesView || (m as any).default })), 'MolecularLegaciesView');
+const AfricanDevelopmentMasterReportView = lazyWithRetry(() => import('./AfricanDevelopmentMasterReportView').then(m => ({ default: m.AfricanDevelopmentMasterReportView || (m as any).default })), 'AfricanDevelopmentMasterReportView');
+const AcademicExportModal = lazyWithRetry(() => import('../components/AcademicExportModal').then(m => ({ default: m.AcademicExportModal || (m as any).default })), 'AcademicExportModal');
+const SlaveVoyagesEssaysViewer = lazyWithRetry(() => import('../components/slaveVoyages/SlaveVoyagesEssaysViewer').then(m => ({ default: m.SlaveVoyagesEssaysViewer || (m as any).default })), 'SlaveVoyagesEssaysViewer');
+const StorytellingGallery = lazyWithRetry(() => import('../components/slaveVoyages/StorytellingGallery').then(m => ({ default: m.StorytellingGallery || (m as any).default })), 'StorytellingGallery');
+const SlaveTradeIconography = lazyWithRetry(() => import('../components/slaveVoyages/SlaveTradeIconography').then(m => ({ default: m.SlaveTradeIconography || (m as any).default })), 'SlaveTradeIconography');
 import { 
   Anchor, 
   Compass, 
@@ -64,12 +66,14 @@ import {
   Scale,
   Download,
   Castle,
+  Wind,
   Image as ImageIcon
 } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 
 export type SlaveTradeSubTab = 
   | 'overview'
+  | 'flow-map'
   | 'ports'
   | 'essays'
   | 'voyages'
@@ -89,15 +93,23 @@ export interface SlaveTradeViewProps {
   onNavigateToFoundations?: () => void;
   onNavigateToIconography?: () => void;
   onNavigateToCartography?: () => void;
+  onSubTabChange?: (subTab: SlaveTradeSubTab) => void;
+  initialSubTab?: SlaveTradeSubTab;
 }
 
 export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
   onNavigateToMolecular,
   onNavigateToFoundations,
   onNavigateToIconography,
-  onNavigateToCartography
+  onNavigateToCartography,
+  onSubTabChange,
+  initialSubTab
 }) => {
-  const [activeSubTab, setActiveSubTab] = useState<SlaveTradeSubTab>('overview');
+  const [activeSubTab, setActiveSubTab] = useState<SlaveTradeSubTab>(initialSubTab || 'overview');
+
+  useEffect(() => {
+    onSubTabChange?.(activeSubTab);
+  }, [activeSubTab, onSubTabChange]);
   const [filters, setFilters] = useState<VoyageFilterState>(DEFAULT_FILTERS);
   const [selectedVoyage, setSelectedVoyage] = useState<CanonicalVoyage | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<RegionalRouteFlow | null>(null);
@@ -105,6 +117,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
   const [enslaverSearch, setEnslaverSearch] = useState('');
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [activeEssayId, setActiveEssayId] = useState<string>('essay-global-magnitude');
+  const [isSeasonalityOpen, setIsSeasonalityOpen] = useState(false);
 
   // Filtered dataset
   const filterResult = useMemo(() => {
@@ -269,6 +282,89 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
             </span>
           </div>
         </div>
+
+        {/* Deep-Dive Research Monographs Integrated with Main Header */}
+        <div className="pt-4 border-t border-[#DCD3C1] dark:border-zinc-800/80 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Card 1: Molecular & Material Legacies */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-indigo-50/90 via-slate-50/70 to-white/95 dark:from-indigo-950/40 dark:via-zinc-900/60 dark:to-zinc-900/90 border border-indigo-200/80 dark:border-indigo-800/50 shadow-xs flex flex-col justify-between gap-3">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="p-1 rounded-lg bg-indigo-600/10 text-indigo-700 dark:text-indigo-400 border border-indigo-600/20">
+                    <Dna className="w-3.5 h-3.5" />
+                  </span>
+                  <span className="text-[10px] font-mono font-bold text-indigo-800 dark:text-indigo-300 uppercase tracking-wider">
+                    Paleogenomics & Bioarchaeology
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono text-zinc-500 font-bold">50K+ Genomes</span>
+              </div>
+              <h4 className="text-sm font-bold text-[#1C1917] dark:text-zinc-100">
+                The Molecular & Material Legacies of Slavery
+              </h4>
+              <p className="text-xs text-[#57534E] dark:text-zinc-300 leading-relaxed">
+                Interdisciplinary synthesis uniting 50,000+ population genomes (IBD haplotype deconvolution), ancient DNA (Zoutsteeg c. 1660s), 98% Maroon retention, and New York African Burial Ground bioarchaeology.
+              </p>
+            </div>
+            <div className="pt-1 flex items-center justify-between">
+              <span className="text-[10px] text-zinc-500 font-mono">IBD · aDNA · Strontium-87</span>
+              <button
+                type="button"
+                onClick={() => {
+                  if (onNavigateToMolecular) {
+                    onNavigateToMolecular();
+                  } else {
+                    setActiveSubTab('molecular');
+                  }
+                }}
+                className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-xs shrink-0 cursor-pointer"
+              >
+                <span>Explore Molecular Atlas</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Card 2: Foundations of African Development */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-50/90 via-orange-50/60 to-white/95 dark:from-amber-950/40 dark:via-zinc-900/60 dark:to-zinc-900/90 border border-amber-200/80 dark:border-amber-800/50 shadow-xs flex flex-col justify-between gap-3">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="p-1 rounded-lg bg-amber-600/10 text-amber-800 dark:text-amber-400 border border-amber-600/20">
+                    <Scale className="w-3.5 h-3.5" />
+                  </span>
+                  <span className="text-[10px] font-mono font-bold text-amber-900 dark:text-amber-300 uppercase tracking-wider">
+                    Macro-Geonomics & Institutional History
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono text-zinc-500 font-bold">UN Res. 2026</span>
+              </div>
+              <h4 className="text-sm font-bold text-[#9A3412] dark:text-amber-200">
+                Foundations of African Development (Master Report)
+              </h4>
+              <p className="text-xs text-[#57534E] dark:text-zinc-300 leading-relaxed">
+                Economic history synthesis uniting Macro-Geonomics (Ashraf-Galor curve), Nathan Nunn's 18M+ slave trade mistrust scar, Henn-Robinson decentralized governance, and the landmark March 25, 2026 UN General Assembly Resolution.
+              </p>
+            </div>
+            <div className="pt-1 flex items-center justify-between">
+              <span className="text-[10px] text-zinc-500 font-mono">Ashraf-Galor · Nunn · Tadei</span>
+              <button
+                type="button"
+                onClick={() => {
+                  if (onNavigateToFoundations) {
+                    onNavigateToFoundations();
+                  } else {
+                    setActiveSubTab('foundations');
+                  }
+                }}
+                className="px-3.5 py-1.5 rounded-xl bg-[#C2410C] hover:bg-[#9A3412] text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-xs shrink-0 cursor-pointer"
+              >
+                <span>Open Master Report</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* 2. Sub-Navigation Tabs Bar - Fully Wrapping with ARIA Tablist Semantics */}
@@ -278,20 +374,21 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
         className="flex flex-wrap items-center gap-2 pb-3 border-b border-zinc-200 dark:border-zinc-800"
       >
         {[
-          { id: 'overview', label: '01 — Overview & Flow Map', icon: Globe },
-          { id: 'ports', label: '02 — African Forts & Enclaves Map', icon: Castle },
-          { id: 'essays', label: '03 — Introduction Essays & Scholarship', icon: BookOpen },
-          { id: 'voyages', label: '04 — Explore Voyages', icon: Compass },
-          { id: 'routes', label: '05 — Geographic Routes', icon: Layers },
-          { id: 'people', label: '06 — African Origins & Names', icon: Users },
-          { id: 'enslavers', label: '07 — Enslavers & Networks', icon: Building2 },
-          { id: 'analytics', label: '08 — Comparative Analytics', icon: BarChart3 },
-          { id: 'query', label: '09 — Query Builder & Citations', icon: SlidersHorizontal },
-          { id: 'methodology', label: '10 — Provenance & Methodology', icon: BookOpen },
-          { id: 'molecular', label: '11 — Molecular & Material Legacies', icon: Dna },
-          { id: 'foundations', label: '12 — Foundations of African Development (Master Report)', icon: Scale },
-          { id: 'iconography', label: '13 — Historical Iconography Archive', icon: ImageIcon },
-          { id: 'cartography', label: '14 — Archival Cartography & Currents GIS', icon: Compass }
+          { id: 'overview', label: '01 — Overview & Research Foundations', icon: Globe },
+          { id: 'flow-map', label: '02 — Atlantic Geodesic Flow Map', icon: Compass },
+          { id: 'ports', label: '03 — African Forts & Enclaves Map', icon: Castle },
+          { id: 'essays', label: '04 — Introduction Essays & Scholarship', icon: BookOpen },
+          { id: 'voyages', label: '05 — Explore Voyages', icon: Compass },
+          { id: 'routes', label: '06 — Geographic Routes', icon: Layers },
+          { id: 'people', label: '07 — African Origins & Names', icon: Users },
+          { id: 'enslavers', label: '08 — Enslavers & Networks', icon: Building2 },
+          { id: 'analytics', label: '09 — Comparative Analytics', icon: BarChart3 },
+          { id: 'query', label: '10 — Query Builder & Citations', icon: SlidersHorizontal },
+          { id: 'methodology', label: '11 — Provenance & Methodology', icon: BookOpen },
+          { id: 'molecular', label: '12 — Molecular & Material Legacies', icon: Dna },
+          { id: 'foundations', label: '13 — Foundations of African Development (Master Report)', icon: Scale },
+          { id: 'iconography', label: '14 — Historical Iconography Archive', icon: ImageIcon },
+          { id: 'cartography', label: '15 — Archival Cartography & Currents GIS', icon: Compass }
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeSubTab === tab.id;
@@ -327,7 +424,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
 
       {/* 3. Sub-Tab Views */}
 
-      {/* TAB 1: OVERVIEW & FLOW MAP */}
+      {/* TAB 1: OVERVIEW & RESEARCH FOUNDATIONS */}
       {activeSubTab === 'overview' && (
         <div 
           role="tabpanel" 
@@ -335,26 +432,215 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
           aria-labelledby="slavetrade-tab-overview" 
           className="space-y-8"
         >
-          {/* Interactive Atlantic Geodesic Flow Map - Edge-to-Edge Full Width Breakout */}
-          <div className="space-y-3 -mx-4 sm:-mx-6 lg:-mx-8 w-[calc(100%+2rem)] sm:w-[calc(100%+3rem)] lg:w-[calc(100%+4rem)]">
-            <div className="px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-extrabold text-[#1C1917] dark:text-zinc-100">
-                  Interactive Atlantic Geodesic Network
+          {/* Standalone Atlantic Flow Map Launchpad Gateway Card */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#FAF5EE] via-[#F3EADB] to-[#E9DEC9] dark:from-zinc-900 dark:via-zinc-900/90 dark:to-zinc-950 border border-[#D5C6AC] dark:border-zinc-800 shadow-sm space-y-5">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="space-y-2 max-w-3xl">
+                <div className="flex items-center gap-2">
+                  <span className="p-1.5 rounded-lg bg-amber-600/15 text-amber-800 dark:text-amber-400 border border-amber-600/25">
+                    <Compass className="w-4 h-4" />
+                  </span>
+                  <span className="text-xs font-mono font-bold text-amber-900 dark:text-amber-300 uppercase tracking-wider">
+                    Interactive Geodesic Flow Engine
+                  </span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-800 dark:text-amber-200 font-bold">
+                    Dedicated Full-Bleed View
+                  </span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-[#1C1917] dark:text-zinc-100 tracking-tight">
+                  Atlantic Geodesic Network: 36,108 Transatlantic Voyage Trajectories
                 </h3>
-                <p className="text-xs text-[#78716C] dark:text-zinc-400">
-                  Visualizing African embarkation regions, American landing ports, and shipboard mortality rates across four centuries.
+                <p className="text-xs sm:text-sm text-[#57534E] dark:text-zinc-300 leading-relaxed">
+                  The primary cartographic workstation for inspecting embarkation corridors, landing ports, and shipboard mortality across 352 years of documented maritime logbooks. Runs in an immersive dedicated workspace with full-screen controls, historical timeline scrubbing, and high-fidelity geodesic arc geometry.
                 </p>
+                <div className="pt-2 flex flex-wrap items-center gap-3 text-xs text-[#78716C] dark:text-zinc-400 font-mono">
+                  <span>36,108 Voyages</span>
+                  <span>·</span>
+                  <span>8 African Embarkation Coasts</span>
+                  <span>·</span>
+                  <span>110+ American Disembarkation Ports</span>
+                  <span>·</span>
+                  <span>Observed vs Imputed Data</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setActiveSubTab('flow-map')}
+                  className="px-6 py-3.5 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center justify-center gap-2.5 transition-all shadow-md shadow-amber-600/20 cursor-pointer"
+                >
+                  <Compass className="w-4 h-4" />
+                  <span>Launch Standalone Flow Map</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveSubTab('ports')}
+                  className="px-5 py-3 rounded-2xl bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+                >
+                  <Castle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <span>Inspect Forts & Enclaves Map</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Key Visual & Cartographic Gateways Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Gateway 1: Iconography Archive */}
+            <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs flex flex-col justify-between gap-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="p-1.5 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                      <ImageIcon className="w-4 h-4" />
+                    </span>
+                    <span className="text-[11px] font-mono font-bold text-rose-700 dark:text-rose-300 uppercase tracking-wider">
+                      Archival Repository
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono text-zinc-500 font-bold">1,252 Digital Plates</span>
+                </div>
+                <h4 className="text-base font-extrabold text-zinc-900 dark:text-zinc-100">
+                  Historical Iconography Archive & Material Culture
+                </h4>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  High-resolution visual collection comprising the 1788 Brookes slave ship stowage plan, 32 Spanish colonial Castas paintings, the 1787 Wedgwood abolitionist medallion, and firsthand historical sketches of Middle Passage conditions.
+                </p>
+                <div className="pt-1 flex flex-wrap items-center gap-2 text-[10px] text-zinc-500 font-mono">
+                  <span>Brookes 1788</span>
+                  <span>·</span>
+                  <span>Castas Canvases</span>
+                  <span>·</span>
+                  <span>Abolitionist Medals</span>
+                  <span>·</span>
+                  <span>300 DPI Archival Zoom</span>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+                <span className="text-xs text-zinc-500">Visual evidence & museum plates</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onNavigateToIconography) {
+                      onNavigateToIconography();
+                    } else {
+                      setActiveSubTab('iconography');
+                    }
+                  }}
+                  className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-bold text-xs flex items-center gap-2 transition-all cursor-pointer"
+                >
+                  <span>Open Iconography Archive</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
 
-            <div className="w-full">
-              <AtlanticFlowMap
-                epistemicMode={filters.epistemicMode}
-                selectedRouteId={selectedRoute?.id}
-                onSelectRoute={(r) => setSelectedRoute(r)}
-                onNavigateToCartography={onNavigateToCartography}
-              />
+            {/* Gateway 2: Cartography & Currents GIS */}
+            <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs flex flex-col justify-between gap-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="p-1.5 rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20">
+                      <Compass className="w-4 h-4" />
+                    </span>
+                    <span className="text-[11px] font-mono font-bold text-teal-700 dark:text-teal-300 uppercase tracking-wider">
+                      Antique GIS & Ocean Currents
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono text-zinc-500 font-bold">1688–1851 GIS</span>
+                </div>
+                <h4 className="text-base font-extrabold text-zinc-900 dark:text-zinc-100">
+                  Archival Cartography & Currents GIS
+                </h4>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  Interactive split-curtain cartographic viewer overlaying Coronelli (1688), D'Anville (1749), and Tallis (1851) antique surveys with a 60fps real-time vector particle field modeling the Canary, Guinea, and Benguela maritime drift regimes.
+                </p>
+                <div className="pt-1 flex flex-wrap items-center gap-2 text-[10px] text-zinc-500 font-mono">
+                  <span>Curtain Slider</span>
+                  <span>·</span>
+                  <span>Canary Current</span>
+                  <span>·</span>
+                  <span>Guinea Flow</span>
+                  <span>·</span>
+                  <span>Benguela Drift</span>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+                <span className="text-xs text-zinc-500">Historical hydrography & wind regimes</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onNavigateToCartography) {
+                      onNavigateToCartography();
+                    } else {
+                      setActiveSubTab('cartography');
+                    }
+                  }}
+                  className="px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs flex items-center gap-2 transition-all cursor-pointer"
+                >
+                  <span>Open Cartography & GIS</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Coastal African Embarkation Demographics (1501–1866) Matrix */}
+          <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-3">
+              <div>
+                <h3 className="font-extrabold text-base text-zinc-900 dark:text-zinc-100">
+                  African Embarkation Coasts: Cumulative Demographic Volume (1501–1866)
+                </h3>
+                <p className="text-xs text-zinc-500">
+                  Synthesized distribution of 12,521,336 embarked captives across 8 macro-coastal zones documented by the SlaveVoyages database
+                </p>
+              </div>
+              <EpistemicStatusBadge currentMode={filters.epistemicMode} interactive={false} />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { name: 'West Central Africa', embarked: 5694574, pct: 45.5, dest: 'Brazil (90%) · Spanish Caribbean', mortality: '10.8%' },
+                { name: 'Bight of Benin', embarked: 1999060, pct: 16.0, dest: 'Bahia · Saint-Domingue · Cuba', mortality: '14.2%' },
+                { name: 'Bight of Biafra', embarked: 1595960, pct: 12.8, dest: 'British Caribbean · Virginia', mortality: '15.6%' },
+                { name: 'Gold Coast', embarked: 1209321, pct: 9.7, dest: 'Jamaica · Barbados · Guianas', mortality: '12.4%' },
+                { name: 'Senegambia', embarked: 755713, pct: 6.0, dest: 'French Caribbean · Chesapeake', mortality: '13.1%' },
+                { name: 'SE Africa & Indian Ocean', embarked: 542748, pct: 4.3, dest: 'Rio de Janeiro · Mascarenes', mortality: '18.9%' },
+                { name: 'Sierra Leone', embarked: 388771, pct: 3.1, dest: 'Carolinas · British Caribbean', mortality: '11.9%' },
+                { name: 'Windward Coast', embarked: 336868, pct: 2.7, dest: 'Caribbean · North America', mortality: '13.7%' }
+              ].map((region, i) => (
+                <div 
+                  key={i} 
+                  className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 space-y-2 hover:border-amber-500/40 transition-colors"
+                >
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-zinc-900 dark:text-zinc-100">{region.name}</span>
+                    <span className="font-mono text-[11px] font-bold text-amber-600 dark:text-amber-400">{region.pct}%</span>
+                  </div>
+                  <div className="w-full h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full" 
+                      style={{ width: `${region.pct * 2}%` }}
+                    />
+                  </div>
+                  <div className="flex items-baseline justify-between pt-1">
+                    <span className="text-sm font-black font-mono text-zinc-900 dark:text-zinc-100">
+                      {(region.embarked / 1000000).toFixed(2)}M
+                    </span>
+                    <span className="text-[10px] font-mono text-rose-600 dark:text-rose-400">
+                      avg {region.mortality} mort.
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
+                    Destination: <span className="font-medium text-zinc-700 dark:text-zinc-300">{region.dest}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -441,73 +727,84 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
               ))}
             </div>
           </div>
+        </div>
+      )}
 
-          {/* Featured Interdisciplinary Deep-Dive Banner (Option A: Atmospheric Warm & Crisp System) */}
-          <div className="p-6 rounded-3xl bg-gradient-to-br from-[#F5EFE6] via-[#EFE6D8] to-[#E4D7C3] dark:from-indigo-950 dark:via-slate-900 dark:to-zinc-950 border border-[#D5C6AC] dark:border-indigo-800/60 shadow-md text-[#1C1917] dark:text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1.5 max-w-2xl">
-              <div className="flex items-center gap-2">
-                <span className="p-1.5 rounded-lg bg-indigo-600/15 text-indigo-700 dark:text-indigo-400 border border-indigo-600/25">
-                  <Dna className="w-4 h-4" />
-                </span>
-                <span className="text-xs font-mono font-bold text-indigo-800 dark:text-indigo-300 uppercase tracking-wider">
-                  Featured Sub-Section (09)
-                </span>
+      {/* TAB 02: STANDALONE ATLANTIC GEODESIC FLOW MAP */}
+      {activeSubTab === 'flow-map' && (
+        <div 
+          role="tabpanel" 
+          id="slavetrade-panel-flow-map" 
+          aria-labelledby="slavetrade-tab-flow-map" 
+          className="w-full flex-1 flex flex-col space-y-2"
+        >
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-2">
+              <span className="p-1.5 rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+                <Compass className="w-4 h-4" />
+              </span>
+              <div>
+                <h3 className="text-base font-extrabold text-[#1C1917] dark:text-zinc-100 flex items-center gap-2">
+                  Interactive Atlantic Geodesic Network
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-800 dark:text-amber-300 font-bold border border-amber-500/20">
+                    Dedicated Full-Bleed View
+                  </span>
+                </h3>
+                <p className="text-xs text-[#78716C] dark:text-zinc-400">
+                  Visualizing African embarkation regions, American landing ports, and shipboard mortality rates across four centuries.
+                </p>
               </div>
-              <h3 className="text-lg font-extrabold text-[#1C1917] dark:text-zinc-100">
-                The Molecular and Material Legacies of Slavery
-              </h3>
-              <p className="text-xs text-[#57534E] dark:text-zinc-300 leading-relaxed">
-                Explore an interdisciplinary synthesis uniting <strong>50,000+ population genomes</strong> (IBD haplotype deconvolution), <strong>ancient DNA (Zoutsteeg c. 1660s)</strong>, <strong>98% Maroon retention</strong>, <strong>sex-biased gene flow ledgers</strong>, and <strong>bioarchaeology from the New York African Burial Ground</strong>.
-              </p>
             </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setIsSeasonalityOpen(prev => !prev)}
+                aria-expanded={isSeasonalityOpen}
+                aria-controls="route-seasonality-simulator-panel"
+                className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border flex items-center gap-1.5 shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C2410C] ${
+                  isSeasonalityOpen
+                    ? 'bg-[#C2410C] text-white border-[#C2410C]'
+                    : 'bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-[#57534E] dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:border-[#C2410C]/40'
+                }`}
+                title="Toggle Route Seasonality Simulator Sliding Panel"
+              >
+                <Wind className={`w-3.5 h-3.5 ${isSeasonalityOpen ? 'text-white animate-spin-slow' : 'text-[#C2410C]'}`} />
+                <span>Seasonality Simulator</span>
+                <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-mono ${
+                  isSeasonalityOpen ? 'bg-black/20 text-white' : 'bg-stone-100 dark:bg-zinc-700 text-stone-600 dark:text-zinc-300'
+                }`}>
+                  {isSeasonalityOpen ? 'Active' : 'Open'}
+                </span>
+              </button>
 
-            <button
-              onClick={() => {
-                if (onNavigateToMolecular) {
-                  onNavigateToMolecular();
-                } else {
-                  setActiveSubTab('molecular');
-                }
-              }}
-              className="px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-600/20 shrink-0 cursor-pointer"
-            >
-              <span>Explore Molecular Atlas</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+              <button
+                type="button"
+                onClick={() => setActiveSubTab('overview')}
+                className="text-xs font-mono font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors flex items-center gap-1 cursor-pointer bg-white dark:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700"
+              >
+                <span>← Back to Overview</span>
+              </button>
+            </div>
           </div>
 
-          {/* Master Report Deep-Dive Banner (Option A: Atmospheric Warm & Crisp System) */}
-          <div className="p-6 rounded-3xl bg-gradient-to-br from-[#FFF7EA] via-[#FCEFD7] to-[#F3E1C0] dark:from-amber-950/80 dark:via-slate-900 dark:to-zinc-950 border border-[#E0C99E] dark:border-amber-800/60 shadow-md text-[#1C1917] dark:text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1.5 max-w-2xl">
-              <div className="flex items-center gap-2">
-                <span className="p-1.5 rounded-lg bg-amber-600/15 text-amber-800 dark:text-amber-400 border border-amber-600/25">
-                  <Scale className="w-4 h-4" />
-                </span>
-                <span className="text-xs font-mono font-bold text-amber-900 dark:text-amber-300 uppercase tracking-wider">
-                  Master Report (Sub-Section 10)
-                </span>
+          <div className="w-full flex-1">
+            <Suspense fallback={
+              <div className="w-full h-[640px] flex items-center justify-center bg-zinc-900/40 rounded-2xl border border-zinc-800">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+                  <p className="text-xs font-mono text-zinc-400">Loading Atlantic Geodesic Flow Map...</p>
+                </div>
               </div>
-              <h3 className="text-lg font-extrabold text-[#9A3412] dark:text-amber-100">
-                The Structural and Evolutionary Foundations of African Development
-              </h3>
-              <p className="text-xs text-[#57534E] dark:text-slate-300 leading-relaxed">
-                Comprehensive synthesis uniting <strong>Macro-Geonomics (Recent African Origin & Ashraf-Galor curve)</strong>, <strong>Nathan Nunn's 18M+ slave trade mistrust scar</strong>, <strong>Henn-Robinson pre-colonial governance (98% decentralized)</strong>, <strong>Tadei's colonial monopsony price-gap model</strong>, and the <strong>landmark March 25, 2026 UN General Assembly Slavery Resolution (123-3)</strong>.
-              </p>
-            </div>
-
-            <button
-              onClick={() => {
-                if (onNavigateToFoundations) {
-                  onNavigateToFoundations();
-                } else {
-                  setActiveSubTab('foundations');
-                }
-              }}
-              className="px-5 py-3 rounded-2xl bg-[#C2410C] hover:bg-[#9A3412] text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-[#C2410C]/20 shrink-0 cursor-pointer"
-            >
-              <span>Open Master Report</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            }>
+              <AtlanticFlowMap
+                epistemicMode={filters.epistemicMode}
+                selectedRouteId={selectedRoute?.id}
+                onSelectRoute={(r) => setSelectedRoute(r)}
+                onNavigateToCartography={onNavigateToCartography}
+                isSeasonalityOpen={isSeasonalityOpen}
+                onToggleSeasonality={() => setIsSeasonalityOpen(prev => !prev)}
+              />
+            </Suspense>
           </div>
         </div>
       )}
@@ -520,30 +817,43 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
           aria-labelledby="slavetrade-tab-ports" 
           className="w-full flex-1 min-h-[calc(100vh-140px)] flex flex-col"
         >
-          <AfricanPortsMap />
+          <Suspense fallback={
+            <div className="w-full h-[640px] flex items-center justify-center bg-zinc-900/40 rounded-2xl border border-zinc-800">
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+                <p className="text-xs font-mono text-zinc-400">Loading African Ports & Forts GIS...</p>
+              </div>
+            </div>
+          }>
+            <AfricanPortsMap />
+          </Suspense>
         </div>
       )}
 
       {/* TAB 03: INTRODUCTION ESSAYS & SCHOLARSHIP */}
       {activeSubTab === 'essays' && (
-        <div className="space-y-12">
-          <StorytellingGallery 
-            onSelectVoyage={(voyage) => setSelectedVoyage(voyage)}
-            onSelectEssay={(essayId) => {
-              setActiveEssayId(essayId);
-              const element = document.getElementById('academic-essay-reader');
-              if (element) {
-                element.scrollIntoView({ behavior: 'smooth' });
-              }
-            }}
-          />
-          <div id="academic-essay-reader" className="pt-4">
-            <SlaveVoyagesEssaysViewer 
-              activeEssayId={activeEssayId}
-              onSelectEssay={(id) => setActiveEssayId(id)}
+        <Suspense fallback={
+          <div className="p-12 text-center text-xs font-mono text-zinc-400">Loading Scholarly Essays & Visual Storytelling...</div>
+        }>
+          <div className="space-y-12">
+            <StorytellingGallery 
+              onSelectVoyage={(voyage) => setSelectedVoyage(voyage)}
+              onSelectEssay={(essayId) => {
+                setActiveEssayId(essayId);
+                const element = document.getElementById('academic-essay-reader');
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
             />
+            <div id="academic-essay-reader" className="pt-4">
+              <SlaveVoyagesEssaysViewer 
+                activeEssayId={activeEssayId}
+                onSelectEssay={(id) => setActiveEssayId(id)}
+              />
+            </div>
           </div>
-        </div>
+        </Suspense>
       )}
 
       {/* TAB 04: EXPLORE VOYAGES */}
@@ -1086,12 +1396,14 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
 
       {/* TAB 7: QUERY BUILDER & CITATIONS */}
       {activeSubTab === 'query' && (
-        <QueryBuilderPanel
-          filters={filters}
-          onUpdateFilters={updateFilters}
-          filteredVoyages={filterResult.voyages}
-          aggregateStats={filterResult.aggregateStats}
-        />
+        <Suspense fallback={<div className="p-12 text-center text-xs font-mono text-zinc-400">Loading Academic Query Builder...</div>}>
+          <QueryBuilderPanel
+            filters={filters}
+            onUpdateFilters={updateFilters}
+            filteredVoyages={filterResult.voyages}
+            aggregateStats={filterResult.aggregateStats}
+          />
+        </Suspense>
       )}
 
       {/* TAB 8: METHODOLOGY & PROVENANCE */}
@@ -1138,24 +1450,34 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
 
       {/* TAB 9: MOLECULAR AND MATERIAL LEGACIES */}
       {activeSubTab === 'molecular' && (
-        <MolecularLegaciesView />
+        <Suspense fallback={<div className="p-12 text-center text-xs font-mono text-zinc-400">Loading Paleogenomics Synthesis...</div>}>
+          <MolecularLegaciesView />
+        </Suspense>
       )}
 
       {/* TAB 10: FOUNDATIONS OF AFRICAN DEVELOPMENT (MASTER REPORT) */}
       {activeSubTab === 'foundations' && (
-        <AfricanDevelopmentMasterReportView />
+        <Suspense fallback={<div className="p-12 text-center text-xs font-mono text-zinc-400">Loading Foundations of African Development Monograph...</div>}>
+          <AfricanDevelopmentMasterReportView />
+        </Suspense>
       )}
 
       {/* TAB 11: HISTORICAL ICONOGRAPHY ARCHIVE */}
       {activeSubTab === 'iconography' && (
-        <SlaveTradeIconography />
+        <Suspense fallback={<div className="p-12 text-center text-xs font-mono text-zinc-400">Loading Historical Iconography Archive...</div>}>
+          <SlaveTradeIconography />
+        </Suspense>
       )}
 
       {/* Voyage Dossier Modal */}
-      <VoyageDossierModal
-        voyage={selectedVoyage}
-        onClose={() => setSelectedVoyage(null)}
-      />
+      {selectedVoyage && (
+        <Suspense fallback={null}>
+          <VoyageDossierModal
+            voyage={selectedVoyage}
+            onClose={() => setSelectedVoyage(null)}
+          />
+        </Suspense>
+      )}
 
       {/* Academic Citation & Vector Export Modal */}
       {isExportOpen && (
@@ -1180,3 +1502,5 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
     </div>
   );
 };
+
+export default SlaveTradeView;

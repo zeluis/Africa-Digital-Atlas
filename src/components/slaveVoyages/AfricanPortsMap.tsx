@@ -44,7 +44,11 @@ import {
   Search,
   X,
   PanelRightClose,
-  PanelRightOpen
+  PanelRightOpen,
+  Wind,
+  Waves,
+  Play,
+  Pause
 } from 'lucide-react';
 import { AFRICAN_EMBARKATION_PORTS, AfricanEmbarkationPort, projectPortToSvg } from '../../data/slaveVoyagesPorts';
 import { AfricaVectorContinent, COUNTRY_TO_EMBARKATION_ZONE } from '../common/AfricaVectorContinent';
@@ -96,6 +100,9 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
   const [selectedRegion, setSelectedRegion] = useState<string>('All');
   const [selectedPower, setSelectedPower] = useState<string>('All');
   const [selectedCentury, setSelectedCentury] = useState<string>('All');
+  const [yearRange, setYearRange] = useState<[number, number]>([1514, 1866]);
+  const [showOceanVectors, setShowOceanVectors] = useState<boolean>(true);
+  const [isTimelinePlaying, setIsTimelinePlaying] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activePort, setActivePort] = useState<AfricanEmbarkationPort | null>(AFRICAN_EMBARKATION_PORTS[0]);
   const [hoveredPortId, setHoveredPortId] = useState<string | null>(null);
@@ -144,20 +151,49 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
   const currentViewBoxRef = useRef(currentViewBox);
   currentViewBoxRef.current = currentViewBox;
 
+  // Auto-play timeline animation effect
+  useEffect(() => {
+    if (!isTimelinePlaying) return;
+    const interval = setInterval(() => {
+      setYearRange(prev => {
+        const step = 25;
+        const nextEnd = prev[1] + step;
+        if (nextEnd > 1866) {
+          setIsTimelinePlaying(false);
+          return [1514, 1866];
+        }
+        return [Math.max(1514, nextEnd - 75), nextEnd];
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isTimelinePlaying]);
+
   // Filtered port list
   const filteredPorts = useMemo(() => {
     return AFRICAN_EMBARKATION_PORTS.filter(port => {
       const matchRegion = selectedRegion === 'All' || port.region === selectedRegion;
       const matchPower = selectedPower === 'All' || port.europeanPowers.includes(selectedPower as any);
       const matchCentury = selectedCentury === 'All' || port.activeCentury.includes(selectedCentury as any);
+
+      // Historical year range filter (1514–1866)
+      const portCenturyStarts: number[] = [];
+      const portCenturyEnds: number[] = [];
+      if (port.activeCentury.includes('16th')) { portCenturyStarts.push(1514); portCenturyEnds.push(1600); }
+      if (port.activeCentury.includes('17th')) { portCenturyStarts.push(1601); portCenturyEnds.push(1700); }
+      if (port.activeCentury.includes('18th')) { portCenturyStarts.push(1701); portCenturyEnds.push(1800); }
+      if (port.activeCentury.includes('19th')) { portCenturyStarts.push(1801); portCenturyEnds.push(1866); }
+      const minYear = portCenturyStarts.length ? Math.min(...portCenturyStarts) : 1514;
+      const maxYear = portCenturyEnds.length ? Math.max(...portCenturyEnds) : 1866;
+      const matchYear = maxYear >= yearRange[0] && minYear <= yearRange[1];
+
       const matchSearch = !searchQuery.trim() || 
         port.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         port.countryModern.toLowerCase().includes(searchQuery.toLowerCase()) ||
         port.historicalAliases.some(a => a.toLowerCase().includes(searchQuery.toLowerCase())) ||
         port.primaryEthnicGroups.some(e => e.toLowerCase().includes(searchQuery.toLowerCase()));
-      return matchRegion && matchPower && matchCentury && matchSearch;
+      return matchRegion && matchPower && matchCentury && matchYear && matchSearch;
     });
-  }, [selectedRegion, selectedPower, selectedCentury, searchQuery]);
+  }, [selectedRegion, selectedPower, selectedCentury, yearRange, searchQuery]);
 
   // Active port index in filtered list
   const currentIndex = useMemo(() => {
@@ -1022,6 +1058,77 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                 <text x="0" y="-48" textAnchor="middle" fill="#0369a1" fontSize="11" fontWeight="900" fontFamily="sans-serif">N</text>
               </g>
 
+              {/* Historical Ocean Currents & Seasonal Trade Wind Vectors Layer */}
+              {showOceanVectors && (
+                <g id="ocean-currents-and-winds" className="pointer-events-none select-none">
+                  {/* Canary Current (SW along West Sahara & Senegambia) */}
+                  <path
+                    d="M 680,1100 Q 520,1650 480,2250"
+                    fill="none"
+                    stroke="#0284c7"
+                    strokeWidth="3.5"
+                    strokeDasharray="18 12"
+                    strokeOpacity="0.45"
+                  />
+                  <polygon points="480,2270 472,2240 492,2244" fill="#0284c7" opacity="0.6" />
+                  <text x="560" y="1700" fill="#0369a1" fontSize="22" fontFamily="monospace" fontWeight="bold" opacity="0.6" transform="rotate(-70 560,1700)">
+                    Canary Current ➔
+                  </text>
+
+                  {/* Guinea Current (Eastward along Gulf of Guinea) */}
+                  <path
+                    d="M 850,2950 Q 1800,2980 2550,2980"
+                    fill="none"
+                    stroke="#0d9488"
+                    strokeWidth="3.5"
+                    strokeDasharray="18 12"
+                    strokeOpacity="0.5"
+                  />
+                  <polygon points="2570,2980 2540,2970 2540,2990" fill="#0d9488" opacity="0.7" />
+                  <text x="1700" y="3030" fill="#0f766e" fontSize="22" fontFamily="monospace" fontWeight="bold" opacity="0.65">
+                    Guinea Current ➔ (Eastward Gulf Flow)
+                  </text>
+
+                  {/* Benguela Current (Northward along Angola & Namibia) */}
+                  <path
+                    d="M 2350,5100 Q 2150,4400 2050,3450"
+                    fill="none"
+                    stroke="#4338ca"
+                    strokeWidth="3.5"
+                    strokeDasharray="18 12"
+                    strokeOpacity="0.45"
+                  />
+                  <polygon points="2050,3430 2060,3460 2040,3458" fill="#4338ca" opacity="0.6" />
+                  <text x="2120" y="4300" fill="#3730a3" fontSize="22" fontFamily="monospace" fontWeight="bold" opacity="0.6" transform="rotate(-82 2120,4300)">
+                    Benguela Current ➔ (Northward Drift)
+                  </text>
+
+                  {/* Agulhas Current (Southward along Mozambique & South Africa) */}
+                  <path
+                    d="M 4600,3600 Q 4250,4500 3750,5350"
+                    fill="none"
+                    stroke="#dc2626"
+                    strokeWidth="3.5"
+                    strokeDasharray="18 12"
+                    strokeOpacity="0.45"
+                  />
+                  <polygon points="3740,5370 3762,5345 3748,5335" fill="#dc2626" opacity="0.6" />
+                  <text x="4200" y="4500" fill="#b91c1c" fontSize="22" fontFamily="monospace" fontWeight="bold" opacity="0.6" transform="rotate(65 4200,4500)">
+                    Agulhas Current ➔
+                  </text>
+
+                  {/* Transatlantic Trade Wind Corridor (NE Trades) */}
+                  <g opacity="0.4" stroke="#d97706" strokeWidth="2.5" strokeDasharray="12 8">
+                    <line x1="1200" y1="2100" x2="300" y2="2450" />
+                    <line x1="1400" y1="2300" x2="400" y2="2650" />
+                    <line x1="1600" y1="2500" x2="500" y2="2850" />
+                  </g>
+                  <text x="750" y="2400" fill="#b45309" fontSize="20" fontFamily="monospace" fontWeight="bold" opacity="0.55" transform="rotate(18 750,2400)">
+                    ⇦ Northeast Trade Winds (Middle Passage Vector)
+                  </text>
+                </g>
+              )}
+
               {/* Coastal Port Beacons and Seaward Collision-Free Labels Layer */}
               <g id="african-coastal-ports-layer">
                 {filteredPorts.map((port) => {
@@ -1246,6 +1353,94 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
               <span className="absolute bottom-1 right-2 text-[9px] font-mono text-stone-400 font-bold uppercase tracking-wider">
                 RADAR
               </span>
+            </div>
+          </div>
+
+          {/* Historical Horizon Scrubber HUD (1514–1866) */}
+          <div
+            className={`absolute right-4 z-20 pointer-events-auto transition-all duration-300 max-w-sm sm:max-w-md ${
+              isFilmstripOpen ? 'bottom-[102px]' : 'bottom-4'
+            }`}
+          >
+            <div className="flex flex-col gap-2 p-3 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border border-stone-300/80 dark:border-stone-700 shadow-xl text-xs">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsTimelinePlaying(!isTimelinePlaying)}
+                    className="w-7 h-7 rounded-xl bg-amber-900 hover:bg-amber-800 text-amber-50 dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-stone-950 flex items-center justify-center transition-colors cursor-pointer shadow-xs"
+                    title={isTimelinePlaying ? 'Pause Century Playback' : 'Play Historical Horizon Animation (1514–1866)'}
+                  >
+                    {isTimelinePlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 ml-0.5" />}
+                  </button>
+                  <span className="font-serif font-bold text-stone-900 dark:text-stone-100">
+                    Era: {yearRange[0]}–{yearRange[1]}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setShowOceanVectors(v => !v)}
+                    className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-mono font-bold transition-all cursor-pointer border ${
+                      showOceanVectors
+                        ? 'bg-sky-50 dark:bg-sky-950/60 border-sky-400 dark:border-sky-600 text-sky-800 dark:text-sky-300'
+                        : 'bg-stone-100 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-500'
+                    }`}
+                    title="Toggle Marine Current & Trade Wind Flow Vectors"
+                  >
+                    <Wind className="w-3 h-3 text-sky-600 dark:text-sky-400" />
+                    <span>Currents {showOceanVectors ? 'ON' : 'OFF'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Range slider for End Year */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-[10px] font-mono text-stone-500 dark:text-stone-400">
+                  <span>1514</span>
+                  <span className="font-bold text-amber-800 dark:text-amber-400">{filteredPorts.length} Ports Active</span>
+                  <span>1866</span>
+                </div>
+                <input
+                  type="range"
+                  min="1514"
+                  max="1866"
+                  value={yearRange[1]}
+                  onChange={(e) => {
+                    const end = Number(e.target.value);
+                    setYearRange([yearRange[0], end]);
+                  }}
+                  className="w-full accent-amber-700 dark:accent-amber-400 cursor-pointer h-1.5 bg-stone-200 dark:bg-stone-800 rounded-lg"
+                />
+              </div>
+
+              {/* Century Fast Jump Buttons */}
+              <div className="flex items-center gap-1 pt-1 border-t border-stone-100 dark:border-stone-800">
+                {[
+                  { label: 'All', range: [1514, 1866] as [number, number] },
+                  { label: '16th C.', range: [1514, 1600] as [number, number] },
+                  { label: '17th C.', range: [1601, 1700] as [number, number] },
+                  { label: '18th C.', range: [1701, 1800] as [number, number] },
+                  { label: '19th C.', range: [1801, 1866] as [number, number] },
+                ].map(b => (
+                  <button
+                    key={b.label}
+                    type="button"
+                    onClick={() => {
+                      setIsTimelinePlaying(false);
+                      setYearRange(b.range);
+                    }}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all cursor-pointer ${
+                      yearRange[0] === b.range[0] && yearRange[1] === b.range[1]
+                        ? 'bg-amber-800 text-white font-bold'
+                        : 'text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
+                    }`}
+                  >
+                    {b.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

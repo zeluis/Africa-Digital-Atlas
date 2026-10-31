@@ -12,7 +12,12 @@ import {
   Grid, 
   List, 
   ChevronRight, 
-  Compass
+  Compass,
+  TableProperties,
+  Anchor,
+  Mountain,
+  Globe,
+  Sparkles
 } from 'lucide-react';
 
 interface ExploreViewProps {
@@ -21,6 +26,10 @@ interface ExploreViewProps {
 
 type SortField = 'name' | 'population' | 'gdp' | 'hdi' | 'area';
 type SortOrder = 'asc' | 'desc';
+type TopologyFilter = 'all' | 'coastal' | 'landlocked' | 'sids';
+
+const SIDS_SET = new Set(['CPV', 'STP', 'MUS', 'SYC', 'COM']);
+const LANDLOCKED_SET = new Set(['BFA', 'BDI', 'CAF', 'TCD', 'SWZ', 'ETH', 'LSO', 'MWI', 'MLI', 'NER', 'RWA', 'SSD', 'UGA', 'ZMB', 'ZWE']);
 
 export const ExploreView: React.FC<ExploreViewProps> = ({
   onSelectCountry
@@ -28,9 +37,10 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<AfricanRegion | 'All'>('All');
+  const [topologyFilter, setTopologyFilter] = useState<TopologyFilter>('all');
   const [sortField, setSortField] = useState<SortField>('population');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
-  const [viewLayout, setViewLayout] = useState<'grid' | 'table'>('grid');
+  const [viewLayout, setViewLayout] = useState<'grid' | 'table' | 'matrix'>('grid');
 
   const allEntities = atlas.getAllEntities();
 
@@ -47,11 +57,20 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
     return allEntities
       .filter(entity => {
         const matchesRegion = regionFilter === 'All' || entity.region === regionFilter;
+        const isSids = SIDS_SET.has(entity.id);
+        const isLandlocked = LANDLOCKED_SET.has(entity.id);
+        const isCoastal = !isLandlocked;
+        const matchesTopology = 
+          topologyFilter === 'all' ? true :
+          topologyFilter === 'sids' ? isSids :
+          topologyFilter === 'landlocked' ? isLandlocked :
+          topologyFilter === 'coastal' ? (isCoastal && !isSids) : true;
+
         const matchesQuery = !searchQuery || 
           entity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           entity.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
           entity.capital.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesRegion && matchesQuery;
+        return matchesRegion && matchesTopology && matchesQuery;
       })
       .sort((a, b) => {
         let valA: number | string = 0;
@@ -115,8 +134,8 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             </p>
           </div>
 
-          {/* Grid / Table Toggle */}
-          <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 p-1.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 shrink-0 self-start md:self-auto">
+          {/* Grid / Table / Matrix Toggle */}
+          <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 p-1.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 shrink-0 self-start md:self-auto gap-0.5">
             <button
               onClick={() => setViewLayout('grid')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
@@ -138,6 +157,17 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             >
               <List className="w-4 h-4" />
               <span>Table</span>
+            </button>
+            <button
+              onClick={() => setViewLayout('matrix')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                viewLayout === 'matrix'
+                  ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs'
+                  : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+              }`}
+            >
+              <TableProperties className="w-4 h-4" />
+              <span>Matrix</span>
             </button>
           </div>
         </div>
@@ -175,6 +205,37 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Topology & Special Category Filters */}
+        <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-900/60 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs text-zinc-400 font-mono flex items-center gap-1 mr-1">
+              <Globe className="w-3.5 h-3.5 text-cyan-500" /> Geographic Topology:
+            </span>
+            {[
+              { id: 'all' as TopologyFilter, label: 'All (54)' },
+              { id: 'coastal' as TopologyFilter, label: 'Coastal States (33)' },
+              { id: 'landlocked' as TopologyFilter, label: 'Landlocked / LLDCs (15)' },
+              { id: 'sids' as TopologyFilter, label: 'Island States / SIDS (6)' },
+            ].map(tf => (
+              <button
+                key={tf.id}
+                onClick={() => setTopologyFilter(tf.id)}
+                className={`px-3 py-1 rounded-xl text-xs font-mono font-semibold transition-all cursor-pointer border ${
+                  topologyFilter === tf.id
+                    ? 'bg-cyan-50 dark:bg-cyan-950/80 border-cyan-400 dark:border-cyan-600 text-cyan-800 dark:text-cyan-300 font-bold shadow-xs'
+                    : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
+                }`}
+              >
+                {tf.label}
+              </button>
+            ))}
+          </div>
+
+          <span className="text-xs font-mono text-zinc-400">
+            Showing {filteredAndSortedEntities.length} of 54 sovereign nations
+          </span>
         </div>
       </div>
 
@@ -381,6 +442,72 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* DENSITY MATRIX VIEW */}
+      {viewLayout === 'matrix' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {filteredAndSortedEntities.map(entity => {
+            const pop = atlas.getIndicatorValue(entity.id, 'SP.POP.TOTL');
+            const gdp = atlas.getIndicatorValue(entity.id, 'NY.GDP.MKTP.CD');
+            const hdi = atlas.getIndicatorValue(entity.id, 'UNDP.HDI.INDEX');
+            const elec = atlas.getIndicatorValue(entity.id, 'EG.ELC.ACCS.ZS');
+            const isSids = SIDS_SET.has(entity.id);
+            const isLandlocked = LANDLOCKED_SET.has(entity.id);
+            const gdpPerCap = (pop && gdp && pop > 0) ? Math.round((gdp * 1e9) / (pop * 1e6)) : null;
+
+            return (
+              <div
+                key={entity.id}
+                onClick={() => onSelectCountry(entity.id)}
+                className="p-3.5 rounded-2xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-emerald-500/60 dark:hover:border-emerald-500/60 transition-all cursor-pointer shadow-xs hover:shadow-md space-y-2.5"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <CountryFlag entityId={entity.id} size="sm" />
+                    <div className="min-w-0">
+                      <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100 truncate">
+                        {entity.name}
+                      </div>
+                      <div className="text-[10px] font-mono text-zinc-400">
+                        {entity.id} · {entity.region}
+                      </div>
+                    </div>
+                  </div>
+
+                  <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border shrink-0 ${
+                    isSids
+                      ? 'bg-cyan-50 dark:bg-cyan-950/70 border-cyan-400/40 text-cyan-800 dark:text-cyan-300'
+                      : isLandlocked
+                      ? 'bg-amber-50 dark:bg-amber-950/70 border-amber-400/40 text-amber-800 dark:text-amber-300'
+                      : 'bg-emerald-50 dark:bg-emerald-950/70 border-emerald-400/40 text-emerald-800 dark:text-emerald-300'
+                  }`}>
+                    {isSids ? 'SIDS' : isLandlocked ? 'Landlocked' : 'Coastal'}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-4 gap-1.5 pt-2 border-t border-zinc-100 dark:border-zinc-800/80 text-[10px] font-mono">
+                  <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/60">
+                    <span className="text-zinc-400 block text-[9px]">POPULATION</span>
+                    <span className="font-bold text-zinc-800 dark:text-zinc-200">{formatPopulation(pop)}</span>
+                  </div>
+                  <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/60">
+                    <span className="text-zinc-400 block text-[9px]">NOM. GDP</span>
+                    <span className="font-bold text-zinc-800 dark:text-zinc-200">{formatGDP(gdp)}</span>
+                  </div>
+                  <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/60">
+                    <span className="text-zinc-400 block text-[9px]">PER CAPITA</span>
+                    <span className="font-bold text-zinc-800 dark:text-zinc-200">{gdpPerCap ? `$${gdpPerCap.toLocaleString()}` : '—'}</span>
+                  </div>
+                  <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/60">
+                    <span className="text-zinc-400 block text-[9px]">HDI / ELEC</span>
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400">{formatHDI(hdi)} · {elec ? `${Math.round(elec)}%` : '—'}</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

@@ -5,12 +5,12 @@ import React, { ReactNode } from 'react';
  * Retries transient module load failures smoothly before delegating to the ErrorBoundary.
  */
 export function lazyWithRetry<T extends React.ComponentType<any>>(
-  factory: () => Promise<{ default: T } | T>,
+  factory: () => Promise<{ default: T } | T | any>,
   componentName: string = 'Component'
 ): React.LazyExoticComponent<T> & { preload: () => Promise<any> } {
   let cachedPromise: Promise<{ default: T }> | null = null;
 
-  const load = (retriesLeft = 4, delay = 250): Promise<{ default: T }> => {
+  const load = (retriesLeft = 5, delay = 350): Promise<{ default: T }> => {
     if (cachedPromise) return cachedPromise;
 
     cachedPromise = factory()
@@ -19,6 +19,12 @@ export function lazyWithRetry<T extends React.ComponentType<any>>(
         let comp: any = (module as any)?.default;
         if (!comp && (module as any)?.[componentName]) {
           comp = (module as any)[componentName];
+        }
+        if (!comp && typeof module === 'object' && module !== null) {
+          const matchedKey = Object.keys(module).find(k => k.toLowerCase() === componentName.toLowerCase());
+          if (matchedKey && (module as any)[matchedKey]) {
+            comp = (module as any)[matchedKey];
+          }
         }
         if (!comp && (typeof module === 'function' || (typeof module === 'object' && module !== null && '$$typeof' in module))) {
           comp = module;
@@ -42,7 +48,7 @@ export function lazyWithRetry<T extends React.ComponentType<any>>(
         if (retriesLeft > 0) {
           console.warn(`[Module Loader] Retrying dynamic import for "${componentName}" (${retriesLeft} retries left)...`);
           return new Promise(resolve => setTimeout(resolve, delay)).then(() =>
-            load(retriesLeft - 1, delay * 1.5)
+            load(retriesLeft - 1, Math.min(delay * 1.5, 1200))
           );
         }
         console.error(`[Module Loader] Failed to load component "${componentName}":`, error);

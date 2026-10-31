@@ -24,6 +24,7 @@ import {
 import { VoiceWelcomeFab } from '../components/VoiceWelcomeFab';
 import { LANGUAGE_FAMILY_GREETINGS } from '../utils/africaliaVoiceEngine';
 import { MotherTonguesWaveformScrubber } from '../components/MotherTonguesWaveformScrubber';
+import { AFRICAN_TYPOLOGICAL_FEATURES, TypologicalFeature } from '../data/africanLinguisticTypology';
 
 interface LanguageFamily {
   id: string;
@@ -209,10 +210,11 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
   onSelectCountry
 }) => {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'families' | 'waveforms' | 'lingua-francas' | 'countries'>('families');
+  const [activeTab, setActiveTab] = useState<'families' | 'waveforms' | 'lingua-francas' | 'countries' | 'typology'>('families');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFamilyId, setSelectedFamilyId] = useState<string>('niger-congo');
   const [activeWaveformLangId, setActiveWaveformLangId] = useState<string>('yoruba');
+  const [selectedTypologyId, setSelectedTypologyId] = useState<string>('clicks');
 
   const allEntities = atlas.getAllEntities();
 
@@ -290,6 +292,17 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
               }`}
             >
               Country Matrix (54)
+            </button>
+            <button
+              onClick={() => setActiveTab('typology')}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeTab === 'typology'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-950/20'
+                  : 'text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Phonemic &amp; Typology Lab (5)</span>
             </button>
           </div>
         </div>
@@ -681,6 +694,200 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
           </div>
         </div>
       )}
+
+      {/* TAB 4: PHONEMIC & TYPOLOGY LAB */}
+      {activeTab === 'typology' && (() => {
+        const activeFeature = AFRICAN_TYPOLOGICAL_FEATURES.find(f => f.id === selectedTypologyId) || AFRICAN_TYPOLOGICAL_FEATURES[0];
+        return (
+          <div className="space-y-6">
+            {/* Feature Selection Ribbon Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
+              {AFRICAN_TYPOLOGICAL_FEATURES.map(feat => {
+                const isSelected = feat.id === activeFeature.id;
+                return (
+                  <button
+                    key={feat.id}
+                    onClick={() => setSelectedTypologyId(feat.id)}
+                    className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[118px] relative overflow-hidden group ${
+                      isSelected
+                        ? 'bg-zinc-900 text-white border-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 dark:border-zinc-100 shadow-lg shadow-zinc-950/15 ring-2 ring-emerald-500/60'
+                        : 'bg-white dark:bg-zinc-900/90 border-zinc-200/90 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50/60 dark:hover:bg-zinc-850'
+                    }`}
+                  >
+                    <div className="space-y-1.5 w-full">
+                      <div className="flex items-center justify-between text-[10px] font-mono font-bold uppercase tracking-wider">
+                        <span className={isSelected ? 'text-emerald-400 dark:text-emerald-600' : 'text-emerald-600 dark:text-emerald-400'}>
+                          {feat.category}
+                        </span>
+                        <span className={`text-[11px] font-mono font-bold ${isSelected ? 'text-zinc-300 dark:text-zinc-700' : 'text-zinc-400'}`}>
+                          {feat.glyph}
+                        </span>
+                      </div>
+                      <h4 className="font-extrabold text-xs sm:text-sm leading-snug font-display">
+                        {feat.shortName}
+                      </h4>
+                    </div>
+
+                    <div className="pt-2 mt-2 border-t border-zinc-200/30 dark:border-zinc-800/60 flex items-center justify-between text-[11px] font-medium">
+                      <span className={isSelected ? 'text-zinc-300 dark:text-zinc-600' : 'text-zinc-500 dark:text-zinc-400'}>
+                        {feat.leadSummary}
+                      </span>
+                      <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md ${
+                        isSelected 
+                          ? 'bg-white/15 dark:bg-zinc-900/15 text-white dark:text-zinc-900' 
+                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                      }`}>
+                        {feat.keyPhonemesOrClasses.length}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Active Feature Deep Dive Dossier */}
+            <div className="rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-950 p-6 sm:p-8 shadow-xl space-y-7">
+              {/* Top Overview & Prevalence Banner */}
+              <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 border-b border-zinc-200/90 dark:border-zinc-800/90 pb-6">
+                <div className="space-y-2.5 max-w-2xl">
+                  <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+                    <span className="font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+                      {activeFeature.category} System
+                    </span>
+                    <span className="text-zinc-400">·</span>
+                    <span className="text-zinc-500 dark:text-zinc-400 font-medium">
+                      World Atlas of Language Structures (WALS)
+                    </span>
+                    <span className="text-zinc-400">·</span>
+                    <span className="text-zinc-500 dark:text-zinc-400 font-semibold">
+                      Phonological Typology
+                    </span>
+                  </div>
+
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight font-display leading-tight">
+                    {activeFeature.name}
+                  </h2>
+                </div>
+
+                {/* Continental Prevalence Card */}
+                <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800/80 lg:max-w-md w-full space-y-1.5 shadow-2xs">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider font-mono">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span>Continental Prevalence</span>
+                  </div>
+                  <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed font-sans">
+                    {activeFeature.prevalenceInAfrica}
+                  </p>
+                </div>
+              </div>
+
+              {/* Mechanism and Geographic Distribution Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-50/40 to-zinc-50 dark:from-emerald-950/20 dark:to-zinc-900/50 border border-emerald-500/20 dark:border-emerald-500/20 space-y-2.5 shadow-2xs">
+                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-2 font-mono">
+                    <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    Articulatory &amp; Acoustic Production
+                  </span>
+                  <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-sans">
+                    {activeFeature.acousticMechanism}
+                  </p>
+                </div>
+
+                <div className="p-5 rounded-2xl bg-gradient-to-br from-cyan-50/40 to-zinc-50 dark:from-cyan-950/20 dark:to-zinc-900/50 border border-cyan-500/20 dark:border-cyan-500/20 space-y-2.5 shadow-2xs">
+                  <span className="text-xs font-bold uppercase tracking-wider text-cyan-800 dark:text-cyan-300 flex items-center gap-2 font-mono">
+                    <Globe2 className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+                    Phylogenetic &amp; Spatial Distribution
+                  </span>
+                  <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-sans">
+                    {activeFeature.geographicDistribution}
+                  </p>
+                </div>
+              </div>
+
+              {/* Phoneme & Class Breakdown Cards */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-mono flex items-center gap-2">
+                    <span>Phonemic Influx Inventory &amp; Attested Lexical Corpus</span>
+                    <span className="text-zinc-400">({activeFeature.keyPhonemesOrClasses.length} documented classes)</span>
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                  {activeFeature.keyPhonemesOrClasses.map((item, idx) => (
+                    <div 
+                      key={idx}
+                      className="p-5 rounded-2xl bg-zinc-50/70 dark:bg-zinc-900/60 border border-zinc-200/90 dark:border-zinc-800/90 space-y-4 shadow-2xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between"
+                    >
+                      {/* Item Header */}
+                      <div className="flex items-start gap-3.5">
+                        <div className="w-12 h-12 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-serif font-black text-xl flex items-center justify-center shrink-0 shadow-2xs">
+                          {item.symbol}
+                        </div>
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <h4 className="font-bold text-sm sm:text-base text-zinc-900 dark:text-zinc-100 leading-snug">
+                            {item.ipaName}
+                          </h4>
+                          <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Sample Words / Attested Lexicon */}
+                      <div className="space-y-2 pt-3 border-t border-zinc-200/80 dark:border-zinc-800/80">
+                        <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                          Attested Lexicon:
+                        </div>
+                        
+                        <div className="grid grid-cols-1 gap-2">
+                          {item.sampleWords.map((sample, sIdx) => (
+                            <div 
+                              key={sIdx}
+                              className="p-3 rounded-xl bg-white dark:bg-zinc-950/80 border border-zinc-200/80 dark:border-zinc-800/70 shadow-2xs space-y-1.5"
+                            >
+                              {/* Row 1: Word and English Translation */}
+                              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                                <span className="font-bold text-sm sm:text-base text-zinc-900 dark:text-zinc-100 font-serif">
+                                  {sample.word}
+                                </span>
+                                <span className="text-xs text-zinc-600 dark:text-zinc-400 italic">
+                                  "{sample.translation}"
+                                </span>
+                              </div>
+
+                              {/* Row 2: IPA transcription and Language badge */}
+                              <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-zinc-100 dark:border-zinc-900 text-xs font-mono">
+                                <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                                  IPA: {sample.ipa}
+                                </span>
+                                <span className="text-[11px] text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-2 py-0.5 rounded border border-zinc-200/60 dark:border-zinc-700/60 font-semibold">
+                                  {sample.language}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Theoretical Linguistic Significance */}
+              <div className="p-5 rounded-2xl bg-amber-500/10 dark:bg-amber-950/30 border border-amber-500/30 dark:border-amber-600/30 text-amber-950 dark:text-amber-200 space-y-2 shadow-2xs">
+                <div className="font-bold text-xs uppercase tracking-wider font-mono flex items-center gap-2 text-amber-900 dark:text-amber-300">
+                  <BookOpen className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  <span>Theoretical Linguistic &amp; Anthropological Significance</span>
+                </div>
+                <p className="text-sm leading-relaxed font-sans text-amber-900/90 dark:text-amber-200/90">
+                  {activeFeature.theoreticalSignificance}
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };

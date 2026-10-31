@@ -8,9 +8,13 @@ import { DynamicIcon } from '../components/DynamicIcon';
 import {
   INITIAL_UNESCO_HERITAGE_SITES,
   unescoSiteToIllustration,
-  parseUnescoXmlRows
+  parseUnescoXmlRows,
+  BIOME_OPTIONS,
+  BiomeFilter,
+  deriveSiteBiome
 } from '../data/unescoHeritageRegistry';
 import { SlaveTradeIllustration, UnescoSiteMetadata } from '../data/slaveTradeIllustrations';
+import { EcologicalBiomeSlidePanel } from '../components/heritage/EcologicalBiomeSlidePanel';
 import {
   Landmark,
   Search,
@@ -23,8 +27,13 @@ import {
   AlertTriangle,
   Globe2,
   Eye,
-  Camera
+  Camera,
+  ChevronDown,
+  SlidersHorizontal
 } from 'lucide-react';
+
+export { deriveSiteBiome, BIOME_OPTIONS };
+export type { BiomeFilter };
 
 interface HeritageViewProps {
   onSelectCountry: (entityId: string) => void;
@@ -60,6 +69,8 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
   const [viewMode, setViewMode] = useState<ViewMode>('viewer');
   const [regionFilter, setRegionFilter] = useState<RegionFilter>('All');
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All');
+  const [biomeFilter, setBiomeFilter] = useState<BiomeFilter>('All Biomes');
+  const [isBiomePanelOpen, setIsBiomePanelOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Modal state for importing / pasting UNESCO XML
@@ -67,7 +78,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
   const [xmlInputText, setXmlInputText] = useState<string>('');
   const [xmlImportStatus, setXmlImportStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-  // Filtered UNESCO sites based on region, category, and search query
+  // Filtered UNESCO sites based on region, category, biome, and search query
   const filteredSites = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return unescoSites.filter(site => {
@@ -82,6 +93,10 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
           ? Boolean(site.danger)
           : site.category === categoryFilter;
 
+      const matchesBiome =
+        biomeFilter === 'All Biomes' ||
+        deriveSiteBiome(site) === biomeFilter;
+
       const matchesQuery =
         !q ||
         site.site.toLowerCase().includes(q) ||
@@ -90,9 +105,9 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
         String(site.idNumber).includes(q) ||
         (site.shortDescription && site.shortDescription.toLowerCase().includes(q));
 
-      return matchesRegion && matchesCategory && matchesQuery;
+      return matchesRegion && matchesCategory && matchesBiome && matchesQuery;
     });
-  }, [unescoSites, regionFilter, categoryFilter, searchQuery]);
+  }, [unescoSites, regionFilter, categoryFilter, biomeFilter, searchQuery]);
 
   // Convert filtered UNESCO sites to SlaveTradeIllustration objects for ArchivalImageViewer
   const illustrationsList = useMemo<SlaveTradeIllustration[]>(() => {
@@ -137,6 +152,17 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
   const africaCount = useMemo(() => unescoSites.filter(s => s.region === 'Africa').length, [unescoSites]);
   const arabStatesCount = useMemo(() => unescoSites.filter(s => s.region === 'Arab States').length, [unescoSites]);
   const dangerCount = useMemo(() => unescoSites.filter(s => s.danger).length, [unescoSites]);
+
+  // Real-time site counts per ecological biome
+  const biomeCounts = useMemo(() => {
+    const counts: Record<string, number> = { 'All Biomes': unescoSites.length };
+    BIOME_OPTIONS.forEach(b => {
+      if (b !== 'All Biomes') {
+        counts[b] = unescoSites.filter(s => deriveSiteBiome(s) === b).length;
+      }
+    });
+    return counts;
+  }, [unescoSites]);
 
   // Handle XML file upload or paste
   const handleParseXmlSubmit = () => {
@@ -261,21 +287,50 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
           </div>
 
           {/* Category Filter Pills */}
-          <div className="hidden lg:inline-flex p-0.5 rounded-xl bg-stone-200/70 dark:bg-stone-900 border border-stone-300/60 dark:border-stone-800 text-[11px] font-mono">
-            {(['All', 'Cultural', 'Natural', 'Mixed', 'Danger'] as CategoryFilter[]).map(cat => (
-              <button
-                key={cat}
-                onClick={() => setCategoryFilter(cat)}
-                className={`px-2 py-1 rounded-lg font-bold transition-all cursor-pointer whitespace-nowrap ${
-                  categoryFilter === cat
-                    ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-950 shadow-2xs'
-                    : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
-                }`}
-              >
-                {cat === 'Danger' ? `In Danger (${dangerCount})` : cat}
-              </button>
-            ))}
+          <div className="inline-flex p-0.5 rounded-xl bg-stone-200/70 dark:bg-stone-900 border border-stone-300/60 dark:border-stone-800 text-[11px] font-mono overflow-x-auto max-w-full">
+            {(['All', 'Cultural', 'Natural', 'Mixed', 'Danger'] as CategoryFilter[]).map(cat => {
+              const isActive = categoryFilter === cat;
+              const isDanger = cat === 'Danger';
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setCategoryFilter(cat)}
+                  className={`px-2 py-1 rounded-lg font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1 ${
+                    isActive
+                      ? isDanger
+                        ? 'bg-rose-600 text-white shadow-2xs'
+                        : 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-950 shadow-2xs'
+                      : isDanger
+                      ? 'text-rose-700 dark:text-rose-400 hover:bg-rose-500/10'
+                      : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
+                  }`}
+                >
+                  {isDanger && <AlertTriangle className="w-3 h-3 shrink-0" />}
+                  <span>{isDanger ? `In Danger (${dangerCount})` : cat}</span>
+                </button>
+              );
+            })}
           </div>
+
+          {/* Sleek Biome Slide Panel Trigger Button */}
+          <button
+            onClick={() => setIsBiomePanelOpen(true)}
+            className={`px-2.5 py-1 rounded-xl text-[11px] font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
+              biomeFilter !== 'All Biomes'
+                ? 'bg-emerald-900/15 dark:bg-emerald-500/20 text-emerald-950 dark:text-emerald-300 border-emerald-600/40 dark:border-emerald-500/40 shadow-xs'
+                : 'bg-stone-200/70 hover:bg-stone-300/80 dark:bg-stone-900 dark:hover:bg-stone-850 text-stone-700 hover:text-stone-900 dark:text-stone-300 dark:hover:text-stone-100 border-stone-300/60 dark:border-stone-800'
+            }`}
+            title="Open Ecological Biomes & Biospheres Catalog"
+          >
+            <Globe2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span className="truncate max-w-[120px] sm:max-w-[150px]">
+              {biomeFilter === 'All Biomes' ? 'Biomes' : biomeFilter}
+            </span>
+            <span className="px-1.5 py-0.2 rounded-full text-[9px] bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 font-mono font-bold">
+              {biomeCounts[biomeFilter] ?? unescoSites.length}
+            </span>
+            <SlidersHorizontal className="w-3 h-3 text-stone-400 shrink-0" />
+          </button>
 
           {/* Compact Search Input */}
           <div className="relative w-36 sm:w-48">
@@ -372,6 +427,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                 onClick={() => {
                   setRegionFilter('All');
                   setCategoryFilter('All');
+                  setBiomeFilter('All Biomes');
                   setSearchQuery('');
                 }}
                 className="px-4 py-2 rounded-xl bg-amber-900 text-white text-xs font-mono font-bold cursor-pointer"
@@ -454,6 +510,18 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                         </div>
                       </div>
 
+                      {meta.danger && (
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-800 dark:text-rose-300 text-[10px] font-mono font-bold">
+                          <AlertTriangle className="w-3 h-3 text-rose-600 dark:text-rose-400 shrink-0" />
+                          <span>In Danger {meta.dangerDates ? `(${meta.dangerDates})` : ''}</span>
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-1.5 text-[10.5px] font-mono text-emerald-700 dark:text-emerald-400">
+                        <Globe2 className="w-3 h-3 shrink-0" />
+                        <span>{deriveSiteBiome(meta)}</span>
+                      </div>
+
                       <h3 className="font-serif font-bold text-base text-stone-900 dark:text-stone-100 leading-snug group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
                         {meta.site}
                       </h3>
@@ -498,6 +566,16 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
           </div>
         </div>
       )}
+
+      {/* Sleek Rich Slide Panel for Ecological Biomes */}
+      <EcologicalBiomeSlidePanel
+        isOpen={isBiomePanelOpen}
+        onClose={() => setIsBiomePanelOpen(false)}
+        selectedBiome={biomeFilter}
+        onSelectBiome={biome => setBiomeFilter(biome)}
+        biomeCounts={biomeCounts}
+        totalSitesCount={unescoSites.length}
+      />
 
       {/* Fullscreen Loupe Modal when popped out */}
       <ArchivalLoupeModal

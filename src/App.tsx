@@ -28,27 +28,27 @@ const MethodologyAuditModal = lazyWithRetry(() => import('./components/Methodolo
 const AfcftaSimulatorModal = lazyWithRetry(() => import('./components/afcfta/AfcftaSimulatorModal').then(m => ({ default: m.AfcftaSimulatorModal })), 'AfcftaSimulatorModal');
 
 // Lazy-load heavier views with automatic chunk recovery and cache resilience for GitHub Pages
-const CountryView = lazyWithRetry(() => import('./views/CountryView').then(m => ({ default: m.CountryView })), 'CountryView');
-const RegionalView = lazyWithRetry(() => import('./views/RegionalView').then(m => ({ default: m.RegionalView })), 'RegionalView');
-const AnalyticsView = lazyWithRetry(() => import('./views/AnalyticsView').then(m => ({ default: m.AnalyticsView })), 'AnalyticsView');
-const HeritageView = lazyWithRetry(() => import('./views/HeritageView').then(m => ({ default: m.HeritageView })), 'HeritageView');
-const CompareView = lazyWithRetry(() => import('./views/CompareView').then(m => ({ default: m.CompareView })), 'CompareView');
-const ProvenanceQualityView = lazyWithRetry(() => import('./views/ProvenanceQualityView').then(m => ({ default: m.ProvenanceQualityView })), 'ProvenanceQualityView');
-const MapView = lazyWithRetry(() => import('./views/MapView').then(m => ({ default: m.MapView })), 'MapView');
-const LanguagesView = lazyWithRetry(() => import('./views/LanguagesView').then(m => ({ default: m.LanguagesView })), 'LanguagesView');
+const CountryView = lazyWithRetry(() => import('./views/CountryView').then(m => ({ default: m.CountryView || (m as any).default })), 'CountryView');
+const RegionalView = lazyWithRetry(() => import('./views/RegionalView').then(m => ({ default: m.RegionalView || (m as any).default })), 'RegionalView');
+const AnalyticsView = lazyWithRetry(() => import('./views/AnalyticsView').then(m => ({ default: m.AnalyticsView || (m as any).default })), 'AnalyticsView');
+const HeritageView = lazyWithRetry(() => import('./views/HeritageView').then(m => ({ default: m.HeritageView || (m as any).default })), 'HeritageView');
+const CompareView = lazyWithRetry(() => import('./views/CompareView').then(m => ({ default: m.CompareView || (m as any).default })), 'CompareView');
+const ProvenanceQualityView = lazyWithRetry(() => import('./views/ProvenanceQualityView').then(m => ({ default: m.ProvenanceQualityView || (m as any).default })), 'ProvenanceQualityView');
+const MapView = lazyWithRetry(() => import('./views/MapView').then(m => ({ default: m.MapView || (m as any).default })), 'MapView');
+const LanguagesView = lazyWithRetry(() => import('./views/LanguagesView').then(m => ({ default: m.LanguagesView || (m as any).default })), 'LanguagesView');
 const ExploreView = lazyWithRetry(() => import('./views/ExploreView').then(m => ({ default: m.ExploreView || (m as any).default })), 'ExploreView');
-const SlaveTradeView = lazyWithRetry(() => import('./views/SlaveTradeView').then(m => ({ default: m.SlaveTradeView })), 'SlaveTradeView');
-const IconographyView = lazyWithRetry(() => import('./views/IconographyView').then(m => ({ default: m.IconographyView })), 'IconographyView');
-const ArchivalCartographyView = lazyWithRetry(() => import('./views/ArchivalCartographyView').then(m => ({ default: m.ArchivalCartographyView })), 'ArchivalCartographyView');
-const MolecularLegaciesArticleView = lazyWithRetry(() => import('./views/MolecularLegaciesArticleView').then(m => ({ default: m.MolecularLegaciesArticleView })), 'MolecularLegaciesArticleView');
-const AfricanDevelopmentMasterReportView = lazyWithRetry(() => import('./views/AfricanDevelopmentMasterReportView').then(m => ({ default: m.AfricanDevelopmentMasterReportView })), 'AfricanDevelopmentMasterReportView');
-const ThematicPillarsView = lazyWithRetry(() => import('./views/ThematicPillarsView').then(m => ({ default: m.ThematicPillarsView })), 'ThematicPillarsView');
+const SlaveTradeView = lazyWithRetry(() => import('./views/SlaveTradeView').then(m => ({ default: m.SlaveTradeView || (m as any).default })), 'SlaveTradeView');
+const IconographyView = lazyWithRetry(() => import('./views/IconographyView').then(m => ({ default: m.IconographyView || (m as any).default })), 'IconographyView');
+const ArchivalCartographyView = lazyWithRetry(() => import('./views/ArchivalCartographyView').then(m => ({ default: m.ArchivalCartographyView || (m as any).default })), 'ArchivalCartographyView');
+const MolecularLegaciesArticleView = lazyWithRetry(() => import('./views/MolecularLegaciesArticleView').then(m => ({ default: m.MolecularLegaciesArticleView || (m as any).default })), 'MolecularLegaciesArticleView');
+const AfricanDevelopmentMasterReportView = lazyWithRetry(() => import('./views/AfricanDevelopmentMasterReportView').then(m => ({ default: m.AfricanDevelopmentMasterReportView || (m as any).default })), 'AfricanDevelopmentMasterReportView');
+const ThematicPillarsView = lazyWithRetry(() => import('./views/ThematicPillarsView').then(m => ({ default: m.ThematicPillarsView || (m as any).default })), 'ThematicPillarsView');
 const EntityBlocsBrowser = lazyWithRetry(() => import('./components/EntityBlocsBrowser').then(m => ({ default: m.EntityBlocsBrowser || (m as any).default })), 'EntityBlocsBrowser');
-const EthnicTreeOfLifeView = lazyWithRetry(() => import('./views/EthnicTreeOfLifeView').then(m => ({ default: m.EthnicTreeOfLifeView })), 'EthnicTreeOfLifeView');
-const UniversalStyleGuideView = lazyWithRetry(() => import('./views/UniversalStyleGuideView').then(m => ({ default: m.UniversalStyleGuideView })), 'UniversalStyleGuideView');
+const EthnicTreeOfLifeView = lazyWithRetry(() => import('./views/EthnicTreeOfLifeView').then(m => ({ default: m.EthnicTreeOfLifeView || (m as any).default })), 'EthnicTreeOfLifeView');
+const UniversalStyleGuideView = lazyWithRetry(() => import('./views/UniversalStyleGuideView').then(m => ({ default: m.UniversalStyleGuideView || (m as any).default })), 'UniversalStyleGuideView');
 const ResearchReportsDirectoryView = lazyWithRetry(() => import('./views/ResearchReportsDirectoryView').then(m => ({ default: m.ResearchReportsDirectoryView || (m as any).default })), 'ResearchReportsDirectoryView');
 const ResearchReportArticleView = lazyWithRetry(() => import('./views/ResearchReportArticleView').then(m => ({ default: m.ResearchReportArticleView || (m as any).default })), 'ResearchReportArticleView');
-const PrivacySectionView = lazyWithRetry(() => import('./views/PrivacySectionView').then(m => ({ default: m.PrivacySectionView })), 'PrivacySectionView');
+const PrivacySectionView = lazyWithRetry(() => import('./views/PrivacySectionView').then(m => ({ default: m.PrivacySectionView || (m as any).default })), 'PrivacySectionView');
 
 const REGION_ID_TO_NAME: Record<string, AfricanRegion> = {
   'region-northern': 'Northern Africa',
@@ -182,6 +182,9 @@ function AppContent() {
 
   // UNESCO Heritage Archive deep link target
   const [selectedHeritageSiteId, setSelectedHeritageSiteId] = useState<number | undefined>(initialRoute.siteId);
+
+  // Slave Trade Active Sub-tab (to hide footer when standalone flow map or ports map is active)
+  const [slaveTradeSubTab, setSlaveTradeSubTab] = useState<string>('overview');
 
   // Desktop Drawer starts open by default. It remains open on nav clicks; only Menu toggles it.
   const [isDesktopDrawerOpen, setIsDesktopDrawerOpen] = useState<boolean>(true);
@@ -563,7 +566,12 @@ function AppContent() {
         <main
           data-core={activeCore}
           className={`core-${activeCore} flex-1 min-w-0 w-full ${
-            currentTab === 'map' || currentTab === 'ethnic-tree' || currentTab === 'archival-cartography' || currentTab === 'heritage' || (currentTab === 'iconography' && isIconographyIngestion)
+            currentTab === 'map' || 
+            currentTab === 'ethnic-tree' || 
+            currentTab === 'archival-cartography' || 
+            currentTab === 'heritage' || 
+            (currentTab === 'iconography' && isIconographyIngestion) ||
+            (currentTab === 'slave-trade' && (slaveTradeSubTab === 'flow-map' || slaveTradeSubTab === 'ports'))
               ? 'p-0 max-w-none flex flex-col'
               : currentTab === 'slave-trade' || currentTab === 'molecular-legacies' || currentTab === 'african-development-foundations'
                 ? 'px-3 sm:px-5 lg:px-6 py-4 md:py-6 max-w-none flex flex-col'
@@ -602,6 +610,7 @@ function AppContent() {
                       onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
                       onNavigateToIconography={() => handleSelectTab('iconography')}
                       onNavigateToCartography={() => handleSelectTab('archival-cartography')}
+                      onSubTabChange={(sub) => setSlaveTradeSubTab(sub)}
                     />
                   )}
 
@@ -883,8 +892,13 @@ function AppContent() {
         </Suspense>
       )}
 
-      {/* Structured Credibility Footer (Hidden on map, ethnic tree, archival cartography, heritage, ports map & iconography ingestion workbench) */}
-      {currentTab !== 'map' && currentTab !== 'ethnic-tree' && currentTab !== 'archival-cartography' && currentTab !== 'heritage' && !(currentTab === 'iconography' && isIconographyIngestion) && (
+      {/* Structured Credibility Footer (Hidden on map, ethnic tree, archival cartography, heritage, standalone flow map & ports, and iconography ingestion workbench) */}
+      {currentTab !== 'map' && 
+       currentTab !== 'ethnic-tree' && 
+       currentTab !== 'archival-cartography' && 
+       currentTab !== 'heritage' && 
+       !(currentTab === 'iconography' && isIconographyIngestion) && 
+       !(currentTab === 'slave-trade' && (slaveTradeSubTab === 'flow-map' || slaveTradeSubTab === 'ports')) && (
         <Suspense fallback={null}>
           <div id="app-footer-container">
             <Footer 

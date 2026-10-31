@@ -290,3 +290,44 @@ export const unescoSiteToIllustration = (site: UnescoSiteMetadata): SlaveTradeIl
  * Curated initial UNESCO World Heritage registry covering Africa and Arab States enriched with photo registry metadata.
  */
 export const INITIAL_UNESCO_HERITAGE_SITES: UnescoSiteMetadata[] = (rawUnescoSitesJson as UnescoSiteMetadata[]).map(enrichWithPhotoRegistry);
+
+export const BIOME_OPTIONS = [
+  'All Biomes',
+  'Hyper-Arid & Desert Erg',
+  'Congo Basin Rainforest',
+  'Marine & Coastal Atoll',
+  'Savanna & Alluvial Delta',
+  'Afroalpine & Rift Montane',
+  'Cape Floral Mediterranean',
+  'Equatorial Biosphere Reserve',
+  'Cultural Landscape'
+] as const;
+
+export type BiomeFilter = (typeof BIOME_OPTIONS)[number];
+
+export function deriveSiteBiome(site: UnescoSiteMetadata): string {
+  const text = `${site.site} ${site.shortDescription || ''} ${site.states} ${site.location || ''}`.toLowerCase();
+  if (text.includes('desert') || text.includes('sahara') || text.includes('tenere') || text.includes('dune') || text.includes('wadi') || text.includes('namib')) {
+    return 'Hyper-Arid & Desert Erg';
+  }
+  if (text.includes('rainforest') || text.includes('forest') || text.includes('congo') || text.includes('dja') || text.includes('lopé') || text.includes('salonga') || text.includes('taï') || text.includes('ituri')) {
+    return 'Congo Basin Rainforest';
+  }
+  if (text.includes('marine') || text.includes('coral') || text.includes('atoll') || text.includes('aldabra') || text.includes('coastal') || text.includes('d\'arguin') || text.includes('island')) {
+    return 'Marine & Coastal Atoll';
+  }
+  if (text.includes('savanna') || text.includes('serengeti') || text.includes('masai') || text.includes('ngorongoro') || text.includes('mara') || text.includes('crater') || text.includes('okavango') || text.includes('delta')) {
+    return 'Savanna & Alluvial Delta';
+  }
+  if (text.includes('rift') || text.includes('mountain') || text.includes('kilimanjaro') || text.includes('kenya') || text.includes('simien') || text.includes('drakensberg') || text.includes('rwenzori') || text.includes('volcano') || text.includes('virunga')) {
+    return 'Afroalpine & Rift Montane';
+  }
+  if (text.includes('fynbos') || text.includes('cape floral') || text.includes('succulent')) {
+    return 'Cape Floral Mediterranean';
+  }
+  if (site.category === 'Natural') {
+    return 'Equatorial Biosphere Reserve';
+  }
+  return 'Cultural Landscape';
+}
+
