@@ -141,16 +141,28 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
     }
   };
 
-  // Keyboard accessibility: dismiss panel with Escape
+  // Hide global app footer while AtlanticFlowMap is mounted
+  useEffect(() => {
+    document.body.classList.add('hide-app-footer');
+    return () => {
+      document.body.classList.remove('hide-app-footer');
+    };
+  }, []);
+
+  // Keyboard accessibility: dismiss panel or return to overview with Escape
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isSeasonalityActive) {
-        handleToggleSeasonality();
+      if (e.key === 'Escape') {
+        if (isSeasonalityActive) {
+          handleToggleSeasonality();
+        } else if (onBackToOverview) {
+          onBackToOverview();
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isSeasonalityActive]);
+  }, [isSeasonalityActive, onBackToOverview]);
 
   // Hydrodynamic Ocean Currents Particle Streamlines Engine
   const oceanCanvasRef = useRef<HTMLCanvasElement>(null);

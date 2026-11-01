@@ -45,6 +45,9 @@ import {
   X,
   PanelRightClose,
   PanelRightOpen,
+  PanelLeftClose,
+  PanelLeftOpen,
+  SlidersHorizontal,
   Wind,
   Waves,
   Play,
@@ -64,13 +67,120 @@ type TabType = 'dossier' | 'citation' | 'network';
 type CitationStyle = 'chicago' | 'apa' | 'harvard' | 'bibtex';
 
 /**
- * Tightly Calibrated Ports Overview ViewBox:
- * Cropping out empty Saharan/Mediterranean regions in the north (Y: 0..1480)
- * and Kalahari/South African regions in the south (Y: 4480..5867).
- * Places all 47 embarkation ports (X: 504..4579, Y: 1681..4253) front-and-center at maximum scale!
+ * 111% Zoom Framing of the Full African Continent:
+ * Displays the complete continent across all regions (Senegambia to Southeast Africa & Indian Ocean),
+ * perfectly framed at 111% zoom with full continental height and ocean breathing room.
+ * Canonical coordinate space: 5,796 × 5,867.
  */
-const TIGHT_PORTS_OVERVIEW_VIEWBOX = { x: 300, y: 1480, w: 4550, h: 3000 };
+export const CONTINENTAL_111_VIEWBOX = { x: 287, y: 290, w: 5222, h: 5286 };
+export const CONTINENTAL_100_VIEWBOX = CONTINENTAL_111_VIEWBOX; // backward-compatibility alias
+export const ATLANTIC_CORRIDOR_250_VIEWBOX = CONTINENTAL_111_VIEWBOX; // backward-compatibility alias
+export const ATLANTIC_CORRIDOR_200_VIEWBOX = CONTINENTAL_111_VIEWBOX; // backward-compatibility alias
+export const BASE_CONTINENTAL_WIDTH = 5796;
 const ZOOMED_PORT_SPAN = { w: 1350, h: 1200 };
+
+/**
+ * Micro-staggering offsets for dense coastal fort chains
+ * to guarantee that even when adjacent forts sit within 5-10px in longitude,
+ * their beacon glyphs maintain clear visual breathing room and never collide.
+ */
+const BEACON_MICRO_OFFSETS: Record<string, { x: number; y: number }> = {
+  // Albreda & James Island (opposite banks of the Gambia River)
+  'port-albreda': { x: 0, y: -4 },
+  'port-james-island': { x: 0, y: 4 },
+  // Gold Coast fort chain: micro-stagger Y so beacons never collide
+  'port-fort-san-antonio': { x: -3, y: -4 },
+  'port-gross-friedrichsburg': { x: 0, y: 4 },
+  'port-metal-cross': { x: 2, y: -3 },
+  'port-elmina': { x: -2, y: -5 },
+  'port-cape-coast': { x: 2, y: 6 },
+  'port-anomabu': { x: -1, y: -4 },
+  'port-fort-amsterdam': { x: 3, y: 6 },
+  // Lagos & Badagry along lagoon
+  'port-badagry': { x: -3, y: -4 },
+  'port-lagos': { x: 3, y: 4 },
+  // Bonny & New Calabar
+  'port-new-calabar': { x: -4, y: -4 },
+  'port-bonny': { x: 4, y: 4 }
+};
+
+/**
+ * Curated Seaward Zero-Collision Label Offsets:
+ * Mathematically calculated to angle leader lines seaward into open ocean
+ * with staggered radial and distance tiers, eliminating any overlap across all 47 ports.
+ */
+const ZERO_COLLISION_LABEL_OFFSETS: Record<string, { offsetX: number; offsetY: number }> = {
+  // 1. Senegambia (Coast runs N-S, Ocean is WEST)
+  'port-saint-louis': { offsetX: -140, offsetY: -20 },
+  'port-goree': { offsetX: -150, offsetY: 0 },
+  'port-james-island': { offsetX: -145, offsetY: -45 },
+  'port-albreda': { offsetX: -145, offsetY: 20 },
+  'port-cacheu': { offsetX: -145, offsetY: 65 },
+  'port-bissau': { offsetX: -145, offsetY: 110 },
+
+  // 2. Sierra Leone (Coast runs NW-SE, Ocean is SW)
+  'port-rio-pongo': { offsetX: -140, offsetY: -20 },
+  'port-bunce-island': { offsetX: -145, offsetY: 0 },
+  'port-sherbro': { offsetX: -140, offsetY: 45 },
+  'port-gallinas': { offsetX: -130, offsetY: 80 },
+
+  // 3. Windward Coast (Ocean is SW / S)
+  'port-cape-mount': { offsetX: -125, offsetY: 65 },
+  'port-grand-bassa': { offsetX: -115, offsetY: 80 },
+  'port-cape-palmas': { offsetX: -50, offsetY: 95 },
+  'port-grand-bassam': { offsetX: -40, offsetY: 90 },
+
+  // 4. Gold Coast (Coast runs W-E, Ocean is SOUTH)
+  'port-fort-san-antonio': { offsetX: -60, offsetY: 70 },
+  'port-gross-friedrichsburg': { offsetX: -90, offsetY: 135 },
+  'port-metal-cross': { offsetX: -40, offsetY: 200 },
+  'port-elmina': { offsetX: -80, offsetY: 265 },
+  'port-cape-coast': { offsetX: 25, offsetY: 75 },
+  'port-anomabu': { offsetX: 65, offsetY: 140 },
+  'port-fort-amsterdam': { offsetX: 95, offsetY: 205 },
+  'port-christiansborg': { offsetX: 60, offsetY: 65 },
+  'port-fort-prinzenstein': { offsetX: -30, offsetY: 145 },
+
+  // 5. Bight of Benin (Coast runs W-E, Ocean is SOUTH)
+  'port-little-popo': { offsetX: -45, offsetY: 80 },
+  'port-grand-popo': { offsetX: -20, offsetY: 245 },
+  'port-ouidah': { offsetX: 0, offsetY: 310 },
+  'port-porto-novo': { offsetX: 40, offsetY: 80 },
+  'port-badagry': { offsetX: -25, offsetY: 140 },
+  'port-lagos': { offsetX: 35, offsetY: 210 },
+  'port-gwato': { offsetX: 60, offsetY: 80 },
+
+  // 6. Bight of Biafra (Ocean is SW / S)
+  'port-brass': { offsetX: -45, offsetY: 70 },
+  'port-new-calabar': { offsetX: -45, offsetY: 155 },
+  'port-bonny': { offsetX: 35, offsetY: 230 },
+  'port-old-calabar': { offsetX: 85, offsetY: 75 },
+  'port-bimbia': { offsetX: 50, offsetY: 140 },
+  'port-sao-tome': { offsetX: 0, offsetY: 70 },
+
+  // 7. West Central Africa (Coast runs N-S, Ocean is WEST)
+  'port-loango': { offsetX: -145, offsetY: -30 },
+  'port-cabinda': { offsetX: -145, offsetY: 20 },
+  'port-mpinda': { offsetX: -145, offsetY: 65 },
+  'port-ambriz': { offsetX: -145, offsetY: -10 },
+  'port-luanda': { offsetX: -145, offsetY: -25 },
+  'port-benguela': { offsetX: -145, offsetY: 20 },
+
+  // 8. Southeast Africa (Coast runs N-S, Ocean is EAST / Mozambique Channel)
+  'port-lamu': { offsetX: 160, offsetY: -25 },
+  'port-mombasa': { offsetX: 160, offsetY: 0 },
+  'port-zanzibar': { offsetX: 160, offsetY: -20 },
+  'port-kilwa': { offsetX: 160, offsetY: 10 },
+  'port-ibo-island': { offsetX: 160, offsetY: -25 },
+  'port-mozambique-island': { offsetX: 160, offsetY: 15 },
+  'port-angoche': { offsetX: 160, offsetY: -15 },
+  'port-quelimane': { offsetX: 160, offsetY: 25 },
+  'port-sofala': { offsetX: 160, offsetY: -15 },
+  'port-inhambane': { offsetX: 160, offsetY: 20 },
+  'port-delagoa-bay': { offsetX: 160, offsetY: 15 },
+  'port-majunga': { offsetX: -160, offsetY: 0 }, // Northwest Madagascar coast facing west (Mozambique Channel)
+  'port-sainte-marie': { offsetX: 160, offsetY: 0 } // East Madagascar coast facing east (Indian Ocean)
+};
 
 const COASTAL_REGIONS_META = [
   { name: 'Senegambia', color: '#0284c7', count: '6 ports' },
@@ -80,7 +190,7 @@ const COASTAL_REGIONS_META = [
   { name: 'Bight of Benin', color: '#ea580c', count: '7 ports' },
   { name: 'Bight of Biafra', color: '#dc2626', count: '6 ports' },
   { name: 'West Central Africa', color: '#7c3aed', count: '6 ports' },
-  { name: 'Southeast Africa', color: '#4338ca', count: '5 ports' }
+  { name: 'Southeast Africa', color: '#4338ca', count: '13 ports' }
 ];
 
 export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
@@ -103,24 +213,25 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
   const [yearRange, setYearRange] = useState<[number, number]>([1514, 1866]);
   const [showOceanVectors, setShowOceanVectors] = useState<boolean>(true);
   const [isTimelinePlaying, setIsTimelinePlaying] = useState<boolean>(false);
+  const [isTimelineOpen, setIsTimelineOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activePort, setActivePort] = useState<AfricanEmbarkationPort | null>(AFRICAN_EMBARKATION_PORTS[0]);
   const [hoveredPortId, setHoveredPortId] = useState<string | null>(null);
 
-  // Region & Country Hover Highlighting
+  // Region & Country Hover Highlighting (collapsed by default on initial view)
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
-  const [isLegendOpen, setIsLegendOpen] = useState<boolean>(true);
+  const [isLegendOpen, setIsLegendOpen] = useState<boolean>(false);
 
-  // Viewport & Pan/Zoom Engine (in SVG coordinate space)
-  const [currentViewBox, setCurrentViewBox] = useState(TIGHT_PORTS_OVERVIEW_VIEWBOX);
+  // Viewport & Pan/Zoom Engine (in SVG coordinate space - 111% full continental view default)
+  const [currentViewBox, setCurrentViewBox] = useState(CONTINENTAL_111_VIEWBOX);
   const [isZoomedIn, setIsZoomedIn] = useState<boolean>(false);
   const [isHighContrast, setIsHighContrast] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
-  // Layout Drawers (identical to ArchivalImageViewer.tsx)
-  const [isMetadataOpen, setIsMetadataOpen] = useState<boolean>(true);
-  const [isFilmstripOpen, setIsFilmstripOpen] = useState<boolean>(true);
+  // Layout Drawers (collapsed by default on initial view)
+  const [isMetadataOpen, setIsMetadataOpen] = useState<boolean>(false);
+  const [isFilmstripOpen, setIsFilmstripOpen] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<TabType>('dossier');
 
   // Citation generator state
@@ -129,15 +240,15 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
 
   // Mouse drag panning state
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const dragStartRef = useRef<{ clientX: number; clientY: number; startViewBox: typeof TIGHT_PORTS_OVERVIEW_VIEWBOX }>({
+  const dragStartRef = useRef<{ clientX: number; clientY: number; startViewBox: typeof CONTINENTAL_111_VIEWBOX }>({
     clientX: 0,
     clientY: 0,
-    startViewBox: TIGHT_PORTS_OVERVIEW_VIEWBOX
+    startViewBox: CONTINENTAL_111_VIEWBOX
   });
 
   // Touch gesture state refs
   const touchStartDistRef = useRef<number | null>(null);
-  const touchStartBoxRef = useRef<typeof TIGHT_PORTS_OVERVIEW_VIEWBOX>(TIGHT_PORTS_OVERVIEW_VIEWBOX);
+  const touchStartBoxRef = useRef<typeof CONTINENTAL_111_VIEWBOX>(CONTINENTAL_111_VIEWBOX);
   const touchStartPointRef = useRef<{ x: number; y: number } | null>(null);
 
   // DOM Refs
@@ -145,27 +256,54 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
   const svgContainerRef = useRef<HTMLDivElement>(null);
   const filmstripRef = useRef<HTMLDivElement>(null);
   const animFrameRef = useRef<number | null>(null);
-  const targetViewBoxRef = useRef(TIGHT_PORTS_OVERVIEW_VIEWBOX);
+  const targetViewBoxRef = useRef(CONTINENTAL_111_VIEWBOX);
 
   // Keep live reference to currentViewBox for native non-passive listeners
   const currentViewBoxRef = useRef(currentViewBox);
   currentViewBoxRef.current = currentViewBox;
 
-  // Auto-play timeline animation effect
+  // Auto-play timeline animation effect with smooth, silky frame-throttled time progression
+  const currentEndYearRef = useRef<number>(yearRange[1]);
+  currentEndYearRef.current = yearRange[1];
+
   useEffect(() => {
     if (!isTimelinePlaying) return;
-    const interval = setInterval(() => {
-      setYearRange(prev => {
-        const step = 25;
-        const nextEnd = prev[1] + step;
-        if (nextEnd > 1866) {
-          setIsTimelinePlaying(false);
-          return [1514, 1866];
-        }
-        return [Math.max(1514, nextEnd - 75), nextEnd];
-      });
-    }, 1000);
-    return () => clearInterval(interval);
+
+    let rafId: number;
+    let lastTime = performance.now();
+    // If starting at the historical terminus (1866), loop back to beginning (1514)
+    let currentYearFloat = currentEndYearRef.current >= 1866 ? 1514 : currentEndYearRef.current;
+    if (currentEndYearRef.current >= 1866) {
+      setYearRange([1514, 1514]);
+    }
+
+    // 16 historical years per second for smooth, readable chronological progression
+    const yearsPerSecond = 16;
+    let lastDispatchedYear = Math.round(currentYearFloat);
+
+    const tick = (now: number) => {
+      const deltaSec = Math.min(0.05, (now - lastTime) / 1000);
+      lastTime = now;
+
+      currentYearFloat += yearsPerSecond * deltaSec;
+
+      if (currentYearFloat >= 1866) {
+        setYearRange([1514, 1866]);
+        setIsTimelinePlaying(false);
+        return;
+      }
+
+      const nextYearInt = Math.round(currentYearFloat);
+      if (nextYearInt !== lastDispatchedYear) {
+        lastDispatchedYear = nextYearInt;
+        setYearRange(prev => [prev[0], nextYearInt]);
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
   }, [isTimelinePlaying]);
 
   // Filtered port list
@@ -247,6 +385,8 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
       (iso3 === 'AGO' && activePort.countryModern.includes('Angola')) ||
       (iso3 === 'MOZ' && activePort.countryModern.includes('Mozambique')) ||
       (iso3 === 'TZA' && activePort.countryModern.includes('Tanzania')) ||
+      (iso3 === 'KEN' && activePort.countryModern.includes('Kenya')) ||
+      (iso3 === 'MDG' && activePort.countryModern.includes('Madagascar')) ||
       (iso3 === 'STP' && activePort.countryModern.includes('São Tomé'))
     );
 
@@ -302,24 +442,48 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
     animFrameRef.current = requestAnimationFrame(step);
   }, []);
 
-  // Zoom & Center on Port on Click
+  // Zoom & Center on Port on Click (opens full archival dossier, centers focused port & label plaque)
   const handlePortClick = useCallback((port: AfricanEmbarkationPort) => {
     setActivePort(port);
+    setIsMetadataOpen(true);
     onSelectPort?.(port);
 
-    const { x, y } = projectPortToSvg(port.coordinates.lat, port.coordinates.lng, port.id);
-    const targetW = ZOOMED_PORT_SPAN.w;
-    const targetH = ZOOMED_PORT_SPAN.h;
+    const raw = projectPortToSvg(port.coordinates.lat, port.coordinates.lng, port.id);
+    const micro = BEACON_MICRO_OFFSETS[port.id] || { x: 0, y: 0 };
+    const beaconX = raw.x + micro.x;
+    const beaconY = raw.y + micro.y;
+
+    const labelConfig = ZERO_COLLISION_LABEL_OFFSETS[port.id] || {
+      offsetX: beaconX > 3500 ? 160 : -160,
+      offsetY: 0
+    };
+
+    // Calculate center between beacon and its label plaque so both are beautifully framed in view
+    const centerX = beaconX + labelConfig.offsetX * 0.45;
+    const centerY = beaconY + (labelConfig.offsetY ? labelConfig.offsetY * 0.45 : 0);
+
+    const targetW = 1250;
+    const targetH = 1100;
     const target = {
-      x: Math.round(x - targetW / 2),
-      y: Math.round(y - targetH / 2),
+      x: Math.round(centerX - targetW / 2),
+      y: Math.round(centerY - targetH / 2),
       w: targetW,
       h: targetH
     };
 
     setIsZoomedIn(true);
-    animateViewBoxTo(target);
+    animateViewBoxTo(target, 500);
   }, [onSelectPort, animateViewBoxTo]);
+
+  // Close the dossier drawer and reset zoom and corridors (as requested)
+  const handleCloseDossier = useCallback(() => {
+    setIsMetadataOpen(false);
+    setSelectedRegion('All');
+    setHoveredRegion(null);
+    setHoveredPortId(null);
+    setIsZoomedIn(false);
+    animateViewBoxTo(CONTINENTAL_111_VIEWBOX, 500);
+  }, [animateViewBoxTo]);
 
   // Stepper to Previous / Next Port
   const handlePrevPort = useCallback(() => {
@@ -334,17 +498,17 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
     handlePortClick(filteredPorts[nextIdx]);
   }, [currentIndex, filteredPorts, handlePortClick]);
 
-  // Reset to tight initial overview
+  // Reset to 111% full continental overview
   const handleResetZoom = useCallback(() => {
     setIsZoomedIn(false);
-    animateViewBoxTo(TIGHT_PORTS_OVERVIEW_VIEWBOX);
+    animateViewBoxTo(CONTINENTAL_111_VIEWBOX, 500);
   }, [animateViewBoxTo]);
 
   // Manual step zoom in / out centered on current viewBox
   const handleStepZoom = useCallback((deltaFactor: number) => {
     const cur = currentViewBoxRef.current;
-    const newW = Math.max(600, Math.min(5200, Math.round(cur.w * deltaFactor)));
-    const newH = Math.max(500, Math.min(4200, Math.round(cur.h * deltaFactor)));
+    const newW = Math.max(600, Math.min(6500, Math.round(cur.w * deltaFactor)));
+    const newH = Math.max(500, Math.min(6600, Math.round(cur.h * deltaFactor)));
     const centerX = cur.x + cur.w / 2;
     const centerY = cur.y + cur.h / 2;
 
@@ -355,7 +519,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
       h: newH
     };
 
-    setIsZoomedIn(newW < TIGHT_PORTS_OVERVIEW_VIEWBOX.w * 0.85);
+    setIsZoomedIn(newW < CONTINENTAL_111_VIEWBOX.w * 0.85);
     animateViewBoxTo(target, 300);
   }, [animateViewBoxTo]);
 
@@ -375,47 +539,34 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
       .sort((a, b) => a.dist - b.dist);
   }, [activePort, filteredPorts]);
 
-  // Compute collision-free label positions for ports visible in zoomed view
+  // Compute collision-free seaward label positions for all ports
   const visiblePortPositions = useMemo(() => {
-    if (!isZoomedIn || !activePort) return new Map<string, { offsetX: number; offsetY: number }>();
-
-    const activeCoords = projectPortToSvg(activePort.coordinates.lat, activePort.coordinates.lng, activePort.id);
     const posMap = new Map<string, { offsetX: number; offsetY: number }>();
-
-    // For East Africa (x > 3500), seaward is EAST (+X).
-    // For West Africa & Angola (x <= 3500), seaward is WEST (-X).
-    const isEastCoast = activeCoords.x > 3500;
-    posMap.set(activePort.id, {
-      offsetX: isEastCoast ? 140 : -140,
-      offsetY: -55
-    });
-
-    // Sort nearby ports by Y coordinate to assign collision-free alternating offsets
-    const sortedNearby = [...nearbyPorts].sort((a, b) => a.coords.y - b.coords.y);
-    sortedNearby.forEach((item, idx) => {
-      const isItemEastCoast = item.coords.x > 3500;
-      const yTiers = [-80, 55, -45, 85, -115, 115, -140, 140];
-      const yTier = yTiers[idx % yTiers.length];
-      const xDir = isItemEastCoast ? 1 : -1;
-      const xDistance = 125 + (idx % 3) * 35;
-
-      posMap.set(item.port.id, {
-        offsetX: xDir * xDistance,
-        offsetY: yTier
-      });
-    });
-
+    for (const port of AFRICAN_EMBARKATION_PORTS) {
+      if (ZERO_COLLISION_LABEL_OFFSETS[port.id]) {
+        posMap.set(port.id, ZERO_COLLISION_LABEL_OFFSETS[port.id]);
+      } else {
+        const rawCoords = projectPortToSvg(port.coordinates.lat, port.coordinates.lng, port.id);
+        posMap.set(port.id, {
+          offsetX: rawCoords.x > 3500 ? 140 : -140,
+          offsetY: 0
+        });
+      }
+    }
     return posMap;
-  }, [isZoomedIn, activePort, nearbyPorts]);
+  }, []);
 
   // Auto-scroll active card in filmstrip tray into view
   useEffect(() => {
-    if (!activePort || !filmstripRef.current) return;
-    const cardEl = filmstripRef.current.querySelector(`[data-port-id="${activePort.id}"]`);
-    if (cardEl) {
-      cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-    }
-  }, [activePort]);
+    if (!activePort || !filmstripRef.current || !isFilmstripOpen) return;
+    const timer = setTimeout(() => {
+      const cardEl = filmstripRef.current?.querySelector(`[data-port-id="${activePort.id}"]`);
+      if (cardEl) {
+        cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [activePort, isFilmstripOpen]);
 
   // Fullscreen toggle handler
   const toggleFullscreen = useCallback(() => {
@@ -439,8 +590,12 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
       const target = e.target as HTMLElement;
       if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
 
-      if (e.key === 'Escape' && onClose) {
-        onClose();
+      if (e.key === 'Escape') {
+        if (isMetadataOpen) {
+          handleCloseDossier();
+        } else if (onClose) {
+          onClose();
+        }
       } else if (e.key === '+' || e.key === '=') {
         handleStepZoom(0.8);
       } else if (e.key === '-' || e.key === '_') {
@@ -477,7 +632,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose, handleStepZoom, handleResetZoom, toggleFullscreen, handlePrevPort, handleNextPort]);
+  }, [onClose, handleStepZoom, handleResetZoom, toggleFullscreen, handlePrevPort, handleNextPort, isMetadataOpen, handleCloseDossier]);
 
   // Native non-passive Wheel Zoom centered on mouse pointer (prevents page scrolling!)
   useEffect(() => {
@@ -503,7 +658,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
       const newX = Math.round(svgPointX - (pointerX / rect.width) * newW);
       const newY = Math.round(svgPointY - (pointerY / rect.height) * newH);
 
-      setIsZoomedIn(newW < TIGHT_PORTS_OVERVIEW_VIEWBOX.w * 0.85);
+      setIsZoomedIn(newW < ATLANTIC_CORRIDOR_250_VIEWBOX.w * 0.85);
       setCurrentViewBox({ x: newX, y: newY, w: newW, h: newH });
     };
 
@@ -659,8 +814,8 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
     }
   };
 
-  // Zoom percentage relative to tight overview
-  const zoomPercent = Math.round((TIGHT_PORTS_OVERVIEW_VIEWBOX.w / currentViewBox.w) * 100);
+  // Zoom percentage relative to 200% base corridor framing
+  const zoomPercent = Math.round((BASE_CONTINENTAL_WIDTH / currentViewBox.w) * 100);
 
   // Radar Mini-Map Viewport Box calculation (mapping 5796x5867 to 160x162)
   const miniMapRect = useMemo(() => {
@@ -679,178 +834,466 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
       ref={rootRef}
       aria-label="African Embarkation Ports & Coastal Enclaves Atlas"
       className={`archival-viewer-root bg-[#FAF8F5] dark:bg-stone-950 text-stone-900 dark:text-stone-100 border border-stone-200/90 dark:border-stone-800 rounded-3xl w-full shadow-2xl relative text-left overflow-hidden flex flex-col transition-all duration-300 select-none ${
-        mode === 'fullscreen' || isFullscreen ? 'fixed inset-0 z-50 rounded-none border-none h-screen' : 'h-[calc(100vh-140px)] min-h-[760px]'
+        mode === 'fullscreen' || isFullscreen ? 'fixed inset-0 z-50 rounded-none border-none h-screen' : 'h-[calc(100vh-68px)] max-h-[calc(100vh-68px)] min-h-[600px] flex-1'
       }`}
     >
-      {/* 1. TOP HEADER BAR — In the vein of ArchivalImageViewer.tsx */}
-      <header className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-stone-200/90 dark:border-stone-800 bg-[#F4EFE6]/95 dark:bg-stone-900/95 backdrop-blur-md shrink-0 z-20 gap-3">
-        {/* Left: Port Identifier, Title & Stepper Index */}
-        <div className="flex items-center gap-2.5 min-w-0 pr-2">
-          {activePort && (
-            <div className="px-2.5 py-1 rounded-full bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/15 dark:border-amber-400/20 text-amber-900 dark:text-amber-300 text-[10px] font-mono font-bold uppercase tracking-wider shrink-0 flex items-center gap-1.5">
-              <Castle className="w-3 h-3 text-amber-700 dark:text-amber-400" />
-              <span>{activePort.id.replace('port-', '').toUpperCase()}</span>
+      {/* 1. TOP DOCKED MAP CANVAS TOOLBAR (Integrated Radar & Timeline) */}
+      <header className="w-full shrink-0 z-30 flex flex-col rounded-t-3xl border-b border-stone-200/90 dark:border-stone-800 bg-[#F4EFE6]/98 dark:bg-stone-900/98 backdrop-blur-md shadow-sm">
+        {/* Tier 1: Port Context, Quick Stepper, Zoom Pill & Primary Actions */}
+        <div className="flex flex-wrap items-center justify-between px-3.5 sm:px-5 py-2.5 gap-2 sm:gap-3">
+          {/* Left: Back Button, Port Identifier, Title & Stepper Index */}
+          <div className="flex items-center gap-2 min-w-0 pr-1">
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-all border border-stone-300 dark:border-stone-700 bg-white/90 dark:bg-stone-800/90 text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:border-amber-600/50 flex items-center gap-1 shadow-2xs cursor-pointer shrink-0"
+                title="Return to Transatlantic Slave Trade Overview"
+              >
+                <span>← Back</span>
+                <span className="hidden sm:inline text-stone-600 dark:text-stone-300 font-medium">to Overview</span>
+              </button>
+            )}
+            {activePort && (
+              <div className="px-2 py-0.5 rounded-md bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/15 dark:border-amber-400/20 text-amber-900 dark:text-amber-300 text-[10px] font-mono font-bold uppercase tracking-wider shrink-0 flex items-center gap-1.5">
+                <Castle className="w-3 h-3 text-amber-700 dark:text-amber-400" />
+                <span>{activePort.id.replace('port-', '').toUpperCase()}</span>
+              </div>
+            )}
+            <h2 className="text-xs sm:text-sm md:text-base font-serif font-bold text-stone-900 dark:text-stone-100 truncate">
+              {activePort ? activePort.name : 'African Embarkation Ports & Coastal Enclaves'}
+            </h2>
+            {activePort && (
+              <span className="hidden md:inline-flex text-[11px] font-mono text-stone-500 dark:text-stone-400 shrink-0">
+                ({currentIndex + 1} of {filteredPorts.length})
+              </span>
+            )}
+            {/* Previous / Next Port Quick Stepper */}
+            {filteredPorts.length > 1 && (
+              <div className="flex items-center gap-0.5 bg-stone-200/70 dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700/80 rounded-xl p-0.5 ml-1 shrink-0">
+                <button
+                  onClick={handlePrevPort}
+                  className="p-1 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
+                  title="Previous Port (Alt + ←)"
+                  aria-label="Previous Port"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={handleNextPort}
+                  className="p-1 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
+                  title="Next Port (Alt + →)"
+                  aria-label="Next Port"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Right Toolbar Controls: Stepper, Zoom Pill, Filmstrip, Details Toggle */}
+          <div role="toolbar" aria-label="Cartographic viewer controls" className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Integrated Zoom, Reset, Contrast, Fullscreen Pill */}
+            <div className="flex items-center bg-stone-200/70 dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700/80 rounded-xl p-0.5 gap-0.5">
+              <button
+                onClick={() => handleStepZoom(0.8)}
+                className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
+                title="Zoom In (+)"
+                aria-label="Zoom In"
+              >
+                <ZoomIn className="w-3.5 h-3.5" />
+              </button>
+              <span className="text-[11px] font-mono px-1.5 text-stone-700 dark:text-stone-300 select-none font-semibold tabular-nums min-w-[38px] text-center">
+                {zoomPercent}%
+              </span>
+              <button
+                onClick={() => handleStepZoom(1.25)}
+                className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
+                title="Zoom Out (-)"
+                aria-label="Zoom Out"
+              >
+                <ZoomOut className="w-3.5 h-3.5" />
+              </button>
+
+              <div className="w-px h-3.5 bg-stone-300 dark:bg-stone-700 mx-0.5" />
+
+              <button
+                onClick={handleResetZoom}
+                className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
+                title="Reset View to 111% Full Continent (0)"
+                aria-label="Reset View"
+              >
+                <RotateCw className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                onClick={() => setIsHighContrast(!isHighContrast)}
+                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                  isHighContrast
+                    ? 'bg-amber-900 text-amber-50 font-bold dark:bg-amber-500 dark:text-stone-950'
+                    : 'hover:bg-stone-300/80 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300'
+                }`}
+                title="High Contrast Cartography Filter"
+                aria-label="High Contrast Filter"
+              >
+                <Contrast className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                onClick={toggleFullscreen}
+                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                  isFullscreen
+                    ? 'bg-amber-900 text-amber-50 font-bold dark:bg-amber-500 dark:text-stone-950'
+                    : 'hover:bg-stone-300/80 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300'
+                }`}
+                title={isFullscreen ? "Exit Fullscreen (F)" : "Enter Fullscreen (F)"}
+                aria-label="Toggle Fullscreen"
+              >
+                {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+              </button>
             </div>
-          )}
-          <h2 className="text-xs sm:text-sm md:text-base font-serif font-bold text-stone-900 dark:text-stone-100 truncate">
-            {activePort ? activePort.name : 'African Embarkation Ports & Coastal Enclaves'}
-          </h2>
-          {activePort && (
-            <span className="hidden md:inline-flex text-[11px] font-mono text-stone-500 dark:text-stone-400 shrink-0">
-              ({currentIndex + 1} of {filteredPorts.length})
-            </span>
-          )}
+
+            {/* Toggle Ports Tray Button */}
+            <button
+              onClick={() => setIsFilmstripOpen(!isFilmstripOpen)}
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+                isFilmstripOpen
+                  ? 'bg-amber-900 text-amber-50 dark:bg-amber-500/20 dark:text-amber-300 shadow-2xs'
+                  : 'bg-stone-200/70 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-300/80 border border-stone-300/70 dark:border-stone-700'
+              }`}
+              title={isFilmstripOpen ? "Collapse Ports Tray" : "Open Ports Tray"}
+            >
+              <Castle className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Ports ({filteredPorts.length})</span>
+            </button>
+
+            {/* Collapsible Details Drawer Toggle */}
+            <AnimatePresence mode="wait">
+              {isMetadataOpen ? (
+                <motion.button
+                  key="hide-details-btn"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 450, damping: 25 }}
+                  onClick={handleCloseDossier}
+                  className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer bg-stone-200/70 hover:bg-stone-300 text-stone-800 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 border border-stone-300/70 dark:border-stone-700 shadow-2xs"
+                  title="Hide Dossier & Reset View"
+                >
+                  <PanelRightClose className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+                  <span className="hidden sm:inline">Hide Dossier</span>
+                </motion.button>
+              ) : (
+                <motion.button
+                  key="show-details-btn"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 450, damping: 25 }}
+                  onClick={() => {
+                    if (activePort) {
+                      handlePortClick(activePort);
+                    } else {
+                      setIsMetadataOpen(true);
+                    }
+                  }}
+                  className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer bg-amber-900/10 hover:bg-amber-900/20 text-amber-900 border border-amber-900/25 dark:bg-amber-500/20 dark:text-amber-300 shadow-2xs"
+                  title="Show Port Dossier"
+                >
+                  <PanelRightOpen className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+                  <span className="hidden sm:inline">Show Dossier</span>
+                </motion.button>
+              )}
+            </AnimatePresence>
+
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="p-1.5 rounded-xl bg-stone-200/70 hover:bg-red-100 hover:text-red-900 dark:bg-stone-800 dark:hover:bg-red-950/60 dark:hover:text-red-300 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer border border-stone-300/70 dark:border-stone-700"
+                title="Close Viewer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Right Toolbar Controls: Stepper, Zoom Pill, Filmstrip, Details Toggle */}
-        <div role="toolbar" aria-label="Cartographic viewer controls" className="flex items-center gap-2 shrink-0">
-          {/* Previous / Next Port Quick Stepper */}
-          {filteredPorts.length > 1 && (
-            <div className="flex items-center gap-0.5 bg-stone-200/70 dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700/80 rounded-xl p-0.5 mr-1">
-              <button
-                onClick={handlePrevPort}
-                className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
-                title="Previous Port (Alt + ←)"
-                aria-label="Previous Port"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
-              <button
-                onClick={handleNextPort}
-                className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
-                title="Next Port (Alt + →)"
-                aria-label="Next Port"
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          )}
-
-          {/* Integrated Zoom, Reset, Contrast, Fullscreen Pill */}
-          <div className="hidden sm:flex items-center bg-stone-200/70 dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700/80 rounded-xl p-0.5 gap-0.5">
+        {/* Tier 2: INTEGRATED RADAR MINI-MAP + TIMELINE ANIMATION ENGINE & CURRENTS HUD */}
+        <div className="flex flex-wrap items-center justify-between gap-2.5 px-3.5 sm:px-5 py-2 border-t border-stone-200/80 dark:border-stone-800/80 bg-[#EFE8DC]/60 dark:bg-stone-950/60 text-xs">
+          {/* Integrated Radar Mini-Map Monitor (Click to reset view) */}
+          <div className="flex items-center gap-2 shrink-0">
             <button
-              onClick={() => handleStepZoom(0.8)}
-              className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
-              title="Zoom In (+)"
-              aria-label="Zoom In"
-            >
-              <ZoomIn className="w-3.5 h-3.5" />
-            </button>
-            <span className="text-[11px] font-mono px-1.5 text-stone-700 dark:text-stone-300 select-none font-semibold tabular-nums min-w-[42px] text-center">
-              {zoomPercent}%
-            </span>
-            <button
-              onClick={() => handleStepZoom(1.25)}
-              className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
-              title="Zoom Out (-)"
-              aria-label="Zoom Out"
-            >
-              <ZoomOut className="w-3.5 h-3.5" />
-            </button>
-
-            <div className="w-px h-3.5 bg-stone-300 dark:bg-stone-700 mx-0.5" />
-
-            <button
+              type="button"
               onClick={handleResetZoom}
-              className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
-              title="Reset View to All Ports (0)"
-              aria-label="Reset View"
+              className="group relative flex items-center justify-center w-28 sm:w-32 h-10 sm:h-11 rounded-xl bg-white/90 dark:bg-stone-900/90 border border-stone-300 dark:border-stone-700 hover:border-amber-600 dark:hover:border-amber-500 transition-all overflow-hidden shadow-2xs cursor-pointer p-0.5"
+              title="Radar Mini-Map: Click to reset to 111% full continental view (0)"
             >
-              <RotateCw className="w-3.5 h-3.5" />
-            </button>
+              <div className="w-full h-full relative overflow-hidden rounded-lg bg-stone-100/90 dark:bg-stone-950/90 flex items-center justify-center">
+                {/* SVG Silhouette of Africa inside Mini-Map */}
+                <svg viewBox="0 0 5796 5867" className="w-full h-full object-contain opacity-40 group-hover:opacity-60 transition-opacity">
+                  <AfricaVectorContinent mode="silhouette" theme="monochrome" strokeWidth={2} />
+                </svg>
 
-            <button
-              onClick={() => setIsHighContrast(!isHighContrast)}
-              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                isHighContrast
-                  ? 'bg-amber-900 text-amber-50 font-bold dark:bg-amber-500 dark:text-stone-950'
-                  : 'hover:bg-stone-300/80 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300'
-              }`}
-              title="High Contrast Cartography Filter"
-              aria-label="High Contrast Filter"
-            >
-              <Contrast className="w-3.5 h-3.5" />
-            </button>
-
-            <button
-              onClick={toggleFullscreen}
-              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                isFullscreen
-                  ? 'bg-amber-900 text-amber-50 font-bold dark:bg-amber-500 dark:text-stone-950'
-                  : 'hover:bg-stone-300/80 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300'
-              }`}
-              title={isFullscreen ? "Exit Fullscreen (F)" : "Enter Fullscreen (F)"}
-              aria-label="Toggle Fullscreen"
-            >
-              {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                {/* Live Viewport Indicator Rectangle */}
+                <div
+                  className="absolute border-2 border-amber-600 bg-amber-500/25 rounded-xs transition-all duration-150 pointer-events-none"
+                  style={{
+                    left: `${(currentViewBox.x / 5796) * 100}%`,
+                    top: `${(currentViewBox.y / 5867) * 100}%`,
+                    width: `${Math.min(100, (currentViewBox.w / 5796) * 100)}%`,
+                    height: `${Math.min(100, (currentViewBox.h / 5867) * 100)}%`
+                  }}
+                />
+              </div>
+              <div className="absolute bottom-0.5 right-1 flex items-center gap-1 text-[8px] font-mono font-bold uppercase tracking-widest text-stone-500 group-hover:text-amber-800 dark:group-hover:text-amber-400 bg-white/80 dark:bg-stone-900/80 px-1 rounded">
+                <span>RADAR</span>
+                <span>·</span>
+                <span>{zoomPercent}%</span>
+              </div>
             </button>
           </div>
 
-          {/* Toggle Bottom Filmstrip Button in Header */}
-          <button
-            onClick={() => setIsFilmstripOpen(!isFilmstripOpen)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
-              isFilmstripOpen
-                ? 'bg-amber-900 text-amber-50 dark:bg-amber-500/20 dark:text-amber-300 shadow-2xs'
-                : 'bg-stone-200/70 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-300/80 border border-stone-300/70 dark:border-stone-700'
-            }`}
-            title={isFilmstripOpen ? "Collapse Ports Tray" : "Open Ports Tray"}
-          >
-            <Grid className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Ports ({filteredPorts.length})</span>
-          </button>
-
-          {/* Collapsible Details Drawer Toggle in Header */}
-          <AnimatePresence mode="wait">
-            {isMetadataOpen ? (
-              <motion.button
-                key="hide-details-btn"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 450, damping: 25 }}
-                onClick={() => setIsMetadataOpen(false)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer bg-stone-200/70 hover:bg-stone-300 text-stone-800 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 border border-stone-300/70 dark:border-stone-700 shadow-2xs"
-                title="Hide Details Drawer"
-              >
-                <PanelRightClose className="w-4 h-4 text-amber-800 dark:text-amber-400" />
-                <span className="hidden sm:inline">Hide Dossier</span>
-              </motion.button>
-            ) : (
-              <motion.button
-                key="show-details-btn"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 450, damping: 25 }}
-                onClick={() => setIsMetadataOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer bg-amber-900/10 hover:bg-amber-900/20 text-amber-900 border border-amber-900/25 dark:bg-amber-500/20 dark:text-amber-300 shadow-2xs"
-                title="Show Details Drawer"
-              >
-                <PanelRightOpen className="w-4 h-4 text-amber-800 dark:text-amber-400" />
-                <span className="hidden sm:inline">Show Dossier</span>
-              </motion.button>
-            )}
-          </AnimatePresence>
-
-          {onClose && (
+          {/* Integrated Timeline Animation Engine & Scrubber (1514–1866) */}
+          <div className="flex flex-1 items-center gap-2 sm:gap-3 min-w-[280px] max-w-3xl px-3 py-1.5 rounded-xl bg-white/90 dark:bg-stone-900/90 border border-stone-300/80 dark:border-stone-700/80 shadow-2xs">
+            {/* Play/Pause Button */}
             <button
-              onClick={onClose}
-              className="p-1.5 rounded-xl bg-stone-200/70 hover:bg-red-100 hover:text-red-900 dark:bg-stone-800 dark:hover:bg-red-950/60 dark:hover:text-red-300 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer border border-stone-300/70 dark:border-stone-700"
-              title="Close Viewer"
+              type="button"
+              onClick={() => setIsTimelinePlaying(!isTimelinePlaying)}
+              className="w-7 h-7 rounded-lg bg-amber-900 hover:bg-amber-800 text-amber-50 dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-stone-950 flex items-center justify-center transition-colors cursor-pointer shadow-xs shrink-0"
+              title={isTimelinePlaying ? 'Pause Historical Horizon Playback' : 'Play Historical Horizon Animation (1514–1866)'}
+              aria-label={isTimelinePlaying ? 'Pause Timeline' : 'Play Timeline'}
             >
-              <X className="w-4 h-4" />
+              {isTimelinePlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 ml-0.5" />}
             </button>
-          )}
+
+            {/* Era Badge */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              <span className="font-serif font-bold text-stone-900 dark:text-stone-100 text-xs tabular-nums">
+                {yearRange[0]}–{yearRange[1]}
+              </span>
+              <span className="text-[10px] font-mono font-bold text-amber-800 dark:text-amber-400 hidden sm:inline">
+                ({filteredPorts.length} Ports)
+              </span>
+            </div>
+
+            {/* Range Scrubber Slider */}
+            <input
+              type="range"
+              min="1514"
+              max="1866"
+              value={yearRange[1]}
+              onChange={(e) => {
+                const end = Number(e.target.value);
+                setYearRange([yearRange[0], end]);
+              }}
+              className="flex-1 min-w-[70px] accent-amber-700 dark:accent-amber-400 cursor-pointer h-1.5 bg-stone-200 dark:bg-stone-700 rounded-lg"
+              title={`Chronological horizon: 1514 to ${yearRange[1]}`}
+              aria-label="Historical horizon year slider"
+            />
+
+            {/* Century Fast Jump Buttons */}
+            <div className="hidden md:flex items-center gap-1 shrink-0">
+              {[
+                { label: 'All', range: [1514, 1866] as [number, number] },
+                { label: '16th', range: [1514, 1600] as [number, number] },
+                { label: '17th', range: [1601, 1700] as [number, number] },
+                { label: '18th', range: [1701, 1800] as [number, number] },
+                { label: '19th', range: [1801, 1866] as [number, number] },
+              ].map(b => (
+                <button
+                  key={b.label}
+                  type="button"
+                  onClick={() => {
+                    setIsTimelinePlaying(false);
+                    setYearRange(b.range);
+                  }}
+                  className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all cursor-pointer ${
+                    yearRange[0] === b.range[0] && yearRange[1] === b.range[1]
+                      ? 'bg-amber-900 text-white font-bold dark:bg-amber-500 dark:text-stone-950'
+                      : 'text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-800'
+                  }`}
+                >
+                  {b.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Right: Marine Currents & Corridors Toggles */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* Marine Currents & Trade Winds Toggle Button */}
+            <button
+              type="button"
+              onClick={() => setShowOceanVectors(v => !v)}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border cursor-pointer ${
+                showOceanVectors
+                  ? 'bg-sky-50 dark:bg-sky-950/60 border-sky-400 dark:border-sky-600 text-sky-800 dark:text-sky-300 shadow-2xs'
+                  : 'bg-white/90 dark:bg-stone-900/90 border-stone-300/80 dark:border-stone-700/80 text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+              }`}
+              title="Toggle Marine Current & Trade Wind Flow Vectors (Canary, Guinea, Benguela, Agulhas)"
+            >
+              <Wind className={`w-3.5 h-3.5 ${showOceanVectors ? 'text-sky-600 dark:text-sky-400 animate-spin-slow' : 'text-stone-400'}`} />
+              <span>Currents {showOceanVectors ? 'ON' : 'OFF'}</span>
+            </button>
+
+            {/* 8-Corridors Legend Toggle */}
+            <button
+              type="button"
+              onClick={() => setIsLegendOpen(!isLegendOpen)}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border cursor-pointer ${
+                isLegendOpen
+                  ? 'bg-amber-900 text-white dark:bg-amber-500 dark:text-stone-950 border-amber-900 dark:border-amber-500 shadow-2xs'
+                  : 'bg-white/90 dark:bg-stone-900/90 border-stone-300/80 dark:border-stone-700/80 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'
+              }`}
+              title={isLegendOpen ? "Close 8 Corridors Legend" : "Open 8 Corridors Legend"}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Corridors</span>
+              {isLegendOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* 2. MAIN SPLIT BODY: Canvas Viewport (7/12 or 2/3) & Metadata Drawer (5/12 or 1/3) */}
-      <div className="flex-1 min-h-0 overflow-hidden relative flex flex-col lg:flex-row w-full">
-        {/* CENTER / LEFT CANVAS: Museum Matte Viewport */}
+      {/* 2. MAIN SPLIT BODY: Left Port Tray (Collapsible) + Canvas Viewport + Right Metadata Drawer */}
+      <div className="flex-1 min-h-0 overflow-hidden relative flex flex-row w-full rounded-b-3xl">
+        {/* LEFT VERTICAL PORT TRAY */}
+        <AnimatePresence>
+          {isFilmstripOpen && (
+            <motion.aside
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 320, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.22, ease: 'easeInOut' }}
+              aria-label="African Embarkation Ports Tray"
+              className="h-full min-h-0 max-h-full w-80 max-w-[85vw] bg-[#F4EFE6]/98 dark:bg-stone-900/98 backdrop-blur-md border-r border-stone-200/90 dark:border-stone-800 flex flex-col shrink-0 z-30 overflow-hidden shadow-xl"
+            >
+              {/* Tray Header */}
+              <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-stone-200/90 dark:border-stone-800 bg-[#EFE8DC]/80 dark:bg-stone-950/70 shrink-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-6 h-6 rounded-lg bg-amber-900/10 dark:bg-amber-400/10 flex items-center justify-center text-amber-800 dark:text-amber-400">
+                    <Castle className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-xs font-serif font-bold text-stone-900 dark:text-stone-100 truncate">
+                      Port Enclaves
+                    </h3>
+                    <p className="text-[10px] font-mono text-stone-500">
+                      {filteredPorts.length} of {AFRICAN_EMBARKATION_PORTS.length} listed
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsFilmstripOpen(false)}
+                  className="p-1.5 rounded-xl hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-colors cursor-pointer"
+                  title="Collapse Ports Tray"
+                  aria-label="Collapse Ports Tray"
+                >
+                  <PanelLeftClose className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+                </button>
+              </div>
+
+              {/* Quick Search & Filter Controls */}
+              <div className="p-2.5 border-b border-stone-200/80 dark:border-stone-800 space-y-2 shrink-0 bg-stone-50/50 dark:bg-stone-950/50">
+                <div className="relative">
+                  <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search port, ethnic group..."
+                    className="w-full pl-8 pr-2.5 py-1.5 text-xs bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 rounded-xl border border-stone-200 dark:border-stone-700 outline-none focus:ring-1 focus:ring-amber-600"
+                  />
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <select
+                    value={selectedRegion}
+                    onChange={(e) => setSelectedRegion(e.target.value)}
+                    className="flex-1 text-[11px] bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-lg px-2 py-1 text-stone-800 dark:text-stone-200 font-medium outline-none cursor-pointer"
+                  >
+                    <option value="All">All 8 Corridors</option>
+                    {COASTAL_REGIONS_META.map(reg => (
+                      <option key={reg.name} value={reg.name}>{reg.name}</option>
+                    ))}
+                  </select>
+                  {selectedRegion !== 'All' && (
+                    <button
+                      onClick={() => setSelectedRegion('All')}
+                      className="text-[10px] font-mono px-1.5 py-1 text-amber-700 dark:text-amber-400 hover:underline cursor-pointer"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Vertical Scrollable Port Cards List */}
+              <div
+                ref={filmstripRef}
+                tabIndex={0}
+                role="region"
+                aria-label="Scrollable list of African embarkation ports"
+                className="flex-1 min-h-0 overflow-y-auto p-2 space-y-1.5 scrollbar-thin scrollbar-thumb-stone-400 dark:scrollbar-thumb-stone-600 scrollbar-track-stone-200/40 dark:scrollbar-track-stone-950/40 overscroll-contain focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500"
+                style={{ scrollbarWidth: 'thin' }}
+              >
+                {filteredPorts.map((port) => {
+                  const isSelected = activePort?.id === port.id;
+                  const regionColor = getRegionColor(port.region);
+                  return (
+                    <button
+                      key={port.id}
+                      data-port-id={port.id}
+                      onClick={() => handlePortClick(port)}
+                      onMouseEnter={() => setHoveredRegion(port.region)}
+                      onMouseLeave={() => setHoveredRegion(null)}
+                      className={`w-full group flex items-start gap-2.5 p-2 rounded-xl text-left border transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-white dark:bg-stone-800 border-amber-600 shadow-sm ring-1 ring-amber-500/30'
+                          : 'bg-white/70 dark:bg-stone-900/60 border-stone-200/80 dark:border-stone-800/80 hover:border-amber-400 hover:bg-white dark:hover:bg-stone-800'
+                      }`}
+                    >
+                      <div
+                        className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-white font-bold text-xs shadow-xs mt-0.5"
+                        style={{ backgroundColor: regionColor }}
+                      >
+                        <Castle className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="text-xs font-serif font-bold text-stone-900 dark:text-stone-100 truncate">
+                            {port.name.split(' (')[0]}
+                          </span>
+                          <span className="text-[10px] font-mono font-bold text-amber-700 dark:text-amber-400 shrink-0">
+                            {(port.estimatedEmbarkations / 1_000_000).toFixed(2)}M
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-[10px] text-stone-500 dark:text-stone-400 font-mono mt-0.5">
+                          <span className="truncate">{port.countryModern}</span>
+                          <span>·</span>
+                          <span className="truncate">{port.fortOrType}</span>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Filmstrip Footer with Count & Scroll Hint */}
+              <div className="px-3 py-1.5 border-t border-stone-200/80 dark:border-stone-800/80 bg-[#EFE8DC]/60 dark:bg-stone-950/60 flex items-center justify-between text-[10px] font-mono text-stone-500 shrink-0">
+                <span>{filteredPorts.length} Ports listed</span>
+                <span className="flex items-center gap-1 text-amber-800 dark:text-amber-400">
+                  <span>Scroll for more</span>
+                  <ChevronDown className="w-3 h-3" />
+                </span>
+              </div>
+            </motion.aside>
+          )}
+        </AnimatePresence>
+
+        {/* CENTER / RIGHT CANVAS: Museum Matte Viewport */}
         <div
           className={`relative flex flex-col justify-between select-none overflow-hidden group bg-[#EFEAE1] dark:bg-[#121110] transition-all duration-300 h-full ${
-            isMetadataOpen ? 'w-full lg:w-7/12 xl:w-2/3 border-b lg:border-b-0 lg:border-r border-stone-200/90 dark:border-stone-800' : 'w-full'
+            isMetadataOpen ? 'flex-1 border-r border-stone-200/90 dark:border-stone-800' : 'flex-1'
           }`}
         >
           {/* Archival Matting Background Pattern */}
@@ -862,121 +1305,141 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
             }}
           />
 
-          {/* Integrated Floating Legend & 47 Ports / +12M Captives Deck */}
-          <div className="absolute top-3 left-3 z-20 flex flex-col gap-2 pointer-events-none max-w-[calc(100%-2rem)] sm:max-w-md">
-            {/* Primary Headline Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border border-stone-300/80 dark:border-stone-700 shadow-md pointer-events-auto text-xs">
-              <div className="flex items-center gap-1.5">
-                <Castle className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-                <span className="font-serif font-bold text-stone-900 dark:text-stone-100">47 Historical Ports & Forts</span>
+          {/* Floating Pills Deck (Positioned below the top bar of the map with clearance) */}
+          <div className="absolute top-5 left-0 right-0 z-20 pointer-events-none px-3.5 sm:px-5 flex flex-wrap items-start justify-between gap-3">
+            <div className="flex flex-wrap items-start gap-2.5 pointer-events-none">
+              {/* Floating Trigger to Re-Open Port Tray when collapsed */}
+              {!isFilmstripOpen && (
+                <button
+                  type="button"
+                  onClick={() => setIsFilmstripOpen(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border border-stone-300/80 dark:border-stone-700 shadow-md text-xs font-mono font-bold text-amber-900 dark:text-amber-300 hover:scale-102 transition-all cursor-pointer pointer-events-auto"
+                  title="Open African Port Tray"
+                >
+                  <Castle className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
+                  <span>Ports ({filteredPorts.length})</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
+                </button>
+              )}
+
+              {/* Floating Collapsible Legend Deck */}
+              <div className="flex flex-col gap-2 pointer-events-none max-w-[calc(100%-2rem)] sm:max-w-md">
+                {/* Primary Headline Deck */}
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border border-stone-300/80 dark:border-stone-700 shadow-md pointer-events-auto text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
+                    <span className="font-serif font-bold text-stone-900 dark:text-stone-100">8 Corridors</span>
+                  </div>
+                  <span className="text-stone-300 dark:text-stone-700">·</span>
+                  <span className="text-emerald-800 dark:text-emerald-300 font-mono font-bold text-[11px]">
+                    +12M Captives
+                  </span>
+                  <button
+                    onClick={() => setIsLegendOpen(!isLegendOpen)}
+                    className="p-0.5 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-colors ml-0.5 cursor-pointer"
+                    title={isLegendOpen ? "Collapse Legend" : "Expand Legend"}
+                  >
+                    {isLegendOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5 text-stone-400" />}
+                  </button>
+                </div>
+
+                {/* Expandable 8-Corridor Regional Palette Legend with Hover Highlights */}
+                <AnimatePresence>
+                  {isLegendOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4, height: 0 }}
+                      animate={{ opacity: 1, y: 0, height: 'auto' }}
+                      exit={{ opacity: 0, y: -4, height: 0 }}
+                      transition={{ duration: 0.18 }}
+                      className="p-3 rounded-2xl bg-white/98 dark:bg-stone-900/98 backdrop-blur-md border border-stone-300/90 dark:border-stone-700 shadow-xl pointer-events-auto overflow-y-auto max-h-[calc(100vh-260px)] scrollbar-thin text-xs space-y-2"
+                    >
+                      <div className="flex items-center justify-between text-[10px] font-mono font-bold uppercase tracking-wider text-stone-500">
+                        <span>8 Coastal Embarkation Corridors</span>
+                        <span className="text-amber-700 dark:text-amber-400">Hover to highlight</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {COASTAL_REGIONS_META.map(reg => (
+                          <button
+                            key={reg.name}
+                            onMouseEnter={() => setHoveredRegion(reg.name)}
+                            onMouseLeave={() => setHoveredRegion(null)}
+                            onClick={() => {
+                              setSelectedRegion(selectedRegion === reg.name ? 'All' : reg.name);
+                            }}
+                            className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl text-left border transition-all cursor-pointer ${
+                              hoveredRegion === reg.name || selectedRegion === reg.name
+                                ? 'bg-amber-500/10 dark:bg-amber-500/15 border-amber-500/40 shadow-xs'
+                                : 'bg-stone-50/70 dark:bg-stone-950/70 border-stone-200/80 dark:border-stone-800/80 hover:bg-stone-100 dark:hover:bg-stone-800'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs" style={{ backgroundColor: reg.color }} />
+                              <span className="truncate text-[11px] font-medium text-stone-800 dark:text-stone-200">{reg.name}</span>
+                            </div>
+                            <span className="text-[10px] font-mono text-stone-400 ml-1 shrink-0">{reg.count}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Filter Selectors Deck inside Legend */}
+                      <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-stone-200 dark:border-stone-800">
+                        <select
+                          value={selectedPower}
+                          onChange={(e) => setSelectedPower(e.target.value)}
+                          className="text-[11px] bg-stone-100 dark:bg-stone-800 border-none rounded-lg px-2 py-1 text-stone-800 dark:text-stone-200 font-medium focus:ring-1 focus:ring-amber-600 outline-none cursor-pointer"
+                        >
+                          <option value="All">All Flags</option>
+                          <option value="Portugal">Portugal</option>
+                          <option value="Great Britain">Great Britain</option>
+                          <option value="France">France</option>
+                          <option value="Netherlands">Netherlands</option>
+                          <option value="Denmark">Denmark</option>
+                          <option value="Brandenburg/Prussia">Brandenburg/Prussia</option>
+                        </select>
+
+                        <select
+                          value={selectedCentury}
+                          onChange={(e) => setSelectedCentury(e.target.value)}
+                          className="text-[11px] bg-stone-100 dark:bg-stone-800 border-none rounded-lg px-2 py-1 text-stone-800 dark:text-stone-200 font-medium focus:ring-1 focus:ring-amber-600 outline-none cursor-pointer"
+                        >
+                          <option value="All">All Centuries</option>
+                          <option value="16th">16th C.</option>
+                          <option value="17th">17th C.</option>
+                          <option value="18th">18th C.</option>
+                          <option value="19th">19th C.</option>
+                        </select>
+
+                        <div className="relative flex items-center ml-auto">
+                          <Search className="w-3 h-3 text-stone-400 absolute left-2 pointer-events-none" />
+                          <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search port..."
+                            className="pl-6 pr-2 py-1 text-[11px] bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 rounded-lg outline-none w-28 focus:w-36 transition-all"
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-              <span className="text-stone-300 dark:text-stone-700">·</span>
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-600/15 text-emerald-800 dark:text-emerald-300 font-mono font-bold text-[11px] border border-emerald-600/25">
-                +12M Captives
-              </span>
-              <button
-                onClick={() => setIsLegendOpen(!isLegendOpen)}
-                className="p-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-colors ml-0.5 cursor-pointer"
-                title={isLegendOpen ? "Collapse Legend" : "Expand Legend"}
-              >
-                {isLegendOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-              </button>
             </div>
 
-            {/* Expandable 8-Corridor Regional Palette Legend with Hover Highlights */}
-            <AnimatePresence>
-              {isLegendOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -6, height: 0 }}
-                  animate={{ opacity: 1, y: 0, height: 'auto' }}
-                  exit={{ opacity: 0, y: -6, height: 0 }}
-                  transition={{ duration: 0.18 }}
-                  className="p-3 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border border-stone-300/80 dark:border-stone-700 shadow-lg pointer-events-auto overflow-hidden text-xs space-y-2"
-                >
-                  <div className="flex items-center justify-between text-[10px] font-mono font-bold uppercase tracking-wider text-stone-500">
-                    <span>8 Coastal Embarkation Corridors</span>
-                    <span className="text-amber-700 dark:text-amber-400">Hover to highlight</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {COASTAL_REGIONS_META.map(reg => (
-                      <button
-                        key={reg.name}
-                        onMouseEnter={() => setHoveredRegion(reg.name)}
-                        onMouseLeave={() => setHoveredRegion(null)}
-                        onClick={() => {
-                          setSelectedRegion(selectedRegion === reg.name ? 'All' : reg.name);
-                        }}
-                        className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl text-left border transition-all cursor-pointer ${
-                          hoveredRegion === reg.name || selectedRegion === reg.name
-                            ? 'bg-amber-500/10 dark:bg-amber-500/15 border-amber-500/40 shadow-xs'
-                            : 'bg-stone-50/70 dark:bg-stone-950/70 border-stone-200/80 dark:border-stone-800/80 hover:bg-stone-100 dark:hover:bg-stone-800'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs" style={{ backgroundColor: reg.color }} />
-                          <span className="truncate text-[11px] font-medium text-stone-800 dark:text-stone-200">{reg.name}</span>
-                        </div>
-                        <span className="text-[10px] font-mono text-stone-400 ml-1 shrink-0">{reg.count}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Filter Selectors Deck inside Legend */}
-                  <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-stone-200 dark:border-stone-800">
-                    <select
-                      value={selectedPower}
-                      onChange={(e) => setSelectedPower(e.target.value)}
-                      className="text-[11px] bg-stone-100 dark:bg-stone-800 border-none rounded-lg px-2 py-1 text-stone-800 dark:text-stone-200 font-medium focus:ring-1 focus:ring-amber-600 outline-none cursor-pointer"
-                    >
-                      <option value="All">All Flags</option>
-                      <option value="Portugal">Portugal</option>
-                      <option value="Great Britain">Great Britain</option>
-                      <option value="France">France</option>
-                      <option value="Netherlands">Netherlands</option>
-                      <option value="Denmark">Denmark</option>
-                      <option value="Brandenburg/Prussia">Brandenburg/Prussia</option>
-                    </select>
-
-                    <select
-                      value={selectedCentury}
-                      onChange={(e) => setSelectedCentury(e.target.value)}
-                      className="text-[11px] bg-stone-100 dark:bg-stone-800 border-none rounded-lg px-2 py-1 text-stone-800 dark:text-stone-200 font-medium focus:ring-1 focus:ring-amber-600 outline-none cursor-pointer"
-                    >
-                      <option value="All">All Centuries</option>
-                      <option value="16th">16th C.</option>
-                      <option value="17th">17th C.</option>
-                      <option value="18th">18th C.</option>
-                      <option value="19th">19th C.</option>
-                    </select>
-
-                    <div className="relative flex items-center ml-auto">
-                      <Search className="w-3 h-3 text-stone-400 absolute left-2 pointer-events-none" />
-                      <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search port..."
-                        className="pl-6 pr-2 py-1 text-[11px] bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 rounded-lg outline-none w-28 focus:w-36 transition-all"
-                      />
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Floating Trigger to Re-Open Dossier Drawer when collapsed (sticky on scroll) */}
+            {!isMetadataOpen && activePort && (
+              <button
+                type="button"
+                onClick={() => handlePortClick(activePort)}
+                className="flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border border-amber-500/30 shadow-md text-xs font-mono font-bold text-amber-900 dark:text-amber-300 hover:scale-102 transition-all cursor-pointer pointer-events-auto shrink-0"
+                title="Open Port Dossier Drawer"
+              >
+                <Castle className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
+                <span>Dossier: {activePort.name.split(' (')[0]}</span>
+                <PanelRightOpen className="w-4 h-4 ml-0.5 text-amber-700 dark:text-amber-400" />
+              </button>
+            )}
           </div>
-
-          {/* Floating Trigger to Re-Open Dossier Drawer when collapsed */}
-          {!isMetadataOpen && activePort && (
-            <button
-              onClick={() => setIsMetadataOpen(true)}
-              className="absolute top-3 right-3 z-20 flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border border-amber-500/30 shadow-md text-xs font-mono font-bold text-amber-900 dark:text-amber-300 hover:scale-102 transition-all cursor-pointer"
-              title="Open Port Dossier Drawer"
-            >
-              <Castle className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
-              <span>Dossier: {activePort.name.split(' (')[0]}</span>
-              <PanelRightOpen className="w-4 h-4 ml-0.5 text-amber-700 dark:text-amber-400" />
-            </button>
-          )}
 
           {/* Interactive Zoomable & Grabbable SVG Canvas */}
           <div
@@ -1009,16 +1472,16 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
               <rect x="-2000" y="-2000" width="10000" height="10000" fill="url(#parchment-grid-5k)" />
 
               {/* Scaled Hairline Graticule Lines (Equator, Prime Meridian, Tropics) */}
-              <line x1="-2000" y1="3081" x2="8000" y2="3081" stroke="#059669" strokeWidth="1.8" strokeDasharray="20 14" opacity="0.6" />
-              <g transform="translate(4800, 3055)">
+              <line x1="-2000" y1="3280" x2="8000" y2="3280" stroke="#059669" strokeWidth="1.8" strokeDasharray="20 14" opacity="0.6" />
+              <g transform="translate(4800, 3254)">
                 <rect x="0" y="-20" width="280" height="40" rx="6" fill="#ecfdf5" stroke="#059669" strokeWidth="1.2" opacity="0.95" />
                 <text x="140" y="6" textAnchor="middle" fill="#047857" fontSize="18" fontFamily="monospace" fontWeight="900">
                   ☀️ EQUATOR 0°
                 </text>
               </g>
 
-              <line x1="1804" y1="-2000" x2="1804" y2="8000" stroke="#0284c7" strokeWidth="1.6" strokeDasharray="18 12" opacity="0.5" />
-              <g transform="translate(1804, 520)">
+              <line x1="1500" y1="-2000" x2="1500" y2="8000" stroke="#0284c7" strokeWidth="1.6" strokeDasharray="18 12" opacity="0.5" />
+              <g transform="translate(1500, 520)">
                 <rect x="-130" y="-20" width="260" height="40" rx="6" fill="#ffffff" stroke="#0284c7" strokeWidth="1.2" opacity="0.95" />
                 <text x="0" y="6" textAnchor="middle" fill="#0369a1" fontSize="18" fontFamily="monospace" fontWeight="900">
                   0° PRIME MERIDIAN
@@ -1042,7 +1505,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
               />
 
               {/* Nautical Compass Rose */}
-              <g transform="translate(950, 4250) scale(4.0)" className="pointer-events-none select-none">
+              <g transform="translate(650, 3950) scale(2.8)" className="pointer-events-none select-none">
                 <circle cx="0" cy="0" r="48" fill="#ffffff" fillOpacity="0.94" stroke="#0284c7" strokeWidth="0.8" strokeOpacity="0.6" />
                 <circle cx="0" cy="0" r="44" fill="none" stroke="#94a3b8" strokeWidth="0.4" strokeDasharray="1 2" opacity="0.8" />
                 <circle cx="0" cy="0" r="38" fill="none" stroke="#cbd5e1" strokeWidth="0.5" />
@@ -1058,72 +1521,146 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                 <text x="0" y="-48" textAnchor="middle" fill="#0369a1" fontSize="11" fontWeight="900" fontFamily="sans-serif">N</text>
               </g>
 
-              {/* Historical Ocean Currents & Seasonal Trade Wind Vectors Layer */}
+              {/* Historical Ocean Currents & Seasonal Trade Wind Vectors Layer — Smooth 60fps Hydrodynamic Flow */}
               {showOceanVectors && (
                 <g id="ocean-currents-and-winds" className="pointer-events-none select-none">
-                  {/* Canary Current (SW along West Sahara & Senegambia) */}
+                  {/* 1. Canary Current (SW Drift past Western Sahara, Mauritania, Senegal strictly in Atlantic waters) */}
                   <path
-                    d="M 680,1100 Q 520,1650 480,2250"
+                    d="M 220,1100 C 200,1500 240,1950 340,2400"
                     fill="none"
                     stroke="#0284c7"
-                    strokeWidth="3.5"
-                    strokeDasharray="18 12"
-                    strokeOpacity="0.45"
+                    strokeWidth="12"
+                    strokeOpacity="0.16"
+                    strokeLinecap="round"
                   />
-                  <polygon points="480,2270 472,2240 492,2244" fill="#0284c7" opacity="0.6" />
-                  <text x="560" y="1700" fill="#0369a1" fontSize="22" fontFamily="monospace" fontWeight="bold" opacity="0.6" transform="rotate(-70 560,1700)">
-                    Canary Current ➔
+                  <path
+                    d="M 220,1100 C 200,1500 240,1950 340,2400"
+                    fill="none"
+                    stroke="#0284c7"
+                    strokeWidth="6"
+                    strokeDasharray="24 16"
+                    strokeOpacity="0.85"
+                    strokeLinecap="round"
+                  >
+                    <animate
+                      attributeName="stroke-dashoffset"
+                      from="0"
+                      to="-80"
+                      dur="2.4s"
+                      repeatCount="indefinite"
+                    />
+                  </path>
+                  <polygon points="340,2430 326,2395 348,2400" fill="#0284c7" opacity="0.85" />
+                  <text x="240" y="1750" fill="#0369a1" fontSize="24" fontFamily="monospace" fontWeight="bold" opacity="0.8" transform="rotate(-78 240,1750)">
+                    Canary Current ➔ (Southwest Drift)
                   </text>
 
-                  {/* Guinea Current (Eastward along Gulf of Guinea) */}
+                  {/* 2. Guinea Current (Eastward Flow along Gulf of Guinea strictly south of West Africa coastline) */}
                   <path
-                    d="M 850,2950 Q 1800,2980 2550,2980"
+                    d="M 650,3180 C 1100,3220 1600,3240 2050,3360"
                     fill="none"
                     stroke="#0d9488"
-                    strokeWidth="3.5"
-                    strokeDasharray="18 12"
-                    strokeOpacity="0.5"
+                    strokeWidth="12"
+                    strokeOpacity="0.16"
+                    strokeLinecap="round"
                   />
-                  <polygon points="2570,2980 2540,2970 2540,2990" fill="#0d9488" opacity="0.7" />
-                  <text x="1700" y="3030" fill="#0f766e" fontSize="22" fontFamily="monospace" fontWeight="bold" opacity="0.65">
+                  <path
+                    d="M 650,3180 C 1100,3220 1600,3240 2050,3360"
+                    fill="none"
+                    stroke="#0d9488"
+                    strokeWidth="6"
+                    strokeDasharray="24 16"
+                    strokeOpacity="0.85"
+                    strokeLinecap="round"
+                  >
+                    <animate
+                      attributeName="stroke-dashoffset"
+                      from="0"
+                      to="-80"
+                      dur="2.6s"
+                      repeatCount="indefinite"
+                    />
+                  </path>
+                  <polygon points="2080,3370 2045,3350 2055,3375" fill="#0d9488" opacity="0.85" />
+                  <text x="1250" y="3290" fill="#0f766e" fontSize="24" fontFamily="monospace" fontWeight="bold" opacity="0.8">
                     Guinea Current ➔ (Eastward Gulf Flow)
                   </text>
 
-                  {/* Benguela Current (Northward along Angola & Namibia) */}
+                  {/* 3. Benguela Current (Northward Drift along Angola & Namibia strictly west in South Atlantic) */}
                   <path
-                    d="M 2350,5100 Q 2150,4400 2050,3450"
+                    d="M 2150,5300 C 1850,4700 1780,4100 1900,3420"
                     fill="none"
                     stroke="#4338ca"
-                    strokeWidth="3.5"
-                    strokeDasharray="18 12"
-                    strokeOpacity="0.45"
+                    strokeWidth="12"
+                    strokeOpacity="0.16"
+                    strokeLinecap="round"
                   />
-                  <polygon points="2050,3430 2060,3460 2040,3458" fill="#4338ca" opacity="0.6" />
-                  <text x="2120" y="4300" fill="#3730a3" fontSize="22" fontFamily="monospace" fontWeight="bold" opacity="0.6" transform="rotate(-82 2120,4300)">
+                  <path
+                    d="M 2150,5300 C 1850,4700 1780,4100 1900,3420"
+                    fill="none"
+                    stroke="#4338ca"
+                    strokeWidth="6"
+                    strokeDasharray="24 16"
+                    strokeOpacity="0.85"
+                    strokeLinecap="round"
+                  >
+                    <animate
+                      attributeName="stroke-dashoffset"
+                      from="0"
+                      to="-80"
+                      dur="2.5s"
+                      repeatCount="indefinite"
+                    />
+                  </path>
+                  <polygon points="1900,3390 1888,3425 1912,3422" fill="#4338ca" opacity="0.85" />
+                  <text x="1750" y="4400" fill="#3730a3" fontSize="24" fontFamily="monospace" fontWeight="bold" opacity="0.8" transform="rotate(-84 1750,4400)">
                     Benguela Current ➔ (Northward Drift)
                   </text>
 
-                  {/* Agulhas Current (Southward along Mozambique & South Africa) */}
+                  {/* 4. Agulhas Current (Southward Flow along Mozambique Channel & Indian Ocean) */}
                   <path
-                    d="M 4600,3600 Q 4250,4500 3750,5350"
+                    d="M 4780,3600 C 4780,4200 4680,4600 4450,5050 C 4250,5400 3800,5750 3300,5820"
                     fill="none"
                     stroke="#dc2626"
-                    strokeWidth="3.5"
-                    strokeDasharray="18 12"
-                    strokeOpacity="0.45"
+                    strokeWidth="12"
+                    strokeOpacity="0.16"
+                    strokeLinecap="round"
                   />
-                  <polygon points="3740,5370 3762,5345 3748,5335" fill="#dc2626" opacity="0.6" />
-                  <text x="4200" y="4500" fill="#b91c1c" fontSize="22" fontFamily="monospace" fontWeight="bold" opacity="0.6" transform="rotate(65 4200,4500)">
-                    Agulhas Current ➔
+                  <path
+                    d="M 4780,3600 C 4780,4200 4680,4600 4450,5050 C 4250,5400 3800,5750 3300,5820"
+                    fill="none"
+                    stroke="#dc2626"
+                    strokeWidth="6"
+                    strokeDasharray="24 16"
+                    strokeOpacity="0.85"
+                    strokeLinecap="round"
+                  >
+                    <animate
+                      attributeName="stroke-dashoffset"
+                      from="0"
+                      to="-80"
+                      dur="2.4s"
+                      repeatCount="indefinite"
+                    />
+                  </path>
+                  <polygon points="3270,5825 3310,5805 3305,5835" fill="#dc2626" opacity="0.85" />
+                  <text x="4730" y="4200" fill="#b91c1c" fontSize="24" fontFamily="monospace" fontWeight="bold" opacity="0.8" transform="rotate(78 4730,4200)">
+                    Agulhas Current ➔ (Mozambique Channel Flow)
                   </text>
 
-                  {/* Transatlantic Trade Wind Corridor (NE Trades) */}
-                  <g opacity="0.4" stroke="#d97706" strokeWidth="2.5" strokeDasharray="12 8">
-                    <line x1="1200" y1="2100" x2="300" y2="2450" />
-                    <line x1="1400" y1="2300" x2="400" y2="2650" />
-                    <line x1="1600" y1="2500" x2="500" y2="2850" />
+                  {/* 5. Transatlantic Trade Wind Corridor (Middle Passage Vector strictly in Atlantic waters) */}
+                  <g opacity="0.6" stroke="#d97706" strokeWidth="3" strokeDasharray="20 14" strokeLinecap="round">
+                    <line x1="400" y1="2100" x2="-400" y2="2450">
+                      <animate attributeName="stroke-dashoffset" from="0" to="-68" dur="2.2s" repeatCount="indefinite" />
+                    </line>
+                    <line x1="450" y1="2400" x2="-350" y2="2750">
+                      <animate attributeName="stroke-dashoffset" from="0" to="-68" dur="2.2s" repeatCount="indefinite" />
+                    </line>
+                    <line x1="550" y1="2700" x2="-250" y2="3050">
+                      <animate attributeName="stroke-dashoffset" from="0" to="-68" dur="2.2s" repeatCount="indefinite" />
+                    </line>
                   </g>
-                  <text x="750" y="2400" fill="#b45309" fontSize="20" fontFamily="monospace" fontWeight="bold" opacity="0.55" transform="rotate(18 750,2400)">
+                  <text x="50" y="2550" fill="#b45309" fontSize="22" fontFamily="monospace" fontWeight="bold" opacity="0.75" transform="rotate(22 50,2550)">
                     ⇦ Northeast Trade Winds (Middle Passage Vector)
                   </text>
                 </g>
@@ -1132,28 +1669,30 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
               {/* Coastal Port Beacons and Seaward Collision-Free Labels Layer */}
               <g id="african-coastal-ports-layer">
                 {filteredPorts.map((port) => {
-                  const { x, y } = projectPortToSvg(port.coordinates.lat, port.coordinates.lng, port.id);
+                  const raw = projectPortToSvg(port.coordinates.lat, port.coordinates.lng, port.id);
+                  const micro = BEACON_MICRO_OFFSETS[port.id] || { x: 0, y: 0 };
+                  const x = raw.x + micro.x;
+                  const y = raw.y + micro.y;
                   const isSelected = activePort?.id === port.id;
                   const isItemHovered = hoveredPortId === port.id;
                   const regionColor = getRegionColor(port.region);
 
-                  // Base beacon radius scaled for 5k space: ~20px to ~42px
-                  const baseRadius = Math.max(20, Math.min(42, Math.sqrt(port.estimatedEmbarkations / 1600)));
-                  const beaconRadius = isSelected ? baseRadius * 1.3 : isItemHovered ? baseRadius * 1.15 : baseRadius;
+                  // Base beacon radius scaled for corridor view: ~9px to ~18px
+                  const baseRadius = Math.max(9, Math.min(18, Math.round(Math.sqrt(port.estimatedEmbarkations / 6500))));
+                  const beaconRadius = isSelected ? baseRadius + 4 : isItemHovered ? baseRadius + 2 : baseRadius;
 
-                  const hasLabelSlot = visiblePortPositions.has(port.id);
-                  const shouldShowLabel = isZoomedIn ? hasLabelSlot : (isSelected || isItemHovered);
+                  // Labels are always visible across the continent for clarity, with active/hovered elevations
+                  const shouldShowLabel = true;
 
-                  const isPortEast = x > 3500;
-                  const labelConfig = visiblePortPositions.get(port.id) || {
-                    offsetX: isPortEast ? 140 : -140,
+                  const labelConfig = ZERO_COLLISION_LABEL_OFFSETS[port.id] || {
+                    offsetX: x > 3500 ? 160 : -160,
                     offsetY: isSelected ? -45 : 0
                   };
 
                   const portDisplayName = port.name.split(' (')[0];
                   const volumeText = `${(port.estimatedEmbarkations / 1_000_000).toFixed(2)}M`;
-                  const labelText = `${portDisplayName} · ${volumeText}`;
-                  const pillWidth = Math.max(140, labelText.length * 12 + 40);
+                  const plaqueWidth = Math.max(190, portDisplayName.length * 12.2 + 82);
+                  const plaqueHeight = 44;
 
                   return (
                     <g
@@ -1173,51 +1712,53 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                         setHoveredRegion(null);
                       }}
                     >
-                      {/* Generous Hitbox */}
-                      <circle cx="0" cy="0" r={beaconRadius + 35} fill="transparent" />
+                      {/* Generous Hitbox for Beacon */}
+                      <circle cx="0" cy="0" r={beaconRadius + 28} fill="transparent" className="cursor-pointer" />
 
-                      {/* Kinetic Pulsing Radar Aura */}
-                      <circle
-                        cx="0"
-                        cy="0"
-                        r={beaconRadius}
-                        fill="none"
-                        stroke={isSelected ? '#d97706' : regionColor}
-                        strokeWidth={isSelected ? '5' : '3'}
-                        opacity="0.85"
-                      >
-                        <animate
-                          attributeName="r"
-                          values={`${beaconRadius};${beaconRadius * (isSelected ? 2.5 : 2.0)}`}
-                          dur={isSelected ? '1.8s' : '3.2s'}
-                          repeatCount="indefinite"
-                        />
-                        <animate
-                          attributeName="opacity"
-                          values="0.85;0"
-                          dur={isSelected ? '1.8s' : '3.2s'}
-                          repeatCount="indefinite"
-                        />
-                      </circle>
+                      {/* Kinetic Pulsing Radar Aura — rendered ONLY for active or hovered port */}
+                      {(isSelected || isItemHovered) && (
+                        <circle
+                          cx="0"
+                          cy="0"
+                          r={beaconRadius}
+                          fill="none"
+                          stroke={isSelected ? '#d97706' : regionColor}
+                          strokeWidth={isSelected ? '4' : '2.5'}
+                          opacity="0.85"
+                        >
+                          <animate
+                            attributeName="r"
+                            values={`${beaconRadius};${beaconRadius * (isSelected ? 2.4 : 1.9)}`}
+                            dur={isSelected ? '1.8s' : '2.6s'}
+                            repeatCount="indefinite"
+                          />
+                          <animate
+                            attributeName="opacity"
+                            values="0.85;0"
+                            dur={isSelected ? '1.8s' : '2.6s'}
+                            repeatCount="indefinite"
+                          />
+                        </circle>
+                      )}
 
                       {/* Rotating Gold Accent Ring on Selected Port */}
                       {isSelected && (
                         <circle
                           cx="0"
                           cy="0"
-                          r={beaconRadius + 12}
+                          r={beaconRadius + 8}
                           fill="none"
                           stroke="#f59e0b"
-                          strokeWidth="3"
-                          strokeDasharray="8 5"
-                          opacity="0.85"
+                          strokeWidth="2.5"
+                          strokeDasharray="6 4"
+                          opacity="0.9"
                         >
                           <animateTransform
                             attributeName="transform"
                             type="rotate"
                             from="0 0 0"
                             to="360 0 0"
-                            dur="14s"
+                            dur="12s"
                             repeatCount="indefinite"
                           />
                         </circle>
@@ -1226,9 +1767,9 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                       {/* Ground Soft Drop Shadow */}
                       <ellipse
                         cx="0"
-                        cy={beaconRadius * 0.4}
-                        rx={beaconRadius * 0.85}
-                        ry={beaconRadius * 0.4}
+                        cy={beaconRadius * 0.35}
+                        rx={beaconRadius * 0.8}
+                        ry={beaconRadius * 0.35}
                         fill="#000000"
                         fillOpacity="0.25"
                       />
@@ -1240,321 +1781,116 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                         r={beaconRadius}
                         fill={isSelected ? '#d97706' : regionColor}
                         stroke="#ffffff"
-                        strokeWidth={isSelected ? '5' : '3.2'}
-                        className="transition-all duration-200"
+                        strokeWidth={isSelected ? '3.5' : '2.2'}
+                        className="transition-all duration-200 cursor-pointer"
                       />
 
                       {/* Glyph Vector Icon inside Beacon */}
                       {port.fortOrType === 'Masonry Castle / Fort' ? (
                         <path
-                          d="M -6 -7 L -6 -3 L -3 -3 L -3 -7 L -1 -7 L -1 -3 L 1 -3 L 1 -7 L 3 -7 L 3 -3 L 6 -3 L 6 -7 L 8 -7 L 8 7 L -8 7 L -8 -7 Z M -2 7 L -2 2 L 2 2 L 2 7 Z"
+                          d="M -5 -6 L -5 -2 L -2.5 -2 L -2.5 -6 L -1 -6 L -1 -2 L 1 -2 L 1 -6 L 2.5 -6 L 2.5 -2 L 5 -2 L 5 -6 L 6 -6 L 6 6 L -6 6 L -6 -6 Z M -1.5 6 L -1.5 2 L 1.5 2 L 1.5 6 Z"
                           fill="#ffffff"
-                          transform={`scale(${beaconRadius >= 30 ? 1.2 : 0.85})`}
+                          transform={`scale(${beaconRadius >= 14 ? 0.9 : 0.7})`}
                         />
                       ) : port.fortOrType === 'Island Entrepôt' ? (
-                        <circle cx="0" cy="0" r={beaconRadius * 0.3} fill="#ffffff" />
+                        <circle cx="0" cy="0" r={beaconRadius * 0.35} fill="#ffffff" />
                       ) : (
                         <path
-                          d="M 0 -7 L 0 5 M -4 1 L 4 1 M -5 3 C -2 7, 2 7, 5 3"
+                          d="M 0 -6 L 0 4 M -3 1 L 3 1 M -4 2.5 C -1.5 6, 1.5 6, 4 2.5"
                           fill="none"
                           stroke="#ffffff"
-                          strokeWidth="2.2"
+                          strokeWidth="1.8"
                           strokeLinecap="round"
-                          transform={`scale(${beaconRadius >= 30 ? 1.1 : 0.8})`}
+                          transform={`scale(${beaconRadius >= 14 ? 0.9 : 0.7})`}
                         />
                       )}
 
-                      {/* Seaward Collision-Free Leader Line & Badge */}
-                      {shouldShowLabel && (() => {
-                        const dist = Math.hypot(labelConfig.offsetX, labelConfig.offsetY);
-                        const trimDist = beaconRadius + 4;
-                        const ratio = dist > trimDist ? (dist - trimDist) / dist : 0.75;
-                        const startX = -labelConfig.offsetX * ratio;
-                        const startY = -labelConfig.offsetY * ratio;
+                      {/* Seaward Collision-Free Nautical Leader Line & Clickable Plaque */}
+                      {shouldShowLabel && (
+                        <g
+                          transform={`translate(${labelConfig.offsetX}, ${labelConfig.offsetY})`}
+                          className="cursor-pointer pointer-events-auto transition-transform"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePortClick(port);
+                          }}
+                          onMouseEnter={() => {
+                            setHoveredPortId(port.id);
+                            setHoveredRegion(port.region);
+                          }}
+                          onMouseLeave={() => {
+                            setHoveredPortId(null);
+                            setHoveredRegion(null);
+                          }}
+                        >
+                          {/* Hairline Nautical Leader Line */}
+                          <line
+                            x1={-labelConfig.offsetX * 0.8}
+                            y1={-labelConfig.offsetY * 0.8}
+                            x2={0}
+                            y2={0}
+                            stroke={isSelected ? '#d97706' : regionColor}
+                            strokeWidth={isSelected ? '3.2' : isItemHovered ? '2.8' : '2.0'}
+                            strokeDasharray={isSelected ? undefined : '5 3'}
+                            opacity={isSelected || isItemHovered ? 1 : 0.85}
+                          />
+                          <circle cx="0" cy="0" r="4" fill={isSelected ? '#d97706' : regionColor} />
 
-                        return (
-                          <g transform={`translate(${labelConfig.offsetX}, ${labelConfig.offsetY})`} className="pointer-events-none">
-                            {/* Hairline Nautical Leader Connecting Line */}
-                            <line
-                              x1={startX}
-                              y1={startY}
-                              x2={0}
-                              y2={0}
-                              stroke={isSelected ? '#d97706' : regionColor}
-                              strokeWidth="2.2"
-                              strokeDasharray="4 3"
-                              opacity="0.85"
-                            />
-                            <circle cx="0" cy="0" r="3" fill={isSelected ? '#d97706' : regionColor} />
+                          {/* High-Contrast Floating Plaque (Zero-Pill Discipline: rx="8", Clickable Hitbox) */}
+                          <rect
+                            x={-plaqueWidth / 2}
+                            y={-plaqueHeight / 2}
+                            width={plaqueWidth}
+                            height={plaqueHeight}
+                            rx="8"
+                            fill={isSelected ? '#1c1917' : isItemHovered ? '#292524' : '#1c1917'}
+                            fillOpacity={isSelected ? 0.98 : 0.94}
+                            stroke={isSelected ? '#f59e0b' : isItemHovered ? '#fbbf24' : regionColor}
+                            strokeWidth={isSelected ? 3.0 : isItemHovered ? 2.6 : 1.8}
+                            className="transition-colors duration-150"
+                          />
 
-                            {/* High-Contrast Floating Pill Badge */}
-                            <rect
-                              x={-pillWidth / 2}
-                              y="-18"
-                              width={pillWidth}
-                              height="36"
-                              rx="18"
-                              fill="#0f172a"
-                              fillOpacity={isSelected ? 0.98 : 0.92}
-                              stroke={isSelected ? '#fbbf24' : regionColor}
-                              strokeWidth={isSelected ? 3.0 : 1.8}
-                            />
+                          {/* Regional Color Accent Line on Left Edge */}
+                          <line
+                            x1={-plaqueWidth / 2 + 4}
+                            y1={-plaqueHeight / 2 + 8}
+                            x2={-plaqueWidth / 2 + 4}
+                            y2={plaqueHeight / 2 - 8}
+                            stroke={regionColor}
+                            strokeWidth="5"
+                            strokeLinecap="round"
+                          />
 
-                            {/* Text: Name & Embarkation Figures */}
-                            <text
-                              x="0"
-                              y="5"
-                              textAnchor="middle"
-                              fill="#ffffff"
-                              fontSize="17"
-                              fontFamily="sans-serif"
-                              fontWeight={isSelected ? '800' : '700'}
-                            >
-                              {isSelected && <tspan fill="#fbbf24">★ </tspan>}
-                              {portDisplayName}{' '}
-                              <tspan fill={isSelected ? '#fde047' : '#94a3b8'} fontWeight="800" fontFamily="monospace">
-                                · {volumeText}
-                              </tspan>
-                            </text>
-                          </g>
-                        );
-                      })()}
+                          {/* Text: Name & Embarkation Figures (Larger & Clickable) */}
+                          <text
+                            x={-plaqueWidth / 2 + 16}
+                            y="6"
+                            fill="#f8fafc"
+                            fontSize={isSelected ? '18' : isItemHovered ? '17.5' : '16.5'}
+                            fontFamily="sans-serif"
+                            fontWeight={isSelected ? '800' : '700'}
+                          >
+                            {isSelected && <tspan fill="#f59e0b">★ </tspan>}
+                            {portDisplayName}{' '}
+                            <tspan fill={isSelected ? '#fde047' : '#94a3b8'} fontWeight="700" fontFamily="monospace" fontSize={isSelected ? '15.5' : '14'}>
+                              · {volumeText}
+                            </tspan>
+                          </text>
+                        </g>
+                      )}
                     </g>
                   );
                 })}
               </g>
             </svg>
           </div>
-
-          {/* Radar Mini-Map in Corner (Shifted dynamically when filmstrip is open so NOTHING is obscured) */}
-          <div
-            className={`absolute left-4 z-20 pointer-events-none hidden sm:block transition-all duration-300 ${
-              isFilmstripOpen ? 'bottom-[102px]' : 'bottom-4'
-            }`}
-          >
-            <div className="w-40 h-[105px] rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border border-stone-300 dark:border-stone-700 p-1.5 shadow-lg relative overflow-hidden">
-              <div className="w-full h-full relative overflow-hidden rounded-xl bg-stone-100 dark:bg-stone-950 flex items-center justify-center">
-                {/* SVG Silhouette of Africa inside Mini-Map */}
-                <svg viewBox="0 0 5796 5867" className="w-full h-full object-contain opacity-40">
-                  <AfricaVectorContinent mode="silhouette" theme="monochrome" strokeWidth={2} />
-                </svg>
-
-                {/* Live Viewport Indicator Rectangle */}
-                <div
-                  className="absolute border-2 border-amber-600 bg-amber-500/25 rounded-xs transition-all duration-150 pointer-events-none"
-                  style={{
-                    left: `${(currentViewBox.x / 5796) * 100}%`,
-                    top: `${(currentViewBox.y / 5867) * 100}%`,
-                    width: `${Math.min(100, (currentViewBox.w / 5796) * 100)}%`,
-                    height: `${Math.min(100, (currentViewBox.h / 5867) * 100)}%`
-                  }}
-                />
-              </div>
-              <span className="absolute bottom-1 right-2 text-[9px] font-mono text-stone-400 font-bold uppercase tracking-wider">
-                RADAR
-              </span>
-            </div>
-          </div>
-
-          {/* Historical Horizon Scrubber HUD (1514–1866) */}
-          <div
-            className={`absolute right-4 z-20 pointer-events-auto transition-all duration-300 max-w-sm sm:max-w-md ${
-              isFilmstripOpen ? 'bottom-[102px]' : 'bottom-4'
-            }`}
-          >
-            <div className="flex flex-col gap-2 p-3 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border border-stone-300/80 dark:border-stone-700 shadow-xl text-xs">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsTimelinePlaying(!isTimelinePlaying)}
-                    className="w-7 h-7 rounded-xl bg-amber-900 hover:bg-amber-800 text-amber-50 dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-stone-950 flex items-center justify-center transition-colors cursor-pointer shadow-xs"
-                    title={isTimelinePlaying ? 'Pause Century Playback' : 'Play Historical Horizon Animation (1514–1866)'}
-                  >
-                    {isTimelinePlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 ml-0.5" />}
-                  </button>
-                  <span className="font-serif font-bold text-stone-900 dark:text-stone-100">
-                    Era: {yearRange[0]}–{yearRange[1]}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setShowOceanVectors(v => !v)}
-                    className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-mono font-bold transition-all cursor-pointer border ${
-                      showOceanVectors
-                        ? 'bg-sky-50 dark:bg-sky-950/60 border-sky-400 dark:border-sky-600 text-sky-800 dark:text-sky-300'
-                        : 'bg-stone-100 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-500'
-                    }`}
-                    title="Toggle Marine Current & Trade Wind Flow Vectors"
-                  >
-                    <Wind className="w-3 h-3 text-sky-600 dark:text-sky-400" />
-                    <span>Currents {showOceanVectors ? 'ON' : 'OFF'}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Range slider for End Year */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-[10px] font-mono text-stone-500 dark:text-stone-400">
-                  <span>1514</span>
-                  <span className="font-bold text-amber-800 dark:text-amber-400">{filteredPorts.length} Ports Active</span>
-                  <span>1866</span>
-                </div>
-                <input
-                  type="range"
-                  min="1514"
-                  max="1866"
-                  value={yearRange[1]}
-                  onChange={(e) => {
-                    const end = Number(e.target.value);
-                    setYearRange([yearRange[0], end]);
-                  }}
-                  className="w-full accent-amber-700 dark:accent-amber-400 cursor-pointer h-1.5 bg-stone-200 dark:bg-stone-800 rounded-lg"
-                />
-              </div>
-
-              {/* Century Fast Jump Buttons */}
-              <div className="flex items-center gap-1 pt-1 border-t border-stone-100 dark:border-stone-800">
-                {[
-                  { label: 'All', range: [1514, 1866] as [number, number] },
-                  { label: '16th C.', range: [1514, 1600] as [number, number] },
-                  { label: '17th C.', range: [1601, 1700] as [number, number] },
-                  { label: '18th C.', range: [1701, 1800] as [number, number] },
-                  { label: '19th C.', range: [1801, 1866] as [number, number] },
-                ].map(b => (
-                  <button
-                    key={b.label}
-                    type="button"
-                    onClick={() => {
-                      setIsTimelinePlaying(false);
-                      setYearRange(b.range);
-                    }}
-                    className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all cursor-pointer ${
-                      yearRange[0] === b.range[0] && yearRange[1] === b.range[1]
-                        ? 'bg-amber-800 text-white font-bold'
-                        : 'text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
-                    }`}
-                  >
-                    {b.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Floating Pill to Open Port Tray when collapsed (Nothing obscured!) */}
-          {!isFilmstripOpen && (
-            <button
-              onClick={() => setIsFilmstripOpen(true)}
-              className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 dark:bg-stone-900/95 shadow-md border border-stone-300 dark:border-stone-700 text-xs font-mono font-bold text-amber-900 dark:text-amber-300 hover:scale-105 transition-all cursor-pointer"
-            >
-              <Grid className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
-              <span>Show Port Tray ({filteredPorts.length})</span>
-              <ChevronUp className="w-3.5 h-3.5 ml-0.5" />
-            </button>
-          )}
-
-          {/* 3. BOTTOM FILMSTRIP TRAY (In the vein of ArchivalImageViewer.tsx) with Toggle Icon */}
-          <AnimatePresence>
-            {isFilmstripOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="w-full border-t border-stone-200/90 dark:border-stone-800 bg-[#F4EFE6]/95 dark:bg-stone-900/95 backdrop-blur-md shrink-0 z-20 overflow-hidden"
-              >
-                <div className="flex items-center justify-between px-4 py-1.5 border-b border-stone-200/60 dark:border-stone-800/60 text-xs">
-                  <span className="font-mono text-[11px] font-bold text-amber-900 dark:text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
-                    <Grid className="w-3.5 h-3.5" />
-                    Historic Port Enclaves Tray ({filteredPorts.length})
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => {
-                        if (filmstripRef.current) filmstripRef.current.scrollBy({ left: -300, behavior: 'smooth' });
-                      }}
-                      className="p-1 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300"
-                      title="Scroll Left"
-                    >
-                      <ChevronLeft className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (filmstripRef.current) filmstripRef.current.scrollBy({ left: 300, behavior: 'smooth' });
-                      }}
-                      className="p-1 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300"
-                      title="Scroll Right"
-                    >
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
-                    <div className="w-px h-3 bg-stone-300 dark:bg-stone-700 mx-1" />
-                    {/* Toggle Icon to Collapse Port Tray */}
-                    <button
-                      onClick={() => setIsFilmstripOpen(false)}
-                      className="flex items-center gap-1 px-2 py-0.5 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 text-[10px] font-mono cursor-pointer"
-                      title="Collapse Port Tray"
-                    >
-                      <span>Hide</span>
-                      <ChevronDown className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-
-                <div
-                  ref={filmstripRef}
-                  className="flex items-center gap-2 overflow-x-auto p-2.5 scrollbar-thin scrollbar-thumb-stone-300 dark:scrollbar-thumb-stone-700"
-                >
-                  {filteredPorts.map((port) => {
-                    const isSelected = activePort?.id === port.id;
-                    const regionColor = getRegionColor(port.region);
-                    return (
-                      <button
-                        key={port.id}
-                        data-port-id={port.id}
-                        onClick={() => handlePortClick(port)}
-                        onMouseEnter={() => setHoveredRegion(port.region)}
-                        onMouseLeave={() => setHoveredRegion(null)}
-                        className={`group shrink-0 flex items-center gap-2.5 px-3 py-2 rounded-2xl text-left border transition-all cursor-pointer ${
-                          isSelected
-                            ? 'bg-white dark:bg-stone-800 border-amber-600 shadow-md ring-2 ring-amber-500/20'
-                            : 'bg-white/80 dark:bg-stone-900/80 border-stone-200 dark:border-stone-800 hover:border-amber-400 hover:bg-white'
-                        }`}
-                      >
-                        <div
-                          className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-white font-bold text-xs shadow-xs"
-                          style={{ backgroundColor: regionColor }}
-                        >
-                          <Castle className="w-4 h-4" />
-                        </div>
-                        <div className="min-w-0 pr-1">
-                          <div className="text-xs font-serif font-bold text-stone-900 dark:text-stone-100 truncate max-w-[130px]">
-                            {port.name.split(' (')[0]}
-                          </div>
-                          <div className="flex items-center gap-1.5 text-[10px] text-stone-500 dark:text-stone-400 font-mono">
-                            <span>{port.countryModern}</span>
-                            <span>·</span>
-                            <span className="font-bold text-amber-700 dark:text-amber-400">
-                              {(port.estimatedEmbarkations / 1_000_000).toFixed(2)}M
-                            </span>
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
 
         {/* RIGHT COLLAPSIBLE METADATA DOSSIER DRAWER (Exactly w-full lg:w-5/12 xl:w-1/3 matching ArchivalImageViewer.tsx) */}
         {isMetadataOpen && (
           <aside 
             aria-label="Port Dossier and Archival Metadata"
-            className="w-full lg:w-5/12 xl:w-1/3 bg-[#FAF8F5] dark:bg-[#161413] flex flex-col justify-between shrink-0 h-full border-t lg:border-t-0 border-stone-200/90 dark:border-stone-800 text-stone-900 dark:text-stone-100 overflow-hidden relative"
+            className="w-full lg:w-5/12 xl:w-1/3 bg-[#FAF8F5] dark:bg-[#161413] flex flex-col justify-between shrink-0 h-full min-h-0 max-h-full border-t lg:border-t-0 border-stone-200/90 dark:border-stone-800 text-stone-900 dark:text-stone-100 overflow-hidden relative"
           >
             {/* Drawer Tab Headers with Dedicated Collapse Toggle */}
             <div 
@@ -1615,10 +1951,10 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
 
                 {/* Dedicated Close/Collapse Toggle on Dossier Drawer */}
                 <button
-                  onClick={() => setIsMetadataOpen(false)}
+                  onClick={handleCloseDossier}
                   className="p-1.5 rounded-xl hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-colors ml-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-                  title="Collapse Dossier Drawer"
-                  aria-label="Collapse Dossier Drawer"
+                  title="Close Dossier & Reset View"
+                  aria-label="Close Dossier & Reset View"
                 >
                   <PanelRightClose className="w-4 h-4 text-amber-800 dark:text-amber-400" />
                 </button>
@@ -1629,7 +1965,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                 role="tabpanel" 
                 id={`panel-port-${activeTab}`} 
                 aria-labelledby={`tab-port-${activeTab}`} 
-                className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 scrollbar-thin scrollbar-thumb-stone-300 dark:scrollbar-thumb-stone-700"
+                className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-4 scrollbar-thin scrollbar-thumb-stone-300 dark:scrollbar-thumb-stone-700"
               >
                 {activePort ? (
                   <>

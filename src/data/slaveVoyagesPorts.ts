@@ -863,80 +863,224 @@ export const AFRICAN_EMBARKATION_PORTS: AfricanEmbarkationPort[] = [
     primaryDestinations: ['French Mascarenes', 'Brazil', 'Cuba'],
     historicalDescription: 'Coral island fortification off Cabo Delgado. Functioned as a secluded holding depot for illicit nineteenth-century French and Brazilian slaving vessels.',
     unescoWorldHeritage: false
+  },
+  {
+    id: 'port-inhambane',
+    name: 'Inhambane (Baía de Inhambane)',
+    historicalAliases: ['Terra de Boa Gente', 'Porto de Inhambane'],
+    region: 'Southeast Africa',
+    countryModern: 'Mozambique',
+    coordinates: { lat: -23.8650, lng: 35.3833 },
+    fortOrType: 'Masonry Castle / Fort',
+    europeanPowers: ['Portugal', 'France'],
+    indigenousPolity: 'Bitonga & Chopi Kingdoms',
+    activeCentury: ['18th', '19th'],
+    estimatedEmbarkations: 68000,
+    primaryEthnicGroups: ['Bitonga', 'Chopi', 'Tsonga'],
+    primaryDestinations: ['Brazil (Rio de Janeiro)', 'French Mascarenes (Réunion)', 'Cuba'],
+    historicalDescription: 'Portuguese southern coastal feitoria on the Bay of Inhambane. Became a focal embarkation node during the intense 19th-century clandestine slave traffic to Rio de Janeiro.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-delagoa-bay',
+    name: 'Delagoa Bay (Lourenço Marques / Maputo Bay)',
+    historicalAliases: ['Baía da Lagoa', 'Fortaleza de Nossa Senhora da Conceição'],
+    region: 'Southeast Africa',
+    countryModern: 'Mozambique',
+    coordinates: { lat: -25.9692, lng: 32.5732 },
+    fortOrType: 'Masonry Castle / Fort',
+    europeanPowers: ['Portugal', 'Great Britain'],
+    indigenousPolity: 'Ronga Chieftaincies & Maputo Kingdom',
+    activeCentury: ['18th', '19th'],
+    estimatedEmbarkations: 46000,
+    primaryEthnicGroups: ['Ronga', 'Tsonga', 'Nguni'],
+    primaryDestinations: ['Brazil (Rio de Janeiro)', 'French Mascarenes', 'North America'],
+    historicalDescription: 'Deep natural harbor on Maputo Bay. Fortified in 1781 after Austrian and British interloping expeditions, serving as a late-era embarkation point during the Mfecane wars.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-sofala',
+    name: 'Sofala (Fortaleza de São Caetano)',
+    historicalAliases: ['Cefala', 'São Caetano de Sofala', 'Rio Búzi Estuary'],
+    region: 'Southeast Africa',
+    countryModern: 'Mozambique',
+    coordinates: { lat: -20.1444, lng: 34.7214 },
+    fortOrType: 'Masonry Castle / Fort',
+    europeanPowers: ['Portugal'],
+    indigenousPolity: 'Kingdom of Quiteve & Mutapa Empire',
+    activeCentury: ['16th', '17th', '18th', '19th'],
+    estimatedEmbarkations: 52000,
+    primaryEthnicGroups: ['Ndau', 'Shona', 'Sena'],
+    primaryDestinations: ['Brazil (Bahia, Rio de Janeiro)', 'Goa / Portuguese India', 'French Mascarenes'],
+    historicalDescription: 'The earliest Portuguese masonry fortress in East Africa, established in 1505 on the historic Swahili gold trade terminus. Transformed in later centuries into a regional slave barracoon.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-angoche',
+    name: 'Angoche (Sultanate of Angoche)',
+    historicalAliases: ['Ilha de Angoche', 'Angoxa'],
+    region: 'Southeast Africa',
+    countryModern: 'Mozambique',
+    coordinates: { lat: -16.2300, lng: 39.9000 },
+    fortOrType: 'Island Entrepôt',
+    europeanPowers: ['Portugal', 'France'],
+    indigenousPolity: 'Sultanate of Angoche (Swahili-Koti)',
+    activeCentury: ['18th', '19th'],
+    estimatedEmbarkations: 74000,
+    primaryEthnicGroups: ['Koti', 'Makua', 'Mwani'],
+    primaryDestinations: ['Madagascar', 'French Mascarenes', 'Brazil', 'Cuba'],
+    historicalDescription: 'Independent Swahili-Muslim sultanate located south of Mozambique Island. Angoche defied Portuguese naval patrols and served as the premier clandestine embarkation haven until 1890.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-mombasa',
+    name: 'Mombasa (Fort Jesus)',
+    historicalAliases: ['Fortaleza de Jesus de Mombaça', 'Mvita'],
+    region: 'Southeast Africa',
+    countryModern: 'Kenya',
+    coordinates: { lat: -4.0547, lng: 39.6738 },
+    fortOrType: 'Masonry Castle / Fort',
+    europeanPowers: ['Portugal', 'Great Britain'],
+    indigenousPolity: 'Mazrui Dynasty & Sultanate of Oman',
+    activeCentury: ['16th', '17th', '18th', '19th'],
+    estimatedEmbarkations: 48000,
+    primaryEthnicGroups: ['Mijikenda', 'Pokomo', 'Swahili', 'Kamba'],
+    primaryDestinations: ['French Mascarenes', 'Oman / Persian Gulf', 'Brazil'],
+    historicalDescription: 'Iconic Renaissance masonry fortress constructed by Portugal in 1593. Controlled the northern Swahili corridor, funneling coastal and hinterland captives to the Indian Ocean and Atlantic circuits.',
+    unescoWorldHeritage: true
+  },
+  {
+    id: 'port-lamu',
+    name: 'Lamu Archipelago & Pate Island',
+    historicalAliases: ['Lamu Fort', 'Pate Island', 'Siyu'],
+    region: 'Southeast Africa',
+    countryModern: 'Kenya',
+    coordinates: { lat: -2.2700, lng: 40.9000 },
+    fortOrType: 'Island Entrepôt',
+    europeanPowers: ['Portugal', 'Great Britain'],
+    indigenousPolity: 'Swahili City-States & Omani Governors',
+    activeCentury: ['17th', '18th', '19th'],
+    estimatedEmbarkations: 34000,
+    primaryEthnicGroups: ['Bajuni', 'Oromo', 'Boni', 'Swahili'],
+    primaryDestinations: ['Oman / Persian Gulf', 'French Mascarenes', 'Zanzibar'],
+    historicalDescription: 'Protected coral island archipelago in northern Kenya. Served as a maritime assembly port for dhows transporting captives down the Swahili coast and outward into international circuits.',
+    unescoWorldHeritage: true
+  },
+  {
+    id: 'port-majunga',
+    name: 'Mahajanga / Majunga (Bembatoka Bay)',
+    historicalAliases: ['Mojanga', 'Bembatoka', 'Boina Port'],
+    region: 'Southeast Africa',
+    countryModern: 'Madagascar',
+    coordinates: { lat: -15.7167, lng: 46.3167 },
+    fortOrType: 'Island Entrepôt',
+    europeanPowers: ['France', 'Portugal', 'Great Britain', 'United States'],
+    indigenousPolity: 'Boina Kingdom (Sakalava) & Antalaotra Community',
+    activeCentury: ['18th', '19th'],
+    estimatedEmbarkations: 76000,
+    primaryEthnicGroups: ['Sakalava', 'Antalaotra', 'Tsimihety'],
+    primaryDestinations: ['French Mascarenes (Mauritius, Réunion)', 'Brazil', 'United States (Chesapeake, Carolinas)'],
+    historicalDescription: 'The dominant northwest Madagascar entrepôt on Bembatoka Bay, governed by the Sakalava kings. Traded directly with American, French, and Portuguese vessels for transatlantic and Indian Ocean delivery.',
+    unescoWorldHeritage: false
+  },
+  {
+    id: 'port-sainte-marie',
+    name: 'Nosy Boraha (Île Sainte-Marie & Antongil Bay)',
+    historicalAliases: ['Île Sainte-Marie', 'Nosy Boraha', 'Antongil'],
+    region: 'Southeast Africa',
+    countryModern: 'Madagascar',
+    coordinates: { lat: -16.9044, lng: 49.9000 },
+    fortOrType: 'Island Entrepôt',
+    europeanPowers: ['France', 'Great Britain'],
+    indigenousPolity: 'Betsimisaraka Confederation',
+    activeCentury: ['17th', '18th', '19th'],
+    estimatedEmbarkations: 58000,
+    primaryEthnicGroups: ['Betsimisaraka', 'Sakalava'],
+    primaryDestinations: ['French Mascarenes (Île de France, Bourbon)', 'French Caribbean (Saint-Domingue)', 'North America'],
+    historicalDescription: 'Island off Madagascar eastern coast and gateway to Antongil Bay. Strategic base for French East India Company and privateer merchants shipping Malagasy captives to the Mascarenes and Caribbean.',
+    unescoWorldHeritage: false
   }
 ];
 
 /**
  * Calibrated Coastal Vector Coordinates:
  * Directly extracted from public/africa-final.svg (incorporating transform "translate(-216.0198 -66.614)").
- * Aligns all 47 historic embarkation ports precisely on their authentic ocean coastlines, bays, and offshore islands:
- * - Eastern African ports positioned on the Indian Ocean coast & archipelagoes (Zanzibar, Kilwa, Ibo, Mozambique Island, Quelimane)
+ * Aligns historic embarkation ports precisely on their authentic ocean coastlines, bays, and offshore islands:
+ * - Eastern African & Indian Ocean ports positioned on the coastal waters & archipelagoes (Lamu, Mombasa, Zanzibar, Kilwa, Ibo, Mozambique Island, Angoche, Quelimane, Sofala, Inhambane, Delagoa Bay, Majunga, Sainte-Marie)
  * - Western African ports positioned on the Atlantic shoreline (Senegambia, Sierra Leone, Windward, Gold Coast, Bight of Benin, Bight of Biafra)
- * - Angolan / West Central ports nudged in Y and X directly on coastal anchorages (Luanda bay, Benguela, Ambriz, Mpinda, Cabinda, Loango)
+ * - Angolan / West Central ports nudged directly on coastal anchorages (Luanda bay, Benguela, Ambriz, Mpinda, Cabinda, Loango)
  */
 export const CALIBRATED_PORT_SVG_COORDINATES: Record<string, { x: number; y: number }> = {
   // 1. SENEGAMBIA
-  'port-goree': { x: 504, y: 1848 }, // Cap-Vert peninsula / Dakar / Gorée Island
-  'port-saint-louis': { x: 664, y: 1681 }, // Senegal River mouth / Ndar
-  'port-james-island': { x: 615, y: 1975 }, // Kunta Kinteh Island, Gambia River estuary
-  'port-albreda': { x: 618, y: 1972 }, // Albreda & Juffure, Gambia north bank
-  'port-cacheu': { x: 595, y: 2015 }, // Cacheu River estuary, Guinea-Bissau
-  'port-bissau': { x: 610, y: 2045 }, // Geba River estuary / Bissau, Guinea-Bissau
+  'port-goree': { x: 504, y: 1848 }, // Cap-Vert peninsula / Dakar / Gorée Island (tip of Senegal)
+  'port-saint-louis': { x: 568, y: 1695 }, // Senegal River mouth / Ndar Atlantic coast
+  'port-james-island': { x: 558, y: 1952 }, // Kunta Kinteh Island, Gambia River estuary
+  'port-albreda': { x: 558, y: 1946 }, // Albreda & Juffure, Gambia north bank estuary
+  'port-cacheu': { x: 538, y: 2035 }, // Cacheu River estuary, Guinea-Bissau coast
+  'port-bissau': { x: 556, y: 2060 }, // Geba River estuary / Bissau, Guinea-Bissau coast
 
   // 2. SIERRA LEONE & UPPER GUINEA
-  'port-rio-pongo': { x: 720, y: 2200 }, // Rio Pongo mangrove river, Guinea
-  'port-bunce-island': { x: 780, y: 2355 }, // Sierra Leone River estuary / Bunce Island
-  'port-sherbro': { x: 830, y: 2420 }, // Sherbro & York Island, Sierra Leone coast
-  'port-gallinas': { x: 885, y: 2470 }, // Gallinas River / Sulima, Sierra Leone
+  'port-rio-pongo': { x: 720, y: 2200 }, // Rio Pongo mangrove river, Guinea coast
+  'port-bunce-island': { x: 777, y: 2356 }, // Sierra Leone River estuary / Bunce Island
+  'port-sherbro': { x: 831, y: 2420 }, // Sherbro & York Island, Sierra Leone coast
+  'port-gallinas': { x: 891, y: 2467 }, // Gallinas River / Sulima, Sierra Leone coast
 
   // 3. WINDWARD COAST
-  'port-cape-mount': { x: 940, y: 2515 }, // Cape Mount / Monrovia roadstead, Liberia
-  'port-grand-bassa': { x: 1020, y: 2565 }, // Grand Bassa & Bassa Cove, Liberia
-  'port-cape-palmas': { x: 1220, y: 2685 }, // Cape Palmas, Liberia / Ivory Coast border
-  'port-grand-bassam': { x: 1490, y: 2620 }, // Grand-Bassam & Comoé estuary, Côte d'Ivoire
+  'port-cape-mount': { x: 946, y: 2510 }, // Cape Mount / Monrovia roadstead, Liberia coast
+  'port-grand-bassa': { x: 1028, y: 2564 }, // Grand Bassa & Bassa Cove, Liberia coast
+  'port-cape-palmas': { x: 1183, y: 2682 }, // Cape Palmas, Liberia / Ivory Coast border
+  'port-grand-bassam': { x: 1490, y: 2620 }, // Grand-Bassam & Comoé estuary, Côte d'Ivoire coast
 
   // 4. GOLD COAST (GHANA)
-  'port-fort-san-antonio': { x: 1568, y: 2533 }, // Fort San Antonio, Axim
-  'port-gross-friedrichsburg': { x: 1580, y: 2538 }, // Fort Gross Friedrichsburg, Princes Town
-  'port-metal-cross': { x: 1595, y: 2542 }, // Fort Metal Cross, Dixcove
-  'port-elmina': { x: 1630, y: 2555 }, // São Jorge da Mina (Elmina Castle)
-  'port-cape-coast': { x: 1640, y: 2557 }, // Cape Coast Castle (Carolusburg)
-  'port-anomabu': { x: 1652, y: 2560 }, // Fort William, Anomabu
-  'port-fort-amsterdam': { x: 1660, y: 2562 }, // Fort Amsterdam, Kormantin / Abandze
-  'port-christiansborg': { x: 1771, y: 2568 }, // Fort Christiansborg (Osu Castle, Accra)
-  'port-fort-prinzenstein': { x: 1845, y: 2545 }, // Fort Prinzenstein, Keta Lagoon
+  'port-fort-san-antonio': { x: 1568, y: 2630 }, // Fort San Antonio, Axim south coast
+  'port-gross-friedrichsburg': { x: 1580, y: 2638 }, // Fort Gross Friedrichsburg, Princes Town south coast
+  'port-metal-cross': { x: 1595, y: 2630 }, // Fort Metal Cross, Dixcove south coast
+  'port-elmina': { x: 1630, y: 2621 }, // São Jorge da Mina (Elmina Castle) south coast
+  'port-cape-coast': { x: 1642, y: 2618 }, // Cape Coast Castle (Carolusburg) south coast
+  'port-anomabu': { x: 1653, y: 2613 }, // Fort William, Anomabu south coast
+  'port-fort-amsterdam': { x: 1665, y: 2612 }, // Fort Amsterdam, Kormantin / Abandze south coast
+  'port-christiansborg': { x: 1749, y: 2566 }, // Fort Christiansborg (Osu Castle, Accra) south coast
+  'port-fort-prinzenstein': { x: 1805, y: 2542 }, // Fort Prinzenstein, Keta Lagoon coast
 
   // 5. BIGHT OF BENIN (SLAVE COAST)
-  'port-little-popo': { x: 1890, y: 2535 }, // Little Popo (Aného), Togo
-  'port-grand-popo': { x: 1920, y: 2530 }, // Grand-Popo & Mono estuary, Benin
-  'port-ouidah': { x: 1965, y: 2525 }, // Ouidah (Whydah Roadstead & Forts), Benin
-  'port-porto-novo': { x: 2005, y: 2520 }, // Porto-Novo (Hogbonu), Benin
-  'port-badagry': { x: 2020, y: 2518 }, // Badagry (Gberefu Island), Nigeria
-  'port-lagos': { x: 2034, y: 2518 }, // Lagos (Eko / Onim), Nigeria
-  'port-gwato': { x: 2150, y: 2535 }, // Gwato & Ughoton, Benin River / Kingdom of Benin
+  'port-little-popo': { x: 1888, y: 2521 }, // Little Popo (Aného), Togo coast
+  'port-grand-popo': { x: 1917, y: 2518 }, // Grand-Popo & Mono estuary, Benin coast
+  'port-ouidah': { x: 1965, y: 2516 }, // Ouidah (Whydah Roadstead & Forts), Benin coast
+  'port-porto-novo': { x: 2000, y: 2513 }, // Porto-Novo (Hogbonu), Benin coast
+  'port-badagry': { x: 2018, y: 2515 }, // Badagry (Gberefu Island), Nigeria coast
+  'port-lagos': { x: 2034, y: 2518 }, // Lagos (Eko / Onim), Nigeria coast
+  'port-gwato': { x: 2159, y: 2534 }, // Gwato & Ughoton, Benin River / Kingdom of Benin estuary
 
   // 6. BIGHT OF BIAFRA
-  'port-brass': { x: 2114, y: 2619 }, // Brass River & Nembe, Niger Delta
-  'port-new-calabar': { x: 2235, y: 2665 }, // New Calabar (Elem Kalabari), Niger Delta
-  'port-bonny': { x: 2257, y: 2672 }, // Grand Bonny & Opobo, Niger Delta
-  'port-old-calabar': { x: 2402, y: 2514 }, // Old Calabar (Duke Town & Creek Town), Cross River
-  'port-bimbia': { x: 2540, y: 2680 }, // Bimbia & Duala River, Cameroon coast
+  'port-brass': { x: 2114, y: 2619 }, // Brass River & Nembe, Niger Delta coast
+  'port-new-calabar': { x: 2235, y: 2665 }, // New Calabar (Elem Kalabari), Niger Delta coast
+  'port-bonny': { x: 2257, y: 2672 }, // Grand Bonny & Opobo, Niger Delta coast
+  'port-old-calabar': { x: 2402, y: 2514 }, // Old Calabar (Duke Town & Creek Town), Cross River estuary
+  'port-bimbia': { x: 2520, y: 2692 }, // Bimbia & Duala River, Cameroon coast
   'port-sao-tome': { x: 2223, y: 2965 }, // São Tomé Island (Forte de São Sebastião)
 
   // 7. WEST CENTRAL AFRICA (CONGO & ANGOLA)
-  'port-loango': { x: 2620, y: 3340 }, // Loango Bay (Diosso / Pointe-Noire), Republic of the Congo
-  'port-cabinda': { x: 2639, y: 3393 }, // Cabinda Bay & Malembo, Angola exclave
-  'port-mpinda': { x: 2780, y: 3514 }, // Mpinda (Soyo / Congo River mouth), Angola
-  'port-ambriz': { x: 2712, y: 3655 }, // Ambriz & Loge River, Angola
-  'port-luanda': { x: 2660, y: 3792 }, // Luanda (São Paulo de Luanda), Angola (coastal bay)
-  'port-benguela': { x: 2794, y: 4028 }, // Benguela (São Filipe de Benguela), Angola (coastal roadstead)
+  'port-loango': { x: 2527, y: 3336 }, // Loango Bay (Diosso / Pointe-Noire), Republic of the Congo coast
+  'port-cabinda': { x: 2567, y: 3415 }, // Cabinda Bay & Malembo, Angola exclave coast
+  'port-mpinda': { x: 2594, y: 3490 }, // Mpinda (Soyo / Congo River mouth), Angola coast
+  'port-ambriz': { x: 2660, y: 3669 }, // Ambriz & Loge River, Angola coast
+  'port-luanda': { x: 2660, y: 3792 }, // Luanda (São Paulo de Luanda), Angola coastal bay
+  'port-benguela': { x: 2690, y: 4037 }, // Benguela (São Filipe de Benguela), Angola coastal roadstead
 
   // 8. SOUTHEAST AFRICA (EASTERN COAST & INDIAN OCEAN)
-  'port-zanzibar': { x: 4536, y: 3526 }, // Stone Town, Zanzibar (Unguja) Island, Tanzania coast
-  'port-kilwa': { x: 4555, y: 3774 }, // Kilwa Kisiwani, southern Tanzania coast
-  'port-ibo-island': { x: 4456, y: 3980 }, // Ibo Island, Quirimbas Archipelago, Cabo Delgado, Mozambique
-  'port-mozambique-island': { x: 4579, y: 4129 }, // Mozambique Island (Ilha de Moçambique), Nampula coast
-  'port-quelimane': { x: 4333, y: 4253 }  // Quelimane & Zambezi estuary, Mozambique coast
+  'port-lamu': { x: 4700, y: 3120 }, // Pate & Lamu Archipelago, northern Kenya coast
+  'port-mombasa': { x: 4640, y: 3340 }, // Mombasa / Fort Jesus, Kenya coast
+  'port-zanzibar': { x: 4600, y: 3535 }, // Stone Town, Zanzibar (Unguja) Island, Tanzania coast
+  'port-kilwa': { x: 4556, y: 3783 }, // Kilwa Kisiwani, southern Tanzania coast
+  'port-ibo-island': { x: 4620, y: 3964 }, // Ibo Island, Quirimbas Archipelago, Cabo Delgado, Mozambique coast
+  'port-mozambique-island': { x: 4615, y: 4122 }, // Mozambique Island (Ilha de Moçambique), Nampula coast
+  'port-angoche': { x: 4540, y: 4290 }, // Sultanate of Angoche, Mozambique coast
+  'port-quelimane': { x: 4370, y: 4466 }, // Quelimane & Zambezi estuary, Mozambique coast
+  'port-sofala': { x: 4230, y: 4660 }, // Sofala / Púngwe & Búzi estuary, Mozambique coast
+  'port-inhambane': { x: 4150, y: 4890 }, // Inhambane Bay, southern Mozambique coast
+  'port-delagoa-bay': { x: 3950, y: 5120 }, // Delagoa Bay / Lourenço Marques / Maputo Bay, southern Mozambique
+  'port-majunga': { x: 5040, y: 4230 }, // Mahajanga / Majunga (Bembatoka Bay), northwest Madagascar coast
+  'port-sainte-marie': { x: 5410, y: 4420 }  // Nosy Boraha / Île Sainte-Marie & Antongil, east Madagascar coast
 };
 
 // Bind calibrated SVG coordinates directly onto all port objects

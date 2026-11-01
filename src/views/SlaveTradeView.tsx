@@ -178,10 +178,17 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
     };
   }, [filterResult, filters.epistemicMode]);
 
+  const isPortsActive = activeSubTab === 'ports';
+  const isFlowMapActive = activeSubTab === 'flow-map';
+  const isMapActive = isPortsActive || isFlowMapActive;
+  const hideMainHeader = isMapActive;
+  const hideTabBar = isMapActive;
+
   return (
-    <div className="space-y-8 animate-in fade-in duration-200 text-left">
+    <div className={isMapActive ? 'w-full flex-1 flex flex-col animate-in fade-in duration-200 text-left' : 'space-y-8 animate-in fade-in duration-200 text-left'}>
       {/* 1. Header Banner & Epistemic Control Strip (Option A: Atmospheric Warm & Crisp Palette) */}
-      <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#FAF6EE] via-[#F5EFE1] to-[#EFE7D5] dark:from-[#1C1815] dark:via-[#161311] dark:to-[#221B16] border border-[#DCD3C1] dark:border-[#3D342A] text-[#1C1917] dark:text-[#F6F4EE] shadow-sm relative overflow-hidden space-y-6">
+      {!hideMainHeader && (
+        <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#FAF6EE] via-[#F5EFE1] to-[#EFE7D5] dark:from-[#1C1815] dark:via-[#161311] dark:to-[#221B16] border border-[#DCD3C1] dark:border-[#3D342A] text-[#1C1917] dark:text-[#F6F4EE] shadow-sm relative overflow-hidden space-y-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="space-y-2 max-w-3xl">
             <div className="flex flex-wrap items-center gap-2.5">
@@ -366,61 +373,64 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
           </div>
         </div>
       </div>
+      )}
 
       {/* 2. Sub-Navigation Tabs Bar - Fully Wrapping with ARIA Tablist Semantics */}
-      <nav 
-        role="tablist" 
-        aria-label="Slave voyages research sections" 
-        className="flex flex-wrap items-center gap-2 pb-3 border-b border-zinc-200 dark:border-zinc-800"
-      >
-        {[
-          { id: 'overview', label: '01 — Overview & Research Foundations', icon: Globe },
-          { id: 'flow-map', label: '02 — Atlantic Geodesic Flow Map', icon: Compass },
-          { id: 'ports', label: '03 — African Forts & Enclaves Map', icon: Castle },
-          { id: 'essays', label: '04 — Introduction Essays & Scholarship', icon: BookOpen },
-          { id: 'voyages', label: '05 — Explore Voyages', icon: Compass },
-          { id: 'routes', label: '06 — Geographic Routes', icon: Layers },
-          { id: 'people', label: '07 — African Origins & Names', icon: Users },
-          { id: 'enslavers', label: '08 — Enslavers & Networks', icon: Building2 },
-          { id: 'analytics', label: '09 — Comparative Analytics', icon: BarChart3 },
-          { id: 'query', label: '10 — Query Builder & Citations', icon: SlidersHorizontal },
-          { id: 'methodology', label: '11 — Provenance & Methodology', icon: BookOpen },
-          { id: 'molecular', label: '12 — Molecular & Material Legacies', icon: Dna },
-          { id: 'foundations', label: '13 — Foundations of African Development (Master Report)', icon: Scale },
-          { id: 'iconography', label: '14 — Historical Iconography Archive', icon: ImageIcon },
-          { id: 'cartography', label: '15 — Archival Cartography & Currents GIS', icon: Compass }
-        ].map(tab => {
-          const Icon = tab.icon;
-          const isActive = activeSubTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              role="tab"
-              id={`slavetrade-tab-${tab.id}`}
-              aria-selected={isActive}
-              aria-controls={`slavetrade-panel-${tab.id}`}
-              tabIndex={isActive ? 0 : -1}
-              onClick={() => {
-                if (tab.id === 'iconography' && onNavigateToIconography) {
-                  onNavigateToIconography();
-                } else if (tab.id === 'cartography' && onNavigateToCartography) {
-                  onNavigateToCartography();
-                } else {
-                  setActiveSubTab(tab.id as SlaveTradeSubTab);
-                }
-              }}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
-                isActive
-                  ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-md scale-102'
-                  : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800'
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
-      </nav>
+      {!hideTabBar && (
+        <nav 
+          role="tablist" 
+          aria-label="Slave voyages research sections" 
+          className="flex flex-wrap items-center gap-2 pb-3 border-b border-zinc-200 dark:border-zinc-800"
+        >
+          {[
+            { id: 'overview', label: '01 — Overview & Research Foundations', icon: Globe },
+            { id: 'flow-map', label: '02 — Atlantic Geodesic Flow Map', icon: Compass },
+            { id: 'ports', label: '03 — African Forts & Enclaves Map', icon: Castle },
+            { id: 'essays', label: '04 — Introduction Essays & Scholarship', icon: BookOpen },
+            { id: 'voyages', label: '05 — Explore Voyages', icon: Compass },
+            { id: 'routes', label: '06 — Geographic Routes', icon: Layers },
+            { id: 'people', label: '07 — African Origins & Names', icon: Users },
+            { id: 'enslavers', label: '08 — Enslavers & Networks', icon: Building2 },
+            { id: 'analytics', label: '09 — Comparative Analytics', icon: BarChart3 },
+            { id: 'query', label: '10 — Query Builder & Citations', icon: SlidersHorizontal },
+            { id: 'methodology', label: '11 — Provenance & Methodology', icon: BookOpen },
+            { id: 'molecular', label: '12 — Molecular & Material Legacies', icon: Dna },
+            { id: 'foundations', label: '13 — Foundations of African Development (Master Report)', icon: Scale },
+            { id: 'iconography', label: '14 — Historical Iconography Archive', icon: ImageIcon },
+            { id: 'cartography', label: '15 — Archival Cartography & Currents GIS', icon: Compass }
+          ].map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeSubTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                role="tab"
+                id={`slavetrade-tab-${tab.id}`}
+                aria-selected={isActive}
+                aria-controls={`slavetrade-panel-${tab.id}`}
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => {
+                  if (tab.id === 'iconography' && onNavigateToIconography) {
+                    onNavigateToIconography();
+                  } else if (tab.id === 'cartography' && onNavigateToCartography) {
+                    onNavigateToCartography();
+                  } else {
+                    setActiveSubTab(tab.id as SlaveTradeSubTab);
+                  }
+                }}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
+                  isActive
+                    ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-md scale-102'
+                    : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+      )}
 
       {/* 3. Sub-Tab Views */}
 
@@ -736,7 +746,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
           role="tabpanel" 
           id="slavetrade-panel-flow-map" 
           aria-labelledby="slavetrade-tab-flow-map" 
-          className="w-full flex-1 flex flex-col"
+          className="w-full flex-1 min-h-[calc(100vh-80px)] flex flex-col"
         >
           <div className="w-full flex-1">
             <Suspense fallback={
@@ -767,7 +777,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
           role="tabpanel" 
           id="slavetrade-panel-ports" 
           aria-labelledby="slavetrade-tab-ports" 
-          className="w-full flex-1 min-h-[calc(100vh-140px)] flex flex-col"
+          className="w-full flex-1 h-[calc(100vh-68px)] max-h-[calc(100vh-68px)] min-h-[600px] flex flex-col overflow-hidden"
         >
           <Suspense fallback={
             <div className="w-full h-[640px] flex items-center justify-center bg-zinc-900/40 rounded-2xl border border-zinc-800">
@@ -777,7 +787,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
               </div>
             </div>
           }>
-            <AfricanPortsMap />
+            <AfricanPortsMap onClose={() => setActiveSubTab('overview')} />
           </Suspense>
         </div>
       )}
