@@ -416,6 +416,21 @@ export default defineConfig(({ command }) => {
       },
       dedupe: ['react', 'react-dom'],
     },
+    optimizeDeps: {
+      include: [
+        'react',
+        'react-dom',
+        'react-dom/client',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'lucide-react',
+        'motion',
+        'motion/react',
+        'recharts',
+        'd3',
+        'topojson-client',
+      ],
+    },
     build: {
       cssTarget: ['chrome115', 'safari16.4', 'firefox115'],
       modulePreload: {

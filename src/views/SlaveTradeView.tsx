@@ -26,18 +26,6 @@ import {
 } from '../data/slaveVoyagesTypes';
 import { filterVoyages, DEFAULT_FILTERS } from '../services/slaveVoyagesApi';
 import { EpistemicStatusBadge } from '../components/slaveVoyages/EpistemicStatusBadge';
-
-// Lazy-load heavier GIS mapping engines, archival iconography, and scholarly monographs on demand
-const AtlanticFlowMap = lazyWithRetry(() => import('../components/slaveVoyages/AtlanticFlowMap').then(m => ({ default: m.AtlanticFlowMap || (m as any).default })), 'AtlanticFlowMap');
-const AfricanPortsMap = lazyWithRetry(() => import('../components/slaveVoyages/AfricanPortsMap').then(m => ({ default: m.AfricanPortsMap || (m as any).default })), 'AfricanPortsMap');
-const VoyageDossierModal = lazyWithRetry(() => import('../components/slaveVoyages/VoyageDossierModal').then(m => ({ default: m.VoyageDossierModal || (m as any).default })), 'VoyageDossierModal');
-const QueryBuilderPanel = lazyWithRetry(() => import('../components/slaveVoyages/QueryBuilderPanel').then(m => ({ default: m.QueryBuilderPanel || (m as any).default })), 'QueryBuilderPanel');
-const MolecularLegaciesView = lazyWithRetry(() => import('../components/slaveVoyages/MolecularLegaciesView').then(m => ({ default: m.MolecularLegaciesView || (m as any).default })), 'MolecularLegaciesView');
-const AfricanDevelopmentMasterReportView = lazyWithRetry(() => import('./AfricanDevelopmentMasterReportView').then(m => ({ default: m.AfricanDevelopmentMasterReportView || (m as any).default })), 'AfricanDevelopmentMasterReportView');
-const AcademicExportModal = lazyWithRetry(() => import('../components/AcademicExportModal').then(m => ({ default: m.AcademicExportModal || (m as any).default })), 'AcademicExportModal');
-const SlaveVoyagesEssaysViewer = lazyWithRetry(() => import('../components/slaveVoyages/SlaveVoyagesEssaysViewer').then(m => ({ default: m.SlaveVoyagesEssaysViewer || (m as any).default })), 'SlaveVoyagesEssaysViewer');
-const StorytellingGallery = lazyWithRetry(() => import('../components/slaveVoyages/StorytellingGallery').then(m => ({ default: m.StorytellingGallery || (m as any).default })), 'StorytellingGallery');
-const SlaveTradeIconography = lazyWithRetry(() => import('../components/slaveVoyages/SlaveTradeIconography').then(m => ({ default: m.SlaveTradeIconography || (m as any).default })), 'SlaveTradeIconography');
 import { 
   Anchor, 
   Compass, 
@@ -70,6 +58,19 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
+
+
+// Lazy-load heavier GIS mapping engines, archival iconography, and scholarly monographs on demand
+const AtlanticFlowMap = lazyWithRetry(() => import('../components/slaveVoyages/AtlanticFlowMap').then(m => ({ default: m.AtlanticFlowMap || (m as any).default })), 'AtlanticFlowMap');
+const AfricanPortsMap = lazyWithRetry(() => import('../components/slaveVoyages/AfricanPortsMap').then(m => ({ default: m.AfricanPortsMap || (m as any).default })), 'AfricanPortsMap');
+const VoyageDossierModal = lazyWithRetry(() => import('../components/slaveVoyages/VoyageDossierModal').then(m => ({ default: m.VoyageDossierModal || (m as any).default })), 'VoyageDossierModal');
+const QueryBuilderPanel = lazyWithRetry(() => import('../components/slaveVoyages/QueryBuilderPanel').then(m => ({ default: m.QueryBuilderPanel || (m as any).default })), 'QueryBuilderPanel');
+const MolecularLegaciesView = lazyWithRetry(() => import('../components/slaveVoyages/MolecularLegaciesView').then(m => ({ default: m.MolecularLegaciesView || (m as any).default })), 'MolecularLegaciesView');
+const AfricanDevelopmentMasterReportView = lazyWithRetry(() => import('./AfricanDevelopmentMasterReportView').then(m => ({ default: m.AfricanDevelopmentMasterReportView || (m as any).default })), 'AfricanDevelopmentMasterReportView');
+const AcademicExportModal = lazyWithRetry(() => import('../components/AcademicExportModal').then(m => ({ default: m.AcademicExportModal || (m as any).default })), 'AcademicExportModal');
+const SlaveVoyagesEssaysViewer = lazyWithRetry(() => import('../components/slaveVoyages/SlaveVoyagesEssaysViewer').then(m => ({ default: m.SlaveVoyagesEssaysViewer || (m as any).default })), 'SlaveVoyagesEssaysViewer');
+const StorytellingGallery = lazyWithRetry(() => import('../components/slaveVoyages/StorytellingGallery').then(m => ({ default: m.StorytellingGallery || (m as any).default })), 'StorytellingGallery');
+const SlaveTradeIconography = lazyWithRetry(() => import('../components/slaveVoyages/SlaveTradeIconography').then(m => ({ default: m.SlaveTradeIconography || (m as any).default })), 'SlaveTradeIconography');
 
 export type SlaveTradeSubTab = 
   | 'overview'
