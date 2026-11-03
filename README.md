@@ -85,9 +85,16 @@ Understanding Africa's demographic and economic trajectory is critical for polic
 
 ## 🚀 Key Capabilities & Feature Modules
 
-### 1. Interactive Vector Cartography Stage
-The core cartographic viewport renders pure SVG path geometries calibrated specifically for the African continental landmass and surrounding island archipelagos:
+### 1. Interactive Vector Cartography Stage & 54-Nation Mosaic
+The core cartographic viewport renders pure SVG path geometries calibrated specifically for the African continental landmass and surrounding island archipelagos, paired with a unified 4-perspective switcher and the 54-Nation Mosaic matrix:
 
+- **Top Continental Macroeconomic Ribbon**: High-density 6-metric benchmark ribbon tracking Continental Population (1.48B, +2.4% YoY), Combined GDP ($3.12T, +3.8% Real), GDP Per Capita ($2,094 Weighted), Continental HDI (0.536, Top: 0.802), Electrification (56.4% Access Trajectory), and Cultural Heritage Properties (104 Sites across 42 Nations).
+- **4-Perspective Cartographic Switcher**: Powered by the Universal Motion Engine with sliding tactile layout indicators, switching seamlessly between:
+  1. *54 Nations Mosaic* (Alternative A — Active by default): High-density interactive matrix with real-time UN Geoscheme filtering, dynamic metric switching, and UN Geoscheme regional tonal hover effects.
+  2. *Authentic Vector Map*: Vector continental map with 1,017 Admin-1 internal provincial/state boundary paths and centroid-anchored labels.
+  3. *UN Geoscheme Regions*: Macro-synthesis layer color-coded across the 5 official UN M49 macro-geoschemes.
+  4. *Harmonization & Provenance*: Comprehensive multilateral provenance overview and verification status flags.
+- **Universal Motion & Animation Engine (`src/utils/motion.tsx`)**: Standardized Framer Motion spring physics (`SPRING_TACTILE`, `SPRING_SNAPPY`, `SlidingPill`, `AnimatedTabPanel`) delivering tactile transitions across all tabs, filters, and dossiers with strict `@media (prefers-reduced-motion)` accessibility.
 - **Mathematical Quantile & Diverging Choropleths**: Dynamically scales colors across selected indicators (e.g., GDP per Capita, Human Development Index, Renewable Energy Share, Fragility Index) using quantile and linear interpolation palettes.
 - **Micro-State & SIDS Precision Locators**: Small Island Developing States (Cabo Verde, São Tomé and Príncipe, Comoros, Mauritius, and Seychelles) feature dedicated high-contrast visual callout rings with enlarged click targets (minimum 44px) to ensure effortless interaction on touchscreens.
 - **Geodesic Viewport Controls**: Smooth zoom, drag-to-pan, and one-click subregional focus presets (**All Africa**, **North Africa**, **West Africa**, **Central Africa**, **East Africa**, and **Southern Africa**).

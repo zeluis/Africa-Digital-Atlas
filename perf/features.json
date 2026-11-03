@@ -63,6 +63,7 @@
     "academicExport.ts:exportBibTeXFile",
     "academicExport.ts:exportCSLJSONFile",
     "academicExport.ts:exportHighDpiPlatePDF",
+    "academicExport.ts:exportMonographPDF",
     "academicExport.ts:exportRISFile",
     "exportUtils.ts:downloadFile",
     "exportUtils.ts:exportAcademicBibtex",

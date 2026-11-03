@@ -14,8 +14,8 @@ Africalia (the Africa Data Atlas) is a full-stack, client-first cartographic obs
 ### Current System Health Matrix
 | Verification Domain | Standard / Tool | Status | Metrics / Details |
 | :--- | :--- | :---: | :--- |
-| **TypeScript Compilation** | `tsc --noEmit` (TypeScript 5.8.2) | **PASSED** | 0 type errors, 100% strict type safety across 274 codebase files. |
-| **Research Provenance Check** | `scripts/research-check.mjs` | **PASSED** | 0 errors, 0 warnings across 274 scanned files; strict ratchet baseline locked. |
+| **TypeScript Compilation** | `tsc --noEmit` (TypeScript 5.8.2) | **PASSED** | 0 type errors, 100% strict type safety across 276 codebase files. |
+| **Research Provenance Check** | `scripts/research-check.mjs` | **PASSED** | 0 errors, 0 warnings across 276 scanned files; strict ratchet baseline locked. |
 | **Cryptographic Integrity** | `scripts/research-integrity.mjs` | **PASSED** | 8 tracked datasets verified with SHA-256 Web Crypto checksums. |
 | **Dual-Licensing Compliance** | `LICENSE-CODE` & `LICENSE-ASSETS` | **PASSED** | MIT License for application code; CC BY 4.0 for cartographic SVG assets. |
 | **Production Bundler** | Vite 6.2.3 & VitePress 1.6.4 | **PASSED** | Client bundles, service worker precache (129 entries), and SSR docs generated. |
@@ -29,12 +29,16 @@ Africalia (the Africa Data Atlas) is a full-stack, client-first cartographic obs
 The application features 21 modular views dynamically routed via URL hash fragments (`#overview`, `#slave-trade`, `#map`, etc.) with code-splitting via `lazyWithRetry`:
 
 ### 1. `OverviewView.tsx` — Continental Synthesis & Macro Overview
-- **Core Function**: Primary executive dashboard integrating the high-precision vector continental map with macro indicators.
+- **Core Function**: Primary executive dashboard integrating the vector continental map with macro indicators, alternative visualization matrices, and the 4-perspective cartographic switcher.
 - **Key Modules**:
-  - Pan-African key indicator summary cards (GDP, Population, HDI, Renewable Energy, Intra-African Trade).
-  - Schematic UN Geoscheme regional layer adhering to the 5 official macro-regions (Northern, Western, Central, Eastern, Southern Africa).
+  - **Top Continental Macroeconomic Ribbon**: Unified 6-metric benchmark ribbon tracking Continental Population (1.48B, +2.4% YoY), Combined GDP ($3.12T, +3.8% Real), GDP Per Capita ($2,094 Weighted), Continental HDI (0.536, Top: 0.802), Electrification (56.4% Access Trajectory), and Cultural Heritage Properties (104 Sites across 42 Nations).
+  - **4-Perspective Cartographic Switcher**: Segmented switcher with sliding pill indicator powered by `layoutId="overviewPerspectivePill"`, providing active and tonal states across:
+    1. *54 Nations Mosaic* (Alternative A — Active by default): High-density interactive matrix of all 54 sovereign nations with live regional filters, multi-criteria sorting, and UN Geoscheme tonal color tokens on hover.
+    2. *Authentic Vector Map*: Vector continental map with 1,017 Admin-1 internal provincial/state boundary paths and centroid-anchored labels.
+    3. *UN Geoscheme Regions*: Regional macro-synthesis layer color-coded strictly across the 5 official UN M49 macro-geoschemes.
+    4. *Harmonization & Provenance*: Comprehensive multilateral provenance overview and verification status flags.
   - Quick-search country selector, regional focus jump links, and interactive SVG country hover inspection.
-- **Data Hook**: `africaData.ts`, `africaFinalGeometry.ts`, `unGeoschemeColors.ts`.
+- **Data Hook**: `africaData.ts`, `africaFinalGeometry.ts`, `unGeoschemeColors.ts`, `FiftyFourNationMosaic.tsx`.
 
 ### 2. `ExploreView.tsx` — 54-Country Grid & Multidimensional Filtering
 - **Core Function**: Visual directory and card grid of all 54 sovereign African states.
@@ -242,10 +246,12 @@ The application features 21 modular views dynamically routed via URL hash fragme
 
 ### 2. Layout, Navigation & Chrome
 - **`Navbar.tsx`**: Accessible header containing brand typography, global search trigger, multilateral API hub button, theme switcher, language selector, and mobile drawer hamburger.
+- **`ThematicPillarNav.tsx`**: Accessible 8-pillar segmented navigation deck with keyboard shortcuts (`1`–`8`), responsive horizontal scrolling, and a shared sliding active pill (`layoutId="thematicPillarActivePill"`) driven by tactile spring dynamics.
 - **`NavigationDrawer.tsx`**: Desktop collapsible rail navigation (`w-72` to `w-[68px]`) with auto-collapse rules on intensive workspaces and accessible mobile bottom sheet modal. Features a restructured navigation hierarchy: Section 5 **Culture** (`Landmark` icon) grouping UNESCO World Heritage Sites and Living Language Phyla; and Section 6 **Analytics** housing Comparative Benchmarks, the UN Geoscheme Macro-Region Matrix, and Continental GIS Cartography.
 - **`Footer.tsx`**: High-contrast, clean footer containing scholarly copyright, Figshare DOI link, dual-licensing badges, and quick links. Auto-concealed when intensive full-bleed GIS workspaces (`flow-map`, `ports`) are active.
 - **`MainContentSkeleton.tsx`**: Layout-shift-free loading skeleton customized for dashboard, map, and article layouts.
 - **`ProgressiveDisclosure.tsx`**: Accessible accordion component for complex analytical dossiers.
+- **`FiftyFourNationMosaic.tsx`**: Compact matrix and card grid of all 54 sovereign African states supporting live UN Geoscheme region filters, multi-criteria sorting (Population, GDP, HDI, Area, Alphabetical), dynamic indicator displays, and UN Geoscheme regional tonal hover effects.
 
 ### 3. Modals & Specialized Drawers
 - **`CountryFactsheetModal.tsx`**: Modal generating a high-density, printable sovereign country factsheet with macroeconomic indicators and radar charts.
@@ -275,6 +281,7 @@ The application features 21 modular views dynamically routed via URL hash fragme
 4. **`indexedDbSearch.ts`**: Fast, client-side IndexedDB full-text indexing engine for offline voyage searches.
 5. **`lazyWithRetry.tsx`**: Resilient dynamic import wrapper that handles network interruptions during chunk fetching with automatic retry logic.
 6. **`nativeTranslationBridge.ts`**: Bi-directional translation helper interfacing with localized dictionaries for Swahili, Hausa, Arabic, and Amharic.
+7. **`motion.tsx`**: Universal Motion & Animation Engine powered by `motion/react` (Framer Motion). Provides standardized spring physics (`SPRING_TACTILE`, `SPRING_SNAPPY`, `SPRING_GENTLE`, `SPRING_BOUNCE`), reusable layout animated primitives (`SlidingPill`, `AnimatedTabPanel`, `AnimatedSection`, `StaggerGrid`), regional card tonal hover dynamics (`getRegionCardTonalStyle`), and strict `@media (prefers-reduced-motion)` accessibility support across all 4 implementation phases.
 
 ---
 
