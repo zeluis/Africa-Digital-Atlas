@@ -601,6 +601,7 @@ function AppContent() {
                   {currentTab === 'explore' && (
                     <ExploreView
                       onSelectCountry={handleSelectCountry}
+                      onNavigateTab={(tab) => handleSelectTab(tab as CanonicalNavTab)}
                     />
                   )}
 

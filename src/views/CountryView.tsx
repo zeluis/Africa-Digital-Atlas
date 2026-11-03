@@ -60,6 +60,7 @@ import {
 } from 'lucide-react';
 import { CountryFactsheetModal } from '../components/CountryFactsheetModal';
 import { getCountryMineralsProfile, getCountryTradeFlows } from '../data/criticalMineralsData';
+import { exportCountryIntelligenceBriefingPDF } from '../utils/academicExport';
 
 interface CountryViewProps {
   entityId: string;
@@ -204,6 +205,16 @@ export const CountryView: React.FC<CountryViewProps> = ({
                   >
                     <FileText className="w-3.5 h-3.5 text-emerald-600" />
                     <span>1-Page Factsheet</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => exportCountryIntelligenceBriefingPDF(entity)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-semibold shadow-xs transition-all cursor-pointer hover:bg-purple-100 dark:hover:bg-purple-900/60"
+                    title="Download Publication-Grade 2-Page Intelligence Dossier (PDF)"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                    <span>2-Page Dossier (PDF)</span>
                   </button>
                 </div>
                 <p className="text-xs md:text-sm text-zinc-600 font-medium">

@@ -19,11 +19,18 @@ import {
   Anchor,
   Mountain,
   Globe,
-  Sparkles
+  Sparkles,
+  SlidersHorizontal,
+  RotateCcw,
+  ArrowRightLeft,
+  Check
 } from 'lucide-react';
+import { getCountryTradeFlows } from '../data/criticalMineralsData';
+import { ENTITY_BLOCS } from '../data/entityBlocs';
 
 interface ExploreViewProps {
   onSelectCountry: (entityId: string) => void;
+  onNavigateTab?: (tab: string) => void;
 }
 
 type SortField = 'name' | 'population' | 'gdp' | 'hdi' | 'area';
@@ -34,7 +41,8 @@ const SIDS_SET = new Set(['CPV', 'STP', 'MUS', 'SYC', 'COM']);
 const LANDLOCKED_SET = new Set(['BFA', 'BDI', 'CAF', 'TCD', 'SWZ', 'ETH', 'LSO', 'MWI', 'MLI', 'NER', 'RWA', 'SSD', 'UGA', 'ZMB', 'ZWE']);
 
 export const ExploreView: React.FC<ExploreViewProps> = ({
-  onSelectCountry
+  onSelectCountry,
+  onNavigateTab
 }) => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
@@ -43,6 +51,28 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   const [sortField, setSortField] = useState<SortField>('population');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [viewLayout, setViewLayout] = useState<'grid' | 'table' | 'matrix'>('grid');
+
+  // Multivariate Screener States
+  const [isScreenerOpen, setIsScreenerOpen] = useState(false);
+  const [minPopulation, setMinPopulation] = useState(0); // in millions
+  const [minGdp, setMinGdp] = useState(0); // in billions
+  const [minHdi, setMinHdi] = useState(0); // e.g. 0, 0.45, 0.55, 0.65
+  const [minIntraTrade, setMinIntraTrade] = useState(0); // %
+  const [recFilter, setRecFilter] = useState('ALL');
+
+  const activeScreenerCount = (minPopulation > 0 ? 1 : 0) + 
+    (minGdp > 0 ? 1 : 0) + 
+    (minHdi > 0 ? 1 : 0) + 
+    (minIntraTrade > 0 ? 1 : 0) + 
+    (recFilter !== 'ALL' ? 1 : 0);
+
+  const handleResetScreener = () => {
+    setMinPopulation(0);
+    setMinGdp(0);
+    setMinHdi(0);
+    setMinIntraTrade(0);
+    setRecFilter('ALL');
+  };
 
   const allEntities = atlas.getAllEntities();
 
@@ -72,7 +102,20 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           entity.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           entity.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
           entity.capital.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesRegion && matchesTopology && matchesQuery;
+
+        // Screener threshold checks
+        const pop = atlas.getIndicatorValue(entity.id, 'SP.POP.TOTL') || 0;
+        const gdp = atlas.getIndicatorValue(entity.id, 'NY.GDP.MKTP.CD') || 0;
+        const hdiVal = atlas.getIndicatorValue(entity.id, 'UNDP.HDI.INDEX') || 0;
+        const tradeFlows = getCountryTradeFlows(entity.id);
+
+        const matchesPop = minPopulation === 0 || pop >= minPopulation;
+        const matchesGdp = minGdp === 0 || gdp >= minGdp;
+        const matchesHdi = minHdi === 0 || hdiVal >= minHdi;
+        const matchesTrade = minIntraTrade === 0 || tradeFlows.intraAfricanSharePct >= minIntraTrade;
+        const matchesRec = recFilter === 'ALL' || (ENTITY_BLOCS[recFilter]?.memberIso3s.includes(entity.id));
+
+        return matchesRegion && matchesTopology && matchesQuery && matchesPop && matchesGdp && matchesHdi && matchesTrade && matchesRec;
       })
       .sort((a, b) => {
         let valA: number | string = 0;
@@ -106,7 +149,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
         }
         return sortOrder === 'asc' ? (valA as number) - (valB as number) : (valB as number) - (valA as number);
       });
-  }, [allEntities, regionFilter, searchQuery, sortField, sortOrder]);
+  }, [allEntities, regionFilter, topologyFilter, searchQuery, sortField, sortOrder, minPopulation, minGdp, minHdi, minIntraTrade, recFilter]);
 
   const toggleSort = (field: SortField) => {
     if (sortField === field) {
@@ -251,11 +294,166 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             })}
           </div>
 
-          <span className="text-xs font-mono text-zinc-400">
-            Showing {filteredAndSortedEntities.length} of 54 sovereign nations
-          </span>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsScreenerOpen(prev => !prev)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+                isScreenerOpen || activeScreenerCount > 0
+                  ? 'bg-purple-600 text-white shadow-xs'
+                  : 'bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-purple-300'
+              }`}
+              title="Toggle Multivariate Econometric Screener (Population, GDP, HDI, Intra-African Trade, RECs)"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              <span>Multivariate Screener</span>
+              {activeScreenerCount > 0 && (
+                <span className="w-4 h-4 rounded-full bg-white text-purple-700 text-[10px] flex items-center justify-center font-bold">
+                  {activeScreenerCount}
+                </span>
+              )}
+            </button>
+
+            <span className="text-xs font-mono text-zinc-400">
+              Showing {filteredAndSortedEntities.length} of 54 sovereign nations
+            </span>
+          </div>
         </div>
       </div>
+
+      {/* Multivariate Econometric Screener Panel */}
+      {isScreenerOpen && (
+        <div className="rounded-3xl border border-purple-200/80 dark:border-purple-900/60 bg-purple-50/40 dark:bg-purple-950/20 p-6 space-y-4 shadow-sm animate-in fade-in duration-150">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 dark:border-purple-900/40 pb-3">
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 font-display">
+                Multivariate Econometric Screener &amp; Threshold Filters
+              </h4>
+            </div>
+            <div className="flex items-center gap-2">
+              {activeScreenerCount > 0 && (
+                <button
+                  type="button"
+                  onClick={handleResetScreener}
+                  className="flex items-center gap-1 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
+                >
+                  <RotateCcw className="w-3 h-3" /> Reset Thresholds
+                </button>
+              )}
+              <span className="text-xs font-mono font-bold text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/60 px-2.5 py-1 rounded-lg">
+                {filteredAndSortedEntities.length} of 54 nations match
+              </span>
+            </div>
+          </div>
+
+          {/* Sliders Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-xs">
+            {/* Min Population */}
+            <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
+              <div className="flex justify-between text-zinc-500 font-mono text-[11px]">
+                <span>Min Population</span>
+                <span className="font-bold text-zinc-900 dark:text-zinc-100">{minPopulation === 0 ? 'Any' : `${minPopulation}M+`}</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="120"
+                step="10"
+                value={minPopulation}
+                onChange={(e) => setMinPopulation(Number(e.target.value))}
+                className="w-full accent-purple-600 cursor-pointer"
+              />
+            </div>
+
+            {/* Min GDP */}
+            <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
+              <div className="flex justify-between text-zinc-500 font-mono text-[11px]">
+                <span>Min Nominal GDP</span>
+                <span className="font-bold text-zinc-900 dark:text-zinc-100">{minGdp === 0 ? 'Any' : `$${minGdp}B+`}</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="200"
+                step="20"
+                value={minGdp}
+                onChange={(e) => setMinGdp(Number(e.target.value))}
+                className="w-full accent-purple-600 cursor-pointer"
+              />
+            </div>
+
+            {/* Min HDI */}
+            <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
+              <div className="flex justify-between text-zinc-500 font-mono text-[11px]">
+                <span>Min Human Dev. (HDI)</span>
+                <span className="font-bold text-zinc-900 dark:text-zinc-100">{minHdi === 0 ? 'Any' : minHdi.toFixed(2)}</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="0.75"
+                step="0.05"
+                value={minHdi}
+                onChange={(e) => setMinHdi(Number(e.target.value))}
+                className="w-full accent-purple-600 cursor-pointer"
+              />
+            </div>
+
+            {/* Intra-African Trade % */}
+            <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
+              <div className="flex justify-between text-zinc-500 font-mono text-[11px]">
+                <span>Min Intra-Africa Trade</span>
+                <span className="font-bold text-zinc-900 dark:text-zinc-100">{minIntraTrade === 0 ? 'Any' : `${minIntraTrade}%+`}</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="35"
+                step="5"
+                value={minIntraTrade}
+                onChange={(e) => setMinIntraTrade(Number(e.target.value))}
+                className="w-full accent-purple-600 cursor-pointer"
+              />
+            </div>
+
+            {/* Regional Economic Community (REC) */}
+            <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-1.5">
+              <div className="text-zinc-500 font-mono text-[11px]">Regional Bloc (REC)</div>
+              <select
+                value={recFilter}
+                onChange={(e) => setRecFilter(e.target.value)}
+                className="w-full py-1 px-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-xs font-bold text-zinc-800 dark:text-zinc-200 focus:outline-none"
+              >
+                <option value="ALL">All RECs (Continental)</option>
+                <option value="ECOWAS">ECOWAS (West Africa)</option>
+                <option value="SADC">SADC (Southern Africa)</option>
+                <option value="EAC">EAC (East Africa)</option>
+                <option value="AMU">AMU (Maghreb)</option>
+                <option value="ECCAS">ECCAS (Central Africa)</option>
+                <option value="COMESA">COMESA (Common Market)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Cohort Action Button */}
+          {onNavigateTab && filteredAndSortedEntities.length >= 2 && (
+            <div className="flex items-center justify-between pt-2 text-xs">
+              <span className="text-zinc-500">
+                Cohort ready for comparative econometric benchmarking:
+              </span>
+              <button
+                type="button"
+                onClick={() => onNavigateTab('compare')}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold transition-colors cursor-pointer"
+              >
+                <ArrowRightLeft className="w-3.5 h-3.5" />
+                <span>Benchmark Filtered Cohort in Bilateral Lab</span>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Results Count & Sort Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1 text-xs text-zinc-500 dark:text-zinc-400 font-medium">

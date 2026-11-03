@@ -19,12 +19,14 @@ import {
   Award,
   Volume2,
   Radio,
-  Sliders
+  Sliders,
+  ArrowRightLeft
 } from 'lucide-react';
 import { VoiceWelcomeFab } from '../components/VoiceWelcomeFab';
 import { LANGUAGE_FAMILY_GREETINGS } from '../utils/africaliaVoiceEngine';
 import { MotherTonguesWaveformScrubber } from '../components/MotherTonguesWaveformScrubber';
 import { AFRICAN_TYPOLOGICAL_FEATURES, TypologicalFeature } from '../data/africanLinguisticTypology';
+import { LinguisticTypologyComparator } from '../components/languages/LinguisticTypologyComparator';
 import { motion } from 'motion/react';
 import { SPRING_TACTILE, AnimatedTabPanel } from '../utils/motion';
 
@@ -212,7 +214,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
   onSelectCountry
 }) => {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'families' | 'waveforms' | 'lingua-francas' | 'countries' | 'typology'>('families');
+  const [activeTab, setActiveTab] = useState<'families' | 'waveforms' | 'lingua-francas' | 'countries' | 'typology' | 'comparator'>('families');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFamilyId, setSelectedFamilyId] = useState<string>('niger-congo');
   const [activeWaveformLangId, setActiveWaveformLangId] = useState<string>('yoruba');
@@ -257,6 +259,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
             {[
               { id: 'families', label: 'Language Families (6)', icon: null },
               { id: 'waveforms', label: 'Waveform Lab (10)', icon: Radio },
+              { id: 'comparator', label: 'Typology Comparator', icon: ArrowRightLeft },
               { id: 'lingua-francas', label: 'Major Lingua Francas', icon: null },
               { id: 'countries', label: 'Country Matrix (54)', icon: null },
               { id: 'typology', label: 'Phonemic & Typology Lab (5)', icon: Sparkles }
@@ -292,6 +295,11 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* TAB: TYPOLOGICAL DISTANCE COMPARATOR */}
+      {activeTab === 'comparator' && (
+        <LinguisticTypologyComparator />
+      )}
 
       {/* TAB: WAVEFORM LABORATORY */}
       {activeTab === 'waveforms' && (

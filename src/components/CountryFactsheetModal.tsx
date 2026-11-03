@@ -15,6 +15,7 @@ import {
   formatArea 
 } from '../data/atlas-formatters';
 import { downloadFile } from '../utils/exportUtils';
+import { exportCountryIntelligenceBriefingPDF } from '../utils/academicExport';
 import { 
   Printer, 
   Download, 
@@ -305,7 +306,17 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
               title="Print or Save as PDF (A4/Letter)"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Print / PDF</span>
+              <span>Print / 1-Page</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => exportCountryIntelligenceBriefingPDF(country)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+              title="Download Publication-Grade 2-Page Intelligence Dossier PDF"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>2-Page Dossier (PDF)</span>
             </button>
 
             <button

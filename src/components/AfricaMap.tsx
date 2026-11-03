@@ -98,6 +98,11 @@ import { UnescoSiteMetadata } from '../data/slaveTradeIllustrations';
 import { INITIAL_UNESCO_HERITAGE_SITES } from '../data/unescoHeritageRegistry';
 import { UnescoSiteDetailModal } from './cartography/UnescoSiteDetailModal';
 import { prewarmUnescoHeritageCache } from '../utils/imagePrecache';
+import { 
+  CriticalMineralsMapLayer, 
+  CriticalMineralsInspector, 
+  SpatialMineralNode 
+} from './cartography/CriticalMineralsMapLayer';
 import {
   AKP_CHOROPLETH_METRICS,
   AKP_CATEGORIES,
@@ -131,6 +136,8 @@ export interface AfricaMapProps {
   showUnescoSites?: boolean;
   onToggleUnescoSites?: () => void;
   onNavigateToHeritage?: (siteId: number) => void;
+  showCriticalMinerals?: boolean;
+  onToggleCriticalMinerals?: () => void;
 }
 
 export type MapDisplayMode = 'authentic_palette' | 'un_geoscheme' | 'choropleth' | 'bivariate' | 'antique_parchment';
@@ -190,7 +197,9 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   initialCartographySource = 'authentic_final',
   showUnescoSites: externalShowUnescoSites,
   onToggleUnescoSites,
-  onNavigateToHeritage
+  onNavigateToHeritage,
+  showCriticalMinerals: externalShowCriticalMinerals,
+  onToggleCriticalMinerals
 }) => {
   const handleSelectCountry = onSelectCountry || onSelectEntity || (() => {});
   const activeRegionFilter = selectedRegionFilter || regionFilter || 'All';
@@ -359,6 +368,12 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       prewarmUnescoHeritageCache().catch(() => {});
     }
   }, [showUnescoSites]);
+
+  // Critical Energy Transition Minerals Layer State
+  const [internalShowCriticalMinerals, setInternalShowCriticalMinerals] = useState<boolean>(false);
+  const showCriticalMinerals = externalShowCriticalMinerals !== undefined ? externalShowCriticalMinerals : internalShowCriticalMinerals;
+  const handleToggleCriticalMinerals = onToggleCriticalMinerals || (() => setInternalShowCriticalMinerals(prev => !prev));
+  const [selectedMineralNode, setSelectedMineralNode] = useState<SpatialMineralNode | null>(null);
 
   const handleToggleLayer = (key: keyof LayerVisibilityState) => {
     setLayerVisibility(prev => ({
@@ -2576,8 +2591,27 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 setHoveredAdmin1={setHoveredAdmin1}
                 onOpenColophonModal={() => setIsColophonOpen(true)}
               />
+
+              {showCriticalMinerals && (
+                <CriticalMineralsMapLayer
+                  activeMineralId={selectedMineralNode?.id}
+                  onSelectMineral={(node) => setSelectedMineralNode(node)}
+                  onSelectCountry={handleSelectCountry}
+                />
+              )}
           </g>
         </svg>
+
+        {/* Critical Energy Transition Minerals Inspector Panel */}
+        <AnimatePresence>
+          {selectedMineralNode && (
+            <CriticalMineralsInspector
+              activeNode={selectedMineralNode}
+              onClose={() => setSelectedMineralNode(null)}
+              onSelectCountry={handleSelectCountry}
+            />
+          )}
+        </AnimatePresence>
 
         {/* Rich Interactive Floating Hover Card for All Thematic Overlays & Beacons (Editorial Theme) */}
         {hoveredThematicItem && !selectedThematicItem && (() => {

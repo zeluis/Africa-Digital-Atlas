@@ -363,3 +363,325 @@ export const exportMonographPDF = async (
   doc.save(cleanFilename);
 };
 
+/**
+ * Generates an executive 2-page Country Intelligence Dossier PDF
+ */
+export const exportCountryIntelligenceBriefingPDF = async (
+  country: {
+    id: string;
+    name: string;
+    officialName?: string;
+    capital: string;
+    region: string;
+    subregion?: string;
+    landAreaKm2?: number;
+    gdpNominalUsd?: number;
+    population?: number;
+    hdi?: number;
+  }
+): Promise<void> => {
+  const { jsPDF } = await import('jspdf');
+  const { atlas } = await import('../data/atlas-store');
+  const { getCountryTradeFlows, getCountryMineralsProfile } = await import('../data/criticalMineralsData');
+  const { INITIAL_UNESCO_HERITAGE_SITES } = await import('../data/unescoHeritageRegistry');
+  const { formatGDP, formatPopulation, formatCurrency } = await import('../data/atlas-formatters');
+
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4'
+  });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 16;
+  const contentWidth = pageWidth - (margin * 2);
+
+  const nominalGdp = atlas.getIndicatorValue(country.id, 'NY.GDP.MKTP.CD') || country.gdpNominalUsd || 0;
+  const population = atlas.getIndicatorValue(country.id, 'SP.POP.TOTL') || country.population || 0;
+  const hdi = atlas.getIndicatorValue(country.id, 'UNDP.HDI.INDEX') || country.hdi || 0;
+  const gdpPerCapita = population > 0 && nominalGdp > 0 ? Math.round((nominalGdp * 1e9) / (population * 1e6)) : 0;
+  const tradeProfile = getCountryTradeFlows(country.id);
+  const mineralsProfile = getCountryMineralsProfile(country.id);
+  const heritageSites = INITIAL_UNESCO_HERITAGE_SITES.filter(s => s.countryCode === country.id);
+
+  // ================= PAGE 1 =================
+  doc.setFillColor(252, 250, 247);
+  doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+  // Top Accent Rule
+  doc.setFillColor(16, 185, 129); // Emerald accent
+  doc.rect(margin, margin, contentWidth, 2, 'F');
+
+  // Header Title
+  doc.setFont('times', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(120, 53, 15);
+  doc.text('AFRICA DATA ATLAS • EXECUTIVE SOVEREIGN INTELLIGENCE DOSSIER', margin, margin + 8);
+
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(110, 110, 110);
+  doc.text(`ISO-3: ${country.id} • DOI: 10.6084/m9.figshare.34065711`, pageWidth - margin - 70, margin + 8);
+
+  // Main Country Name
+  doc.setFont('times', 'bold');
+  doc.setFontSize(22);
+  doc.setTextColor(24, 24, 27);
+  doc.text(country.name, margin, margin + 20);
+
+  // Official Name & Subtitle
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(80, 80, 80);
+  const subtext = `${country.officialName || country.name} • Region: ${country.region} • Capital: ${country.capital} • Land Area: ${(country.landAreaKm2 || 0).toLocaleString()} km²`;
+  doc.text(subtext, margin, margin + 26);
+
+  // Dividing line
+  doc.setDrawColor(210, 200, 190);
+  doc.setLineWidth(0.3);
+  doc.line(margin, margin + 30, pageWidth - margin, margin + 30);
+
+  // Section 1: Macroeconomic Indicator Matrix
+  doc.setFont('times', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(30, 25, 20);
+  doc.text('1. Core Macroeconomic & Demographic Fundamentals', margin, margin + 38);
+
+  const statBoxes = [
+    { label: 'Nominal GDP (2024)', value: formatGDP(nominalGdp) },
+    { label: 'Total Population', value: formatPopulation(population) },
+    { label: 'GDP per Capita (Nominal)', value: gdpPerCapita > 0 ? formatCurrency(gdpPerCapita) : '—' },
+    { label: 'Human Development (HDI)', value: hdi > 0 ? hdi.toFixed(3) : '—' },
+  ];
+
+  let boxX = margin;
+  const boxWidth = (contentWidth - 9) / 4;
+  const boxY = margin + 42;
+
+  statBoxes.forEach(stat => {
+    doc.setFillColor(245, 240, 235);
+    doc.roundedRect(boxX, boxY, boxWidth, 18, 1.5, 1.5, 'F');
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(110, 100, 90);
+    doc.text(stat.label, boxX + 3, boxY + 6);
+
+    doc.setFont('courier', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(20, 20, 20);
+    doc.text(stat.value, boxX + 3, boxY + 14);
+
+    boxX += boxWidth + 3;
+  });
+
+  // Section 2: 10-Year Structural Trajectory Table (2015-2024)
+  doc.setFont('times', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(30, 25, 20);
+  doc.text('2. Ten-Year Structural Convergence Trajectory (2015–2024)', margin, margin + 68);
+
+  const years = [2015, 2017, 2019, 2021, 2023, 2024];
+  const tableY = margin + 74;
+  const colWidth = contentWidth / 7;
+
+  // Table Header
+  doc.setFillColor(235, 230, 220);
+  doc.rect(margin, tableY, contentWidth, 7, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.5);
+  doc.setTextColor(50, 45, 40);
+  doc.text('Indicator Series', margin + 2, tableY + 5);
+
+  years.forEach((yr, idx) => {
+    doc.text(yr.toString(), margin + colWidth + (idx * colWidth) + 4, tableY + 5);
+  });
+
+  const rowSeries = [
+    { label: 'Real GDP Growth (%)', id: 'NY.GDP.MKTP.KD.ZG', unit: '%' },
+    { label: 'Inflation CPI (%)', id: 'FP.CPI.TOTL.ZG', unit: '%' },
+    { label: 'Gross Govt Debt (% GDP)', id: 'GC.DOD.TOTL.GD.ZS', unit: '%' },
+    { label: 'Life Expectancy (Years)', id: 'SP.DYN.LE00.IN', unit: 'y' },
+    { label: 'Electricity Access (% pop)', id: 'EG.ELC.ACCS.ZS', unit: '%' }
+  ];
+
+  let currentTableRowY = tableY + 7;
+  rowSeries.forEach((series, sIdx) => {
+    if (sIdx % 2 === 1) {
+      doc.setFillColor(248, 245, 240);
+      doc.rect(margin, currentTableRowY, contentWidth, 6.5, 'F');
+    }
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(50, 45, 40);
+    doc.text(series.label, margin + 2, currentTableRowY + 4.5);
+
+    years.forEach((yr, idx) => {
+      const val = atlas.getIndicatorValue(country.id, series.id, yr);
+      const textVal = val !== undefined && val !== null ? `${val.toFixed(1)}${series.unit}` : '—';
+      doc.setFont('courier', 'normal');
+      doc.text(textVal, margin + colWidth + (idx * colWidth) + 4, currentTableRowY + 4.5);
+    });
+
+    currentTableRowY += 6.5;
+  });
+
+  // Section 3: Demographic & Economic Structure Brief
+  doc.setFont('times', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(30, 25, 20);
+  doc.text('3. Macro-Historical Overview & Institutional Context', margin, currentTableRowY + 10);
+
+  doc.setFont('times', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(50, 45, 40);
+
+  const narrativeText = `${country.name} represents a key sovereign economy within ${country.region}. With a demographic base of ${formatPopulation(population)} citizens and a total domestic output of ${formatGDP(nominalGdp)}, the nation is strategically positioned across continental supply corridors. Under the African Continental Free Trade Area (AfCFTA), the country maintains bilateral trade relationships with regional peers and multilateral trading partners.`;
+  const splitNarrative = doc.splitTextToSize(narrativeText, contentWidth);
+  doc.text(splitNarrative, margin, currentTableRowY + 16);
+
+  // Page 1 Footer
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(120, 120, 120);
+  doc.text('Africa Data Atlas • Sovereign Intelligence Dossier • Page 1 of 2', margin, pageHeight - margin);
+
+  // ================= PAGE 2 =================
+  doc.addPage();
+  doc.setFillColor(252, 250, 247);
+  doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+  // Top Accent Rule
+  doc.setFillColor(14, 165, 233); // Cyan accent
+  doc.rect(margin, margin, contentWidth, 2, 'F');
+
+  // Header Title
+  doc.setFont('times', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(120, 53, 15);
+  doc.text('AFRICA DATA ATLAS • TRADE, CRITICAL MINERALS & HERITAGE PROFILE', margin, margin + 8);
+
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(110, 110, 110);
+  doc.text(`ISO-3: ${country.id} • Page 2 of 2`, pageWidth - margin - 40, margin + 8);
+
+  // Section 4: Critical Minerals & Energy Transition
+  doc.setFont('times', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(30, 25, 20);
+  doc.text('4. Strategic Critical Minerals & Beneficiation Status', margin, margin + 20);
+
+  if (mineralsProfile && mineralsProfile.keyMinerals.length > 0) {
+    doc.setFont('times', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(60, 55, 50);
+    const summaryLines = doc.splitTextToSize(mineralsProfile.summary, contentWidth);
+    doc.text(summaryLines, margin, margin + 26);
+
+    let mineralY = margin + 28 + (summaryLines.length * 4);
+    mineralsProfile.keyMinerals.slice(0, 3).forEach(mineral => {
+      doc.setFillColor(242, 238, 232);
+      doc.roundedRect(margin, mineralY, contentWidth, 12, 1, 1, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(20, 20, 20);
+      doc.text(`${mineral.mineral} (${mineral.chemicalSymbol}) — ${mineral.category}`, margin + 3, mineralY + 5);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(100, 90, 80);
+      const appText = `Application: ${mineral.strategicApplication} • Status: ${mineral.refiningStatus}`;
+      doc.text(doc.splitTextToSize(appText, contentWidth - 6)[0], margin + 3, mineralY + 9.5);
+
+      mineralY += 14;
+    });
+  } else {
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(8.5);
+    doc.setTextColor(100, 100, 100);
+    doc.text('National minerals profile under indexing or non-primary mineral exporter.', margin, margin + 26);
+  }
+
+  // Section 5: AfCFTA Trade Corridors & Partners
+  const tradeY = margin + 80;
+  doc.setFont('times', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(30, 25, 20);
+  doc.text('5. AfCFTA Continental Trade Profile & Top Partners', margin, tradeY);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(60, 55, 50);
+  doc.text(`Intra-African Trade Share: ${tradeProfile.intraAfricanSharePct}% • Corridor Integration: ${tradeProfile.afcftaCorridorNote}`, margin, tradeY + 6);
+
+  let partnerY = tradeY + 12;
+  tradeProfile.topPartners.slice(0, 3).forEach(p => {
+    doc.setFont('courier', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(40, 40, 40);
+    doc.text(`• ${p.name} (${p.role}): ${p.sharePct}% of total trade volume`, margin + 3, partnerY);
+    partnerY += 5;
+  });
+
+  // Section 6: UNESCO Cultural & Natural Heritage
+  const unescoY = partnerY + 6;
+  doc.setFont('times', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(30, 25, 20);
+  doc.text('6. Designated UNESCO World Heritage Sites', margin, unescoY);
+
+  if (heritageSites.length > 0) {
+    let siteY = unescoY + 6;
+    heritageSites.slice(0, 4).forEach(site => {
+      doc.setFont('times', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(120, 53, 15);
+      doc.text(`• ${site.title} (${site.date})`, margin + 2, siteY);
+
+      doc.setFont('times', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(60, 60, 60);
+      const descLine = doc.splitTextToSize(site.description, contentWidth - 10)[0];
+      doc.text(descLine, margin + 6, siteY + 4);
+      siteY += 9;
+    });
+  } else {
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(8.5);
+    doc.setTextColor(100, 100, 100);
+    doc.text('No current UNESCO World Heritage Sites inscribed in official catalog.', margin, unescoY + 6);
+  }
+
+  // Section 7: Epistemic Provenance & Scholarly Citation
+  const provenanceY = pageHeight - margin - 30;
+  doc.setDrawColor(210, 200, 190);
+  doc.setLineWidth(0.3);
+  doc.line(margin, provenanceY, pageWidth - margin, provenanceY);
+
+  doc.setFont('times', 'bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(80, 50, 20);
+  doc.text('Methodological Provenance & Citation Standards', margin, provenanceY + 5);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  doc.setTextColor(90, 90, 90);
+  doc.text('Compiled from World Bank World Development Indicators (WDI), UNESCO World Heritage Centre, USGS Mineral Commodity Summaries, and the UN Comtrade database. Cryptographically anchored under DOI: 10.6084/m9.figshare.34065711.', margin, provenanceY + 9, { maxWidth: contentWidth });
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7);
+  doc.text('Dual License: MIT (Code) & Open Data Commons Attribution License (ODC-By v1.0) (Data).', margin, provenanceY + 17);
+
+  // Page 2 Footer
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(120, 120, 120);
+  doc.text('Africa Data Atlas • Sovereign Intelligence Dossier • Page 2 of 2', margin, pageHeight - margin);
+
+  const cleanFilename = `${country.id}_${country.name.replace(/[^a-zA-Z0-9]/g, '_')}_Intelligence_Dossier.pdf`;
+  doc.save(cleanFilename);
+};
+
+

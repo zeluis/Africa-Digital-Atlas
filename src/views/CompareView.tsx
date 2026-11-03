@@ -13,10 +13,11 @@ import {
   formatHDI, 
   formatArea 
 } from '../data/atlas-formatters';
-import { GitCompare, Plus, X, ArrowRight, ShieldCheck, Check, Layers, Crosshair, Ship, DollarSign, FileText, TrendingUp, Activity } from 'lucide-react';
+import { GitCompare, Plus, X, ArrowRight, ShieldCheck, Check, Layers, Crosshair, Ship, DollarSign, FileText, TrendingUp, Activity, ArrowRightLeft } from 'lucide-react';
 import { getCountryHistoricalDevelopmentDossier } from '../data/countryHistoricalDevelopmentData';
 import { MultiCountryRadarMatrix } from '../components/MultiCountryRadarMatrix';
 import { CountryFactsheetModal } from '../components/CountryFactsheetModal';
+import { BilateralTradeComplementaritySection } from '../components/afcfta/BilateralTradeComplementaritySection';
 import { 
   ResponsiveContainer, 
   LineChart, 
@@ -51,6 +52,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
   initialCountries = ['NGA', 'ZAF', 'EGY', 'KEN']
 }) => {
   const [selectedIds, setSelectedIds] = useState<string[]>(initialCountries);
+  const [activeCompareTab, setActiveCompareTab] = useState<'matrix' | 'afcfta'>('matrix');
   const [showSilhouettes, setShowSilhouettes] = useState(true);
   const [valuationMode, setValuationMode] = useState<'nominal' | 'ppp'>('nominal');
   const [normalizationScale, setNormalizationScale] = useState<'aggregate' | 'perCapita'>('aggregate');
@@ -297,25 +299,65 @@ export const CompareView: React.FC<CompareViewProps> = ({
         </div>
       </div>
 
-      {/* Side-by-Side SVG Geographic Silhouettes */}
-      {showSilhouettes && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="font-bold text-sm text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
-              <Layers className="w-4 h-4 text-emerald-500" /> Comparative SVG Geography & Vector Silhouettes
-            </h3>
-            <span className="text-[11px] font-mono text-zinc-500">Build-phase deterministic coordinates</span>
-          </div>
+      {/* Compare View Switcher Tabs */}
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-fit" role="tablist" aria-label="Comparative analysis perspective">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeCompareTab === 'matrix'}
+          onClick={() => setActiveCompareTab('matrix')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            activeCompareTab === 'matrix'
+              ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+          }`}
+        >
+          <GitCompare className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+          <span>Macroeconomic &amp; Indicator Matrix</span>
+        </button>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {countries.map(country => (
-              <div key={country.id} className="relative">
-                <CountrySilhouette entityId={country.id} size="md" />
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeCompareTab === 'afcfta'}
+          onClick={() => setActiveCompareTab('afcfta')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            activeCompareTab === 'afcfta'
+              ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+          }`}
+        >
+          <ArrowRightLeft className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+          <span>AfCFTA &amp; Bilateral Trade Complementarity</span>
+        </button>
+      </div>
+
+      {activeCompareTab === 'afcfta' ? (
+        <BilateralTradeComplementaritySection
+          countryIds={selectedIds}
+          onSelectCountry={onSelectCountry}
+        />
+      ) : (
+        <>
+          {/* Side-by-Side SVG Geographic Silhouettes */}
+          {showSilhouettes && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-sm text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-emerald-500" /> Comparative SVG Geography & Vector Silhouettes
+                </h3>
+                <span className="text-[11px] font-mono text-zinc-500">Build-phase deterministic coordinates</span>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {countries.map(country => (
+                  <div key={country.id} className="relative">
+                    <CountrySilhouette entityId={country.id} size="md" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
       {/* Multi-Country 8-Pillar Radar Matrix */}
       <MultiCountryRadarMatrix
@@ -619,6 +661,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
           ))}
         </div>
       </div>
+      </>
+      )}
 
       {/* 1-Page Printable Country Factsheet Modal */}
       {factsheetCountryId && (
