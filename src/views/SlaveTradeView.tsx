@@ -58,6 +58,8 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
+import { motion } from 'motion/react';
+import { SPRING_TACTILE } from '../utils/motion';
 
 
 // Lazy-load heavier GIS mapping engines, archival iconography, and scholarly monographs on demand
@@ -419,14 +421,23 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                     setActiveSubTab(tab.id as SlaveTradeSubTab);
                   }
                 }}
-                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
+                className={`relative px-4 py-2.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                   isActive
-                    ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-md scale-102'
+                    ? 'text-white dark:text-zinc-900'
                     : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800'
                 }`}
               >
-                <Icon className="w-4 h-4" />
-                <span>{tab.label}</span>
+                {isActive && (
+                  <motion.div
+                    layoutId="slaveVoyagesSubTabPill"
+                    className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-md"
+                    transition={SPRING_TACTILE}
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-2">
+                  <Icon className="w-4 h-4" />
+                  <span>{tab.label}</span>
+                </span>
               </button>
             );
           })}
@@ -844,36 +855,33 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-mono text-[#78716C] dark:text-zinc-400 font-bold uppercase">Database:</span>
                 <div className="inline-flex p-1 rounded-xl bg-[#E8DFCE] dark:bg-zinc-900 border border-[#DCD3C1] dark:border-zinc-800 text-xs font-medium">
-                  <button
-                    onClick={() => handleSelectDatabase('consolidated')}
-                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                      filters.database === 'consolidated'
-                        ? 'bg-[#C2410C] text-white font-bold shadow-xs'
-                        : 'text-[#57534E] hover:text-[#1C1917] dark:text-zinc-400 dark:hover:text-zinc-200'
-                    }`}
-                  >
-                    Consolidated (All Trades)
-                  </button>
-                  <button
-                    onClick={() => handleSelectDatabase('transatlantic')}
-                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                      filters.database === 'transatlantic'
-                        ? 'bg-[#C2410C] text-white font-bold shadow-xs'
-                        : 'text-[#57534E] hover:text-[#1C1917] dark:text-zinc-400 dark:hover:text-zinc-200'
-                    }`}
-                  >
-                    Trans-Atlantic (36,108 Voyages)
-                  </button>
-                  <button
-                    onClick={() => handleSelectDatabase('intra_american')}
-                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                      filters.database === 'intra_american'
-                        ? 'bg-[#C2410C] text-white font-bold shadow-xs'
-                        : 'text-[#57534E] hover:text-[#1C1917] dark:text-zinc-400 dark:hover:text-zinc-200'
-                    }`}
-                  >
-                    Intra-American (11,400+ Voyages)
-                  </button>
+                  {[
+                    { id: 'consolidated', label: 'Consolidated (All Trades)' },
+                    { id: 'transatlantic', label: 'Trans-Atlantic (36,108 Voyages)' },
+                    { id: 'intra_american', label: 'Intra-American (11,400+ Voyages)' }
+                  ].map(db => {
+                    const isActive = filters.database === db.id;
+                    return (
+                      <button
+                        key={db.id}
+                        onClick={() => handleSelectDatabase(db.id as any)}
+                        className={`relative px-3 py-1.5 rounded-lg transition-colors cursor-pointer select-none ${
+                          isActive
+                            ? 'text-white font-bold'
+                            : 'text-[#57534E] hover:text-[#1C1917] dark:text-zinc-400 dark:hover:text-zinc-200'
+                        }`}
+                      >
+                        {isActive && (
+                          <motion.div
+                            layoutId="slaveVoyagesDbPill"
+                            className="absolute inset-0 rounded-lg bg-[#C2410C] shadow-xs"
+                            transition={SPRING_TACTILE}
+                          />
+                        )}
+                        <span className="relative z-10">{db.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

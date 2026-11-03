@@ -1,4 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { motion } from 'motion/react';
+import { SPRING_TACTILE } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from '../components/CountryFlag';
 import { getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
@@ -266,47 +268,72 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
         {/* Center / Right Controls: Region Filter, Category Filter, Search, XML Ingest & View Switcher */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Region Filter Pills */}
-          <div className="inline-flex p-0.5 rounded-xl bg-stone-200/70 dark:bg-stone-900 border border-stone-300/60 dark:border-stone-800 text-[11px] font-mono">
-            {(['All', 'Africa', 'Arab States'] as RegionFilter[]).map(reg => (
-              <button
-                key={reg}
-                onClick={() => setRegionFilter(reg)}
-                className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer whitespace-nowrap ${
-                  regionFilter === reg
-                    ? 'bg-amber-900 text-white dark:bg-amber-500 dark:text-stone-950 shadow-2xs'
-                    : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
-                }`}
-              >
-                {reg === 'All'
-                  ? `All (${unescoSites.length})`
-                  : reg === 'Africa'
-                  ? `Africa (${africaCount})`
-                  : `Arab States (${arabStatesCount})`}
-              </button>
-            ))}
+          <div className="relative inline-flex p-0.5 rounded-xl bg-stone-200/70 dark:bg-stone-900 border border-stone-300/60 dark:border-stone-800 text-[11px] font-mono" role="tablist" aria-label="Filter heritage sites by region">
+            {(['All', 'Africa', 'Arab States'] as RegionFilter[]).map(reg => {
+              const isSelected = regionFilter === reg;
+              return (
+                <button
+                  key={reg}
+                  role="tab"
+                  aria-selected={isSelected}
+                  onClick={() => setRegionFilter(reg)}
+                  className={`relative px-2.5 py-1 rounded-lg font-bold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap ${
+                    isSelected
+                      ? 'text-white dark:text-stone-950 shadow-2xs'
+                      : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
+                  }`}
+                >
+                  {isSelected && (
+                    <motion.div
+                      layoutId="heritageRegionPill"
+                      className="absolute inset-0 rounded-lg bg-amber-900 dark:bg-amber-500 shadow-2xs"
+                      transition={SPRING_TACTILE}
+                    />
+                  )}
+                  <span className="relative z-10">
+                    {reg === 'All'
+                      ? `All (${unescoSites.length})`
+                      : reg === 'Africa'
+                      ? `Africa (${africaCount})`
+                      : `Arab States (${arabStatesCount})`}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Category Filter Pills */}
-          <div className="inline-flex p-0.5 rounded-xl bg-stone-200/70 dark:bg-stone-900 border border-stone-300/60 dark:border-stone-800 text-[11px] font-mono overflow-x-auto max-w-full">
+          <div className="relative inline-flex p-0.5 rounded-xl bg-stone-200/70 dark:bg-stone-900 border border-stone-300/60 dark:border-stone-800 text-[11px] font-mono overflow-x-auto max-w-full" role="tablist" aria-label="Filter heritage sites by category">
             {(['All', 'Cultural', 'Natural', 'Mixed', 'Danger'] as CategoryFilter[]).map(cat => {
               const isActive = categoryFilter === cat;
               const isDanger = cat === 'Danger';
               return (
                 <button
                   key={cat}
+                  role="tab"
+                  aria-selected={isActive}
                   onClick={() => setCategoryFilter(cat)}
-                  className={`px-2 py-1 rounded-lg font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1 ${
+                  className={`relative px-2 py-1 rounded-lg font-bold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap flex items-center gap-1 ${
                     isActive
                       ? isDanger
-                        ? 'bg-rose-600 text-white shadow-2xs'
-                        : 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-950 shadow-2xs'
+                        ? 'text-white shadow-2xs'
+                        : 'text-white dark:text-stone-950 shadow-2xs'
                       : isDanger
                       ? 'text-rose-700 dark:text-rose-400 hover:bg-rose-500/10'
                       : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
                   }`}
                 >
-                  {isDanger && <AlertTriangle className="w-3 h-3 shrink-0" />}
-                  <span>{isDanger ? `In Danger (${dangerCount})` : cat}</span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="heritageCategoryPill"
+                      className={`absolute inset-0 rounded-lg shadow-2xs ${
+                        isDanger ? 'bg-rose-600' : 'bg-stone-900 dark:bg-stone-100'
+                      }`}
+                      transition={SPRING_TACTILE}
+                    />
+                  )}
+                  {isDanger && <AlertTriangle className="w-3 h-3 shrink-0 relative z-10" />}
+                  <span className="relative z-10">{isDanger ? `In Danger (${dangerCount})` : cat}</span>
                 </button>
               );
             })}
@@ -366,39 +393,57 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
           </button>
 
           {/* Segmented Switchboard: Plate Viewer vs Directory Grid */}
-          <div className="inline-flex p-0.5 rounded-xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner">
+          <div className="relative inline-flex p-0.5 rounded-xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner" role="tablist" aria-label="Switch heritage view format">
             <button
+              role="tab"
+              aria-selected={viewMode === 'viewer'}
               onClick={() => setViewMode('viewer')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`relative px-2.5 py-1 rounded-lg text-xs font-sans font-bold transition-colors duration-150 cursor-pointer select-none flex items-center gap-1.5 ${
                 viewMode === 'viewer'
-                  ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-xs'
+                  ? 'text-white dark:text-stone-900 shadow-xs'
                   : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
               }`}
             >
+              {viewMode === 'viewer' && (
+                <motion.div
+                  layoutId="heritageViewModePill"
+                  className="absolute inset-0 rounded-lg bg-stone-900 dark:bg-stone-100 shadow-xs"
+                  transition={SPRING_TACTILE}
+                />
+              )}
               <DynamicIcon
                 icon="lucide:gallery-thumbnails"
-                className={`w-3.5 h-3.5 shrink-0 ${
+                className={`w-3.5 h-3.5 shrink-0 relative z-10 ${
                   viewMode === 'viewer' ? 'text-amber-400 dark:text-amber-600' : 'text-stone-500'
                 }`}
               />
-              <span>Heritage Viewer</span>
+              <span className="relative z-10">Heritage Viewer</span>
             </button>
 
             <button
+              role="tab"
+              aria-selected={viewMode === 'directory'}
               onClick={() => setViewMode('directory')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`relative px-2.5 py-1 rounded-lg text-xs font-sans font-bold transition-colors duration-150 cursor-pointer select-none flex items-center gap-1.5 ${
                 viewMode === 'directory'
-                  ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-xs'
+                  ? 'text-white dark:text-stone-900 shadow-xs'
                   : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
               }`}
             >
+              {viewMode === 'directory' && (
+                <motion.div
+                  layoutId="heritageViewModePill"
+                  className="absolute inset-0 rounded-lg bg-stone-900 dark:bg-stone-100 shadow-xs"
+                  transition={SPRING_TACTILE}
+                />
+              )}
               <DynamicIcon
                 icon="fluent-mdl2:picture-tile"
-                className={`w-3.5 h-3.5 shrink-0 ${
+                className={`w-3.5 h-3.5 shrink-0 relative z-10 ${
                   viewMode === 'directory' ? 'text-amber-400 dark:text-amber-600' : 'text-stone-500'
                 }`}
               />
-              <span>Grid ({illustrationsList.length})</span>
+              <span className="relative z-10">Grid ({illustrationsList.length})</span>
             </button>
           </div>
         </div>

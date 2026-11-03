@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { SPRING_TACTILE } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from '../components/CountryFlag';
 import { CountrySilhouette } from '../components/CountrySilhouette';
@@ -336,21 +338,33 @@ export const CompareView: React.FC<CompareViewProps> = ({
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5">
-            {convergenceMetrics.map(m => (
-              <button
-                key={m.id}
-                type="button"
-                onClick={() => setConvergenceMetricId(m.id)}
-                className={`px-3 py-1 rounded-xl text-xs font-mono font-semibold transition-all cursor-pointer border ${
-                  convergenceMetricId === m.id
-                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 border-zinc-900 dark:border-zinc-100 shadow-xs'
-                    : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
-                }`}
-              >
-                {m.label}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Convergence trajectory indicator">
+            {convergenceMetrics.map(m => {
+              const isSelected = convergenceMetricId === m.id;
+              return (
+                <button
+                  key={m.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isSelected}
+                  onClick={() => setConvergenceMetricId(m.id)}
+                  className={`relative px-3 py-1 rounded-xl text-xs font-mono font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 ${
+                    isSelected
+                      ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
+                      : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
+                  }`}
+                >
+                  {isSelected && (
+                    <motion.div
+                      layoutId="compareConvergenceMetric"
+                      className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs"
+                      transition={SPRING_TACTILE}
+                    />
+                  )}
+                  <span className="relative z-10">{m.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -398,28 +412,42 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
             Currency &amp; Valuation:
           </span>
-          <div className="flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1 border border-zinc-200 dark:border-zinc-700">
+          <div className="relative flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1 border border-zinc-200 dark:border-zinc-700">
             <button
               type="button"
               onClick={() => setValuationMode('nominal')}
-              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`relative px-3 py-1 rounded-lg text-xs font-bold transition-colors duration-150 cursor-pointer select-none ${
                 valuationMode === 'nominal'
-                  ? 'bg-white dark:bg-zinc-950 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                  ? 'text-emerald-700 dark:text-emerald-400 font-bold shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
               }`}
             >
-              Nominal USD ($)
+              {valuationMode === 'nominal' && (
+                <motion.div
+                  layoutId="compareValuationMode"
+                  className="absolute inset-0 rounded-lg bg-white dark:bg-zinc-950 shadow-xs"
+                  transition={SPRING_TACTILE}
+                />
+              )}
+              <span className="relative z-10">Nominal USD ($)</span>
             </button>
             <button
               type="button"
               onClick={() => setValuationMode('ppp')}
-              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`relative px-3 py-1 rounded-lg text-xs font-bold transition-colors duration-150 cursor-pointer select-none ${
                 valuationMode === 'ppp'
-                  ? 'bg-purple-600 text-white shadow-xs'
+                  ? 'text-purple-700 dark:text-purple-300 font-bold shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-purple-600'
               }`}
             >
-              PPP Int'l $ (World Bank ICP)
+              {valuationMode === 'ppp' && (
+                <motion.div
+                  layoutId="compareValuationMode"
+                  className="absolute inset-0 rounded-lg bg-white dark:bg-zinc-950 shadow-xs"
+                  transition={SPRING_TACTILE}
+                />
+              )}
+              <span className="relative z-10">PPP Int'l $ (World Bank ICP)</span>
             </button>
           </div>
         </div>
@@ -427,28 +455,42 @@ export const CompareView: React.FC<CompareViewProps> = ({
         {/* Normalization Scale Switcher */}
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono font-bold text-zinc-500 uppercase">Aggregation Scale:</span>
-          <div className="flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1 border border-zinc-200 dark:border-zinc-700">
+          <div className="relative flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1 border border-zinc-200 dark:border-zinc-700">
             <button
               type="button"
               onClick={() => setNormalizationScale('aggregate')}
-              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`relative px-3 py-1 rounded-lg text-xs font-bold transition-colors duration-150 cursor-pointer select-none ${
                 normalizationScale === 'aggregate'
-                  ? 'bg-white dark:bg-zinc-950 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                  ? 'text-emerald-700 dark:text-emerald-400 font-bold shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
               }`}
             >
-              National Aggregate
+              {normalizationScale === 'aggregate' && (
+                <motion.div
+                  layoutId="compareNormalizationScale"
+                  className="absolute inset-0 rounded-lg bg-white dark:bg-zinc-950 shadow-xs"
+                  transition={SPRING_TACTILE}
+                />
+              )}
+              <span className="relative z-10">National Aggregate</span>
             </button>
             <button
               type="button"
               onClick={() => setNormalizationScale('perCapita')}
-              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`relative px-3 py-1 rounded-lg text-xs font-bold transition-colors duration-150 cursor-pointer select-none ${
                 normalizationScale === 'perCapita'
-                  ? 'bg-white dark:bg-zinc-950 text-emerald-700 dark:text-emerald-400 shadow-xs'
+                  ? 'text-emerald-700 dark:text-emerald-400 font-bold shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
               }`}
             >
-              Per-Capita Normalized
+              {normalizationScale === 'perCapita' && (
+                <motion.div
+                  layoutId="compareNormalizationScale"
+                  className="absolute inset-0 rounded-lg bg-white dark:bg-zinc-950 shadow-xs"
+                  transition={SPRING_TACTILE}
+                />
+              )}
+              <span className="relative z-10">Per-Capita Normalized</span>
             </button>
           </div>
         </div>

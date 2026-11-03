@@ -25,6 +25,8 @@ import { VoiceWelcomeFab } from '../components/VoiceWelcomeFab';
 import { LANGUAGE_FAMILY_GREETINGS } from '../utils/africaliaVoiceEngine';
 import { MotherTonguesWaveformScrubber } from '../components/MotherTonguesWaveformScrubber';
 import { AFRICAN_TYPOLOGICAL_FEATURES, TypologicalFeature } from '../data/africanLinguisticTypology';
+import { motion } from 'motion/react';
+import { SPRING_TACTILE, AnimatedTabPanel } from '../utils/motion';
 
 interface LanguageFamily {
   id: string;
@@ -251,59 +253,42 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
           </div>
 
           {/* Nav Tabs */}
-          <div className="flex flex-wrap items-center gap-2 bg-zinc-100 dark:bg-zinc-900 p-1.5 rounded-2xl border border-zinc-200 dark:border-zinc-800">
-            <button
-              onClick={() => setActiveTab('families')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                activeTab === 'families'
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-950/20'
-                  : 'text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
-            >
-              Language Families (6)
-            </button>
-            <button
-              onClick={() => setActiveTab('waveforms')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                activeTab === 'waveforms'
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-950/20'
-                  : 'text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
-            >
-              <Radio className="w-3.5 h-3.5" />
-              <span>Waveform Lab (10)</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('lingua-francas')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                activeTab === 'lingua-francas'
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-950/20'
-                  : 'text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
-            >
-              Major Lingua Francas
-            </button>
-            <button
-              onClick={() => setActiveTab('countries')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                activeTab === 'countries'
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-950/20'
-                  : 'text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
-            >
-              Country Matrix (54)
-            </button>
-            <button
-              onClick={() => setActiveTab('typology')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                activeTab === 'typology'
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-950/20'
-                  : 'text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Phonemic &amp; Typology Lab (5)</span>
-            </button>
+          <div role="tablist" aria-label="Linguistic views" className="flex flex-wrap items-center gap-2 bg-zinc-100 dark:bg-zinc-900 p-1.5 rounded-2xl border border-zinc-200 dark:border-zinc-800">
+            {[
+              { id: 'families', label: 'Language Families (6)', icon: null },
+              { id: 'waveforms', label: 'Waveform Lab (10)', icon: Radio },
+              { id: 'lingua-francas', label: 'Major Lingua Francas', icon: null },
+              { id: 'countries', label: 'Country Matrix (54)', icon: null },
+              { id: 'typology', label: 'Phonemic & Typology Lab (5)', icon: Sparkles }
+            ].map(tab => {
+              const isActive = activeTab === tab.id;
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`relative px-3.5 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                    isActive
+                      ? 'text-white shadow-xs'
+                      : 'text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                  }`}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="languagesViewTabPill"
+                      className="absolute inset-0 rounded-xl bg-emerald-600 shadow-md shadow-emerald-950/20"
+                      transition={SPRING_TACTILE}
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center gap-1.5">
+                    {Icon && <Icon className="w-3.5 h-3.5" />}
+                    <span>{tab.label}</span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -708,13 +693,20 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                   <button
                     key={feat.id}
                     onClick={() => setSelectedTypologyId(feat.id)}
-                    className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[118px] relative overflow-hidden group ${
+                    className={`relative p-4 rounded-2xl border text-left transition-colors cursor-pointer select-none flex flex-col justify-between min-h-[118px] overflow-hidden group ${
                       isSelected
-                        ? 'bg-zinc-900 text-white border-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 dark:border-zinc-100 shadow-lg shadow-zinc-950/15 ring-2 ring-emerald-500/60'
+                        ? 'text-white border-zinc-900 dark:border-zinc-100 shadow-lg shadow-zinc-950/15'
                         : 'bg-white dark:bg-zinc-900/90 border-zinc-200/90 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50/60 dark:hover:bg-zinc-850'
                     }`}
                   >
-                    <div className="space-y-1.5 w-full">
+                    {isSelected && (
+                      <motion.div
+                        layoutId="languagesTypologyPill"
+                        className="absolute inset-0 rounded-2xl bg-zinc-900 dark:bg-zinc-100 ring-2 ring-emerald-500/60"
+                        transition={SPRING_TACTILE}
+                      />
+                    )}
+                    <div className="relative z-10 space-y-1.5 w-full">
                       <div className="flex items-center justify-between text-[10px] font-mono font-bold uppercase tracking-wider">
                         <span className={isSelected ? 'text-emerald-400 dark:text-emerald-600' : 'text-emerald-600 dark:text-emerald-400'}>
                           {feat.category}
@@ -728,7 +720,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                       </h4>
                     </div>
 
-                    <div className="pt-2 mt-2 border-t border-zinc-200/30 dark:border-zinc-800/60 flex items-center justify-between text-[11px] font-medium">
+                    <div className="relative z-10 pt-2 mt-2 border-t border-zinc-200/30 dark:border-zinc-800/60 flex items-center justify-between text-[11px] font-medium">
                       <span className={isSelected ? 'text-zinc-300 dark:text-zinc-600' : 'text-zinc-500 dark:text-zinc-400'}>
                         {feat.leadSummary}
                       </span>

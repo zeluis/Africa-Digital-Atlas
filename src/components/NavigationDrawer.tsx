@@ -272,7 +272,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     currentTab === 'african-development-foundations' ||
     (typeof currentTab === 'string' && currentTab.startsWith('african-development-foundations')) ||
     (typeof currentTab === 'string' && isReportOrPaperTab(currentTab)) ||
-    (currentTab === 'iconography' && Boolean(isIconographyIngestion));
+    currentTab === 'iconography';
   const [isDrawerHovered, setIsDrawerHovered] = useState(false);
 
   // Active group detections

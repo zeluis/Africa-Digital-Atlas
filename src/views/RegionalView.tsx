@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
+import { SPRING_TACTILE } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { getRegionalSummaries, getBlocSummaries } from '../data/atlas-selectors';
 import { AfricanRegion, RegionalBloc, UNRegionName } from '../data/types';
@@ -193,7 +195,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
           </div>
 
           {/* Region Buttons Panel - Fully Wrapping with No Hidden Elements */}
-          <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+          <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto" role="tablist" aria-label="Select regional dossier">
             {allFiveRegions.map(reg => {
               const isSelected = viewMode === 'region-dossier' && selectedRegion === reg;
               const tonal = getRegionTonalPalette(reg);
@@ -202,24 +204,33 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                 <button
                   key={reg}
                   id={`btn-region-${reg.toLowerCase().replace(/\s+/g, '-')}`}
+                  role="tab"
+                  aria-selected={isSelected}
                   onClick={() => {
                     handleRegionChange(reg);
                   }}
-                  className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl text-xs font-semibold transition-all cursor-pointer border ${
+                  className={`relative inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl text-xs font-semibold cursor-pointer select-none transition-colors duration-150 border border-zinc-200 dark:border-zinc-800 ${
                     isSelected
-                      ? `${tonal.badge.bg} ${tonal.badge.border} ${tonal.badge.text} font-bold shadow-md ring-2 ring-offset-2 ring-zinc-400 dark:ring-zinc-600 scale-[1.02]`
-                      : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700'
+                      ? `${tonal.badge.text} font-bold shadow-xs`
+                      : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                   }`}
                 >
+                  {isSelected && (
+                    <motion.div
+                      layoutId="regionalActiveSelector"
+                      className={`absolute inset-0 rounded-2xl ${tonal.badge.bg} ${tonal.badge.border} border shadow-xs`}
+                      transition={SPRING_TACTILE}
+                    />
+                  )}
                   <span
-                    className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs"
+                    className="relative z-10 w-2.5 h-2.5 rounded-full shrink-0 shadow-xs"
                     style={{
                       backgroundColor: tonal.warmAccent,
                       boxShadow: `0 0 6px ${tonal.glowRgba}`
                     }}
                   />
-                  <span>{reg}</span>
-                  <span className="text-[10px] font-mono opacity-70 font-normal">
+                  <span className="relative z-10">{reg}</span>
+                  <span className="relative z-10 text-[10px] font-mono opacity-70 font-normal">
                     ({summary?.countryCount || 0})
                   </span>
                 </button>
@@ -229,15 +240,24 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
             {/* Matrix Button */}
             <button
               id="btn-regional-matrix-all"
+              role="tab"
+              aria-selected={viewMode === 'matrix'}
               onClick={() => setViewMode('matrix')}
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-semibold transition-all cursor-pointer border ${
+              className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-semibold cursor-pointer select-none transition-colors duration-150 border border-zinc-200 dark:border-zinc-800 ${
                 viewMode === 'matrix'
-                  ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 border-zinc-900 dark:border-zinc-100 font-bold shadow-md scale-[1.02]'
-                  : 'bg-zinc-100 dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800'
+                  ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
+                  : 'bg-zinc-100 dark:bg-zinc-900/90 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800'
               }`}
             >
-              <TableProperties className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Comparative Matrix (All Regions & Blocs)</span>
+              {viewMode === 'matrix' && (
+                <motion.div
+                  layoutId="regionalActiveSelector"
+                  className="absolute inset-0 rounded-2xl bg-zinc-900 dark:bg-zinc-100 border border-zinc-900 dark:border-zinc-100 shadow-xs"
+                  transition={SPRING_TACTILE}
+                />
+              )}
+              <TableProperties className="relative z-10 w-3.5 h-3.5 text-emerald-500" />
+              <span className="relative z-10">Comparative Matrix (All Regions & Blocs)</span>
             </button>
           </div>
         </div>

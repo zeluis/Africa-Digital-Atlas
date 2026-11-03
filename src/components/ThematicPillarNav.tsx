@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import { motion } from 'motion/react';
+import { SPRING_TACTILE } from '../utils/motion';
 import { THEMATIC_PILLARS, ThematicPillarId } from '../services/wikipediaService';
 import { 
   Globe, 
@@ -68,18 +70,25 @@ export const ThematicPillarNav: React.FC<ThematicPillarNavProps> = ({
           <button
             key={pillar.id}
             onClick={() => onSelectPillar(pillar.id)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+            className={`relative flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors duration-150 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
               isActive
-                ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-md scale-[1.02]'
+                ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
                 : 'bg-zinc-100/90 dark:bg-zinc-900/90 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 border border-zinc-200/70 dark:border-zinc-800/70'
             }`}
             title={`Switch to Pillar ${pillar.number}: ${pillar.label} (Press ${pillar.number})`}
           >
-            <span className={isActive ? 'text-amber-400 dark:text-amber-600' : 'text-zinc-400'}>
+            {isActive && (
+              <motion.div
+                layoutId="thematicPillarActivePill"
+                className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-white shadow-xs"
+                transition={SPRING_TACTILE}
+              />
+            )}
+            <span className={`relative z-10 ${isActive ? 'text-amber-400 dark:text-amber-600' : 'text-zinc-400'}`}>
               {PILLAR_ICONS[pillar.id]}
             </span>
-            <span>{pillar.shortLabel}</span>
-            <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-md ${
+            <span className="relative z-10">{pillar.shortLabel}</span>
+            <span className={`relative z-10 text-[10px] font-mono px-1.5 py-0.2 rounded-md ${
               isActive
                 ? 'bg-zinc-800 text-zinc-300 dark:bg-zinc-200 dark:text-zinc-800'
                 : 'bg-zinc-200/80 dark:bg-zinc-800/80 text-zinc-500 dark:text-zinc-400'

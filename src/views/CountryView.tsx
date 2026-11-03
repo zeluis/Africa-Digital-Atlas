@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from 'react';
+import { motion } from 'motion/react';
+import { SPRING_TACTILE, AnimatedTabPanel } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { AtlasEntity, HeritageSite, SubnationalUnit } from '../data/types';
 import { CountryFlag } from '../components/CountryFlag';
@@ -280,29 +282,42 @@ export const CountryView: React.FC<CountryViewProps> = ({
       </div>
 
       {/* Tabs Navigation Bar - Fully Wrapping so All Buttons are Visible */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+      <div 
+        className="flex flex-wrap items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-3"
+        role="tablist"
+        aria-label="Country dossier thematic tabs"
+      >
         {tabs.map(t => {
           const isActive = activeTab === t.id;
           return (
             <button
               key={t.id}
+              role="tab"
+              aria-selected={isActive}
               onClick={() => setActiveTab(t.id)}
               style={!isActive ? { backgroundColor: countryCalmBg } : undefined}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
+              className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold whitespace-nowrap cursor-pointer select-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                 isActive
-                  ? 'bg-emerald-600 text-white dark:bg-zinc-100 dark:text-zinc-950 font-bold shadow-sm'
+                  ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
                   : 'border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:opacity-90'
               }`}
             >
-              {t.icon}
-              <span>{t.label}</span>
+              {isActive && (
+                <motion.div
+                  layoutId="countryDossierTabPill"
+                  className="absolute inset-0 rounded-xl bg-emerald-600 dark:bg-zinc-100 shadow-xs"
+                  transition={SPRING_TACTILE}
+                />
+              )}
+              <span className="relative z-10">{t.icon}</span>
+              <span className="relative z-10">{t.label}</span>
             </button>
           );
         })}
       </div>
 
-      {/* Tab Content Container */}
-      <div className="space-y-6">
+      {/* Tab Content Container with Fluid Cross-Fade */}
+      <AnimatedTabPanel tabKey={activeTab} className="space-y-6">
         {/* TAB 1: OVERVIEW & KEY FACTS */}
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -1105,7 +1120,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
             </div>
           </div>
         )}
-      </div>
+      </AnimatedTabPanel>
 
       {/* 1-Page Printable Executive Country Factsheet Modal */}
       <CountryFactsheetModal

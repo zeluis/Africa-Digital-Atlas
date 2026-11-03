@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from 'react';
+import { motion } from 'motion/react';
+import { SPRING_TACTILE, usePrefersReducedMotion } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { AfricanRegion, AtlasEntity } from '../data/types';
 import { CountryFlag } from '../components/CountryFlag';
@@ -135,40 +137,36 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           </div>
 
           {/* Grid / Table / Matrix Toggle */}
-          <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 p-1.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 shrink-0 self-start md:self-auto gap-0.5">
-            <button
-              onClick={() => setViewLayout('grid')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                viewLayout === 'grid'
-                  ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs'
-                  : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
-              }`}
-            >
-              <Grid className="w-4 h-4" />
-              <span>Grid</span>
-            </button>
-            <button
-              onClick={() => setViewLayout('table')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                viewLayout === 'table'
-                  ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs'
-                  : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
-              }`}
-            >
-              <List className="w-4 h-4" />
-              <span>Table</span>
-            </button>
-            <button
-              onClick={() => setViewLayout('matrix')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                viewLayout === 'matrix'
-                  ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs'
-                  : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
-              }`}
-            >
-              <TableProperties className="w-4 h-4" />
-              <span>Matrix</span>
-            </button>
+          <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 p-1 rounded-2xl border border-zinc-200 dark:border-zinc-800 shrink-0 self-start md:self-auto gap-0.5">
+            {[
+              { id: 'grid', label: 'Grid', icon: Grid },
+              { id: 'table', label: 'Table', icon: List },
+              { id: 'matrix', label: 'Matrix', icon: TableProperties },
+            ].map(item => {
+              const Icon = item.icon;
+              const isActive = viewLayout === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setViewLayout(item.id as any)}
+                  className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors duration-150 cursor-pointer select-none ${
+                    isActive
+                      ? 'text-zinc-900 dark:text-zinc-100 shadow-xs'
+                      : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                  }`}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="exploreLayoutToggle"
+                      className="absolute inset-0 rounded-xl bg-white dark:bg-zinc-800 shadow-xs"
+                      transition={SPRING_TACTILE}
+                    />
+                  )}
+                  <Icon className="w-4 h-4 relative z-10" />
+                  <span className="relative z-10">{item.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -191,19 +189,29 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             <span className="text-xs text-zinc-400 font-medium mr-1 hidden lg:inline flex items-center gap-1">
               <Filter className="w-3 h-3" /> Region:
             </span>
-            {regions.map(r => (
-              <button
-                key={r}
-                onClick={() => setRegionFilter(r)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-                  regionFilter === r
-                    ? 'bg-emerald-500 text-zinc-950 shadow-xs'
-                    : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
-                }`}
-              >
-                {r}
-              </button>
-            ))}
+            {regions.map(r => {
+              const isSelected = regionFilter === r;
+              return (
+                <button
+                  key={r}
+                  onClick={() => setRegionFilter(r)}
+                  className={`relative px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors duration-150 cursor-pointer select-none ${
+                    isSelected
+                      ? 'text-zinc-950 font-bold shadow-xs'
+                      : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
+                  }`}
+                >
+                  {isSelected && (
+                    <motion.div
+                      layoutId="exploreRegionPill"
+                      className="absolute inset-0 rounded-xl bg-emerald-500 shadow-xs"
+                      transition={SPRING_TACTILE}
+                    />
+                  )}
+                  <span className="relative z-10">{r}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -218,19 +226,29 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
               { id: 'coastal' as TopologyFilter, label: 'Coastal States (33)' },
               { id: 'landlocked' as TopologyFilter, label: 'Landlocked / LLDCs (15)' },
               { id: 'sids' as TopologyFilter, label: 'Island States / SIDS (6)' },
-            ].map(tf => (
-              <button
-                key={tf.id}
-                onClick={() => setTopologyFilter(tf.id)}
-                className={`px-3 py-1 rounded-xl text-xs font-mono font-semibold transition-all cursor-pointer border ${
-                  topologyFilter === tf.id
-                    ? 'bg-cyan-50 dark:bg-cyan-950/80 border-cyan-400 dark:border-cyan-600 text-cyan-800 dark:text-cyan-300 font-bold shadow-xs'
-                    : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
-                }`}
-              >
-                {tf.label}
-              </button>
-            ))}
+            ].map(tf => {
+              const isSelected = topologyFilter === tf.id;
+              return (
+                <button
+                  key={tf.id}
+                  onClick={() => setTopologyFilter(tf.id)}
+                  className={`relative px-3 py-1 rounded-xl text-xs font-mono font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 ${
+                    isSelected
+                      ? 'text-cyan-900 dark:text-cyan-200 font-bold shadow-xs'
+                      : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
+                  }`}
+                >
+                  {isSelected && (
+                    <motion.div
+                      layoutId="exploreTopologyPill"
+                      className="absolute inset-0 rounded-xl bg-cyan-100/90 dark:bg-cyan-950/80 border border-cyan-400 dark:border-cyan-600 shadow-xs"
+                      transition={SPRING_TACTILE}
+                    />
+                  )}
+                  <span className="relative z-10">{tf.label}</span>
+                </button>
+              );
+            })}
           </div>
 
           <span className="text-xs font-mono text-zinc-400">

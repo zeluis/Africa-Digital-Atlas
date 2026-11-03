@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from 'react';
+import { motion } from 'motion/react';
+import { SPRING_TACTILE } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { 
   getIndicatorRankings, 
@@ -292,37 +294,38 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           </div>
 
           {/* Mode Switcher */}
-          <div className="flex bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-2xl shrink-0">
-            <button
-              onClick={() => setActiveTab('rankings')}
-              className={`px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
-                activeTab === 'rankings' 
-                  ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-md' 
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
-              }`}
-            >
-              <TrendingUp className="w-4 h-4" /> Rankings
-            </button>
-            <button
-              onClick={() => setActiveTab('timeseries')}
-              className={`px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
-                activeTab === 'timeseries' 
-                  ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-md' 
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
-              }`}
-            >
-              <Layers className="w-4 h-4" /> Time Series
-            </button>
-            <button
-              onClick={() => setActiveTab('correlation')}
-              className={`px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
-                activeTab === 'correlation' 
-                  ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-md' 
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
-              }`}
-            >
-              <ScatterIcon className="w-4 h-4" /> Correlations
-            </button>
+          <div className="relative flex bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-2xl shrink-0" role="tablist" aria-label="Analytical mode switcher">
+            {[
+              { id: 'rankings', label: 'Rankings', icon: TrendingUp },
+              { id: 'timeseries', label: 'Time Series', icon: Layers },
+              { id: 'correlation', label: 'Correlations', icon: ScatterIcon },
+            ].map(tab => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`relative px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold transition-colors duration-150 cursor-pointer select-none flex items-center gap-2 ${
+                    isActive
+                      ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
+                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
+                  }`}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="analyticsModeSwitch"
+                      className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-white shadow-xs"
+                      transition={SPRING_TACTILE}
+                    />
+                  )}
+                  <Icon className="w-4 h-4 relative z-10" />
+                  <span className="relative z-10">{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -341,21 +344,30 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 pt-1">
+          <div className="flex flex-wrap items-center gap-2 pt-1" role="tablist" aria-label="Select indicator domain">
             {DOMAIN_CONFIGS.map(d => {
               const isSelected = selectedDomain === d.id;
               return (
                 <button
                   key={d.id}
+                  role="tab"
+                  aria-selected={isSelected}
                   onClick={() => handleDomainChange(d.id)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 border ${
+                  className={`relative px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap flex items-center gap-1.5 border border-zinc-200 dark:border-zinc-800 ${
                     isSelected
-                      ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 border-zinc-900 dark:border-zinc-100 font-bold shadow-md'
-                      : 'bg-zinc-50 dark:bg-zinc-900/80 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-300 dark:hover:border-zinc-700'
+                      ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
+                      : 'bg-zinc-50 dark:bg-zinc-900/80 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-300 dark:hover:border-zinc-700'
                   }`}
                 >
-                  {isSelected && <Check className="w-3 h-3 text-emerald-400 dark:text-emerald-600" />}
-                  <span>{d.label}</span>
+                  {isSelected && (
+                    <motion.div
+                      layoutId="analyticsDomainPill"
+                      className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs"
+                      transition={SPRING_TACTILE}
+                    />
+                  )}
+                  {isSelected && <Check className="w-3 h-3 text-emerald-400 dark:text-emerald-600 relative z-10" />}
+                  <span className="relative z-10">{d.label}</span>
                 </button>
               );
             })}
