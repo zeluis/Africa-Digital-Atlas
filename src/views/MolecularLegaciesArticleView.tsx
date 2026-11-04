@@ -899,3 +899,5 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
     </div>
   );
 };
+
+export default MolecularLegaciesArticleView;

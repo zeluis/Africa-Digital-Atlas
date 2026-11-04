@@ -648,3 +648,5 @@ export const ProvenanceQualityView: React.FC = () => {
     </div>
   );
 };
+
+export default ProvenanceQualityView;

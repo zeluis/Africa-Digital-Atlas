@@ -790,3 +790,5 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
     </div>
   );
 };
+
+export default PrivacySectionView;

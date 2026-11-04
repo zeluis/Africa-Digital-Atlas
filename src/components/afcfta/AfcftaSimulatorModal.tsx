@@ -39,3 +39,5 @@ export const AfcftaSimulatorModal: React.FC<AfcftaSimulatorModalProps> = ({
     </div>
   );
 };
+
+export default AfcftaSimulatorModal;

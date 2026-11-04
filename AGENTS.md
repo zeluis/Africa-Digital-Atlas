@@ -24,7 +24,7 @@ When making changes, preserve GitBook sync metadata such as frontmatter, `SUMMAR
 
 ## 1. SVG Color Fidelity & Palette Integrity
 - **Original Vector Colors**: Always preserve and prioritize the exact original hex colors extracted directly from `public/africa-final.svg` (`originalColor` / `originalClass` in `src/data/africaFinalGeometry.ts` and `src/data/africaFinalMapData.json`). No compromises.
-- **Derived Choropleth Scales**: In choropleth metric mode for the authentic map, derive alpha-modulated tonal ramps directly from each country's authoritative SVG base color.
+- **Derived Choropleth Scales**: In choropleth metric mode for the authentic map, derive alpha-modulated tonal ramps directly from each country's canonical SVG base color.
 - **Schematic UN Geoscheme Separation**: The schematic map layer on the Overview page strictly adheres to the 5 UN M49 macro-geoscheme regional colors (Northern Africa, Western Africa, Central Africa, Eastern Africa, Southern Africa).
 
 ## 2. Cartographic Engine & Coordinate Systems
@@ -50,5 +50,13 @@ Before modifying text or documentation in `src/`, `docs/`, `documentation/`, `he
 - **Banned Words & Ratchet Violations**: Never use prohibited terms from `research/rules.json` ("authoritative", "definitive", "unprecedented", "forensic", "flawless", "scientific reproducibility", "zero manual tampering").
 - **Approved Substitutions**: Prefer "curated", "documented", "canonical", "current best", or cite the specific institutional source directly (e.g. World Bank, SlaveVoyages Consortium, IMF).
 - **Automated Verification**: Always verify changes by running `npm run research:check` and `npm run research:integrity` to guarantee zero errors and zero warnings against `research/lint-baseline.json`.
+
+## 6. Dynamic Chunk Resilience, Export Architecture & GitHub Pages Standards
+- **Dual Export Mandate**: Every view in `src/views/*.tsx` and every lazy-loaded component/modal must provide both a named component export (`export const ViewName = ...`) AND a standard default export (`export default ViewName;`). This prevents React hook dispatcher corruption (`Cannot read properties of null (reading 'useState')`) during dynamic chunk loading and bundler code splitting.
+- **Vite Pre-bundling Disciplines**: In `vite.config.ts`, include all JavaScript/TypeScript runtime dependencies in `optimizeDeps.include`. NEVER add pure JSON/data packages without a JS entry point (such as `world-atlas`) to `optimizeDeps.include`.
+- **Error Boundary Hardening**: Use `lazyWithRetry` with automated retry and `ViewErrorBoundary` for all route transitions and lazy chunks.
+- **GitHub Pages Configuration**: Maintain `public/.nojekyll` to bypass Jekyll parsing, `public/404.html` for single-page routing deep links, and support dynamic base path resolution (`process.env.BASE_URL || process.env.VITE_BASE_PATH || './'`).
+- **Continuous Validation**: Run `node scripts/verify-views-and-chunks.mjs` before committing any new view or modal.
+
 
 

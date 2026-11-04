@@ -626,3 +626,5 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
     </AnimatePresence>
   );
 };
+
+export default MethodologyAuditModal;

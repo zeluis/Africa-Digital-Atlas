@@ -891,3 +891,5 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
     </div>
   );
 };
+
+export default LanguagesView;

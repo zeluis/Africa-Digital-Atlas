@@ -297,3 +297,5 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
     </AnimatePresence>
   );
 };
+
+export default WorkingPapersModal;

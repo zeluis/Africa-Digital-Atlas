@@ -428,3 +428,5 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
     </div>
   );
 };
+
+export default MultiSourceApiHubModal;

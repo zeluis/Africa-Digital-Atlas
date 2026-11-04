@@ -1282,3 +1282,5 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
     </div>
   );
 };
+
+export default ThematicPillarsView;

@@ -1184,3 +1184,5 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
     </div>
   );
 };
+
+export default AfricanDevelopmentMasterReportView;

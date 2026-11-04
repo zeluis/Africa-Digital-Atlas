@@ -490,3 +490,5 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
     </div>
   );
 };
+
+export default UniversalStyleGuideView;

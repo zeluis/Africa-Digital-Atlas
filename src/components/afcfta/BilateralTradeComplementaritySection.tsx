@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { atlas } from '../../data/atlas-store';
 import { getCountryTradeFlows } from '../../data/criticalMineralsData';
-import { TRADE_CORRIDORS, TradeCorridorData } from '../../data/afcftaSimulatorData';
+import { AFCFTA_CORRIDOR_PRESETS, TradeCorridorPreset } from '../../data/afcftaSimulatorData';
 import { ENTITY_BLOCS } from '../../data/entityBlocs';
 import { CountryFlag } from '../CountryFlag';
 import { 
@@ -46,8 +46,8 @@ export const BilateralTradeComplementaritySection: React.FC<BilateralTradeComple
   const countryA = atlas.getEntity(validPairA);
   const countryB = atlas.getEntity(validPairB);
 
-  const tradeProfileA = useMemo(() => getCountryTradeFlows(validPairA), [validPairA]);
-  const tradeProfileB = useMemo(() => getCountryTradeFlows(validPairB), [validPairB]);
+  const tradeProfileA = useMemo(() => getCountryTradeFlows(validPairA, countryA?.name || validPairA), [validPairA, countryA?.name]);
+  const tradeProfileB = useMemo(() => getCountryTradeFlows(validPairB, countryB?.name || validPairB), [validPairB, countryB?.name]);
 
   // Find shared Regional Economic Communities
   const sharedBlocs = useMemo(() => {
@@ -62,19 +62,27 @@ export const BilateralTradeComplementaritySection: React.FC<BilateralTradeComple
 
   // Find connecting corridors
   const connectingCorridors = useMemo(() => {
-    return TRADE_CORRIDORS.filter(corridor => {
-      const touchesA = corridor.countries.includes(validPairA);
-      const touchesB = corridor.countries.includes(validPairB);
-      // Either touches both or is part of the regional network
+    const nameA = countryA?.name?.toLowerCase() || '';
+    const nameB = countryB?.name?.toLowerCase() || '';
+    return AFCFTA_CORRIDOR_PRESETS.filter(corridor => {
+      const allCountries = [corridor.originCountry, corridor.destinationCountry, ...corridor.transitCountries].map(c => c.toLowerCase());
+      const touchesA = allCountries.some(c => c.includes(nameA) || nameA.includes(c));
+      const touchesB = allCountries.some(c => c.includes(nameB) || nameB.includes(c));
       return touchesA && touchesB;
     });
-  }, [validPairA, validPairB]);
+  }, [countryA?.name, countryB?.name]);
 
   // Regional corridors fallback if no direct bilateral corridor touches both
   const regionalCorridors = useMemo(() => {
     if (connectingCorridors.length > 0) return connectingCorridors;
-    return TRADE_CORRIDORS.filter(c => c.countries.includes(validPairA) || c.countries.includes(validPairB));
-  }, [connectingCorridors, validPairA, validPairB]);
+    const nameA = countryA?.name?.toLowerCase() || '';
+    const nameB = countryB?.name?.toLowerCase() || '';
+    const filtered = AFCFTA_CORRIDOR_PRESETS.filter(corridor => {
+      const allCountries = [corridor.originCountry, corridor.destinationCountry, ...corridor.transitCountries].map(c => c.toLowerCase());
+      return allCountries.some(c => c.includes(nameA) || nameA.includes(c) || c.includes(nameB) || nameB.includes(c));
+    });
+    return filtered.length > 0 ? filtered : AFCFTA_CORRIDOR_PRESETS.slice(0, 3);
+  }, [connectingCorridors, countryA?.name, countryB?.name]);
 
   // Calculate Trade Complementarity Index (TCI proxy based on export diversity & intra-African intensity)
   const complementarityScore = useMemo(() => {
@@ -313,32 +321,32 @@ export const BilateralTradeComplementaritySection: React.FC<BilateralTradeComple
                 <h5 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 font-display">
                   {corridor.name}
                 </h5>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold">
-                  {corridor.lengthKm.toLocaleString()} km
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold shrink-0">
+                  {corridor.distanceKm.toLocaleString()} km
                 </span>
               </div>
 
               <div className="text-[11px] text-zinc-600 dark:text-zinc-400 leading-snug">
-                Route: {corridor.keyCities.join(' → ')}
+                Route: {corridor.originPort} → {corridor.destinationHub}
               </div>
 
               <div className="grid grid-cols-2 gap-2 pt-1 border-t border-zinc-200/60 dark:border-zinc-700/60 text-[11px]">
                 <div>
-                  <span className="text-zinc-500">Border Wait:</span>
+                  <span className="text-zinc-500">Baseline Transit:</span>
                   <div className="font-mono font-semibold text-zinc-800 dark:text-zinc-200">
-                    {corridor.borderDwellHours} hrs avg
+                    {(corridor.baselineRoadDays + corridor.baselineBorderDays).toFixed(1)} days
                   </div>
                 </div>
                 <div>
-                  <span className="text-zinc-500">Freight Cost:</span>
-                  <div className="font-mono font-semibold text-zinc-800 dark:text-zinc-200">
-                    ${corridor.freightCostPerTonKm}/ton-km
+                  <span className="text-zinc-500">AfCFTA Target:</span>
+                  <div className="font-mono font-semibold text-emerald-600 dark:text-emerald-400">
+                    {corridor.afcftaOptimizedDays} days
                   </div>
                 </div>
               </div>
 
-              <div className="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium">
-                Target: {corridor.efficiencyImprovementTarget}
+              <div className="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium truncate">
+                Volume: {corridor.annualTradeVolumeUSD} · REC: {corridor.rec}
               </div>
             </div>
           ))}

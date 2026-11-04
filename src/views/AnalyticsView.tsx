@@ -848,3 +848,5 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
     </div>
   );
 };
+
+export default AnalyticsView;

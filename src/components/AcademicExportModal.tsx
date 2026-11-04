@@ -332,3 +332,5 @@ ER  -`;
     </div>
   );
 };
+
+export default AcademicExportModal;

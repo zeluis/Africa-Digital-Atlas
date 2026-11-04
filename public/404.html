@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Africalia: Africa Data Atlas</title>
+    <script>
+      // Single Page Application deep link redirector for GitHub Pages
+      (function() {
+        var l = window.location;
+        var pathSegments = l.pathname.split('/').filter(Boolean);
+        var repoSegment = '';
+        var isGitHubPagesSubpath = l.hostname.endsWith('github.io') && pathSegments.length > 0;
+        
+        if (isGitHubPagesSubpath) {
+          repoSegment = '/' + pathSegments[0];
+          pathSegments.shift();
+        }
+        
+        var cleanPath = pathSegments.join('/');
+        var search = l.search ? (cleanPath ? '&' : '?') + l.search.slice(1) : '';
+        var targetHash = cleanPath ? '#' + cleanPath + search : '';
+        
+        if (l.hash && !targetHash) {
+          targetHash = l.hash;
+        } else if (l.hash && targetHash) {
+          targetHash = targetHash + (l.hash.startsWith('#') ? '/' + l.hash.slice(1) : l.hash);
+        }
+        
+        var destination = l.origin + repoSegment + '/' + (targetHash ? targetHash : '');
+        l.replace(destination);
+      })();
+    </script>
+  </head>
+  <body style="font-family: sans-serif; text-align: center; padding-top: 50px; background: #FCFAF7; color: #292524;">
+    <p>Navigating to Africa Data Atlas...</p>
+  </body>
+</html>

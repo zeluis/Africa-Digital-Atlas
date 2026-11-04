@@ -219,3 +219,5 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
     </AnimatePresence>
   );
 };
+
+export default KeyboardShortcutsModal;

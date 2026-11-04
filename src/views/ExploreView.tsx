@@ -107,7 +107,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
         const pop = atlas.getIndicatorValue(entity.id, 'SP.POP.TOTL') || 0;
         const gdp = atlas.getIndicatorValue(entity.id, 'NY.GDP.MKTP.CD') || 0;
         const hdiVal = atlas.getIndicatorValue(entity.id, 'UNDP.HDI.INDEX') || 0;
-        const tradeFlows = getCountryTradeFlows(entity.id);
+        const tradeFlows = getCountryTradeFlows(entity.id, entity.name);
 
         const matchesPop = minPopulation === 0 || pop >= minPopulation;
         const matchesGdp = minGdp === 0 || gdp >= minGdp;

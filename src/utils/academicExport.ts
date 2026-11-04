@@ -401,9 +401,9 @@ export const exportCountryIntelligenceBriefingPDF = async (
   const population = atlas.getIndicatorValue(country.id, 'SP.POP.TOTL') || country.population || 0;
   const hdi = atlas.getIndicatorValue(country.id, 'UNDP.HDI.INDEX') || country.hdi || 0;
   const gdpPerCapita = population > 0 && nominalGdp > 0 ? Math.round((nominalGdp * 1e9) / (population * 1e6)) : 0;
-  const tradeProfile = getCountryTradeFlows(country.id);
-  const mineralsProfile = getCountryMineralsProfile(country.id);
-  const heritageSites = INITIAL_UNESCO_HERITAGE_SITES.filter(s => s.countryCode === country.id);
+  const tradeProfile = getCountryTradeFlows(country.id, country.name);
+  const mineralsProfile = getCountryMineralsProfile(country.id, country.name);
+  const heritageSites = INITIAL_UNESCO_HERITAGE_SITES.filter(s => s.entityId === country.id || s.isoCode === country.id);
 
   // ================= PAGE 1 =================
   doc.setFillColor(252, 250, 247);
@@ -517,7 +517,8 @@ export const exportCountryIntelligenceBriefingPDF = async (
     doc.text(series.label, margin + 2, currentTableRowY + 4.5);
 
     years.forEach((yr, idx) => {
-      const val = atlas.getIndicatorValue(country.id, series.id, yr);
+      const obs = atlas.getObservations(country.id, series.id).find(o => o.period === yr);
+      const val = obs?.value ?? (yr === 2024 ? atlas.getIndicatorValue(country.id, series.id) : null);
       const textVal = val !== undefined && val !== null ? `${val.toFixed(1)}${series.unit}` : '—';
       doc.setFont('courier', 'normal');
       doc.text(textVal, margin + colWidth + (idx * colWidth) + 4, currentTableRowY + 4.5);
@@ -638,12 +639,13 @@ export const exportCountryIntelligenceBriefingPDF = async (
       doc.setFont('times', 'bold');
       doc.setFontSize(8.5);
       doc.setTextColor(120, 53, 15);
-      doc.text(`• ${site.title} (${site.date})`, margin + 2, siteY);
+      doc.text(`• ${site.site} (${site.dateInscribed})`, margin + 2, siteY);
 
       doc.setFont('times', 'normal');
       doc.setFontSize(7.5);
       doc.setTextColor(60, 60, 60);
-      const descLine = doc.splitTextToSize(site.description, contentWidth - 10)[0];
+      const siteDesc = site.shortDescription || site.criteriaTxt || '';
+      const descLine = doc.splitTextToSize(siteDesc, contentWidth - 10)[0] || '';
       doc.text(descLine, margin + 6, siteY + 4);
       siteY += 9;
     });

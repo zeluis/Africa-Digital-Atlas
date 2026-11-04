@@ -45,7 +45,8 @@ import {
   Share2,
   Clock,
   History,
-  Maximize2
+  Maximize2,
+  Crosshair
 } from 'lucide-react';
 import { AfricaMapFinalLayer } from '../AfricaMapFinalLayer';
 import { AfricanRegion } from '../../data/types';
@@ -60,7 +61,13 @@ import { KingdomArtifact3DViewerModal } from './KingdomArtifact3DViewerModal';
 import { TradeCorridorParticleCanvas, TradeCorridorVectorLayer } from './TradeCorridorParticleCanvas';
 import { TradeCorridorDetailPanel } from './TradeCorridorDetailPanel';
 import { ToponymConcordanceModal } from './ToponymConcordanceModal';
-import { DETAILED_KINGDOMS_DATA, ToponymConcordanceItem, ALL_TRADE_CORRIDORS, TradeCorridorPath } from '../../data/preColonialKingdomsDetailed';
+import { 
+  DETAILED_KINGDOMS_DATA, 
+  ToponymConcordanceItem, 
+  ALL_TRADE_CORRIDORS, 
+  TradeCorridorPath,
+  TOPONYM_CONCORDANCE_INDEX
+} from '../../data/preColonialKingdomsDetailed';
 
 interface ToponymLocation {
   x: number;
@@ -236,6 +243,8 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
 
   // Toponym Spatial Callout state
   const [activeToponymFocus, setActiveToponymFocus] = useState<{ name: string; note: string } | null>(null);
+  const [showToponymPins, setShowToponymPins] = useState<boolean>(false);
+  const [selectedToponymPin, setSelectedToponymPin] = useState<ToponymConcordanceItem | null>(null);
 
   // Deep link sharing state
   const [copiedDeepLink, setCopiedDeepLink] = useState<boolean>(false);
@@ -831,6 +840,26 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                   >
                     <BookOpen className="w-3 h-3 text-blue-600 dark:text-blue-400" />
                     <span className="hidden lg:inline">Concordance</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowToponymPins(tp => !tp);
+                      if (showToponymPins) setSelectedToponymPin(null);
+                    }}
+                    className={`px-2 py-1 rounded-lg text-[10px] font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
+                      showToponymPins
+                        ? 'bg-rose-500/20 text-rose-900 dark:text-rose-200 border-rose-500/50 shadow-2xs font-bold'
+                        : 'bg-transparent text-stone-600 dark:text-stone-400 border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800'
+                    }`}
+                    title="Toggle Synchronized Dual-Era Toponym Crosshairs"
+                  >
+                    <Crosshair className={`w-3 h-3 ${showToponymPins ? 'text-rose-600 dark:text-rose-400' : 'text-stone-500'}`} />
+                    <span className="hidden sm:inline">Crosshairs</span>
+                    <span className="text-[9px] font-mono px-1 rounded-full bg-rose-500/20 text-rose-800 dark:text-rose-300 font-bold">
+                      {TOPONYM_CONCORDANCE_INDEX.length}
+                    </span>
                   </button>
                 </>
               )}
@@ -1735,8 +1764,8 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                 </div>
               </div>
 
-              {/* 3. Pre-Colonial Empires & Kingdoms Vector Beacons & Extents (Top Layer) */}
-              {showPreColonialKingdoms && (
+              {/* 3. Pre-Colonial Empires & Kingdoms Vector Beacons & Extents & Toponym Crosshairs (Top Layer) */}
+              {(showPreColonialKingdoms || showToponymPins) && (
                 <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-4 pointer-events-auto z-20">
                   <svg
                     viewBox={AFRICA_FINAL_VIEWBOX}
@@ -1744,7 +1773,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                     preserveAspectRatio="xMidYMid meet"
                   >
                     {/* Pre-Colonial Peak Territorial Extents Polygons */}
-                    {showKingdomTerritoryPolygons && (
+                    {showPreColonialKingdoms && showKingdomTerritoryPolygons && (
                       <g id="preColonialTerritoryPolygons" transform={AFRICA_FINAL_TRANSFORM} className="pointer-events-none">
                         {PRE_COLONIAL_ENTITIES.map(entity => {
                           const detailed = DETAILED_KINGDOMS_DATA[entity.id];
@@ -1780,7 +1809,8 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                       </g>
                     )}
 
-                    <g id="preColonialKingdomBeaconsTop" transform={AFRICA_FINAL_TRANSFORM} className="pointer-events-auto">
+                    {showPreColonialKingdoms && (
+                      <g id="preColonialKingdomBeaconsTop" transform={AFRICA_FINAL_TRANSFORM} className="pointer-events-auto">
                       {PRE_COLONIAL_ENTITIES.map(entity => {
                         const [x, y] = entity.svgCoordinates;
                         const isSelected = selectedEntity?.id === entity.id;
@@ -1967,10 +1997,11 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                           </g>
                         );
                       })}
-                    </g>
+                      </g>
+                    )}
 
                     {/* Pre-Colonial Trade Corridors Vector Layer (Inside SVG coordinate space) */}
-                    {showTradeCorridors && (
+                    {showPreColonialKingdoms && showTradeCorridors && (
                       <g id="preColonialTradeCorridorsTop" transform={AFRICA_FINAL_TRANSFORM} className="pointer-events-auto">
                         <TradeCorridorVectorLayer
                           selectedCorridorId={selectedTradeCorridor?.id || null}
@@ -1984,9 +2015,174 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                         />
                       </g>
                     )}
+
+                    {/* Synchronized Dual-Era Toponym Crosshairs Layer */}
+                    {showToponymPins && (
+                      <g id="toponymConcordanceCrosshairs" transform={AFRICA_FINAL_TRANSFORM} className="pointer-events-auto">
+                        {TOPONYM_CONCORDANCE_INDEX.map((item, idx) => {
+                          const [x, y] = item.svgCoordinates;
+                          const isSelected = selectedToponymPin?.antiqueName === item.antiqueName;
+
+                          return (
+                            <g
+                              key={`toponym-pin-${idx}-${item.antiqueName}`}
+                              transform={`translate(${x}, ${y})`}
+                              className="cursor-pointer group pointer-events-auto"
+                              onPointerDown={(e) => e.stopPropagation()}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedToponymPin(item);
+                              }}
+                            >
+                              {/* Pulse beacon for selected */}
+                              {isSelected && (
+                                <circle cx="0" cy="0" r="140" fill="#f43f5e" opacity="0.3">
+                                  <animate attributeName="r" values="100;320;100" dur="2s" repeatCount="indefinite" />
+                                  <animate attributeName="opacity" values="0.45;0.05;0.45" dur="2s" repeatCount="indefinite" />
+                                </circle>
+                              )}
+                              
+                              {/* Outer crosshair reticle ring */}
+                              <circle
+                                cx="0"
+                                cy="0"
+                                r="120"
+                                stroke={isSelected ? '#f43f5e' : '#e11d48'}
+                                strokeWidth="16"
+                                strokeDasharray="32 20"
+                                fill="none"
+                                opacity={isSelected ? 1.0 : 0.85}
+                                className="group-hover:stroke-rose-400 transition-colors"
+                              />
+
+                              {/* Crosshair reticle lines */}
+                              <line x1="-180" y1="0" x2="-80" y2="0" stroke={isSelected ? '#f43f5e' : '#e11d48'} strokeWidth="14" />
+                              <line x1="80" y1="0" x2="180" y2="0" stroke={isSelected ? '#f43f5e' : '#e11d48'} strokeWidth="14" />
+                              <line x1="0" y1="-180" x2="0" y2="-80" stroke={isSelected ? '#f43f5e' : '#e11d48'} strokeWidth="14" />
+                              <line x1="0" y1="80" x2="0" y2="180" stroke={isSelected ? '#f43f5e' : '#e11d48'} strokeWidth="14" />
+
+                              {/* Center Ruby Jewel Core */}
+                              <circle
+                                cx="0"
+                                cy="0"
+                                r="55"
+                                fill={isSelected ? '#e11d48' : '#be123c'}
+                                stroke="#ffffff"
+                                strokeWidth="14"
+                                className="drop-shadow-lg"
+                              />
+                              <circle cx="0" cy="0" r="18" fill="#ffffff" />
+
+                              {/* Toponym Label Tag */}
+                              <g transform="translate(0, 160)" className="pointer-events-none">
+                                <rect
+                                  x={-(item.antiqueName.length * 28 + 140) / 2}
+                                  y="-60"
+                                  width={item.antiqueName.length * 28 + 140}
+                                  height="120"
+                                  rx="60"
+                                  fill={isSelected ? '#881337' : '#0c0a09'}
+                                  stroke={isSelected ? '#fb7185' : '#e11d48'}
+                                  strokeWidth="10"
+                                  opacity="0.94"
+                                />
+                                <text
+                                  x="0"
+                                  y="6"
+                                  textAnchor="middle"
+                                  dominantBaseline="middle"
+                                  fill="#ffffff"
+                                  fontFamily="'Plus Jakarta Sans Variable', system-ui, sans-serif"
+                                  fontSize="46"
+                                  fontWeight="800"
+                                >
+                                  {item.antiqueName}
+                                </text>
+                              </g>
+                            </g>
+                          );
+                        })}
+                      </g>
+                    )}
                   </svg>
                 </div>
               )}
+
+              {/* Floating Toponym Concordance Placard */}
+              <AnimatePresence>
+                {selectedToponymPin && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                    className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 w-[92vw] max-w-xl p-4 rounded-2xl bg-stone-900/95 dark:bg-zinc-950/95 text-stone-100 border border-rose-500/50 shadow-2xl backdrop-blur-xl"
+                  >
+                    <div className="flex items-start justify-between gap-3 border-b border-stone-800 pb-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400">
+                          <Crosshair className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-mono uppercase tracking-wider text-rose-400 font-bold">
+                            Dual-Era Toponym Crosshair
+                          </div>
+                          <h4 className="text-base font-serif font-bold text-stone-50">
+                            {selectedToponymPin.antiqueName}
+                          </h4>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedToponymForModal(selectedToponymPin.antiqueName);
+                            setIsToponymConcordanceOpen(true);
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/40 font-mono text-[10px] font-bold transition-colors cursor-pointer flex items-center gap-1"
+                        >
+                          <BookOpen className="w-3 h-3" />
+                          <span>Concordance</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedToponymPin(null)}
+                          className="p-1 rounded-lg text-stone-400 hover:text-white hover:bg-stone-800 transition-colors cursor-pointer"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 py-3 text-xs">
+                      <div className="p-2.5 rounded-xl bg-stone-800/60 border border-stone-700/60">
+                        <div className="text-[9.5px] font-mono uppercase text-stone-400 font-bold">Modern Toponym & Nation</div>
+                        <div className="text-sm font-semibold text-emerald-300 mt-0.5">{selectedToponymPin.modernName}</div>
+                        <div className="text-[11px] text-stone-300">{selectedToponymPin.modernCountry}</div>
+                      </div>
+
+                      <div className="p-2.5 rounded-xl bg-stone-800/60 border border-stone-700/60">
+                        <div className="text-[9.5px] font-mono uppercase text-stone-400 font-bold">Indigenous / Canonical Name</div>
+                        <div className="text-sm font-semibold text-amber-300 mt-0.5">{selectedToponymPin.indigenousName}</div>
+                        <div className="text-[10px] font-mono text-stone-400 mt-0.5">
+                          {selectedToponymPin.coordinates[0].toFixed(2)}°N, {selectedToponymPin.coordinates[1].toFixed(2)}°E
+                        </div>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-stone-300 leading-relaxed font-sans bg-black/30 p-2.5 rounded-xl border border-stone-800/80">
+                      {selectedToponymPin.note}
+                    </p>
+
+                    <div className="mt-2 text-[10px] font-mono text-stone-400 flex items-center justify-between">
+                      <span className="truncate">Source: {selectedToponymPin.plateSource}</span>
+                      <span className="uppercase tracking-wider px-1.5 py-0.5 rounded bg-stone-800 text-stone-300 font-bold">
+                        {selectedToponymPin.category}
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Floating Trade Corridor Hover Indicator */}
               <AnimatePresence>

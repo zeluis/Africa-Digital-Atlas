@@ -746,3 +746,5 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
     </div>
   );
 };
+
+export default HeritageView;

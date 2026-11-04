@@ -675,3 +675,5 @@ export const CompareView: React.FC<CompareViewProps> = ({
     </div>
   );
 };
+
+export default CompareView;

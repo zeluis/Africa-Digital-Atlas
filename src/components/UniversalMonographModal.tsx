@@ -394,3 +394,5 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
     </AnimatePresence>
   );
 };
+
+export default UniversalMonographModal;

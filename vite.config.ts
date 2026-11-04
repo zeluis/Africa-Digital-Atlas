@@ -9,7 +9,7 @@ export default defineConfig(({ command }) => {
     process.env.NODE_ENV = 'production';
   }
   return {
-    base: './',
+    base: process.env.BASE_URL || process.env.VITE_BASE_PATH || './',
     plugins: [
       react(),
       tailwindcss(),
@@ -429,6 +429,8 @@ export default defineConfig(({ command }) => {
         'recharts',
         'd3',
         'topojson-client',
+        '@iconify/react',
+        'jspdf',
       ],
     },
     build: {

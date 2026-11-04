@@ -1142,3 +1142,5 @@ export const CountryView: React.FC<CountryViewProps> = ({
     </div>
   );
 };
+
+export default CountryView;

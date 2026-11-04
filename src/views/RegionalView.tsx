@@ -1286,3 +1286,5 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
     </div>
   );
 };
+
+export default RegionalView;

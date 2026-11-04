@@ -1123,3 +1123,5 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
     </div>
   );
 };
+
+export default OnboardingModal;

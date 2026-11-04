@@ -32,3 +32,5 @@ export const EthnicTreeOfLifeView: React.FC<EthnicTreeOfLifeViewProps> = ({
     </div>
   );
 };
+
+export default EthnicTreeOfLifeView;

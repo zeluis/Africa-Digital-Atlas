@@ -49,6 +49,11 @@ The production application is deployed on GitHub Pages:
    - [Visual Identity & Japandi Design System](#12-visual-identity--japandi-design-system)
    - [African Ethnic Tree & Ancestral Lineages Explorer](#13-african-ethnic-tree--ancestral-lineages-explorer)
    - [Privacy, Data Governance & Scholarly Charter (MD3 Architecture)](#14-privacy-data-governance--scholarly-charter-md3-architecture)
+   - [Critical Minerals & Clean Energy Transition Cartography](#15-critical-minerals--clean-energy-transition-cartography)
+   - [AfCFTA Bilateral Trade Complementarity Engine](#16-afcfta-bilateral-trade-complementarity-engine)
+   - [Sahel Climate Corridor & Ecological Simulator](#17-sahel-climate-corridor--ecological-simulator)
+   - [Linguistic Typology & Cross-Phyla Phonological Comparator](#18-linguistic-typology--cross-phyla-phonological-comparator)
+   - [Academic Export Suite (PDF, CSV, JSON-LD, BibTeX)](#19-academic-export-suite-pdf-csv-json-ld-bibtex)
 3. [Indicators & Multilateral Data Sources Catalog](#-indicators--multilateral-data-sources-catalog)
 4. [SVG Geography Engine & Projection Geometry](#-svg-geography-engine--projection-geometry)
 5. [Multilingual Translation Engine (i18n)](#-multilingual-translation-engine-i18n)
@@ -299,6 +304,47 @@ An in-app four-pillar governance framework built with Material Design 3 (MD3) na
 
 ---
 
+### 15. Critical Minerals & Clean Energy Transition Cartography
+A spatial cartographic layer detailing the distribution of strategic energy transition minerals across Africa:
+- **Strategic Mineral Deposit Registry**: Maps 40+ documented deposits across Lithium, Cobalt, Graphite, Copper, Nickel, Rare Earth Elements (REEs), and Platinum Group Metals (PGMs).
+- **Extraction Hubs & Logistic Corridors**: Pinpoints strategic extraction centers (e.g. DRC Copperbelt, Manono Lithium Corridor, Bikita, Bushveld Complex, Moma Heavy Sands) and maritime export links.
+- **Sovereign Beneficiation Indices**: Compares raw unprocessed ore export dependence against domestic refining and smelting policy frameworks.
+
+---
+
+### 16. AfCFTA Bilateral Trade Complementarity Engine
+An econometric diagnostic matrix analyzing intra-African trade integration under the African Continental Free Trade Area:
+- **Bilateral Trade Complementarity Indices (TCI)**: Mathematical formulation benchmarking country export supply baskets against partner import demand profiles.
+- **Tariff Elimination Trajectories**: Tracks preferential tariff schedules across 90% of non-sensitive tariff lines, sensitive items (7%), and exclusion lists (3%).
+- **Regional Value-Chain Synergies**: Highlights priority cross-border opportunities in automotive manufacturing, textile assembly, pharmaceutical production, and agro-processing.
+
+---
+
+### 17. Sahel Climate Corridor & Ecological Simulator
+An interactive spatial environmental trajectory simulator modeling ecological dynamics across the 8,000-kilometer Sahelian belt:
+- **Great Green Wall Transect**: Visualizes ecological restoration pathways across Senegal, Mauritania, Mali, Burkina Faso, Niger, Nigeria, Chad, Sudan, Eritrea, Ethiopia, and Djibouti.
+- **Climate Trajectory Variables**: Simulates aridity index shifts, vegetative cover (NDVI) recovery targets, and precipitation anomalies under IPCC AR6 SSP2-4.5 and SSP5-8.5 scenarios.
+- **Transboundary Groundwater Aquifers**: Documents major hydrogeological systems (Nubian Sandstone, Iullemeden, Chad Basin) supporting dryland agriculture.
+
+---
+
+### 18. Linguistic Typology & Cross-Phyla Phonological Comparator
+A comparative linguistic laboratory mapping typological parameters across more than 2,000 African languages:
+- **6 Continental Phyla**: Full classification encompassing Niger-Congo, Afroasiatic, Nilo-Saharan, Central Khoisan (Khoe-Kwadi), Northern Khoisan (Juu-ǂHoan), and Southern Khoisan (Tuu).
+- **WALS Structural Parameters**: Side-by-side benchmarking of canonical word order (SOV, SVO, VSO), noun class complexity, verbal inflection paradigms, and tone register counts.
+- **Click Inventory Cartography**: Interactive geographic and phonological distribution of labial, dental, alveolar, palatal, and lateral click consonants across Southern and Eastern Africa.
+
+---
+
+### 19. Academic Export Suite (PDF, CSV, JSON-LD, BibTeX)
+A publication-quality export suite enabling researchers to extract data and cartography:
+- **Multi-Page Print-Ready PDF Reports**: Generates structured national briefs and analytical dossiers with embedded vector charts, indicator matrices, and bibliographic footnotes.
+- **Harmonized CSV Tables**: Downloads clean tabular data with per-value observation status flags (`observed`, `estimated`, `forecast`, `derived`).
+- **Linked Open Data (JSON-LD)**: Schema.org conformant structured datasets for semantic web integration and academic archiving.
+- **Standardized BibTeX Records**: Ready-to-cite references for LaTeX and reference managers with universal DOI integration.
+
+---
+
 ## 📊 Indicators & Multilateral Data Sources Catalog
 
 The Africa Data Atlas harmonizes data across **16 international connectors** and **over 90 indicators**. Below is the complete catalog of integrated sources:
@@ -436,6 +482,13 @@ The Africa Data Atlas is configured as a fully compliant **Progressive Web App (
 - **Archival Deep-Zoom Engine**: Custom non-passive wheel interceptor with `{ passive: false }`, Euclidean two-finger mobile pinch-to-zoom, and boundary-clamped metadata drawers (`overscroll-behavior: contain`)
 - **Icons**: [Lucide React](https://lucide.dev/) for vector iconography alongside mathematical inline institutional SVG seals
 
+### Dynamic Chunk Resilience & Dual Export Architecture:
+To prevent React runtime hook dispatcher collisions (`Cannot read properties of null (reading 'useState')`) during on-demand chunk loading and client-side code splitting, the application enforces:
+- **Dual Export Pattern**: Every view module in `src/views/` and all dynamically imported modals in `src/components/` supply both a named component export (`export const ViewName = ...`) and a standard default export (`export default ViewName;`), ensuring seamless interoperability across Vite, Rollup, and React's `lazyWithRetry` loader.
+- **Pre-Bundling Optimization**: In `vite.config.ts`, all JavaScript/TypeScript runtime dependencies (`react`, `react-dom`, `lucide-react`, `motion`, `recharts`, `d3`, `@iconify/react`, `jspdf`) are declared in `optimizeDeps.include`. Pure data packages (such as `world-atlas`) are excluded from prebundling to maintain clean resolution.
+- **Automated View Guardrail (`scripts/verify-views-and-chunks.mjs`)**: Integrated directly into `npm run lint` and CI gates to verify every module provides compliant exports and prevents module loading degradation.
+- **Resilient Error Boundaries (`src/utils/lazyWithRetry.tsx`)**: The top-level `ViewErrorBoundary` detects chunk mismatches and hook dispatcher disruptions across version deployments, offering instant one-click reload and local cache clearance.
+
 ---
 
 ## 🛠️ Installation & Local Development
@@ -484,12 +537,26 @@ npm run preview
 ```
 
 ### Deploying to GitHub Pages:
-The repository includes a production GitHub Actions CI/CD workflow (`.github/workflows/deploy.yml`). Pushing changes to the `main` or `master` branches automatically compiles the Vite application and deploys it to GitHub Pages.
+The repository includes an automated GitHub Actions CI/CD workflow (`.github/workflows/deploy.yml`). Pushing changes to the `main` or `master` branches automatically compiles the application and deploys the static production bundle to GitHub Pages.
+
+#### Single Page Application (SPA) Deep-Linking & 404 Routing:
+- **Zero 404 Navigation Errors**: GitHub Pages natively serves static files and returns a 404 error on deep direct routes (e.g., `/country/NGA` or `/region/western-africa`). The platform integrates a lightweight routing handler at `public/404.html`.
+- **Seamless Hash Translation**: When an unmapped route is requested, `404.html` captures the requested path and query parameters, redirecting the browser to the equivalent client-side hash route (`/#country/NGA`) where `src/App.tsx` renders the exact requested entity.
+
+#### Jekyll Processing Bypass (`.nojekyll`):
+- To prevent GitHub Pages' default Jekyll engine from omitting folders or assets prefixed with underscores (such as `_assets/` or dotfiles), `public/.nojekyll` is included and copied directly to `dist/.nojekyll` during the build process.
+
+#### Dynamic Base Path Resolution:
+- Vite dynamically resolves base URLs via:
+  ```ts
+  base: process.env.BASE_URL || process.env.VITE_BASE_PATH || './'
+  ```
+  allowing seamless deployment to subpaths (e.g. `https://<org>.github.io/<repo>/`) or custom domains without asset path fragmentation.
 
 #### 🔐 GitHub App Stateless Token Format & Length Resilience:
 - **Stateless Tokens (`ghs_...`)**: Fully compliant with GitHub's stateless installation token format (~520 characters, JSON Web Tokens).
-- **No Hardcoded Buffer Assumptions**: All workflow actions (`actions/checkout@v4`, `actions/deploy-pages@v4`) and git scripts use variable-length token buffers without legacy string length limits.
-- **Override Header Validation**: Supports the `X-GitHub-Stateless-S2S-Token: enabled` request header for proactive validation and canary testing of stateless App installation tokens.
+- **No Hardcoded Buffer Assumptions**: All workflow actions (`actions/checkout@v5`, `actions/deploy-pages@v5`, `actions/configure-pages@v5`) and git scripts use variable-length token buffers without legacy string length limits.
+- **Override Header Validation**: Supports the `X-GitHub-Stateless-S2S-Token: enabled` request header for proactive validation and testing of stateless App installation tokens.
 
 ### Deploying to Container Platforms (Docker / Google Cloud Run):
 The application includes a self-contained Express server configuration (`server.ts`) for containerized deployment:

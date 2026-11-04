@@ -12,7 +12,7 @@ import {
   SlidersHorizontal, 
   Mic 
 } from 'lucide-react';
-import { playPhoneticSpeech } from '../../utils/africaliaVoiceEngine';
+import { speakAcademicNarration } from '../../utils/africaliaVoiceEngine';
 
 export interface LanguageTypologyProfile {
   id: string;
@@ -242,7 +242,7 @@ export const LinguisticTypologyComparator: React.FC = () => {
   }, [langA, langB]);
 
   const handleSpeak = (text: string) => {
-    playPhoneticSpeech(text);
+    speakAcademicNarration({ text, playChime: true });
   };
 
   return (

@@ -387,3 +387,5 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
     </div>
   );
 };
+
+export default IconographyView;

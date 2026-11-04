@@ -116,7 +116,9 @@ export class ViewErrorBoundary extends React.Component<ErrorBoundaryProps, Error
       const isChunkError = 
         this.state.error?.message?.includes('dynamically imported module') ||
         this.state.error?.message?.includes('Loading chunk') ||
-        this.state.error?.message?.includes('Failed to fetch');
+        this.state.error?.message?.includes('Failed to fetch') ||
+        this.state.error?.message?.includes('Invalid hook call') ||
+        this.state.error?.message?.includes('useState');
 
       return (
         <div className="w-full min-h-[500px] flex items-center justify-center p-6 sm:p-12">

@@ -13,6 +13,7 @@ import {
   Leaf,
   FileCheck2
 } from 'lucide-react';
+import { SahelCorridorSimulator } from './heritage/SahelCorridorSimulator';
 
 interface RegionalEcologySectionProps {
   region: AfricanRegion;
@@ -181,6 +182,13 @@ export const RegionalEcologySection: React.FC<RegionalEcologySectionProps> = ({
             </strong>
             {activeEco.strategicSignificance}
           </div>
+        </div>
+      )}
+
+      {/* Great Green Wall & Sahel Agroforestry Corridor Simulator */}
+      {(region === 'Western Africa' || region === 'Northern Africa' || region === 'Eastern Africa' || region === 'Central Africa') && (
+        <div className="pt-2">
+          <SahelCorridorSimulator />
         </div>
       )}
     </div>

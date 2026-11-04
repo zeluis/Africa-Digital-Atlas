@@ -626,3 +626,5 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
     </AnimatePresence>
   );
 };
+
+export default CartographicColophonModal;

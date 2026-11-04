@@ -1084,3 +1084,5 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
     </div>
   );
 };
+
+export default ArchivalCartographyView;
