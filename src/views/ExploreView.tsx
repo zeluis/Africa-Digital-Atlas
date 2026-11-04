@@ -1,6 +1,14 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'motion/react';
-import { SPRING_TACTILE, usePrefersReducedMotion } from '../utils/motion';
+import { motion, AnimatePresence } from 'motion/react';
+import { 
+  SPRING_TACTILE, 
+  SPRING_SNAPPY,
+  SlidingPill,
+  StaggerGrid,
+  StaggerGridItem,
+  getRegionCardTonalStyle,
+  usePrefersReducedMotion 
+} from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { AfricanRegion, AtlasEntity } from '../data/types';
 import { CountryFlag } from '../components/CountryFlag';
@@ -45,6 +53,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   onNavigateTab
 }) => {
   const { t } = useTranslation();
+  const reducedMotion = usePrefersReducedMotion();
   const [searchQuery, setSearchQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<AfricanRegion | 'All'>('All');
   const [topologyFilter, setTopologyFilter] = useState<TopologyFilter>('all');
@@ -84,6 +93,15 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
     'Eastern Africa',
     'Southern Africa'
   ];
+
+  const REGION_ACCENT_COLORS: Record<AfricanRegion | 'All', string> = {
+    'All': '#10B981',
+    'Northern Africa': '#2563EB',
+    'Western Africa': '#16A34A',
+    'Central Africa': '#C026D3',
+    'Eastern Africa': '#EAB308',
+    'Southern Africa': '#DC2626'
+  };
 
   const filteredAndSortedEntities = useMemo(() => {
     return allEntities
@@ -192,17 +210,16 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                 <button
                   key={item.id}
                   onClick={() => setViewLayout(item.id as any)}
-                  className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors duration-150 cursor-pointer select-none ${
+                  className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors duration-150 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                     isActive
                       ? 'text-zinc-900 dark:text-zinc-100 shadow-xs'
                       : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
                   }`}
                 >
                   {isActive && (
-                    <motion.div
+                    <SlidingPill
                       layoutId="exploreLayoutToggle"
                       className="absolute inset-0 rounded-xl bg-white dark:bg-zinc-800 shadow-xs"
-                      transition={SPRING_TACTILE}
                     />
                   )}
                   <Icon className="w-4 h-4 relative z-10" />
@@ -223,35 +240,44 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search by country, capital or ISO code..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs font-medium text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs font-medium text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
             />
           </div>
 
-          {/* Region Tabs Filter - Fully Wrapping */}
+          {/* Region Tabs Filter - Fully Wrapping with UN Geoscheme Colors */}
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-xs text-zinc-400 font-medium mr-1 hidden lg:inline flex items-center gap-1">
               <Filter className="w-3 h-3" /> Region:
             </span>
             {regions.map(r => {
               const isSelected = regionFilter === r;
+              const accentColor = REGION_ACCENT_COLORS[r];
               return (
                 <button
                   key={r}
                   onClick={() => setRegionFilter(r)}
-                  className={`relative px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors duration-150 cursor-pointer select-none ${
+                  className={`relative px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors duration-150 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                     isSelected
-                      ? 'text-zinc-950 font-bold shadow-xs'
+                      ? 'text-white font-bold shadow-xs'
                       : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
                   }`}
                 >
                   {isSelected && (
-                    <motion.div
+                    <SlidingPill
                       layoutId="exploreRegionPill"
-                      className="absolute inset-0 rounded-xl bg-emerald-500 shadow-xs"
-                      transition={SPRING_TACTILE}
+                      className="absolute inset-0 rounded-xl shadow-xs"
+                      style={{ backgroundColor: accentColor }}
                     />
                   )}
-                  <span className="relative z-10">{r}</span>
+                  <span className="relative z-10 flex items-center gap-1.5">
+                    <span 
+                      className={`w-1.5 h-1.5 rounded-full shrink-0 transition-opacity ${
+                        isSelected ? 'bg-white opacity-90' : ''
+                      }`}
+                      style={!isSelected ? { backgroundColor: accentColor } : undefined}
+                    />
+                    <span>{r}</span>
+                  </span>
                 </button>
               );
             })}
@@ -275,17 +301,16 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                 <button
                   key={tf.id}
                   onClick={() => setTopologyFilter(tf.id)}
-                  className={`relative px-3 py-1 rounded-xl text-xs font-mono font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 ${
+                  className={`relative px-3 py-1 rounded-xl text-xs font-mono font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 ${
                     isSelected
                       ? 'text-cyan-900 dark:text-cyan-200 font-bold shadow-xs'
                       : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
                   }`}
                 >
                   {isSelected && (
-                    <motion.div
+                    <SlidingPill
                       layoutId="exploreTopologyPill"
                       className="absolute inset-0 rounded-xl bg-cyan-100/90 dark:bg-cyan-950/80 border border-cyan-400 dark:border-cyan-600 shadow-xs"
-                      transition={SPRING_TACTILE}
                     />
                   )}
                   <span className="relative z-10">{tf.label}</span>
@@ -295,10 +320,12 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           </div>
 
           <div className="flex items-center gap-3">
-            <button
+            <motion.button
               type="button"
               onClick={() => setIsScreenerOpen(prev => !prev)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+              whileHover={reducedMotion ? undefined : { scale: 1.02 }}
+              whileTap={reducedMotion ? undefined : { scale: 0.98 }}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${
                 isScreenerOpen || activeScreenerCount > 0
                   ? 'bg-purple-600 text-white shadow-xs'
                   : 'bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-purple-300'
@@ -312,7 +339,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                   {activeScreenerCount}
                 </span>
               )}
-            </button>
+            </motion.button>
 
             <span className="text-xs font-mono text-zinc-400">
               Showing {filteredAndSortedEntities.length} of 54 sovereign nations
@@ -322,138 +349,148 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
       </div>
 
       {/* Multivariate Econometric Screener Panel */}
-      {isScreenerOpen && (
-        <div className="rounded-3xl border border-purple-200/80 dark:border-purple-900/60 bg-purple-50/40 dark:bg-purple-950/20 p-6 space-y-4 shadow-sm animate-in fade-in duration-150">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 dark:border-purple-900/40 pb-3">
-            <div className="flex items-center gap-2">
-              <SlidersHorizontal className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-              <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 font-display">
-                Multivariate Econometric Screener &amp; Threshold Filters
-              </h4>
-            </div>
-            <div className="flex items-center gap-2">
-              {activeScreenerCount > 0 && (
-                <button
-                  type="button"
-                  onClick={handleResetScreener}
-                  className="flex items-center gap-1 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
-                >
-                  <RotateCcw className="w-3 h-3" /> Reset Thresholds
-                </button>
+      <AnimatePresence>
+        {isScreenerOpen && (
+          <motion.div
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, height: 0, scale: 0.98 }}
+            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, height: 'auto', scale: 1 }}
+            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, height: 0, scale: 0.98 }}
+            transition={SPRING_SNAPPY}
+            className="overflow-hidden"
+          >
+            <div className="rounded-3xl border border-purple-200/80 dark:border-purple-900/60 bg-purple-50/40 dark:bg-purple-950/20 p-6 space-y-4 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 dark:border-purple-900/40 pb-3">
+                <div className="flex items-center gap-2">
+                  <SlidersHorizontal className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                  <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 font-display">
+                    Multivariate Econometric Screener &amp; Threshold Filters
+                  </h4>
+                </div>
+                <div className="flex items-center gap-2">
+                  {activeScreenerCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleResetScreener}
+                      className="flex items-center gap-1 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
+                    >
+                      <RotateCcw className="w-3 h-3" /> Reset Thresholds
+                    </button>
+                  )}
+                  <span className="text-xs font-mono font-bold text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/60 px-2.5 py-1 rounded-lg">
+                    {filteredAndSortedEntities.length} of 54 nations match
+                  </span>
+                </div>
+              </div>
+
+              {/* Sliders Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-xs">
+                {/* Min Population */}
+                <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
+                  <div className="flex justify-between text-zinc-500 font-mono text-[11px]">
+                    <span>Min Population</span>
+                    <span className="font-bold text-zinc-900 dark:text-zinc-100">{minPopulation === 0 ? 'Any' : `${minPopulation}M+`}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="120"
+                    step="10"
+                    value={minPopulation}
+                    onChange={(e) => setMinPopulation(Number(e.target.value))}
+                    className="w-full accent-purple-600 cursor-pointer"
+                  />
+                </div>
+
+                {/* Min GDP */}
+                <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
+                  <div className="flex justify-between text-zinc-500 font-mono text-[11px]">
+                    <span>Min Nominal GDP</span>
+                    <span className="font-bold text-zinc-900 dark:text-zinc-100">{minGdp === 0 ? 'Any' : `$${minGdp}B+`}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="200"
+                    step="20"
+                    value={minGdp}
+                    onChange={(e) => setMinGdp(Number(e.target.value))}
+                    className="w-full accent-purple-600 cursor-pointer"
+                  />
+                </div>
+
+                {/* Min HDI */}
+                <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
+                  <div className="flex justify-between text-zinc-500 font-mono text-[11px]">
+                    <span>Min Human Dev. (HDI)</span>
+                    <span className="font-bold text-zinc-900 dark:text-zinc-100">{minHdi === 0 ? 'Any' : minHdi.toFixed(2)}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="0.75"
+                    step="0.05"
+                    value={minHdi}
+                    onChange={(e) => setMinHdi(Number(e.target.value))}
+                    className="w-full accent-purple-600 cursor-pointer"
+                  />
+                </div>
+
+                {/* Intra-African Trade % */}
+                <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
+                  <div className="flex justify-between text-zinc-500 font-mono text-[11px]">
+                    <span>Min Intra-Africa Trade</span>
+                    <span className="font-bold text-zinc-900 dark:text-zinc-100">{minIntraTrade === 0 ? 'Any' : `${minIntraTrade}%+`}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="35"
+                    step="5"
+                    value={minIntraTrade}
+                    onChange={(e) => setMinIntraTrade(Number(e.target.value))}
+                    className="w-full accent-purple-600 cursor-pointer"
+                  />
+                </div>
+
+                {/* Regional Economic Community (REC) */}
+                <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-1.5">
+                  <div className="text-zinc-500 font-mono text-[11px]">Regional Bloc (REC)</div>
+                  <select
+                    value={recFilter}
+                    onChange={(e) => setRecFilter(e.target.value)}
+                    className="w-full py-1 px-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-xs font-bold text-zinc-800 dark:text-zinc-200 focus:outline-none"
+                  >
+                    <option value="ALL">All RECs (Continental)</option>
+                    <option value="ECOWAS">ECOWAS (West Africa)</option>
+                    <option value="SADC">SADC (Southern Africa)</option>
+                    <option value="EAC">EAC (East Africa)</option>
+                    <option value="AMU">AMU (Maghreb)</option>
+                    <option value="ECCAS">ECCAS (Central Africa)</option>
+                    <option value="COMESA">COMESA (Common Market)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Cohort Action Button */}
+              {onNavigateTab && filteredAndSortedEntities.length >= 2 && (
+                <div className="flex items-center justify-between pt-2 text-xs">
+                  <span className="text-zinc-500">
+                    Cohort ready for comparative econometric benchmarking:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => onNavigateTab('compare')}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold transition-colors cursor-pointer"
+                  >
+                    <ArrowRightLeft className="w-3.5 h-3.5" />
+                    <span>Benchmark Filtered Cohort in Bilateral Lab</span>
+                  </button>
+                </div>
               )}
-              <span className="text-xs font-mono font-bold text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/60 px-2.5 py-1 rounded-lg">
-                {filteredAndSortedEntities.length} of 54 nations match
-              </span>
             </div>
-          </div>
-
-          {/* Sliders Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-xs">
-            {/* Min Population */}
-            <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
-              <div className="flex justify-between text-zinc-500 font-mono text-[11px]">
-                <span>Min Population</span>
-                <span className="font-bold text-zinc-900 dark:text-zinc-100">{minPopulation === 0 ? 'Any' : `${minPopulation}M+`}</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="120"
-                step="10"
-                value={minPopulation}
-                onChange={(e) => setMinPopulation(Number(e.target.value))}
-                className="w-full accent-purple-600 cursor-pointer"
-              />
-            </div>
-
-            {/* Min GDP */}
-            <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
-              <div className="flex justify-between text-zinc-500 font-mono text-[11px]">
-                <span>Min Nominal GDP</span>
-                <span className="font-bold text-zinc-900 dark:text-zinc-100">{minGdp === 0 ? 'Any' : `$${minGdp}B+`}</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="200"
-                step="20"
-                value={minGdp}
-                onChange={(e) => setMinGdp(Number(e.target.value))}
-                className="w-full accent-purple-600 cursor-pointer"
-              />
-            </div>
-
-            {/* Min HDI */}
-            <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
-              <div className="flex justify-between text-zinc-500 font-mono text-[11px]">
-                <span>Min Human Dev. (HDI)</span>
-                <span className="font-bold text-zinc-900 dark:text-zinc-100">{minHdi === 0 ? 'Any' : minHdi.toFixed(2)}</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="0.75"
-                step="0.05"
-                value={minHdi}
-                onChange={(e) => setMinHdi(Number(e.target.value))}
-                className="w-full accent-purple-600 cursor-pointer"
-              />
-            </div>
-
-            {/* Intra-African Trade % */}
-            <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
-              <div className="flex justify-between text-zinc-500 font-mono text-[11px]">
-                <span>Min Intra-Africa Trade</span>
-                <span className="font-bold text-zinc-900 dark:text-zinc-100">{minIntraTrade === 0 ? 'Any' : `${minIntraTrade}%+`}</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="35"
-                step="5"
-                value={minIntraTrade}
-                onChange={(e) => setMinIntraTrade(Number(e.target.value))}
-                className="w-full accent-purple-600 cursor-pointer"
-              />
-            </div>
-
-            {/* Regional Economic Community (REC) */}
-            <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-1.5">
-              <div className="text-zinc-500 font-mono text-[11px]">Regional Bloc (REC)</div>
-              <select
-                value={recFilter}
-                onChange={(e) => setRecFilter(e.target.value)}
-                className="w-full py-1 px-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-xs font-bold text-zinc-800 dark:text-zinc-200 focus:outline-none"
-              >
-                <option value="ALL">All RECs (Continental)</option>
-                <option value="ECOWAS">ECOWAS (West Africa)</option>
-                <option value="SADC">SADC (Southern Africa)</option>
-                <option value="EAC">EAC (East Africa)</option>
-                <option value="AMU">AMU (Maghreb)</option>
-                <option value="ECCAS">ECCAS (Central Africa)</option>
-                <option value="COMESA">COMESA (Common Market)</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Cohort Action Button */}
-          {onNavigateTab && filteredAndSortedEntities.length >= 2 && (
-            <div className="flex items-center justify-between pt-2 text-xs">
-              <span className="text-zinc-500">
-                Cohort ready for comparative econometric benchmarking:
-              </span>
-              <button
-                type="button"
-                onClick={() => onNavigateTab('compare')}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold transition-colors cursor-pointer"
-              >
-                <ArrowRightLeft className="w-3.5 h-3.5" />
-                <span>Benchmark Filtered Cohort in Bilateral Lab</span>
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Results Count & Sort Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
@@ -463,41 +500,124 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <span>Sort by:</span>
-          {(['population', 'gdp', 'hdi', 'area', 'name'] as SortField[]).map(field => (
-            <button
-              key={field}
-              onClick={() => toggleSort(field)}
-              className={`px-2.5 py-1 rounded-lg border text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                sortField === field
-                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300'
-                  : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700'
-              }`}
-            >
-              <span className="capitalize">{field}</span>
-              {sortField === field && (
-                <span className="text-[10px] font-mono">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-              )}
-            </button>
-          ))}
+          <span className="text-zinc-400 font-medium mr-0.5">Sort by:</span>
+          <div 
+            className="flex items-center bg-zinc-100 dark:bg-zinc-900 p-0.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs"
+            role="group"
+            aria-label="Sort nations criteria"
+          >
+            {(['population', 'gdp', 'hdi', 'area', 'name'] as SortField[]).map(field => {
+              const isSelected = sortField === field;
+              return (
+                <button
+                  key={field}
+                  onClick={() => toggleSort(field)}
+                  className={`relative px-2.5 py-1 rounded-lg font-semibold cursor-pointer select-none transition-colors duration-150 flex items-center gap-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 ${
+                    isSelected
+                      ? 'text-emerald-950 dark:text-emerald-100 font-bold shadow-2xs'
+                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                  }`}
+                  title={`Sort by ${field}`}
+                >
+                  {isSelected && (
+                    <SlidingPill
+                      layoutId="exploreSortCriteriaPill"
+                      className="absolute inset-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-400/60 dark:border-emerald-600/60 shadow-2xs"
+                    />
+                  )}
+                  <span className="relative z-10 capitalize">{field}</span>
+                  {isSelected && (
+                    <motion.span
+                      animate={{ rotate: sortOrder === 'asc' ? 180 : 0 }}
+                      transition={SPRING_TACTILE}
+                      className="relative z-10 inline-block text-[11px] font-mono leading-none"
+                    >
+                      ↓
+                    </motion.span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
+      {/* Empty State */}
+      {filteredAndSortedEntities.length === 0 && (
+        <div className="p-12 text-center rounded-3xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/60 shadow-sm space-y-3">
+          <div className="w-12 h-12 mx-auto rounded-2xl bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-400">
+            <Search className="w-6 h-6" />
+          </div>
+          <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            No sovereign nations match your current filter and threshold parameters.
+          </p>
+          <p className="text-xs text-zinc-400 max-w-md mx-auto">
+            Try adjusting your search query, selecting another geographic region, or resetting econometric screener thresholds.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setSearchQuery('');
+              setRegionFilter('All');
+              setTopologyFilter('all');
+              handleResetScreener();
+            }}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors cursor-pointer select-none"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Reset All Filters</span>
+          </button>
+        </div>
+      )}
+
       {/* GRID VIEW */}
-      {viewLayout === 'grid' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {viewLayout === 'grid' && filteredAndSortedEntities.length > 0 && (
+        <StaggerGrid
+          role="region"
+          aria-label="54 Sovereign African Nations Grid"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        >
           {filteredAndSortedEntities.map(entity => {
             const pop = atlas.getIndicatorValue(entity.id, 'SP.POP.TOTL');
             const gdp = atlas.getIndicatorValue(entity.id, 'NY.GDP.MKTP.CD');
             const hdi = atlas.getIndicatorValue(entity.id, 'UNDP.HDI.INDEX');
             const silhouette = getCountrySilhouette(entity.id);
             const tonal = getCountryRegionTonalPalette(entity.id);
+            const regionTonal = getRegionCardTonalStyle(entity.region);
 
             return (
-              <div
+              <motion.div
                 key={entity.id}
+                layout="position"
                 onClick={() => onSelectCountry(entity.id)}
-                className={`group rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xs hover:shadow-xl hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200 cursor-pointer flex flex-col justify-between`}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectCountry(entity.id);
+                  }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label={`Inspect ${entity.name} sovereign dossier`}
+                whileHover={
+                  reducedMotion
+                    ? undefined
+                    : {
+                        y: -4,
+                        boxShadow: regionTonal.hoverGlow,
+                        borderColor: regionTonal.hoverBorder,
+                        transition: SPRING_SNAPPY
+                      }
+                }
+                whileTap={
+                  reducedMotion
+                    ? undefined
+                    : {
+                        scale: 0.985,
+                        transition: SPRING_TACTILE
+                      }
+                }
+                className="group rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xs transition-colors duration-200 cursor-pointer flex flex-col justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 select-none"
               >
                 <div>
                   {/* Card Header: Flag + Regional ISO3 code on left, Prominent UN Geoscheme Vector Silhouette on right */}
@@ -549,12 +669,10 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                   <h3 className={`font-extrabold text-lg text-zinc-900 dark:text-zinc-100 ${tonal.card.accentText} transition-colors`}>
                     {entity.name}
                   </h3>
-                  <div className="flex items-center gap-2 mb-4 mt-1">
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                      {entity.capital}
-                    </span>
-                    <span className="text-zinc-300 dark:text-zinc-700">•</span>
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${tonal.badge.bg} ${tonal.badge.border} ${tonal.badge.text}`}>
+                  <div className="flex items-center gap-2 mb-4 mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                    <span>{entity.capital}</span>
+                    <span className="text-zinc-300 dark:text-zinc-700">·</span>
+                    <span className={`font-semibold ${tonal.badge.text}`}>
                       {entity.region}
                     </span>
                   </div>
@@ -581,18 +699,18 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                   </div>
                 </div>
 
-                <div className={`mt-5 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-xs font-semibold ${tonal.card.accentText} group-hover:translate-x-1 transition-transform`}>
+                <div className={`mt-5 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-xs font-semibold ${tonal.card.accentText} transition-colors`}>
                   <span>View Full Dossier</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-200" />
                 </div>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </StaggerGrid>
       )}
 
       {/* TABLE VIEW */}
-      {viewLayout === 'table' && (
+      {viewLayout === 'table' && filteredAndSortedEntities.length > 0 && (
         <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
@@ -662,7 +780,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
       )}
 
       {/* DENSITY MATRIX VIEW */}
-      {viewLayout === 'matrix' && (
+      {viewLayout === 'matrix' && filteredAndSortedEntities.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {filteredAndSortedEntities.map(entity => {
             const pop = atlas.getIndicatorValue(entity.id, 'SP.POP.TOTL');
@@ -674,10 +792,35 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             const gdpPerCap = (pop && gdp && pop > 0) ? Math.round((gdp * 1e9) / (pop * 1e6)) : null;
 
             return (
-              <div
+              <motion.div
                 key={entity.id}
+                layout="position"
                 onClick={() => onSelectCountry(entity.id)}
-                className="p-3.5 rounded-2xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-emerald-500/60 dark:hover:border-emerald-500/60 transition-all cursor-pointer shadow-xs hover:shadow-md space-y-2.5"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectCountry(entity.id);
+                  }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label={`Inspect ${entity.name} sovereign dossier`}
+                whileHover={
+                  reducedMotion
+                    ? undefined
+                    : {
+                        y: -2,
+                        transition: SPRING_TACTILE
+                      }
+                }
+                whileTap={
+                  reducedMotion
+                    ? undefined
+                    : {
+                        scale: 0.985
+                      }
+                }
+                className="p-3.5 rounded-2xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-emerald-500/60 dark:hover:border-emerald-500/60 transition-colors cursor-pointer shadow-xs hover:shadow-md space-y-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 select-none"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -721,7 +864,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                     <span className="font-bold text-emerald-600 dark:text-emerald-400">{formatHDI(hdi)} · {elec ? `${Math.round(elec)}%` : '—'}</span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
