@@ -198,15 +198,15 @@ export const BASELINE_DOI_CONCORDANCE: Record<string, DoiConcordanceEntry> = {
   // 13. Working Paper No. 08 - European Capital Accumulation
   'rep-economics-europe-atlantic-2026': {
     id: 'rep-economics-europe-atlantic-2026',
-    title: 'How Europe Underdeveloped Africa: Quantitative Cliometrics and Counterfactual Reconstructions of Capital Accumulation (1450–1960)',
-    doi: '10.3386/w14700',
-    canonicalUrl: 'https://doi.org/10.3386/w14700',
-    verifiedTitle: 'The Long-Term Effects of Africa’s Slave Trades and Colonial Extraction',
+    title: 'Atlantic Slavery, European Development, and Colonial Extraction',
+    doi: '10.6084/m9.figshare.34063314',
+    canonicalUrl: 'https://doi.org/10.6084/m9.figshare.34063314',
+    verifiedTitle: 'Atlantic Slavery, European Development, and Colonial Extraction',
     journal: 'NBER Working Paper Series / Africalia Press',
-    authors: ['Nunn, Nathan', 'Acemoglu, Daron', 'Africalia Economic Research Group'],
+    authors: ['Africalia Economic Research Group'],
     year: 2026,
     status: 'working_paper_series',
-    notes: 'General equilibrium counterfactual measuring net surplus diversion into European industrialization.'
+    notes: 'A Quantitative Historical-Economics Research Proposal (Consolidated Version 3).'
   }
 };
 

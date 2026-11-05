@@ -1096,7 +1096,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             } text-left rounded-xl transition-all cursor-pointer ${
               currentTab === 'provenance'
                 ? 'bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 text-emerald-800 dark:text-emerald-300 font-bold'
-                : 'text-zinc-500 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-800 dark:hover:text-zinc-200'
+                : 'text-emerald-500 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-white/[0.04] hover:text-emerald-800 dark:hover:text-emerald-200'
             }`}
           >
             <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
@@ -1118,7 +1118,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               title="Working Papers & Policy Briefs"
               className={`w-full flex items-center ${
                 isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
-              } text-left rounded-xl transition-all cursor-pointer text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-900 mt-1`}
+              } text-left rounded-xl transition-all cursor-pointer text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 dark:hover:bg-amber-500/15 mt-1`}
             >
               <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
                 <FileText className="w-4 h-4 text-amber-600 dark:text-amber-500 shrink-0" />
