@@ -1,6 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { SPRING_TACTILE } from '../utils/motion';
+import { motion, AnimatePresence } from 'motion/react';
+import { 
+  SPRING_TACTILE, 
+  SPRING_SNAPPY,
+  SlidingPill,
+  StaggerGrid,
+  getRegionCardTonalStyle,
+  usePrefersReducedMotion 
+} from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from '../components/CountryFlag';
 import { getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
@@ -68,6 +75,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
     return INITIAL_UNESCO_HERITAGE_SITES;
   });
 
+  const reducedMotion = usePrefersReducedMotion();
   const [viewMode, setViewMode] = useState<ViewMode>('viewer');
   const [regionFilter, setRegionFilter] = useState<RegionFilter>('All');
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All');
@@ -277,17 +285,16 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                   role="tab"
                   aria-selected={isSelected}
                   onClick={() => setRegionFilter(reg)}
-                  className={`relative px-2.5 py-1 rounded-lg font-bold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap ${
+                  className={`relative px-2.5 py-1 rounded-lg font-bold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
                     isSelected
                       ? 'text-white dark:text-stone-950 shadow-2xs'
                       : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
                   }`}
                 >
                   {isSelected && (
-                    <motion.div
+                    <SlidingPill
                       layoutId="heritageRegionPill"
                       className="absolute inset-0 rounded-lg bg-amber-900 dark:bg-amber-500 shadow-2xs"
-                      transition={SPRING_TACTILE}
                     />
                   )}
                   <span className="relative z-10">
@@ -313,7 +320,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                   role="tab"
                   aria-selected={isActive}
                   onClick={() => setCategoryFilter(cat)}
-                  className={`relative px-2 py-1 rounded-lg font-bold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap flex items-center gap-1 ${
+                  className={`relative px-2 py-1 rounded-lg font-bold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap flex items-center gap-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
                     isActive
                       ? isDanger
                         ? 'text-white shadow-2xs'
@@ -324,12 +331,11 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                   }`}
                 >
                   {isActive && (
-                    <motion.div
+                    <SlidingPill
                       layoutId="heritageCategoryPill"
                       className={`absolute inset-0 rounded-lg shadow-2xs ${
                         isDanger ? 'bg-rose-600' : 'bg-stone-900 dark:bg-stone-100'
                       }`}
-                      transition={SPRING_TACTILE}
                     />
                   )}
                   {isDanger && <AlertTriangle className="w-3 h-3 shrink-0 relative z-10" />}
@@ -398,17 +404,16 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
               role="tab"
               aria-selected={viewMode === 'viewer'}
               onClick={() => setViewMode('viewer')}
-              className={`relative px-2.5 py-1 rounded-lg text-xs font-sans font-bold transition-colors duration-150 cursor-pointer select-none flex items-center gap-1.5 ${
+              className={`relative px-2.5 py-1 rounded-lg text-xs font-sans font-bold transition-colors duration-150 cursor-pointer select-none flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
                 viewMode === 'viewer'
                   ? 'text-white dark:text-stone-900 shadow-xs'
                   : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
               }`}
             >
               {viewMode === 'viewer' && (
-                <motion.div
+                <SlidingPill
                   layoutId="heritageViewModePill"
                   className="absolute inset-0 rounded-lg bg-stone-900 dark:bg-stone-100 shadow-xs"
-                  transition={SPRING_TACTILE}
                 />
               )}
               <DynamicIcon
@@ -424,17 +429,16 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
               role="tab"
               aria-selected={viewMode === 'directory'}
               onClick={() => setViewMode('directory')}
-              className={`relative px-2.5 py-1 rounded-lg text-xs font-sans font-bold transition-colors duration-150 cursor-pointer select-none flex items-center gap-1.5 ${
+              className={`relative px-2.5 py-1 rounded-lg text-xs font-sans font-bold transition-colors duration-150 cursor-pointer select-none flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
                 viewMode === 'directory'
                   ? 'text-white dark:text-stone-900 shadow-xs'
                   : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
               }`}
             >
               {viewMode === 'directory' && (
-                <motion.div
+                <SlidingPill
                   layoutId="heritageViewModePill"
                   className="absolute inset-0 rounded-lg bg-stone-900 dark:bg-stone-100 shadow-xs"
-                  transition={SPRING_TACTILE}
                 />
               )}
               <DynamicIcon
@@ -484,20 +488,54 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
         </div>
       ) : (
         <div className="flex-1 w-full min-h-0 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-12">
+          <StaggerGrid 
+            role="region" 
+            aria-label="UNESCO World Heritage Directory Grid" 
+            className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-12"
+          >
             {illustrationsList.map(item => {
               const meta = item.unescoMeta!;
               const country = meta.entityId ? atlas.getEntity(meta.entityId) : undefined;
               const tonal = getCountryRegionTonalPalette(meta.entityId || 'EGY');
+              const regionTonal = country?.region ? getRegionCardTonalStyle(country.region) : getRegionCardTonalStyle('Northern Africa');
 
               return (
-                <div
+                <motion.div
                   key={item.objectId}
+                  layout="position"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Inspect ${meta.site} in Heritage Viewer`}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setActiveIllustration(item);
+                      setViewMode('viewer');
+                    }
+                  }}
                   onClick={() => {
                     setActiveIllustration(item);
                     setViewMode('viewer');
                   }}
-                  className={`rounded-3xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 overflow-hidden shadow-sm hover:shadow-xl transition-all flex flex-col justify-between cursor-pointer group ${tonal.card.borderHover}`}
+                  whileHover={
+                    reducedMotion
+                      ? undefined
+                      : {
+                          y: -4,
+                          boxShadow: regionTonal.hoverGlow,
+                          borderColor: regionTonal.hoverBorder,
+                          transition: SPRING_SNAPPY
+                        }
+                  }
+                  whileTap={
+                    reducedMotion
+                      ? undefined
+                      : {
+                          scale: 0.985,
+                          transition: SPRING_TACTILE
+                        }
+                  }
+                  className="rounded-3xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 overflow-hidden shadow-sm transition-colors flex flex-col justify-between cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 select-none"
                 >
                   {/* Thumbnail Preview */}
                   <div className="aspect-video w-full relative bg-stone-100 dark:bg-stone-950 overflow-hidden">
@@ -605,10 +643,10 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+          </StaggerGrid>
         </div>
       )}
 

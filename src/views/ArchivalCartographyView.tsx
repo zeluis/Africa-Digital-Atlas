@@ -1,6 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
+  SPRING_TACTILE, 
+  SPRING_SNAPPY, 
+  SlidingPill, 
+  StaggerGrid, 
+  usePrefersReducedMotion 
+} from '../utils/motion';
+import { 
   HISTORICAL_MAP_PLATES, 
   PRE_COLONIAL_ENTITIES, 
   OCEAN_CURRENTS, 
@@ -87,6 +94,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
   }, [initialPlateId]);
 
   const [activeTab, setActiveTab] = useState<CartographyWorkbenchTab>(initialData.tab);
+  const reducedMotion = usePrefersReducedMotion();
   const [selectedPlate, setSelectedPlate] = useState<HistoricalMapPlate>(initialData.plate);
   const [focusedEntity, setFocusedEntity] = useState<PreColonialEntity | null>(null);
   const [selectedDynastyKingdom, setSelectedDynastyKingdom] = useState<KingdomDetailedRecord | null>(null);
@@ -948,11 +956,34 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 text-left">
+            <StaggerGrid 
+              role="region" 
+              aria-label="Pre-Colonial Kingdoms and Polities Grid" 
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 text-left"
+            >
               {PRE_COLONIAL_ENTITIES.map(entity => (
-                <div
+                <motion.div
                   key={entity.id}
-                  className="p-5 rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xs hover:border-purple-500/60 hover:shadow-lg transition-all flex flex-col justify-between space-y-4 group"
+                  layout="position"
+                  whileHover={
+                    reducedMotion
+                      ? undefined
+                      : {
+                          y: -4,
+                          boxShadow: `0 12px 28px -6px ${entity.color}35`,
+                          borderColor: `${entity.color}70`,
+                          transition: SPRING_SNAPPY
+                        }
+                  }
+                  whileTap={
+                    reducedMotion
+                      ? undefined
+                      : {
+                          scale: 0.985,
+                          transition: SPRING_TACTILE
+                        }
+                  }
+                  className="p-5 rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xs transition-colors flex flex-col justify-between space-y-4 group select-none"
                 >
                   <div className="space-y-3.5">
                     <div className="flex items-center justify-between gap-2">
@@ -1033,9 +1064,9 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                       </button>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </StaggerGrid>
           </div>
 
           {/* Interactive Dynastic Lineage Modal in Kingdoms Workbench */}

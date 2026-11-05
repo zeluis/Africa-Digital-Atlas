@@ -1,6 +1,13 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
+  SPRING_TACTILE, 
+  SPRING_SNAPPY, 
+  SlidingPill, 
+  StaggerGrid, 
+  usePrefersReducedMotion 
+} from '../../utils/motion';
+import { 
   Search, 
   Filter, 
   Download, 
@@ -48,6 +55,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
   initialSearchTerm = ''
 }) => {
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+  const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     if (initialSearchTerm !== undefined) {
@@ -413,23 +421,29 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
           </div>
 
           {/* Right: Integrated Segmented Control */}
-          <div className="inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner self-start lg:self-auto">
+          <div className="relative inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner self-start lg:self-auto" role="tablist" aria-label="Toggle between Archival Plates and Castas series">
             <button
               onClick={() => onTabChange?.('registry')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-2 ${
+              className={`relative px-3.5 py-1.5 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
                 activeTab === 'registry'
-                  ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-sm'
+                  ? 'text-white dark:text-stone-900 shadow-sm'
                   : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
               }`}
             >
+              {activeTab === 'registry' && (
+                <SlidingPill
+                  layoutId="slaveTradeIconographyTabPill"
+                  className="absolute inset-0 rounded-xl bg-stone-900 dark:bg-stone-100 shadow-sm"
+                />
+              )}
               <DynamicIcon 
                 icon="fluent-mdl2:picture-tile" 
-                className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                className={`w-3.5 h-3.5 shrink-0 relative z-10 transition-colors ${
                   activeTab === 'registry' ? 'text-amber-400 dark:text-amber-600' : 'text-stone-500 dark:text-stone-400'
                 }`} 
               />
-              <span>Archival Plates Grid</span>
-              <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold ${
+              <span className="relative z-10">Archival Plates Grid</span>
+              <span className={`relative z-10 px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold ${
                 activeTab === 'registry'
                   ? 'bg-stone-800 text-amber-300 dark:bg-stone-200 dark:text-stone-900'
                   : 'bg-stone-200/80 dark:bg-stone-800 text-stone-600 dark:text-stone-400'
@@ -440,20 +454,26 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
 
             <button
               onClick={() => onTabChange?.('ingestion')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-2 ${
+              className={`relative px-3.5 py-1.5 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
                 activeTab === 'ingestion'
-                  ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-sm'
+                  ? 'text-white dark:text-stone-900 shadow-sm'
                   : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
               }`}
             >
+              {activeTab === 'ingestion' && (
+                <SlidingPill
+                  layoutId="slaveTradeIconographyTabPill"
+                  className="absolute inset-0 rounded-xl bg-stone-900 dark:bg-stone-100 shadow-sm"
+                />
+              )}
               <DynamicIcon 
                 icon="lucide:gallery-thumbnails" 
-                className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                className={`w-3.5 h-3.5 shrink-0 relative z-10 transition-colors ${
                   activeTab === 'ingestion' ? 'text-amber-400 dark:text-amber-600' : 'text-amber-600 dark:text-amber-400'
                 }`} 
               />
-              <span>Castas &amp; Colonial Archive</span>
-              <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold ${
+              <span className="relative z-10">Castas &amp; Colonial Archive</span>
+              <span className={`relative z-10 px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold ${
                 activeTab === 'ingestion'
                   ? 'bg-stone-800 text-amber-300 dark:bg-stone-200 dark:text-stone-900'
                   : 'bg-stone-200/80 dark:bg-stone-800 text-stone-600 dark:text-stone-400'
@@ -595,12 +615,44 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
             </button>
           </div>
         ) : viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <StaggerGrid 
+            role="region" 
+            aria-label="Historical Archival Plates Gallery" 
+            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+          >
             {visibleIllustrations.map((item, idx) => (
-              <div
+              <motion.div
                 key={item.objectId}
+                layout="position"
+                tabIndex={0}
+                role="button"
+                aria-label={`Inspect ${item.title} plate details`}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setActiveIllustration(item);
+                  }
+                }}
                 onClick={() => setActiveIllustration(item)}
-                className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl overflow-hidden hover:shadow-md hover:border-stone-300 dark:hover:border-stone-700 transition-all flex flex-col justify-between cursor-pointer group"
+                whileHover={
+                  reducedMotion
+                    ? undefined
+                    : {
+                        y: -4,
+                        boxShadow: '0 12px 28px -6px rgba(180, 83, 9, 0.22)',
+                        borderColor: 'rgba(217, 119, 6, 0.6)',
+                        transition: SPRING_SNAPPY
+                      }
+                }
+                whileTap={
+                  reducedMotion
+                    ? undefined
+                    : {
+                        scale: 0.985,
+                        transition: SPRING_TACTILE
+                      }
+                }
+                className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl overflow-hidden hover:shadow-md transition-colors flex flex-col justify-between cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 select-none"
               >
                 {/* Graphic container with high contrast scrim and LQIP blur-up */}
                 <div className="aspect-video w-full relative bg-stone-100 dark:bg-stone-950 overflow-hidden">
@@ -667,9 +719,9 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                     </span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </StaggerGrid>
         ) : (
           /* List View Mode */
           <div className="border border-stone-200 dark:border-stone-800 rounded-2xl overflow-hidden bg-white dark:bg-stone-950/20 shadow-xs divide-y divide-stone-200 dark:divide-stone-800">

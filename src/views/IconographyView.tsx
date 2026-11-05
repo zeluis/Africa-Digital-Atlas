@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { SlidingPill, usePrefersReducedMotion } from '../utils/motion';
 import { 
   BookOpen, 
   Sparkles, 
@@ -164,31 +165,35 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
           </div>
 
           {/* Right: Segmented Switchboard to toggle between Archival Plates Grid and Castas */}
-          <div className="inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner self-start sm:self-auto">
+          <div className="relative inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner self-start sm:self-auto" role="tablist" aria-label="Toggle between Archival Plates and Castas series">
             <button
               onClick={() => setActiveTab('registry')}
-              className="px-3 py-1 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-1.5 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
+              className="relative px-3 py-1 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
             >
               <DynamicIcon 
                 icon="fluent-mdl2:picture-tile" 
-                className="w-3.5 h-3.5 shrink-0 transition-colors text-stone-500 dark:text-stone-400" 
+                className="w-3.5 h-3.5 shrink-0 relative z-10 transition-colors text-stone-500 dark:text-stone-400" 
               />
-              <span>Archival Plates Grid</span>
-              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold bg-stone-200/80 dark:bg-stone-800 text-stone-600 dark:text-stone-400">
+              <span className="relative z-10">Archival Plates Grid</span>
+              <span className="relative z-10 px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold bg-stone-200/80 dark:bg-stone-800 text-stone-600 dark:text-stone-400">
                 {SLAVE_TRADE_ILLUSTRATIONS.length}
               </span>
             </button>
 
             <button
               onClick={() => setActiveTab('ingestion')}
-              className="px-3 py-1 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-1.5 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-sm"
+              className="relative px-3 py-1 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 text-white dark:text-stone-900 shadow-sm"
             >
+              <SlidingPill
+                layoutId="iconographyHeaderTabPill"
+                className="absolute inset-0 rounded-xl bg-stone-900 dark:bg-stone-100 shadow-sm"
+              />
               <DynamicIcon 
                 icon="lucide:gallery-thumbnails" 
-                className="w-3.5 h-3.5 shrink-0 transition-colors text-amber-400 dark:text-amber-600" 
+                className="w-3.5 h-3.5 shrink-0 relative z-10 transition-colors text-amber-400 dark:text-amber-600" 
               />
-              <span>Castas Series</span>
-              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold bg-stone-800 text-amber-300 dark:bg-stone-200 dark:text-stone-900">
+              <span className="relative z-10">Castas Series</span>
+              <span className="relative z-10 px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold bg-stone-800 text-amber-300 dark:bg-stone-200 dark:text-stone-900">
                 {castasIllustrations.length}
               </span>
             </button>

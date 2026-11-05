@@ -170,7 +170,7 @@ const getActiveSubmenuFromTab = (tab: CanonicalNavTab): SubmenuKey | null => {
   ) return 'history';
   if (tab === 'research-directory' || (typeof tab === 'string' && isReportOrPaperTab(tab))) return 'reports';
   if (tab === 'heritage' || tab === 'languages') return 'culture';
-  if (tab === 'analytics' || tab === 'regions' || tab === 'map') return 'analytics';
+  if (tab === 'analytics' || tab === 'regions' || tab === 'compare' || tab === 'map') return 'analytics';
   return null;
 };
 
@@ -227,13 +227,13 @@ const getSelectedLinkColor = (tab: CanonicalNavTab, activeRegion?: AfricanRegion
     return { thumb: '#A855F7', hover: '#9333EA' }; // Purple
   }
 
-  // 7. Analytics Group (Benchmarks, Matrix, Map - Emerald active indicator)
-  if (tab === 'analytics' || tab === 'regions' || tab === 'map') {
+  // 7. Analytics Group (Benchmarks, Matrix, Compare, Map - Emerald active indicator)
+  if (tab === 'analytics' || tab === 'regions' || tab === 'compare' || tab === 'map') {
     return { thumb: '#10B981', hover: '#059669' }; // Emerald
   }
 
-  // 8. Auxiliary Links (Compare, Pipeline - Emerald active indicator)
-  if (tab === 'compare' || tab === 'provenance') {
+  // 8. Auxiliary Links (Pipeline - Emerald active indicator)
+  if (tab === 'provenance') {
     return { thumb: '#10B981', hover: '#059669' }; // Emerald
   }
 
@@ -288,7 +288,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     currentTab === 'research-directory' || 
     (typeof currentTab === 'string' && isReportOrPaperTab(currentTab));
   const isCultureGroupActive = currentTab === 'heritage' || currentTab === 'languages';
-  const isAnalyticsGroupActive = currentTab === 'analytics' || currentTab === 'regions' || currentTab === 'map';
+  const isAnalyticsGroupActive = currentTab === 'analytics' || currentTab === 'regions' || currentTab === 'compare' || currentTab === 'map';
 
   // Strictly single open submenu at any time
   const [openSubmenu, setOpenSubmenu] = useState<SubmenuKey | null>(() => {
@@ -428,10 +428,26 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     { id: 'languages', label: 'Languages', icon: LanguagesIcon, badge: '2,000+ Phyla' }
   ];
 
-  // Submenu items for Analytics (Benchmarks, Matrix, Map)
-  const analyticsSubItems = [
+  // Submenu items for Analytics (Benchmarks, Matrix, Compare, AfCFTA Simulator, Map)
+  const analyticsSubItems: Array<{
+    id: string;
+    label: string;
+    icon: any;
+    badge: string;
+    isAction?: boolean;
+    onClick?: () => void;
+  }> = [
     { id: 'analytics', label: 'Benchmarks', icon: BarChart3, badge: 'Time-series' },
     { id: 'regions', label: 'Matrix', icon: Globe2, badge: 'Comparative' },
+    { id: 'compare', label: t('nav.compare', 'Compare'), icon: GitCompare, badge: 'Cross-Country' },
+    ...(onOpenAfcftaSimulator ? [{
+      id: 'afcfta-simulator',
+      label: 'AfCFTA Simulator',
+      icon: Truck,
+      badge: 'Trade Corridors',
+      isAction: true,
+      onClick: onOpenAfcftaSimulator
+    }] : []),
     { id: 'map', label: 'Map', icon: 'gis:search-globe', badge: 'Spatial GIS' }
   ];
 
@@ -963,27 +979,31 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                         className="overflow-hidden ml-4 pl-3 border-l-2 border-zinc-200 dark:border-zinc-800/80 space-y-1 my-1.5"
                       >
                         {analyticsSubItems.map(sub => {
-                          const isSubActive = currentTab === sub.id;
+                          const isSubActive = !sub.isAction && currentTab === sub.id;
                           return (
                             <motion.div key={sub.id} variants={submenuItemVariants}>
                               <button
                                 onClick={() => {
-                                  onSelectTab(sub.id as CanonicalNavTab);
+                                  if (sub.onClick) {
+                                    sub.onClick();
+                                  } else {
+                                    onSelectTab(sub.id as CanonicalNavTab);
+                                  }
                                   if (isMobile) onCloseMobile();
                                 }}
                                 className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer px-3 py-2 text-xs group ${
                                   isSubActive
-                                    ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold'
-                                    : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
+                                    ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-bold'
+                                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0 pr-1">
                                   {typeof sub.icon === 'string' ? (
-                                    <DynamicIcon icon={sub.icon} className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-emerald-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
+                                    <DynamicIcon icon={sub.icon} className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300'}`} />
                                   ) : (
                                     (() => {
                                       const SubIconComponent = sub.icon as any;
-                                      return <SubIconComponent className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-emerald-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />;
+                                      return <SubIconComponent className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300'}`} />;
                                     })()
                                   )}
                                   <div className="flex flex-col min-w-0">
@@ -991,7 +1011,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                     <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
                                   </div>
                                 </div>
-                                {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />}
+                                {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 shrink-0" />}
                               </button>
                             </motion.div>
                           );
@@ -1063,31 +1083,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           </div>
         </div>
 
-        {/* Auxiliary Pipeline & Compare Quick Links */}
+        {/* Auxiliary Pipeline Quick Links */}
         <div className={`pt-4 border-t border-zinc-200 dark:border-zinc-800/80 space-y-1 ${isDesktopCollapsed ? 'px-0' : 'px-1'}`}>
-          <button
-            onClick={() => {
-              onSelectTab('compare');
-              if (isMobile) onCloseMobile();
-            }}
-            title={t('nav.compare', 'Compare')}
-            className={`relative w-full flex items-center ${
-              isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
-            } text-left rounded-xl transition-all cursor-pointer ${
-              currentTab === 'compare'
-                ? 'bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 text-emerald-800 dark:text-emerald-300 font-bold'
-                : 'text-zinc-500 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-800 dark:hover:text-zinc-200'
-            }`}
-          >
-            <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
-              <GitCompare className="w-4 h-4 text-emerald-500 shrink-0" />
-              {!isDesktopCollapsed && <span>{t('nav.compare', 'Compare')}</span>}
-            </div>
-            {!isDesktopCollapsed && currentTab === 'compare' && (
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            )}
-          </button>
-
           <button
             onClick={() => {
               onSelectTab('provenance');
@@ -1110,30 +1107,6 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             )}
           </button>
-
-          {/* AfCFTA Trade Corridor Simulator */}
-          {onOpenAfcftaSimulator && (
-            <button
-              onClick={() => {
-                if (isMobile) onCloseMobile();
-                onOpenAfcftaSimulator();
-              }}
-              title="AfCFTA Trade Corridor & Tariff Impact Simulator"
-              className={`w-full flex items-center ${
-                isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
-              } text-left rounded-xl transition-all cursor-pointer text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-900 mt-1`}
-            >
-              <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
-                <Truck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                {!isDesktopCollapsed && <span>AfCFTA Simulator</span>}
-              </div>
-              {!isDesktopCollapsed && (
-                <span className="text-[10px] font-mono uppercase bg-emerald-500/20 px-1.5 py-0.5 rounded text-emerald-800 dark:text-emerald-300 font-bold">
-                  Tool
-                </span>
-              )}
-            </button>
-          )}
 
           {/* Institutional Policy Brief & Working Paper Series */}
           {onOpenWorkingPapers && (

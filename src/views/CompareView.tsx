@@ -1,6 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { SPRING_TACTILE } from '../utils/motion';
+import { 
+  SPRING_TACTILE, 
+  SPRING_SNAPPY, 
+  SlidingPill, 
+  StaggerGrid, 
+  StaggerGridItem, 
+  usePrefersReducedMotion, 
+  getRegionCardTonalStyle, 
+  TACTILE_CARD_INTERACTIONS, 
+  TACTILE_BUTTON_INTERACTIONS 
+} from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from '../components/CountryFlag';
 import { CountrySilhouette } from '../components/CountrySilhouette';
@@ -13,7 +23,27 @@ import {
   formatHDI, 
   formatArea 
 } from '../data/atlas-formatters';
-import { GitCompare, Plus, X, ArrowRight, ShieldCheck, Check, Layers, Crosshair, Ship, DollarSign, FileText, TrendingUp, Activity, ArrowRightLeft } from 'lucide-react';
+import { 
+  GitCompare, 
+  Plus, 
+  X, 
+  ArrowRight, 
+  ShieldCheck, 
+  Check, 
+  Layers, 
+  Crosshair, 
+  Ship, 
+  DollarSign, 
+  FileText, 
+  TrendingUp, 
+  Activity, 
+  ArrowRightLeft,
+  Search,
+  RefreshCw,
+  Sparkles,
+  Filter,
+  Globe
+} from 'lucide-react';
 import { getCountryHistoricalDevelopmentDossier } from '../data/countryHistoricalDevelopmentData';
 import { MultiCountryRadarMatrix } from '../components/MultiCountryRadarMatrix';
 import { CountryFactsheetModal } from '../components/CountryFactsheetModal';
@@ -59,21 +89,78 @@ export const CompareView: React.FC<CompareViewProps> = ({
   const [factsheetCountryId, setFactsheetCountryId] = useState<string | null>(null);
   const [convergenceMetricId, setConvergenceMetricId] = useState<string>('NY.GDP.MKTP.CD');
 
-  const convergenceMetrics = [
-    { id: 'NY.GDP.MKTP.CD', label: 'Nominal GDP ($B)', unit: '$B' },
-    { id: 'NY.GDP.MKTP.KD.ZG', label: 'Real GDP Growth (%)', unit: '%' },
-    { id: 'SP.DYN.LE00.IN', label: 'Life Expectancy (Years)', unit: 'yrs' },
-    { id: 'EG.ELC.ACCS.ZS', label: 'Electricity Access (%)', unit: '%' },
-    { id: 'SE.PRM.ENRR', label: 'Primary School Enrollment (%)', unit: '%' },
+  // Sleek Country Selector Modal State
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+  const [swapTargetIndex, setSwapTargetIndex] = useState<number | null>(null);
+  const [selectorSearch, setSelectorSearch] = useState('');
+  const [selectedRegionFilter, setSelectedRegionFilter] = useState<string>('ALL');
+
+  const reducedMotion = usePrefersReducedMotion();
+
+  const REGION_OPTIONS = [
+    { id: 'ALL', label: 'All Regions' },
+    { id: 'Northern Africa', label: 'Northern Africa' },
+    { id: 'Western Africa', label: 'Western Africa' },
+    { id: 'Central Africa', label: 'Central Africa' },
+    { id: 'Eastern Africa', label: 'Eastern Africa' },
+    { id: 'Southern Africa', label: 'Southern Africa' },
   ];
 
-  const convergenceData = React.useMemo(() => {
-    return getMultiCountryTimeSeries(selectedIds, convergenceMetricId);
-  }, [selectedIds, convergenceMetricId]);
+  const handleOpenAdd = () => {
+    setSwapTargetIndex(null);
+    setSelectorSearch('');
+    setSelectedRegionFilter('ALL');
+    setIsSelectorOpen(true);
+  };
 
-  const COUNTRY_CHART_COLORS = ['#10b981', '#06b6d4', '#8b5cf6', '#f59e0b'];
+  const handleOpenSwap = (index: number) => {
+    setSwapTargetIndex(index);
+    setSelectorSearch('');
+    setSelectedRegionFilter('ALL');
+    setIsSelectorOpen(true);
+  };
+
+  const handleSelectCountry = (id: string) => {
+    if (swapTargetIndex !== null) {
+      const updated = [...selectedIds];
+      updated[swapTargetIndex] = id;
+      setSelectedIds(updated);
+    } else {
+      if (selectedIds.length < 4 && !selectedIds.includes(id)) {
+        setSelectedIds([...selectedIds, id]);
+      }
+    }
+    setIsSelectorOpen(false);
+  };
+
+  // Keyboard shortcut (Escape to close selector)
+  useEffect(() => {
+    if (!isSelectorOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsSelectorOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSelectorOpen]);
 
   const allEntities = atlas.getAllEntities();
+
+  const candidateCountries = useMemo(() => {
+    const q = selectorSearch.trim().toLowerCase();
+    return allEntities.filter(entity => {
+      if (selectedRegionFilter !== 'ALL' && entity.region !== selectedRegionFilter) {
+        return false;
+      }
+      if (!q) return true;
+      const matchName = entity.name.toLowerCase().includes(q);
+      const matchId = entity.id.toLowerCase().includes(q);
+      const matchRegion = entity.region.toLowerCase().includes(q);
+      const matchCapital = entity.capital?.toLowerCase().includes(q) || false;
+      return matchName || matchId || matchRegion || matchCapital;
+    });
+  }, [allEntities, selectorSearch, selectedRegionFilter]);
 
   const handleAddCountry = (id: string) => {
     if (selectedIds.length < 4 && !selectedIds.includes(id)) {
@@ -88,6 +175,20 @@ export const CompareView: React.FC<CompareViewProps> = ({
   };
 
   const countries = selectedIds.map(id => atlas.getEntity(id) || atlas.getEntity('NGA')!);
+
+  const convergenceMetrics = [
+    { id: 'NY.GDP.MKTP.CD', label: 'Nominal GDP ($B)', unit: '$B' },
+    { id: 'NY.GDP.MKTP.KD.ZG', label: 'Real GDP Growth (%)', unit: '%' },
+    { id: 'SP.DYN.LE00.IN', label: 'Life Expectancy (Years)', unit: 'yrs' },
+    { id: 'EG.ELC.ACCS.ZS', label: 'Electricity Access (%)', unit: '%' },
+    { id: 'SE.PRM.ENRR', label: 'Primary School Enrollment (%)', unit: '%' },
+  ];
+
+  const convergenceData = useMemo(() => {
+    return getMultiCountryTimeSeries(selectedIds, convergenceMetricId);
+  }, [selectedIds, convergenceMetricId]);
+
+  const COUNTRY_CHART_COLORS = ['#10b981', '#06b6d4', '#8b5cf6', '#f59e0b'];
 
   // Metrics definitions for the comparison table
   const metricGroups = [
@@ -258,62 +359,168 @@ export const CompareView: React.FC<CompareViewProps> = ({
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button
+              type="button"
               onClick={() => setShowSilhouettes(!showSilhouettes)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                 showSilhouettes
-                  ? 'bg-emerald-500 text-zinc-950 font-bold border-emerald-400'
-                  : 'bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400'
+                  ? 'bg-emerald-500 text-zinc-950 font-bold border-emerald-400 shadow-xs'
+                  : 'bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
               }`}
             >
               <Crosshair className="w-3.5 h-3.5" />
               <span>{showSilhouettes ? 'Hide Silhouettes' : 'Show Silhouettes'}</span>
             </button>
 
-            {/* Add Country Picker */}
+            {/* Sleek Add Country Button */}
             {selectedIds.length < 4 && (
-              <div className="relative">
-                <select
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      handleAddCountry(e.target.value);
-                      e.target.value = '';
-                    }
-                  }}
-                  className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-semibold px-3 py-2 rounded-xl cursor-pointer hover:border-emerald-500 focus:outline-hidden"
-                  defaultValue=""
-                >
-                  <option value="" disabled>+ Add Country to Compare</option>
-                  {allEntities
-                    .filter(e => !selectedIds.includes(e.id))
-                    .map(e => (
-                      <option key={e.id} value={e.id}>
-                        {e.name} ({e.id})
-                      </option>
-                    ))}
-                </select>
-              </div>
+              <button
+                type="button"
+                onClick={handleOpenAdd}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-500 transition-all cursor-pointer shadow-xs"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Country</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-md bg-emerald-200/60 dark:bg-emerald-900/60 font-bold">
+                  {selectedIds.length}/4
+                </span>
+              </button>
             )}
           </div>
         </div>
       </div>
 
-      {/* Compare View Switcher Tabs */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-fit" role="tablist" aria-label="Comparative analysis perspective">
+      {/* Active Comparison Lineup Ribbon */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        {countries.map((country, idx) => {
+          const tonal = getRegionCardTonalStyle(country.region);
+          const pop = atlas.getIndicatorValue(country.id, 'SP.POP.TOTL') || 0;
+          const gdp = atlas.getIndicatorValue(country.id, 'NY.GDP.MKTP.CD') || 0;
+
+          return (
+            <motion.div
+              key={country.id}
+              layout="position"
+              whileHover={reducedMotion ? {} : { y: -2 }}
+              className="p-4 rounded-2xl border transition-all relative group flex flex-col justify-between"
+              style={{
+                backgroundColor: tonal.lightBackground,
+                borderColor: tonal.lightBorder,
+                boxShadow: `0 4px 16px -4px ${tonal.unBaseColor}20`
+              }}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="shrink-0 drop-shadow-xs">
+                    <CountryFlag entityId={country.id} size="md" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span 
+                        className="w-2 h-2 rounded-full shrink-0" 
+                        style={{ backgroundColor: tonal.unBaseColor }}
+                        title={country.region}
+                      />
+                      <span className="font-extrabold text-sm text-zinc-900 dark:text-zinc-100 truncate">
+                        {country.name}
+                      </span>
+                    </div>
+                    <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 mt-0.5">
+                      <span>{country.id}</span>
+                      <span className="mx-1">·</span>
+                      <span className="truncate">{country.region}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions: Swap & Remove */}
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => handleOpenSwap(idx)}
+                    className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-emerald-600 transition-colors cursor-pointer shadow-2xs"
+                    title={`Swap ${country.name} with another nation`}
+                    aria-label={`Swap ${country.name}`}
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                  </button>
+                  {selectedIds.length > 2 && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveCountry(country.id)}
+                      className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-zinc-500 hover:text-rose-600 transition-colors cursor-pointer shadow-2xs"
+                      title={`Remove ${country.name} from comparison`}
+                      aria-label={`Remove ${country.name}`}
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Bottom Quick Metric Indicator */}
+              <div className="mt-3 pt-2.5 border-t border-zinc-200/60 dark:border-zinc-800/60 flex items-center justify-between text-[11px] font-mono text-zinc-600 dark:text-zinc-400">
+                <span>Pop: {formatPopulation(pop)}</span>
+                <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+                  GDP: {formatGDP(gdp)}
+                </span>
+              </div>
+            </motion.div>
+          );
+        })}
+
+        {/* Empty Slots */}
+        {Array.from({ length: 4 - selectedIds.length }).map((_, emptyIdx) => {
+          const slotNum = selectedIds.length + emptyIdx + 1;
+          return (
+            <motion.button
+              key={`empty-slot-${slotNum}`}
+              type="button"
+              layout="position"
+              onClick={handleOpenAdd}
+              whileHover={reducedMotion ? {} : { scale: 1.01 }}
+              whileTap={reducedMotion ? {} : { scale: 0.985 }}
+              className="p-4 rounded-2xl border-2 border-dashed border-zinc-300 dark:border-zinc-700 hover:border-emerald-500 dark:hover:border-emerald-500 bg-zinc-50/60 dark:bg-zinc-900/30 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/20 transition-all flex flex-col items-center justify-center min-h-[96px] gap-2 text-zinc-500 hover:text-emerald-700 dark:hover:text-emerald-400 cursor-pointer group"
+            >
+              <div className="w-7 h-7 rounded-full bg-zinc-200/80 dark:bg-zinc-800 group-hover:bg-emerald-500 group-hover:text-zinc-950 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition-all">
+                <Plus className="w-4 h-4" />
+              </div>
+              <div className="text-center">
+                <span className="text-xs font-bold font-display block">Slot {slotNum} Available</span>
+                <span className="text-[10px] font-mono text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                  + Add Nation to Compare
+                </span>
+              </div>
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {/* Compare View Switcher Tabs with SlidingPill */}
+      <div 
+        className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-fit" 
+        role="tablist" 
+        aria-label="Comparative analysis perspective"
+      >
         <button
           type="button"
           role="tab"
           aria-selected={activeCompareTab === 'matrix'}
           onClick={() => setActiveCompareTab('matrix')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
             activeCompareTab === 'matrix'
-              ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs'
+              ? 'text-zinc-900 dark:text-zinc-100'
               : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
           }`}
         >
-          <GitCompare className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-          <span>Macroeconomic &amp; Indicator Matrix</span>
+          {activeCompareTab === 'matrix' && (
+            <SlidingPill layoutId="compareActivePerspectiveTab" className="absolute inset-0 rounded-xl bg-white dark:bg-zinc-800 shadow-xs" />
+          )}
+          <span className="relative z-10 flex items-center gap-2">
+            <GitCompare className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>Macroeconomic &amp; Indicator Matrix</span>
+          </span>
         </button>
 
         <button
@@ -321,14 +528,19 @@ export const CompareView: React.FC<CompareViewProps> = ({
           role="tab"
           aria-selected={activeCompareTab === 'afcfta'}
           onClick={() => setActiveCompareTab('afcfta')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
             activeCompareTab === 'afcfta'
-              ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs'
+              ? 'text-zinc-900 dark:text-zinc-100'
               : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
           }`}
         >
-          <ArrowRightLeft className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-          <span>AfCFTA &amp; Bilateral Trade Complementarity</span>
+          {activeCompareTab === 'afcfta' && (
+            <SlidingPill layoutId="compareActivePerspectiveTab" className="absolute inset-0 rounded-xl bg-white dark:bg-zinc-800 shadow-xs" />
+          )}
+          <span className="relative z-10 flex items-center gap-2">
+            <ArrowRightLeft className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>AfCFTA &amp; Bilateral Trade Complementarity</span>
+          </span>
         </button>
       </div>
 
@@ -349,13 +561,13 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 <span className="text-[11px] font-mono text-zinc-500">Build-phase deterministic coordinates</span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <StaggerGrid className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {countries.map(country => (
-                  <div key={country.id} className="relative">
+                  <StaggerGridItem key={country.id} className="relative">
                     <CountrySilhouette entityId={country.id} size="md" />
-                  </div>
+                  </StaggerGridItem>
                 ))}
-              </div>
+              </StaggerGrid>
             </div>
           )}
 
@@ -564,17 +776,30 @@ export const CompareView: React.FC<CompareViewProps> = ({
             Indicators &amp; Metrics
           </div>
 
-          {countries.map(country => (
+          {countries.map((country, idx) => (
             <div key={country.id} className="p-4 md:p-6 border-l border-zinc-200 dark:border-zinc-800 flex flex-col justify-between relative group">
-              {selectedIds.length > 2 && (
+              <div className="absolute top-3 right-3 flex items-center gap-1">
                 <button
-                  onClick={() => handleRemoveCountry(country.id)}
-                  className="absolute top-3 right-3 p-1 rounded-full bg-zinc-200 dark:bg-zinc-900 text-zinc-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950 transition-colors cursor-pointer"
-                  title="Remove country"
+                  type="button"
+                  onClick={() => handleOpenSwap(idx)}
+                  className="p-1 rounded-full bg-zinc-200/80 dark:bg-zinc-900 text-zinc-500 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition-colors cursor-pointer"
+                  title={`Swap ${country.name} with another nation`}
+                  aria-label={`Swap ${country.name}`}
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <RefreshCw className="w-3.5 h-3.5" />
                 </button>
-              )}
+                {selectedIds.length > 2 && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveCountry(country.id)}
+                    className="p-1 rounded-full bg-zinc-200/80 dark:bg-zinc-900 text-zinc-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-colors cursor-pointer"
+                    title={`Remove ${country.name}`}
+                    aria-label={`Remove ${country.name}`}
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
 
               <div className="space-y-2">
                 <CountryFlag entityId={country.id} size="lg" />
@@ -663,6 +888,188 @@ export const CompareView: React.FC<CompareViewProps> = ({
       </div>
       </>
       )}
+
+      {/* Sleek Interactive Country Selector Modal */}
+      <AnimatePresence>
+        {isSelectorOpen && (
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/60 backdrop-blur-md"
+            onClick={() => setIsSelectorOpen(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="country-selector-modal-title"
+          >
+            <motion.div
+              initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 16 }}
+              animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
+              exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 16 }}
+              transition={SPRING_SNAPPY}
+              className="w-full max-w-4xl max-h-[88vh] flex flex-col rounded-3xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Modal Masthead */}
+              <div className="p-5 md:p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-4 bg-zinc-50/80 dark:bg-zinc-900/60">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700/60 text-emerald-700 dark:text-emerald-300">
+                      {swapTargetIndex !== null ? `SWAPPING SLOT ${swapTargetIndex + 1}` : 'ADD NATION TO COMPARISON'}
+                    </span>
+                    <span className="text-[11px] font-mono text-zinc-500">
+                      {selectedIds.length}/4 Active Slots
+                    </span>
+                  </div>
+                  <h2 id="country-selector-modal-title" className="text-xl md:text-2xl font-bold font-display text-zinc-900 dark:text-zinc-100 mt-1">
+                    {swapTargetIndex !== null 
+                      ? `Replace ${atlas.getEntity(selectedIds[swapTargetIndex])?.name || 'Selected Nation'}`
+                      : 'Choose an African Nation to Compare'}
+                  </h2>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                    Select from 54 sovereign African states across all UN M49 macro-geoschemes.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsSelectorOpen(false)}
+                  className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-600 dark:text-zinc-300 transition-colors cursor-pointer"
+                  aria-label="Close country selector"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Search & Region Filter Bar */}
+              <div className="p-4 md:px-6 md:py-3.5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/40 dark:bg-zinc-900/30 space-y-3">
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
+                  <input
+                    type="text"
+                    value={selectorSearch}
+                    onChange={e => setSelectorSearch(e.target.value)}
+                    placeholder="Search by country name, ISO code (e.g. NGA, KEN, MAR), or capital..."
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs md:text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-hidden focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-sans"
+                    autoFocus
+                  />
+                  {selectorSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectorSearch('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Region Filter Chips with SlidingPill */}
+                <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Geoscheme region filter">
+                  {REGION_OPTIONS.map(opt => {
+                    const isSelected = selectedRegionFilter === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        role="tab"
+                        aria-selected={isSelected}
+                        onClick={() => setSelectedRegionFilter(opt.id)}
+                        className={`relative px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 ${
+                          isSelected
+                            ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
+                            : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
+                        }`}
+                      >
+                        {isSelected && (
+                          <SlidingPill layoutId="selectorRegionPill" className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs" />
+                        )}
+                        <span className="relative z-10">{opt.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Nations Grid */}
+              <div className="p-4 md:p-6 overflow-y-auto flex-1">
+                {candidateCountries.length === 0 ? (
+                  <div className="py-12 text-center text-zinc-500">
+                    <Globe className="w-8 h-8 mx-auto text-zinc-400 mb-2 opacity-50" />
+                    <p className="text-sm font-semibold">No countries matching &ldquo;{selectorSearch}&rdquo;</p>
+                    <p className="text-xs text-zinc-400 mt-1">Try searching for a different name, ISO code, or reset the regional filter.</p>
+                  </div>
+                ) : (
+                  <StaggerGrid className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {candidateCountries.map(entity => {
+                      const isCurrentlyCompared = selectedIds.includes(entity.id);
+                      const isTargetSlotCountry = swapTargetIndex !== null && selectedIds[swapTargetIndex] === entity.id;
+                      const tonal = getRegionCardTonalStyle(entity.region);
+                      const pop = atlas.getIndicatorValue(entity.id, 'SP.POP.TOTL') || 0;
+                      const gdp = atlas.getIndicatorValue(entity.id, 'NY.GDP.MKTP.CD') || 0;
+
+                      return (
+                        <StaggerGridItem key={entity.id}>
+                          <button
+                            type="button"
+                            disabled={isCurrentlyCompared && !isTargetSlotCountry}
+                            onClick={() => handleSelectCountry(entity.id)}
+                            className={`w-full p-3.5 rounded-2xl border text-left transition-all relative flex flex-col justify-between h-full cursor-pointer ${
+                              isTargetSlotCountry
+                                ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-950/30 ring-1 ring-amber-500'
+                                : isCurrentlyCompared
+                                ? 'border-zinc-200 dark:border-zinc-800 bg-zinc-100/70 dark:bg-zinc-900/40 opacity-60 cursor-not-allowed'
+                                : 'border-zinc-200 dark:border-zinc-800 hover:border-emerald-500 dark:hover:border-emerald-500 bg-white dark:bg-zinc-900/80 hover:shadow-md'
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <CountryFlag entityId={entity.id} size="md" />
+                                <div className="min-w-0">
+                                  <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100 truncate flex items-center gap-1.5">
+                                    <span
+                                      className="w-1.5 h-1.5 rounded-full shrink-0"
+                                      style={{ backgroundColor: tonal.unBaseColor }}
+                                    />
+                                    <span>{entity.name}</span>
+                                  </div>
+                                  <div className="text-[10px] font-mono text-zinc-500 flex items-center gap-1">
+                                    <span>{entity.id}</span>
+                                    <span>·</span>
+                                    <span className="truncate">{entity.region}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {isCurrentlyCompared ? (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/60 shrink-0">
+                                  <Check className="w-3 h-3" /> In Matrix
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 group-hover:bg-emerald-500 group-hover:text-zinc-950 shrink-0">
+                                  Select
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="mt-3 pt-2 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+                              <span>Pop: {formatPopulation(pop)}</span>
+                              <span className="font-semibold text-zinc-700 dark:text-zinc-300">GDP: {formatGDP(gdp)}</span>
+                            </div>
+                          </button>
+                        </StaggerGridItem>
+                      );
+                    })}
+                  </StaggerGrid>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="p-3 md:px-6 md:py-3 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex items-center justify-between text-xs text-zinc-500 font-mono">
+                <span>Showing {candidateCountries.length} of 54 African Nations</span>
+                <span className="hidden sm:inline">Press Esc to Close</span>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* 1-Page Printable Country Factsheet Modal */}
       {factsheetCountryId && (
