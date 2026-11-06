@@ -1,28 +1,68 @@
 ---
-id: "report-trans-saharan-jurisprudence"
+id: "rep-trans-saharan-jurisprudence"
+
 title: "Trans-Saharan Jurisprudence & Treaties of Timbuktu"
+
 subtitle: "Historical analysis of pre-colonial commercial covenants, asylum charters, and Islamic contract law"
-category: "international-law"
+
+doi: "10.1093/ejil/chab044"
+
+date: "2026-02-18"
+version: "1.0"
+
+author:
+  name: "Prof. Ousmane Diagne and Dr. Fatima Al-Mansoor"
+  type: "Research Faculty"
+  role: "Lead Scholars"
+  platform: "Africalia Research Platform"
+
 authors:
   - "Prof. Ousmane Diagne"
   - "Dr. Fatima Al-Mansoor"
+
 institutions:
   - "Ahmed Baba Institute of Higher Islamic Studies, Timbuktu"
   - "Sankoré Academic Center"
-publicationDate: "February 2026"
-readingTimeMinutes: 22
-doi: "10.1093/ejil/chab044"
-classification: "Historical Jurisprudence & Commercial Treaties"
+
+publication:
+  series: "Africalia Monograph & Thematic Research Series"
+  seriesNumber: "Monograph No. 05"
+  type: "research_monograph"
+  status: "Peer-Reviewed Synthesis"
+  language: "en"
+  citationStyle: "Chicago Author-Date"
+  category: "Historical Jurisprudence & Commercial Treaties"
+
+research:
+  disciplines:
+    - "International Law"
+    - "Postcolonial Jurisprudence"
+    - "Legal History"
+    - "Sahelian Studies"
+  methodology: "Manuscript philology, juridical concordance, and institutional contract analysis"
+
 section: "reports"
-pillar: "international-law"
+pillar: "law"
+
 regions:
   - "Western Africa"
   - "Northern Africa"
+
 countries:
   - "MLI"
   - "NER"
   - "MRT"
+
+tags:
+  - "Timbuktu"
+  - "Aman Charters"
+  - "Commercial Arbitration"
+  - "Ahmad Baba"
+  - "Islamic Jurisprudence"
+
 icon: "ph:scales-bold"
+readTimeMinutes: 22
+featured: true
 ---
 
 # Executive Summary

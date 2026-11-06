@@ -19,7 +19,6 @@ import { WorkingPaperEntry, WORKING_PAPERS_SERIES as BASELINE_WORKING_PAPERS } f
 import { LucideIcon, BookOpen, Dna, Scale, TrendingUp, Cpu, FileText } from 'lucide-react';
 import rawBantu from '../content/reports/bantu-expansion-genomics.md?raw';
 import rawTransSaharan from '../content/reports/trans-saharan-jurisprudence.md?raw';
-import rawEuropeAtlanticReport from '../content/reports/economics-europe-atlantic.md?raw';
 import rawEuropeAtlanticWorkingPaper from '../content/working-papers/economics-europe-atlantic.md?raw';
 
 /**
@@ -27,8 +26,7 @@ import rawEuropeAtlanticWorkingPaper from '../content/working-papers/economics-e
  */
 const SEED_REPORT_FILES: Record<string, string> = {
   '../content/reports/bantu-expansion-genomics.md': rawBantu,
-  '../content/reports/trans-saharan-jurisprudence.md': rawTransSaharan,
-  '../content/reports/economics-europe-atlantic.md': rawEuropeAtlanticReport
+  '../content/reports/trans-saharan-jurisprudence.md': rawTransSaharan
 };
 
 const SEED_WORKING_PAPER_FILES: Record<string, string> = {
@@ -74,6 +72,11 @@ export function loadDropInReports(): Record<string, ResearchReport> {
       if (typeof rawContent === 'string' && rawContent.trim()) {
         const { report } = ingestNotebookMarkdown(rawContent, path.replace('../content/reports/', 'reports/'));
         dropInCatalog[report.id] = report;
+        // Register legacy alias if id starts with rep-
+        if (report.id.startsWith('rep-')) {
+          const legacyId = report.id.replace(/^rep-/, 'report-');
+          dropInCatalog[legacyId] = report;
+        }
       }
     } catch (err) {
       console.warn(`[DropInReportsLoader] Failed to ingest report at "${path}":`, err);
@@ -95,6 +98,13 @@ export function loadDropInWorkingPapers(): Record<string, ResearchReport> {
         const { report } = ingestNotebookMarkdown(rawContent, path.replace('../content/working-papers/', 'working-papers/'));
         report.isWorkingPaper = true;
         wpCatalog[report.id] = report;
+        // Register legacy aliases if id starts with wkp-
+        if (report.id.startsWith('wkp-')) {
+          const legacyRepId = report.id.replace(/^wkp-/, 'rep-');
+          const legacyWpId = report.id.replace(/^wkp-/, 'wp-');
+          wpCatalog[legacyRepId] = report;
+          wpCatalog[legacyWpId] = report;
+        }
       }
     } catch (err) {
       console.warn(`[DropInWorkingPapersLoader] Failed to ingest working paper at "${path}":`, err);
@@ -247,7 +257,7 @@ export function getAllReports(): Record<string, ResearchReport> {
  */
 export function isReportOrPaperTab(tabId: string): boolean {
   if (!tabId) return false;
-  if (tabId.startsWith('report-') || tabId.startsWith('rep-') || tabId.startsWith('wp-')) {
+  if (tabId.startsWith('report-') || tabId.startsWith('rep-') || tabId.startsWith('wp-') || tabId.startsWith('wkp-')) {
     return true;
   }
   const all = getAllReports();
@@ -358,11 +368,19 @@ export function getCategorizedReports(): NavReportGroup[] {
     'report-rao-model-socioeconomic': 'Capital Policy',
     'report-sociological-origins-racism': 'Historical',
     'report-bantu-expansion-genomics': 'Archaeogenomics',
+    'rep-bantu-expansion-genomics': 'Archaeogenomics',
     'report-trans-saharan-jurisprudence': 'Timbuktu Charters',
-    'rep-economics-europe-atlantic-2026': 'Working Paper No. 08'
+    'rep-trans-saharan-jurisprudence': 'Timbuktu Charters',
+    'rep-economics-europe-atlantic-2026': 'Working Paper No. 08',
+    'wkp-economics-europe-atlantic-2026': 'Working Paper No. 08'
   };
 
+  const seenReportIds = new Set<string>();
+
   for (const rep of reportsList) {
+    if (seenReportIds.has(rep.id)) continue;
+    seenReportIds.add(rep.id);
+
     const item: NavReportItem = {
       id: rep.id,
       label: rep.title.replace(/^Research:\s*/i, ''),
@@ -371,22 +389,22 @@ export function getCategorizedReports(): NavReportGroup[] {
       category: rep.category
     };
 
-    // 1. Always add to its thematic pillar & category group
-    if (rep.category === 'genetics') {
-      groups[1].items.push(item);
-    } else if (rep.category === 'international-law') {
-      groups[2].items.push(item);
-    } else {
-      groups[3].items.push(item);
-    }
-
-    // 2. If it is an Africalia Working Paper, also register it under the Working Papers group
+    // If it is an Africalia Working Paper, register exclusively under the Working Papers group
     if (rep.isWorkingPaper) {
       groups[4].items.push({
         ...item,
         badge: rep.seriesNumber ? rep.seriesNumber.replace('Africalia ', '') : 'Working Paper',
         category: 'working-papers'
       });
+    } else {
+      // Standard thematic research reports register in their designated category
+      if (rep.category === 'genetics') {
+        groups[1].items.push(item);
+      } else if (rep.category === 'international-law') {
+        groups[2].items.push(item);
+      } else {
+        groups[3].items.push(item);
+      }
     }
   }
 

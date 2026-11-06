@@ -10,12 +10,14 @@ import {
   Award,
   Printer,
   Upload,
-  ArrowRight
+  ArrowRight,
+  Download
 } from 'lucide-react';
 import { WorkingPaperEntry } from '../data/methodologyDossierData';
-import { getUnifiedWorkingPaperEntries } from '../data/reportsDataLoader';
+import { getUnifiedWorkingPaperEntries, getAllReports } from '../data/reportsDataLoader';
 import { NotebookIngestionModal } from './NotebookIngestionModal';
 import { AfricaUnLogo } from './AfricaUnLogo';
+import { exportPublicationPDF } from '../utils/academicExport';
 
 interface WorkingPapersModalProps {
   isOpen: boolean;
@@ -32,6 +34,7 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
   const [refreshTick, setRefreshTick] = useState(0);
   const [isIngestionOpen, setIsIngestionOpen] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   useEffect(() => {
     const handleUpdate = () => setRefreshTick(t => t + 1);
@@ -51,6 +54,44 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
     navigator.clipboard.writeText(text);
     setCopiedKey(key);
     setTimeout(() => setCopiedKey(null), 2000);
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!selectedPaper) return;
+    try {
+      setIsGeneratingPdf(true);
+      const allReports = getAllReports();
+      const linkedReport = selectedPaper.reportId ? allReports[selectedPaper.reportId] : undefined;
+
+      if (linkedReport) {
+        await exportPublicationPDF(linkedReport);
+      } else {
+        await exportPublicationPDF({
+          id: selectedPaper.id,
+          title: selectedPaper.title,
+          subtitle: selectedPaper.subtitle,
+          authors: [selectedPaper.author],
+          institutions: [selectedPaper.affiliation],
+          publicationDate: selectedPaper.date,
+          seriesNumber: selectedPaper.seriesNumber,
+          isWorkingPaper: true,
+          jelCodes: selectedPaper.jelCodes,
+          executiveSummary: selectedPaper.abstract,
+          sections: [
+            {
+              id: 'sec-findings',
+              title: 'Key Econometric Findings & Empirical Evidence',
+              content: selectedPaper.keyFindings.join('\n\n')
+            }
+          ],
+          citations: [selectedPaper.citationApa]
+        });
+      }
+    } catch (err) {
+      console.error('Failed to export publication PDF from modal:', err);
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   const handlePrint = () => {
@@ -105,12 +146,21 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
                 <span>Ingest Working Paper (.md)</span>
               </button>
               <button
+                onClick={handleDownloadPdf}
+                disabled={isGeneratingPdf}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                title="Download High-Resolution Publication PDF"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>{isGeneratingPdf ? 'Generating PDF...' : 'Download PDF'}</span>
+              </button>
+              <button
                 onClick={handlePrint}
                 className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-semibold transition-colors cursor-pointer"
-                title="Print or Save as Academic PDF"
+                title="Print directly from browser"
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>Academic Print PDF</span>
+                <span>Print</span>
               </button>
               <button
                 onClick={onClose}
@@ -267,11 +317,19 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
                 </button>
               )}
               <button
+                onClick={handleDownloadPdf}
+                disabled={isGeneratingPdf}
+                className="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
+              >
+                <Download className="w-3.5 h-3.5 inline mr-1" />
+                {isGeneratingPdf ? 'Generating PDF...' : 'Download PDF'}
+              </button>
+              <button
                 onClick={handlePrint}
                 className="px-3.5 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold transition-colors cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5 inline mr-1" />
-                Print / Save PDF
+                Print
               </button>
               <button
                 onClick={onClose}

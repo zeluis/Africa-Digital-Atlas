@@ -67,11 +67,24 @@ const KNOWN_REPORTS_META: Record<string, { title: string; shortTitle: string; is
     title: 'Archaeogenomics of the Bantu Expansion & Continental Demography',
     shortTitle: 'Bantu Expansion'
   },
+  'rep-bantu-expansion-genomics': {
+    title: 'Archaeogenomics of the Bantu Expansion & Continental Demography',
+    shortTitle: 'Bantu Expansion'
+  },
   'report-trans-saharan-jurisprudence': {
     title: 'Trans-Saharan Commercial Jurisprudence & Timbuktu Manuscript Charters',
     shortTitle: 'Trans-Saharan Law'
   },
+  'rep-trans-saharan-jurisprudence': {
+    title: 'Trans-Saharan Commercial Jurisprudence & Timbuktu Manuscript Charters',
+    shortTitle: 'Trans-Saharan Law'
+  },
   'rep-economics-europe-atlantic-2026': {
+    title: 'Atlantic Extraction and European Capital Accumulation (1500–1850)',
+    shortTitle: 'Atlantic Capital',
+    isWorkingPaper: true
+  },
+  'wkp-economics-europe-atlantic-2026': {
     title: 'Atlantic Extraction and European Capital Accumulation (1500–1850)',
     shortTitle: 'Atlantic Capital',
     isWorkingPaper: true
@@ -80,7 +93,7 @@ const KNOWN_REPORTS_META: Record<string, { title: string; shortTitle: string; is
 
 export function isReportOrPaperTab(tabId: string): boolean {
   if (!tabId) return false;
-  if (tabId.startsWith('report-') || tabId.startsWith('rep-') || tabId.startsWith('wp-')) {
+  if (tabId.startsWith('report-') || tabId.startsWith('rep-') || tabId.startsWith('wp-') || tabId.startsWith('wkp-')) {
     return true;
   }
   return Boolean(KNOWN_REPORTS_META[tabId]);

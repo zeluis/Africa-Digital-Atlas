@@ -1,30 +1,71 @@
 ---
-id: "report-bantu-expansion-genomics"
+id: "rep-bantu-expansion-genomics"
+
 title: "Molecular Genetics of the Bantu Expansion & Sub-Saharan Admixture"
+
 subtitle: "High-density autosomal SNP analysis reconstructing demographic expansion from the Benue-Cross River Basin"
-category: "genetics"
+
+doi: "10.1016/j.ajhg.2026.03.011"
+
+date: "2026-03-15"
+version: "1.0"
+
+author:
+  name: "Dr. Amara Okafor, Prof. K. A. Diallo, and Dr. Marcus Thorne"
+  type: "Consortium Collaboration"
+  role: "Lead Investigators"
+  platform: "Africalia Research Platform"
+
 authors:
   - "Dr. Amara Okafor"
   - "Prof. K. A. Diallo"
   - "Dr. Marcus Thorne"
+
 institutions:
   - "African Institute for Molecular Genetics, Ibadan"
   - "Institut Pasteur Dakar"
   - "Center for Afro-Atlantic Studies"
-publicationDate: "March 2026"
-readingTimeMinutes: 18
-doi: "10.1016/j.ajhg.2026.03.011"
-classification: "Population Genetics & Archaeogenomics"
+
+publication:
+  series: "Africalia Monograph & Thematic Research Series"
+  seriesNumber: "Monograph No. 04"
+  type: "research_monograph"
+  status: "Peer-Reviewed Synthesis"
+  language: "en"
+  citationStyle: "Chicago Author-Date"
+  category: "Population Genetics & Archaeogenomics"
+
+research:
+  disciplines:
+    - "Population Genetics"
+    - "Paleogenomics"
+    - "Bioarchaeology"
+    - "Human Evolutionary Biology"
+  methodology: "High-density autosomal SNP genotyping, ancient DNA coalescence modeling, and Bayesian glottochronology"
+
 section: "reports"
 pillar: "genetics"
+
 regions:
   - "Western Africa"
   - "Central Africa"
+  - "Southern Africa"
+
 countries:
   - "NGA"
   - "CMR"
   - "COD"
+
+tags:
+  - "Bantu Expansion"
+  - "Archaeogenomics"
+  - "Ancient DNA"
+  - "Population Genetics"
+  - "Niger-Congo"
+
 icon: "lucide:dna"
+readTimeMinutes: 18
+featured: true
 ---
 
 # Executive Summary

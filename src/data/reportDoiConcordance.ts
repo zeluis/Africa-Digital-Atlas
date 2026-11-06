@@ -30,8 +30,20 @@ const LOCAL_STORAGE_KEY = 'africalia_user_doi_concordance_v1';
  */
 export const BASELINE_DOI_CONCORDANCE: Record<string, DoiConcordanceEntry> = {
   // 1. Bantu Expansion Paleogenomics
+  'rep-bantu-expansion-genomics': {
+    id: 'rep-bantu-expansion-genomics',
+    title: 'Archaeogenomic Mapping of the Bantu Expansion: Ceramic Horizons and Molecular Admixture Trajectories',
+    doi: '10.1126/science.aal1988',
+    canonicalUrl: 'https://doi.org/10.1126/science.aal1988',
+    verifiedTitle: 'Dispersals and genetic adaptation of Bantu-speaking populations in Africa and North America',
+    journal: 'Science (AAAS)',
+    authors: ['Patin, E.', 'Lopez, M.', 'Grollemund, R.', 'Verdu, P.', 'Harmant, C.'],
+    year: 2017,
+    status: 'verified_journal',
+    notes: 'High-coverage whole-genome analysis resolving early western vs. eastern Bantu migration routes.'
+  },
   'report-bantu-expansion-genomics': {
-    id: 'report-bantu-expansion-genomics',
+    id: 'rep-bantu-expansion-genomics',
     title: 'Archaeogenomic Mapping of the Bantu Expansion: Ceramic Horizons and Molecular Admixture Trajectories',
     doi: '10.1126/science.aal1988',
     canonicalUrl: 'https://doi.org/10.1126/science.aal1988',
@@ -182,8 +194,20 @@ export const BASELINE_DOI_CONCORDANCE: Record<string, DoiConcordanceEntry> = {
   },
 
   // 12. Timbuktu Charters & Pre-Colonial Commercial Jurisprudence
+  'rep-trans-saharan-jurisprudence': {
+    id: 'rep-trans-saharan-jurisprudence',
+    title: 'Trans-Saharan Jurisprudence & Commercial Contracts in the Pre-Colonial Sahel (1100–1600 CE)',
+    doi: '10.1163/9789004165427',
+    canonicalUrl: 'https://doi.org/10.1163/9789004165427',
+    verifiedTitle: 'The Timbuktu Manuscripts: Heritage, Culture, and Trade Across the Sahara',
+    journal: 'Brill Academic Publishers / UNESCO',
+    authors: ['Hunwick, John O.', 'Boye, Alida'],
+    year: 2008,
+    status: 'verified_university_press',
+    notes: 'Analysis of contractual suftaja credit instruments and legal charters from Ahmed Baba Institute archives.'
+  },
   'report-trans-saharan-jurisprudence': {
-    id: 'report-trans-saharan-jurisprudence',
+    id: 'rep-trans-saharan-jurisprudence',
     title: 'Trans-Saharan Jurisprudence & Commercial Contracts in the Pre-Colonial Sahel (1100–1600 CE)',
     doi: '10.1163/9789004165427',
     canonicalUrl: 'https://doi.org/10.1163/9789004165427',
@@ -196,8 +220,20 @@ export const BASELINE_DOI_CONCORDANCE: Record<string, DoiConcordanceEntry> = {
   },
 
   // 13. Working Paper No. 08 - European Capital Accumulation
+  'wkp-economics-europe-atlantic-2026': {
+    id: 'wkp-economics-europe-atlantic-2026',
+    title: 'Atlantic Slavery, European Development, and Colonial Extraction',
+    doi: '10.6084/m9.figshare.34063314',
+    canonicalUrl: 'https://doi.org/10.6084/m9.figshare.34063314',
+    verifiedTitle: 'Atlantic Slavery, European Development, and Colonial Extraction',
+    journal: 'NBER Working Paper Series / Africalia Press',
+    authors: ['Africalia Economic Research Group'],
+    year: 2026,
+    status: 'working_paper_series',
+    notes: 'A Quantitative Historical-Economics Research Proposal (Consolidated Version 3).'
+  },
   'rep-economics-europe-atlantic-2026': {
-    id: 'rep-economics-europe-atlantic-2026',
+    id: 'wkp-economics-europe-atlantic-2026',
     title: 'Atlantic Slavery, European Development, and Colonial Extraction',
     doi: '10.6084/m9.figshare.34063314',
     canonicalUrl: 'https://doi.org/10.6084/m9.figshare.34063314',
@@ -238,6 +274,7 @@ export function getUserConcordanceOverrides(): Record<string, Partial<DoiConcord
       const entry = val as Partial<DoiConcordanceEntry>;
       if (
         entry.doi === '10.1515/9780773576810-003' ||
+        key === 'wkp-economics-europe-atlantic-2026' ||
         key === 'rep-economics-europe-atlantic-2026' ||
         key === 'Atlantic Slavery, European Development, and Colonial Extraction'
       ) {

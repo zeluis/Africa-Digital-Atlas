@@ -35,6 +35,7 @@ import { CitePublicationModal } from '../components/CitePublicationModal';
 import { DoiVerificationModal } from '../components/DoiVerificationModal';
 import { getVerifiedPublicationUrl } from '../data/reportDoiConcordance';
 import { verifyDoiWithCrossref, DoiVerificationResult } from '../services/crossrefService';
+import { exportPublicationPDF } from '../utils/academicExport';
 import { AfricaliaReport } from '../types/africaliaReport';
 
 interface ResearchReportArticleViewProps {
@@ -61,6 +62,18 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
   const [isDoiModalOpen, setIsDoiModalOpen] = useState<boolean>(false);
   const [crossrefStatus, setCrossrefStatus] = useState<DoiVerificationResult | null>(null);
   const [readingProgress, setReadingProgress] = useState<number>(0);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState<boolean>(false);
+
+  const handleDownloadPdf = async () => {
+    try {
+      setIsGeneratingPdf(true);
+      await exportPublicationPDF(report);
+    } catch (err) {
+      console.error('Failed to export publication PDF:', err);
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
 
   // Curated verified publication concordancer
   const verifiedPub = getVerifiedPublicationUrl(report.id, report.doi);
@@ -164,15 +177,15 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
   };
 
   return (
-    <div className="relative space-y-8 pb-16 animate-in fade-in duration-300" id="research-report-article-view">
+    <div className="printable-article relative space-y-8 pb-16 animate-in fade-in duration-300" id="research-report-article-view">
       {/* Top Reading Progress Bar */}
       <div 
-        className="fixed top-0 left-0 right-0 h-1 bg-amber-500 z-50 transition-all duration-150"
+        className="fixed top-0 left-0 right-0 h-1 bg-amber-500 z-50 transition-all duration-150 no-print"
         style={{ width: `${readingProgress}%` }}
       />
 
       {/* Navigation Breadcrumb Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs no-print">
         <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
           {onBackToDirectory && (
             <button
@@ -197,7 +210,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
         </div>
 
         {/* Reader Controls */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 no-print">
           {/* Audio Voice Narration Engine */}
           <ReportVoiceReader
             title={report.title}
@@ -253,6 +266,18 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
             <span>Cite Publication</span>
           </button>
 
+          {/* Download Publication PDF */}
+          <button
+            type="button"
+            onClick={handleDownloadPdf}
+            disabled={isGeneratingPdf}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold transition-all cursor-pointer text-xs shadow-2xs disabled:opacity-50"
+            title="Download publication-grade academic PDF"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>{isGeneratingPdf ? 'Generating PDF...' : 'Download PDF'}</span>
+          </button>
+
           {/* Export Machine-Readable JSON */}
           <button
             type="button"
@@ -260,24 +285,25 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 font-medium transition-all cursor-pointer text-xs"
             title="Download canonical AfricaliaReport JSON format"
           >
-            <Download className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
+            <FileText className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
             <span className="hidden sm:inline">Export JSON</span>
           </button>
 
-          {/* Print Monograph */}
+          {/* Print Monograph directly from browser */}
           <button
             type="button"
             onClick={() => window.print()}
-            className="p-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 transition-all cursor-pointer"
-            title="Print / Save PDF"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 font-medium transition-all cursor-pointer text-xs"
+            title="Print Monograph directly from browser"
           >
-            <Printer className="w-4 h-4" />
+            <Printer className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
+            <span className="hidden sm:inline">Print</span>
           </button>
         </div>
       </div>
 
       {/* Scholarly Article Header Banner */}
-      <header className="p-6 md:p-10 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden space-y-6">
+      <header className="article-header p-6 md:p-10 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden space-y-6">
         <div 
           className="absolute top-0 right-0 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-20"
           style={{ backgroundColor: report.categoryColor }}
@@ -403,7 +429,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
       {/* Main Two-Column Academic Article Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Sticky Column: Table of Contents & Cross-Links (4 Cols) */}
-        <aside className="lg:col-span-4 space-y-4 lg:sticky lg:top-24">
+        <aside className="lg:col-span-4 space-y-4 lg:sticky lg:top-24 no-print">
           <div className="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-3">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 pb-2 border-b border-zinc-100 dark:border-zinc-800">
               <BookOpen className="w-4 h-4 text-amber-500" />

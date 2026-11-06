@@ -846,7 +846,7 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
 
   // 7. Stable Identifier & Slugs
   const cleanTitleSlug = extractedTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 36).replace(/^-|-$/g, '');
-  const prefix = isWorkingPaper ? 'wp' : 'report';
+  const prefix = isWorkingPaper ? 'wkp' : 'rep';
   const reportId = frontmatter.id || `${prefix}-${pillar}-${cleanTitleSlug}`;
 
   // 8. Authors & Institution Normalization (supports both `authors:` list and `author:` nested object)

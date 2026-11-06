@@ -1,5 +1,5 @@
 ---
-id: "rep-economics-europe-atlantic-2026"
+id: "wkp-economics-europe-atlantic-2026"
 
 title: "Atlantic Slavery, European Development, and Colonial Extraction"
 

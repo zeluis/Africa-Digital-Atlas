@@ -363,6 +363,300 @@ export const exportMonographPDF = async (
   doc.save(cleanFilename);
 };
 
+export interface PublicationPdfInput {
+  id: string;
+  title: string;
+  subtitle?: string | null;
+  authors?: string[];
+  institutions?: string[];
+  publicationDate?: string;
+  seriesNumber?: string;
+  isWorkingPaper?: boolean;
+  doi?: string;
+  jelCodes?: string[];
+  classification?: string | { disciplines?: string[]; pillar?: string };
+  executiveSummary?: string;
+  sections?: Array<{
+    id?: string;
+    title: string;
+    content: string;
+    keyTakeaway?: string;
+  }>;
+  citations?: Array<{
+    authors?: string;
+    year?: number | string;
+    title?: string;
+    journalOrPublisher?: string;
+    doiOrUrl?: string;
+  } | string>;
+}
+
+/**
+ * Generates and downloads a complete, multi-page publication-grade PDF
+ * for any Africalia Research Monograph or Working Paper.
+ */
+export const exportPublicationPDF = async (pub: PublicationPdfInput): Promise<void> => {
+  const { jsPDF } = await import('jspdf');
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4'
+  });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 16;
+  const contentWidth = pageWidth - (margin * 2);
+
+  const cleanDoi = pub.doi ? pub.doi.replace('https://doi.org/', '').trim() : '10.6084/m9.figshare.34065711';
+  const authorsList = pub.authors && pub.authors.length > 0 
+    ? pub.authors 
+    : (pub.isWorkingPaper ? ['Africalia Interdisciplinary Research & Knowledge Initiative'] : ['Africalia']);
+  const institutionsList = pub.institutions && pub.institutions.length > 0 
+    ? pub.institutions 
+    : ['Africalia Research Platform'];
+  const pubDate = pub.publicationDate || '2026';
+  const classificationStr = typeof pub.classification === 'string'
+    ? pub.classification
+    : (pub.classification?.disciplines?.[0] || 'Historical Political Economy');
+  const jelStr = pub.jelCodes && pub.jelCodes.length > 0 ? `JEL: ${pub.jelCodes.join(', ')}` : '';
+
+  // 1. First Page Header Banner
+  doc.setDrawColor(180, 160, 140);
+  doc.setLineWidth(0.4);
+  doc.line(margin, margin + 9, pageWidth - margin, margin + 9);
+
+  doc.setFont('times', 'bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(120, 53, 15);
+  const seriesText = pub.isWorkingPaper
+    ? `AFRICALIA WORKING PAPER SERIES • ${pub.seriesNumber || 'WORKING PAPER NO. 08'}`
+    : 'AFRICALIA SCHOLARLY RESEARCH MONOGRAPH SERIES';
+  doc.text(seriesText, margin, margin + 6);
+
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(90, 80, 70);
+  doc.text(`DOI: ${cleanDoi}`, pageWidth - margin - 50, margin + 6);
+
+  // 2. Title & Subtitle
+  let currentY = margin + 17;
+  doc.setFont('times', 'bold');
+  doc.setFontSize(16);
+  doc.setTextColor(28, 25, 23);
+  const titleLines = doc.splitTextToSize(pub.title, contentWidth);
+  doc.text(titleLines, margin, currentY);
+  currentY += (titleLines.length * 6.5) + 2;
+
+  if (pub.subtitle) {
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(9.5);
+    doc.setTextColor(87, 83, 78);
+    const subLines = doc.splitTextToSize(pub.subtitle, contentWidth);
+    doc.text(subLines, margin, currentY);
+    currentY += (subLines.length * 4.5) + 3;
+  }
+
+  // 3. Authors & Metadata Block
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(41, 37, 36);
+  doc.text(authorsList.join('  •  '), margin, currentY);
+  currentY += 4.5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(120, 113, 108);
+  const metaLine = `${institutionsList.join('  |  ')}  •  ${pubDate}  •  ${classificationStr} ${jelStr ? ' • ' + jelStr : ''}`;
+  const metaLines = doc.splitTextToSize(metaLine, contentWidth);
+  doc.text(metaLines, margin, currentY);
+  currentY += (metaLines.length * 4) + 4;
+
+  // Thin separator line before abstract
+  doc.setDrawColor(220, 215, 205);
+  doc.setLineWidth(0.2);
+  doc.line(margin, currentY, pageWidth - margin, currentY);
+  currentY += 5;
+
+  // 4. Executive Summary / Abstract Box
+  if (pub.executiveSummary) {
+    const cleanAbstract = pub.executiveSummary
+      .replace(/\[REF:[^|\]]+(?:\|([^\]]+))?\]/g, '($1)')
+      .replace(/[#*`]/g, '')
+      .trim();
+
+    doc.setFont('times', 'normal');
+    doc.setFontSize(8.5);
+    const abstractLines = doc.splitTextToSize(cleanAbstract, contentWidth - 8);
+    const boxHeight = (abstractLines.length * 4.2) + 12;
+
+    // Soft warm background box
+    doc.setFillColor(250, 248, 245);
+    doc.rect(margin, currentY, contentWidth, boxHeight, 'F');
+
+    // Amber left vertical accent bar
+    doc.setFillColor(217, 119, 6);
+    doc.rect(margin, currentY, 1.8, boxHeight, 'F');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(180, 83, 9);
+    doc.text('EXECUTIVE ABSTRACT', margin + 4, currentY + 5);
+
+    doc.setFont('times', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(41, 37, 36);
+    doc.text(abstractLines, margin + 4, currentY + 10);
+
+    currentY += boxHeight + 7;
+  }
+
+  // 5. Sections Rendering
+  if (pub.sections && pub.sections.length > 0) {
+    for (const sec of pub.sections) {
+      if (currentY > pageHeight - 35) {
+        doc.addPage();
+        currentY = margin + 12;
+      }
+
+      // Section Title
+      doc.setFont('times', 'bold');
+      doc.setFontSize(11.5);
+      doc.setTextColor(28, 25, 23);
+      const secTitleLines = doc.splitTextToSize(sec.title, contentWidth);
+      doc.text(secTitleLines, margin, currentY);
+      currentY += (secTitleLines.length * 5) + 3;
+
+      // Clean Paragraphs
+      const rawContent = sec.content
+        .replace(/\[REF:[^|\]]+(?:\|([^\]]+))?\]/g, '($1)')
+        .replace(/<[^>]*>/g, '');
+      const paragraphs = rawContent.split(/\n\s*\n/).filter(p => p.trim());
+
+      doc.setFont('times', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(41, 37, 36);
+
+      for (const p of paragraphs) {
+        const cleanP = p.replace(/^[#*>-]+\s*/, '').replace(/[*_`]/g, '').trim();
+        if (!cleanP) continue;
+
+        const pLines = doc.splitTextToSize(cleanP, contentWidth);
+        if (currentY + (pLines.length * 4.2) > pageHeight - 20) {
+          doc.addPage();
+          currentY = margin + 12;
+        }
+
+        doc.text(pLines, margin, currentY);
+        currentY += (pLines.length * 4.2) + 3.5;
+      }
+
+      // Key Takeaway callout if present
+      if (sec.keyTakeaway) {
+        if (currentY > pageHeight - 25) {
+          doc.addPage();
+          currentY = margin + 12;
+        }
+
+        const cleanTakeaway = sec.keyTakeaway.replace(/[*_`]/g, '').trim();
+        const takeawayLines = doc.splitTextToSize(`Key Takeaway: ${cleanTakeaway}`, contentWidth - 6);
+        const takeawayBoxHeight = (takeawayLines.length * 4) + 6;
+
+        doc.setFillColor(245, 243, 239);
+        doc.rect(margin, currentY, contentWidth, takeawayBoxHeight, 'F');
+        doc.setFillColor(16, 185, 129);
+        doc.rect(margin, currentY, 1.5, takeawayBoxHeight, 'F');
+
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(8);
+        doc.setTextColor(68, 64, 60);
+        doc.text(takeawayLines, margin + 4, currentY + 4.5);
+
+        currentY += takeawayBoxHeight + 5;
+      }
+
+      currentY += 2;
+    }
+  }
+
+  // 6. Citations & References Section
+  if (pub.citations && pub.citations.length > 0) {
+    if (currentY > pageHeight - 40) {
+      doc.addPage();
+      currentY = margin + 12;
+    }
+
+    doc.setDrawColor(200, 195, 185);
+    doc.setLineWidth(0.3);
+    doc.line(margin, currentY, pageWidth - margin, currentY);
+    currentY += 6;
+
+    doc.setFont('times', 'bold');
+    doc.setFontSize(10.5);
+    doc.setTextColor(120, 53, 15);
+    doc.text('PRIMARY SOURCES & SCHOLARLY REFERENCES', margin, currentY);
+    currentY += 5;
+
+    doc.setFont('courier', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(68, 64, 60);
+
+    for (const cite of pub.citations) {
+      let citeStr = '';
+      if (typeof cite === 'string') {
+        citeStr = cite;
+      } else {
+        citeStr = `${cite.authors || 'Africalia'} (${cite.year || '2026'}). ${cite.title || 'Scholarly Treatise'}. ${cite.journalOrPublisher || 'Africalia Press'}. ${cite.doiOrUrl || ''}`.trim();
+      }
+
+      const citeLines = doc.splitTextToSize(`• ${citeStr}`, contentWidth);
+      if (currentY + (citeLines.length * 3.6) > pageHeight - 20) {
+        doc.addPage();
+        currentY = margin + 12;
+      }
+
+      doc.text(citeLines, margin, currentY);
+      currentY += (citeLines.length * 3.6) + 2.5;
+    }
+  }
+
+  // 7. Running Page Header & Footer on all pages
+  const totalPages = doc.getNumberOfPages();
+  for (let p = 1; p <= totalPages; p++) {
+    doc.setPage(p);
+
+    // Running Header (pages > 1)
+    if (p > 1) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7);
+      doc.setTextColor(140, 130, 120);
+      const headerTitle = pub.title.length > 55 ? `${pub.title.slice(0, 52)}...` : pub.title;
+      doc.text(headerTitle, margin, margin - 4);
+      doc.text(`DOI: ${cleanDoi}`, pageWidth - margin - 45, margin - 4);
+
+      doc.setDrawColor(220, 215, 205);
+      doc.setLineWidth(0.2);
+      doc.line(margin, margin - 2, pageWidth - margin, margin - 2);
+    }
+
+    // Running Footer (all pages)
+    doc.setDrawColor(220, 215, 205);
+    doc.setLineWidth(0.2);
+    doc.line(margin, pageHeight - margin + 1, pageWidth - margin, pageHeight - margin + 1);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(120, 113, 108);
+    doc.text('Africa Data Atlas • Cartographic Observatory & Open Research Repository • CC BY 4.0', margin, pageHeight - margin + 4.5);
+
+    doc.setFont('courier', 'bold');
+    doc.text(`Page ${p} of ${totalPages}`, pageWidth - margin - 20, pageHeight - margin + 4.5);
+  }
+
+  const cleanFilename = `${(pub.id || 'Africalia_Monograph').replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`;
+  doc.save(cleanFilename);
+};
+
 /**
  * Generates an executive 2-page Country Intelligence Dossier PDF
  */
