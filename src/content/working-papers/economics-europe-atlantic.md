@@ -5,6 +5,8 @@ title: "Atlantic Slavery, European Development, and Colonial Extraction"
 
 subtitle: "A Quantitative Historical-Economics Research Proposal (Consolidated Version 3)"
 
+doi: "10.6084/m9.figshare.34063314"
+
 date: "2026-10-04"
 version: "1.0"
 

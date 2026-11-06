@@ -229,7 +229,27 @@ export function getUserConcordanceOverrides(): Record<string, Partial<DoiConcord
   if (typeof window === 'undefined' || !window.localStorage) return {};
   try {
     const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    let modified = false;
+
+    // Purge outdated or erroneous overrides for Working Paper No. 08
+    for (const [key, val] of Object.entries(parsed)) {
+      const entry = val as Partial<DoiConcordanceEntry>;
+      if (
+        entry.doi === '10.1515/9780773576810-003' ||
+        key === 'rep-economics-europe-atlantic-2026' ||
+        key === 'Atlantic Slavery, European Development, and Colonial Extraction'
+      ) {
+        delete parsed[key];
+        modified = true;
+      }
+    }
+
+    if (modified) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(parsed));
+    }
+    return parsed;
   } catch {
     return {};
   }
