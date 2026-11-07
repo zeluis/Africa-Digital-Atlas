@@ -599,7 +599,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
   };
 
   return (
-    <div className="space-y-6 animate-enter-japandi">
+    <section aria-label="Eight Pillars of Continental Analysis Observatory" className="space-y-6 animate-enter-japandi">
       {/* Consolidated Unified Sticky / Fixed Header */}
       <div className="sticky top-0 z-40 -mx-3 sm:-mx-6 -mt-3 sm:-mt-6 px-4 sm:px-6 py-3 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-zinc-200/90 dark:border-zinc-800/90 shadow-md transition-all space-y-2.5">
         <div className="max-w-7xl mx-auto space-y-2.5">
@@ -1279,7 +1279,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </section>
   );
 };
 

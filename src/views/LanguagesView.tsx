@@ -236,7 +236,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
   }, [allEntities, searchQuery]);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-200">
+    <section aria-label="Languages and Linguistics of Africa Observatory" className="space-y-8 animate-in fade-in duration-200">
       {/* Header Banner */}
       <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-2xl transition-colors">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -888,7 +888,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
           </div>
         );
       })()}
-    </div>
+    </section>
   );
 };
 

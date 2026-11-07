@@ -834,7 +834,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
       ref={rootRef}
       aria-label="African Embarkation Ports & Coastal Enclaves Atlas"
       className={`archival-viewer-root bg-[#FAF8F5] dark:bg-stone-950 text-stone-900 dark:text-stone-100 border border-stone-200/90 dark:border-stone-800 rounded-3xl w-full shadow-2xl relative text-left overflow-hidden flex flex-col transition-all duration-300 select-none ${
-        mode === 'fullscreen' || isFullscreen ? 'fixed inset-0 z-50 rounded-none border-none h-screen' : 'h-[calc(100vh-68px)] max-h-[calc(100vh-68px)] min-h-[600px] flex-1'
+        mode === 'fullscreen' || isFullscreen ? 'fixed inset-0 z-50 rounded-none border-none h-[100dvh]' : 'h-[calc(100dvh-68px)] max-h-[calc(100dvh-68px)] min-h-[600px] flex-1'
       }`}
     >
       {/* 1. TOP DOCKED MAP CANVAS TOOLBAR (Integrated Radar & Timeline) */}

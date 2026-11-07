@@ -17,9 +17,10 @@ export const EthnicTreeOfLifeView: React.FC<EthnicTreeOfLifeViewProps> = ({
   onNavigateToLanguages
 }) => {
   return (
-    <div 
+    <section 
       id="ethnic-tree-viewport-container" 
-      className="relative flex-1 w-full h-[calc(100vh-64px)] min-h-[640px] overflow-hidden flex flex-col bg-[#161412]"
+      aria-label="Africalia Ethnic Tree of Life Cartographic Explorer"
+      className="relative flex-1 w-full h-[calc(100dvh-64px)] min-h-[640px] overflow-hidden flex flex-col bg-[#161412]"
     >
       {/* Full-Screen Sovereign Cartography Engine displaying the authentic raw SVG with 100% fidelity */}
       <AfricaliaExplorer
@@ -29,7 +30,7 @@ export const EthnicTreeOfLifeView: React.FC<EthnicTreeOfLifeViewProps> = ({
         onNavigateToFoundations={onNavigateToFoundations}
         onNavigateToLanguages={onNavigateToLanguages}
       />
-    </div>
+    </section>
   );
 };
 

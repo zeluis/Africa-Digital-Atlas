@@ -54,7 +54,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
   ];
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <section aria-label="Universal Style Guide and Living Systems Matrix" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Editorial Header Masthead */}
       <div className="rounded-3xl p-6 sm:p-10 border border-stone-200/90 dark:border-stone-800/90 bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5EFE6] dark:from-stone-950 dark:via-stone-900 dark:to-[#1A1816] shadow-sm relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -487,7 +487,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 };
 

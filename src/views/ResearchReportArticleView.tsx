@@ -177,10 +177,10 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
   };
 
   return (
-    <div className="printable-article relative space-y-8 pb-16 animate-in fade-in duration-300" id="research-report-article-view">
+    <article aria-label={report.title} className="printable-article relative space-y-8 pb-16 animate-in fade-in duration-300" id="research-report-article-view">
       {/* Top Reading Progress Bar */}
       <div 
-        className="fixed top-0 left-0 right-0 h-1 bg-amber-500 z-50 transition-all duration-150 no-print"
+        className="fixed top-0 left-0 right-0 h-1 bg-amber-500 z-50 transition-all duration-150 no-print scroll-reading-progress"
         style={{ width: `${readingProgress}%` }}
       />
 
@@ -663,7 +663,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
         onClose={() => setIsDoiModalOpen(false)}
         initialReportId={report.id}
       />
-    </div>
+    </article>
   );
 };
 

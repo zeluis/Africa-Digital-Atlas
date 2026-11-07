@@ -125,7 +125,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   const topHdi = getIndicatorRankings('UNDP.HDI.INDEX', 6);
 
   return (
-    <div className="space-y-6 sm:space-y-8 animate-enter-japandi">
+    <section aria-label="Pan-African Continental Overview and Sovereign Matrix" className="space-y-6 sm:space-y-8 animate-enter-japandi">
       {/* 1. First Viewport Orientation: Purpose & Scope */}
       <div className="cascade-item cascade-1">
         <FirstViewportClarity onExploreClick={onNavigateTab} />
@@ -626,7 +626,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           </motion.div>
         </AnimatePresence>
       </section>
-    </div>
+    </section>
   );
 };
 

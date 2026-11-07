@@ -192,7 +192,9 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
     : MOLECULAR_RESEARCH_CITATIONS.filter(c => c.category.toLowerCase() === citationFilter.toLowerCase());
 
   return (
-    <div className={`report-frame max-w-[1440px] mx-auto border-x border-[#D7D6CD] dark:border-[#2D2E2A] px-4 sm:px-6 lg:px-10 py-8 transition-colors duration-300 ${fontSizeClass === 'large' ? 'text-[1.125rem]' : 'text-[1.063rem]'}`} id="molecular-legacies-article-view">
+    <article aria-label="Molecular Legacies and Genomic Archaeology of the Middle Passage Monograph" className={`report-frame max-w-[1440px] mx-auto border-x border-[#D7D6CD] dark:border-[#2D2E2A] px-4 sm:px-6 lg:px-10 py-8 transition-colors duration-300 relative ${fontSizeClass === 'large' ? 'text-[1.125rem]' : 'text-[1.063rem]'}`} id="molecular-legacies-article-view">
+      {/* Top Reading Progress Bar */}
+      <div className="fixed top-0 left-0 right-0 h-1 bg-emerald-600 dark:bg-emerald-400 z-50 transition-all duration-150 no-print scroll-reading-progress" />
       
       {/* 1. ASYMMETRIC EDITORIAL HEADER BLOCK */}
       <header className="border-b border-[#DCD9CE] dark:border-[#2C2E2A] pb-10 mb-12 relative">
@@ -896,7 +898,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
           </section>
 
         </main>
-    </div>
+    </article>
   );
 };
 

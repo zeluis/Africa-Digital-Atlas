@@ -148,7 +148,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
   const countryCalmBg = getRegionCalmColor(entity.region);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-200">
+    <section aria-label={`${entity.name} Sovereign Country Dossier and Demographic Observatory`} className="space-y-6 animate-in fade-in duration-200">
       {/* Top Country Dossier Header Card with Pure Regional Tonal Directional Gradient */}
       <div 
         className="relative rounded-3xl p-6 md:p-8 shadow-sm overflow-hidden transition-all duration-300"
@@ -1139,7 +1139,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
         isOpen={showFactsheet}
         onClose={() => setShowFactsheet(false)}
       />
-    </div>
+    </section>
   );
 };
 

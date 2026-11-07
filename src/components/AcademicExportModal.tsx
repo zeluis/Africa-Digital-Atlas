@@ -134,7 +134,12 @@ ER  -`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/75 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-3xl bg-[#FAF8F5] dark:bg-stone-950 rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden flex flex-col">
+      <div 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="academic-export-modal-title"
+        className="relative w-full max-w-3xl bg-[#FAF8F5] dark:bg-stone-950 rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden flex flex-col"
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 shrink-0">
           <div className="flex items-center gap-3">
@@ -142,7 +147,7 @@ ER  -`;
               <Quote className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-sm font-extrabold text-stone-900 dark:text-stone-100 font-serif">
+              <h2 id="academic-export-modal-title" className="text-sm font-extrabold text-stone-900 dark:text-stone-100 font-serif">
                 Cite this Research Platform & Cartography
               </h2>
               <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">

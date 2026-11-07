@@ -220,6 +220,18 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
         handlePrevIllustration();
       } else if (e.key === 'ArrowRight' && e.altKey) {
         handleNextIllustration();
+      } else if (e.key === 'ArrowLeft' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setPanOffset(p => ({ ...p, x: p.x + 50 }));
+      } else if (e.key === 'ArrowRight' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setPanOffset(p => ({ ...p, x: p.x - 50 }));
+      } else if (e.key === 'ArrowUp' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setPanOffset(p => ({ ...p, y: p.y + 50 }));
+      } else if (e.key === 'ArrowDown' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setPanOffset(p => ({ ...p, y: p.y - 50 }));
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -951,7 +963,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
 
         {/* Right Collapsible Panel: Polished Editorial Dossier & Citation Generator */}
         {isMetadataOpen && (
-          <div className="w-full lg:w-5/12 xl:w-1/3 bg-[#FAF8F5] dark:bg-[#161413] flex flex-col h-full min-h-0 border-t lg:border-t-0 border-stone-200/90 dark:border-stone-800 text-stone-900 dark:text-stone-100 overflow-hidden relative">
+          <aside aria-label="Archival Plate Dossier and Scholarly Metadata" className="w-full lg:w-5/12 xl:w-1/3 bg-[#FAF8F5] dark:bg-[#161413] flex flex-col h-full min-h-0 border-t lg:border-t-0 border-stone-200/90 dark:border-stone-800 text-stone-900 dark:text-stone-100 overflow-hidden relative">
             
             {/* Panel Header & Tabs: Metadata, Citation & Academia */}
             <div className="flex items-center justify-between border-b border-stone-200/90 dark:border-stone-800 bg-[#F4EFE6]/90 dark:bg-stone-950/80 shrink-0">
@@ -2047,7 +2059,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
               className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#FAF8F5] dark:from-[#161413] to-transparent pointer-events-none z-10" 
               aria-hidden="true" 
             />
-          </div>
+          </aside>
         )}
 
       </div>

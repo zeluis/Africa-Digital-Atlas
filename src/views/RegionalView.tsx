@@ -177,7 +177,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
   ];
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-200">
+    <section aria-label="UN M49 African Regional Portals and Macro-Geoscheme Observatory" className="space-y-6 animate-in fade-in duration-200">
       {/* 1. MASTER REGIONAL SELECTOR PANEL - NO CLIPPING, ALL BUTTONS FULLY VISIBLE */}
       <div 
         id="regional-selector-panel"
@@ -1283,7 +1283,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
           )}
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

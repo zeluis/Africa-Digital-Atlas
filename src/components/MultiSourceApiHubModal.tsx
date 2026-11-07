@@ -134,6 +134,9 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-2 sm:p-4 lg:p-6 bg-[#EEDBB8]/90 dark:bg-[#231C11]/90 backdrop-blur-lg overflow-y-auto">
       <motion.div 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="api-hub-modal-title"
         initial={{ opacity: 0, scale: 0.97, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.97, y: 10 }}
@@ -151,7 +154,7 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-2.5">
-                <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50 font-display">
+                <h2 id="api-hub-modal-title" className="text-lg sm:text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50 font-display">
                   Multilateral Data APIs & Ingestion Hub
                 </h2>
                 <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">

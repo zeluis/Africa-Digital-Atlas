@@ -145,7 +145,7 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
   const compareAgg = useMemo(() => calculateBlocAggregates(compareBlocId), [compareBlocId]);
 
   return (
-    <div className="space-y-8 md:space-y-9">
+    <section aria-label="Regional Economic Blocs & Free Trade Communities" className="space-y-8 md:space-y-9">
       {/* Top Header Card with MD3 surface elevation */}
       <motion.div 
         initial={{ opacity: 0, y: -10 }}
@@ -514,7 +514,11 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                 {/* Rich Wikipedia Dossier Section Tabs */}
                 <div className="border-t border-zinc-200/80 dark:border-zinc-800 pt-5 space-y-4">
                   <div className="flex items-center justify-between flex-wrap gap-2">
-                    <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-zinc-100/90 dark:bg-zinc-800/90 overflow-x-auto custom-scrollbar max-w-full">
+                    <div 
+                      role="tablist" 
+                      aria-label="Regional bloc dossier modules" 
+                      className="flex items-center gap-1.5 p-1 rounded-2xl bg-zinc-100/90 dark:bg-zinc-800/90 overflow-x-auto custom-scrollbar max-w-full"
+                    >
                       {[
                         { id: 'overview', label: 'Summary', icon: BookOpen },
                         { id: 'indicators', label: 'Indicators & Trade', icon: TrendingUp },
@@ -528,6 +532,11 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                         return (
                           <button
                             key={tab.id}
+                            role="tab"
+                            id={`bloc-tab-${tab.id}`}
+                            aria-selected={isActive}
+                            aria-controls={`bloc-panel-${tab.id}`}
+                            tabIndex={isActive ? 0 : -1}
                             onClick={() => setActiveWikiTab(tab.id as WikiTabId)}
                             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
                               isActive
@@ -544,7 +553,12 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                   </div>
 
                   {/* Tab Content Display */}
-                  <div className="p-4 rounded-2xl bg-zinc-50/80 dark:bg-zinc-950/60 border border-zinc-200/70 dark:border-zinc-800 min-h-[140px]">
+                  <div 
+                    role="tabpanel" 
+                    id={`bloc-panel-${activeWikiTab}`} 
+                    aria-labelledby={`bloc-tab-${activeWikiTab}`} 
+                    className="p-4 rounded-2xl bg-zinc-50/80 dark:bg-zinc-950/60 border border-zinc-200/70 dark:border-zinc-800 min-h-[140px]"
+                  >
                     {activeWikiTab === 'overview' && (
                       <div className="space-y-3">
                         <div className="space-y-2">
@@ -860,7 +874,7 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
           </div>
         </motion.div>
       </AnimatePresence>
-    </div>
+    </section>
   );
 };
 

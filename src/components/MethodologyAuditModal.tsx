@@ -111,6 +111,9 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
 
         {/* Modal Window */}
         <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="methodology-audit-modal-title"
           initial={{ opacity: 0, scale: 0.96, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 1, y: 0 }}
@@ -124,7 +127,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-sm font-extrabold text-stone-900 dark:text-stone-100 font-serif tracking-tight">
+                <h2 id="methodology-audit-modal-title" className="text-sm font-extrabold text-stone-900 dark:text-stone-100 font-serif tracking-tight">
                   Methodological &amp; Data Provenance Dossier
                 </h2>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">

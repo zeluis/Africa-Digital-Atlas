@@ -30,7 +30,7 @@ export const MapView: React.FC<MapViewProps> = ({
   const handleToggleUnesco = externalOnToggleUnescoSites || (() => setInternalShowUnescoSites(prev => !prev));
 
   return (
-    <div className="w-full min-h-screen flex-1 flex flex-col select-none relative bg-zinc-50 dark:bg-zinc-950">
+    <section aria-label="Interactive Cartographic Map Observatory" className="w-full min-h-[100dvh] flex-1 flex flex-col select-none relative bg-zinc-50 dark:bg-zinc-950">
       {/* Main Full-Screen Map Viewport */}
       <div id="map-viewport-container" className="relative w-full flex-1 flex flex-col">
         {/* Floating Quick-Access Layer Toggle Badges for UNESCO World Heritage Sites & Critical Minerals */}
@@ -112,7 +112,7 @@ export const MapView: React.FC<MapViewProps> = ({
           onToggleCriticalMinerals={() => setShowCriticalMinerals(prev => !prev)}
         />
       </div>
-    </div>
+    </section>
   );
 };
 

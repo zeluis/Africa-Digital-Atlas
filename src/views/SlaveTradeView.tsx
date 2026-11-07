@@ -188,7 +188,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
   const hideTabBar = isMapActive;
 
   return (
-    <div className={isMapActive ? 'w-full flex-1 flex flex-col animate-in fade-in duration-200 text-left' : 'space-y-8 animate-in fade-in duration-200 text-left'}>
+    <section aria-label="Atlantic Slave Trade Data Atlas and Historical Demography Observatory" className={isMapActive ? 'w-full flex-1 flex flex-col animate-in fade-in duration-200 text-left' : 'space-y-8 animate-in fade-in duration-200 text-left'}>
       {/* 1. Header Banner & Epistemic Control Strip (Option A: Atmospheric Warm & Crisp Palette) */}
       {!hideMainHeader && (
         <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#FAF6EE] via-[#F5EFE1] to-[#EFE7D5] dark:from-[#1C1815] dark:via-[#161311] dark:to-[#221B16] border border-[#DCD3C1] dark:border-[#3D342A] text-[#1C1917] dark:text-[#F6F4EE] shadow-sm relative overflow-hidden space-y-6">
@@ -1470,7 +1470,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
           />
         </Suspense>
       )}
-    </div>
+    </section>
   );
 };
 

@@ -23,6 +23,11 @@
     --surface-subtle: #EFECE3;
     --surface-sunken: #E7E3D8;
 
+    /* Canonical Typographic Stack Tokens (Pillar IV Standard) */
+    --font-sans: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    --font-serif: "Noto Serif Display Variable", "Noto Serif Display", Georgia, serif;
+    --font-mono: "JetBrains Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
     /* =========================================================================
        UTOPIA & MD3 FLUID TYPE SCALE TOKENS (Interpolating 375px -> 1280px Viewport)
        ========================================================================= */
@@ -69,12 +74,12 @@
     --region-southern-raw: #FF0A0A;
     --region-western-raw: #00FF00;
 
-    /* Controlled Harmonized Fills (8% Bloom) */
-    --region-eastern-fill: rgba(255, 165, 0, 0.08);
-    --region-middle-fill: rgba(255, 0, 254, 0.08);
-    --region-northern-fill: rgba(24, 2, 255, 0.08);
-    --region-southern-fill: rgba(255, 10, 10, 0.08);
-    --region-western-fill: rgba(0, 255, 0, 0.08);
+    /* Controlled Harmonized Fills (8% Bloom via OKLCH color space) */
+    --region-eastern-fill: color-mix(in oklch, var(--region-eastern-raw) 8%, transparent);
+    --region-middle-fill: color-mix(in oklch, var(--region-middle-raw) 8%, transparent);
+    --region-northern-fill: color-mix(in oklch, var(--region-northern-raw) 8%, transparent);
+    --region-southern-fill: color-mix(in oklch, var(--region-southern-raw) 8%, transparent);
+    --region-western-fill: color-mix(in oklch, var(--region-western-raw) 8%, transparent);
 
     /* Precise Controlled Vector Stroke Accents */
     --region-eastern-stroke: #EA580C;
@@ -243,12 +248,12 @@
     --region-southern-raw: #FF0A0A;
     --region-western-raw: #00FF00;
 
-    /* Chart Fill Tints (Dark Mode 14% Luminous Bloom) */
-    --region-eastern-fill: rgba(249, 115, 22, 0.14);
-    --region-middle-fill: rgba(99, 102, 241, 0.14);
-    --region-northern-fill: rgba(217, 119, 6, 0.14);
-    --region-southern-fill: rgba(225, 29, 72, 0.14);
-    --region-western-fill: rgba(16, 185, 129, 0.14);
+    /* Chart Fill Tints (Dark Mode 14% Luminous Bloom via OKLCH color space) */
+    --region-eastern-fill: color-mix(in oklch, var(--region-eastern-raw) 14%, transparent);
+    --region-middle-fill: color-mix(in oklch, var(--region-middle-raw) 14%, transparent);
+    --region-northern-fill: color-mix(in oklch, var(--region-northern-raw) 14%, transparent);
+    --region-southern-fill: color-mix(in oklch, var(--region-southern-raw) 14%, transparent);
+    --region-western-fill: color-mix(in oklch, var(--region-western-raw) 14%, transparent);
 
     /* Vector Stroke Accents */
     --region-eastern-stroke: #FB923C;
@@ -317,6 +322,15 @@
 
   [lang="am"] {
     font-family: "Noto Sans Ethiopic", "Plus Jakarta Sans Variable", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  /* Baseline CSS Modern Typography Wrapping */
+  h1, h2, h3, h4, .font-display, .font-serif-title {
+    text-wrap: balance;
+  }
+
+  p, .prose, .report-editorial-body {
+    text-wrap: pretty;
   }
 }
 
@@ -1145,6 +1159,42 @@ body.hide-app-footer #app-footer-container {
     scroll-behavior: auto !important;
   }
 }
+
+/* =========================================================================
+   Baseline CSS Modern Platform Utilities (Subgrid, Container Queries, Scroll Animation)
+   ========================================================================= */
+
+/* CSS Subgrid: Align children along common parent row tracks */
+.subgrid-rows-3 {
+  display: grid;
+  grid-row: span 3;
+  grid-template-rows: subgrid;
+}
+
+/* Container Queries: Enable modular context-aware component scaling */
+.container-inline {
+  container-type: inline-size;
+}
+
+/* Hardware-accelerated compositor-driven reading progress */
+@keyframes reading-progress-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-reading-progress {
+    transform-origin: 0% 50%;
+    animation: reading-progress-grow linear;
+    animation-timeline: scroll();
+    width: 100% !important;
+  }
+}
+
 
 
 

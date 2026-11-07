@@ -117,6 +117,9 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 12 }}
             transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="keyboard-shortcuts-modal-title"
             className="w-full max-w-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
           >
             {/* Modal Header */}
@@ -126,7 +129,7 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
                   <Keyboard className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-base font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                  <h2 id="keyboard-shortcuts-modal-title" className="text-base font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                     <span>Keyboard Navigation &amp; Hotkeys</span>
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300/60 dark:border-emerald-700/60">
                       Power-User Cheat Sheet

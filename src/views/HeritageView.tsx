@@ -232,7 +232,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
   const activeMeta = activeIllustration?.unescoMeta;
 
   return (
-    <div className="w-full h-[calc(100vh-64px)] min-h-[640px] flex flex-col overflow-hidden bg-[#FAF8F5] dark:bg-stone-950 select-none">
+    <section aria-label="UNESCO World Heritage Archive and Interactive Visualizer" className="w-full h-[calc(100dvh-64px)] min-h-[640px] flex flex-col overflow-hidden bg-[#FAF8F5] dark:bg-stone-950 select-none">
       {/* Top Integrated Workbench Bar (matches Castas & Cartography Full-Bleed Header) */}
       <header className="w-full shrink-0 border-b border-stone-200/90 dark:border-stone-800/90 bg-[#FAF8F5]/98 dark:bg-stone-950/98 backdrop-blur-md px-3 sm:px-6 py-2 flex flex-col xl:flex-row xl:items-center justify-between gap-2.5 z-20 shadow-xs">
         
@@ -781,7 +781,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

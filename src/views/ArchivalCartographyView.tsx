@@ -135,7 +135,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
   };
 
   return (
-    <div className={`w-full ${activeTab === 'curtain' || activeTab === 'streamlines' ? 'h-[calc(100vh-64px)] min-h-[600px] overflow-hidden' : 'min-h-[calc(100vh-64px)]'} flex flex-col relative bg-[#FAF8F5] dark:bg-stone-950 select-none`}>
+    <section aria-label="Archival Cartography and Oceanic Streamlines Observatory" className={`w-full ${activeTab === 'curtain' || activeTab === 'streamlines' ? 'h-[calc(100dvh-64px)] min-h-[600px] overflow-hidden' : 'min-h-[calc(100dvh-64px)]'} flex flex-col relative bg-[#FAF8F5] dark:bg-stone-950 select-none`}>
       
       {/* =========================================================================
           TAB 1: IMMERSIVE FULL-BLEED GEOREFERENCED MAP CURTAIN VIEWER
@@ -1112,7 +1112,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
           />
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

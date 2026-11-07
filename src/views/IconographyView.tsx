@@ -137,7 +137,7 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
   // Full-bleed workbench mode for Castas & Colonial Archive
   if (activeTab === 'ingestion') {
     return (
-      <div className="w-full h-[calc(100vh-64px)] min-h-[640px] flex flex-col overflow-hidden bg-[#FAF8F5] dark:bg-stone-950 select-none">
+      <section aria-label="Castas and Colonial Visual Archive" className="w-full h-[calc(100dvh-64px)] min-h-[640px] flex flex-col overflow-hidden bg-[#FAF8F5] dark:bg-stone-950 select-none">
         {/* Full-Bleed Workbench Top Integrated Controls Bar (in the vein of HistoricalMapCurtainViewer) */}
         <header className="w-full shrink-0 border-b border-stone-200/90 dark:border-stone-800/90 bg-[#FAF8F5]/98 dark:bg-stone-950/98 backdrop-blur-md px-3 sm:px-6 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 z-20 shadow-xs">
           
@@ -224,12 +224,12 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
           onClose={() => setInspectedIllustration(null)}
           academiaVariant="castas"
         />
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className="space-y-8 pb-16">
+    <section aria-label="Trans-Atlantic Slave Trade Iconography and Visual Culture Archive" className="space-y-8 pb-16">
       {/* Edge-to-Edge Editorial Hero Banner */}
       <div className="relative -mx-4 sm:-mx-6 md:-mx-8 border-y border-stone-200/90 dark:border-stone-800/90 bg-[#FAF8F5] dark:bg-stone-950 overflow-hidden min-h-[380px] sm:min-h-[420px] flex items-center transition-colors duration-500">
         
@@ -389,7 +389,7 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
         onClose={() => setInspectedIllustration(null)}
         academiaVariant="slavery-images"
       />
-    </div>
+    </section>
   );
 };
 

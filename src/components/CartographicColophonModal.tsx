@@ -91,6 +91,9 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
 
         {/* Modal Window */}
         <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="colophon-modal-title"
           initial={{ opacity: 0, scale: 0.96, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 20 }}
@@ -104,7 +107,7 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                 <Compass className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-sm sm:text-base font-extrabold text-stone-900 dark:text-stone-100 font-serif tracking-tight">
+                <h2 id="colophon-modal-title" className="text-sm sm:text-base font-extrabold text-stone-900 dark:text-stone-100 font-serif tracking-tight">
                   Official Cartographic Cartouche &amp; Imprint
                 </h2>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">

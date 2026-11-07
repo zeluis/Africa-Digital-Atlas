@@ -107,7 +107,7 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
   }, [allReportsList, selectedCategory, searchQuery]);
 
   return (
-    <div className="space-y-8 pb-16 animate-in fade-in duration-300" id="research-reports-directory-view">
+    <section aria-label="African Research and Analytical Reports Directory" className="space-y-8 pb-16 animate-in fade-in duration-300" id="research-reports-directory-view">
       {/* Directory Banner Card */}
       <div className="p-6 md:p-10 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden space-y-6">
         <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -339,7 +339,7 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
         isOpen={isDoiModalOpen}
         onClose={() => setIsDoiModalOpen(false)}
       />
-    </div>
+    </section>
   );
 };
 

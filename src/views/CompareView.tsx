@@ -342,7 +342,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
   ];
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-200">
+    <section aria-label="Multi-Nation Comparative Matrix and Head-to-Head Observatory" className="space-y-8 animate-in fade-in duration-200">
       {/* Header Banner */}
       <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-2xl transition-colors">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -1079,7 +1079,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
           onClose={() => setFactsheetCountryId(null)}
         />
       )}
-    </div>
+    </section>
   );
 };
 

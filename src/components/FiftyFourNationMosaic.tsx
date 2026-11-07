@@ -401,7 +401,7 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
                       transition: { type: 'spring', stiffness: 600, damping: 35 }
                     }
               }
-              className="group relative p-2.5 rounded-xl border backdrop-blur-xs shadow-xs text-left flex flex-col justify-between h-[86px] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors"
+              className="group relative p-2.5 rounded-xl border backdrop-blur-xs shadow-xs text-left grid grid-rows-3 items-center h-[88px] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors"
               title={`${item.entity.name} (${item.region})\nCapital: ${item.entity.capital || 'N/A'}\nGDP: $${item.gdpBillion.toFixed(1)}B • Pop: ${item.populationMillion.toFixed(1)}M • Growth: ${item.growthPct}% • HDI: ${item.hdiScore}`}
             >
               {/* Top Row: Flag + ISO3 + Region Dot */}

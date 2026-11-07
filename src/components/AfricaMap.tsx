@@ -915,6 +915,42 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     setPanOffset(DEFAULT_PAN_OFFSET);
   };
 
+  // Universal Keyboard Cartographic Navigation (Pillar I Section 1.3)
+  useEffect(() => {
+    const handleMapKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) {
+        return;
+      }
+
+      if (e.key === 'ArrowLeft' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setPanOffset(prev => ({ ...prev, x: prev.x + 60 }));
+      } else if (e.key === 'ArrowRight' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setPanOffset(prev => ({ ...prev, x: prev.x - 60 }));
+      } else if (e.key === 'ArrowUp' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setPanOffset(prev => ({ ...prev, y: prev.y + 60 }));
+      } else if (e.key === 'ArrowDown' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setPanOffset(prev => ({ ...prev, y: prev.y - 60 }));
+      } else if ((e.key === '+' || e.key === '=') && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setZoomLevel(prev => Math.min(4.0, Number((prev + 0.25).toFixed(2))));
+      } else if ((e.key === '-' || e.key === '_') && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setZoomLevel(prev => Math.max(0.7, Number((prev - 0.25).toFixed(2))));
+      } else if (e.key === '0' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        handleResetZoom();
+      }
+    };
+
+    window.addEventListener('keydown', handleMapKeyDown);
+    return () => window.removeEventListener('keydown', handleMapKeyDown);
+  }, []);
+
   // Automated Smooth Centering and Zoom-to-Fit for Country & Admin-1 Subdivisions
   const zoomToCountry = useCallback((countryId: string) => {
     const country = AFRICA_FINAL_MAP[countryId] || AFRICA_SVG_MAP[countryId];

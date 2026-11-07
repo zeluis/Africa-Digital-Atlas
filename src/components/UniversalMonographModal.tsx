@@ -69,6 +69,9 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
 
         {/* Modal Container */}
         <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="universal-monograph-modal-title"
           initial={{ opacity: 0, scale: 0.96, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 20 }}
@@ -82,7 +85,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
                 <BookOpen className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-sm font-extrabold text-stone-900 dark:text-stone-100 font-serif">
+                <h2 id="universal-monograph-modal-title" className="text-sm font-extrabold text-stone-900 dark:text-stone-100 font-serif">
                   Africalia Universal Monograph & Architectural Constitution
                 </h2>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">

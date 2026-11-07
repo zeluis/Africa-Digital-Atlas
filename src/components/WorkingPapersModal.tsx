@@ -114,6 +114,9 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
 
         {/* Modal Window */}
         <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="working-paper-modal-title"
           initial={{ opacity: 0, scale: 0.96, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 1, y: 0 }}
@@ -127,7 +130,7 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
                 <FileText className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-sm font-extrabold text-stone-900 dark:text-stone-100 font-serif tracking-tight">
+                <h2 id="working-paper-modal-title" className="text-sm font-extrabold text-stone-900 dark:text-stone-100 font-serif tracking-tight">
                   Africalia Working Paper & Policy Brief Series
                 </h2>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">

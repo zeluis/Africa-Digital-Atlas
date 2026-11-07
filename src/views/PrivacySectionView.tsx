@@ -185,7 +185,7 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
   ];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14 space-y-10 animate-in fade-in duration-300" id="privacy-section-view">
+    <section aria-label="Legal Governance Privacy and Academic Protocol" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14 space-y-10 animate-in fade-in duration-300" id="privacy-section-view">
       
       {/* Breadcrumb & Context Navigation */}
       <div className="flex items-center justify-between gap-4 text-xs font-mono text-zinc-500 dark:text-zinc-400">
@@ -787,7 +787,7 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
         </div>
       </footer>
 
-    </div>
+    </section>
   );
 };
 

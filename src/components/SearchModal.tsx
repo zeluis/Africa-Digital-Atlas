@@ -372,6 +372,9 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       onClick={onClose}
     >
       <div 
+        role="dialog"
+        aria-modal="true"
+        aria-label="Universal Platform Search & Command Palette"
         className="w-full max-w-2xl overflow-hidden rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-2xl text-zinc-900 dark:text-zinc-100 transition-colors"
         onClick={e => e.stopPropagation()}
       >

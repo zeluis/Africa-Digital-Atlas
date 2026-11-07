@@ -276,7 +276,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   const COUNTRY_COLORS = ['#10b981', '#06b6d4', '#8b5cf6', '#f59e0b', '#f43f5e', '#3b82f6', '#ec4899', '#14b8a6'];
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-200">
+    <section aria-label="Indicator Analytics and Comparative Engine" className="space-y-8 animate-in fade-in duration-200">
       {/* Header Banner - Matches Global Japandi Standard */}
       <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-2xl transition-colors">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -845,7 +845,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

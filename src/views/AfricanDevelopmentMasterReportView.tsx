@@ -130,7 +130,9 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
   };
 
   return (
-    <div className={`report-frame max-w-[1440px] mx-auto border-x border-[#D7D6CD] dark:border-[#2D2E2A] px-4 sm:px-8 lg:px-12 py-10 sm:py-14 transition-colors duration-300 ${fontSizeClass === 'large' ? 'text-[1.125rem]' : 'text-[1.063rem]'}`} id="african-development-master-report-view">
+    <article aria-label="The Structural and Evolutionary Foundations of African Development Master Treatise" className={`report-frame max-w-[1440px] mx-auto border-x border-[#D7D6CD] dark:border-[#2D2E2A] px-4 sm:px-8 lg:px-12 py-10 sm:py-14 transition-colors duration-300 relative ${fontSizeClass === 'large' ? 'text-[1.125rem]' : 'text-[1.063rem]'}`} id="african-development-master-report-view">
+      {/* Top Reading Progress Bar */}
+      <div className="fixed top-0 left-0 right-0 h-1 bg-amber-600 dark:bg-amber-400 z-50 transition-all duration-150 no-print scroll-reading-progress" />
       
       {/* 1. ASYMMETRIC EDITORIAL HEADER BLOCK */}
       <header className="border-b-2 border-[#181816] dark:border-[#E6E3DB] pb-10 mb-14 relative">
@@ -1181,7 +1183,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
           </section>
 
         </main>
-    </div>
+    </article>
   );
 };
 
