@@ -4,7 +4,7 @@ icon: shield-check
 
 # Universal Audit & Engineering Specification
 
-A rigorous five-pillar specification governing all views, interactive maps, modals, master reports, and drawer components within the **Africalia (Africa Data Atlas)** platform.
+A rigorous five-pillar specification governing all views, interactive maps, modals, master reports, and drawer components within the **Afriata (Africa Data Atlas)** platform.
 
 ## Pillar I: Semantic HTML & Accessibility Architecture (WCAG 2.2 AAA/AA)
 

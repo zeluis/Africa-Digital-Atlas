@@ -2,7 +2,7 @@
 
 ## Institutional & Legal Framework
 
-The Africa Digital Atlas operates under an uncompromising sovereign data governance model, strict EU GDPR compliance, absolute client-side data minimization, open-source FAIR data principles, and scholarly institutional independence.
+Afriata (Africa Data Atlas) operates under an uncompromising sovereign data governance model, strict EU GDPR compliance, absolute client-side data minimization, open-source FAIR data principles, and scholarly institutional independence.
 
 ---
 
@@ -20,7 +20,7 @@ The Atlas does not deploy advertising trackers, behavioral fingerprinting script
 ## Pillar 2: Academic Advisory & Institutional Independence
 
 ### Explicit Institutional Decoupling
-The Africa Digital Atlas is an independent educational and scholarly digital platform. 
+Afriata (Africa Data Atlas) is an independent educational and scholarly digital platform. 
 Referenced university scholars, economic historians, bioarchaeologists, and institutions (such as Prof. Nathan Nunn, Harvard University, American Economic Review, Quarterly Journal of Economics, the SlaveVoyages Consortium, and UNESCO) are cited strictly for empirical provenance under academic fair use. 
 
 They are not institutional affiliates, sponsors, or commercial partners of the platform unless explicitly stated.
@@ -63,7 +63,7 @@ When citing the Africa Data Atlas in scholarly work, please include the permanen
   author       = {Correia, Z{\'e}Luis F.},
   title        = {Africa Data Atlas \& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
   year         = {2026},
-  publisher    = {Africalia},
+  publisher    = {Afriata},
   doi          = {10.6084/m9.figshare.34065711},
   url          = {https://doi.org/10.6084/m9.figshare.34065711},
   note         = {Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555}

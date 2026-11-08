@@ -86,7 +86,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
               </div>
               <div>
                 <h2 id="universal-monograph-modal-title" className="text-sm font-extrabold text-stone-900 dark:text-stone-100 font-serif">
-                  Africalia Universal Monograph & Architectural Constitution
+                  Afriata Universal Monograph & Architectural Constitution
                 </h2>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
                   Complete Reference Text • Author: Zéluis F. Correia • CC-BY 4.0 Observatory Edition
@@ -147,7 +147,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
                 <span>Permanent Scholarly Reference • Observatory Edition 2026.1</span>
               </div>
               <h1 className="text-2xl sm:text-4xl font-extrabold text-stone-900 dark:text-stone-100 tracking-tight font-serif">
-                AFRICALIA UNIVERSAL STYLE GUIDE & LIVING ARCHITECTURAL MONOGRAPH
+                AFRIATA UNIVERSAL STYLE GUIDE & LIVING ARCHITECTURAL MONOGRAPH
               </h1>
               <p className="text-stone-600 dark:text-stone-300 text-sm sm:text-base font-sans leading-relaxed">
                 The Sovereign Design System, Cartographic Geodesy, and Technical Architecture of the Africa Data Atlas. Under the scientific direction and cartographic curation of <strong className="text-stone-900 dark:text-stone-100 font-semibold">Zéluis F. Correia</strong>.
@@ -167,7 +167,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
                 <div className="space-y-4 font-sans text-stone-700 dark:text-stone-300 text-sm sm:text-base leading-relaxed">
                   <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 font-serif pt-2">1.1 Institutional Identity & Purpose</h3>
                   <p>
-                    <strong>Africalia</strong> is an independent, non-partisan cartographic and econometric research observatory founded by <strong>Zéluis F. Correia</strong>. The <strong>Africa Data Atlas</strong> serves as a digital public good and scientific synthesis platform bridging the gap between fragmented multilateral statistics, deep ancestral phylogenetic lineages, historical trade extractions, and contemporary geopolitical transformations across all 54 sovereign African nations.
+                    <strong>Afriata</strong> is an independent, non-partisan cartographic and econometric research observatory founded by <strong>Zéluis F. Correia</strong>. The <strong>Africa Data Atlas</strong> serves as a digital public good and scientific synthesis platform bridging the gap between fragmented multilateral statistics, deep ancestral phylogenetic lineages, historical trade extractions, and contemporary geopolitical transformations across all 54 sovereign African nations.
                   </p>
 
                   <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 font-serif pt-2">1.2 Dual Licensing &amp; Creative Assets Authorship</h3>
@@ -189,7 +189,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
                   <ul className="list-disc pl-5 space-y-2">
                     <li><strong>Creative Assets (<code className="font-mono text-xs">LICENSE-ASSETS</code> — CC BY 4.0)</strong>: You are free to share and adapt the SVG maps, Ethnic Tree Visualization and SVG, and graphics for any purpose, provided you give appropriate credit to <strong>ZéLuis F. Correia</strong>, link to the CC BY 4.0 license, and indicate if changes were made.</li>
                     <li><strong>Required Attribution</strong>: <br/>
-                    <em className="text-amber-800 dark:text-amber-300 font-medium">"Cartographic visualization by ZéLuis F. Correia (Africalia: Africa Data Atlas, CC BY 4.0, https://doi.org/10.6084/m9.figshare.34065711)."</em></li>
+                    <em className="text-amber-800 dark:text-amber-300 font-medium">"Cartographic visualization by ZéLuis F. Correia (Afriata: Africa Data Atlas, CC BY 4.0, https://doi.org/10.6084/m9.figshare.34065711)."</em></li>
                     <li><strong>Source Code (<code className="font-mono text-xs">LICENSE-CODE</code> — MIT License)</strong>: The software codebase is released under the standard MIT License (`Copyright (c) 2026 ZéLuis F. Correia`).</li>
                   </ul>
                 </div>
@@ -209,7 +209,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
                 <div className="space-y-4 font-sans text-stone-700 dark:text-stone-300 text-sm sm:text-base leading-relaxed">
                   <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 font-serif pt-2">2.1 Aesthetic Philosophy</h3>
                   <p>
-                    The visual architecture of Africalia departs from generic tech-startup conventions (&quot;AI slop&quot;, neon purple gradients, floating glassmorphism). Instead, it adopts a <strong>Japandi-Sahel Synthesis</strong>—blending Japanese minimalism (<i>wabi-sabi</i>, optical breathing room, respect for negative space) with Scandinavian functionalism (<i>lagom</i>, ergonomic typography) and warm, dignified African earthen pigmentations.
+                    The visual architecture of Afriata departs from generic tech-startup conventions (&quot;AI slop&quot;, neon purple gradients, floating glassmorphism). Instead, it adopts a <strong>Japandi-Sahel Synthesis</strong>—blending Japanese minimalism (<i>wabi-sabi</i>, optical breathing room, respect for negative space) with Scandinavian functionalism (<i>lagom</i>, ergonomic typography) and warm, dignified African earthen pigmentations.
                   </p>
 
                   <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 font-serif pt-2">2.2 Color Constellation & Curated Palettes</h3>
@@ -364,7 +364,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-mono font-bold text-stone-700 dark:text-stone-300">APA 7th Edition Citation</span>
                       <button
-                        onClick={() => handleCopy('Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Africalia. https://doi.org/10.6084/m9.figshare.34065711', 'apa-cite')}
+                        onClick={() => handleCopy('Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Afriata. https://doi.org/10.6084/m9.figshare.34065711', 'apa-cite')}
                         className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 text-[11px] font-medium transition-colors cursor-pointer"
                       >
                         {copiedKey === 'apa-cite' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
@@ -372,7 +372,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
                       </button>
                     </div>
                     <p className="text-xs font-serif text-stone-600 dark:text-stone-400 italic">
-                      Correia, Z. F. (2026). Africa Data Atlas &amp; Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Africalia. https://doi.org/10.6084/m9.figshare.34065711
+                      Correia, Z. F. (2026). Africa Data Atlas &amp; Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Afriata. https://doi.org/10.6084/m9.figshare.34065711
                     </p>
                   </div>
                 </div>

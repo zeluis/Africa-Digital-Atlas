@@ -20,7 +20,7 @@ import {
   MotherTongueSyllable, 
   playMotherTongueAudio 
 } from '../data/motherTonguesAudioData';
-import { getBestSystemVoice, stopAfricaliaSpeech } from '../utils/africaliaVoiceEngine';
+import { getBestSystemVoice, stopAfriataSpeech } from '../utils/afriataVoiceEngine';
 
 interface MotherTonguesWaveformScrubberProps {
   initialLanguageId?: string;
@@ -84,7 +84,7 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
 
   // Clean speech synthesis & animation loop
   const stopAudio = useCallback(() => {
-    stopAfricaliaSpeech();
+    stopAfriataSpeech();
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current);
       animFrameRef.current = null;

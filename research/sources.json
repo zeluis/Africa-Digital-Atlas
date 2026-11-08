@@ -3,7 +3,7 @@
   "platform": {
     "title": "Africa Data Atlas & Cartographic Observatory",
     "subtitle": "An interactive atlas of geography, indicators and historical trade flows",
-    "publisher": "Africalia",
+    "publisher": "Afriata",
     "author": {
       "name": "ZéLuis F. Correia",
       "orcid": "0000-0001-9421-6555",
@@ -24,7 +24,7 @@
         "spdx": "CC-BY-4.0",
         "file": "LICENSE-ASSETS",
         "url": "https://creativecommons.org/licenses/by/4.0/",
-        "scope": "All SVG maps (public/africa-final.svg, src/data/africaFinalGeometry.ts), the Ethnic Tree Visualization and SVG (src/data/authenticEthnicTreeSvg.ts, src/data/africaliaMasterTreeData.ts), and all graphics and visualizations unless stated otherwise"
+        "scope": "All SVG maps (public/africa-final.svg, src/data/africaFinalGeometry.ts), the Ethnic Tree Visualization and SVG (src/data/authenticEthnicTreeSvg.ts, src/data/afriataMasterTreeData.ts), and all graphics and visualizations unless stated otherwise"
       }
     }
   },

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PreColonialEntity } from '../../data/archivalCartographyData';
 import { DETAILED_KINGDOMS_DATA, KingdomDetailedRecord } from '../../data/preColonialKingdomsDetailed';
-import { speakAcademicNarration, stopAfricaliaSpeech } from '../../utils/africaliaVoiceEngine';
+import { speakAcademicNarration, stopAfriataSpeech } from '../../utils/afriataVoiceEngine';
 import { 
   Crown, 
   Landmark, 
@@ -69,13 +69,13 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
   // Stop audio on unmount or entity change
   useEffect(() => {
     return () => {
-      stopAfricaliaSpeech();
+      stopAfriataSpeech();
     };
   }, [entity.id]);
 
   const handleSpeak = () => {
     if (isSpeaking) {
-      stopAfricaliaSpeech();
+      stopAfriataSpeech();
       setIsSpeaking(false);
       return;
     }

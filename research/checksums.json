@@ -1,6 +1,6 @@
 {
   "_readme": "Build-time SHA-256 checksums for the 8 foundational datasets listed in research/datasets.json. Re-verify with `npm run research:integrity` or update with `node scripts/research-integrity.mjs --update-checksums`.",
-  "generatedAt": "2026-10-04T23:31:51.432Z",
+  "generatedAt": "2026-11-08T15:30:14.863Z",
   "algorithm": "SHA-256",
   "datasets": {
     "public/africa-final.svg": {
@@ -22,16 +22,16 @@
     "src/data/authenticEthnicTreeSvg.ts": {
       "datasetName": "Ethnic Tree of Life Vector Conduits & Nodes SVG",
       "recordCount": 2000,
-      "bytes": 759745,
-      "sha256": "b126f58bec726356e633e0538d6e5d2796e359cb879b6214aaf6a2287f51fcbe",
+      "bytes": 759743,
+      "sha256": "d19cf21bb510b1a085b6f8dfea8ab8f33e8eb27acbb1666c21eb6be0c8ed7f81",
       "license": "CC-BY-4.0 (LICENSE-ASSETS)",
       "author": "ZéLuis F. Correia"
     },
-    "src/data/africaliaMasterTreeData.ts": {
+    "src/data/afriataMasterTreeData.ts": {
       "datasetName": "Linguistic & Ethnolinguistic Tree Hierarchy",
       "recordCount": 310,
-      "bytes": 51739,
-      "sha256": "bb752f45f13d126e2bf37d7483abddf8d4f046f58d387d6e056ced316d56aacc",
+      "bytes": 51729,
+      "sha256": "32b3af97c6f0eecb14d4c280f5b095217f3979281bd945cfe7083597862be2b1",
       "license": "CC-BY-4.0 (LICENSE-ASSETS)",
       "author": "ZéLuis F. Correia"
     },

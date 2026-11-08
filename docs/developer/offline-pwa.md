@@ -1,6 +1,6 @@
 # Offline PWA & Caching Strategy
 
-The Africa Digital Atlas is designed to work fully offline once loaded.
+The Afriata (Africa Data Atlas) platform is designed to work fully offline once loaded.
 
 ## How it works
 

@@ -1,5 +1,5 @@
 /**
- * Africalia Sovereign Voice & Audio Synthesis Engine
+ * Afriata Sovereign Voice & Audio Synthesis Engine
  * 
  * Provides crisp, intelligible, natural-cadence speech synthesis and acoustic modeling:
  * - Natural Unified Voice Engine: Automatically pairs with verified OS native voice engines
@@ -256,7 +256,7 @@ export function getAfricanFemaleVoice(preferredLang?: string): SpeechSynthesisVo
 /**
  * Stop any current speech or audio playback
  */
-export function stopAfricaliaSpeech() {
+export function stopAfriataSpeech() {
   if (currentAudioElement) {
     try {
       currentAudioElement.pause();
@@ -296,7 +296,7 @@ export function speakAcademicNarration(config: {
   }
 
   // 1. Terminate any active speech or audio singleton
-  stopAfricaliaSpeech();
+  stopAfriataSpeech();
 
   // 2. Play subtle introductory chime if requested
   if (config.playChime) {
@@ -370,11 +370,11 @@ export function speakAcademicNarration(config: {
 /**
  * Speak welcoming phrase using the high-fidelity native OS voice system
  */
-export async function speakAfricaliaGreeting(config: SpeechGreetingConfig) {
+export async function speakAfriataGreeting(config: SpeechGreetingConfig) {
   if (typeof window === 'undefined') return;
 
   // Always stop existing audio first
-  stopAfricaliaSpeech();
+  stopAfriataSpeech();
 
   // Play the welcoming African pentatonic kalimba chime
   playWarmAfricanChime();
@@ -538,57 +538,57 @@ export interface FamilyWelcomeGreeting {
 export const LANGUAGE_FAMILY_GREETINGS: Record<string, FamilyWelcomeGreeting> = {
   'niger-congo': {
     familyId: 'niger-congo',
-    nativePhrase: 'Karibu Africalia—Mvumbuzi wa Kikabila wa Atlantiki.',
+    nativePhrase: 'Karibu Afriata—Mvumbuzi wa Kikabila wa Atlantiki.',
     spokenPhrase: 'Welcome to the Niger-Congo linguistic phylum, home to over 1,500 living languages across Africa.',
     phoneticGuide: '[kaˈri.bu af.riˈka.li.a]',
     languageName: 'Kiswahili & Niger-Congo',
     langTag: 'sw-KE',
-    meaningEn: 'Welcome to Africalia—The Atlantic Ethnic Explorer.'
+    meaningEn: 'Welcome to Afriata—The Atlantic Ethnic Explorer.'
   },
   'afroasiatic': {
     familyId: 'afroasiatic',
-    nativePhrase: 'Barka da zuwa Africalia—Mai Binciken Kabilun Atlantika.',
+    nativePhrase: 'Barka da zuwa Afriata—Mai Binciken Kabilun Atlantika.',
     spokenPhrase: 'Welcome to the Afroasiatic phylum, spanning the Sahara, Horn of Africa, and North African civilizations.',
     phoneticGuide: '[bar.ka da zu.wa af.riˈka.li.a]',
     languageName: 'Hausa & Afroasiatic',
     langTag: 'ha-NG',
-    meaningEn: 'Welcome to Africalia—The Atlantic Ethnic Explorer.'
+    meaningEn: 'Welcome to Afriata—The Atlantic Ethnic Explorer.'
   },
   'nilo-saharan': {
     familyId: 'nilo-saharan',
-    nativePhrase: 'Yawa, karibu Africalia—Jagol kido mar Atlantic.',
+    nativePhrase: 'Yawa, karibu Afriata—Jagol kido mar Atlantic.',
     spokenPhrase: 'Welcome to the Nilo-Saharan language family, tracing ancient corridors from the Nile Basin to Central Africa.',
     phoneticGuide: '[ya.wa ka.ri.bu jag.ol ki.do]',
     languageName: 'Luo & Nilo-Saharan',
     langTag: 'sw-KE',
-    meaningEn: 'Welcome to Africalia—The Atlantic Ethnic Explorer.'
+    meaningEn: 'Welcome to Afriata—The Atlantic Ethnic Explorer.'
   },
   'austronesian': {
     familyId: 'austronesian',
-    nativePhrase: 'Tonga soa eto amin\'ny Africalia—Mpikaroka ny foko Atlantika.',
+    nativePhrase: 'Tonga soa eto amin\'ny Afriata—Mpikaroka ny foko Atlantika.',
     spokenPhrase: 'Welcome to the Austronesian phylum in Africa, connecting Madagascar and the Indian Ocean rim.',
     phoneticGuide: '[tʊŋ.ɡa su.a e.tu a.min.ni]',
     languageName: 'Malagasy & Austronesian',
     langTag: 'fr-FR',
-    meaningEn: 'Welcome to Africalia—The Atlantic Ethnic Explorer.'
+    meaningEn: 'Welcome to Afriata—The Atlantic Ethnic Explorer.'
   },
   'khoisan': {
     familyId: 'khoisan',
-    nativePhrase: 'ǁKhawa ǃgû re Africalia—Atlantic ǃAosab ǃKhôa-aos.',
+    nativePhrase: 'ǁKhawa ǃgû re Afriata—Atlantic ǃAosab ǃKhôa-aos.',
     spokenPhrase: 'Welcome to the Khoe-San linguistic families, representing humanity\'s deepest surviving phonetic heritages.',
     phoneticGuide: '[ǁkʰa.wa ǃɡuː re af.riˈka.li.a]',
     languageName: 'Nama & Khoe-San',
     langTag: 'en-ZA',
-    meaningEn: 'Welcome to Africalia—The Atlantic Ethnic Explorer.'
+    meaningEn: 'Welcome to Afriata—The Atlantic Ethnic Explorer.'
   },
   'indo-european': {
     familyId: 'indo-european',
-    nativePhrase: 'Bem-bindu na Africalia—Splorador Étniku di Atlântiku.',
+    nativePhrase: 'Bem-bindu na Afriata—Splorador Étniku di Atlântiku.',
     spokenPhrase: 'Welcome to Atlantic Creoles and Indo-European linguistic heritages across continental and island states.',
     phoneticGuide: '[bẽj̃ˈbĩdu na af.riˈka.li.a]',
     languageName: 'Kriolu & Atlantic Creoles',
     langTag: 'pt-PT',
-    meaningEn: 'Welcome to Africalia—The Atlantic Ethnic Explorer.'
+    meaningEn: 'Welcome to Afriata—The Atlantic Ethnic Explorer.'
   }
 };
 
@@ -597,37 +597,37 @@ export const LANGUAGE_FAMILY_GREETINGS: Record<string, FamilyWelcomeGreeting> = 
  */
 export const TOP_BAR_UI_GREETINGS: Record<string, { phrase: string; langTag: string; languageName: string }> = {
   'en': {
-    phrase: 'Welcome to the Africalia experience, the Atlantic Ethnic Explorer. Please enjoy.',
+    phrase: 'Welcome to the Afriata experience, the Atlantic Ethnic Explorer. Please enjoy.',
     langTag: 'en-NG',
     languageName: 'English (Sovereign Voice)'
   },
   'fr': {
-    phrase: 'Bienvenue dans l\'expérience Africalia, l\'explorateur ethnique de l\'Atlantique. Bonne découverte.',
+    phrase: 'Bienvenue dans l\'expérience Afriata, l\'explorateur ethnique de l\'Atlantique. Bonne découverte.',
     langTag: 'fr-FR',
     languageName: 'Français'
   },
   'pt': {
-    phrase: 'Olá, bem-vindo à experiência Africalia, o Explorador Étnico do Atlântico. Desfrute da sua exploração.',
+    phrase: 'Olá, bem-vindo à experiência Afriata, o Explorador Étnico do Atlântico. Desfrute da sua exploração.',
     langTag: 'pt-PT',
     languageName: 'Português (Portugal)'
   },
   'es': {
-    phrase: 'Hola, bienvenido a la experiencia Africalia, el Explorador Étnico del Atlántico. Disfrute de su exploración.',
+    phrase: 'Hola, bienvenido a la experiencia Afriata, el Explorador Étnico del Atlántico. Disfrute de su exploración.',
     langTag: 'es-ES',
     languageName: 'Español'
   },
   'it': {
-    phrase: 'Ciao e benvenuto nell\'esperienza Africalia, l\'Esploratore Etnico dell\'Atlantico. Buona scoperta.',
+    phrase: 'Ciao e benvenuto nell\'esperienza Afriata, l\'Esploratore Etnico dell\'Atlantico. Buona scoperta.',
     langTag: 'it-IT',
     languageName: 'Italiano'
   },
   'nl': {
-    phrase: 'Hallo, welkom bij de Africalia-ervaring, de Atlantische Etnische Verkenner. Veel plezier met uw ontdekkingstocht.',
+    phrase: 'Hallo, welkom bij de Afriata-ervaring, de Atlantische Etnische Verkenner. Veel plezier met uw ontdekkingstocht.',
     langTag: 'nl-NL',
     languageName: 'Nederlands'
   },
   'de': {
-    phrase: 'Willkommen zum Africalia-Erlebnis, der Atlantische Ethnische Entdecker. Viel Vergnügen.',
+    phrase: 'Willkommen zum Afriata-Erlebnis, der Atlantische Ethnische Entdecker. Viel Vergnügen.',
     langTag: 'de-DE',
     languageName: 'Deutsch'
   },
@@ -638,42 +638,42 @@ export const TOP_BAR_UI_GREETINGS: Record<string, { phrase: string; langTag: str
   },
   // Indigenous languages: clean, intelligible introductions without phonetic garbling
   'yo': {
-    phrase: 'Welcome to the Africalia experience in Yoruba. The Atlantic Ethnic Explorer. Please enjoy.',
+    phrase: 'Welcome to the Afriata experience in Yoruba. The Atlantic Ethnic Explorer. Please enjoy.',
     langTag: 'en-NG',
     languageName: 'Yorùbá'
   },
   'ha': {
-    phrase: 'Welcome to the Africalia experience in Hausa. The Atlantic Ethnic Explorer. Please enjoy.',
+    phrase: 'Welcome to the Afriata experience in Hausa. The Atlantic Ethnic Explorer. Please enjoy.',
     langTag: 'en-NG',
     languageName: 'Hausa'
   },
   'ig': {
-    phrase: 'Welcome to the Africalia experience in Igbo. The Atlantic Ethnic Explorer. Please enjoy.',
+    phrase: 'Welcome to the Afriata experience in Igbo. The Atlantic Ethnic Explorer. Please enjoy.',
     langTag: 'en-NG',
     languageName: 'Igbo'
   },
   'sw': {
-    phrase: 'Welcome to the Africalia experience in Kiswahili. The Atlantic Ethnic Explorer. Please enjoy.',
+    phrase: 'Welcome to the Afriata experience in Kiswahili. The Atlantic Ethnic Explorer. Please enjoy.',
     langTag: 'en-KE',
     languageName: 'Kiswahili'
   },
   'am': {
-    phrase: 'Welcome to the Africalia experience in Amharic. The Atlantic Ethnic Explorer. Please enjoy.',
+    phrase: 'Welcome to the Afriata experience in Amharic. The Atlantic Ethnic Explorer. Please enjoy.',
     langTag: 'en-NG',
     languageName: 'Amharic (አማርኛ)'
   },
   'wo': {
-    phrase: 'Welcome to the Africalia experience in Wolof. The Atlantic Ethnic Explorer. Please enjoy.',
+    phrase: 'Welcome to the Afriata experience in Wolof. The Atlantic Ethnic Explorer. Please enjoy.',
     langTag: 'en-NG',
     languageName: 'Wolof'
   },
   'zu': {
-    phrase: 'Welcome to the Africalia experience in isiZulu. The Atlantic Ethnic Explorer. Please enjoy.',
+    phrase: 'Welcome to the Afriata experience in isiZulu. The Atlantic Ethnic Explorer. Please enjoy.',
     langTag: 'en-ZA',
     languageName: 'isiZulu'
   },
   'xh': {
-    phrase: 'Welcome to the Africalia experience in isiXhosa. The Atlantic Ethnic Explorer. Please enjoy.',
+    phrase: 'Welcome to the Afriata experience in isiXhosa. The Atlantic Ethnic Explorer. Please enjoy.',
     langTag: 'en-ZA',
     languageName: 'isiXhosa'
   }

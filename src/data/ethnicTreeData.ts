@@ -44,7 +44,7 @@ export interface CoreClusterNode {
   description: string;
 }
 
-// 40 Sovereign country branch conduits matching AFRICALIA SVG color taxonomy
+// 40 Sovereign country branch conduits matching AFRIATA SVG color taxonomy
 export const COUNTRY_BRANCHES: Record<string, CountryBranch> = {
   Nigeria: {
     name: 'Nigeria',

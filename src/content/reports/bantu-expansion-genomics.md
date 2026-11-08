@@ -14,7 +14,7 @@ author:
   name: "Dr. Amara Okafor, Prof. K. A. Diallo, and Dr. Marcus Thorne"
   type: "Consortium Collaboration"
   role: "Lead Investigators"
-  platform: "Africalia Research Platform"
+  platform: "Afriata Research Platform"
 
 authors:
   - "Dr. Amara Okafor"
@@ -27,7 +27,7 @@ institutions:
   - "Center for Afro-Atlantic Studies"
 
 publication:
-  series: "Africalia Monograph & Thematic Research Series"
+  series: "Afriata Monograph & Thematic Research Series"
   seriesNumber: "Monograph No. 04"
   type: "research_monograph"
   status: "Peer-Reviewed Synthesis"

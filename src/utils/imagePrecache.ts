@@ -28,7 +28,7 @@ export const getUnescoHeritageImageUrls = async (): Promise<string[]> => {
     });
 
     if (typeof localStorage !== 'undefined') {
-      const saved = localStorage.getItem('africalia_unesco_xml_sites_v1');
+      const saved = localStorage.getItem('afriata_unesco_xml_sites_v1') || localStorage.getItem('africalia_unesco_xml_sites_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
@@ -215,7 +215,7 @@ export const prewarmArchivalImageCache = async (): Promise<{ cached: number; tot
 
 /**
  * Hook or helper to trigger pre-warming when network is idle,
- * respecting user Data Saver settings and connection constraints (Africalia Lean item I).
+ * respecting user Data Saver settings and connection constraints (Afriata Lean item I).
  */
 export const initArchivalPrecache = () => {
   if (typeof window === 'undefined') return;

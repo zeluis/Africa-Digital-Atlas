@@ -1,4 +1,4 @@
-# AFRICALIA UNIVERSAL AUDIT & ENGINEERING SPECIFICATION
+# AFRIATA UNIVERSAL AUDIT & ENGINEERING SPECIFICATION
 **A Rigorous Standard for Semantic HTML, Responsive CSS, Web Vitals, Typography & WCAG 2.2 Accessibility**
 
 *Author & Scientific Curator: **Zéluis F. Correia***  
@@ -8,11 +8,11 @@
 
 ## 🏛️ OVERVIEW & SCOPE
 
-This specification governs all views, interactive maps, modals, master reports, and drawer components within the **Africalia (Africa Data Atlas)** platform. Every engineering implementation must satisfy the invariants defined across these five pillars prior to deployment.
+This specification governs all views, interactive maps, modals, master reports, and drawer components within the **Afriata (Africa Data Atlas)** platform. Every engineering implementation must satisfy the invariants defined across these five pillars prior to deployment.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│               AFRICALIA UNIVERSAL AUDIT SPECIFICATION                  │
+│               AFRIATA UNIVERSAL AUDIT SPECIFICATION                  │
 ├─────────────────┬─────────────────┬──────────────────┬─────────────────┤
 │    PILLAR I     │    PILLAR II    │    PILLAR III    │    PILLAR IV    │
 │  Semantic HTML  │   Modern CSS    │   Web Vitals &   │   Typography &  │
@@ -225,4 +225,4 @@ Before any module, view, or report PR is finalized, verify every item:
 
 ---
 
-*Curated by Zéluis F. Correia • Africalia Observatory • Standard Reference 2026*
+*Curated by Zéluis F. Correia • Afriata Observatory • Standard Reference 2026*

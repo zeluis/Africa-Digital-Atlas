@@ -1,5 +1,5 @@
 ---
-description: Answers to common questions about the Africa Digital Atlas
+description: Answers to common questions about Afriata (Africa Data Atlas)
 icon: circle-question
 layout:
   width: wide
@@ -25,7 +25,7 @@ layout:
 
 ### Does the Atlas work offline?
 
-Yes. Africa Digital Atlas is a Progressive Web App (PWA). Once you've loaded it once, the app shell, the vector map geometry, and previously viewed indicator data are cached by a service worker, so you can keep browsing without a network connection. You can also install it to your device like a native app.
+Yes. Afriata (Africa Data Atlas) is a Progressive Web App (PWA). Once you've loaded it once, the app shell, the vector map geometry, and previously viewed indicator data are cached by a service worker, so you can keep browsing without a network connection. You can also install it to your device like a native app.
 
 ### How often is the data updated?
 

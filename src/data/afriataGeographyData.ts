@@ -1,13 +1,13 @@
 /**
- * africaliaGeographyData.ts
+ * afriataGeographyData.ts
  * UN M49 Regional Hierarchy & First-Level Administrative Subdivisions (Admin-1)
- * Schema: africalia-geography/1
+ * Schema: afriata-geography/1
  */
 
-import { AfricaliaGeographyHierarchy, AfricaliaAdmin1, AfricaliaCountryHierarchy } from './types';
+import { AfriataGeographyHierarchy, AfriataAdmin1, AfriataCountryHierarchy } from './types';
 
-export const AFRICALIA_GEOGRAPHY_DATA: AfricaliaGeographyHierarchy = {
-  schema: 'africalia-geography/1',
+export const AFRIATA_GEOGRAPHY_DATA: AfriataGeographyHierarchy = {
+  schema: 'afriata-geography/1',
   root: 'AFRICA',
   sources: {
     admin1: 'UN Geoscheme M49 / Natural Earth / National Cartographic Bureaus',
@@ -420,7 +420,7 @@ export const AFRICALIA_GEOGRAPHY_DATA: AfricaliaGeographyHierarchy = {
 };
 
 // Flattened lookup for all Admin1 entities
-export const ALL_ADMIN1_SUBDIVISIONS: AfricaliaAdmin1[] = AFRICALIA_GEOGRAPHY_DATA.regions.flatMap(region =>
+export const ALL_ADMIN1_SUBDIVISIONS: AfriataAdmin1[] = AFRIATA_GEOGRAPHY_DATA.regions.flatMap(region =>
   region.countries.flatMap(country =>
     country.admin1.map(adm => ({
       ...adm,
@@ -431,11 +431,11 @@ export const ALL_ADMIN1_SUBDIVISIONS: AfricaliaAdmin1[] = AFRICALIA_GEOGRAPHY_DA
   )
 );
 
-export function getAdmin1ForCountry(iso3: string): AfricaliaAdmin1[] {
+export function getAdmin1ForCountry(iso3: string): AfriataAdmin1[] {
   return ALL_ADMIN1_SUBDIVISIONS.filter(a => a.iso3 === iso3);
 }
 
-export function searchAdmin1Subdivisions(query: string): AfricaliaAdmin1[] {
+export function searchAdmin1Subdivisions(query: string): AfriataAdmin1[] {
   if (!query || !query.trim()) return [];
   const q = query.toLowerCase().trim();
   return ALL_ADMIN1_SUBDIVISIONS.filter(a =>

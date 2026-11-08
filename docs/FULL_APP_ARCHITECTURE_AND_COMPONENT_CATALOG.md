@@ -1,4 +1,4 @@
-# AFRICALIA (AFRICA DATA ATLAS) — MASTER ARCHITECTURE & COMPONENT CATALOG
+# AFRIATA (AFRICA DATA ATLAS) — MASTER ARCHITECTURE & COMPONENT CATALOG
 **Comprehensive Technical Specification, View Registry, Component Directory, Services, Data Pipelines & API Reference**
 
 *Scientific Direction & Cartographic Curation: **Zéluis F. Correia***  
@@ -9,7 +9,7 @@
 
 ## 🏛️ SECTION 1: SYSTEM OVERVIEW & CURRENT APPLICATION HEALTH
 
-Africalia (the Africa Data Atlas) is a full-stack, client-first cartographic observatory, econometric analytics suite, and historical research repository covering all 54 sovereign African states. The application unites multilateral socioeconomic indicators (2015–2024), 36,108 documented historical trans-Atlantic and intra-American slave voyages (1514–1866), paleogenomics, pre-colonial territorial history, and high-precision $5,796 \times 5,867$ vector cartography.
+Afriata (the Africa Data Atlas) is a full-stack, client-first cartographic observatory, econometric analytics suite, and historical research repository covering all 54 sovereign African states. The application unites multilateral socioeconomic indicators (2015–2024), 36,108 documented historical trans-Atlantic and intra-American slave voyages (1514–1866), paleogenomics, pre-colonial territorial history, and high-precision $5,796 \times 5,867$ vector cartography.
 
 ### Current System Health Matrix
 | Verification Domain | Standard / Tool | Status | Metrics / Details |
@@ -106,7 +106,7 @@ The application features 21 modular views dynamically routed via URL hash fragme
   - Language & Phonemic Typology Lab: Reader-optimized, high-contrast typological cards analyzing phoneme inventories, click consonants (Khoisan / Bantu borrowings), tonal registers (level vs contour), noun class systems, and grammatical alignment.
   - Cross-border vehicular languages (Swahili, Hausa, Fulfulde, Manding, Lingala).
   - Multilingual localized interface switching (Arabic, Amharic, Swahili, Hausa, French, Portuguese, English).
-- **Data Hook**: `motherTonguesAudioData.ts`, `africanLinguisticTypology.ts`, `africaliaGeographyData.ts`.
+- **Data Hook**: `motherTonguesAudioData.ts`, `africanLinguisticTypology.ts`, `afriataGeographyData.ts`.
 
 ### 9. `HeritageView.tsx` — UNESCO World Heritage & Sacred Cultural Sites
 - **Core Function**: Spatial directory of all 145+ UNESCO World Heritage Sites across Africa.
@@ -132,7 +132,7 @@ The application features 21 modular views dynamically routed via URL hash fragme
   - Interactive radial cladogram rooted in anatomical modern human origins in East/Southern Africa.
   - Deep ancestry lineages (L0, L1, L2, L3 mitochondrial haplogroups and E1b1a/E1b1b Y-DNA lineages).
   - Wikipedia ethnic dossier overlay with curated cultural, migratory, and linguistic histories.
-- **Data Hook**: `authenticEthnicTreeSvg.ts`, `africaliaMasterTreeData.ts`.
+- **Data Hook**: `authenticEthnicTreeSvg.ts`, `afriataMasterTreeData.ts`.
 
 ### 12. `SlaveTradeView.tsx` — Transatlantic & Intra-American Slave Voyages Atlas
 - **Core Function**: Dedicated research environment documenting four centuries of forced maritime extractions (1514–1866).
@@ -205,7 +205,7 @@ The application features 21 modular views dynamically routed via URL hash fragme
   - Semantic typography with Noto Serif Display, side marginalia notes, and figure callouts.
   - Text-to-speech audio narration powered by the native voice engine and Gemini speech API.
   - Citation export modal with DOI verification.
-- **Data Hook**: `reportsDataLoader.ts`, `africaliaVoiceEngine.ts`.
+- **Data Hook**: `reportsDataLoader.ts`, `afriataVoiceEngine.ts`.
 
 ### 19. `ProvenanceQualityView.tsx` — Data Transparency & Methodology Audit
 - **Core Function**: Complete disclosure of multilateral data ingestion methods, status flags, and SHA-256 checksums.
@@ -276,7 +276,7 @@ The application features 21 modular views dynamically routed via URL hash fragme
 
 ### Utilities
 1. **`academicExport.ts`**: Generates standardized academic citations formatted in APA 7th, Chicago 17th (Author-Date), Harvard, and BibTeX.
-2. **`africaliaVoiceEngine.ts`**: High-quality speech synthesis engine coordinating browser Web Speech API and Gemini audio streams for article narration.
+2. **`afriataVoiceEngine.ts`**: High-quality speech synthesis engine coordinating browser Web Speech API and Gemini audio streams for article narration.
 3. **`assetPath.ts`**: Resolves base paths across development preview, production subdirectories, and GitHub Pages deployments.
 4. **`indexedDbSearch.ts`**: Fast, client-side IndexedDB full-text indexing engine for offline voyage searches.
 5. **`lazyWithRetry.tsx`**: Resilient dynamic import wrapper that handles network interruptions during chunk fetching with automatic retry logic.
@@ -344,4 +344,4 @@ The application includes an Express 4 backend running on Node.js 22 (`server.ts`
 
 ---
 
-*Catalog compiled for the Africalia Observatory • Permanent Engineering Documentation Reference*
+*Catalog compiled for the Afriata Observatory • Permanent Engineering Documentation Reference*

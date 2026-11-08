@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Dna, Compass, Activity, MapPin, Calendar, Layers, X, Sparkles, ChevronRight, ArrowRight } from 'lucide-react';
-import { VBW, VBH, CX, CY } from '../../data/africaliaMasterTreeData';
+import { VBW, VBH, CX, CY } from '../../data/afriataMasterTreeData';
 
 export interface MolecularDivergenceNode {
   id: string;
@@ -69,7 +69,7 @@ export const MOLECULAR_DIVERGENCE_NODES: MolecularDivergenceNode[] = [
     coords: { x: 1250, y: 1780 },
     description: 'Molecular legacies preserved in American and Macaronesian populations, tracking the involuntary maritime dispersion of millions of African captives.',
     significance: 'Demonstrates deep genealogical connections between specific African ethnolinguistic groups and modern African diaspora communities.',
-    downstreamBranches: ['Africalia-Cabo Verde transatlantic maritime crucible', 'Afro-descendant genomic lineages across the Americas']
+    downstreamBranches: ['Afriata-Cabo Verde transatlantic maritime crucible', 'Afro-descendant genomic lineages across the Americas']
   }
 ];
 

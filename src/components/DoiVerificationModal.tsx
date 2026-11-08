@@ -174,7 +174,7 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'africalia_doi_concordance.json';
+    a.download = 'afriata_doi_concordance.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -203,7 +203,7 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'africalia_reports_doi_template.json';
+    a.download = 'afriata_reports_doi_template.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

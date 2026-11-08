@@ -13,7 +13,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     1: {
       stageBadge: 'Screen 1: The Foundation (History & Heritage)',
       header: 'Discover the Diaspora',
-      body: 'Welcome to Africalia, a curated gateway honoring the Atlantic Ethnic Explorer. Immerse yourself in the profound histories, resilience, and interconnected heritages that bridge Europe, Africa, and the Americas.',
+      body: 'Welcome to Afriata, a curated gateway honoring the Atlantic Ethnic Explorer. Immerse yourself in the profound histories, resilience, and interconnected heritages that bridge Europe, Africa, and the Americas.',
       regionFocus: 'Eastern & Northern Africa Tonal Axis'
     },
     2: {
@@ -31,7 +31,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     4: {
       stageBadge: 'Screen 4: Academic Integrity & Dual Space Entry',
       header: 'Historical Context & Content Continuity',
-      body: 'Africalia operates under rigorous scholarly and socio-educational protocols. Review the ethical research framework and data provenance below, then choose your curated entry destination.',
+      body: 'Afriata operates under rigorous scholarly and socio-educational protocols. Review the ethical research framework and data provenance below, then choose your curated entry destination.',
       regionFocus: 'Scholarly Integrity & Transatlantic Synthesis'
     }
   },
@@ -41,7 +41,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     1: {
       stageBadge: 'Étape 1 : Les Fondations (Histoire & Patrimoine)',
       header: 'Découvrez la Diaspora',
-      body: 'Bienvenue sur Africalia, un portail d\'exception dédié à l\'Explorateur Ethnique Atlantique. Plongez au cœur des histoires profondes, de la résilience et des héritages interconnectés unissant l\'Europe, l\'Afrique et les Amériques.',
+      body: 'Bienvenue sur Afriata, un portail d\'exception dédié à l\'Explorateur Ethnique Atlantique. Plongez au cœur des histoires profondes, de la résilience et des héritages interconnectés unissant l\'Europe, l\'Afrique et les Amériques.',
       regionFocus: 'Axe Tonal Afrique de l\'Est & du Nord'
     },
     2: {
@@ -59,7 +59,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     4: {
       stageBadge: 'Étape 4 : Rigueur Académique & Double Accès',
       header: 'Contexte Historique & Continuité des Données',
-      body: 'Africalia s\'appuie sur des protocoles scientifiques rigoureux. Découvrez notre cadre méthodologique avant de choisir votre destination d\'exploration.',
+      body: 'Afriata s\'appuie sur des protocoles scientifiques rigoureux. Découvrez notre cadre méthodologique avant de choisir votre destination d\'exploration.',
       regionFocus: 'Intégrité Scientifique & Synthèse Transatlantique'
     }
   },
@@ -69,7 +69,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     1: {
       stageBadge: 'Ecrã 1: As Fundações (História e Património)',
       header: 'Descubra a Diáspora',
-      body: 'Bem-vindo ao Africalia, um portal de referência em honra do Explorador Étnico do Atlântico. Explore as memórias profundas, a resiliência e os patrimónios que unem a Europa, a África e as Américas.',
+      body: 'Bem-vindo ao Afriata, um portal de referência em honra do Explorador Étnico do Atlântico. Explore as memórias profundas, a resiliência e os patrimónios que unem a Europa, a África e as Américas.',
       regionFocus: 'Eixo Tonal da África Oriental e do Norte'
     },
     2: {
@@ -87,7 +87,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     4: {
       stageBadge: 'Ecrã 4: Integridade Académica e Entrada Dual',
       header: 'Contexto Histórico e Continuidade Científica',
-      body: 'O Africalia cumpre normas rigorosas de investigação e ética historiográfica. Consulte a metodologia e selecione o seu ponto de partida.',
+      body: 'O Afriata cumpre normas rigorosas de investigação e ética historiográfica. Consulte a metodologia e selecione o seu ponto de partida.',
       regionFocus: 'Integridade Académica e Síntese Transatlântica'
     }
   },
@@ -97,7 +97,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     1: {
       stageBadge: 'Pantalla 1: Los Fundamentos (Historia y Patrimonio)',
       header: 'Descubra la Diáspora',
-      body: 'Bienvenido a Africalia, una puerta de entrada dedicada al Explorador Étnico del Atlántico. Sumérjase en las profundas historias, la resiliencia y el patrimonio compartido que une a Europa, África y las Américas.',
+      body: 'Bienvenido a Afriata, una puerta de entrada dedicada al Explorador Étnico del Atlántico. Sumérjase en las profundas historias, la resiliencia y el patrimonio compartido que une a Europa, África y las Américas.',
       regionFocus: 'Eje Tonal África Oriental y del Norte'
     },
     2: {
@@ -115,7 +115,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     4: {
       stageBadge: 'Pantalla 4: Rigor Académico y Acceso Dual',
       header: 'Contexto Histórico y Continuidad de Contenidos',
-      body: 'Africalia opera bajo estrictos protocolos científicos y pedagógicos. Revise el marco de investigación antes de elegir su destino de entrada.',
+      body: 'Afriata opera bajo estrictos protocolos científicos y pedagógicos. Revise el marco de investigación antes de elegir su destino de entrada.',
       regionFocus: 'Integridad Académica y Síntesis Transatlántica'
     }
   },
@@ -125,7 +125,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     1: {
       stageBadge: 'Bildschirm 1: Das Fundament (Geschichte & Erbe)',
       header: 'Entdecken Sie die Diaspora',
-      body: 'Willkommen bei Africalia, einem Portal zu Ehren des Atlantic Ethnic Explorer. Erkunden Sie die tiefgründigen Geschichten, die Widerstandskraft und das Erbe, das Europa, Afrika und Amerika verbindet.',
+      body: 'Willkommen bei Afriata, einem Portal zu Ehren des Atlantic Ethnic Explorer. Erkunden Sie die tiefgründigen Geschichten, die Widerstandskraft und das Erbe, das Europa, Afrika und Amerika verbindet.',
       regionFocus: 'Ost- & Nordafrika Tonachse'
     },
     2: {
@@ -143,7 +143,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     4: {
       stageBadge: 'Bildschirm 4: Akademische Integrität & Dualer Zugang',
       header: 'Historischer Kontext & Datenkontinuität',
-      body: 'Africalia arbeitet nach strengen wissenschaftlichen Standards. Wählen Sie Ihren individuellen Einstiegspunkt in den Atlas.',
+      body: 'Afriata arbeitet nach strengen wissenschaftlichen Standards. Wählen Sie Ihren individuellen Einstiegspunkt in den Atlas.',
       regionFocus: 'Wissenschaftliche Integrität & Transatlantische Synthese'
     }
   },
@@ -153,7 +153,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     1: {
       stageBadge: 'Schermata 1: Le Fondamenta (Storia e Patrimonio)',
       header: 'Scopri la Diaspora',
-      body: 'Benvenuti su Africalia, un portale d\'eccellenza in onore dell\'Esploratore Etnico dell\'Atlantico. Immergiti nelle storie profonde, nella resilienza e nelle eredità condivise che uniscono Europa, Africa e Americhe.',
+      body: 'Benvenuti su Afriata, un portale d\'eccellenza in onore dell\'Esploratore Etnico dell\'Atlantico. Immergiti nelle storie profonde, nella resilienza e nelle eredità condivise che uniscono Europa, Africa e Americhe.',
       regionFocus: 'Asse Tonale Africa Orientale e Settentrionale'
     },
     2: {
@@ -171,7 +171,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     4: {
       stageBadge: 'Schermata 4: Integrità Accademica e Doppio Accesso',
       header: 'Contesto Storico e Continuità dei Contenuti',
-      body: 'Africalia opera secondo rigorosi protocolli accademici ed etici. Esplora il quadro metodologico e scegli la tua destinazione di partenza.',
+      body: 'Afriata opera secondo rigorosi protocolli accademici ed etici. Esplora il quadro metodologico e scegli la tua destinazione di partenza.',
       regionFocus: 'Integrità Scientifica e Sintesi Transatlantica'
     }
   },
@@ -181,7 +181,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     1: {
       stageBadge: 'Scherm 1: Het Fundament (Geschiedenis & Erfgoed)',
       header: 'Ontdek de Diaspora',
-      body: 'Welkom bij Africalia, een portaal ter ere van de Atlantic Ethnic Explorer. Verdiep u in de diepgaande geschiedenis, veerkracht en het erfgoed dat Europa, Afrika en de Amerika\'s verbindt.',
+      body: 'Welkom bij Afriata, een portaal ter ere van de Atlantic Ethnic Explorer. Verdiep u in de diepgaande geschiedenis, veerkracht en het erfgoed dat Europa, Afrika en de Amerika\'s verbindt.',
       regionFocus: 'Oost- & Noord-Afrika Toon-as'
     },
     2: {
@@ -199,7 +199,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     4: {
       stageBadge: 'Scherm 4: Academische Integriteit & Toegang',
       header: 'Historische Context & Gegevenscontinuïteit',
-      body: 'Africalia hanteert strenge wetenschappelijke protocollen. Bekijk het methodologische kader en kies uw startpunt.',
+      body: 'Afriata hanteert strenge wetenschappelijke protocollen. Bekijk het methodologische kader en kies uw startpunt.',
       regionFocus: 'Wetenschappelijke Integriteit & Trans-Atlantische Synthese'
     }
   },
@@ -265,7 +265,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     1: {
       stageBadge: 'Kashi na 1: Tushen Tarihi da Gado',
       header: 'Gano Ƴan Ƙasar Waje',
-      body: 'Barka da zuwa Africalia, babbar kofa mai karrama Mai Binciken Kabilanci na Tekun Atlantika. Shiga cikin zurfin tarihi da hadin gwiwar Turai, Afirka, da Amurka.',
+      body: 'Barka da zuwa Afriata, babbar kofa mai karrama Mai Binciken Kabilanci na Tekun Atlantika. Shiga cikin zurfin tarihi da hadin gwiwar Turai, Afirka, da Amurka.',
       regionFocus: 'Yankin Gabas da Arewacin Afirka'
     },
     2: {
@@ -283,7 +283,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     4: {
       stageBadge: 'Kashi na 4: Nagartar Ilmi da Hanyoyin Shiga',
       header: 'Bayanin Tarihi da Ci Gaban Bayanai',
-      body: 'Africalia na aiki karkashin kyakkyawan tsarin ilmi da bincike. Zabi inda kake son fara bincikenka a cikin taswirar.',
+      body: 'Afriata na aiki karkashin kyakkyawan tsarin ilmi da bincike. Zabi inda kake son fara bincikenka a cikin taswirar.',
       regionFocus: 'Nagartar Ilmi da Hadin Kan Atlantika'
     }
   },
@@ -293,7 +293,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     1: {
       stageBadge: 'Nke 1: Ntọala (Akụkọ Ihe Mere Eme & Ihe Nketa)',
       header: 'Chọpụta Ndị Nọ na Mba Ọzọ',
-      body: 'Nnọọ na Africalia, ụzọ nkwanye ugwu maka Atlantic Ethnic Explorer. Banye n\'ime akụkọ miri emi, ntachi obi na ihe nketa jikọtara Europe, Africa na America.',
+      body: 'Nnọọ na Afriata, ụzọ nkwanye ugwu maka Atlantic Ethnic Explorer. Banye n\'ime akụkọ miri emi, ntachi obi na ihe nketa jikọtara Europe, Africa na America.',
       regionFocus: 'Ebe Ọwụwa Anyanwụ & Ugwu Africa'
     },
     2: {
@@ -311,7 +311,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     4: {
       stageBadge: 'Nke 4: Iguzosi Ike n\'Ihe Ọmụmụ',
       header: 'Ọnọdụ Akụkọ Ihe Mere Eme',
-      body: 'Africalia na-arụ ọrụ n\'okpuru usoro agụmakwụkwọ siri ike. Họrọ ebe ị ga-achọ ịmalite njem gị.',
+      body: 'Afriata na-arụ ọrụ n\'okpuru usoro agụmakwụkwọ siri ike. Họrọ ebe ị ga-achọ ịmalite njem gị.',
       regionFocus: 'Nnyocha Agụmakwụkwọ & Njikọ Atlantika'
     }
   },
@@ -321,7 +321,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     1: {
       stageBadge: 'Ipele 1: Ipilẹṣẹ (Itan & Ajogunba)',
       header: 'Ṣawari Awọn Ara Ilu Oṣere',
-      body: 'Kaabọ si Africalia, ẹnu-ọna ti a ṣe iyasọtọ lati bu ọla fun Oluṣawari Ẹya Atlantic. Rin irin-ajo nipasẹ itan ti o jinlẹ ati ajogunba ti o so Yuroopu, Afirika, ati Amẹrika pọ.',
+      body: 'Kaabọ si Afriata, ẹnu-ọna ti a ṣe iyasọtọ lati bu ọla fun Oluṣawari Ẹya Atlantic. Rin irin-ajo nipasẹ itan ti o jinlẹ ati ajogunba ti o so Yuroopu, Afirika, ati Amẹrika pọ.',
       regionFocus: 'Ila-oorun & Ariwa Afirika'
     },
     2: {
@@ -339,7 +339,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     4: {
       stageBadge: 'Ipele 4: Otitọ Eko & Wiwọle',
       header: 'Itan & Ilọsiwaju Data',
-      body: 'Africalia n ṣiṣẹ labẹ awọn ilana iwadii to muna. Yan ibi ti o fẹ lati bẹrẹ irin-ajo rẹ.',
+      body: 'Afriata n ṣiṣẹ labẹ awọn ilana iwadii to muna. Yan ibi ti o fẹ lati bẹrẹ irin-ajo rẹ.',
       regionFocus: 'Iwadii Eko & Isopọ Atlantic'
     }
   },
@@ -349,7 +349,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     1: {
       stageBadge: 'Pàcc 1: Cëslaay gi (Taariix ak Cosaan)',
       header: 'Gis Lëkkalekaay bi',
-      body: 'Dalal ak jàmm ci Africalia, bunt bu mag ngir teral Boroom Gëstu ci Géeju Atlantik. Xam-xamu taariix ak cosaan gu réy gi lëkkale Tugal, Afrig ak Aamerik.',
+      body: 'Dalal ak jàmm ci Afriata, bunt bu mag ngir teral Boroom Gëstu ci Géeju Atlantik. Xam-xamu taariix ak cosaan gu réy gi lëkkale Tugal, Afrig ak Aamerik.',
       regionFocus: 'Penku ak Bëj-gànnaaru Afrig'
     },
     2: {
@@ -367,7 +367,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     4: {
       stageBadge: 'Pàcc 4: Xam-xam ak Dugguwaay',
       header: 'Taariix ak Dëggu Xibaar',
-      body: 'Africalia dafa sukkandiku ci gëstu gu wóor. Tànnal fa nga bëggee door sa njàng.',
+      body: 'Afriata dafa sukkandiku ci gëstu gu wóor. Tànnal fa nga bëggee door sa njàng.',
       regionFocus: 'Xam-xamu Dëgg ak Géeju Atlantik'
     }
   },
@@ -377,7 +377,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     1: {
       stageBadge: 'Isiteji 1: Isisekelo (Umlando Namasiko)',
       header: 'Thola Abasezweni',
-      body: 'Siyakwamukela ku-Africalia, isango lokuhlonipha uMhloli Wezizwe zase-Atlantic. Gxila emlandweni ojulile, ukubekezela kanye namagugu ahlanganisa iYurophu, i-Afrika kanye ne-Melika.',
+      body: 'Siyakwamukela ku-Afriata, isango lokuhlonipha uMhloli Wezizwe zase-Atlantic. Gxila emlandweni ojulile, ukubekezela kanye namagugu ahlanganisa iYurophu, i-Afrika kanye ne-Melika.',
       regionFocus: 'Empumalanga Nenyakatho ne-Afrika'
     },
     2: {
@@ -395,7 +395,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     4: {
       stageBadge: 'Isiteji 4: Ubuqotho Bencwadi Nokungena',
       header: 'Isizinda Somlando Nokuqukethwe',
-      body: 'I-Africalia isebenza ngaphansi kwemithetho eqinile yocwaningo. Khetha indawo ofisa ukuqala ngayo.',
+      body: 'I-Afriata isebenza ngaphansi kwemithetho eqinile yocwaningo. Khetha indawo ofisa ukuqala ngayo.',
       regionFocus: 'Ubuqotho Bezifundo Nokuhlanganiswa Kwe-Atlantic'
     }
   },
@@ -405,7 +405,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     1: {
       stageBadge: 'Inyathelo 1: Isiseko (Imbali Nelifa)',
       header: 'Fumanisa i-Diaspora',
-      body: 'Wamkelekile kwi-Africalia, isango lokuhlonipha uMhloli Wezizwe zase-Atlantic. Ngena kwimbali enzulu, ukunyamezela kunye nelifa elidibanisa iYurophu, i-Afrika kunye ne-Melika.',
+      body: 'Wamkelekile kwi-Afriata, isango lokuhlonipha uMhloli Wezizwe zase-Atlantic. Ngena kwimbali enzulu, ukunyamezela kunye nelifa elidibanisa iYurophu, i-Afrika kunye ne-Melika.',
       regionFocus: 'Mpuma neNtshona Afrika'
     },
     2: {
@@ -423,7 +423,7 @@ export const ONBOARDING_TRANSLATIONS: Record<SupportedLanguage, Record<number, O
     4: {
       stageBadge: 'Inyathelo 4: Imfundo Enzulu noKungena',
       header: 'Imbali noBulungisa boLwazi',
-      body: 'I-Africalia isebenza phantsi kwemigangatho engqongqo yophando. Khetha apho ufuna ukuqala khona uhambo lwakho.',
+      body: 'I-Afriata isebenza phantsi kwemigangatho engqongqo yophando. Khetha apho ufuna ukuqala khona uhambo lwakho.',
       regionFocus: 'Uphando lweMfundo noMdibaniso we-Atlantic'
     }
   }

@@ -393,7 +393,7 @@ export interface PublicationPdfInput {
 
 /**
  * Generates and downloads a complete, multi-page publication-grade PDF
- * for any Africalia Research Monograph or Working Paper.
+ * for any Afriata Research Monograph or Working Paper.
  */
 export const exportPublicationPDF = async (pub: PublicationPdfInput): Promise<void> => {
   const { jsPDF } = await import('jspdf');
@@ -411,10 +411,10 @@ export const exportPublicationPDF = async (pub: PublicationPdfInput): Promise<vo
   const cleanDoi = pub.doi ? pub.doi.replace('https://doi.org/', '').trim() : '10.6084/m9.figshare.34065711';
   const authorsList = pub.authors && pub.authors.length > 0 
     ? pub.authors 
-    : (pub.isWorkingPaper ? ['Africalia Interdisciplinary Research & Knowledge Initiative'] : ['Africalia']);
+    : (pub.isWorkingPaper ? ['Afriata Interdisciplinary Research & Knowledge Initiative'] : ['Afriata']);
   const institutionsList = pub.institutions && pub.institutions.length > 0 
     ? pub.institutions 
-    : ['Africalia Research Platform'];
+    : ['Afriata Research Platform'];
   const pubDate = pub.publicationDate || '2026';
   const classificationStr = typeof pub.classification === 'string'
     ? pub.classification
@@ -430,8 +430,8 @@ export const exportPublicationPDF = async (pub: PublicationPdfInput): Promise<vo
   doc.setFontSize(8.5);
   doc.setTextColor(120, 53, 15);
   const seriesText = pub.isWorkingPaper
-    ? `AFRICALIA WORKING PAPER SERIES • ${pub.seriesNumber || 'WORKING PAPER NO. 08'}`
-    : 'AFRICALIA SCHOLARLY RESEARCH MONOGRAPH SERIES';
+    ? `AFRIATA WORKING PAPER SERIES • ${pub.seriesNumber || 'WORKING PAPER NO. 08'}`
+    : 'AFRIATA SCHOLARLY RESEARCH MONOGRAPH SERIES';
   doc.text(seriesText, margin, margin + 6);
 
   doc.setFont('courier', 'normal');
@@ -606,7 +606,7 @@ export const exportPublicationPDF = async (pub: PublicationPdfInput): Promise<vo
       if (typeof cite === 'string') {
         citeStr = cite;
       } else {
-        citeStr = `${cite.authors || 'Africalia'} (${cite.year || '2026'}). ${cite.title || 'Scholarly Treatise'}. ${cite.journalOrPublisher || 'Africalia Press'}. ${cite.doiOrUrl || ''}`.trim();
+        citeStr = `${cite.authors || 'Afriata'} (${cite.year || '2026'}). ${cite.title || 'Scholarly Treatise'}. ${cite.journalOrPublisher || 'Afriata Press'}. ${cite.doiOrUrl || ''}`.trim();
       }
 
       const citeLines = doc.splitTextToSize(`• ${citeStr}`, contentWidth);
@@ -653,7 +653,7 @@ export const exportPublicationPDF = async (pub: PublicationPdfInput): Promise<vo
     doc.text(`Page ${p} of ${totalPages}`, pageWidth - margin - 20, pageHeight - margin + 4.5);
   }
 
-  const cleanFilename = `${(pub.id || 'Africalia_Monograph').replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`;
+  const cleanFilename = `${(pub.id || 'Afriata_Monograph').replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`;
   doc.save(cleanFilename);
 };
 

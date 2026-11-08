@@ -70,8 +70,8 @@ import {
   Columns,
   AlertTriangle
 } from 'lucide-react';
-import { getAdmin1ForCountry, searchAdmin1Subdivisions, ALL_ADMIN1_SUBDIVISIONS } from '../data/africaliaGeographyData';
-import { AfricaliaAdmin1 } from '../data/types';
+import { getAdmin1ForCountry, searchAdmin1Subdivisions, ALL_ADMIN1_SUBDIVISIONS } from '../data/afriataGeographyData';
+import { AfriataAdmin1 } from '../data/types';
 import { getCanonicalCountryColor } from '../data/africaCanonicalColorPalette';
 import { AfricaMapFinalLayer } from './AfricaMapFinalLayer';
 import { UnifiedInspectorDrawer } from './UnifiedInspectorDrawer';
@@ -349,7 +349,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
   const [unescoSites] = useState<UnescoSiteMetadata[]>(() => {
     try {
-      const saved = localStorage.getItem('africalia_unesco_xml_sites_v1');
+      const saved = localStorage.getItem('afriata_unesco_xml_sites_v1') || localStorage.getItem('africalia_unesco_xml_sites_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -689,7 +689,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
   // Admin-1 Subdivisions State & Query
   const [admin1SearchQuery, setAdmin1SearchQuery] = useState<string>('');
-  const [selectedAdmin1, setSelectedAdmin1] = useState<AfricaliaAdmin1 | null>(null);
+  const [selectedAdmin1, setSelectedAdmin1] = useState<AfriataAdmin1 | null>(null);
 
   // Available Admin-1 subdivisions for the currently selected country
   const currentCountryAdmin1 = useMemo(() => {
@@ -1117,7 +1117,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     zoomToCountry(countryId);
   };
 
-  const handleAdmin1Focus = (admin1: AfricaliaAdmin1) => {
+  const handleAdmin1Focus = (admin1: AfriataAdmin1) => {
     setSelectedAdmin1(admin1);
     if (admin1.iso3) {
       zoomToCountry(admin1.iso3);
@@ -1145,7 +1145,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       regionName: AFRICA_FINAL_MAP[sub.countryId]?.unRegion || 'Western Africa',
       admin1Code: sub.id
     };
-    setSelectedAdmin1(matchingAdmin1 as AfricaliaAdmin1);
+    setSelectedAdmin1(matchingAdmin1 as AfriataAdmin1);
     setHoveredAdmin1({ id: sub.id, name: sub.name, countryId: sub.countryId });
     setActiveTooltipEntityId(sub.countryId);
     setHoveredEntityId(sub.countryId);
@@ -1389,9 +1389,9 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       clonedSvg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
       clonedSvg.setAttribute('version', '1.1');
       clonedSvg.setAttribute('data-author', 'ZéLuis F. Correia');
-      clonedSvg.setAttribute('data-curator', 'Africalia');
+      clonedSvg.setAttribute('data-curator', 'Afriata');
       clonedSvg.setAttribute('data-license', 'CC BY 4.0 (LICENSE-ASSETS)');
-      clonedSvg.setAttribute('data-copyright', '© 2024-2026 ZéLuis F. Correia (Africalia). Licensed under CC BY 4.0.');
+      clonedSvg.setAttribute('data-copyright', '© 2024-2026 ZéLuis F. Correia (Afriata). Licensed under CC BY 4.0.');
       clonedSvg.setAttribute('data-doi', '10.6084/m9.figshare.34065711');
 
       // Add background rect if solid
@@ -1437,7 +1437,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
       const provenanceHeader = `<!--
   ============================================================================
-  AFRICALIA CARTOGRAPHIC OBSERVATORY — VECTOR TOPOLOGY ARCHITECTURE
+  AFRIATA CARTOGRAPHIC OBSERVATORY — VECTOR TOPOLOGY ARCHITECTURE
   Author & Cartographer: ZéLuis F. Correia
   License: CC BY 4.0 (LICENSE-ASSETS) • Code: MIT (LICENSE-CODE)
   Coordinate Space: 5796 x 5867 High-Precision Vector Grid
@@ -2540,9 +2540,9 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           preserveAspectRatio="xMidYMid meet"
           xmlns="http://www.w3.org/2000/svg"
           data-author="ZéLuis F. Correia"
-          data-curator="Africalia"
+          data-curator="Afriata"
           data-license="CC BY 4.0 (LICENSE-ASSETS)"
-          data-copyright="© 2024-2026 ZéLuis F. Correia (Africalia). Licensed under CC BY 4.0."
+          data-copyright="© 2024-2026 ZéLuis F. Correia (Afriata). Licensed under CC BY 4.0."
           data-doi="10.6084/m9.figshare.34065711"
           role="region"
           aria-label="Interactive Map of the African Continent"

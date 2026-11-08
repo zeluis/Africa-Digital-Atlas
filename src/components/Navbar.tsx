@@ -1,7 +1,7 @@
 import React from 'react';
 import { LanguageSelector } from './LanguageSelector';
 import { VoiceWelcomeFab } from './VoiceWelcomeFab';
-import { TOP_BAR_UI_GREETINGS } from '../utils/africaliaVoiceEngine';
+import { TOP_BAR_UI_GREETINGS } from '../utils/afriataVoiceEngine';
 import { useTranslation } from '../i18n/LanguageContext';
 import { JapandiTooltip } from './JapandiTooltip';
 import type { CanonicalNavTab } from './NavigationDrawer';
@@ -97,7 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div 
                 className="relative flex items-center justify-center cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 shrink-0"
                 onClick={() => onSelectTab('overview')}
-                title="Africalia Continental Atlas - Return to Primary Overview"
+                title="Afriata Continental Atlas - Return to Primary Overview"
               >
                 <AfricaUnLogo 
                   className="shrink-0 drop-shadow-[0_1px_4px_rgba(217,119,6,0.2)] dark:drop-shadow-[0_1px_6px_rgba(251,191,36,0.2)]" 
@@ -118,26 +118,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                 />
               </div>
               
-              {/* Stacked Vertical Title Hierarchy: Africalia + Version Pill */}
-              <div className="hidden lg:flex flex-col justify-center leading-none">
+              {/* Stacked Vertical Title Hierarchy: Afriata + Version Pill */}
+              <div className="hidden lg:flex flex-col justify-center items-stretch leading-none w-fit">
                 <button
                   type="button"
                   onClick={() => onSelectTab('overview')}
                   style={{ fontFamily: '"Noto Serif Display", Georgia, Cambria, "Times New Roman", serif' }}
-                  className="font-extrabold text-[1.1rem] tracking-tight text-amber-900 dark:text-amber-400 hover:opacity-85 transition-opacity cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded py-0.5 leading-tight"
-                  aria-label="Africalia - Return to Primary Overview"
+                  className="w-full font-extrabold text-[1.32rem] sm:text-[1.35rem] tracking-tight text-amber-900 dark:text-amber-400 hover:opacity-85 transition-opacity cursor-pointer text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded py-0.5 leading-tight"
+                  aria-label="Afriata - Return to Primary Overview"
                   title="Return to Primary Overview"
                 >
-                  Africalia
+                  Afriata
                 </button>
 
-                <div className="flex items-center mt-0.5">
+                <div className="flex items-center justify-center mt-0.5 w-full">
                   <button
                     type="button"
                     onClick={() => onSelectTab('overview')}
                     style={{ fontSize: '9px', lineHeight: '1.2' }}
-                    className="inline-flex items-center gap-1 rounded-full bg-amber-100/60 dark:bg-amber-950/60 hover:bg-amber-200/80 dark:hover:bg-amber-900/80 border border-amber-300/60 dark:border-amber-700/50 px-1.5 py-[1px] font-mono text-amber-800/80 dark:text-amber-300/80 transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 max-w-fit"
-                    title={`Africalia Atlas v${manifest.atlasVersion} - Return to Primary Overview`}
+                    className="w-full inline-flex items-center justify-center gap-1 rounded-full bg-amber-100/60 dark:bg-amber-950/60 hover:bg-amber-200/80 dark:hover:bg-amber-900/80 border border-amber-300/60 dark:border-amber-700/50 px-1.5 py-[1px] font-mono text-amber-800/80 dark:text-amber-300/80 transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                    title={`Afriata Atlas v${manifest.atlasVersion} - Return to Primary Overview`}
                     aria-label={`Atlas v${manifest.atlasVersion} - Return to Overview`}
                   >
                     <span className="font-semibold uppercase tracking-widest text-[8px] text-amber-900/75 dark:text-amber-300/75">Atlas</span>
@@ -274,8 +274,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 text={currentGreeting.phrase}
                 langTag={currentGreeting.langTag}
                 languageName={currentLanguageOption.name}
-                tooltip={`Listen to Africalia Welcome in ${currentLanguageOption.name}`}
-                ariaLabel={`Play Africalia Welcome greeting in ${currentLanguageOption.name}`}
+                tooltip={`Listen to Afriata Welcome in ${currentLanguageOption.name}`}
+                ariaLabel={`Play Afriata Welcome greeting in ${currentLanguageOption.name}`}
               />
             </div>
 

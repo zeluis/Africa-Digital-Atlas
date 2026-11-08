@@ -61,7 +61,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
           <div className="space-y-3 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-800 dark:text-amber-300 text-xs font-mono font-bold uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-              <span>Africalia Architectural Monograph & Design Constitution</span>
+              <span>Afriata Architectural Monograph & Design Constitution</span>
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-stone-900 dark:text-stone-100 font-serif">
               Universal Style Guide & Living Systems Matrix
@@ -135,7 +135,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                   </div>
                 </div>
                 <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
-                  The Africa Data Atlas exists to dismantle pan-African data asymmetries. By harmonizing 16 multilateral reporting bodies into an open, offline-resilient Progressive Web Application, Africalia provides planning ministries, university lecture halls, and global scholars with an unassailable evidentiary baseline.
+                  The Africa Data Atlas exists to dismantle pan-African data asymmetries. By harmonizing 16 multilateral reporting bodies into an open, offline-resilient Progressive Web Application, Afriata provides planning ministries, university lecture halls, and global scholars with an unassailable evidentiary baseline.
                 </p>
                 <div className="p-3 rounded-2xl bg-[#FAF8F5] dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 text-[11px] text-stone-600 dark:text-stone-400">
                   <strong className="text-stone-900 dark:text-stone-200">Editorial Voice:</strong> Rigorous, measured, and dignified. We reject techno-solutionist buzzwords in favor of empirical historiography and econometric precision.
@@ -169,7 +169,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                 <div className="flex items-center justify-between pt-1 text-xs">
                   <span className="text-stone-500">Required Attribution Form:</span>
                   <button
-                    onClick={() => handleCopy('Cartographic visualization by ZéLuis F. Correia (Africalia: Africa Data Atlas, CC BY 4.0, https://doi.org/10.6084/m9.figshare.34065711).', 'legal-cite')}
+                    onClick={() => handleCopy('Cartographic visualization by ZéLuis F. Correia (Afriata: Africa Data Atlas, CC BY 4.0, https://doi.org/10.6084/m9.figshare.34065711).', 'legal-cite')}
                     className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 text-stone-700 dark:text-stone-300 text-[11px] font-medium transition-colors cursor-pointer"
                   >
                     {copiedKey === 'legal-cite' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
@@ -433,14 +433,14 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                 <span>Zero-Surveillance Standard & Academic Independence</span>
               </h3>
               <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
-                Africalia adheres strictly to the EU General Data Protection Regulation (GDPR) and the African Union Malabo Convention on Personal Data Protection. We operate zero commercial advertising cookies, zero third-party tracking scripts, and zero speech-recording storage.
+                Afriata adheres strictly to the EU General Data Protection Regulation (GDPR) and the African Union Malabo Convention on Personal Data Protection. We operate zero commercial advertising cookies, zero third-party tracking scripts, and zero speech-recording storage.
               </p>
 
               <div className="p-4 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono font-bold text-stone-700 dark:text-stone-300">APA 7th Edition Citation</span>
                   <button
-                    onClick={() => handleCopy('Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Africalia. https://doi.org/10.6084/m9.figshare.34065711', 'apa-cite')}
+                    onClick={() => handleCopy('Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Afriata. https://doi.org/10.6084/m9.figshare.34065711', 'apa-cite')}
                     className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 text-[10px] font-medium transition-colors cursor-pointer"
                   >
                     {copiedKey === 'apa-cite' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
@@ -448,7 +448,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                   </button>
                 </div>
                 <p className="text-xs font-serif text-stone-600 dark:text-stone-400 italic">
-                  Correia, Z. F. (2026). Africa Data Atlas &amp; Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Africalia. https://doi.org/10.6084/m9.figshare.34065711
+                  Correia, Z. F. (2026). Africa Data Atlas &amp; Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Afriata. https://doi.org/10.6084/m9.figshare.34065711
                 </p>
               </div>
 
@@ -460,7 +460,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
   author = {Correia, Z{\\'e}Luis F.},
   title = {Africa Data Atlas \\& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
   year = {2026},
-  publisher = {Africalia},
+  publisher = {Afriata},
   doi = {10.6084/m9.figshare.34065711},
   url = {https://doi.org/10.6084/m9.figshare.34065711},
   note = {ORCID: 0000-0001-9421-6555}
@@ -476,7 +476,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
   author = {Correia, Z{\\'e}Luis F.},
   title = {Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
   year = {2026},
-  publisher = {Africalia},
+  publisher = {Afriata},
   doi = {10.6084/m9.figshare.34065711},
   url = {https://doi.org/10.6084/m9.figshare.34065711},
   note = {ORCID: 0000-0001-9421-6555}

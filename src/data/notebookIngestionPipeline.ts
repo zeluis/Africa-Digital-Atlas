@@ -1,7 +1,7 @@
 /**
  * Google NotebookLM & Markdown Universal Ingestion Pipeline
  * 
- * Canonical Ingestion Engine for Africalia Scholarly Research Publications.
+ * Canonical Ingestion Engine for Afriata Scholarly Research Publications.
  * 
  * Pipeline flow:
  * 1. YAML frontmatter parsing with resilient fallbacks
@@ -11,20 +11,20 @@
  * 5. Weighted pillar and taxonomy classification with confidence scoring
  * 6. Automated publication type inference (monograph, article, study, report)
  * 7. Integrity fingerprinting (SHA-256 source hash) and validation gates
- * 8. Generation of immutable, fully normalized `AfricaliaReport` JSON records
+ * 8. Generation of immutable, fully normalized `AfriataReport` JSON records
  */
 
 import { ResearchReport, ReportSection, ReportCitation, ReportCategory } from './reportsData';
 import { 
-  AfricaliaReport, 
-  AfricaliaPillar, 
-  AfricaliaSection, 
-  AfricaliaPublicationType, 
-  AfricaliaAuthor,
+  AfriataReport, 
+  AfriataPillar, 
+  AfriataSection, 
+  AfriataPublicationType, 
+  AfriataAuthor,
   CONTROLLED_PILLARS, 
   CONTROLLED_UN_REGIONS, 
   CONTROLLED_TAST_HISTORICAL_REGIONS 
-} from '../types/africaliaReport';
+} from '../types/afriataReport';
 import { resolveDoi } from './externalLinksRegistry';
 
 export interface NotebookMetadataHeader {
@@ -43,7 +43,7 @@ export interface NotebookMetadataHeader {
     platform?: string;
     affiliation?: string;
   } | string;
-  authors?: string[] | string | AfricaliaAuthor[];
+  authors?: string[] | string | AfriataAuthor[];
   institutions?: string[] | string;
   publication?: {
     series?: string;
@@ -76,8 +76,8 @@ export interface NotebookMetadataHeader {
   readTimeMinutes?: number;
   doi?: string;
   classification?: string;
-  section?: AfricaliaSection | string;
-  pillar?: AfricaliaPillar | string;
+  section?: AfriataSection | string;
+  pillar?: AfriataPillar | string;
   disciplines?: string[];
   regions?: string[];
   countries?: string[];
@@ -87,13 +87,13 @@ export interface NotebookMetadataHeader {
   relatedEthnicNodes?: string[];
   icon?: string;
   featured?: boolean;
-  publication_type?: AfricaliaPublicationType;
+  publication_type?: AfriataPublicationType;
   seriesNumber?: string;
   jelCodes?: string[];
 }
 
 export interface IngestionResult {
-  report: AfricaliaReport;
+  report: AfriataReport;
   rawMarkdown: string;
   extractedCitationsCount: number;
   extractedSectionsCount: number;
@@ -163,7 +163,7 @@ const COUNTRY_TO_ISO3_MAP: Record<string, string> = {
 /**
  * Weighted dictionary for taxonomic pillar classification
  */
-const PILLAR_KEYWORD_WEIGHTS: Record<AfricaliaPillar, string[]> = {
+const PILLAR_KEYWORD_WEIGHTS: Record<AfriataPillar, string[]> = {
   genetics: [
     'genetics', 'genomic', 'genome', 'paleogenomics', 'dna', 'admixture', 'haplogroup',
     'mitochondrial', 'y-chromosome', 'allele', 'identity-by-descent', 'ibd', 'strata',
@@ -216,13 +216,13 @@ const PILLAR_KEYWORD_WEIGHTS: Record<AfricaliaPillar, string[]> = {
 };
 
 /**
- * Normalizes any pillar or category string from YAML frontmatter into a canonical AfricaliaPillar
+ * Normalizes any pillar or category string from YAML frontmatter into a canonical AfriataPillar
  */
-export function normalizePillarKey(rawPillar?: string, rawCategory?: string): AfricaliaPillar | null {
+export function normalizePillarKey(rawPillar?: string, rawCategory?: string): AfriataPillar | null {
   const candidates = [rawPillar, rawCategory].filter(Boolean).map(s => String(s).trim().toLowerCase());
   for (const val of candidates) {
     if (val in CONTROLLED_PILLARS) {
-      return val as AfricaliaPillar;
+      return val as AfriataPillar;
     }
     if (['development', 'economic-development', 'development-sociology', 'economics', 'historical-economics', 'political-economy'].includes(val)) {
       return 'development';
@@ -683,8 +683,8 @@ export function classifyPillarAndPublication(
   frontmatter: Partial<NotebookMetadataHeader>,
   sourcePath: string = ''
 ): {
-  pillar: AfricaliaPillar;
-  publicationType: AfricaliaPublicationType;
+  pillar: AfriataPillar;
+  publicationType: AfriataPublicationType;
   disciplines: string[];
   pillarConfidence: number;
   pubTypeConfidence: number;
@@ -713,7 +713,7 @@ export function classifyPillarAndPublication(
     String(frontmatter.id || '').startsWith('wp-')
   );
 
-  let pubType: AfricaliaPublicationType = isWorkingPaper
+  let pubType: AfriataPublicationType = isWorkingPaper
     ? (rawPubTypeStr.includes('policy') ? 'policy_brief' : rawPubTypeStr.includes('note') ? 'research_note' : 'working_paper')
     : (frontmatter.publication_type || inferPublicationType(body));
 
@@ -732,7 +732,7 @@ export function classifyPillarAndPublication(
 
   // 2. Score text against weighted pillar dictionary
   const corpus = `${title} ${frontmatter.subtitle || ''} ${body.slice(0, 5000)}`.toLowerCase();
-  let bestPillar: AfricaliaPillar = 'development';
+  let bestPillar: AfriataPillar = 'development';
   let maxScore = 0;
 
   for (const [pillar, keywords] of Object.entries(PILLAR_KEYWORD_WEIGHTS)) {
@@ -743,7 +743,7 @@ export function classifyPillarAndPublication(
     }
     if (score > maxScore) {
       maxScore = score;
-      bestPillar = pillar as AfricaliaPillar;
+      bestPillar = pillar as AfriataPillar;
     }
   }
 
@@ -759,7 +759,7 @@ export function classifyPillarAndPublication(
   };
 }
 
-function inferPublicationType(body: string): AfricaliaPublicationType {
+function inferPublicationType(body: string): AfriataPublicationType {
   const wordCount = body.split(/\s+/).length;
   if (wordCount >= 20000) return 'research_monograph';
   if (wordCount >= 8000) return 'research_study';
@@ -767,7 +767,7 @@ function inferPublicationType(body: string): AfricaliaPublicationType {
   return 'research_article';
 }
 
-function inferDisciplines(pillar: AfricaliaPillar): string[] {
+function inferDisciplines(pillar: AfriataPillar): string[] {
   switch (pillar) {
     case 'genetics':
       return ['Population Genetics', 'Paleogenomics', 'Bioarchaeology', 'Human Evolutionary Biology'];
@@ -792,7 +792,7 @@ function inferDisciplines(pillar: AfricaliaPillar): string[] {
   }
 }
 
-function inferJelCodes(pillar: AfricaliaPillar): string[] {
+function inferJelCodes(pillar: AfriataPillar): string[] {
   switch (pillar) {
     case 'development':
     case 'macroeconomics':
@@ -811,7 +811,7 @@ function inferJelCodes(pillar: AfricaliaPillar): string[] {
  * Universal Ingestion Pipeline Engine
  * 
  * Transforms arbitrary Markdown monographs & working papers into typed, normalized, 
- * machine-readable `AfricaliaReport` records conforming to the 1.0.0 canonical publication schema.
+ * machine-readable `AfriataReport` records conforming to the 1.0.0 canonical publication schema.
  */
 export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string = 'reports/monograph.md'): IngestionResult {
   const { frontmatter, body } = parseFrontmatter(rawMarkdown);
@@ -850,30 +850,30 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
   const reportId = frontmatter.id || `${prefix}-${pillar}-${cleanTitleSlug}`;
 
   // 8. Authors & Institution Normalization (supports both `authors:` list and `author:` nested object)
-  const authors: AfricaliaAuthor[] = [];
+  const authors: AfriataAuthor[] = [];
   if (Array.isArray(frontmatter.authors) && frontmatter.authors.length > 0) {
     frontmatter.authors.forEach(a => {
       if (typeof a === 'string') {
-        authors.push({ name: a, role: 'author', institution: 'Africalia Research Platform' });
+        authors.push({ name: a, role: 'author', institution: 'Afriata Research Platform' });
       } else if (a && typeof a === 'object') {
         authors.push(a);
       }
     });
   } else if (typeof frontmatter.authors === 'string' && frontmatter.authors.trim()) {
-    authors.push({ name: frontmatter.authors.trim(), role: 'author', institution: 'Africalia Research Platform' });
+    authors.push({ name: frontmatter.authors.trim(), role: 'author', institution: 'Afriata Research Platform' });
   } else if (frontmatter.author) {
     if (typeof frontmatter.author === 'string') {
-      authors.push({ name: frontmatter.author, role: 'author', institution: 'Africalia Research Platform' });
+      authors.push({ name: frontmatter.author, role: 'author', institution: 'Afriata Research Platform' });
     } else if (typeof frontmatter.author === 'object' && frontmatter.author.name) {
       authors.push({
         name: frontmatter.author.name,
         role: frontmatter.author.role || 'Institutional / Project Author',
-        institution: frontmatter.author.platform || frontmatter.author.affiliation || 'Africalia Research Platform'
+        institution: frontmatter.author.platform || frontmatter.author.affiliation || 'Afriata Research Platform'
       });
     }
   }
   if (authors.length === 0) {
-    authors.push({ name: 'Africalia Research Consortium', role: 'author', institution: 'Africalia Research Platform' });
+    authors.push({ name: 'Afriata Research Consortium', role: 'author', institution: 'Afriata Research Platform' });
   }
 
   const rawAuthorNames = authors.map(a => a.name);
@@ -898,8 +898,8 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
     : [pillar, ...geography.countries.slice(0, 4)];
 
   const pubObj = frontmatter.publication && typeof frontmatter.publication === 'object' ? frontmatter.publication : undefined;
-  const seriesName = pubObj?.series || pubObj?.category || (isWorkingPaper ? 'Africalia Working Paper & Policy Brief Series' : 'Africalia Scholarly Research Reports');
-  const seriesNumber = frontmatter.seriesNumber || pubObj?.seriesNumber || (isWorkingPaper ? 'Africalia Working Paper No. 08' : undefined);
+  const seriesName = pubObj?.series || pubObj?.category || (isWorkingPaper ? 'Afriata Working Paper & Policy Brief Series' : 'Afriata Scholarly Research Reports');
+  const seriesNumber = frontmatter.seriesNumber || pubObj?.seriesNumber || (isWorkingPaper ? 'Afriata Working Paper No. 08' : undefined);
   const jelCodes = frontmatter.jelCodes || pubObj?.jelCodes || inferJelCodes(pillar);
 
   const institutionsList = Array.isArray(frontmatter.institutions) && frontmatter.institutions.length > 0
@@ -908,17 +908,17 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
       ? [frontmatter.institutions]
       : (typeof frontmatter.author === 'object' && frontmatter.author?.platform
           ? [frontmatter.author.platform]
-          : ['Africalia Research Platform']);
+          : ['Afriata Research Platform']);
 
   const aiObj = frontmatter.ai_assistance && typeof frontmatter.ai_assistance === 'object' ? frontmatter.ai_assistance : undefined;
 
   // 12. Provenance Fingerprinting
   const sourceHash = computeDeterministicHash(rawMarkdown);
 
-  // 13. Construct Canonical AfricaliaReport Record
-  const report: AfricaliaReport = {
+  // 13. Construct Canonical AfriataReport Record
+  const report: AfriataReport = {
     schema: {
-      name: 'AfricaliaReport',
+      name: 'AfriataReport',
       version: '1.0.0'
     },
     id: reportId,
@@ -928,10 +928,10 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
     version: String(frontmatter.version || '1.0'),
     status: 'published',
     institution: {
-      name: typeof frontmatter.author === 'object' && frontmatter.author?.name ? frontmatter.author.name : 'Africalia',
+      name: typeof frontmatter.author === 'object' && frontmatter.author?.name ? frontmatter.author.name : 'Afriata',
       type: typeof frontmatter.author === 'object' && frontmatter.author?.type ? frontmatter.author.type : 'Interdisciplinary Research & Knowledge Initiative',
       role: typeof frontmatter.author === 'object' && frontmatter.author?.role ? frontmatter.author.role : 'Institutional / Project Author',
-      platform: typeof frontmatter.author === 'object' && frontmatter.author?.platform ? frontmatter.author.platform : 'Africalia Research Platform'
+      platform: typeof frontmatter.author === 'object' && frontmatter.author?.platform ? frontmatter.author.platform : 'Afriata Research Platform'
     },
     publication: {
       series: seriesName,
@@ -943,7 +943,7 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
     authors: rawAuthorNames,
     author_details: authors,
     classification: {
-      section: isWorkingPaper ? 'working-papers' : ((frontmatter.section as AfricaliaSection) || 'reports'),
+      section: isWorkingPaper ? 'working-papers' : ((frontmatter.section as AfriataSection) || 'reports'),
       pillar,
       disciplines,
       confidence: {
@@ -988,10 +988,10 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
     },
     ai_assistance: {
       enabled: aiObj?.enabled ?? true,
-      system: aiObj?.system || 'Africalia Ingestion Engine',
+      system: aiObj?.system || 'Afriata Ingestion Engine',
       role: Array.isArray(aiObj?.role) ? aiObj.role : ['source_organization', 'metadata_extraction', 'classification', 'semantic_citation_tagging'],
       disclosure: aiObj?.disclosure || aiObj?.status || 'Scholarly synthesis and computational cross-referencing against primary archives.',
-      accountability: aiObj?.accountability || 'Africalia'
+      accountability: aiObj?.accountability || 'Afriata'
     },
     provenance: {
       source_file: sourcePath,
@@ -1000,7 +1000,7 @@ export function ingestNotebookMarkdown(rawMarkdown: string, sourcePath: string =
       metadata: frontmatter.title ? 'hybrid' : 'automatic',
       classification: frontmatter.pillar ? 'manual' : 'automatic',
       processed_at: new Date().toISOString(),
-      pipeline_version: 'africalia-ingest-1.0.0'
+      pipeline_version: 'afriata-ingest-1.0.0'
     },
     confidence: {
       title: frontmatter.title ? 1.0 : 0.95,

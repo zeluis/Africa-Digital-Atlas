@@ -24,7 +24,7 @@ import {
   CoreClusterNode 
 } from '../../data/ethnicTreeData';
 import { MolecularMigrationDrawer, MolecularMigrationCanvasLayer, MolecularDivergenceNode } from './MolecularMigrationOverlay';
-import { VBW, VBH, CX, CY } from '../../data/africaliaMasterTreeData';
+import { VBW, VBH, CX, CY } from '../../data/afriataMasterTreeData';
 
 interface EthnicTreeCanvasProps {
   onSelectReport?: (reportId: string) => void;
@@ -261,7 +261,7 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
           </div>
           <div>
             <h2 className="text-xs font-bold text-white tracking-wide">
-              AFRICALIA <span className="text-amber-400 font-serif font-normal italic">Ethnic Tree of Life</span>
+              AFRIATA <span className="text-amber-400 font-serif font-normal italic">Ethnic Tree of Life</span>
             </h2>
             <p className="text-[10px] text-zinc-400 flex items-center gap-1.5">
               <span>Transatlantic Lineages</span>
@@ -476,9 +476,9 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
         preserveAspectRatio="xMidYMid meet"
         xmlns="http://www.w3.org/2000/svg"
         data-author="ZéLuis F. Correia"
-        data-curator="Africalia"
+        data-curator="Afriata"
         data-license="CC BY 4.0 (LICENSE-ASSETS)"
-        data-copyright="© 2024-2026 ZéLuis F. Correia (Africalia). Licensed under CC BY 4.0."
+        data-copyright="© 2024-2026 ZéLuis F. Correia (Afriata). Licensed under CC BY 4.0."
         data-doi="10.6084/m9.figshare.34065711"
         style={{
           transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
@@ -488,7 +488,7 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
       >
         {/* 
           ============================================================================
-          AFRICALIA CARTOGRAPHIC OBSERVATORY — VECTOR TOPOLOGY ARCHITECTURE
+          AFRIATA CARTOGRAPHIC OBSERVATORY — VECTOR TOPOLOGY ARCHITECTURE
           Author & Cartographer: ZéLuis F. Correia
           License: CC BY 4.0 (LICENSE-ASSETS) • Code: MIT (LICENSE-CODE)
           Coordinate Space: 2000 x 2000 Sovereign Ethnic Radial Topology

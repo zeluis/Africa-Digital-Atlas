@@ -1,9 +1,9 @@
 ---
-name: africalia-lean
-description: Optimize the Africalia / Africa-Digital-Atlas app for speed and size without removing any feature or weakening research integrity. Use when asked to improve performance, reduce bundle or asset size, speed up loading, fix jank, or "make it leaner". Measures first, works in small verified steps, and reports before/after numbers.
+name: afriata-lean
+description: Optimize the Afriata / Africa-Digital-Atlas app for speed and size without removing any feature or weakening research integrity. Use when asked to improve performance, reduce bundle or asset size, speed up loading, fix jank, or "make it leaner". Measures first, works in small verified steps, and reports before/after numbers.
 ---
 
-# Africalia lean-and-fast
+# Afriata lean-and-fast
 
 **Goal:** a faster, smaller app that still does everything it does today, on slow phones and metered data, and still tells the truth about its data.
 
@@ -54,7 +54,7 @@ Target: about 3 MB download, same offline coverage. `offline-audit.mjs` must sti
 
 ### C. Slim the start-up path
 Startup currently preloads data chunks that only specific views need (`data-slave-voyages`, `data-research-reports`, `data-svg-schematic-maps`, `data-african-development`, `data-country-silhouettes`).
-1. Remove static imports of modals that `App.tsx` already lazy-loads. Vite warns about `CartographicColophonModal` and `AcademicExportModal`, which are imported statically in `AfricaMap.tsx`, `AfricaliaExplorer.tsx`, `SlaveTradeView.tsx` and `ProvenanceQualityView.tsx`. Replace with `lazy()` plus `<Suspense>`.
+1. Remove static imports of modals that `App.tsx` already lazy-loads. Vite warns about `CartographicColophonModal` and `AcademicExportModal`, which are imported statically in `AfricaMap.tsx`, `AfriataExplorer.tsx`, `SlaveTradeView.tsx` and `ProvenanceQualityView.tsx`. Replace with `lazy()` plus `<Suspense>`.
 2. Make every view a lazy route (`const SlaveTradeView = lazy(() => import('./views/SlaveTradeView'))`) with a skeleton fallback.
 3. Stop data chunks from being preloaded:
 ```ts
@@ -66,7 +66,7 @@ build: { modulePreload: { resolveDependencies: (_, deps) => deps.filter(d => !/\
 `slave-trade-illustrations` is 2.4 MB raw (1,198 records). `wikipediaEthnicAtlas.ts` is 3,351 lines. Generate `.json` files at build time into `public/data/`, `fetch()` them when a view opens, and show a skeleton. Keep the same shapes so components do not change, and add `json` to the service-worker `globPatterns` so the files remain precached (check with `offline-audit.mjs`). Show the first 50 records and load more on scroll (or virtualize); 1,198 DOM cards at once is a jank source.
 
 ### E. Shrink the two large vector files
-`africa-final.svg` (2.4 MB) and `africalia-ethnic-tree.svg` (716 KB): run `npx svgo --multipass -p 2` (check the maps visually before and after), serve with gzip/brotli (GitHub Pages does gzip), and load only on the views that use them. Keep the originals in `docs/source-art/`.
+`africa-final.svg` (2.4 MB) and `afriata-ethnic-tree.svg` (716 KB): run `npx svgo --multipass -p 2` (check the maps visually before and after), serve with gzip/brotli (GitHub Pages does gzip), and load only on the views that use them. Keep the originals in `docs/source-art/`.
 
 ### F. CSS and fonts
 - 422 KB of CSS is large for Tailwind v4. Inspect with `npx vite-bundle-visualizer` and search for huge `@apply` blocks, safelists and repeated arbitrary values. Target 250 KB.

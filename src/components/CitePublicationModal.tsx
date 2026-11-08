@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { ResearchReport } from '../data/reportsData';
-import { AfricaliaReport } from '../types/africaliaReport';
+import { AfriataReport } from '../types/afriataReport';
 import { Copy, Check, Download, BookOpen, X, Code2, Share2 } from 'lucide-react';
 
 interface CitePublicationModalProps {
-  report: ResearchReport | AfricaliaReport;
+  report: ResearchReport | AfriataReport;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -26,7 +26,7 @@ export const CitePublicationModal: React.FC<CitePublicationModalProps> = ({
   const authorsStr = authorsList.join(', ');
   const year = report.publicationDate?.split(' ').pop() || new Date().getFullYear().toString();
   const hasDoi = true;
-  const doi = (report.doi && !report.doi.includes('africalia')) ? report.doi : '10.6084/m9.figshare.34065711';
+  const doi = (report.doi && !report.doi.includes('afriata')) ? report.doi : '10.6084/m9.figshare.34065711';
   const doiUrl = doi.startsWith('http') ? doi : `https://doi.org/${doi}`;
   const title = report.title;
   const subtitle = report.subtitle ? `: ${report.subtitle}` : '';
@@ -34,20 +34,20 @@ export const CitePublicationModal: React.FC<CitePublicationModalProps> = ({
   const generateCitationText = (targetStyle = style) => {
     switch (targetStyle) {
       case 'chicago':
-        return `${authorsStr}. ${year}. "${title}${subtitle}." Africalia: Africa Data Atlas & Cartographic Observatory. ${doiUrl} (ORCID: https://orcid.org/0000-0001-9421-6555).`;
+        return `${authorsStr}. ${year}. "${title}${subtitle}." Afriata: Africa Data Atlas & Cartographic Observatory. ${doiUrl} (ORCID: https://orcid.org/0000-0001-9421-6555).`;
       case 'apa':
-        return `${authorsStr} (${year}). ${title}${subtitle}. Africalia: Africa Data Atlas & Cartographic Observatory. ${doiUrl} (ORCID: https://orcid.org/0000-0001-9421-6555)`;
+        return `${authorsStr} (${year}). ${title}${subtitle}. Afriata: Africa Data Atlas & Cartographic Observatory. ${doiUrl} (ORCID: https://orcid.org/0000-0001-9421-6555)`;
       case 'mla':
-        return `${authorsStr}. "${title}${subtitle}." Africalia: Africa Data Atlas & Cartographic Observatory, ${year}, ${doiUrl}. ORCID: 0000-0001-9421-6555.`;
+        return `${authorsStr}. "${title}${subtitle}." Afriata: Africa Data Atlas & Cartographic Observatory, ${year}, ${doiUrl}. ORCID: 0000-0001-9421-6555.`;
       case 'harvard':
-        return `${authorsStr}, ${year}. ${title}${subtitle}. Africalia: Africa Data Atlas & Cartographic Observatory. Available at: <${doiUrl}> (ORCID: 0000-0001-9421-6555).`;
+        return `${authorsStr}, ${year}. ${title}${subtitle}. Afriata: Africa Data Atlas & Cartographic Observatory. Available at: <${doiUrl}> (ORCID: 0000-0001-9421-6555).`;
       case 'bibtex': {
         const citeKey = report.id.replace(/[^a-zA-Z0-9]/g, '_') + '_' + year;
         return `@article{${citeKey},
   title={${title}},
   subtitle={${report.subtitle || ''}},
   author={${authorsList.join(' and ')}},
-  journal={Africalia: Africa Data Atlas \\& Cartographic Observatory},
+  journal={Afriata: Africa Data Atlas \\& Cartographic Observatory},
   year={${year}},${hasDoi ? `\n  doi={${doi}},` : ''}
   url={${doiUrl}},
   note={Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555}
@@ -57,7 +57,7 @@ export const CitePublicationModal: React.FC<CitePublicationModalProps> = ({
         return `TY  - JOUR
 TI  - ${title}${subtitle}
 ${authorsList.map(a => `AU  - ${a}`).join('\n')}
-JO  - Africalia: Africa Data Atlas & Cartographic Observatory
+JO  - Afriata: Africa Data Atlas & Cartographic Observatory
 PY  - ${year}${hasDoi ? `\nDO  - ${doi}` : ''}
 UR  - ${doiUrl}
 N1  - ORCID: https://orcid.org/0000-0001-9421-6555
@@ -78,7 +78,7 @@ ER  - `;
           "identifier": doiUrl,
           "publisher": {
             "@type": "Organization",
-            "name": "Africalia: Africa Data Atlas & Cartographic Observatory",
+            "name": "Afriata: Africa Data Atlas & Cartographic Observatory",
             "url": "https://zeluis.github.io/Africa-Digital-Atlas/"
           }
         };

@@ -53,7 +53,7 @@ type RegionFilter = 'All' | 'Africa' | 'Arab States';
 type CategoryFilter = 'All' | 'Cultural' | 'Natural' | 'Mixed' | 'Danger';
 type ViewMode = 'viewer' | 'directory';
 
-const UNESCO_CUSTOM_XML_STORAGE_KEY = 'africalia_unesco_xml_sites_v1';
+const UNESCO_CUSTOM_XML_STORAGE_KEY = 'afriata_unesco_xml_sites_v1';
 
 export const HeritageView: React.FC<HeritageViewProps> = ({
   onSelectCountry,
@@ -62,7 +62,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
   // Load either custom ingested XML rows from localStorage or the complete 210 Africa + Arab States registry
   const [unescoSites, setUnescoSites] = useState<UnescoSiteMetadata[]>(() => {
     try {
-      const saved = localStorage.getItem(UNESCO_CUSTOM_XML_STORAGE_KEY);
+      const saved = localStorage.getItem(UNESCO_CUSTOM_XML_STORAGE_KEY) || localStorage.getItem('africalia_unesco_xml_sites_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length >= INITIAL_UNESCO_HERITAGE_SITES.length && parsed[0]?.license) {

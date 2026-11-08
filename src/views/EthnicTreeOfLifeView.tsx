@@ -1,5 +1,5 @@
 import React from 'react';
-import { AfricaliaExplorer } from '../components/ethnicTree/AfricaliaExplorer';
+import { AfriataExplorer } from '../components/ethnicTree/AfriataExplorer';
 
 interface EthnicTreeOfLifeViewProps {
   onSelectReport?: (reportId: string) => void;
@@ -19,11 +19,11 @@ export const EthnicTreeOfLifeView: React.FC<EthnicTreeOfLifeViewProps> = ({
   return (
     <section 
       id="ethnic-tree-viewport-container" 
-      aria-label="Africalia Ethnic Tree of Life Cartographic Explorer"
+      aria-label="Afriata Ethnic Tree of Life Cartographic Explorer"
       className="relative flex-1 w-full h-[calc(100dvh-64px)] min-h-[640px] overflow-hidden flex flex-col bg-[#161412]"
     >
       {/* Full-Screen Sovereign Cartography Engine displaying the authentic raw SVG with 100% fidelity */}
-      <AfricaliaExplorer
+      <AfriataExplorer
         onSelectReport={onSelectReport}
         onNavigateToSlaveTrade={onNavigateToSlaveTrade}
         onNavigateToMolecular={onNavigateToMolecular}

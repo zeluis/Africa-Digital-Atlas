@@ -1,7 +1,7 @@
 import { SupportedLanguage } from '../i18n/types';
 
 /**
- * Mapping of Africalia supported languages to standard translation target codes.
+ * Mapping of Afriata supported languages to standard translation target codes.
  */
 const TRANSLATION_CODE_MAP: Record<SupportedLanguage, string> = {
   en: 'en',
@@ -56,7 +56,7 @@ declare global {
   interface Window {
     google?: any;
     googleTranslateElementInit?: () => void;
-    __africaliaTranslationInitialized?: boolean;
+    __afriataTranslationInitialized?: boolean;
   }
 }
 
@@ -64,11 +64,11 @@ declare global {
  * Initializes Google Translate client script cleanly without unwanted UI banners.
  */
 export function initNativeTranslationEngine(): void {
-  if (typeof window === 'undefined' || window.__africaliaTranslationInitialized) {
+  if (typeof window === 'undefined' || window.__afriataTranslationInitialized) {
     return;
   }
 
-  window.__africaliaTranslationInitialized = true;
+  window.__afriataTranslationInitialized = true;
 
   // Define global init callback
   window.googleTranslateElementInit = function () {
@@ -157,7 +157,7 @@ export function syncNativeTranslation(targetLang: SupportedLanguage): void {
   // 4. Dispatch custom event for custom components listening to language changes
   try {
     window.dispatchEvent(
-      new CustomEvent('africalia-language-changed', {
+      new CustomEvent('afriata-language-changed', {
         detail: { language: targetLang, code: targetCode, isRTL }
       })
     );

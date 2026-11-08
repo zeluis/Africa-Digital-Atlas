@@ -34,7 +34,7 @@ export const CartographicCartouche: React.FC<CartographicCartoucheProps> = ({
 
   return (
     <g 
-      id="africalia-cartographic-cartouche"
+      id="afriata-cartographic-cartouche"
       transform={`translate(${x}, ${y}) scale(${scale})`}
       className="cursor-pointer select-none group"
       onClick={(e) => {
@@ -130,7 +130,7 @@ export const CartographicCartouche: React.FC<CartographicCartoucheProps> = ({
           fontFamily="monospace"
           letterSpacing="4"
         >
-          AFRICALIA OBSERVATORY • AUTONOMOUS CARTOGRAPHIC IMPRINT
+          AFRIATA OBSERVATORY • AUTONOMOUS CARTOGRAPHIC IMPRINT
         </text>
 
         {/* Major Title */}

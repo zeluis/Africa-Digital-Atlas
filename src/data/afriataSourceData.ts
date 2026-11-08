@@ -1,4 +1,4 @@
-export interface AfricaliaEntity {
+export interface AfriataEntity {
   id: string;
   label: string;
   type: string;
@@ -9,7 +9,7 @@ export interface RegionOption {
   label: string;
 }
 
-export const AFRICALIA_REGIONS: RegionOption[] = [
+export const AFRIATA_REGIONS: RegionOption[] = [
   { value: 'west-sahael', label: 'West Sahel' },
   { value: 'western-africa', label: 'Western Africa' },
   { value: 'southern-africa', label: 'Southern Africa' },
@@ -19,7 +19,7 @@ export const AFRICALIA_REGIONS: RegionOption[] = [
   { value: 'central-africa', label: 'Central Africa' }
 ];
 
-export const AFRICALIA_COUNTRY_LABELS: Record<string, string> = {
+export const AFRIATA_COUNTRY_LABELS: Record<string, string> = {
   'guinea-conacry': 'Guinea',
   'guinea-eq': 'Equatorial Guinea',
   'ivory-coast': 'Côte d’Ivoire',
@@ -32,13 +32,13 @@ export const AFRICALIA_COUNTRY_LABELS: Record<string, string> = {
   'cabo-verde': 'Cabo Verde'
 };
 
-export const AFRICALIA_LAYER_GROUPS = {
+export const AFRIATA_LAYER_GROUPS = {
   first: 'quant--tast--first--totals--5694581--THE-MAIN-REGION-WITH-HIGHER-TOTAL-TAST--1500-1866-WEST-CENTRAL-AFRICA-AND-ST-HELENA',
   second: 'quant--tast--second--totals--4802952--SECOND-REGION-HIGH-TAST--1500-1866--BIGHT-OF-BENINN--BIGHT-OF-BIAFRA--GOLD_COAST',
   third: 'quant--tast--third--totals--2023821--THIRD_REGION_AND_LESS_OF_TAST-1500-1866-SOUTH-EAST_AFRICA-AND-ISLANDS-SOUTHERN_AFRICA-SENEGAMBIA-AND--OFF-SHORE-ATLANTIC-SIERRA-LEONE--WINWARD-COST-SOUTH-EAST-AFRICA-AND-INDIAN-OCEAN-ISLANDS'
 };
 
-export const AFRICALIA_CABO_VERDE_DATA = {
+export const AFRIATA_CABO_VERDE_DATA = {
   title: 'Cabo Verde',
   sourceFile: 'Genetic and Social Structure of Cape Verde.md',
   context: [
@@ -76,24 +76,24 @@ export const AFRICALIA_CABO_VERDE_DATA = {
   ]
 };
 
-export function formatAfricaliaTitleCase(s: string): string {
+export function formatAfriataTitleCase(s: string): string {
   return s
     .replace(/\b\w/g, m => m.toUpperCase())
     .replace(/\bTg\b/g, 'Tg')
     .replace(/-/g, ' ');
 }
 
-export function formatAfricaliaIdTitle(id: string): string {
+export function formatAfriataIdTitle(id: string): string {
   const parts = id.split('--');
-  if (id.startsWith('node--ethnic--')) return formatAfricaliaTitleCase(parts[2]);
+  if (id.startsWith('node--ethnic--')) return formatAfriataTitleCase(parts[2]);
   if (id.startsWith('node--country--') || id.startsWith('geo--country--') || id.startsWith('label--country--')) {
-    return formatAfricaliaTitleCase(parts.slice(2).join(' '));
+    return formatAfriataTitleCase(parts.slice(2).join(' '));
   }
   if (id.startsWith('node--geo--country--')) return 'Cabo Verde';
-  if (id.startsWith('node--region--') || id.startsWith('branch--region--')) return formatAfricaliaTitleCase(parts.slice(2).join(' '));
-  if (id.startsWith('assoc--ethnic--')) return formatAfricaliaTitleCase(parts[2]);
-  if (id.startsWith('label--ethnic--')) return formatAfricaliaTitleCase(parts[2]);
-  if (id.startsWith('branch--ethnic--')) return formatAfricaliaTitleCase(parts[2]);
+  if (id.startsWith('node--region--') || id.startsWith('branch--region--')) return formatAfriataTitleCase(parts.slice(2).join(' '));
+  if (id.startsWith('assoc--ethnic--')) return formatAfriataTitleCase(parts[2]);
+  if (id.startsWith('label--ethnic--')) return formatAfriataTitleCase(parts[2]);
+  if (id.startsWith('branch--ethnic--')) return formatAfriataTitleCase(parts[2]);
   if (id.startsWith('quant--')) return id.replace(/^quant--tast--/, 'TAST ').replace(/--/g, ' · ').replace(/_/g, ' ');
-  return formatAfricaliaTitleCase(id);
+  return formatAfriataTitleCase(id);
 }

@@ -1,5 +1,5 @@
 /**
- * AFRICALIA CARTOGRAPHIC & ECONOMETRIC OBSERVATORY
+ * AFRIATA CARTOGRAPHIC & ECONOMETRIC OBSERVATORY
  * Methodological Governance, Multilateral Harmonization, and Working Papers Data
  * Principal Cartographer & Software Architect: ZéLuis F. Correia
  * Dual Licensed: Source Code under MIT (LICENSE-CODE) • Creative Assets under CC BY 4.0 (LICENSE-ASSETS)
@@ -104,16 +104,16 @@ export const DATASET_INTEGRITY_HASHES: DatasetIntegrityHash[] = [
     fileScope: 'src/data/authenticEthnicTreeSvg.ts',
     recordCount: 2000,
     bytes: 759745,
-    sha256: 'b126f58bec726356e633e0538d6e5d2796e359cb879b6214aaf6a2287f51fcbe',
+    sha256: 'd19cf21bb510b1a085b6f8dfea8ab8f33e8eb27acbb1666c21eb6be0c8ed7f81',
     lastAudited: '2026-10-04T00:00:00Z',
     verificationStatus: 'published'
   },
   {
     datasetName: 'Linguistic & Ethnolinguistic Tree Hierarchy',
-    fileScope: 'src/data/africaliaMasterTreeData.ts',
+    fileScope: 'src/data/afriataMasterTreeData.ts',
     recordCount: 310,
     bytes: 51739,
-    sha256: 'bb752f45f13d126e2bf37d7483abddf8d4f046f58d387d6e056ced316d56aacc',
+    sha256: '32b3af97c6f0eecb14d4c280f5b095217f3979281bd945cfe7083597862be2b1',
     lastAudited: '2026-10-04T00:00:00Z',
     verificationStatus: 'published'
   },
@@ -199,13 +199,13 @@ export async function computeDatasetSha256InBrowser(fileScope: string): Promise<
 
 export const WORKING_PAPERS_SERIES: WorkingPaperEntry[] = [
   {
-    id: 'africalia-policy-brief-01',
-    seriesNumber: 'Africalia Policy Brief No. 01',
+    id: 'afriata-policy-brief-01',
+    seriesNumber: 'Afriata Policy Brief No. 01',
     type: 'Policy Brief',
     title: 'Structural Legacies of Monopsonistic Trade Concessions in Atlantic Africa',
     subtitle: 'Institutional Path-Dependency, Extraction Corridors, and Contemporary Mineral Supply Chains',
     author: 'Zéluis F. Correia',
-    affiliation: 'Africalia Cartographic & Econometric Observatory',
+    affiliation: 'Afriata Cartographic & Econometric Observatory',
     date: 'February 2026',
     jelCodes: ['N17', 'O10', 'O43', 'F14'],
     abstract: 'This policy brief examines the enduring spatial and institutional imprint of colonial trade concessions across Atlantic Africa (1885–1960). Using geospatial vector overlays of historic concession boundaries juxtaposed against modern AfCFTA infrastructure corridors and UN Comtrade mineral export matrices, we demonstrate that transport infrastructure remains disproportionately oriented toward raw export extraction rather than regional trade complementarity. Policy remedies highlight intra-African tariff reduction and continental industrial value-addition under the AfCFTA framework.',
@@ -214,17 +214,17 @@ export const WORKING_PAPERS_SERIES: WorkingPaperEntry[] = [
       'Intra-African trade in processed goods carries a 2.4x higher transport freight premium than raw mineral evacuation to Atlantic deepwater ports.',
       'Targeted tariff harmonization under AfCFTA Rules of Origin could unlock an estimated $44B in regional intermediate processing value by 2035.'
     ],
-    citationApa: 'Correia, Z. F. (2026). Structural Legacies of Monopsonistic Trade Concessions in Atlantic Africa (Africalia Policy Brief No. 01). Africalia Open Science Repository. https://doi.org/10.6084/m9.figshare.34065711',
-    downloadFilename: 'Africalia_Policy_Brief_01_Monopsonistic_Trade_Concessions.pdf'
+    citationApa: 'Correia, Z. F. (2026). Structural Legacies of Monopsonistic Trade Concessions in Atlantic Africa (Afriata Policy Brief No. 01). Afriata Open Science Repository. https://doi.org/10.6084/m9.figshare.34065711',
+    downloadFilename: 'Afriata_Policy_Brief_01_Monopsonistic_Trade_Concessions.pdf'
   },
   {
-    id: 'africalia-research-note-04',
-    seriesNumber: 'Africalia Research Note No. 04',
+    id: 'afriata-research-note-04',
+    seriesNumber: 'Afriata Research Note No. 04',
     type: 'Research Note',
     title: 'Genomic Admixture and Tri-Continental Founder Effects in Cabo Verde',
     subtitle: 'A Biogeographical Synthesis of Trans-Atlantic Demographic Bottlenecks and Lineage Persistence',
     author: 'Zéluis F. Correia',
-    affiliation: 'Africalia Cartographic & Econometric Observatory',
+    affiliation: 'Afriata Cartographic & Econometric Observatory',
     date: 'January 2026',
     jelCodes: ['N37', 'J15', 'Z13'],
     abstract: 'Cabo Verde represents one of the earliest Creole neo-societies founded through forced Atlantic maritime labor convergence (1462–1878). This research note synthesizes autosomal, mtDNA, and Y-chromosome population genetics datasets with historical customs registers and SlaveVoyages embarkation logs. The findings elucidate asymmetrical sex-biased admixture patterns, strong matrilineal Senegambian founder lineages, and the subsequent evolutionary bottleneck effects that shaped the archipelagic gene pool.',
@@ -233,26 +233,26 @@ export const WORKING_PAPERS_SERIES: WorkingPaperEntry[] = [
       'Patrilineal Y-chromosome distributions reflect intense European male reproductive skew characteristic of 16th-century Atlantic feitoria economies.',
       'Archival customs manifests corroborate that trade isolation post-1600 reinforced micro-demographic differentiation between Santiago and Barlavento islands.'
     ],
-    citationApa: 'Correia, Z. F. (2026). Genomic Admixture and Tri-Continental Founder Effects in Cabo Verde (Africalia Research Note No. 04). Africalia Open Science Repository. https://doi.org/10.6084/m9.figshare.34065711',
-    downloadFilename: 'Africalia_Research_Note_04_Cabo_Verde_Genomic_Admixture.pdf'
+    citationApa: 'Correia, Z. F. (2026). Genomic Admixture and Tri-Continental Founder Effects in Cabo Verde (Afriata Research Note No. 04). Afriata Open Science Repository. https://doi.org/10.6084/m9.figshare.34065711',
+    downloadFilename: 'Afriata_Research_Note_04_Cabo_Verde_Genomic_Admixture.pdf'
   },
   {
-    id: 'africalia-working-paper-07',
-    seriesNumber: 'Africalia Working Paper No. 07',
+    id: 'afriata-working-paper-07',
+    seriesNumber: 'Afriata Working Paper No. 07',
     type: 'Working Paper',
     title: 'Cartographic Geodesy and Admin-1 Spatial Disaggregation in Sub-Saharan Africa',
     subtitle: 'Precision Boundary Alignment, High-Resolution Vector Topologies, and Multilateral Statistical Reconciliation',
     author: 'Zéluis F. Correia',
-    affiliation: 'Africalia Cartographic & Econometric Observatory',
+    affiliation: 'Afriata Cartographic & Econometric Observatory',
     date: 'March 2026',
     jelCodes: ['C88', 'R12', 'O55', 'C81'],
-    abstract: 'Accurate spatial representation of sub-national economic performance in Africa is frequently compromised by coarse national aggregates and distorted cartographic projections. This paper presents the technical specification of the Africalia 5,796 × 5,867 planar Cartesian vector engine, reconciling 1,017 Admin-1 provincial boundaries across 54 sovereign nations. By coupling hairline geodesic graticules with micro-demographic weighting, we demonstrate a deterministic framework for sub-national indicator disaggregation.',
+    abstract: 'Accurate spatial representation of sub-national economic performance in Africa is frequently compromised by coarse national aggregates and distorted cartographic projections. This paper presents the technical specification of the Afriata 5,796 × 5,867 planar Cartesian vector engine, reconciling 1,017 Admin-1 provincial boundaries across 54 sovereign nations. By coupling hairline geodesic graticules with micro-demographic weighting, we demonstrate a deterministic framework for sub-national indicator disaggregation.',
     keyFindings: [
       'Documenting and cataloging 1,017 first-order administrative sub-divisions eliminates aggregate spatial bias in trans-boundary economic analysis.',
       'Calculated centroid-anchored dynamic text placement preserves label legibility without obscuring provincial border topology.',
       'Full compatibility with open web standards (SVG 1.1) eliminates proprietary GIS licensing constraints for African planning ministries.'
     ],
-    citationApa: 'Correia, Z. F. (2026). Cartographic Geodesy and Admin-1 Spatial Disaggregation in Sub-Saharan Africa (Africalia Working Paper No. 07). Africalia Open Science Repository. https://doi.org/10.6084/m9.figshare.34065711',
-    downloadFilename: 'Africalia_Working_Paper_07_Cartographic_Geodesy_Admin1.pdf'
+    citationApa: 'Correia, Z. F. (2026). Cartographic Geodesy and Admin-1 Spatial Disaggregation in Sub-Saharan Africa (Afriata Working Paper No. 07). Afriata Open Science Repository. https://doi.org/10.6084/m9.figshare.34065711',
+    downloadFilename: 'Afriata_Working_Paper_07_Cartographic_Geodesy_Admin1.pdf'
   }
 ];

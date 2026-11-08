@@ -23,11 +23,11 @@ layout:
     visible: true
 ---
 
-# Africa Digital Atlas
+# Afriata: Africa Data Atlas
 
-![Africa Digital Atlas](.gitbook/assets/hero-preview.jpg)
+![Afriata: Africa Data Atlas](.gitbook/assets/hero-preview.jpg)
 
-**Africa Digital Atlas** is an open-source, interactive data platform covering all 54 African sovereign nations and territories. It combines a pure-SVG vector cartography engine, 90+ harmonized socioeconomic indicators from 16 multilateral data sources, a 3D historical voyages globe, and comparative analytics tooling into a single offline-capable web app.
+**Afriata (Africa Data Atlas)** is an open-source, interactive data platform covering all 54 African sovereign nations and territories. It combines a pure-SVG vector cartography engine, 90+ harmonized socioeconomic indicators from 16 multilateral data sources, a 3D historical voyages globe, and comparative analytics tooling into a single offline-capable web app.
 
 **Live app:** [zeluis.github.io/Africa-Digital-Atlas](https://zeluis.github.io/Africa-Digital-Atlas/) **Source code:** [github.com/zeluis/Africa-Digital-Atlas](https://github.com/zeluis/Africa-Digital-Atlas)
 

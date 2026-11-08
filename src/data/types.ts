@@ -265,7 +265,7 @@ export interface AtlasManifest {
   lastUpdated?: string;
 }
 
-export interface AfricaliaAdmin1 {
+export interface AfriataAdmin1 {
   id: string;
   level: 'admin1';
   parent: string;
@@ -277,7 +277,7 @@ export interface AfricaliaAdmin1 {
   regionName?: string;
 }
 
-export interface AfricaliaCountryHierarchy {
+export interface AfriataCountryHierarchy {
   id: string;
   level: 'country';
   m49: string;
@@ -290,20 +290,20 @@ export interface AfricaliaCountryHierarchy {
   admin1Layer?: string;
   admin2Layer?: string;
   admin1Count: number;
-  admin1: AfricaliaAdmin1[];
+  admin1: AfriataAdmin1[];
 }
 
-export interface AfricaliaRegionHierarchy {
+export interface AfriataRegionHierarchy {
   m49: string;
   name: AfricanRegion | string;
   layer: string;
   level: 'region';
-  countries: AfricaliaCountryHierarchy[];
+  countries: AfriataCountryHierarchy[];
 }
 
-export interface AfricaliaGeographyHierarchy {
+export interface AfriataGeographyHierarchy {
   schema: string;
   root: string;
   sources: { admin1: string; admin2: string };
-  regions: AfricaliaRegionHierarchy[];
+  regions: AfriataRegionHierarchy[];
 }

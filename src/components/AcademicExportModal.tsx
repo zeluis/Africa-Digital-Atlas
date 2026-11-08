@@ -38,10 +38,10 @@ export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
   title = 'Africa Data Atlas & Cartographic Observatory',
   sourceContext = 'Multilateral Macroeconomic, Ethnographic & Cartographic Corpus',
   citationMetadata = {
-    authors: ['Zéluis F. Correia', 'Africalia Cartographic & Econometric Observatory'],
+    authors: ['Zéluis F. Correia', 'Afriata Cartographic & Econometric Observatory'],
     year: 2026,
     datasetName: 'Africa Data Atlas & Cartographic Observatory',
-    url: typeof window !== 'undefined' ? window.location.origin : 'https://africalia.org',
+    url: typeof window !== 'undefined' ? window.location.origin : 'https://afriata.org',
     doi: '10.6084/m9.figshare.34065711',
     version: '2026.1 (Observatory Canonical Edition)'
   },
@@ -55,36 +55,36 @@ export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
   if (!isOpen) return null;
 
   const accessDate = new Date().toISOString().split('T')[0];
-  const pageUrl = typeof window !== 'undefined' ? window.location.href : 'https://africalia.org';
+  const pageUrl = typeof window !== 'undefined' ? window.location.href : 'https://afriata.org';
   const doi = citationMetadata.doi || '10.6084/m9.figshare.34065711';
 
   // Standardized Academic Citations
-  const apaCitation = `Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Africalia. https://github.com/zeluis/Africa-Digital-Atlas · https://doi.org/${doi}`;
+  const apaCitation = `Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Afriata. https://github.com/zeluis/Africa-Digital-Atlas · https://doi.org/${doi}`;
 
-  const chicagoCitation = `Correia, Zéluis F. 2026. Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Lisbon/Praia: Africalia. https://doi.org/${doi}.`;
+  const chicagoCitation = `Correia, Zéluis F. 2026. Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Lisbon/Praia: Afriata. https://doi.org/${doi}.`;
 
-  const mlaCitation = `Correia, Zéluis F. "Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows." Africalia, 2026, https://doi.org/${doi}. Accessed ${accessDate}.`;
+  const mlaCitation = `Correia, Zéluis F. "Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows." Afriata, 2026, https://doi.org/${doi}. Accessed ${accessDate}.`;
 
-  const harvardCitation = `Correia, Z.F. (2026) Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Africalia. Available at: ${pageUrl} (Accessed: ${accessDate}). https://doi.org/${doi}.`;
+  const harvardCitation = `Correia, Z.F. (2026) Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Afriata. Available at: ${pageUrl} (Accessed: ${accessDate}). https://doi.org/${doi}.`;
 
   const bibtexCitation = `@dataset{correia_africa_data_atlas_2026,
   author    = {Correia, Z{\\'e}luis F.},
   orcid     = {0000-0001-9421-6555},
   title     = {{Africa Data Atlas \\& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows}},
   year      = {2026},
-  publisher = {Africalia},
+  publisher = {Afriata},
   doi       = {${doi}},
   url       = {${pageUrl}},
   version   = {${citationMetadata.version || '2026.1'}},
   note      = {Accessed: ${accessDate}}
 }
 
-@software{correia_africalia_vector_engine_2026,
+@software{correia_afriata_vector_engine_2026,
   author    = {Correia, Z{\\'e}luis F.},
   orcid     = {0000-0001-9421-6555},
-  title     = {{Africalia Continental Vector Topology \\& High-Precision Geodetic Engine (5,796 x 5,867)}},
+  title     = {{Afriata Continental Vector Topology \\& High-Precision Geodetic Engine (5,796 x 5,867)}},
   year      = {2026},
-  publisher = {Africalia Cartographic Observatory},
+  publisher = {Afriata Cartographic Observatory},
   doi       = {${doi}},
   url       = {${pageUrl}}
 }`;
@@ -93,7 +93,7 @@ export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
 TI  - Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows
 AU  - Correia, Zéluis F.
 PY  - 2026
-PB  - Africalia
+PB  - Afriata
 DO  - ${doi}
 UR  - ${pageUrl}
 Y2  - ${accessDate}
@@ -125,11 +125,11 @@ ER  -`;
   };
 
   const handleDownloadRis = () => {
-    downloadFile('africalia_atlas_citation.ris', risCitation, 'application/x-research-info-systems;charset=utf-8');
+    downloadFile('afriata_atlas_citation.ris', risCitation, 'application/x-research-info-systems;charset=utf-8');
   };
 
   const handleDownloadBibtex = () => {
-    downloadFile('africalia_atlas_citation.bib', bibtexCitation, 'text/plain;charset=utf-8');
+    downloadFile('afriata_atlas_citation.bib', bibtexCitation, 'text/plain;charset=utf-8');
   };
 
   return (
@@ -290,7 +290,7 @@ ER  -`;
           </div>
 
           <div className="flex items-center justify-between text-[11px] font-mono text-stone-500 px-1">
-            <span>Africalia Open Science Repository • Author: ZéLuis F. Correia</span>
+            <span>Afriata Open Science Repository • Author: ZéLuis F. Correia</span>
             <span>CC BY 4.0 (Assets) • MIT (Code)</span>
           </div>
         </div>

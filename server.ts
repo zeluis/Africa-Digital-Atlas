@@ -77,7 +77,7 @@ const ALLOWED_TRACKED_DATASETS = new Set([
   "public/africa-final.svg",
   "src/data/africaFinalGeometry.ts",
   "src/data/authenticEthnicTreeSvg.ts",
-  "src/data/africaliaMasterTreeData.ts",
+  "src/data/afriataMasterTreeData.ts",
   "src/data/slaveVoyagesData.ts",
   "src/data/records-with-descriptions.json",
   "src/data/wikipediaTableEntries.json",
@@ -120,7 +120,7 @@ app.post("/api/ingest/test-connector", async (req, res) => {
   try {
     const upstreamRes = await fetch(targetUrl, {
       signal: AbortSignal.timeout(5000),
-      headers: { "User-Agent": "Africalia-Data-Atlas/2.4 (Open Knowledge Research)" }
+      headers: { "User-Agent": "Afriata-Data-Atlas/2.4 (Open Knowledge Research)" }
     });
     const latency = Math.round(performance.now() - startTime);
 
@@ -337,7 +337,7 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Africalia server running on http://0.0.0.0:${PORT}`);
+    console.log(`Afriata server running on http://0.0.0.0:${PORT}`);
   });
 }
 

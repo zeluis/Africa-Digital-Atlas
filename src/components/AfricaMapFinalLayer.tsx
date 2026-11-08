@@ -97,7 +97,7 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
     <>
       {/* 
         ============================================================================
-        AFRICALIA CARTOGRAPHIC OBSERVATORY — VECTOR CONTINENTAL TOPOLOGY
+        AFRIATA CARTOGRAPHIC OBSERVATORY — VECTOR CONTINENTAL TOPOLOGY
         Author & Cartographer: ZéLuis F. Correia
         License: CC BY 4.0 (LICENSE-ASSETS) • Code: MIT (LICENSE-CODE)
         Coordinate Space: 5796 x 5867 High-Precision Vector Cartesian Grid
@@ -819,7 +819,7 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
         </g>
       )}
 
-      {/* Official Africalia Cartographic Cartouche (Title, Scale Bar, Geodesy, and Copyright Line) */}
+      {/* Official Afriata Cartographic Cartouche (Title, Scale Bar, Geodesy, and Copyright Line) */}
       {showCartouche && (
         <CartographicCartouche
           x={50}

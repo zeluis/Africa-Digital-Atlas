@@ -1,7 +1,7 @@
 /**
- * Canonical Africalia Universal Research Publication Schema
+ * Canonical Afriata Universal Research Publication Schema
  * 
- * Defines the formal, machine-readable publication record (`AfricaliaReport`)
+ * Defines the formal, machine-readable publication record (`AfriataReport`)
  * consumed by the React application, search indexes, country profiles, and regional cartography.
  * 
  * Schema Version: 1.0.0
@@ -9,9 +9,9 @@
 
 import { ReportSection, ReportCitation, ReportCategory } from '../data/reportsData';
 
-export type AfricaliaPublicationStatus = 'draft' | 'review' | 'published' | 'archived';
+export type AfriataPublicationStatus = 'draft' | 'review' | 'published' | 'archived';
 
-export type AfricaliaPublicationType = 
+export type AfriataPublicationType = 
   | 'research_article'
   | 'research_report'
   | 'research_study'
@@ -23,7 +23,7 @@ export type AfricaliaPublicationType =
   | 'research_note'
   | 'research_proposal';
 
-export type AfricaliaCitationStyle = 
+export type AfriataCitationStyle = 
   | 'chicago-author-date'
   | 'chicago-notes'
   | 'apa'
@@ -31,7 +31,7 @@ export type AfricaliaCitationStyle =
   | 'harvard'
   | 'custom';
 
-export type AfricaliaAuthorRole = 
+export type AfriataAuthorRole = 
   | 'author'
   | 'editor'
   | 'researcher'
@@ -39,7 +39,7 @@ export type AfricaliaAuthorRole =
   | 'translator'
   | string;
 
-export type AfricaliaSection = 
+export type AfriataSection = 
   | 'reports'
   | 'working-papers'
   | 'history'
@@ -50,7 +50,7 @@ export type AfricaliaSection =
   | 'archives'
   | 'methodology';
 
-export type AfricaliaPillar = 
+export type AfriataPillar = 
   | 'genetics'
   | 'law'
   | 'development'
@@ -65,33 +65,33 @@ export type AfricaliaPillar =
 
 export type IngestionMode = 'automatic' | 'manual' | 'hybrid';
 
-export interface AfricaliaInstitution {
+export interface AfriataInstitution {
   name: string;
   type: string;
   role: string;
   platform: string;
 }
 
-export interface AfricaliaPublication {
+export interface AfriataPublication {
   series: string;
-  type: AfricaliaPublicationType;
+  type: AfriataPublicationType;
   edition: string;
   language: string;
-  citation_style?: AfricaliaCitationStyle;
+  citation_style?: AfriataCitationStyle;
   peer_review_status?: string;
   data_availability_url?: string | null;
 }
 
-export interface AfricaliaAuthor {
+export interface AfriataAuthor {
   name: string;
-  role: AfricaliaAuthorRole;
+  role: AfriataAuthorRole;
   institution?: string | null;
   orcid?: string | null;
 }
 
-export interface AfricaliaClassification {
-  section: AfricaliaSection;
-  pillar: AfricaliaPillar;
+export interface AfriataClassification {
+  section: AfriataSection;
+  pillar: AfriataPillar;
   disciplines: string[];
   confidence?: {
     section?: number;
@@ -99,41 +99,41 @@ export interface AfricaliaClassification {
   };
 }
 
-export interface AfricaliaGeography {
+export interface AfriataGeography {
   regions: string[];
   countries: string[]; // ISO 3166-1 alpha-3 codes
   cities?: string[];
   historical_regions?: string[];
 }
 
-export interface AfricaliaIdentifiers {
+export interface AfriataIdentifiers {
   doi: string | null;
   isbn?: string | null;
   external_url?: string | null;
   source_url?: string | null;
 }
 
-export interface AfricaliaResearchCharacteristics {
+export interface AfriataResearchCharacteristics {
   methodology?: string[];
   disciplines?: string[];
   temporal_scope?: string | null;
   geographic_scope?: string | null;
 }
 
-export interface AfricaliaReadingMetadata {
+export interface AfriataReadingMetadata {
   read_time_minutes: number;
   word_count: number;
   section_count: number;
 }
 
-export interface AfricaliaDisplay {
+export interface AfriataDisplay {
   featured: boolean;
   cover_image?: string | null;
   accent?: string | null;
   layout?: 'article' | 'monograph' | 'dossier' | 'study';
 }
 
-export interface AfricaliaAiAssistance {
+export interface AfriataAiAssistance {
   enabled: boolean;
   system?: string | null;
   role: string[];
@@ -141,7 +141,7 @@ export interface AfricaliaAiAssistance {
   accountability: string;
 }
 
-export interface AfricaliaProvenance {
+export interface AfriataProvenance {
   source_file: string;
   source_hash: string;
   ingestion: IngestionMode;
@@ -151,7 +151,7 @@ export interface AfricaliaProvenance {
   pipeline_version: string;
 }
 
-export interface AfricaliaConfidence {
+export interface AfriataConfidence {
   title: number;
   classification: number;
   disciplines: number;
@@ -160,7 +160,7 @@ export interface AfricaliaConfidence {
   publication_type: number;
 }
 
-export interface AfricaliaValidation {
+export interface AfriataValidation {
   valid: boolean;
   warnings: string[];
   errors: string[];
@@ -168,11 +168,11 @@ export interface AfricaliaValidation {
 }
 
 /**
- * Universal Canonical Africalia Report publication record
+ * Universal Canonical Afriata Report publication record
  */
-export interface AfricaliaReport {
+export interface AfriataReport {
   schema: {
-    name: 'AfricaliaReport';
+    name: 'AfriataReport';
     version: '1.0.0';
   };
   id: string;
@@ -181,24 +181,24 @@ export interface AfricaliaReport {
   date: string;
   updated?: string | null;
   version: string;
-  status: AfricaliaPublicationStatus;
-  institution: AfricaliaInstitution;
-  publication: AfricaliaPublication;
+  status: AfriataPublicationStatus;
+  institution: AfriataInstitution;
+  publication: AfriataPublication;
   authors: string[];
-  author_details?: AfricaliaAuthor[];
-  classification: AfricaliaClassification;
+  author_details?: AfriataAuthor[];
+  classification: AfriataClassification;
   keywords: string[];
   subjects: string[];
   tags: string[];
-  geography: AfricaliaGeography;
-  identifiers: AfricaliaIdentifiers;
-  research: AfricaliaResearchCharacteristics;
-  reading: AfricaliaReadingMetadata;
-  display: AfricaliaDisplay;
-  ai_assistance: AfricaliaAiAssistance;
-  provenance: AfricaliaProvenance;
-  confidence: AfricaliaConfidence;
-  validation: AfricaliaValidation;
+  geography: AfriataGeography;
+  identifiers: AfriataIdentifiers;
+  research: AfriataResearchCharacteristics;
+  reading: AfriataReadingMetadata;
+  display: AfriataDisplay;
+  ai_assistance: AfriataAiAssistance;
+  provenance: AfriataProvenance;
+  confidence: AfriataConfidence;
+  validation: AfriataValidation;
 
   // React & backwards-compatibility runtime properties
   executiveSummary: string;
@@ -246,7 +246,7 @@ export const CONTROLLED_TAST_HISTORICAL_REGIONS = [
   'South-east Africa and Indian ocean islands and St. Helena'
 ] as const;
 
-export const CONTROLLED_PILLARS: Record<AfricaliaPillar, { label: string; color: string; canonicalCategory: ReportCategory }> = {
+export const CONTROLLED_PILLARS: Record<AfriataPillar, { label: string; color: string; canonicalCategory: ReportCategory }> = {
   genetics: {
     label: 'Genetics & Admixture',
     color: '#6366F1',

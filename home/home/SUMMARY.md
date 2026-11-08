@@ -1,3 +1,3 @@
 # Table of contents
 
-* [Africa Digital Atlas](README.md)
+* [Afriata: Africa Data Atlas](README.md)

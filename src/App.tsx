@@ -166,7 +166,7 @@ function AppContent() {
   // 3-Screen Curated Orientation & Historical Context Consent Modal (Auto-open for new users)
   const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(() => {
     try {
-      return localStorage.getItem('africalia_onboarding_v1') !== 'true';
+      return localStorage.getItem('afriata_onboarding_v1') !== 'true' && localStorage.getItem('africalia_onboarding_v1') !== 'true';
     } catch {
       return true;
     }

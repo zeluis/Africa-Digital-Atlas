@@ -14,7 +14,7 @@
 
 import { ingestNotebookMarkdown } from './notebookIngestionPipeline';
 import { ResearchReport, ReportCategory, RESEARCH_REPORTS as BASELINE_REPORTS } from './reportsData';
-import { AfricaliaReport } from '../types/africaliaReport';
+import { AfriataReport } from '../types/afriataReport';
 import { WorkingPaperEntry, WORKING_PAPERS_SERIES as BASELINE_WORKING_PAPERS } from './methodologyDossierData';
 import { LucideIcon, BookOpen, Dna, Scale, TrendingUp, Cpu, FileText } from 'lucide-react';
 import rawBantu from '../content/reports/bantu-expansion-genomics.md?raw';
@@ -133,12 +133,12 @@ export function getAllWorkingPapers(): Record<string, ResearchReport> {
   // Merge client-side dynamically uploaded working papers from localStorage
   if (typeof window !== 'undefined' && window.localStorage) {
     try {
-      const savedWp = localStorage.getItem('africalia_custom_working_papers');
+      const savedWp = localStorage.getItem('afriata_custom_working_papers') || localStorage.getItem('africalia_custom_working_papers');
       if (savedWp) {
         const parsed = JSON.parse(savedWp);
         Object.assign(unifiedWp, parsed);
       }
-      const savedReports = localStorage.getItem('africalia_custom_reports');
+      const savedReports = localStorage.getItem('afriata_custom_reports') || localStorage.getItem('africalia_custom_reports');
       if (savedReports) {
         const parsedReports = JSON.parse(savedReports) as Record<string, ResearchReport>;
         for (const [id, rep] of Object.entries(parsedReports)) {
@@ -175,8 +175,8 @@ export function getUnifiedWorkingPaperEntries(): Array<WorkingPaperEntry & { rep
       return `${sec.title} — ${cleanParagraph}${cleanParagraph.length >= 260 ? '...' : ''}`;
     });
 
-    const seriesNum = wp.seriesNumber || `Africalia Working Paper No. 0${8 + idx}`;
-    const authorStr = wp.authors.join(', ') || 'Africalia';
+    const seriesNum = wp.seriesNumber || `Afriata Working Paper No. 0${8 + idx}`;
+    const authorStr = wp.authors.join(', ') || 'Afriata';
     const yearMatch = wp.publicationDate.match(/\d{4}/);
     const yearStr = yearMatch ? yearMatch[0] : '2026';
 
@@ -189,12 +189,12 @@ export function getUnifiedWorkingPaperEntries(): Array<WorkingPaperEntry & { rep
       title: wp.title,
       subtitle: wp.subtitle || wp.categoryLabel,
       author: authorStr,
-      affiliation: wp.institutions?.[0] || 'Africalia Interdisciplinary Research & Knowledge Initiative',
+      affiliation: wp.institutions?.[0] || 'Afriata Interdisciplinary Research & Knowledge Initiative',
       date: wp.publicationDate,
       jelCodes: wp.jelCodes || ['N17', 'O10', 'N37', 'F54'],
       abstract: wp.executiveSummary.replace(/\[REF:[^|\]]+(?:\|([^\]]+))?\]/g, '($1)'),
       keyFindings: keyFindings.length > 0 ? keyFindings : [wp.executiveSummary],
-      citationApa: `${authorStr} (${yearStr}). ${wp.title}: ${wp.subtitle || wp.categoryLabel}. ${seriesNum}. Africalia Research Platform. https://doi.org/${wp.doi.replace('https://doi.org/', '')}`,
+      citationApa: `${authorStr} (${yearStr}). ${wp.title}: ${wp.subtitle || wp.categoryLabel}. ${seriesNum}. Afriata Research Platform. https://doi.org/${wp.doi.replace('https://doi.org/', '')}`,
       downloadFilename: `${wp.id}.pdf`
     };
   });
@@ -207,10 +207,10 @@ export function getUnifiedWorkingPaperEntries(): Array<WorkingPaperEntry & { rep
 }
 
 /**
- * Returns unified dictionary of all reports (typed as AfricaliaReport | ResearchReport)
+ * Returns unified dictionary of all reports (typed as AfriataReport | ResearchReport)
  */
-export function getAllAfricaliaReports(): Record<string, AfricaliaReport> {
-  return getAllReports() as unknown as Record<string, AfricaliaReport>;
+export function getAllAfriataReports(): Record<string, AfriataReport> {
+  return getAllReports() as unknown as Record<string, AfriataReport>;
 }
 
 /**
@@ -234,12 +234,12 @@ export function getAllReports(): Record<string, ResearchReport> {
   // Merge client-side dynamically imported localStorage reports & working papers if in browser
   if (typeof window !== 'undefined' && window.localStorage) {
     try {
-      const savedReports = localStorage.getItem('africalia_custom_reports');
+      const savedReports = localStorage.getItem('afriata_custom_reports') || localStorage.getItem('africalia_custom_reports');
       if (savedReports) {
         const parsed = JSON.parse(savedReports);
         Object.assign(unified, parsed);
       }
-      const savedWp = localStorage.getItem('africalia_custom_working_papers');
+      const savedWp = localStorage.getItem('afriata_custom_working_papers') || localStorage.getItem('africalia_custom_working_papers');
       if (savedWp) {
         const parsedWp = JSON.parse(savedWp);
         Object.assign(unified, parsedWp);
@@ -389,11 +389,11 @@ export function getCategorizedReports(): NavReportGroup[] {
       category: rep.category
     };
 
-    // If it is an Africalia Working Paper, register exclusively under the Working Papers group
+    // If it is an Afriata Working Paper, register exclusively under the Working Papers group
     if (rep.isWorkingPaper) {
       groups[4].items.push({
         ...item,
-        badge: rep.seriesNumber ? rep.seriesNumber.replace('Africalia ', '') : 'Working Paper',
+        badge: rep.seriesNumber ? rep.seriesNumber.replace('Afriata ', '') : 'Working Paper',
         category: 'working-papers'
       });
     } else {

@@ -81,7 +81,7 @@ for (let i = 1; i < rawRows.length; i++) {
 console.log('Total entries extracted from table:', entries.length);
 
 // Also let's extract all ethnic labels from the SVG so we can cross-index them
-const svg = fs.readFileSync('public/africalia-ethnic-tree.svg', 'utf8');
+const svg = fs.readFileSync('public/afriata-ethnic-tree.svg', 'utf8');
 const allTexts = [...svg.matchAll(/<text([^>]*)>([\s\S]*?)<\/text>/g)];
 const svgLabels = new Set();
 for (let m of allTexts) {

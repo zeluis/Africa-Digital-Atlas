@@ -60,7 +60,7 @@ const DATA_CONNECTORS_CATALOG = [
   { name: 'Global Peace Index (GPI)', provider: 'Institute for Economics & Peace', coverage: 'Societal Safety, Militarisation, Ongoing Conflict', verified: true },
   { name: 'UNESCO World Heritage Centre', provider: 'UNESCO', coverage: '54 African Sovereign Inscribed Cultural/Natural Sites', verified: true },
   { name: 'Slave Voyages Consortium', provider: 'Emory University & Academic Partners', coverage: 'Trans-Atlantic, Indian Ocean & Saharan Trade Records', verified: true },
-  { name: 'Africalia Vector Engine', provider: 'Internal GeoJSON/TopoJSON', coverage: 'Sovereign Borders, Continental Coastlines, 8 Regional Blocs', verified: true }
+  { name: 'Afriata Vector Engine', provider: 'Internal GeoJSON/TopoJSON', coverage: 'Sovereign Borders, Continental Coastlines, 8 Regional Blocs', verified: true }
 ];
 
 export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
@@ -124,10 +124,14 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
 
   const handleClearAllStorage = () => {
     try {
+      localStorage.removeItem('afriata_onboarding_v1');
       localStorage.removeItem('africalia_onboarding_v1');
-      localStorage.removeItem('africalia_theme');
-      localStorage.removeItem('africalia_language');
-      localStorage.removeItem('africalia_density');
+      localStorage.removeItem('afriata_theme');
+      localStorage.removeItem('atlas_theme');
+      localStorage.removeItem('afriata_language');
+      localStorage.removeItem('atlas_language');
+      localStorage.removeItem('afriata_density');
+      localStorage.removeItem('atlas_density');
       setLocalCacheCleared(true);
       refreshStorageInspector();
       setTimeout(() => setLocalCacheCleared(false), 4000);
@@ -146,15 +150,15 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
   author = {Correia, Z{\\'e}Luis F.},
   title = {Africa Data Atlas \\& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
   year = {2026},
-  publisher = {Africalia},
+  publisher = {Afriata},
   doi = {10.6084/m9.figshare.34065711},
   url = {https://doi.org/10.6084/m9.figshare.34065711},
   note = {Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555}
 }`;
 
-  const apaText = `Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Africalia. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555)`;
+  const apaText = `Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Afriata. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555)`;
 
-  const chicagoText = `Correia, ZéLuis F. 2026. "Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows." Africalia. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555).`;
+  const chicagoText = `Correia, ZéLuis F. 2026. "Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows." Afriata. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555).`;
 
   // Material Design 3 inspired tab definitions with warm tonal active tokens
   const TAB_ITEMS: { id: PillarTab; label: string; subtitle: string; icon: React.FC<{ className?: string }> }[] = [
@@ -318,7 +322,7 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
                     Zero-Surveillance & Client-Side Isolation
                   </h2>
                   <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                    Africalia complies with Articles 12–22 of the EU GDPR, the EU ePrivacy Directive, CCPA/CPRA, and the African Union Malabo Convention on Personal Data Protection. We do not deploy advertising trackers, behavioral fingerprinting scripts, third-party pixel beacons, or cross-site tracking telemetry.
+                    Afriata complies with Articles 12–22 of the EU GDPR, the EU ePrivacy Directive, CCPA/CPRA, and the African Union Malabo Convention on Personal Data Protection. We do not deploy advertising trackers, behavioral fingerprinting scripts, third-party pixel beacons, or cross-site tracking telemetry.
                   </p>
                   <ul className="space-y-2 text-xs font-mono text-zinc-600 dark:text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800">
                     <li className="flex items-center gap-2">
@@ -509,7 +513,7 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
                       Independent Authorship
                     </h3>
                     <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                      Platform syntheses, cartographic boundary representations, and interactive exploratory tools are independently maintained by the Africalia research team.
+                      Platform syntheses, cartographic boundary representations, and interactive exploratory tools are independently maintained by the Afriata research team.
                     </p>
                   </div>
                 </div>

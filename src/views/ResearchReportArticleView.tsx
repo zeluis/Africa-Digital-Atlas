@@ -36,7 +36,7 @@ import { DoiVerificationModal } from '../components/DoiVerificationModal';
 import { getVerifiedPublicationUrl } from '../data/reportDoiConcordance';
 import { verifyDoiWithCrossref, DoiVerificationResult } from '../services/crossrefService';
 import { exportPublicationPDF } from '../utils/academicExport';
-import { AfricaliaReport } from '../types/africaliaReport';
+import { AfriataReport } from '../types/afriataReport';
 
 interface ResearchReportArticleViewProps {
   reportId: string;
@@ -89,8 +89,8 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
     return () => { isMounted = false; };
   }, [report.id, report.doi, report.title, verifiedPub.doi]);
 
-  // Cast report safely to extract AfricaliaReport metadata extensions if present
-  const afReport = report as Partial<AfricaliaReport>;
+  // Cast report safely to extract AfriataReport metadata extensions if present
+  const afReport = report as Partial<AfriataReport>;
   const geoCoverage = afReport.geography?.countries || [];
   const primaryRegions = afReport.geography?.regions || [];
   const pubType = afReport.publication?.type ? afReport.publication.type.replace(/_/g, ' ') : 'Research Monograph';
@@ -123,8 +123,8 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
       "identifier": `https://doi.org/${report.doi}`,
       "publisher": {
         "@type": "Organization",
-        "name": "Africalia: African Data Atlas & Research Repository",
-        "url": "https://africalia.atlas"
+        "name": "Afriata: African Data Atlas & Research Repository",
+        "url": "https://afriata.atlas"
       }
     };
 
@@ -169,7 +169,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${report.id}_africalia_report.json`;
+    a.download = `${report.id}_afriata_report.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -283,7 +283,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
             type="button"
             onClick={handleExportJson}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 font-medium transition-all cursor-pointer text-xs"
-            title="Download canonical AfricaliaReport JSON format"
+            title="Download canonical AfriataReport JSON format"
           >
             <FileText className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
             <span className="hidden sm:inline">Export JSON</span>
@@ -584,7 +584,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
             </div>
 
             <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              This monograph complies with the <strong className="text-zinc-800 dark:text-zinc-200">Africalia Universal Monograph Schema</strong>. Data points, historical toponyms, and genomic/demographic indices are synchronized with primary archives (TAST, World Bank, UNESCO, and peer-reviewed journals).
+              This monograph complies with the <strong className="text-zinc-800 dark:text-zinc-200">Afriata Universal Monograph Schema</strong>. Data points, historical toponyms, and genomic/demographic indices are synchronized with primary archives (TAST, World Bank, UNESCO, and peer-reviewed journals).
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 text-[11px] font-mono">
@@ -596,7 +596,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
               <div className="p-2.5 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80">
                 <span className="text-zinc-400 block text-[10px] uppercase">Cryptographic SHA-256</span>
                 <span className="text-zinc-600 dark:text-zinc-300 truncate block font-mono text-[10px]">
-                  {shaFingerprint ? `${shaFingerprint.substring(0, 24)}...` : 'sha256-verified-africalia-monograph'}
+                  {shaFingerprint ? `${shaFingerprint.substring(0, 24)}...` : 'sha256-verified-afriata-monograph'}
                 </span>
               </div>
             </div>

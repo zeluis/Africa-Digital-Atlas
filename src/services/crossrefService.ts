@@ -53,7 +53,7 @@ export interface DoiVerificationResult {
   errorMessage?: string;
 }
 
-const CACHE_PREFIX = 'africalia_crossref_v1_';
+const CACHE_PREFIX = 'afriata_crossref_v1_';
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const memoryCache = new Map<string, { result: DoiVerificationResult; timestamp: number }>();
 
@@ -164,7 +164,7 @@ export async function verifyDoiWithCrossref(
     // Check localStorage cache
     if (typeof window !== 'undefined' && window.localStorage) {
       try {
-        const stored = localStorage.getItem(CACHE_PREFIX + cleanDoi);
+        const stored = localStorage.getItem(CACHE_PREFIX + cleanDoi) || localStorage.getItem('africalia_crossref_v1_' + cleanDoi);
         if (stored) {
           const parsed = JSON.parse(stored) as DoiVerificationResult;
           memoryCache.set(cacheKey, { result: parsed, timestamp: now });
@@ -186,7 +186,7 @@ export async function verifyDoiWithCrossref(
       signal: controller.signal,
       headers: {
         // Crossref polite pool etiquette
-        'User-Agent': 'AfricaDataAtlas/1.0 (https://africalia.org; mailto:atlas-curator@africalia.org)',
+        'User-Agent': 'AfricaDataAtlas/1.0 (https://afriata.org; mailto:atlas-curator@afriata.org)',
         Accept: 'application/json'
       }
     });
@@ -315,7 +315,7 @@ export async function searchCrossrefByTitle(title: string, author?: string): Pro
     const url = `https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(query)}&rows=5`;
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'AfricaDataAtlas/1.0 (mailto:atlas-curator@africalia.org)',
+        'User-Agent': 'AfricaDataAtlas/1.0 (mailto:atlas-curator@afriata.org)',
         Accept: 'application/json'
       }
     });

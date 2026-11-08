@@ -6,11 +6,11 @@ If you use the Africa Data Atlas in academic or research work, please cite both 
 
 **APA 7th edition**
 
-> Correia, Z. F. (2026). *Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows*. Africalia. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555)
+> Correia, Z. F. (2026). *Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows*. Afriata. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555)
 
 **Chicago 17th edition (Author-Date)**
 
-> Correia, ZéLuis F. 2026. *Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows*. Africalia. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555).
+> Correia, ZéLuis F. 2026. *Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows*. Afriata. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555).
 
 **BibTeX**
 
@@ -19,7 +19,7 @@ If you use the Africa Data Atlas in academic or research work, please cite both 
   author       = {Correia, Z{\'e}Luis F.},
   title        = {Africa Data Atlas \& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
   year         = {2026},
-  publisher    = {Africalia},
+  publisher    = {Afriata},
   doi          = {10.6084/m9.figshare.34065711},
   url          = {https://doi.org/10.6084/m9.figshare.34065711},
   note         = {Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555}
@@ -59,7 +59,7 @@ The list of 310 contemporary ethnic groups is drawn from Wikipedia, and the phyl
 The repository uses a two-file dual-licensing model at its root:
 
 - **Source code (`LICENSE-CODE`):** The Africa Data Atlas source code is released under the **MIT License** (`Copyright (c) 2026 ZéLuis F. Correia`).
-- **Creative assets (`LICENSE-ASSETS`):** **ZéLuis F. Correia** is the author of all SVG maps (`public/africa-final.svg`, `src/data/africaFinalGeometry.ts`) and the Ethnic Tree Visualization and SVG (`src/data/authenticEthnicTreeSvg.ts`, `src/data/africaliaMasterTreeData.ts`). Unless stated otherwise, all graphics and visualizations have the same author and are licensed under the **Creative Commons Attribution 4.0 International Public License (CC BY 4.0)**. Please attribute: *"Cartographic visualization by ZéLuis F. Correia (Africalia: Africa Data Atlas, CC BY 4.0, https://doi.org/10.6084/m9.figshare.34065711)."*
+- **Creative assets (`LICENSE-ASSETS`):** **ZéLuis F. Correia** is the author of all SVG maps (`public/africa-final.svg`, `src/data/africaFinalGeometry.ts`) and the Ethnic Tree Visualization and SVG (`src/data/authenticEthnicTreeSvg.ts`, `src/data/afriataMasterTreeData.ts`). Unless stated otherwise, all graphics and visualizations have the same author and are licensed under the **Creative Commons Attribution 4.0 International Public License (CC BY 4.0)**. Please attribute: *"Cartographic visualization by ZéLuis F. Correia (Afriata: Africa Data Atlas, CC BY 4.0, https://doi.org/10.6084/m9.figshare.34065711)."*
 - **Data licensing:** Underlying statistical, archival, and historical datasets remain subject to the licenses of their originating institutions.
 
 ---

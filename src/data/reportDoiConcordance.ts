@@ -1,7 +1,7 @@
 /**
  * Verified DOI & Academic Publication Concordance Registry
  *
- * Serves as the curated mapping between Africalia research monographs,
+ * Serves as the curated mapping between Afriata research monographs,
  * working papers, and drop-in reports to genuine Crossref DOIs, peer-reviewed
  * journal articles, and open-access repositories.
  *
@@ -23,10 +23,10 @@ export interface DoiConcordanceEntry {
   notes?: string;
 }
 
-const LOCAL_STORAGE_KEY = 'africalia_user_doi_concordance_v1';
+const LOCAL_STORAGE_KEY = 'afriata_user_doi_concordance_v1';
 
 /**
- * Baseline Curated Concordance Map for Africalia Research Publications
+ * Baseline Curated Concordance Map for Afriata Research Publications
  */
 export const BASELINE_DOI_CONCORDANCE: Record<string, DoiConcordanceEntry> = {
   // 1. Bantu Expansion Paleogenomics
@@ -226,8 +226,8 @@ export const BASELINE_DOI_CONCORDANCE: Record<string, DoiConcordanceEntry> = {
     doi: '10.6084/m9.figshare.34063314',
     canonicalUrl: 'https://doi.org/10.6084/m9.figshare.34063314',
     verifiedTitle: 'Atlantic Slavery, European Development, and Colonial Extraction',
-    journal: 'NBER Working Paper Series / Africalia Press',
-    authors: ['Africalia Economic Research Group'],
+    journal: 'NBER Working Paper Series / Afriata Press',
+    authors: ['Afriata Economic Research Group'],
     year: 2026,
     status: 'working_paper_series',
     notes: 'A Quantitative Historical-Economics Research Proposal (Consolidated Version 3).'
@@ -238,8 +238,8 @@ export const BASELINE_DOI_CONCORDANCE: Record<string, DoiConcordanceEntry> = {
     doi: '10.6084/m9.figshare.34063314',
     canonicalUrl: 'https://doi.org/10.6084/m9.figshare.34063314',
     verifiedTitle: 'Atlantic Slavery, European Development, and Colonial Extraction',
-    journal: 'NBER Working Paper Series / Africalia Press',
-    authors: ['Africalia Economic Research Group'],
+    journal: 'NBER Working Paper Series / Afriata Press',
+    authors: ['Afriata Economic Research Group'],
     year: 2026,
     status: 'working_paper_series',
     notes: 'A Quantitative Historical-Economics Research Proposal (Consolidated Version 3).'

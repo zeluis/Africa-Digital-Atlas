@@ -12,7 +12,7 @@ import {
   SlidersHorizontal, 
   Mic 
 } from 'lucide-react';
-import { speakAcademicNarration } from '../../utils/africaliaVoiceEngine';
+import { speakAcademicNarration } from '../../utils/afriataVoiceEngine';
 
 export interface LanguageTypologyProfile {
   id: string;

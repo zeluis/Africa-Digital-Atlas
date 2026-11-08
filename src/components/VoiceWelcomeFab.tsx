@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Volume2, VolumeX, Sparkles } from 'lucide-react';
-import { speakAfricaliaGreeting, stopAfricaliaSpeech } from '../utils/africaliaVoiceEngine';
+import { speakAfriataGreeting, stopAfriataSpeech } from '../utils/afriataVoiceEngine';
 
 interface VoiceWelcomeFabProps {
   text: string;
@@ -29,7 +29,7 @@ export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
     return () => {
       // Clean up on unmount if playing
       if (isPlaying) {
-        stopAfricaliaSpeech();
+        stopAfriataSpeech();
       }
     };
   }, [isPlaying]);
@@ -38,13 +38,13 @@ export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
     e.stopPropagation(); // Avoid triggering parent card clicks
 
     if (isPlaying) {
-      stopAfricaliaSpeech();
+      stopAfriataSpeech();
       setIsPlaying(false);
       return;
     }
 
     setIsPlaying(true);
-    speakAfricaliaGreeting({
+    speakAfriataGreeting({
       text,
       langTag,
       languageName,
@@ -65,7 +65,7 @@ export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
               ? 'bg-emerald-500/20 dark:bg-emerald-500/30 border-emerald-500 text-emerald-700 dark:text-emerald-300 shadow-md ring-2 ring-emerald-500/30 animate-pulse'
               : 'bg-zinc-100/90 dark:bg-zinc-900/90 hover:bg-zinc-200 dark:hover:bg-zinc-800 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 hover:text-emerald-600 dark:hover:text-emerald-400'
           } ${className}`}
-          title={tooltip || (isPlaying ? 'Stop Voice Welcome' : 'Listen to Africalia Welcome in current language')}
+          title={tooltip || (isPlaying ? 'Stop Voice Welcome' : 'Listen to Afriata Welcome in current language')}
           aria-label={ariaLabel || 'Play warm African female welcome greeting'}
         >
           {isPlaying ? (
@@ -95,7 +95,7 @@ export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-emerald-700 dark:text-emerald-400 font-mono">
                 <Sparkles className="w-3 h-3 text-emerald-500" />
-                <span>AFRICALIA SOVEREIGN VOICE</span>
+                <span>AFRIATA SOVEREIGN VOICE</span>
               </div>
               <button
                 type="button"
@@ -132,7 +132,7 @@ export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
             ? 'bg-gradient-to-tr from-emerald-600 to-amber-500 text-white shadow-emerald-600/30 scale-105 ring-2 ring-emerald-400 ring-offset-2 dark:ring-offset-zinc-950'
             : 'bg-white/90 dark:bg-zinc-900/90 hover:bg-emerald-500 dark:hover:bg-emerald-600 text-zinc-700 dark:text-zinc-200 hover:text-white border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500 hover:shadow-lg'
         }`}
-        title={tooltip || 'Listen to authentic greeting: "Welcome to Africalia—The Atlantic Ethnic Explorer. Please enjoy."'}
+        title={tooltip || 'Listen to authentic greeting: "Welcome to Afriata—The Atlantic Ethnic Explorer. Please enjoy."'}
         aria-label={ariaLabel || `Listen to welcome greeting in ${languageName || 'indigenous language'}`}
       >
         {isPlaying ? (

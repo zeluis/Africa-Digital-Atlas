@@ -246,7 +246,7 @@ export function useCanvasViewport(
   const handleWheel = useCallback((e: React.WheelEvent) => {
     // Isolate zooming: If user is wheel-scrolling inside any floating panel, drawer, or scrollable element, allow natural scroll and DO NOT zoom canvas
     const target = e.target as HTMLElement;
-    if (target?.closest?.('.overflow-y-auto, .overflow-x-auto, .no-drag, [data-panel-scroll="true"], .stable-gutter, .sleek-scrollbar, .sleek-scrollbar-amber, #scholarly-dossier-inspector, #africalia-left-dock, #africalia-master-top-control-bar, aside, dialog, .modal-scroll-pane')) {
+    if (target?.closest?.('.overflow-y-auto, .overflow-x-auto, .no-drag, [data-panel-scroll="true"], .stable-gutter, .sleek-scrollbar, .sleek-scrollbar-amber, #scholarly-dossier-inspector, #afriata-left-dock, #afriata-master-top-control-bar, aside, dialog, .modal-scroll-pane')) {
       return;
     }
 

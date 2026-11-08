@@ -597,10 +597,10 @@ The Africa Data Atlas is an independent academic, educational, and public-intere
 When citing the Africa Data Atlas in academic papers, working dossiers, or syllabi (also see [`CITATION.cff`](./CITATION.cff)):
 
 **APA 7th Edition:**
-> Correia, Z. F. (2026). *Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows*. Africalia. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555)
+> Correia, Z. F. (2026). *Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows*. Afriata. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555)
 
 **Chicago 17th Edition (Author-Date):**
-> Correia, ZéLuis F. 2026. "Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows." Africalia. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555).
+> Correia, ZéLuis F. 2026. "Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows." Afriata. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555).
 
 **Academic BibTeX Citation:**
 ```bibtex
@@ -608,7 +608,7 @@ When citing the Africa Data Atlas in academic papers, working dossiers, or sylla
   author       = {Correia, Z{\'e}Luis F.},
   title        = {Africa Data Atlas \& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
   year         = {2026},
-  publisher    = {Africalia},
+  publisher    = {Afriata},
   doi          = {10.6084/m9.figshare.34065711},
   url          = {https://doi.org/10.6084/m9.figshare.34065711},
   note         = {Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555}
@@ -657,7 +657,7 @@ If you utilize the Africa Data Atlas or its harmonized datasets in academic publ
   author       = {Correia, Z{\'e}Luis F.},
   title        = {Africa Data Atlas \& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
   year         = {2026},
-  publisher    = {Africalia},
+  publisher    = {Afriata},
   doi          = {10.6084/m9.figshare.34065711},
   url          = {https://doi.org/10.6084/m9.figshare.34065711},
   note         = {Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555}

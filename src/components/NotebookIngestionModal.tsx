@@ -32,18 +32,18 @@ date: "2026-10-04"
 version: "1.0"
 
 author:
-  name: "Africalia"
+  name: "Afriata"
   type: "Interdisciplinary Research & Knowledge Initiative"
   role: "Institutional / Project Author"
-  platform: "Africalia Research Platform"
+  platform: "Afriata Research Platform"
 
 publication:
-  series: "Africalia Scholarly Research Reports"
+  series: "Afriata Scholarly Research Reports"
   type: "research_report"
   status: "Research Edition"
   language: "en"
   citationStyle: "Chicago Author-Date"
-  category: "Africalia Scholarly Research Reports"
+  category: "Afriata Scholarly Research Reports"
 
 research:
   disciplines:
@@ -60,7 +60,7 @@ ai_assistance:
     - "Source synthesis"
     - "Information organization"
   status: "AI-assisted"
-  accountability: "Africalia"
+  accountability: "Afriata"
 
 section: "reports"
 pillar: "genetics"
@@ -104,24 +104,24 @@ Recent high-coverage paleogenomic sequencing across the Middle Niger and Senegal
 const SAMPLE_WORKING_PAPER_MARKDOWN = `---
 id: "wp-development-atlantic-fiscal-counterfactuals"
 title: "Counterfactual Capital Accumulation and Maritime Insurance in the Atlantic System"
-subtitle: "Africalia Working Paper on Shapley Value Decompositions and Port-City Industrialization"
+subtitle: "Afriata Working Paper on Shapley Value Decompositions and Port-City Industrialization"
 date: "2026-10-04"
 version: "1.0"
 
 author:
-  name: "Africalia"
+  name: "Afriata"
   type: "Interdisciplinary Research & Knowledge Initiative"
   role: "Institutional / Project Author"
-  platform: "Africalia Research Platform"
+  platform: "Afriata Research Platform"
 
 publication:
-  series: "Africalia Working Paper & Policy Brief Series"
-  seriesNumber: "Africalia Working Paper No. 09"
+  series: "Afriata Working Paper & Policy Brief Series"
+  seriesNumber: "Afriata Working Paper No. 09"
   type: "working_paper"
   status: "Working Paper Pre-Print"
   language: "en"
   citationStyle: "Chicago Author-Date"
-  category: "Africalia Working Paper & Policy Brief Series"
+  category: "Afriata Working Paper & Policy Brief Series"
   jelCodes:
     - "N17"
     - "O10"
@@ -142,7 +142,7 @@ ai_assistance:
     - "Source synthesis"
     - "Information organization"
   status: "AI-assisted"
-  accountability: "Africalia"
+  accountability: "Afriata"
 
 section: "working-papers"
 pillar: "development"
@@ -277,13 +277,13 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
   const persistPublication = (rep: ResearchReport) => {
     try {
       const storageKey = rep.isWorkingPaper || targetPipeline === 'working-papers'
-        ? 'africalia_custom_working_papers'
-        : 'africalia_custom_reports';
+        ? 'afriata_custom_working_papers'
+        : 'afriata_custom_reports';
       const saved = localStorage.getItem(storageKey);
       const existing = saved ? JSON.parse(saved) : {};
       existing[rep.id] = rep;
       localStorage.setItem(storageKey, JSON.stringify(existing));
-      window.dispatchEvent(new CustomEvent('africalia-publications-updated'));
+      window.dispatchEvent(new CustomEvent('afriata-publications-updated'));
     } catch {
       // Ignore storage quota errors
     }
@@ -457,11 +457,11 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
             <div className="space-y-4 text-xs">
               <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/20 space-y-2">
                 <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
-                  Universal Africalia YAML Frontmatter Specification (v1.0)
+                  Universal Afriata YAML Frontmatter Specification (v1.0)
                 </h3>
                 <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
                   Both <strong>Research Reports/Notebooks</strong> (<code className="font-mono">/src/content/reports/*.md</code>) and{' '}
-                  <strong>Africalia Working Papers</strong> (<code className="font-mono">/src/content/working-papers/*.md</code>) share the exact same Universal YAML Frontmatter structure. Only <strong>two fields</strong> differ between a Report and a Working Paper:
+                  <strong>Afriata Working Papers</strong> (<code className="font-mono">/src/content/working-papers/*.md</code>) share the exact same Universal YAML Frontmatter structure. Only <strong>two fields</strong> differ between a Report and a Working Paper:
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                   <div className="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
@@ -471,19 +471,19 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
                     <pre className="font-mono text-[11px] text-zinc-700 dark:text-zinc-300">
 {`section: "reports"
 publication:
-  series: "Africalia Scholarly Research Reports"
+  series: "Afriata Scholarly Research Reports"
   type: "research_report" # or research_article`}
                     </pre>
                   </div>
                   <div className="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                     <div className="font-mono font-bold text-amber-600 dark:text-amber-400 mb-1">
-                      2. Africalia Working Paper (/content/working-papers/)
+                      2. Afriata Working Paper (/content/working-papers/)
                     </div>
                     <pre className="font-mono text-[11px] text-zinc-700 dark:text-zinc-300">
 {`section: "working-papers"
 publication:
-  series: "Africalia Working Paper & Policy Brief Series"
-  seriesNumber: "Africalia Working Paper No. 08"
+  series: "Afriata Working Paper & Policy Brief Series"
+  seriesNumber: "Afriata Working Paper No. 08"
   type: "working_paper" # or policy_brief`}
                     </pre>
                   </div>
@@ -558,7 +558,7 @@ publication:
                     Publication Class
                   </div>
                   <div className="text-xs font-semibold text-zinc-900 dark:text-white mt-1">
-                    {ingestionResult.report.isWorkingPaper ? 'Africalia Working Paper' : 'Scholarly Monograph'}
+                    {ingestionResult.report.isWorkingPaper ? 'Afriata Working Paper' : 'Scholarly Monograph'}
                   </div>
                 </div>
                 <div className="p-3 rounded-2xl bg-cyan-500/5 dark:bg-cyan-500/10 border border-cyan-500/20">
@@ -582,7 +582,7 @@ publication:
                   </span>
                   {ingestionResult.report.isWorkingPaper && (
                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
-                      {ingestionResult.report.seriesNumber || 'Africalia Working Paper Series'}
+                      {ingestionResult.report.seriesNumber || 'Afriata Working Paper Series'}
                     </span>
                   )}
                 </div>

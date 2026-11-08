@@ -174,7 +174,7 @@ export function getPageInfo(
         title: 'Overview',
         shortTitle: 'Overview',
         fullTitle: 'Continental Overview & Macro Synthesis',
-        category: 'Africalia Continental Atlas',
+        category: 'Afriata Continental Atlas',
         Icon: Compass
       };
 
@@ -299,7 +299,7 @@ export function getPageInfo(
       return {
         title: 'Research Reports',
         shortTitle: 'Research',
-        fullTitle: 'Africalia Academic Research Monographs & Monographs Directory',
+        fullTitle: 'Afriata Academic Research Monographs & Monographs Directory',
         category: 'Monographs & Papers',
         Icon: BookOpen
       };
@@ -340,7 +340,7 @@ export function getPageInfo(
             title: meta.title,
             shortTitle: meta.shortTitle,
             fullTitle: meta.title,
-            category: meta.isWorkingPaper ? 'Africalia Working Paper' : 'Research Monograph',
+            category: meta.isWorkingPaper ? 'Afriata Working Paper' : 'Research Monograph',
             Icon: FileText
           };
         }
@@ -357,7 +357,7 @@ export function getPageInfo(
         title: formattedTitle,
         shortTitle: formattedTitle,
         fullTitle: formattedTitle,
-        category: 'Africalia Atlas',
+        category: 'Afriata Atlas',
         Icon: FileText
       };
     }

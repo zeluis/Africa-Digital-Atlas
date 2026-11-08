@@ -53,7 +53,7 @@ export const Footer: React.FC<FooterProps> = ({
               <div 
                 className="relative flex items-center justify-center cursor-pointer transition-transform duration-200 hover:scale-105 shrink-0"
                 onClick={() => onNavigateTab('overview')}
-                title="Africalia Continental Atlas - Return to Primary Overview"
+                title="Afriata Continental Atlas - Return to Primary Overview"
               >
                 <AfricaUnLogo 
                   size={46} 
@@ -68,7 +68,7 @@ export const Footer: React.FC<FooterProps> = ({
                   style={{ fontFamily: '"Noto Serif Display", Georgia, Cambria, "Times New Roman", serif' }}
                   className="font-extrabold text-xl tracking-tight text-amber-900 dark:text-amber-400 leading-tight"
                 >
-                  Africalia
+                  Afriata
                 </span>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="font-extrabold text-[11px] uppercase tracking-wider text-zinc-900 dark:text-zinc-100 font-mono">
@@ -242,7 +242,7 @@ export const Footer: React.FC<FooterProps> = ({
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-amber-500/[0.04] dark:bg-amber-500/[0.07] border border-amber-500/20">
               <div className="space-y-1">
                 <span className="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 block">
-                  Africalia Cartographic &amp; Econometric Observatory
+                  Afriata Cartographic &amp; Econometric Observatory
                 </span>
                 <p className="text-xs text-stone-600 dark:text-stone-400 font-sans leading-relaxed">
                   Under the scientific direction and cartographic curation of <strong className="text-stone-900 dark:text-stone-100 font-semibold">Zéluis F. Correia</strong>. Dedicated to African data sovereignty, open scientific inquiry, and the rigorous preservation of continental heritage.

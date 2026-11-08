@@ -2,7 +2,7 @@
 import json
 
 data = {
-  "schema": "africalia-geography/1",
+  "schema": "afriata-geography/1",
   "root": "AFRICA",
   "sources": {
     "admin1": "",

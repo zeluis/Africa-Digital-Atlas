@@ -11,19 +11,19 @@ date: "2026-10-04"
 version: "1.0"
 
 author:
-  name: "Africalia"
+  name: "Afriata"
   type: "Interdisciplinary Research & Knowledge Initiative"
   role: "Institutional / Project Author"
-  platform: "Africalia Research Platform"
+  platform: "Afriata Research Platform"
 
 publication:
-  series: "Africalia Working Paper & Policy Brief Series"
-  seriesNumber: "Africalia Working Paper No. 08"
+  series: "Afriata Working Paper & Policy Brief Series"
+  seriesNumber: "Afriata Working Paper No. 08"
   type: "working_paper"
   status: "Research Edition"
   language: "en"
   citationStyle: "Chicago Author-Date"
-  category: "Africalia Working Paper & Policy Brief Series"
+  category: "Afriata Working Paper & Policy Brief Series"
   jelCodes:
     - "N17"
     - "O10"
@@ -48,7 +48,7 @@ ai_assistance:
     - "Information organization"
     - "Editorial assistance"
   status: "AI-assisted"
-  accountability: "Africalia"
+  accountability: "Afriata"
 
 section: "working-papers"
 pillar: "development"

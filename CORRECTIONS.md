@@ -21,7 +21,7 @@ To report an error or suggest a correction, open an issue using the [Data or Cit
 - **Guardrail**: Added `1501–1867` error rule in `research/rules.json`.
 
 ### CORR-2026-03: Ethnic Group Catalog Source & Population-Genetics Clustering Attribution
-- **Scope**: `src/components/ethnicTree/AfricaliaExplorer.tsx`, `src/components/MethodologyAuditModal.tsx`, `docs/data/citations-licensing.md`, `CITATION.cff`
+- **Scope**: `src/components/ethnicTree/AfriataExplorer.tsx`, `src/components/MethodologyAuditModal.tsx`, `docs/data/citations-licensing.md`, `CITATION.cff`
 - **Issue**: Citations to Bird et al. (2023) and Tishkoff et al. (2009) needed clearer separation from the source of the 310 ethnic group entries.
 - **Correction**: Clarified across the UI and documentation that the **310 contemporary ethnic groups** come from Wikipedia's *List of contemporary ethnic groups of Africa* (retrieved `2026-01`), while **Bird et al. (2023)** (`10.1126/sciadv.abq2616`) and **Tishkoff et al. (2009)** (`10.1126/science.1172257`) are cited strictly for their **clustering framework** (how genetic clusters relate to ethnicity, language, and geography), without reproducing their samples or genetic data.
 

@@ -455,8 +455,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   const [publicationsVersion, setPublicationsVersion] = useState(0);
   useEffect(() => {
     const handleUpdate = () => setPublicationsVersion(v => v + 1);
-    window.addEventListener('africalia-publications-updated', handleUpdate);
-    return () => window.removeEventListener('africalia-publications-updated', handleUpdate);
+    window.addEventListener('afriata-publications-updated', handleUpdate);
+    return () => window.removeEventListener('afriata-publications-updated', handleUpdate);
   }, []);
 
   const reportsSubGroups = React.useMemo(() => getCategorizedReports(), [publicationsVersion]);
@@ -1255,7 +1255,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             <div className="pt-4 mt-2 border-t border-zinc-100 dark:border-zinc-800/50 px-2 select-none space-y-1">
               <div className="text-[10px] leading-relaxed text-zinc-500 dark:text-zinc-400">
                 <span className="font-bold text-zinc-800 dark:text-zinc-200 block mb-0.5 font-serif">
-                  Africalia Cartographic Observatory
+                  Afriata Cartographic Observatory
                 </span>
                 <span>Under the direction of Zéluis F. Correia • CC-BY 4.0</span>
               </div>

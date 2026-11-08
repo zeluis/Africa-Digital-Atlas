@@ -1,4 +1,4 @@
-export interface AfricaliaEthnicNode {
+export interface AfriataEthnicNode {
   id: string;
   name: string;
   country: string;
@@ -17,7 +17,7 @@ export interface AfricaliaEthnicNode {
   wikipediaSlug?: string;
 }
 
-export interface AfricaliaCountryConduit {
+export interface AfriataCountryConduit {
   id: string;
   name: string;
   countryCode: string;
@@ -56,7 +56,7 @@ export interface CentralClusterNode {
   subregion: string;
 }
 
-// Master SVG coordinate space matching authentic Africalia Sovereign Vector
+// Master SVG coordinate space matching authentic Afriata Sovereign Vector
 export const VBW = 4331.1877;
 export const VBH = 4326.1193;
 export const CX = 2166.382;
@@ -71,7 +71,7 @@ export const TAST_COHORTS = [
 ] as const;
 
 // 41 Sovereign Country Conduits mapped to exact radial coordinates on 4427x4427 canvas
-export const AFRICALIA_COUNTRY_CONDUITS: AfricaliaCountryConduit[] = [
+export const AFRIATA_COUNTRY_CONDUITS: AfriataCountryConduit[] = [
   // WESTERN AFRICA - BIGHT OF BENIN & BIAFRA (GREEN)
   {
     id: 'nigeria',

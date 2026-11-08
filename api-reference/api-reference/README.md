@@ -1,15 +1,15 @@
 ---
 description: >-
   The full catalog of data sources, the geography engine, and citation guidance
-  behind the Africa Digital Atlas
+  behind Afriata (Africa Data Atlas)
 icon: database
 ---
 
 # Data & Methodology
 
-> The pages below are the real Data & Methodology docs for the Africa Digital Atlas. (Note: this space still has a leftover auto-generated "Petstore" API reference further down the page list from the original GitBook template — it's unrelated placeholder content and can be removed from the GitBook app directly, since it's generated from an attached OpenAPI spec that this integration can't delete.)
+> The pages below are the real Data & Methodology docs for Afriata (Africa Data Atlas). (Note: this space still has a leftover auto-generated "Petstore" API reference further down the page list from the original GitBook template — it's unrelated placeholder content and can be removed from the GitBook app directly, since it's generated from an attached OpenAPI spec that this integration can't delete.)
 
-The Africa Digital Atlas doesn't host its own primary statistical series — it harmonizes and visualizes data pulled from 16 multilateral and academic institutions. This section documents where every number comes from, how the map geometry works, and how to cite the platform.
+Afriata (Africa Data Atlas) doesn't host its own primary statistical series — it harmonizes and visualizes data pulled from 16 multilateral and academic institutions. This section documents where every number comes from, how the map geometry works, and how to cite the platform.
 
 ## Contents
 

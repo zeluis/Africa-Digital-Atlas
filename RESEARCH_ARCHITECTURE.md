@@ -1,6 +1,6 @@
 # Research Architecture & Provenance Governance
 
-This document defines the research integrity, provenance, and verification architecture of the **Africa Data Atlas & Cartographic Observatory** (`Africalia`).
+This document defines the research integrity, provenance, and verification architecture of the **Africa Data Atlas & Cartographic Observatory** (`Afriata`).
 
 ---
 

@@ -223,7 +223,7 @@ export function exportAcademicBibtex(reportKey?: 'atlas' | 'molecular' | 'nunn')
   title = {Africa Data Atlas \\& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
   author = {Correia, Z{\\'e}Luis F.},
   year = {2026},
-  publisher = {Africalia},
+  publisher = {Afriata},
   doi = {10.6084/m9.figshare.34065711},
   url = {https://doi.org/10.6084/m9.figshare.34065711},
   note = {Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555; 2015-2024 curated indicator snapshot for 54 African states, SlaveVoyages summary (1514-1866), and ethnic-group cartography}

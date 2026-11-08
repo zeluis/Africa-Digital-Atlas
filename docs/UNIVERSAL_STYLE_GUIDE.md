@@ -1,4 +1,4 @@
-# AFRICALIA UNIVERSAL STYLE GUIDE & LIVING ARCHITECTURAL MONOGRAPH
+# AFRIATA UNIVERSAL STYLE GUIDE & LIVING ARCHITECTURAL MONOGRAPH
 **The Sovereign Design System, Cartographic Geodesy, and Technical Architecture of the Africa Data Atlas**
 
 *Under the scientific direction and cartographic curation of **Zéluis F. Correia***  
@@ -9,7 +9,7 @@
 ## 🏛️ SECTION I: INSTITUTIONAL MISSION & INTELLECTUAL PROPERTY CHARTER
 
 ### 1.1 Institutional Identity & Purpose
-**Africalia** is an independent, non-partisan cartographic and econometric research observatory founded by **Zéluis F. Correia**. The **Africa Data Atlas** serves as a digital public good and scientific synthesis platform bridging the gap between fragmented multilateral statistics, deep ancestral phylogenetic lineages, historical trade extractions, and contemporary geopolitical transformations across all 54 sovereign African nations.
+**Afriata** is an independent, non-partisan cartographic and econometric research observatory founded by **Zéluis F. Correia**. The **Africa Data Atlas** serves as a digital public good and scientific synthesis platform bridging the gap between fragmented multilateral statistics, deep ancestral phylogenetic lineages, historical trade extractions, and contemporary geopolitical transformations across all 54 sovereign African nations.
 
 ### 1.2 Dual Licensing & Creative Assets Authorship
 The Africa Data Atlas applies explicit dual licensing at its repository root (`LICENSE-CODE` and `LICENSE-ASSETS`):
@@ -17,12 +17,12 @@ The Africa Data Atlas applies explicit dual licensing at its repository root (`L
 > **AUTHORSHIP & DUAL-LICENSING DECLARATION**  
 > **ZéLuis F. Correia is the author of all SVG maps and the Ethnic Tree Visualization and SVG. Unless stated otherwise, all graphics and visualizations have the same author.**  
 > 
-> *The $5796 \times 5867$ High-Precision Vector Continental Map (`africa-final.svg` / `AfricaMapFinalLayer.tsx`), the 1,017 Admin-1 provincial subdivision boundaries, the Geodesic SIDS Coordinate Callout Arrays, and the Ethnic Tree Visualization and SVG (`AfricaliaExplorer.tsx` / `authenticEthnicTreeSvg.ts`) are licensed under **Creative Commons Attribution 4.0 International (CC BY 4.0)** (`LICENSE-ASSETS`). Application source code is licensed under the **MIT License** (`LICENSE-CODE`).*
+> *The $5796 \times 5867$ High-Precision Vector Continental Map (`africa-final.svg` / `AfricaMapFinalLayer.tsx`), the 1,017 Admin-1 provincial subdivision boundaries, the Geodesic SIDS Coordinate Callout Arrays, and the Ethnic Tree Visualization and SVG (`AfriataExplorer.tsx` / `authenticEthnicTreeSvg.ts`) are licensed under **Creative Commons Attribution 4.0 International (CC BY 4.0)** (`LICENSE-ASSETS`). Application source code is licensed under the **MIT License** (`LICENSE-CODE`).*
 
 #### License Terms & Attribution:
 - **Creative Assets (`LICENSE-ASSETS` — CC BY 4.0)**: You are free to share and adapt the SVG maps, Ethnic Tree Visualization and SVG, and graphics for any purpose, provided you give appropriate credit to **ZéLuis F. Correia**, link to the CC BY 4.0 license, and indicate if changes were made.
 - **Required Attribution**:  
-  `"Cartographic visualization by ZéLuis F. Correia (Africalia: Africa Data Atlas, CC BY 4.0, https://doi.org/10.6084/m9.figshare.34065711)."`
+  `"Cartographic visualization by ZéLuis F. Correia (Afriata: Africa Data Atlas, CC BY 4.0, https://doi.org/10.6084/m9.figshare.34065711)."`
 - **Source Code (`LICENSE-CODE` — MIT License)**: The software codebase is released under the standard MIT License (`Copyright (c) 2026 ZéLuis F. Correia`).
 
 ---
@@ -30,7 +30,7 @@ The Africa Data Atlas applies explicit dual licensing at its repository root (`L
 ## 🎨 SECTION II: VISUAL CONSTITUTION & JAPANDI-SAHEL DESIGN SYSTEM
 
 ### 2.1 Aesthetic Philosophy
-The visual architecture of Africalia departs from generic tech-startup conventions ("AI slop", neon purple gradients, floating glassmorphism). Instead, it adopts a **Japandi-Sahel Synthesis**—blending Japanese minimalism (*wabi-sabi*, optical breathing room, respect for negative space) with Scandinavian functionalism (*lagom*, ergonomic typography) and warm, dignified African earthen pigmentations.
+The visual architecture of Afriata departs from generic tech-startup conventions ("AI slop", neon purple gradients, floating glassmorphism). Instead, it adopts a **Japandi-Sahel Synthesis**—blending Japanese minimalism (*wabi-sabi*, optical breathing room, respect for negative space) with Scandinavian functionalism (*lagom*, ergonomic typography) and warm, dignified African earthen pigmentations.
 
 ### 2.2 Color Constellation & Curated Palettes
 
@@ -158,10 +158,10 @@ The platform continuously harmonizes statistical indicators across 16 internatio
 When citing the Africa Data Atlas, its cartographic layers, or econometric working papers (also see [`CITATION.cff`](https://github.com/zeluis/Africa-Digital-Atlas/blob/main/CITATION.cff)):
 
 #### APA 7th Edition:
-> Correia, Z. F. (2026). *Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows*. Africalia. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555)
+> Correia, Z. F. (2026). *Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows*. Afriata. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555)
 
 #### Chicago 17th Edition (Author-Date):
-> Correia, ZéLuis F. 2026. *Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows*. Africalia. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555).
+> Correia, ZéLuis F. 2026. *Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows*. Afriata. https://doi.org/10.6084/m9.figshare.34065711 (ORCID: https://orcid.org/0000-0001-9421-6555).
 
 #### Academic BibTeX Entry:
 ```bibtex
@@ -169,7 +169,7 @@ When citing the Africa Data Atlas, its cartographic layers, or econometric worki
   author       = {Correia, Z{\'e}Luis F.},
   title        = {Africa Data Atlas \& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows},
   year         = {2026},
-  publisher    = {Africalia},
+  publisher    = {Afriata},
   doi          = {10.6084/m9.figshare.34065711},
   url          = {https://doi.org/10.6084/m9.figshare.34065711},
   note         = {Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555}
@@ -190,4 +190,4 @@ The platform enforces a binding, five-pillar engineering and design constitution
 
 ---
 
-*Authored by Zéluis F. Correia • Africalia Cartographic & Econometric Observatory • 2026*
+*Authored by Zéluis F. Correia • Afriata Cartographic & Econometric Observatory • 2026*

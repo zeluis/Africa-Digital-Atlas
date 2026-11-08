@@ -38,8 +38,8 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
 
   useEffect(() => {
     const handleUpdate = () => setRefreshTick(t => t + 1);
-    window.addEventListener('africalia-publications-updated', handleUpdate);
-    return () => window.removeEventListener('africalia-publications-updated', handleUpdate);
+    window.addEventListener('afriata-publications-updated', handleUpdate);
+    return () => window.removeEventListener('afriata-publications-updated', handleUpdate);
   }, []);
 
   const allPapers = useMemo(() => getUnifiedWorkingPaperEntries(), [refreshTick]);
@@ -131,7 +131,7 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
               </div>
               <div>
                 <h2 id="working-paper-modal-title" className="text-sm font-extrabold text-stone-900 dark:text-stone-100 font-serif tracking-tight">
-                  Africalia Working Paper & Policy Brief Series
+                  Afriata Working Paper & Policy Brief Series
                 </h2>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
                   Academic Monographs & Applied Econometric Research Notes ({allPapers.length} Papers)
@@ -210,7 +210,7 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
                   <AfricaUnLogo size={36} variant="warm-tonal" interactive={false} />
                   <div>
                     <span className="font-mono text-xs uppercase tracking-widest font-extrabold text-amber-800 dark:text-amber-400 block">
-                      Africalia Open Science Repository
+                      Afriata Open Science Repository
                     </span>
                     <span className="font-mono text-[10px] text-stone-500">
                       DOI: 10.6084/m9.figshare.34065711 • Lisbon / Praia / Pan-African Network
@@ -308,7 +308,7 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
           {/* Footer */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 shrink-0">
             <span className="text-xs text-stone-500 font-mono text-center sm:text-left">
-              Published by Africalia Cartographic & Econometric Observatory • Drop-in dir: <code className="text-amber-600 dark:text-amber-400">/src/content/working-papers/*.md</code>
+              Published by Afriata Cartographic & Econometric Observatory • Drop-in dir: <code className="text-amber-600 dark:text-amber-400">/src/content/working-papers/*.md</code>
             </span>
             <div className="flex items-center gap-2">
               {selectedPaper.isIngestedMarkdown && selectedPaper.reportId && onSelectReport && (

@@ -125,8 +125,8 @@ export default defineConfig(({ command }) => {
         includeAssets: ['favicon.svg', 'favicon-32x32.png', 'apple-touch-icon.png', 'icon.svg'],
         manifest: {
           id: './',
-          name: 'Africalia: Africa Data Atlas',
-          short_name: 'Africalia',
+          name: 'Afriata: Africa Data Atlas',
+          short_name: 'Afriata',
           description: 'Curated Pan-African data platform featuring 54 sovereign nations, Atlantic Slave Trade research database, ethnic tree cartography, 8 thematic pillars, and investigative monographs.',
           theme_color: '#4e5e51',
           background_color: '#18181b',
@@ -170,7 +170,7 @@ export default defineConfig(({ command }) => {
             'assets/**/*.{js,css,woff2,json}',
           ],
           globIgnores: [
-            '**/africalia-ethnic-tree.svg',
+            '**/afriata-ethnic-tree.svg',
             '**/castas/**',
             '**/cartography/**',
             '**/archives/**',
@@ -477,7 +477,7 @@ export default defineConfig(({ command }) => {
             if (id.includes('src/data/africanDevelopment') || id.includes('src/data/countryHistoricalDevelopment')) {
               return 'data-african-development';
             }
-            if (id.includes('src/data/ethnicTree') || id.includes('src/data/authenticEthnicTreeSvg') || id.includes('src/data/africaliaMasterTreeData')) {
+            if (id.includes('src/data/ethnicTree') || id.includes('src/data/authenticEthnicTreeSvg') || id.includes('src/data/afriataMasterTreeData')) {
               return 'data-ethnic-tree';
             }
             if (id.includes('src/i18n/translations')) {

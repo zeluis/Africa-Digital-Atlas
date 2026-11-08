@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Volume2, VolumeX, Play, Pause, RotateCcw, Sparkles } from 'lucide-react';
-import { speakAfricaliaGreeting, stopAfricaliaSpeech } from '../utils/africaliaVoiceEngine';
+import { speakAfriataGreeting, stopAfriataSpeech } from '../utils/afriataVoiceEngine';
 import { useTranslation } from '../i18n/LanguageContext';
 
 export interface ReportVoiceReaderProps {
@@ -28,7 +28,7 @@ export const ReportVoiceReader: React.FC<ReportVoiceReaderProps> = ({
 
   useEffect(() => {
     return () => {
-      stopAfricaliaSpeech();
+      stopAfriataSpeech();
     };
   }, []);
 
@@ -46,7 +46,7 @@ export const ReportVoiceReader: React.FC<ReportVoiceReaderProps> = ({
 
   const handleTogglePlay = () => {
     if (isPlaying) {
-      stopAfricaliaSpeech();
+      stopAfriataSpeech();
       setIsPlaying(false);
       setIsPaused(false);
       return;
@@ -57,7 +57,7 @@ export const ReportVoiceReader: React.FC<ReportVoiceReaderProps> = ({
     setIsPlaying(true);
     setIsPaused(false);
 
-    speakAfricaliaGreeting({
+    speakAfriataGreeting({
       text: fullText,
       langTag: targetLang,
       onStart: () => {
@@ -76,7 +76,7 @@ export const ReportVoiceReader: React.FC<ReportVoiceReaderProps> = ({
   };
 
   const handleStop = () => {
-    stopAfricaliaSpeech();
+    stopAfriataSpeech();
     setIsPlaying(false);
     setIsPaused(false);
   };

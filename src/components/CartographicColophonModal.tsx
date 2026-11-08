@@ -111,7 +111,7 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                   Official Cartographic Cartouche &amp; Imprint
                 </h2>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
-                  Africalia Cartographic Observatory • High-Precision Geodesy Engine
+                  Afriata Cartographic Observatory • High-Precision Geodesy Engine
                 </p>
               </div>
             </div>
@@ -284,7 +284,7 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                     </div>
                     <div>
                       <span className="text-stone-500 dark:text-stone-400 block font-mono text-[11px]">Institutional Observatory:</span>
-                      <span className="font-bold text-stone-900 dark:text-stone-100 text-sm">Africalia Open Science Repository</span>
+                      <span className="font-bold text-stone-900 dark:text-stone-100 text-sm">Afriata Open Science Repository</span>
                       <p className="text-stone-600 dark:text-stone-400 text-[11px] mt-0.5 leading-relaxed">
                         Lisbon / Praia / Pan-African Geospatial Network. Registered under Figshare / OpenAIRE Open Science Archival standard (DOI: 10.6084/m9.figshare.34065711).
                       </p>
@@ -357,7 +357,7 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                       <p className="text-stone-600 dark:text-stone-400 text-[11px] leading-relaxed">
                         All SVG maps, the Ethnic Tree Visualization and SVG, and all graphics and visualizations (unless stated otherwise) are authored by <strong>ZéLuis F. Correia</strong> and licensed under <strong>CC BY 4.0</strong>. Please attribute: <br />
                         <em className="text-stone-800 dark:text-stone-200 font-medium">
-                          &quot;Cartographic visualization by ZéLuis F. Correia (Africalia: Africa Data Atlas, CC BY 4.0, https://doi.org/10.6084/m9.figshare.34065711).&quot;
+                          &quot;Cartographic visualization by ZéLuis F. Correia (Afriata: Africa Data Atlas, CC BY 4.0, https://doi.org/10.6084/m9.figshare.34065711).&quot;
                         </em>
                       </p>
                     </div>

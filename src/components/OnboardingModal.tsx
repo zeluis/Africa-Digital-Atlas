@@ -31,7 +31,7 @@ import { AfricaUnLogo } from './AfricaUnLogo';
 import { OnboardingContinentVisualizer } from './OnboardingContinentVisualizer';
 import { PersonaSelector, PersonaTrack } from './onboarding/PersonaSelector';
 import { InteractiveFeatureSpotlight } from './onboarding/InteractiveFeatureSpotlight';
-import { speakAfricaliaGreeting, stopAfricaliaSpeech, playWarmAfricanChime } from '../utils/africaliaVoiceEngine';
+import { speakAfriataGreeting, stopAfriataSpeech, playWarmAfricanChime } from '../utils/afriataVoiceEngine';
 import { ONBOARDING_TRANSLATIONS } from '../data/onboardingTranslations';
 import { resolveAssetPath } from '../utils/assetPath';
 
@@ -72,7 +72,7 @@ const ONBOARDING_SCREENS: OnboardingScreenDef[] = [
     stageNumber: '01',
     stageBadge: 'Screen 1: The Foundation (History & Heritage)',
     header: 'Discover the Diaspora',
-    body: 'Welcome to Africalia, a curated gateway honoring the Atlantic Ethnic Explorer. Immerse yourself in the profound histories, resilience, and interconnected heritages that bridge Europe, Africa, and the Americas.',
+    body: 'Welcome to Afriata, a curated gateway honoring the Atlantic Ethnic Explorer. Immerse yourself in the profound histories, resilience, and interconnected heritages that bridge Europe, Africa, and the Americas.',
     artTheme: 'history',
     regionFocus: 'Eastern & Northern Africa Tonal Axis',
     primaryTone: '#b47b4d', // Warm terracotta ochre
@@ -141,7 +141,7 @@ const ONBOARDING_SCREENS: OnboardingScreenDef[] = [
     stageNumber: '04',
     stageBadge: 'Screen 4: Academic Integrity & Dual Space Entry',
     header: 'Historical Context & Content Continuity',
-    body: 'Africalia operates under rigorous scholarly and socio-educational protocols. Review the ethical research framework and data provenance below, then choose your curated entry destination.',
+    body: 'Afriata operates under rigorous scholarly and socio-educational protocols. Review the ethical research framework and data provenance below, then choose your curated entry destination.',
     artTheme: 'economy',
     regionFocus: 'Scholarly Integrity & Transatlantic Synthesis',
     primaryTone: '#5c7f73',
@@ -303,7 +303,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
   // Stop speech when step changes, language changes, or modal closes
   useEffect(() => {
-    stopAfricaliaSpeech();
+    stopAfriataSpeech();
     setIsSpeaking(false);
   }, [currentStepIndex, isOpen, language]);
 
@@ -377,11 +377,11 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   };
 
   const handleDirectCloseToDefaultApp = () => {
-    stopAfricaliaSpeech();
+    stopAfriataSpeech();
     setIsSpeaking(false);
     setShowDualEntryPanels(false);
     try {
-      localStorage.setItem('africalia_onboarding_v1', 'true');
+      localStorage.setItem('afriata_onboarding_v1', 'true');
     } catch {
       // safe fallback
     }
@@ -390,11 +390,11 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   };
 
   const handleChooseDestination = (destinationTab: CanonicalNavTab) => {
-    stopAfricaliaSpeech();
+    stopAfriataSpeech();
     setIsSpeaking(false);
     playWarmAfricanChime();
     try {
-      localStorage.setItem('africalia_onboarding_v1', 'true');
+      localStorage.setItem('afriata_onboarding_v1', 'true');
     } catch {
       // safe fallback
     }
@@ -404,12 +404,12 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
   const handleToggleVoice = () => {
     if (isSpeaking) {
-      stopAfricaliaSpeech();
+      stopAfriataSpeech();
       setIsSpeaking(false);
     } else {
       setIsSpeaking(true);
       const narrationText = `${activeScreen.header}. ${activeScreen.body}`;
-      speakAfricaliaGreeting({
+      speakAfriataGreeting({
         text: narrationText,
         langTag: language,
         onEnd: () => setIsSpeaking(false),
@@ -423,10 +423,10 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   return (
     <div 
       className="fixed inset-0 z-50 flex flex-col justify-between overflow-hidden select-none"
-      id="africalia-onboarding-container"
+      id="afriata-onboarding-container"
       role="dialog"
       aria-modal="true"
-      aria-label="Africalia Onboarding Experience"
+      aria-label="Afriata Onboarding Experience"
     >
       {/* 1. Fullscreen Calmed Atmospheric Backdrop */}
       <motion.div
@@ -491,7 +491,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-serif font-bold tracking-wider text-sm sm:text-base uppercase text-stone-900">
-                  Africalia
+                  Afriata
                 </span>
                 <span className="text-emerald-700 font-semibold text-xs tracking-widest uppercase">
                   • Data Atlas
@@ -769,7 +769,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
                           {/* Foundational Framing Callout */}
                           <p className="font-medium text-stone-900 text-xs sm:text-sm md:text-[14.5px] border-l-4 border-amber-600 pl-4 sm:pl-5 pr-4 py-3 sm:py-3.5 bg-amber-50/80 rounded-r-2xl mb-5 leading-relaxed sm:leading-loose shadow-2xs">
-                            Africalia is an independent, open-access digital humanities portal dedicated to historical documentation, demographic cartography, and macroeconomic analysis across the African continent and transatlantic diaspora.
+                            Afriata is an independent, open-access digital humanities portal dedicated to historical documentation, demographic cartography, and macroeconomic analysis across the African continent and transatlantic diaspora.
                           </p>
 
                           {/* 4 Structured Academic Protocol Pillars */}
@@ -784,7 +784,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                                   </strong>
                                 </div>
                                 <p className="text-[11.5px] text-stone-600 font-normal leading-relaxed">
-                                  Africalia is an independent platform and is <strong>not affiliated with, sponsored by, or an official organ</strong> of the United Nations (UN), African Union (AU), World Bank, AfDB, or national governments. Standard taxonomies (UN Geoscheme, AU RECs) are applied solely for analytical standardization.
+                                  Afriata is an independent platform and is <strong>not affiliated with, sponsored by, or an official organ</strong> of the United Nations (UN), African Union (AU), World Bank, AfDB, or national governments. Standard taxonomies (UN Geoscheme, AU RECs) are applied solely for analytical standardization.
                                 </p>
                               </div>
                             </div>
@@ -799,7 +799,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                                   </strong>
                                 </div>
                                 <p className="text-[11.5px] text-stone-600 font-normal leading-relaxed">
-                                  All indexed academic treatises, peer-reviewed monographs, and historical datasets belong exclusively to their respective authors and journals. <strong>Inclusion does not imply that cited scholars endorse or are associated with Africalia</strong> unless formal bilateral affiliation is explicitly documented.
+                                  All indexed academic treatises, peer-reviewed monographs, and historical datasets belong exclusively to their respective authors and journals. <strong>Inclusion does not imply that cited scholars endorse or are associated with Afriata</strong> unless formal bilateral affiliation is explicitly documented.
                                 </p>
                               </div>
                             </div>
@@ -945,7 +945,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
                               <div className="relative w-full h-44 sm:h-48 md:h-52 rounded-2xl overflow-hidden bg-stone-100 border border-amber-200/80 flex items-center justify-center mb-3">
                                 <img 
-                                  src={resolveAssetPath('/africalia-ethnic-tree.svg')} 
+                                  src={resolveAssetPath('/afriata-ethnic-tree.svg')} 
                                   alt="Ethnic Tree of Life Vector Diagram" 
                                   width={640}
                                   height={360}

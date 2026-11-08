@@ -129,7 +129,7 @@ export const KingdomArtifact3DViewerModal: React.FC<KingdomArtifact3DViewerModal
   // Copy Chicago Style Citation
   const handleCopyCitation = () => {
     if (!selectedArtifact) return;
-    const citation = `"${selectedArtifact.title} (${selectedArtifact.nativeTitle})." ${selectedArtifact.period}, ${selectedArtifact.provenance}. Currently curated at ${selectedArtifact.currentLocation}. Africalia Archival Database.`;
+    const citation = `"${selectedArtifact.title} (${selectedArtifact.nativeTitle})." ${selectedArtifact.period}, ${selectedArtifact.provenance}. Currently curated at ${selectedArtifact.currentLocation}. Afriata Archival Database.`;
     navigator.clipboard.writeText(citation);
     setCopiedCitation(true);
     setTimeout(() => setCopiedCitation(false), 2400);
@@ -1243,7 +1243,7 @@ export const KingdomArtifact3DViewerModal: React.FC<KingdomArtifact3DViewerModal
                       </button>
                     </div>
                     <div className="p-3 rounded-2xl bg-zinc-950 border border-zinc-800/80 font-serif text-[11.5px] text-zinc-400 leading-relaxed italic">
-                      "{selectedArtifact.title} ({selectedArtifact.nativeTitle})." {selectedArtifact.period}, {selectedArtifact.provenance}. Curated at {selectedArtifact.currentLocation}. Africalia Archival Repository.
+                      "{selectedArtifact.title} ({selectedArtifact.nativeTitle})." {selectedArtifact.period}, {selectedArtifact.provenance}. Curated at {selectedArtifact.currentLocation}. Afriata Archival Repository.
                     </div>
                   </div>
                 </>

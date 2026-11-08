@@ -43,21 +43,21 @@ import {
   VBH, 
   CX, 
   CY, 
-  AFRICALIA_COUNTRY_CONDUITS, 
-  AfricaliaCountryConduit
-} from '../../data/africaliaMasterTreeData';
-import { AFRICALIA_REGIONS } from '../../data/africaliaSourceData';
+  AFRIATA_COUNTRY_CONDUITS, 
+  AfriataCountryConduit
+} from '../../data/afriataMasterTreeData';
+import { AFRIATA_REGIONS } from '../../data/afriataSourceData';
 import { WikipediaEthnicDossier } from './WikipediaEthnicDossier';
 import { RichEditorialCountryDevelopmentPanel } from './RichEditorialCountryDevelopmentPanel';
 import { getMajorLinguisticFamilies } from '../../services/wikipediaService';
 import { findWikipediaEntry, WIKIPEDIA_TABLE_ENTRIES } from '../../data/wikipediaEthnicAtlas';
-import { ALL_ADMIN1_SUBDIVISIONS } from '../../data/africaliaGeographyData';
+import { ALL_ADMIN1_SUBDIVISIONS } from '../../data/afriataGeographyData';
 import { RadialTreeSkeleton } from './RadialTreeSkeleton';
 import { useCanvasViewport } from '../../hooks/useCanvasViewport';
 import { getCanonicalCountryForEthnic } from '../../data/ethnicToCountryMap';
 import type { WorkerSearchRequest, WorkerSearchResponse } from '../../workers/ethnicAtlasWorker';
 
-interface AfricaliaExplorerProps {
+interface AfriataExplorerProps {
   onSelectReport?: (reportId: string) => void;
   onNavigateToSlaveTrade?: () => void;
   onNavigateToMolecular?: () => void;
@@ -299,7 +299,7 @@ const HISTORICAL_REGION_COUNTRY_MAP: Record<string, string[]> = {
   'Eastern Africa': ['tanzania', 'kenya', 'uganda', 'rwanda', 'nubia-south-sudan', 'ethiopia', 'somalia', 'eritrea']
 };
 
-export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
+export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
   onSelectReport,
   onNavigateToSlaveTrade,
   onNavigateToMolecular,
@@ -310,7 +310,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Accessible ARIA announcement for screen readers on camera refocus
-  const [liveAnnouncement, setLiveAnnouncement] = useState<string>('Africalia sovereign ethnic tree loaded');
+  const [liveAnnouncement, setLiveAnnouncement] = useState<string>('Afriata sovereign ethnic tree loaded');
 
   // Shared Viewport, Zoom, Pan & Keyboard/Pinch/Inertia state via custom hook
   const {
@@ -350,7 +350,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     }, 450);
 
     const base = (import.meta.env?.BASE_URL || './').replace(/\/$/, '');
-    const assetUrl = `${base}/africalia-ethnic-tree.svg`;
+    const assetUrl = `${base}/afriata-ethnic-tree.svg`;
     fetch(assetUrl)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -379,16 +379,16 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
   const rawSvgToDisplay = useMemo(() => {
     let svg = customSvgMarkup || '';
     if (svg) {
-      if (!svg.includes('id="africalia-master-sovereign-svg"')) {
-        svg = svg.replace('<svg ', '<svg id="africalia-master-sovereign-svg" ');
+      if (!svg.includes('id="afriata-master-sovereign-svg"')) {
+        svg = svg.replace('<svg ', '<svg id="afriata-master-sovereign-svg" ');
       }
       if (!svg.includes('data-author=')) {
-        svg = svg.replace('<svg ', '<svg data-author="ZéLuis F. Correia" data-curator="Africalia" data-license="CC BY 4.0 (LICENSE-ASSETS)" data-copyright="© 2024-2026 ZéLuis F. Correia (Africalia). Licensed under CC BY 4.0." data-doi="10.6084/m9.figshare.34065711" ');
+        svg = svg.replace('<svg ', '<svg data-author="ZéLuis F. Correia" data-curator="Afriata" data-license="CC BY 4.0 (LICENSE-ASSETS)" data-copyright="© 2024-2026 ZéLuis F. Correia (Afriata). Licensed under CC BY 4.0." data-doi="10.6084/m9.figshare.34065711" ');
       }
-      if (!svg.includes('AFRICALIA CARTOGRAPHIC OBSERVATORY')) {
+      if (!svg.includes('AFRIATA CARTOGRAPHIC OBSERVATORY')) {
         const comment = `<!--
   ============================================================================
-  AFRICALIA CARTOGRAPHIC OBSERVATORY — VECTOR TOPOLOGY ARCHITECTURE
+  AFRIATA CARTOGRAPHIC OBSERVATORY — VECTOR TOPOLOGY ARCHITECTURE
   Author & Cartographer: ZéLuis F. Correia
   License: CC BY 4.0 (LICENSE-ASSETS) • Code: MIT (LICENSE-CODE)
   Coordinate Space: 2000 x 2000 Sovereign Ethnic Radial Topology
@@ -463,7 +463,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/-+$/, '');
 
-    const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
+    const conduit = AFRIATA_COUNTRY_CONDUITS.find(c => 
       c.name.toLowerCase() === countryName.toLowerCase() || 
       c.id.toLowerCase() === cleanSlug ||
       c.countryCode.toLowerCase() === cleanSlug ||
@@ -739,8 +739,8 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     let maxY = -Infinity;
     let foundPoints = 0;
 
-    // 2. Gather all conduit geometric coordinates from AFRICALIA_COUNTRY_CONDUITS
-    const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
+    // 2. Gather all conduit geometric coordinates from AFRIATA_COUNTRY_CONDUITS
+    const conduit = AFRIATA_COUNTRY_CONDUITS.find(c => 
       c.name.toLowerCase() === canonicalCountry.toLowerCase() || 
       c.id.toLowerCase() === cleanSlug ||
       c.countryCode.toLowerCase() === cleanSlug ||
@@ -893,7 +893,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         if (e.data.type === 'SEARCH_AND_INDEX_RESULT') {
           const mapped = e.data.results.map(entry => {
             // Find coordinate conduit if already in tree or match from homeland string
-            const matchedConduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
+            const matchedConduit = AFRIATA_COUNTRY_CONDUITS.find(c => 
               (entry.homeland && entry.homeland.toLowerCase().includes(c.name.toLowerCase())) ||
               c.ethnicGroups.some(g => g.name.toLowerCase() === entry.name.toLowerCase())
             );
@@ -979,12 +979,12 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     }[] = [];
     
     // Regions
-    AFRICALIA_REGIONS.forEach(r => {
+    AFRIATA_REGIONS.forEach(r => {
       list.push({ id: `region-${r.value}`, name: r.label, type: 'region', region: r.label });
     });
 
     // Countries & Ethnic Groups from Conduits
-    AFRICALIA_COUNTRY_CONDUITS.forEach(c => {
+    AFRIATA_COUNTRY_CONDUITS.forEach(c => {
       list.push({
         id: c.id,
         name: c.name,
@@ -1025,7 +1025,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
     // UN M49 Level 1 Administrative Subdivisions (Admin-1)
     ALL_ADMIN1_SUBDIVISIONS.forEach(adm => {
-      const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c =>
+      const conduit = AFRIATA_COUNTRY_CONDUITS.find(c =>
         (adm.iso3 && c.id.toLowerCase() === adm.iso3.toLowerCase()) ||
         (adm.countryName && c.name.toLowerCase() === adm.countryName.toLowerCase())
       );
@@ -1060,7 +1060,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       // Match historical region names if applicable
       for (const [histRegion, countryIds] of Object.entries(HISTORICAL_REGION_COUNTRY_MAP)) {
         if (histRegion.toLowerCase().includes(q)) {
-          const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
+          const conduit = AFRIATA_COUNTRY_CONDUITS.find(c => 
             (item.type === 'country' && c.name.toLowerCase() === item.name.toLowerCase() && countryIds.includes(c.id)) ||
             (item.type === 'ethnic' && c.name.toLowerCase() === item.country?.toLowerCase() && countryIds.includes(c.id))
           );
@@ -1082,12 +1082,12 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
   // Available countries filtered by selected region (supports UN GeoScheme & Historical regions: West Sahel, East Sahel, East Guinea)
   const availableCountries = useMemo(() => {
-    if (selectedRegion === 'All') return AFRICALIA_COUNTRY_CONDUITS;
+    if (selectedRegion === 'All') return AFRIATA_COUNTRY_CONDUITS;
     const mappedCountrySlugs = HISTORICAL_REGION_COUNTRY_MAP[selectedRegion];
     if (mappedCountrySlugs && mappedCountrySlugs.length > 0) {
-      return AFRICALIA_COUNTRY_CONDUITS.filter(c => mappedCountrySlugs.includes(c.id));
+      return AFRIATA_COUNTRY_CONDUITS.filter(c => mappedCountrySlugs.includes(c.id));
     }
-    return AFRICALIA_COUNTRY_CONDUITS.filter(c => c.region === selectedRegion);
+    return AFRIATA_COUNTRY_CONDUITS.filter(c => c.region === selectedRegion);
   }, [selectedRegion]);
 
   // Lookup entity by raw SVG element id or name with Wikipedia Cultural Atlas resolution
@@ -1096,7 +1096,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     if (id.startsWith('geo--country--')) {
       const parts = id.replace('geo--country--', '').split('--');
       const countryRaw = parts[0]?.replace(/-/g, ' ');
-      const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
+      const conduit = AFRIATA_COUNTRY_CONDUITS.find(c => 
         c.name.toLowerCase() === countryRaw?.toLowerCase() ||
         c.id.toLowerCase() === countryRaw?.toLowerCase()
       );
@@ -1136,7 +1136,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     if (countryMatch) {
       const countryRawSlug = countryMatch[1];
       const countrySlug = countryRawSlug.replace(/-\d+$/, ''); // strip trailing numeric suffix like -2
-      const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
+      const conduit = AFRIATA_COUNTRY_CONDUITS.find(c => 
         c.id.toLowerCase() === countrySlug || 
         c.id.toLowerCase() === countryRawSlug ||
         c.name.toLowerCase().replace(/\s+/g, '-') === countrySlug ||
@@ -1208,7 +1208,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         }
       }
 
-      let conduit = (authorCountry || countrySlug) ? AFRICALIA_COUNTRY_CONDUITS.find(c => 
+      let conduit = (authorCountry || countrySlug) ? AFRIATA_COUNTRY_CONDUITS.find(c => 
         (authorCountry && c.name.toLowerCase() === authorCountry.toLowerCase()) ||
         (countrySlug && (
           c.id.toLowerCase() === countrySlug || 
@@ -1225,7 +1225,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
       // If conduit was not in the ID, search conduits for an ethnic group with this name or base name
       if (!conduit) {
-        conduit = AFRICALIA_COUNTRY_CONDUITS.find(c =>
+        conduit = AFRIATA_COUNTRY_CONDUITS.find(c =>
           c.ethnicGroups.some(eg => 
             eg.name.toLowerCase() === cleanName.toLowerCase() || 
             eg.name.toLowerCase() === baseEthnicName.toLowerCase() ||
@@ -1240,7 +1240,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       let resolvedCountry = authorCountry || conduit?.name || (countrySlug === 'cabo-verde' ? 'Cabo Verde' : undefined);
       if (!resolvedCountry && wiki?.homeland) {
         const homelandCountry = wiki.homeland.split('(')[0].split(',')[0].trim();
-        const matchingConduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
+        const matchingConduit = AFRIATA_COUNTRY_CONDUITS.find(c => 
           c.name.toLowerCase() === homelandCountry.toLowerCase()
         );
         resolvedCountry = matchingConduit?.name || homelandCountry;
@@ -1301,7 +1301,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
     // 4. Cabo Verde transatlantic crucible ellipse & country node
     if (id === 'node--geo--country--cabo-verde' || id === 'geo--country--Cabo-Verde' || id === 'label--country--cabo-verde' || id === 'CABO-VERDE' || id.includes('cabo-verde')) {
-      const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => c.id === 'cape-verde' || c.name.toLowerCase().includes('verde'));
+      const conduit = AFRIATA_COUNTRY_CONDUITS.find(c => c.id === 'cape-verde' || c.name.toLowerCase().includes('verde'));
       return {
         id: 'node--geo--country--cabo-verde',
         name: conduit?.name || 'Cabo Verde',
@@ -1322,7 +1322,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         const authorCountry = getCanonicalCountryForEthnic(textContent);
 
         // Check if this text matches a country conduit
-        const countryMatch = AFRICALIA_COUNTRY_CONDUITS.find(c => 
+        const countryMatch = AFRIATA_COUNTRY_CONDUITS.find(c => 
           c.name.toLowerCase() === textContent.toLowerCase() ||
           c.id.toLowerCase() === textContent.toLowerCase().replace(/\s+/g, '-') ||
           (authorCountry && c.name.toLowerCase() === authorCountry.toLowerCase())
@@ -1342,14 +1342,14 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         }
 
         const wiki = findWikipediaEntry(textContent);
-        const conduit = countryMatch || AFRICALIA_COUNTRY_CONDUITS.find(c =>
+        const conduit = countryMatch || AFRIATA_COUNTRY_CONDUITS.find(c =>
           (authorCountry && c.name.toLowerCase() === authorCountry.toLowerCase()) ||
           c.ethnicGroups.some(eg => eg.name.toLowerCase() === textContent.toLowerCase())
         );
         let resolvedCountry = authorCountry || conduit?.name;
         if (!resolvedCountry && wiki?.homeland) {
           const homelandCountry = wiki.homeland.split('(')[0].split(',')[0].trim();
-          const matchingConduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
+          const matchingConduit = AFRIATA_COUNTRY_CONDUITS.find(c => 
             c.name.toLowerCase() === homelandCountry.toLowerCase()
           );
           resolvedCountry = matchingConduit?.name || homelandCountry;
@@ -1451,9 +1451,9 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       const svgY = (clickClientY - pos.y) / currentScale;
 
       // Check proximity to country conduits (label and trunk endpoints)
-      let closestConduit: typeof AFRICALIA_COUNTRY_CONDUITS[0] | null = null;
+      let closestConduit: typeof AFRIATA_COUNTRY_CONDUITS[0] | null = null;
       let minConduitDist = 140; // 140px generous SVG space hit radius
-      for (const c of AFRICALIA_COUNTRY_CONDUITS) {
+      for (const c of AFRIATA_COUNTRY_CONDUITS) {
         const distLabel = Math.hypot(svgX - c.labelX, svgY - c.labelY);
         const distTrunkEnd = Math.hypot(svgX - c.trunkEndX, svgY - c.trunkEndY);
         const d = Math.min(distLabel, distTrunkEnd);
@@ -1464,9 +1464,9 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       }
 
       // Check proximity to ethnic nodes
-      let closestEthnicGroup: { name: string; conduit: typeof AFRICALIA_COUNTRY_CONDUITS[0]; x: number; y: number } | null = null;
+      let closestEthnicGroup: { name: string; conduit: typeof AFRIATA_COUNTRY_CONDUITS[0]; x: number; y: number } | null = null;
       let minEthnicDist = 80; // 80px generous SVG space hit radius
-      for (const c of AFRICALIA_COUNTRY_CONDUITS) {
+      for (const c of AFRIATA_COUNTRY_CONDUITS) {
         for (const eg of c.ethnicGroups) {
           const d = Math.hypot(svgX - eg.nodeX, svgY - eg.nodeY);
           if (d < minEthnicDist) {
@@ -1534,7 +1534,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
       // If coordinates still missing, fallback to conduit label coordinates
       if (!entity.coords && entity.country) {
-        const cond = AFRICALIA_COUNTRY_CONDUITS.find(c => c.name.toLowerCase() === entity.country?.toLowerCase());
+        const cond = AFRIATA_COUNTRY_CONDUITS.find(c => c.name.toLowerCase() === entity.country?.toLowerCase());
         if (cond) {
           entity.coords = { x: cond.labelX, y: cond.labelY, r: 16 };
         }
@@ -1586,7 +1586,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onWheel={handleWheel}
-      id="africalia-explorer-root"
+      id="afriata-explorer-root"
     >
       {/* Screen Reader Live Announcement Region */}
       <div 
@@ -1608,7 +1608,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           className="pointer-events-auto flex items-center flex-wrap gap-1 sm:gap-1.5 p-1.5 rounded-2xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_8px_30px_rgba(75,55,35,0.14)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.6)] backdrop-blur-xl text-xs no-drag select-none"
-          id="africalia-master-top-control-bar"
+          id="afriata-master-top-control-bar"
         >
           {/* 1. Search & Focus Trigger Button */}
           <button
@@ -2013,16 +2013,16 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             <span>Colophon</span>
           </button>
 
-          {/* Africalia Title & SVG Info Tag */}
+          {/* Afriata Title & SVG Info Tag */}
           <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0 mx-0.5" />
           <div className="flex items-center gap-1 px-1 text-[10px] text-[#7D6B5A] dark:text-[#B5A492] font-medium shrink-0">
-            <span className="font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6]">Africalia</span>
+            <span className="font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6]">Afriata</span>
           </div>
         </motion.div>
       </div>
 
       {/* =========================================================================
-          2. UNIFIED DRAGGABLE & MINIMIZABLE AFRICALIA SEARCH & CONTROLS PANEL
+          2. UNIFIED DRAGGABLE & MINIMIZABLE AFRIATA SEARCH & CONTROLS PANEL
           ========================================================================= */}
       <AnimatePresence>
         {isUnifiedPanelOpen && (
@@ -2043,12 +2043,12 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             id="unified-geography-search-dock"
           >
             {isUnifiedPanelMinimized ? (
-              /* Minimized Floating Pill State (Africalia Title & SVG Info) */
+              /* Minimized Floating Pill State (Afriata Title & SVG Info) */
               <div className="flex items-center justify-between w-full gap-3 select-none">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-[#E67E48] animate-pulse shrink-0" />
                   <div className="text-xs font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6]">
-                    Africalia
+                    Afriata
                   </div>
                   <span className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">· SVG Info</span>
                 </div>
@@ -2130,7 +2130,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                 {/* Sub-Header: UN Geo Scheme Toggle & Tree Info */}
                 <div className="px-4 py-2 bg-black/[0.02] dark:bg-white/[0.02] border-b border-[#E5DDD0]/70 dark:border-[#38322B]/70 flex items-center justify-between gap-2 text-[10px]">
                   <p className="text-[#7D6B5A] dark:text-[#B5A492] font-medium truncate">
-                    Africalia Vector Tree · Raw SVG (100% fidelity)
+                    Afriata Vector Tree · Raw SVG (100% fidelity)
                   </p>
                   <button
                     type="button"
@@ -2194,7 +2194,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                             onClick={() => {
                               if (item.type === 'country') {
                                 setSelectedCountry(item.name);
-                                const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => c.name === item.name);
+                                const conduit = AFRIATA_COUNTRY_CONDUITS.find(c => c.name === item.name);
                                 if (conduit) {
                                   setSelectedRegion(conduit.region);
                                   setSelectedEntity({
@@ -2284,12 +2284,12 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                           // Check if historical region mapping exists
                           const historicalCountryIds = HISTORICAL_REGION_COUNTRY_MAP[reg];
                           if (historicalCountryIds && historicalCountryIds.length > 0) {
-                            const firstHistConduit = AFRICALIA_COUNTRY_CONDUITS.find(c => historicalCountryIds.includes(c.id));
+                            const firstHistConduit = AFRIATA_COUNTRY_CONDUITS.find(c => historicalCountryIds.includes(c.id));
                             if (firstHistConduit) {
                               panToCoordinates(firstHistConduit.labelX, firstHistConduit.labelY, 1.6);
                             }
                           } else {
-                            const firstConduit = AFRICALIA_COUNTRY_CONDUITS.find(c => c.region === reg);
+                            const firstConduit = AFRIATA_COUNTRY_CONDUITS.find(c => c.region === reg);
                             if (firstConduit) {
                               panToCoordinates(firstConduit.labelX, firstConduit.labelY, 1.6);
                             }
@@ -2301,7 +2301,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                       className="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] text-xs text-[#2B241E] dark:text-[#F5EFE6] outline-none font-medium cursor-pointer"
                     >
                       <option value="All" className="bg-[#FAF7F2] dark:bg-[#1E1B18]">All Sovereign Regions</option>
-                      {AFRICALIA_REGIONS.map(r => (
+                      {AFRIATA_REGIONS.map(r => (
                         <option key={r.value} value={r.label} className="bg-[#FAF7F2] dark:bg-[#1E1B18]">{r.label}</option>
                       ))}
                     </select>
@@ -2318,7 +2318,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
                         const countryName = e.target.value;
                         setSelectedCountry(countryName);
                         if (countryName !== 'All') {
-                          const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => c.name === countryName);
+                          const conduit = AFRIATA_COUNTRY_CONDUITS.find(c => c.name === countryName);
                           if (conduit) {
                             setSelectedRegion(conduit.region);
                             setSelectedEntity({
@@ -2678,54 +2678,54 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
         >
           {/* SVG Global Interactive Styles */}
           <style>{`
-            #africalia-master-sovereign-svg text,
-            #africalia-master-sovereign-svg tspan,
-            #africalia-master-sovereign-svg [id^="label--"],
-            #africalia-master-sovereign-svg [id^="node--"],
-            #africalia-master-sovereign-svg [id^="nodes--"],
-            #africalia-master-sovereign-svg [id^="branch--"],
-            #africalia-master-sovereign-svg [id^="branches--"],
-            #africalia-master-sovereign-svg [id^="assoc--"],
-            #africalia-master-sovereign-svg [id^="geo--country--"],
-            #africalia-master-sovereign-svg ellipse,
-            #africalia-master-sovereign-svg circle {
+            #afriata-master-sovereign-svg text,
+            #afriata-master-sovereign-svg tspan,
+            #afriata-master-sovereign-svg [id^="label--"],
+            #afriata-master-sovereign-svg [id^="node--"],
+            #afriata-master-sovereign-svg [id^="nodes--"],
+            #afriata-master-sovereign-svg [id^="branch--"],
+            #afriata-master-sovereign-svg [id^="branches--"],
+            #afriata-master-sovereign-svg [id^="assoc--"],
+            #afriata-master-sovereign-svg [id^="geo--country--"],
+            #afriata-master-sovereign-svg ellipse,
+            #afriata-master-sovereign-svg circle {
               cursor: pointer !important;
               pointer-events: auto !important;
             }
-            #africalia-master-sovereign-svg [id^="label--country--"] path {
+            #afriata-master-sovereign-svg [id^="label--country--"] path {
               cursor: pointer !important;
               pointer-events: auto !important;
               stroke: transparent !important;
               stroke-width: 16px !important;
               paint-order: stroke fill !important;
             }
-            #africalia-master-sovereign-svg text {
+            #afriata-master-sovereign-svg text {
               cursor: pointer !important;
               pointer-events: auto !important;
               stroke: transparent !important;
               stroke-width: 12px !important;
               paint-order: stroke fill !important;
             }
-            #africalia-master-sovereign-svg ellipse,
-            #africalia-master-sovereign-svg circle {
+            #afriata-master-sovereign-svg ellipse,
+            #afriata-master-sovereign-svg circle {
               cursor: pointer !important;
               pointer-events: auto !important;
               stroke: transparent !important;
               stroke-width: 10px !important;
               paint-order: stroke fill !important;
             }
-            #africalia-master-sovereign-svg [id^="label--country--"]:hover,
-            #africalia-master-sovereign-svg [id^="branch--country--"]:hover,
-            #africalia-master-sovereign-svg [id^="node--country--"]:hover {
+            #afriata-master-sovereign-svg [id^="label--country--"]:hover,
+            #afriata-master-sovereign-svg [id^="branch--country--"]:hover,
+            #afriata-master-sovereign-svg [id^="node--country--"]:hover {
               filter: drop-shadow(0 0 12px rgba(230,126,72,0.95)) drop-shadow(0 0 24px rgba(230,126,72,0.6));
             }
-            #africalia-master-sovereign-svg [id^="label--ethnic--"]:hover text,
-            #africalia-master-sovereign-svg [id^="assoc--ethnic--"]:hover text,
-            #africalia-master-sovereign-svg text:hover {
+            #afriata-master-sovereign-svg [id^="label--ethnic--"]:hover text,
+            #afriata-master-sovereign-svg [id^="assoc--ethnic--"]:hover text,
+            #afriata-master-sovereign-svg text:hover {
               fill: #E67E48 !important;
               filter: drop-shadow(0 0 8px rgba(230,126,72,0.85));
             }
-            #africalia-master-sovereign-svg *:focus-visible {
+            #afriata-master-sovereign-svg *:focus-visible {
               outline: 2.5px dashed #E67E48 !important;
               outline-offset: 4px !important;
             }
@@ -2750,16 +2750,16 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
             /* Dynamic Level of Detail (LOD): At low zoom levels (<0.8x), declutter fine sub-branch text labels */
             ${zoom < 0.8 ? `
-              #africalia-master-sovereign-svg [id^="label--ethnic--"],
-              #africalia-master-sovereign-svg [id^="assoc--ethnic--"] text {
+              #afriata-master-sovereign-svg [id^="label--ethnic--"],
+              #afriata-master-sovereign-svg [id^="assoc--ethnic--"] text {
                 opacity: 0 !important;
                 visibility: hidden !important;
                 pointer-events: none !important;
                 transition: opacity 0.2s ease-out;
               }
             ` : `
-              #africalia-master-sovereign-svg [id^="label--ethnic--"],
-              #africalia-master-sovereign-svg [id^="assoc--ethnic--"] text {
+              #afriata-master-sovereign-svg [id^="label--ethnic--"],
+              #afriata-master-sovereign-svg [id^="assoc--ethnic--"] text {
                 opacity: 1;
                 transition: opacity 0.25s ease-in;
               }
@@ -2767,55 +2767,55 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
             /* Reactive Scoped CSS Layer Visibility Toggles */
             ${!layerVisibility.nodes ? `
-              #africalia-master-sovereign-svg [id^="node--"],
-              #africalia-master-sovereign-svg [id^="origin--"],
-              #africalia-master-sovereign-svg ellipse,
-              #africalia-master-sovereign-svg circle:not(.reticle) {
+              #afriata-master-sovereign-svg [id^="node--"],
+              #afriata-master-sovereign-svg [id^="origin--"],
+              #afriata-master-sovereign-svg ellipse,
+              #afriata-master-sovereign-svg circle:not(.reticle) {
                 display: none !important;
               }
             ` : ''}
 
             ${!layerVisibility.branches ? `
-              #africalia-master-sovereign-svg [id^="branch--"],
-              #africalia-master-sovereign-svg [id^="branches--"],
-              #africalia-master-sovereign-svg [id^="trunk--"],
-              #africalia-master-sovereign-svg path.branch,
-              #africalia-master-sovereign-svg path.trunk,
-              #africalia-master-sovereign-svg [id*="STEM" i],
-              #africalia-master-sovereign-svg [id*="CONDUIT" i] {
+              #afriata-master-sovereign-svg [id^="branch--"],
+              #afriata-master-sovereign-svg [id^="branches--"],
+              #afriata-master-sovereign-svg [id^="trunk--"],
+              #afriata-master-sovereign-svg path.branch,
+              #afriata-master-sovereign-svg path.trunk,
+              #afriata-master-sovereign-svg [id*="STEM" i],
+              #afriata-master-sovereign-svg [id*="CONDUIT" i] {
                 display: none !important;
               }
             ` : ''}
 
             ${!layerVisibility.crucibles ? `
-              #africalia-master-sovereign-svg #assoc--ethnic--country--cabo-verde,
-              #africalia-master-sovereign-svg #CABO-VERDE,
-              #africalia-master-sovereign-svg [id*="cabo-verde" i],
-              #africalia-master-sovereign-svg [id*="crucible" i] {
+              #afriata-master-sovereign-svg #assoc--ethnic--country--cabo-verde,
+              #afriata-master-sovereign-svg #CABO-VERDE,
+              #afriata-master-sovereign-svg [id*="cabo-verde" i],
+              #afriata-master-sovereign-svg [id*="crucible" i] {
                 opacity: 0.12 !important;
                 pointer-events: none !important;
               }
             ` : ''}
 
             ${!layerVisibility.labels ? `
-              #africalia-master-sovereign-svg [id^="label--"],
-              #africalia-master-sovereign-svg [id^="assoc--"] text,
-              #africalia-master-sovereign-svg text {
+              #afriata-master-sovereign-svg [id^="label--"],
+              #afriata-master-sovereign-svg [id^="assoc--"] text,
+              #afriata-master-sovereign-svg text {
                 display: none !important;
               }
             ` : ''}
 
             ${!layerVisibility.tastCohorts ? `
-              #africalia-master-sovereign-svg [id*="TAST" i],
-              #africalia-master-sovereign-svg [id*="cohort" i],
-              #africalia-master-sovereign-svg [id*="slave-trade" i] {
+              #afriata-master-sovereign-svg [id*="TAST" i],
+              #afriata-master-sovereign-svg [id*="cohort" i],
+              #afriata-master-sovereign-svg [id*="slave-trade" i] {
                 display: none !important;
               }
             ` : ''}
 
             /* Molecular Migration Mode Active: Subordinate underlying SVG pointer events to prevent selection conflicts */
             ${isMolecularOverlayOpen ? `
-              #africalia-master-sovereign-svg * {
+              #afriata-master-sovereign-svg * {
                 pointer-events: none !important;
               }
             ` : ''}
@@ -3001,7 +3001,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
             .replace(/\s+\d+$/, '')
             .trim();
 
-          let conduit = AFRICALIA_COUNTRY_CONDUITS.find(c =>
+          let conduit = AFRIATA_COUNTRY_CONDUITS.find(c =>
             (cleanCountry && (
               c.name.toLowerCase() === cleanCountry.toLowerCase() ||
               c.id.toLowerCase() === cleanCountry.toLowerCase().replace(/\s+/g, '-')
@@ -3015,7 +3015,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
           );
 
           if (!conduit && cleanCountry) {
-            conduit = AFRICALIA_COUNTRY_CONDUITS.find(c =>
+            conduit = AFRIATA_COUNTRY_CONDUITS.find(c =>
               c.name.toLowerCase().includes(cleanCountry.toLowerCase()) ||
               cleanCountry.toLowerCase().includes(c.name.toLowerCase())
             );
@@ -3185,7 +3185,7 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
 
               {/* Documented Ethnic Groups under this Conduit */}
               {(() => {
-                const conduit = AFRICALIA_COUNTRY_CONDUITS.find(c => 
+                const conduit = AFRIATA_COUNTRY_CONDUITS.find(c => 
                   c.name.toLowerCase() === selectedEntity.name.toLowerCase() || 
                   c.id.toLowerCase() === selectedEntity.id.toLowerCase()
                 );
@@ -3309,17 +3309,17 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
           <AcademicExportModal
             isOpen={isExportModalOpen}
             onClose={() => setIsExportModalOpen(false)}
-            title="Africalia Sovereign Ethnic Tree of Life"
-            sourceContext="Africalia Sovereign Lineage Vector Atlas & Harvard / Wikipedia Anthropological Corpus"
+            title="Afriata Sovereign Ethnic Tree of Life"
+            sourceContext="Afriata Sovereign Lineage Vector Atlas & Harvard / Wikipedia Anthropological Corpus"
             citationMetadata={{
-              authors: ['Zéluis F. Correia', 'Africalia Cartographic Observatory'],
+              authors: ['Zéluis F. Correia', 'Afriata Cartographic Observatory'],
               year: 2026,
               datasetName: 'Pan-African Ethno-Linguistic Continuum and Conduit Lineages',
-              url: typeof window !== 'undefined' ? window.location.href : 'https://africalia.org/#ethnic-tree',
+              url: typeof window !== 'undefined' ? window.location.href : 'https://afriata.org/#ethnic-tree',
               doi: '10.6084/m9.figshare.34065711',
               version: '2026.2'
             }}
-            svgContainerId="africalia-master-sovereign-svg"
+            svgContainerId="afriata-master-sovereign-svg"
           />
         </Suspense>
       )}
@@ -3337,3 +3337,5 @@ export const AfricaliaExplorer: React.FC<AfricaliaExplorerProps> = ({
     </div>
   );
 };
+
+export default AfriataExplorer;

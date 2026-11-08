@@ -2,7 +2,7 @@
   "public/africa-final.svg",
   "src/data/africaFinalGeometry.ts",
   "src/data/authenticEthnicTreeSvg.ts",
-  "src/data/africaliaMasterTreeData.ts",
+  "src/data/afriataMasterTreeData.ts",
   "src/data/slaveVoyagesData.ts",
   "src/data/records-with-descriptions.json",
   "src/data/wikipediaTableEntries.json",

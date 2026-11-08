@@ -11,14 +11,14 @@ import {
   VBH,
   CX,
   CY,
-  AFRICALIA_COUNTRY_CONDUITS,
+  AFRIATA_COUNTRY_CONDUITS,
   CENTRAL_LOBE_NODES,
   TAST_COHORTS
-} from '../src/data/africaliaMasterTreeData.ts';
+} from '../src/data/afriataMasterTreeData.ts';
 
 function generateFullSvg() {
   let svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VBW} ${VBH}" width="${VBW}" height="${VBH}" id="africalia-master-sovereign-svg">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VBW} ${VBH}" width="${VBW}" height="${VBH}" id="afriata-master-sovereign-svg">
 <defs>
   <style>
     .cls-bg { fill: #f4f1ea; }
@@ -44,7 +44,7 @@ function generateFullSvg() {
 </defs>
 
 <!-- Background Canvas Layer -->
-<rect width="${VBW}" height="${VBH}" class="cls-bg" id="africalia-canvas-bg" />
+<rect width="${VBW}" height="${VBH}" class="cls-bg" id="afriata-canvas-bg" />
 
 <!-- TAST Quantitative Ring Overlays -->
 <g id="QUANT" class="tast-quant-layer">
@@ -73,7 +73,7 @@ function generateFullSvg() {
 `;
 
   // Draw Country Trunks and Feeders
-  for (const c of AFRICALIA_COUNTRY_CONDUITS) {
+  for (const c of AFRIATA_COUNTRY_CONDUITS) {
     const strokeW = Math.max(3, Math.min(10, c.tastVolumeShare * 0.4));
     svg += `  <g id="branch--country--${c.id}" class="country-conduit-group" data-country="${c.name}" data-region="${c.region}">\n`;
     svg += `    <!-- Main Trunk -->\n`;
@@ -122,7 +122,7 @@ function generateFullSvg() {
   return svg;
 }
 
-const outputPath = path.resolve(__dirname, '../public/africalia-ethnic-tree.svg');
+const outputPath = path.resolve(__dirname, '../public/afriata-ethnic-tree.svg');
 const svgContent = generateFullSvg();
 fs.writeFileSync(outputPath, svgContent, 'utf-8');
 console.log(`Successfully generated full sovereign SVG at ${outputPath} (Size: ${svgContent.length} bytes)`);

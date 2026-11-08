@@ -1,7 +1,7 @@
 /**
  * Centralized External Links & DOI Resolver Registry
  * 
- * Single Source of Truth for all outbound URLs across Africalia Atlas.
+ * Single Source of Truth for all outbound URLs across Afriata Atlas.
  * Provides:
  * 1. Normalized DOI resolution through the official International DOI Foundation resolver (https://doi.org/).
  * 2. Institutional portal catalogs (World Bank, IMF, UNESCO, WHO, AfDB, etc.).
@@ -61,7 +61,7 @@ export function getWaybackArchiveUrl(targetUrl: string): string {
 }
 
 /**
- * Standard safe props for all external anchor tags across Africalia Atlas
+ * Standard safe props for all external anchor tags across Afriata Atlas
  */
 export const SAFE_EXTERNAL_LINK_PROPS = {
   target: '_blank',

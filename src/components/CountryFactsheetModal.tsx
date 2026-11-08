@@ -118,7 +118,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
 - **UNESCO World Heritage Sites:** ${heritageSites.length} documented sites
 
 ---
-*Source: Africalia Africa Data Atlas (World Bank WDI, IMF WEO, UN DESA, UNESCO, AfDB).*`;
+*Source: Afriata Africa Data Atlas (World Bank WDI, IMF WEO, UN DESA, UNESCO, AfDB).*`;
 
     navigator.clipboard.writeText(md).then(() => {
       setCopied(true);
@@ -143,7 +143,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
   <rect x="40" y="40" width="1120" height="180" class="header-box" />
   <text x="80" y="110" class="title">${country.name.toUpperCase()} (${country.id})</text>
   <text x="80" y="155" class="subtitle">${country.officialName || country.name} • Capital: ${country.capital || 'N/A'} • UN Region: ${country.region} • M49: ${m49}</text>
-  <text x="80" y="190" style="font-size: 14px; fill: #059669; font-weight: bold;">AFRICALIA PAN-AFRICAN DATA PLATFORM • EXECUTIVE 1-PAGE DOSSIER BRIEF</text>
+  <text x="80" y="190" style="font-size: 14px; fill: #059669; font-weight: bold;">AFRIATA PAN-AFRICAN DATA PLATFORM • EXECUTIVE 1-PAGE DOSSIER BRIEF</text>
 
   <!-- Macro Grid -->
   <text x="40" y="270" class="section-title">I. Core Macroeconomics &amp; Demographics (2024)</text>
@@ -210,10 +210,10 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
   <!-- Footer Provenance Stamp -->
   <rect x="40" y="1480" width="1120" height="80" fill="#f3f4f6" rx="12" />
   <text x="65" y="1525" style="font-size: 13px; fill: #6b7280;">Curated Data Sources: World Bank WDI (2024), IMF World Economic Outlook, UN DESA WPP, UNESCO World Heritage Centre.</text>
-  <text x="65" y="1545" style="font-size: 12px; fill: #9ca3af; font-family: monospace;">Africalia Platform Document ID: AFRICALIA-FACTSHEET-${country.id}-2024 • ISO 3166-1 alpha-3: ${country.id}</text>
+  <text x="65" y="1545" style="font-size: 12px; fill: #9ca3af; font-family: monospace;">Afriata Platform Document ID: AFRIATA-FACTSHEET-${country.id}-2024 • ISO 3166-1 alpha-3: ${country.id}</text>
 </svg>`;
 
-    downloadFile(`africalia-factsheet-${country.id.toLowerCase()}.svg`, svgContent, 'image/svg+xml');
+    downloadFile(`afriata-factsheet-${country.id.toLowerCase()}.svg`, svgContent, 'image/svg+xml');
   };
 
   const handleExportHtml = () => {
@@ -243,7 +243,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
       <div class="subtitle">${country.officialName || country.name} • Capital: ${country.capital || 'N/A'} • UN Region: ${country.region} • M49: ${m49}</div>
     </div>
     <div style="text-align: right; font-size: 11px; font-weight: bold; color: #059669;">
-      AFRICALIA PAN-AFRICAN DATA PLATFORM<br>
+      AFRIATA PAN-AFRICAN DATA PLATFORM<br>
       <span style="font-size: 10px; color: #6b7280;">Harmonized Baseline Edition 2024</span>
     </div>
   </div>
@@ -277,12 +277,12 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
   </div>
 
   <div class="footer">
-    Africalia Platform Document ID: AFRICALIA-FACTSHEET-${country.id}-2024 • Sources: World Bank WDI, IMF WEO, UN DESA, UNESCO.
+    Afriata Platform Document ID: AFRIATA-FACTSHEET-${country.id}-2024 • Sources: World Bank WDI, IMF WEO, UN DESA, UNESCO.
   </div>
 </body>
 </html>`;
 
-    downloadFile(`africalia-factsheet-${country.id.toLowerCase()}.html`, htmlDoc, 'text/html');
+    downloadFile(`afriata-factsheet-${country.id.toLowerCase()}.html`, htmlDoc, 'text/html');
   };
 
   return (
@@ -591,7 +591,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
           {/* Section 4: Provenance Stamp & Official Citation */}
           <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[10px] font-mono text-zinc-500 dark:text-zinc-400">
             <div>
-              <span>Official Citation: Africalia Africa Data Atlas (2024). {country.name} National Dossier.</span>
+              <span>Official Citation: Afriata Africa Data Atlas (2024). {country.name} National Dossier.</span>
             </div>
             <div>
               <span>Verification: ISO 3166-1 • World Bank WDI • IMF WEO • UN DESA WPP</span>

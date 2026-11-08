@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { KingdomDetailedRecord, DynasticNode } from '../../data/preColonialKingdomsDetailed';
-import { speakAcademicNarration, stopAfricaliaSpeech } from '../../utils/africaliaVoiceEngine';
+import { speakAcademicNarration, stopAfriataSpeech } from '../../utils/afriataVoiceEngine';
 import { 
   Crown, 
   Sparkles, 
@@ -35,13 +35,13 @@ export const KingdomDynasticTreeModal: React.FC<KingdomDynasticTreeModalProps> =
   // Stop audio on unmount or node change
   useEffect(() => {
     return () => {
-      stopAfricaliaSpeech();
+      stopAfriataSpeech();
     };
   }, [selectedNode?.id]);
 
   const handleSpeak = (text: string) => {
     if (isSpeaking) {
-      stopAfricaliaSpeech();
+      stopAfriataSpeech();
       setIsSpeaking(false);
       return;
     }

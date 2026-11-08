@@ -48,8 +48,8 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
 
   useEffect(() => {
     const handleUpdate = () => setRefreshTick(t => t + 1);
-    window.addEventListener('africalia-publications-updated', handleUpdate);
-    return () => window.removeEventListener('africalia-publications-updated', handleUpdate);
+    window.addEventListener('afriata-publications-updated', handleUpdate);
+    return () => window.removeEventListener('afriata-publications-updated', handleUpdate);
   }, []);
 
   const handleReportIngested = (newReport: ResearchReport) => {
@@ -157,7 +157,7 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
                 setIsIngestionModalOpen(true);
               }}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all cursor-pointer shadow-md"
-              title="Import Africalia Working Paper (.md) into content/working-papers"
+              title="Import Afriata Working Paper (.md) into content/working-papers"
             >
               <Sparkles className="w-4 h-4" />
               <span>Import Working Paper (.md)</span>
@@ -196,7 +196,7 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
               { id: 'genetics', label: 'Genetics & Admixture' },
               { id: 'international-law', label: 'International Law' },
               { id: 'development-sociology', label: 'Development & Economics' },
-              { id: 'working-papers', label: 'Africalia Working Papers' }
+              { id: 'working-papers', label: 'Afriata Working Papers' }
             ].map(pill => (
               <button
                 key={pill.id}
@@ -294,7 +294,7 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
                     </span>
                     {rep.isWorkingPaper && (
                       <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
-                        {rep.seriesNumber ? rep.seriesNumber.replace('Africalia ', '') : 'Working Paper'}
+                        {rep.seriesNumber ? rep.seriesNumber.replace('Afriata ', '') : 'Working Paper'}
                       </span>
                     )}
                   </div>

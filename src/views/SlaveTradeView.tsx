@@ -1459,10 +1459,10 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
             title="Atlantic Slave Trade Data Atlas & Maritime Flow Corridors"
             sourceContext="SlaveVoyages Consortium (api.slavevoyages.org), TAST Database v2026.1"
             citationMetadata={{
-              authors: ['SlaveVoyages Consortium', 'Africalia Historical Analytics Group', 'Eltis et al.'],
+              authors: ['SlaveVoyages Consortium', 'Afriata Historical Analytics Group', 'Eltis et al.'],
               year: 2026,
               datasetName: 'Trans-Atlantic and Intra-American Slave Trade Databases',
-              url: window?.location?.href || 'https://africalia.org/#slave-trade',
+              url: window?.location?.href || 'https://afriata.org/#slave-trade',
               doi: '10.6084/m9.figshare.34065711',
               version: SLAVEVOYAGES_METADATA.version
             }}

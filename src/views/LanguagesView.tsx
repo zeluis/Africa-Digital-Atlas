@@ -23,7 +23,7 @@ import {
   ArrowRightLeft
 } from 'lucide-react';
 import { VoiceWelcomeFab } from '../components/VoiceWelcomeFab';
-import { LANGUAGE_FAMILY_GREETINGS } from '../utils/africaliaVoiceEngine';
+import { LANGUAGE_FAMILY_GREETINGS } from '../utils/afriataVoiceEngine';
 import { MotherTonguesWaveformScrubber } from '../components/MotherTonguesWaveformScrubber';
 import { AFRICAN_TYPOLOGICAL_FEATURES, TypologicalFeature } from '../data/africanLinguisticTypology';
 import { LinguisticTypologyComparator } from '../components/languages/LinguisticTypologyComparator';

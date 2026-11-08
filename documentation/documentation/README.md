@@ -1,11 +1,11 @@
 ---
-description: A guide to every feature in the Africa Digital Atlas
+description: A guide to every feature in Afriata (Africa Data Atlas)
 icon: hand-wave
 ---
 
 # User Guide
 
-This guide walks through each module of the Africa Digital Atlas, the pan-African data and cartography platform. Open the [live app](https://zeluis.github.io/Africa-Digital-Atlas/) alongside these pages to follow along.
+This guide walks through each module of Afriata (Africa Data Atlas), the pan-African data and cartography platform. Open the [live app](https://zeluis.github.io/Africa-Digital-Atlas/) alongside these pages to follow along.
 
 ## Features
 

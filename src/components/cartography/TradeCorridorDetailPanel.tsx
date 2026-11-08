@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { TradeCorridorPath } from '../../data/preColonialKingdomsDetailed';
-import { speakAcademicNarration, stopAfricaliaSpeech } from '../../utils/africaliaVoiceEngine';
+import { speakAcademicNarration, stopAfriataSpeech } from '../../utils/afriataVoiceEngine';
 import { 
   Compass, 
   MapPin, 
@@ -55,7 +55,7 @@ export const TradeCorridorDetailPanel: React.FC<TradeCorridorDetailPanelProps> =
   // Stop audio playback on unmount or corridor change
   useEffect(() => {
     return () => {
-      stopAfricaliaSpeech();
+      stopAfriataSpeech();
     };
   }, [corridor.id]);
 
@@ -73,7 +73,7 @@ export const TradeCorridorDetailPanel: React.FC<TradeCorridorDetailPanelProps> =
 
   const handleSpeak = () => {
     if (isSpeaking) {
-      stopAfricaliaSpeech();
+      stopAfriataSpeech();
       setIsSpeaking(false);
       return;
     }

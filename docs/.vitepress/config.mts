@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: 'Africa Digital Atlas',
+  title: 'Afriata: Africa Data Atlas',
   description: 'A pan-African data and cartography platform — 54 countries, 90+ indicators, 16 institutional data sources.',
   base: process.env.DOCS_BASE || '/Africa-Digital-Atlas/docs/',
   
@@ -11,14 +11,14 @@ export default defineConfig({
     ['meta', { name: 'theme-color', content: '#d97706' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:locale', content: 'en' }],
-    ['meta', { property: 'og:title', content: 'Africa Digital Atlas Documentation' }],
-    ['meta', { property: 'og:site_name', content: 'Africa Digital Atlas Docs' }],
+    ['meta', { property: 'og:title', content: 'Afriata: Africa Data Atlas Documentation' }],
+    ['meta', { property: 'og:site_name', content: 'Afriata Docs' }],
     ['meta', { property: 'og:image', content: 'https://zeluis.github.io/Africa-Digital-Atlas/hero-preview.jpg' }],
   ],
 
   themeConfig: {
     logo: '/hero-preview.jpg',
-    siteTitle: 'Africa Digital Atlas',
+    siteTitle: 'Afriata',
 
     nav: [
       { text: 'Home', link: '/' },
@@ -80,8 +80,8 @@ export default defineConfig({
     ],
 
     footer: {
-      message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2026 Africa Digital Atlas'
+      message: 'Released under the MIT and CC BY 4.0 Licenses.',
+      copyright: 'Copyright © 2026 Afriata • ZéLuis F. Correia'
     },
 
     search: {

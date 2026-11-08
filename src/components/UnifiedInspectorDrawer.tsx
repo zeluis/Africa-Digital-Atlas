@@ -4,7 +4,7 @@ import { AtlasEntity, AfricanRegion } from '../data/types';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from './CountryFlag';
 import { formatPopulation, formatGDP, formatHDI } from '../data/atlas-formatters';
-import { AfricaliaAdmin1 } from '../data/types';
+import { AfriataAdmin1 } from '../data/types';
 import { CountryFactsheetModal } from './CountryFactsheetModal';
 import {
   X,

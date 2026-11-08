@@ -396,7 +396,7 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
         >
           <div className="flex items-center gap-1.5 text-xs font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6] tracking-wide">
             <GitBranch className="w-3.5 h-3.5 text-[#C86D3B] dark:text-[#F59E0B]" />
-            <span>Africalia</span>
+            <span>Afriata</span>
             <span className="text-[#7D6B5A] dark:text-[#B5A492] font-normal font-sans text-[11px]">
               · Sovereign Lineage Tree
             </span>

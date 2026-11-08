@@ -14,7 +14,7 @@ author:
   name: "Prof. Ousmane Diagne and Dr. Fatima Al-Mansoor"
   type: "Research Faculty"
   role: "Lead Scholars"
-  platform: "Africalia Research Platform"
+  platform: "Afriata Research Platform"
 
 authors:
   - "Prof. Ousmane Diagne"
@@ -25,7 +25,7 @@ institutions:
   - "Sankoré Academic Center"
 
 publication:
-  series: "Africalia Monograph & Thematic Research Series"
+  series: "Afriata Monograph & Thematic Research Series"
   seriesNumber: "Monograph No. 05"
   type: "research_monograph"
   status: "Peer-Reviewed Synthesis"

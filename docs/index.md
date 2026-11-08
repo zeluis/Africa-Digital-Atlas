@@ -2,12 +2,12 @@
 layout: home
 
 hero:
-  name: Africa Digital Atlas
-  text: Documentation
+  name: Afriata
+  text: Africa Data Atlas Documentation
   tagline: A pan-African data and cartography platform — 54 countries, 90+ indicators, 16 institutional data sources.
   image:
     src: /hero-preview.jpg
-    alt: Africa Digital Atlas
+    alt: "Afriata: Africa Data Atlas"
   actions:
     - theme: brand
       text: User Guide
