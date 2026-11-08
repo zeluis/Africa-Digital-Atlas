@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { triggerHaptic } from '../utils/mobileHaptics';
 
 export interface ViewportPosition {
   x: number;
@@ -37,6 +38,7 @@ export function useCanvasViewport(
   const activePointers = useRef<Map<number, { x: number; y: number }>>(new Map());
   const pinchStartDist = useRef<number | null>(null);
   const pinchStartZoom = useRef<number>(1);
+  const lastTapRef = useRef<{ time: number; x: number; y: number }>({ time: 0, x: 0, y: 0 });
   const velocityTracker = useRef<{ vx: number; vy: number; lastTime: number; lastX: number; lastY: number }>({
     vx: 0, vy: 0, lastTime: 0, lastX: 0, lastY: 0
   });
@@ -198,7 +200,8 @@ export function useCanvasViewport(
       lastY: e.clientY
     };
 
-    if (Math.hypot(dx, dy) > 4) {
+    // 8px slop threshold prevents finger tremors from falsely flagging a tap as a drag
+    if (Math.hypot(dx, dy) > 8) {
       dragStart.current.moved = true;
     }
     setPos({
@@ -213,6 +216,35 @@ export function useCanvasViewport(
     if (activePointers.current.size < 2) {
       pinchStartDist.current = null;
       setIsPinching(false);
+    }
+
+    // Double-tap zoom detection on single pointer clean tap
+    if (!dragStart.current.moved && activePointers.current.size === 0 && containerRef.current) {
+      const now = performance.now();
+      const dt = now - lastTapRef.current.time;
+      const distFromLastTap = Math.hypot(e.clientX - lastTapRef.current.x, e.clientY - lastTapRef.current.y);
+
+      if (dt < 320 && distFromLastTap < 28) {
+        // Double-tap detected: zoom smoothly into the tapped coordinate
+        const rect = containerRef.current.getBoundingClientRect();
+        const focalX = e.clientX - rect.left;
+        const focalY = e.clientY - rect.top;
+
+        // Toggle: if already zoomed in, zoom out to fit, else zoom in by 1.6x
+        const nextZoom = zoom > 2.2 ? minZoom * 1.2 : Math.min(zoom * 1.6, maxZoom);
+        const currentScale = fitScale * zoom;
+        const nextScale = fitScale * nextZoom;
+
+        setPos(prev => ({
+          x: focalX - (focalX - prev.x) * (nextScale / currentScale),
+          y: focalY - (focalY - prev.y) * (nextScale / currentScale)
+        }));
+        setZoom(nextZoom);
+        triggerHaptic('medium');
+        lastTapRef.current = { time: 0, x: 0, y: 0 };
+        return;
+      }
+      lastTapRef.current = { time: now, x: e.clientX, y: e.clientY };
     }
 
     if (activePointers.current.size === 0) {
@@ -240,7 +272,7 @@ export function useCanvasViewport(
         momentumAnimId.current = requestAnimationFrame(stepKinetic);
       }
     }
-  }, []);
+  }, [containerRef, fitScale, minZoom, maxZoom, zoom]);
 
   // Mouse Wheel Zoom
   const handleWheel = useCallback((e: React.WheelEvent) => {
@@ -330,3 +362,5 @@ export function useCanvasViewport(
     handleWheel
   };
 }
+
+export default useCanvasViewport;

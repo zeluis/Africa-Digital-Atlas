@@ -21,6 +21,7 @@ import {
   getRegionCardTonalStyle,
   usePrefersReducedMotion 
 } from '../utils/motion';
+import { triggerHaptic } from '../utils/mobileHaptics';
 import { 
   Search, 
   ArrowUpDown, 
@@ -235,7 +236,10 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
                 key={tab.id}
                 role="tab"
                 aria-selected={isSelected}
-                onClick={() => setSelectedRegion(tab.id)}
+                onClick={() => {
+                  triggerHaptic('light');
+                  setSelectedRegion(tab.id);
+                }}
                 className={`relative px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 cursor-pointer flex items-center gap-1.5 select-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                   isSelected
                     ? 'text-white font-bold shadow-xs'
@@ -376,7 +380,10 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
             <motion.button
               key={item.entity.id}
               layout={!reducedMotion}
-              onClick={() => onSelectCountry(item.entity.id)}
+              onClick={() => {
+                triggerHaptic('selection');
+                onSelectCountry(item.entity.id);
+              }}
               style={{
                 backgroundColor: tonal.lightBackground,
                 borderColor: tonal.lightBorder,
@@ -489,3 +496,5 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
     </div>
   );
 };
+
+export default FiftyFourNationMosaic;

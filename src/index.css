@@ -297,6 +297,15 @@
     --region-southern-calm:  #24191E; /* Deep Berry-Rose-Slate, lightness ~12.5% */
     --region-western-calm:   #15231C; /* Balanced Sage-Pine-Slate, lightness ~12.5% */
     --region-pan-african-calm: #181D26; /* Universal Swiss Obsidian-Slate Card */
+    /* Hardware & Viewport Safe Area Variables (iOS Notch & Dynamic Island, Android Nav Bar) */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+  }
+
+  html, body {
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
@@ -1195,6 +1204,91 @@ body.hide-app-footer #app-footer-container {
   }
 }
 
+/* =========================================================================
+   Mobile Touch Ergonomics & Dynamic Viewport Height Utilities (Baseline 2024)
+   ========================================================================= */
 
+/* Dynamic Viewport Heights (resilient against mobile URL bar expansion) */
+.viewport-screen {
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+}
 
+.h-dvh {
+  height: 100vh;
+  height: 100dvh;
+}
 
+.min-h-dvh {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.max-h-dvh {
+  max-height: 100vh;
+  max-height: 100dvh;
+}
+
+/* Touch Action & Gesture Isolation */
+.touch-canvas {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.touch-pan-zoom {
+  touch-action: pan-y pinch-zoom;
+}
+
+.touch-sheet {
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tactile Micro-Interactions */
+.active-tactile {
+  transition: transform 0.12s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.active-tactile:active {
+  transform: scale(0.97);
+}
+
+/* Minimum Touch Hitbox (WCAG 2.5.5 / 2.5.8 >= 44px) */
+.min-touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Safe Area Inset Classes */
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+
+.pt-safe {
+  padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+}
+
+.safe-bottom-dock {
+  bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Responsive Container Query Enhancements */
+@container (min-width: 440px) {
+  .cq-col-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container (max-width: 360px) {
+  .cq-hide-sm {
+    display: none;
+  }
+  .cq-text-sm {
+    font-size: 0.75rem;
+  }
+}

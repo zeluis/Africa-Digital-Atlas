@@ -38,6 +38,7 @@ import { getRegionTonalPalette } from '../data/unGeoschemeColors';
 import { getCategorizedReports, getAllReports, isReportOrPaperTab, NavReportGroup } from '../data/reportsDataLoader';
 import { DynamicIcon } from './DynamicIcon';
 import { AfricaUnLogo } from './AfricaUnLogo';
+import { triggerHaptic } from '../utils/mobileHaptics';
 
 export type MainNavId = 
   | 'overview'
@@ -1330,7 +1331,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 '--drawer-scrollbar-thumb': selectedScrollbarColor.thumb,
                 '--drawer-scrollbar-thumb-hover': selectedScrollbarColor.hover,
               } as React.CSSProperties}
-              className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 z-50 overflow-hidden lg:hidden flex flex-col justify-between shadow-2xl"
+              className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 z-50 overflow-hidden lg:hidden flex flex-col justify-between shadow-2xl touch-sheet safe-pb"
             >
               <div className="p-5 pb-0 flex flex-col flex-1 min-h-0 relative overflow-hidden">
                 <div className="flex items-center justify-between pb-4 mb-2 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
@@ -1338,8 +1339,12 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                     Navigation Menu
                   </span>
                   <button
-                    onClick={onCloseMobile}
-                    className="p-1.5 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 cursor-pointer"
+                    onClick={() => {
+                      triggerHaptic('light');
+                      onCloseMobile();
+                    }}
+                    className="min-touch-target p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 cursor-pointer active-tactile"
+                    aria-label="Close navigation menu"
                   >
                     <X className="w-5 h-5" />
                   </button>

@@ -10,6 +10,7 @@ import { AfricanRegion } from './data/types';
 import { lazyWithRetry, ViewErrorBoundary } from './utils/lazyWithRetry';
 import { PanelLeftOpen } from 'lucide-react';
 import { getPageInfo, isReportOrPaperTab } from './utils/navigationTitles';
+import { MobileBottomNav } from './components/MobileBottomNav';
 
 const NavigationDrawer = lazyWithRetry(() => import('./components/NavigationDrawer').then(m => ({ default: m.NavigationDrawer })), 'NavigationDrawer');
 const Footer = lazyWithRetry(() => import('./components/Footer').then(m => ({ default: m.Footer })), 'Footer');
@@ -532,15 +533,13 @@ function AppContent() {
           </button>
         )}
 
-        {/* Mobile Floating Drawer Trigger (Aligned under the logo) */}
-        <button
-          onClick={() => setIsMobileNavOpen(true)}
-          className="lg:hidden fixed bottom-5 left-4 z-40 p-3 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-900/95 text-zinc-800 dark:text-zinc-200 shadow-xl backdrop-blur-md flex items-center gap-2 text-xs font-mono font-bold cursor-pointer hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-          aria-label="Open Navigation Menu"
-        >
-          <PanelLeftOpen className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-          <span>Menu</span>
-        </button>
+        {/* Mobile Bottom Navigation Dock (Thumb-Zone Optimized with Safe Area Insets) */}
+        <MobileBottomNav
+          currentTab={currentTab}
+          onSelectTab={handleSelectTab}
+          onOpenMenu={() => setIsMobileNavOpen(true)}
+          onOpenSearch={() => setIsSearchOpen(true)}
+        />
 
         {/* Desktop Navigation Drawer (Starts open, 272px width, doesn't close on tab clicks) + Mobile Bottom Sheet */}
         <Suspense fallback={<div className="hidden lg:block w-[272px] shrink-0" />}>
@@ -572,10 +571,10 @@ function AppContent() {
             currentTab === 'heritage' || 
             (currentTab === 'iconography' && isIconographyIngestion) ||
             (currentTab === 'slave-trade' && (slaveTradeSubTab === 'flow-map' || slaveTradeSubTab === 'ports'))
-              ? 'p-0 max-w-none flex flex-col'
+              ? 'p-0 max-w-none flex flex-col pb-16 lg:pb-0'
               : currentTab === 'slave-trade' || currentTab === 'molecular-legacies' || currentTab === 'african-development-foundations'
-                ? 'px-3 sm:px-5 lg:px-6 py-4 md:py-6 max-w-none flex flex-col'
-                : 'px-4 sm:px-6 lg:px-8 py-6 md:py-8 max-w-[1440px] mx-auto'
+                ? 'px-3 sm:px-5 lg:px-6 py-4 md:py-6 pb-20 lg:pb-6 max-w-none flex flex-col'
+                : 'px-4 sm:px-6 lg:px-8 py-6 md:py-8 pb-24 lg:pb-8 max-w-[1440px] mx-auto'
           }`}
           id="main-content-workspace"
         >

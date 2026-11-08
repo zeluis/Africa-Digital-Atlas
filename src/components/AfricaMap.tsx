@@ -98,6 +98,7 @@ import { UnescoSiteMetadata } from '../data/slaveTradeIllustrations';
 import { INITIAL_UNESCO_HERITAGE_SITES } from '../data/unescoHeritageRegistry';
 import { UnescoSiteDetailModal } from './cartography/UnescoSiteDetailModal';
 import { prewarmUnescoHeritageCache } from '../utils/imagePrecache';
+import { triggerHaptic } from '../utils/mobileHaptics';
 import { 
   CriticalMineralsMapLayer, 
   CriticalMineralsInspector, 
@@ -1106,6 +1107,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
   const handleCountryClick = (countryId: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    triggerHaptic('selection');
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -1257,45 +1259,208 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     setIsDragging(false);
   };
 
-  // Touch pan & pinch zoom handlers for mobile devices
-  const touchStartRef = useRef<{ x: number; y: number; dist?: number }>({ x: 0, y: 0 });
+  // Refined Touch Pan, Focal Pinch Zoom & Kinetic Inertia for Mobile Devices
+  const touchStartRef = useRef<{ 
+    x: number; 
+    y: number; 
+    dist?: number;
+    focalX?: number;
+    focalY?: number;
+    startZoom?: number;
+    startPanX?: number;
+    startPanY?: number;
+    moved?: boolean;
+    startX?: number;
+    startY?: number;
+  }>({ x: 0, y: 0 });
+  const touchVelocityRef = useRef<{ vx: number; vy: number; lastTime: number; lastX: number; lastY: number }>({
+    vx: 0, vy: 0, lastTime: 0, lastX: 0, lastY: 0
+  });
+  const touchDecelAnimRef = useRef<number | null>(null);
+  const lastMapTapRef = useRef<{ time: number; x: number; y: number }>({ time: 0, x: 0, y: 0 });
 
   const handleTouchStart = (e: React.TouchEvent<SVGSVGElement>) => {
+    if (touchDecelAnimRef.current) {
+      cancelAnimationFrame(touchDecelAnimRef.current);
+      touchDecelAnimRef.current = null;
+    }
+
     if (e.touches.length === 1) {
       const touch = e.touches[0];
-      touchStartRef.current = { x: touch.clientX - panOffset.x, y: touch.clientY - panOffset.y };
+      touchStartRef.current = { 
+        x: touch.clientX - panOffset.x, 
+        y: touch.clientY - panOffset.y,
+        startX: touch.clientX,
+        startY: touch.clientY,
+        moved: false
+      };
+      touchVelocityRef.current = {
+        vx: 0,
+        vy: 0,
+        lastTime: performance.now(),
+        lastX: touch.clientX,
+        lastY: touch.clientY
+      };
       setIsDragging(true);
-    } else if (e.touches.length === 2) {
+    } else if (e.touches.length === 2 && containerRef.current) {
       const t1 = e.touches[0];
       const t2 = e.touches[1];
       const dist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+      const rect = containerRef.current.getBoundingClientRect();
+      const midX = (t1.clientX + t2.clientX) / 2;
+      const midY = (t1.clientY + t2.clientY) / 2;
       touchStartRef.current = {
-        x: (t1.clientX + t2.clientX) / 2 - panOffset.x,
-        y: (t1.clientY + t2.clientY) / 2 - panOffset.y,
-        dist
+        x: midX - panOffset.x,
+        y: midY - panOffset.y,
+        dist,
+        focalX: midX - rect.left,
+        focalY: midY - rect.top,
+        startZoom: zoomLevel,
+        startPanX: panOffset.x,
+        startPanY: panOffset.y,
+        moved: true
       };
+      setIsDragging(false);
     }
   };
 
   const handleTouchMove = (e: React.TouchEvent<SVGSVGElement>) => {
     if (e.touches.length === 1 && isDragging) {
       const touch = e.touches[0];
+      const now = performance.now();
+      const dt = Math.max(now - touchVelocityRef.current.lastTime, 8);
+      const dx = touch.clientX - (touchStartRef.current.startX ?? touch.clientX);
+      const dy = touch.clientY - (touchStartRef.current.startY ?? touch.clientY);
+
+      // 8px threshold prevents minor finger tremor from canceling intentional country taps
+      if (Math.hypot(dx, dy) > 8) {
+        touchStartRef.current.moved = true;
+      }
+
+      const instVx = (touch.clientX - touchVelocityRef.current.lastX) / dt;
+      const instVy = (touch.clientY - touchVelocityRef.current.lastY) / dt;
+      touchVelocityRef.current = {
+        vx: touchVelocityRef.current.vx * 0.3 + instVx * 0.7,
+        vy: touchVelocityRef.current.vy * 0.3 + instVy * 0.7,
+        lastTime: now,
+        lastX: touch.clientX,
+        lastY: touch.clientY
+      };
+
       setPanOffset({
         x: touch.clientX - touchStartRef.current.x,
         y: touch.clientY - touchStartRef.current.y
       });
-    } else if (e.touches.length === 2 && touchStartRef.current.dist) {
+    } else if (e.touches.length === 2 && touchStartRef.current.dist && touchStartRef.current.startZoom && containerRef.current) {
       const t1 = e.touches[0];
       const t2 = e.touches[1];
       const dist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
       const ratio = dist / touchStartRef.current.dist;
-      setZoomLevel(prev => Math.max(0.7, Math.min(4.2, prev * (1 + (ratio - 1) * 0.1))));
-      touchStartRef.current.dist = dist;
+      const nextZoom = Math.max(0.7, Math.min(4.2, touchStartRef.current.startZoom * ratio));
+      
+      const focalX = touchStartRef.current.focalX ?? 0;
+      const focalY = touchStartRef.current.focalY ?? 0;
+      const startPanX = touchStartRef.current.startPanX ?? 0;
+      const startPanY = touchStartRef.current.startPanY ?? 0;
+      const scaleMultiplier = nextZoom / touchStartRef.current.startZoom;
+
+      setZoomLevel(nextZoom);
+      setPanOffset({
+        x: focalX - (focalX - startPanX) * scaleMultiplier,
+        y: focalY - (focalY - startPanY) * scaleMultiplier
+      });
     }
   };
 
-  const handleTouchEnd = () => {
-    setIsDragging(false);
+  const handleTouchEnd = (e: React.TouchEvent<SVGSVGElement>) => {
+    if (e.touches.length === 0) {
+      setIsDragging(false);
+
+      // Double-tap detection for instant centered zoom
+      if (!touchStartRef.current.moved && containerRef.current) {
+        const now = performance.now();
+        const dt = now - lastMapTapRef.current.time;
+        const lastX = touchVelocityRef.current.lastX;
+        const lastY = touchVelocityRef.current.lastY;
+        const distFromLastTap = Math.hypot(lastX - lastMapTapRef.current.x, lastY - lastMapTapRef.current.y);
+
+        if (dt < 320 && distFromLastTap < 30) {
+          const rect = containerRef.current.getBoundingClientRect();
+          const focalX = lastX - rect.left;
+          const focalY = lastY - rect.top;
+          const nextZoom = zoomLevel > 2.0 ? 1.0 : Math.min(zoomLevel * 1.6, 4.0);
+          const scaleMultiplier = nextZoom / zoomLevel;
+
+          setZoomLevel(nextZoom);
+          setPanOffset(prev => ({
+            x: focalX - (focalX - prev.x) * scaleMultiplier,
+            y: focalY - (focalY - prev.y) * scaleMultiplier
+          }));
+          triggerHaptic('medium');
+          lastMapTapRef.current = { time: 0, x: 0, y: 0 };
+          return;
+        }
+        lastMapTapRef.current = { time: now, x: lastX, y: lastY };
+      }
+
+      // Kinetic momentum glide with smooth deceleration
+      let vx = touchVelocityRef.current.vx * 15;
+      let vy = touchVelocityRef.current.vy * 15;
+      const speed = Math.hypot(vx, vy);
+
+      if (speed > 1.0) {
+        const friction = 0.92;
+        const stepKinetic = () => {
+          vx *= friction;
+          vy *= friction;
+          if (Math.hypot(vx, vy) < 0.2) {
+            touchDecelAnimRef.current = null;
+            return;
+          }
+          setPanOffset(prev => ({
+            x: prev.x + vx,
+            y: prev.y + vy
+          }));
+          touchDecelAnimRef.current = requestAnimationFrame(stepKinetic);
+        };
+        touchDecelAnimRef.current = requestAnimationFrame(stepKinetic);
+      }
+    } else if (e.touches.length === 1) {
+      // Re-anchor pan when lifting one finger from pinch
+      const touch = e.touches[0];
+      touchStartRef.current = {
+        x: touch.clientX - panOffset.x,
+        y: touch.clientY - panOffset.y,
+        startX: touch.clientX,
+        startY: touch.clientY,
+        moved: true
+      };
+      setIsDragging(true);
+    }
+  };
+
+  // Smooth Mouse Wheel Zoom (Focal Zoom at cursor position)
+  const handleWheel = (e: React.WheelEvent<SVGSVGElement>) => {
+    // If scrolling inside an overlay drawer or tooltray, allow default scroll
+    const target = e.target as HTMLElement;
+    if (target?.closest?.('.overflow-y-auto, .overflow-x-auto, .no-drag, aside, dialog, [data-panel-scroll="true"]')) {
+      return;
+    }
+
+    e.preventDefault();
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const focalX = e.clientX - rect.left;
+    const focalY = e.clientY - rect.top;
+    const factor = e.deltaY < 0 ? 1.15 : 0.87;
+    const nextZoom = Math.max(0.7, Math.min(4.2, zoomLevel * factor));
+    const scaleMultiplier = nextZoom / zoomLevel;
+
+    setZoomLevel(nextZoom);
+    setPanOffset(prev => ({
+      x: focalX - (focalX - prev.x) * scaleMultiplier,
+      y: focalY - (focalY - prev.y) * scaleMultiplier
+    }));
   };
 
   // High-Resolution PNG Export Handler
@@ -1995,8 +2160,11 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl shadow-2xs">
               <button
                 type="button"
-                onClick={() => setZoomLevel(prev => Math.max(0.7, Number((prev - 0.25).toFixed(2))))}
-                className="p-1 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all cursor-pointer"
+                onClick={() => {
+                  triggerHaptic('light');
+                  setZoomLevel(prev => Math.max(0.7, Number((prev - 0.25).toFixed(2))));
+                }}
+                className="p-1 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all cursor-pointer active-tactile"
                 title="Zoom Out (–)"
                 aria-label="Zoom Out"
               >
@@ -2007,8 +2175,11 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               </span>
               <button
                 type="button"
-                onClick={() => setZoomLevel(prev => Math.min(4.0, Number((prev + 0.25).toFixed(2))))}
-                className="p-1 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all cursor-pointer"
+                onClick={() => {
+                  triggerHaptic('light');
+                  setZoomLevel(prev => Math.min(4.0, Number((prev + 0.25).toFixed(2))));
+                }}
+                className="p-1 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all cursor-pointer active-tactile"
                 title="Zoom In (+)"
                 aria-label="Zoom In"
               >
@@ -2016,8 +2187,11 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               </button>
               <button
                 type="button"
-                onClick={handleResetZoom}
-                className="p-1 ml-0.5 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800"
+                onClick={() => {
+                  triggerHaptic('light');
+                  handleResetZoom();
+                }}
+                className="p-1 ml-0.5 rounded-lg hover:bg-white dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800 active-tactile"
                 title="Reset View (100%)"
                 aria-label="Reset View"
               >
@@ -2551,6 +2725,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onWheel={handleWheel}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
