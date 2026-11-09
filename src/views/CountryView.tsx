@@ -7,6 +7,7 @@ import { CountryFlag } from '../components/CountryFlag';
 import { CountrySilhouette } from '../components/CountrySilhouette';
 import { CountryHeaderInfo } from '../components/CountryHeaderInfo';
 import { ClimateEcologySection } from '../components/ClimateEcologySection';
+import { MicroSparkline } from '../components/common/MicroSparkline';
 import { DataSourceBadge } from '../components/DataSourceBadge';
 import { getRegionCalmColor, getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
 import { useTranslation } from '../i18n/LanguageContext';
@@ -56,11 +57,14 @@ import {
   Printer,
   Pickaxe,
   BatteryCharging,
-  ArrowUpRight
+  ArrowUpRight,
+  Volume2
 } from 'lucide-react';
 import { CountryFactsheetModal } from '../components/CountryFactsheetModal';
 import { getCountryMineralsProfile, getCountryTradeFlows } from '../data/criticalMineralsData';
 import { exportCountryIntelligenceBriefingPDF } from '../utils/academicExport';
+import { speakAcademicNarration, stopAfriataSpeech } from '../utils/afriataVoiceEngine';
+import { getCountryHeaderData } from '../data/countryHeaderData';
 
 interface CountryViewProps {
   entityId: string;
@@ -78,6 +82,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
   const { isCountrySaved, toggleSaveCountry } = useSavedEntities();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [showFactsheet, setShowFactsheet] = useState<boolean>(false);
+  const [isSpeakingName, setIsSpeakingName] = useState<boolean>(false);
   
   const entity = atlas.getEntity(entityId) || atlas.getEntity('NGA')!;
   const isSaved = isCountrySaved(entity.id);
@@ -176,6 +181,33 @@ export const CountryView: React.FC<CountryViewProps> = ({
                     {entity.name}
                   </h1>
                   <button
+                    type="button"
+                    onClick={() => {
+                      if (isSpeakingName) {
+                        stopAfriataSpeech();
+                        setIsSpeakingName(false);
+                      } else {
+                        const headerMeta = getCountryHeaderData(entity.id);
+                        const speechText = `${entity.name}. Capital city: ${headerMeta.capital || entity.capital}. Located in ${entity.region}.`;
+                        speakAcademicNarration({
+                          text: speechText,
+                          onStart: () => setIsSpeakingName(true),
+                          onEnd: () => setIsSpeakingName(false),
+                          onError: () => setIsSpeakingName(false)
+                        });
+                      }
+                    }}
+                    className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
+                      isSpeakingName
+                        ? 'bg-emerald-500 text-white border-emerald-600 shadow-xs animate-pulse'
+                        : 'bg-white/90 border-zinc-200 text-zinc-500 hover:text-emerald-600 hover:border-emerald-300'
+                    }`}
+                    title={isSpeakingName ? 'Stop pronunciation' : 'Listen to country name and capital pronunciation'}
+                    aria-label={`Pronounce ${entity.name}`}
+                  >
+                    <Volume2 className="w-4 h-4" />
+                  </button>
+                  <button
                     onClick={() => toggleSaveCountry(entity.id)}
                     className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
                       isSaved
@@ -238,12 +270,32 @@ export const CountryView: React.FC<CountryViewProps> = ({
             {/* Quick Core Metrics Capsule - Elevated Crisp White Tile */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white/95 border border-zinc-200/90 p-3.5 rounded-2xl shadow-xs">
               <div className="space-y-0.5">
-                <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">Population</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">Population</span>
+                  {atlas.getObservations(entity.id, 'SP.POP.TOTL').length > 1 && (
+                    <MicroSparkline 
+                      data={atlas.getObservations(entity.id, 'SP.POP.TOTL').map(o => o.value)} 
+                      width={44} 
+                      height={14} 
+                      color="#059669" 
+                    />
+                  )}
+                </div>
                 <div className="font-mono font-bold text-sm text-zinc-900">{formatPopulation(pop)}</div>
                 <DataSourceBadge entityId={entity.id} indicatorId="SP.POP.TOTL" />
               </div>
               <div className="space-y-0.5">
-                <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">Nominal GDP</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">Nominal GDP</span>
+                  {atlas.getObservations(entity.id, 'NY.GDP.MKTP.CD').length > 1 && (
+                    <MicroSparkline 
+                      data={atlas.getObservations(entity.id, 'NY.GDP.MKTP.CD').map(o => o.value)} 
+                      width={44} 
+                      height={14} 
+                      color="#0284c7" 
+                    />
+                  )}
+                </div>
                 <div className="font-mono font-bold text-sm text-cyan-700">{formatGDP(gdp)}</div>
                 <DataSourceBadge entityId={entity.id} indicatorId="NY.GDP.MKTP.CD" />
               </div>

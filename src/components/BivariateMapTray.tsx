@@ -89,6 +89,8 @@ interface BivariateMapTrayProps {
   onSelectPreset: (presetId: string) => void;
   hoveredCell: { x: number; y: number } | null;
   onHoverCell: (cell: { x: number; y: number } | null) => void;
+  lockedCell?: { x: number; y: number } | null;
+  onSelectCell?: (cell: { x: number; y: number } | null) => void;
   cellCounts: number[][];
   thresholds?: BivariateThresholds;
   onThresholdsChange?: (thresholds: BivariateThresholds) => void;
@@ -100,6 +102,8 @@ export const BivariateMapTray: React.FC<BivariateMapTrayProps> = ({
   onSelectPreset,
   hoveredCell,
   onHoverCell,
+  lockedCell = null,
+  onSelectCell,
   cellCounts,
   thresholds = { pX1: 33, pX2: 66, pY1: 33, pY2: 66 },
   onThresholdsChange,
@@ -226,6 +230,7 @@ export const BivariateMapTray: React.FC<BivariateMapTrayProps> = ({
                   {[0, 1, 2].map(x => {
                     const color = BIVARIATE_MATRIX_COLORS[y][x];
                     const isHovered = hoveredCell?.x === x && hoveredCell?.y === y;
+                    const isLocked = lockedCell?.x === x && lockedCell?.y === y;
                     const count = cellCounts?.[y]?.[x] ?? 0;
                     const xLabel = x === 0 ? 'Low' : x === 1 ? 'Mid' : 'High';
                     const yLabel = y === 0 ? 'Low' : y === 1 ? 'Mid' : 'High';
@@ -234,11 +239,18 @@ export const BivariateMapTray: React.FC<BivariateMapTrayProps> = ({
                       <button
                         key={`${y}-${x}`}
                         type="button"
+                        onClick={() => {
+                          if (onSelectCell) {
+                            onSelectCell(isLocked ? null : { x, y });
+                          }
+                        }}
                         onMouseEnter={() => onHoverCell({ x, y })}
                         onMouseLeave={() => onHoverCell(null)}
-                        title={`${yLabel} ${activePreset.labelY} & ${xLabel} ${activePreset.labelX} (${count} nations) — Click or hover to spotlight`}
+                        title={`${yLabel} ${activePreset.labelY} & ${xLabel} ${activePreset.labelX} (${count} nations) — ${isLocked ? 'Click to clear filter' : 'Click to lock & filter map'}`}
                         className={`w-5 h-5 rounded-md transition-all cursor-pointer relative flex items-center justify-center ${
-                          isHovered
+                          isLocked
+                            ? 'ring-2 ring-amber-500 scale-115 z-20 shadow-lg'
+                            : isHovered
                             ? 'ring-2 ring-purple-600 scale-110 z-10 shadow-md'
                             : 'hover:scale-105'
                         }`}
@@ -247,6 +259,9 @@ export const BivariateMapTray: React.FC<BivariateMapTrayProps> = ({
                         <span className={`text-[8px] font-mono font-bold font-tabular tabular-nums ${y >= 1 && x >= 1 ? 'text-white' : 'text-zinc-800'}`}>
                           {count}
                         </span>
+                        {isLocked && (
+                          <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-500 border border-white" />
+                        )}
                       </button>
                     );
                   })}

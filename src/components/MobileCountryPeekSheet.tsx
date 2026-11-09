@@ -22,11 +22,13 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
 }) => {
   const sheetRef = useRef<HTMLDivElement>(null);
   const dragStartY = useRef<number | null>(null);
+  // 3-tier snap levels: 'collapsed' | 'mid' | 'full'
+  const [snapTier, setSnapTier] = React.useState<'collapsed' | 'mid' | 'full'>('mid');
 
   const country = countryId ? AFRICA_FINAL_MAP[countryId] : null;
   const entityData = countryId ? atlas.getEntity(countryId) : null;
 
-  // Handle touch-drag swipe down to dismiss
+  // Handle touch-drag gesture for snap stops or dismiss
   const handleTouchStart = (e: React.TouchEvent) => {
     dragStartY.current = e.touches[0].clientY;
   };
@@ -34,10 +36,34 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
   const handleTouchMove = (e: React.TouchEvent) => {
     if (dragStartY.current === null) return;
     const dy = e.touches[0].clientY - dragStartY.current;
-    if (dy > 80) {
-      triggerHaptic('light');
-      onClose();
-      dragStartY.current = null;
+    
+    // Swipe down
+    if (dy > 90) {
+      if (snapTier === 'full') {
+        triggerHaptic('light');
+        setSnapTier('mid');
+        dragStartY.current = null;
+      } else if (snapTier === 'mid') {
+        triggerHaptic('light');
+        setSnapTier('collapsed');
+        dragStartY.current = null;
+      } else {
+        triggerHaptic('light');
+        onClose();
+        dragStartY.current = null;
+      }
+    } 
+    // Swipe up
+    else if (dy < -70) {
+      if (snapTier === 'collapsed') {
+        triggerHaptic('light');
+        setSnapTier('mid');
+        dragStartY.current = null;
+      } else if (snapTier === 'mid') {
+        triggerHaptic('light');
+        setSnapTier('full');
+        dragStartY.current = null;
+      }
     }
   };
 
@@ -51,6 +77,12 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
   const gdp = atlas.getIndicatorValue(countryId, 'NY.GDP.MKTP.CD');
   const hdi = atlas.getIndicatorValue(countryId, 'UNDP.HDI.INDEX');
   const capital = entityData?.capital;
+
+  const heightClasses = {
+    collapsed: 'max-h-[160px] pb-4',
+    mid: 'max-h-[46dvh]',
+    full: 'max-h-[92dvh]'
+  }[snapTier];
 
   return (
     <AnimatePresence>
@@ -67,7 +99,7 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
           aria-hidden="true"
         />
 
-        {/* Sliding Bottom Sheet Container */}
+        {/* Sliding Bottom Sheet Container with 3-tier height stops */}
         <motion.div
           ref={sheetRef}
           initial={{ y: '100%' }}
@@ -77,10 +109,17 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          className="relative bg-white dark:bg-zinc-900 rounded-t-3xl border-t border-zinc-200 dark:border-zinc-800 shadow-2xl safe-pb pt-2 px-4 select-none max-h-[85dvh] flex flex-col"
+          className={`relative bg-white dark:bg-zinc-900 rounded-t-3xl border-t border-zinc-200 dark:border-zinc-800 shadow-2xl safe-pb pt-2 px-4 select-none flex flex-col transition-all duration-300 ${heightClasses}`}
         >
-          {/* Tactile Grab Handle */}
-          <div className="w-12 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto my-2 shrink-0 cursor-grab active:cursor-grabbing" />
+          {/* Tactile Grab Handle with Tap to Expand / Collapse */}
+          <div 
+            onClick={() => {
+              triggerHaptic('light');
+              setSnapTier(prev => prev === 'mid' ? 'full' : prev === 'full' ? 'collapsed' : 'mid');
+            }}
+            className="w-12 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto my-2 shrink-0 cursor-grab active:cursor-grabbing hover:bg-zinc-400" 
+            title="Tap to toggle sheet height"
+          />
 
           {/* Sheet Header */}
           <div className="flex items-start justify-between gap-3 pt-1 pb-3 border-b border-zinc-100 dark:border-zinc-800/80">

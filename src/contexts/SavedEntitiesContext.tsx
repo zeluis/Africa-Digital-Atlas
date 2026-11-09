@@ -3,11 +3,14 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 interface SavedEntitiesContextType {
   savedCountries: string[];
   savedRegions: string[];
+  savedPlates: string[];
   recentSearches: string[];
   toggleSaveCountry: (countryId: string) => void;
   isCountrySaved: (countryId: string) => boolean;
   toggleSaveRegion: (region: string) => void;
   isRegionSaved: (region: string) => boolean;
+  toggleSavePlate: (plateId: string) => void;
+  isPlateSaved: (plateId: string) => boolean;
   addRecentSearch: (term: string) => void;
   clearRecentSearches: () => void;
 }
@@ -33,6 +36,15 @@ export const SavedEntitiesProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   });
 
+  const [savedPlates, setSavedPlates] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('atlas_saved_plates');
+      return saved ? JSON.parse(saved) : ['danville-1749', 'arrows-1802'];
+    } catch {
+      return ['danville-1749', 'arrows-1802'];
+    }
+  });
+
   const [recentSearches, setRecentSearches] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('atlas_recent_searches');
@@ -49,6 +61,10 @@ export const SavedEntitiesProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     localStorage.setItem('atlas_saved_regions', JSON.stringify(savedRegions));
   }, [savedRegions]);
+
+  useEffect(() => {
+    localStorage.setItem('atlas_saved_plates', JSON.stringify(savedPlates));
+  }, [savedPlates]);
 
   useEffect(() => {
     localStorage.setItem('atlas_recent_searches', JSON.stringify(recentSearches));
@@ -75,6 +91,16 @@ export const SavedEntitiesProvider: React.FC<{ children: React.ReactNode }> = ({
     return savedRegions.includes(region);
   };
 
+  const toggleSavePlate = (plateId: string) => {
+    setSavedPlates(prev =>
+      prev.includes(plateId) ? prev.filter(p => p !== plateId) : [...prev, plateId]
+    );
+  };
+
+  const isPlateSaved = (plateId: string): boolean => {
+    return savedPlates.includes(plateId);
+  };
+
   const addRecentSearch = (term: string) => {
     const clean = term.trim();
     if (!clean) return;
@@ -93,11 +119,14 @@ export const SavedEntitiesProvider: React.FC<{ children: React.ReactNode }> = ({
       value={{
         savedCountries,
         savedRegions,
+        savedPlates,
         recentSearches,
         toggleSaveCountry,
         isCountrySaved,
         toggleSaveRegion,
         isRegionSaved,
+        toggleSavePlate,
+        isPlateSaved,
         addRecentSearch,
         clearRecentSearches
       }}

@@ -980,4 +980,145 @@ export const exportCountryIntelligenceBriefingPDF = async (
   doc.save(cleanFilename);
 };
 
+/**
+ * Compiles a bespoke Multi-Asset Academic Research Dossier PDF from saved entities & historical plates
+ */
+export const exportCustomBriefingDossierPDF = async (
+  savedCountryIds: string[],
+  savedPlateIds: string[]
+): Promise<void> => {
+  const { jsPDF } = await import('jspdf');
+  const { atlas } = await import('../data/atlas-store');
+  const { HISTORICAL_MAP_PLATES } = await import('../data/archivalCartographyData');
+
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4'
+  });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 14;
+  const contentWidth = pageWidth - margin * 2;
+
+  // Header Banner
+  doc.setFillColor(30, 27, 24);
+  doc.rect(margin, margin, contentWidth, 24, 'F');
+
+  doc.setFont('times', 'bold');
+  doc.setFontSize(14);
+  doc.setTextColor(255, 255, 255);
+  doc.text('AFRIATA: AFRICA DATA ATLAS', margin + 6, margin + 10);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(210, 195, 175);
+  doc.text('CUSTOM SCHOLARLY BRIEFING DOSSIER & COMPILATION NOTEBOOK', margin + 6, margin + 17);
+
+  let currentY = margin + 32;
+
+  // Executive Summary of Bookmarked Assets
+  doc.setFont('times', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(40, 30, 20);
+  doc.text('1. Executive Compilation Roster', margin, currentY);
+  currentY += 6;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(70, 70, 70);
+  doc.text(
+    `This briefing synthesizes ${savedCountryIds.length} sovereign territorial profile(s) and ${savedPlateIds.length} archival cartographic plate(s) into an integrated research notebook.`,
+    margin,
+    currentY,
+    { maxWidth: contentWidth }
+  );
+  currentY += 10;
+
+  // Bookmarked Sovereign Countries Table
+  doc.setFont('times', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(15, 90, 60);
+  doc.text('2. Sovereign Territorial Syntheses', margin, currentY);
+  currentY += 6;
+
+  savedCountryIds.forEach((id, idx) => {
+    const entity = atlas.getEntity(id);
+    if (!entity) return;
+
+    doc.setFillColor(248, 246, 242);
+    doc.roundedRect(margin, currentY, contentWidth, 18, 2, 2, 'F');
+    doc.setDrawColor(220, 215, 205);
+    doc.setLineWidth(0.2);
+    doc.roundedRect(margin, currentY, contentWidth, 18, 2, 2, 'S');
+
+    doc.setFont('times', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(20, 20, 20);
+    doc.text(`${idx + 1}. ${entity.name} (${entity.id}) — ${entity.region}`, margin + 3, currentY + 5);
+
+    const pop = atlas.getIndicatorValue(id, 'SP.POP.TOTL');
+    const gdp = atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD');
+    const hdi = atlas.getIndicatorValue(id, 'UNDP.HDI.INDEX');
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(80, 80, 80);
+    const popTxt = pop ? `${(pop / 1_000_000).toFixed(1)}M` : '—';
+    const gdpTxt = gdp ? `$${(gdp / 1_000_000_000).toFixed(1)}B` : '—';
+    const hdiTxt = hdi ? hdi.toFixed(3) : '—';
+    doc.text(`Capital: ${entity.capital} • Population: ${popTxt} • Nominal GDP: ${gdpTxt} • HDI: ${hdiTxt}`, margin + 3, currentY + 11);
+
+    currentY += 21;
+  });
+
+  currentY += 4;
+
+  // Bookmarked Cartographic Plates
+  doc.setFont('times', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(140, 70, 20);
+  doc.text('3. Curated Archival Cartographic Plates', margin, currentY);
+  currentY += 6;
+
+  savedPlateIds.forEach((pId, pIdx) => {
+    const plate = HISTORICAL_MAP_PLATES.find(p => p.id === pId);
+    if (!plate) return;
+
+    doc.setFillColor(254, 252, 246);
+    doc.roundedRect(margin, currentY, contentWidth, 20, 2, 2, 'F');
+    doc.setDrawColor(230, 215, 195);
+    doc.setLineWidth(0.2);
+    doc.roundedRect(margin, currentY, contentWidth, 20, 2, 2, 'S');
+
+    doc.setFont('times', 'bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(30, 20, 10);
+    doc.text(`Plate ${pIdx + 1}: ${plate.shortTitle || plate.title} (${plate.year})`, margin + 3, currentY + 5);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(80, 70, 60);
+    doc.text(`Cartographer: ${plate.cartographer} • Institution: ${plate.institution}`, margin + 3, currentY + 10);
+
+    const desc = doc.splitTextToSize(plate.description, contentWidth - 6)[0] || '';
+    doc.text(desc, margin + 3, currentY + 15);
+
+    currentY += 23;
+  });
+
+  // Footer & Provenance Signoff
+  doc.setDrawColor(210, 205, 195);
+  doc.setLineWidth(0.2);
+  doc.line(margin, pageHeight - margin - 12, pageWidth - margin, pageHeight - margin - 12);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  doc.setTextColor(120, 115, 110);
+  doc.text('Afriata Cartographic Observatory & Research Repository • DOI: 10.6084/m9.figshare.34065711 • CC BY 4.0', margin, pageHeight - margin - 6);
+
+  doc.save('Afriata_Briefing_Dossier_Compilation.pdf');
+};
+
 

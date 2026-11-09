@@ -48,6 +48,7 @@ export interface AfricaMapFinalLayerProps {
   handleAdmin1Click?: (admin1: { id: string; name: string; countryId: string }, event: React.MouseEvent) => void;
   setHoveredAdmin1: React.Dispatch<React.SetStateAction<{ id: string; name: string; countryId: string } | null>>;
   onOpenColophonModal?: () => void;
+  isolatedCountryId?: string | null;
 }
 
 export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
@@ -90,6 +91,7 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
   handleAdmin1Click,
   setHoveredAdmin1,
   onOpenColophonModal,
+  isolatedCountryId = null
 }) => {
   const { mapData: streamedMap } = useAfricaFinalMap();
   const finalMap = mapData || streamedMap || AFRICA_FINAL_MAP;
@@ -201,8 +203,9 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
           const isRegionVisible = visibleRegions.has(country.unRegion);
           const isRegionFiltered = Boolean(activeRegionFilter && activeRegionFilter.toLowerCase() !== 'all' && country.unRegion !== activeRegionFilter);
           const isBlocFiltered = !!blocMemberSet && !blocMemberSet.has(country.id);
-          
-          const isDimmed = !isRegionVisible || isRegionFiltered || isBlocFiltered;
+          const isIsolated = isolatedCountryId ? country.id === isolatedCountryId : false;
+          const isDimmedByIsolation = Boolean(isolatedCountryId && !isIsolated);
+          const isDimmed = isDimmedByIsolation || !isRegionVisible || isRegionFiltered || isBlocFiltered;
           const fill = getCountryFill(country, isSelected, isHovered);
 
           return (

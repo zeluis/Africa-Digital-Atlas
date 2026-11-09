@@ -20,6 +20,7 @@ import { ENTITY_BLOCS } from '../data/entityBlocs';
 import { InteractiveMapLegend, SUBREGION_PILL_DEFS } from './InteractiveMapLegend';
 import { CountryFlag } from './CountryFlag';
 import { formatValueByUnit, formatPopulation, formatGDP, formatHDI } from '../data/atlas-formatters';
+import { MicroSparkline } from './common/MicroSparkline';
 import { 
   ZoomIn, 
   ZoomOut, 
@@ -243,6 +244,8 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   // Bivariate 2D Choropleth State & Multi-Indicator Cross-Analysis
   const [selectedBivariatePresetId, setSelectedBivariatePresetId] = useState<string>('gdp_vs_renewables');
   const [hoveredBivariateCell, setHoveredBivariateCell] = useState<{ x: number; y: number } | null>(null);
+  const [lockedBivariateCell, setLockedBivariateCell] = useState<{ x: number; y: number } | null>(null);
+  const [isolatedCountryId, setIsolatedCountryId] = useState<string | null>(null);
   const [bivariateThresholds, setBivariateThresholds] = useState<BivariateThresholds>({
     pX1: 33,
     pX2: 66,
@@ -1012,8 +1015,9 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       const coord = bivariateData.countryCoords[country.id];
       if (!coord) return '#cbd5e1';
 
-      if (hoveredBivariateCell) {
-        if (coord.x === hoveredBivariateCell.x && coord.y === hoveredBivariateCell.y) {
+      const activeBivCell = hoveredBivariateCell || lockedBivariateCell;
+      if (activeBivCell) {
+        if (coord.x === activeBivCell.x && coord.y === activeBivCell.y) {
           return '#f59e0b'; // Amber spotlight for matched quadrant
         } else {
           return '#d1d5db'; // Dim out non-matched countries
@@ -2369,9 +2373,14 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             <BivariateMapTray
               key="bivariate-sliding-tray"
               activePresetId={selectedBivariatePresetId}
-              onSelectPreset={(id) => setSelectedBivariatePresetId(id)}
+              onSelectPreset={(id) => {
+                setSelectedBivariatePresetId(id);
+                setLockedBivariateCell(null);
+              }}
               hoveredCell={hoveredBivariateCell}
               onHoverCell={(cell) => setHoveredBivariateCell(cell)}
+              lockedCell={lockedBivariateCell}
+              onSelectCell={(cell) => setLockedBivariateCell(cell)}
               cellCounts={bivariateData.cellCounts}
               thresholds={bivariateThresholds}
               onThresholdsChange={(t) => setBivariateThresholds(t)}
@@ -2801,6 +2810,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 handleAdmin1Click={handleAdmin1Click}
                 setHoveredAdmin1={setHoveredAdmin1}
                 onOpenColophonModal={() => setIsColophonOpen(true)}
+                isolatedCountryId={isolatedCountryId}
               />
 
               {showCriticalMinerals && (
@@ -3122,17 +3132,37 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               </div>
             </div>
 
-            {/* Quick Metrics Grid */}
+            {/* Quick Metrics Grid with 5-Year Mini Sparklines */}
             <div className="grid grid-cols-2 gap-2 p-2 rounded-xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800/80 mb-3 text-xs">
-              <div>
-                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block font-medium">Population</span>
-                <span className="font-bold text-zinc-900 dark:text-zinc-100">
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block font-medium">Population</span>
+                  {atlas.getObservations(hoveredEntity.id, 'SP.POP.TOTL').length > 1 && (
+                    <MicroSparkline 
+                      data={atlas.getObservations(hoveredEntity.id, 'SP.POP.TOTL').map(o => o.value)} 
+                      width={38} 
+                      height={14} 
+                      color="#059669"
+                    />
+                  )}
+                </div>
+                <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
                   {formatPopulation(atlas.getIndicatorValue(hoveredEntity.id, 'SP.POP.TOTL') || 0)}
                 </span>
               </div>
-              <div>
-                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block font-medium">Nominal GDP</span>
-                <span className="font-bold text-zinc-900 dark:text-zinc-100">
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block font-medium">Nominal GDP</span>
+                  {atlas.getObservations(hoveredEntity.id, 'NY.GDP.MKTP.CD').length > 1 && (
+                    <MicroSparkline 
+                      data={atlas.getObservations(hoveredEntity.id, 'NY.GDP.MKTP.CD').map(o => o.value)} 
+                      width={38} 
+                      height={14} 
+                      color="#0284c7"
+                    />
+                  )}
+                </div>
+                <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
                   {formatGDP(atlas.getIndicatorValue(hoveredEntity.id, 'NY.GDP.MKTP.CD') || 0)}
                 </span>
               </div>
@@ -3180,17 +3210,39 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               );
             })()}
 
-            {/* CTA Button to Open Full Country Dossier */}
-            <button
-              onClick={() => {
-                handleSelectCountry(hoveredEntity.id);
-                setActiveTooltipEntityId(null);
-              }}
-              className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <span>Inspect Country Details</span>
-              <Sparkles className="w-3.5 h-3.5 text-white/80" />
-            </button>
+            {/* Action Buttons: Isolate Territory & Open Dossier */}
+            <div className="space-y-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  const nextIsolated = isolatedCountryId === hoveredEntity.id ? null : hoveredEntity.id;
+                  setIsolatedCountryId(nextIsolated);
+                  if (nextIsolated) {
+                    zoomToCountry(nextIsolated);
+                    setShowAdmin1Borders(true);
+                  }
+                }}
+                className={`w-full py-1.5 px-3 rounded-xl font-bold text-[11px] border transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  isolatedCountryId === hoveredEntity.id
+                    ? 'bg-amber-100 dark:bg-amber-950/80 border-amber-400 text-amber-900 dark:text-amber-200'
+                    : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200'
+                }`}
+              >
+                <Compass className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                <span>{isolatedCountryId === hoveredEntity.id ? 'Exit Territory Isolation' : 'Isolate Territory & Admin-1'}</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  handleSelectCountry(hoveredEntity.id);
+                  setActiveTooltipEntityId(null);
+                }}
+                className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <span>Inspect Country Details</span>
+                <Sparkles className="w-3.5 h-3.5 text-white/80" />
+              </button>
+            </div>
           </div>
         )}
 

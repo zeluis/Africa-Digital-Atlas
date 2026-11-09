@@ -15,6 +15,8 @@ import {
   Award
 } from 'lucide-react';
 import { downloadFile } from '../utils/exportUtils';
+import { exportCustomBriefingDossierPDF } from '../utils/academicExport';
+import { useSavedEntities } from '../contexts/SavedEntitiesContext';
 
 export interface AcademicExportModalProps {
   isOpen: boolean;
@@ -47,10 +49,13 @@ export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
   },
   svgContainerId
 }) => {
+  const [activeMainTab, setActiveMainTab] = useState<'citation' | 'dossier_builder'>('citation');
   const [citationTab, setCitationTab] = useState<'apa' | 'chicago' | 'harvard' | 'mla' | 'bibtex' | 'ris'>('apa');
   const [copied, setCopied] = useState<boolean>(false);
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
   const [isExportingImage, setIsExportingImage] = useState<boolean>(false);
+  const [isGeneratingDossier, setIsGeneratingDossier] = useState<boolean>(false);
+  const { savedCountries, savedPlates, toggleSaveCountry, toggleSavePlate } = useSavedEntities();
 
   if (!isOpen) return null;
 
@@ -188,19 +193,50 @@ ER  -`;
           </a>
         </div>
 
-        {/* Tab Selectors & Quick Copy Bar */}
-        <div className="px-6 pt-4 pb-2 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="p-1 rounded-2xl bg-stone-100 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 flex flex-wrap items-center gap-1">
-            <button
-              onClick={() => setCitationTab('apa')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                citationTab === 'apa'
-                  ? 'bg-amber-600 text-white shadow-xs font-bold'
-                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
-              }`}
-            >
-              APA 7th
-            </button>
+        {/* Primary Mode Switcher (Citation vs Custom Dossier Builder) */}
+        <div className="px-6 pt-3 bg-stone-50 dark:bg-stone-950 border-b border-stone-200 dark:border-stone-800 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setActiveMainTab('citation')}
+            className={`pb-2.5 px-3 text-xs font-bold border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+              activeMainTab === 'citation'
+                ? 'border-amber-600 text-amber-700 dark:text-amber-400'
+                : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-300'
+            }`}
+          >
+            <Quote className="w-3.5 h-3.5" />
+            <span>Citation & Bibliographic Indices</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveMainTab('dossier_builder')}
+            className={`pb-2.5 px-3 text-xs font-bold border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+              activeMainTab === 'dossier_builder'
+                ? 'border-purple-600 text-purple-700 dark:text-purple-400'
+                : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-300'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+            <span>Briefing Dossier Builder ({savedCountries.length} countries, {savedPlates.length} plates)</span>
+          </button>
+        </div>
+
+        {activeMainTab === 'citation' ? (
+          <>
+            {/* Tab Selectors & Quick Copy Bar */}
+            <div className="px-6 pt-4 pb-2 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="p-1 rounded-2xl bg-stone-100 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 flex flex-wrap items-center gap-1">
+                <button
+                  onClick={() => setCitationTab('apa')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    citationTab === 'apa'
+                      ? 'bg-amber-600 text-white shadow-xs font-bold'
+                      : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
+                  }`}
+                >
+                  APA 7th
+                </button>
             <button
               onClick={() => setCitationTab('chicago')}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
@@ -333,6 +369,103 @@ ER  -`;
             </button>
           </div>
         </div>
+          </>
+        ) : (
+          /* Dossier Builder Notebook Tab */
+          <div className="p-6 space-y-5">
+            <div className="p-4 rounded-2xl bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200/80 dark:border-purple-800/60 space-y-2">
+              <h4 className="text-sm font-bold text-purple-900 dark:text-purple-200 flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <span>Custom Academic Briefing Dossier &amp; Compilation Notebook</span>
+              </h4>
+              <p className="text-xs text-purple-800/80 dark:text-purple-300/80 leading-relaxed">
+                Compile your bookmarked sovereign nations and archival cartographic plates into a formal, multi-asset executive research briefing PDF complete with macroeconomic summaries, institutional citations, and figure numbering.
+              </p>
+            </div>
+
+            {/* Bookmarked Sovereign Countries Checklist */}
+            <div className="space-y-2">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 block">
+                1. Bookmarked Sovereign Nations ({savedCountries.length})
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {savedCountries.length === 0 ? (
+                  <span className="text-xs text-stone-400 italic">No countries saved yet. Click the star icon on any country dossier.</span>
+                ) : (
+                  savedCountries.map(id => (
+                    <div 
+                      key={id} 
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-xs font-semibold text-stone-800 dark:text-stone-200 shadow-xs"
+                    >
+                      <span>{id}</span>
+                      <button 
+                        type="button" 
+                        onClick={() => toggleSaveCountry(id)}
+                        className="text-stone-400 hover:text-red-500 cursor-pointer ml-1"
+                        title="Remove from dossier"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Bookmarked Archival Cartography Plates */}
+            <div className="space-y-2">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 block">
+                2. Selected Archival Map Plates ({savedPlates.length})
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {savedPlates.length === 0 ? (
+                  <span className="text-xs text-stone-400 italic">No plates saved yet.</span>
+                ) : (
+                  savedPlates.map(pId => (
+                    <div 
+                      key={pId} 
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-xs font-semibold text-stone-800 dark:text-stone-200 shadow-xs"
+                    >
+                      <span className="font-mono">{pId}</span>
+                      <button 
+                        type="button" 
+                        onClick={() => toggleSavePlate(pId)}
+                        className="text-stone-400 hover:text-red-500 cursor-pointer ml-1"
+                        title="Remove plate from dossier"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Compile Action Button */}
+            <div className="pt-3 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between">
+              <span className="text-xs text-stone-500 font-mono">
+                {savedCountries.length + savedPlates.length} total research assets selected
+              </span>
+
+              <button
+                type="button"
+                disabled={isGeneratingDossier || (savedCountries.length === 0 && savedPlates.length === 0)}
+                onClick={async () => {
+                  setIsGeneratingDossier(true);
+                  try {
+                    await exportCustomBriefingDossierPDF(savedCountries, savedPlates);
+                  } finally {
+                    setIsGeneratingDossier(false);
+                  }
+                }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer disabled:opacity-50"
+              >
+                <Download className="w-4 h-4" />
+                <span>{isGeneratingDossier ? 'Generating PDF Briefing...' : 'Compile Academic Dossier (PDF)'}</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
