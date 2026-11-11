@@ -50,7 +50,7 @@ export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
   svgContainerId
 }) => {
   const [activeMainTab, setActiveMainTab] = useState<'citation' | 'dossier_builder'>('citation');
-  const [citationTab, setCitationTab] = useState<'apa' | 'chicago' | 'harvard' | 'mla' | 'bibtex' | 'ris'>('apa');
+  const [citationTab, setCitationTab] = useState<'apa' | 'chicago' | 'harvard' | 'mla' | 'bibtex' | 'ris' | 'cff' | 'enw'>('apa');
   const [copied, setCopied] = useState<boolean>(false);
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
   const [isExportingImage, setIsExportingImage] = useState<boolean>(false);
@@ -104,6 +104,33 @@ UR  - ${pageUrl}
 Y2  - ${accessDate}
 ER  -`;
 
+  const cffCitation = `cff-version: 1.2.0
+message: "If you use this atlas or software in your research, please cite it as below."
+title: "Africa Data Atlas & Cartographic Observatory"
+authors:
+  - family-names: "Correia"
+    given-names: "Zéluis F."
+    orcid: "https://orcid.org/0000-0001-9421-6555"
+version: "${citationMetadata.version || '2026.1'}"
+doi: "${doi}"
+date-released: "2026-01-15"
+url: "${pageUrl}"
+repository-code: "https://github.com/zeluis/Africa-Digital-Atlas"
+keywords:
+  - "Africa"
+  - "Cartography"
+  - "Socioeconomic Indicators"
+  - "SlaveVoyages"
+  - "AfCFTA"`;
+
+  const enwCitation = `%0 Dataset
+%T Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows
+%A Correia, Zéluis F.
+%D 2026
+%I Afriata
+%R ${doi}
+%U ${pageUrl}`;
+
   const getActiveCitation = (tab = citationTab) => {
     switch (tab) {
       case 'apa': return apaCitation;
@@ -112,6 +139,8 @@ ER  -`;
       case 'harvard': return harvardCitation;
       case 'bibtex': return bibtexCitation;
       case 'ris': return risCitation;
+      case 'cff': return cffCitation;
+      case 'enw': return enwCitation;
     }
   };
 
@@ -135,6 +164,14 @@ ER  -`;
 
   const handleDownloadBibtex = () => {
     downloadFile('afriata_atlas_citation.bib', bibtexCitation, 'text/plain;charset=utf-8');
+  };
+
+  const handleDownloadCff = () => {
+    downloadFile('CITATION.cff', cffCitation, 'text/yaml;charset=utf-8');
+  };
+
+  const handleDownloadEnw = () => {
+    downloadFile('afriata_atlas_citation.enw', enwCitation, 'text/plain;charset=utf-8');
   };
 
   return (
@@ -287,6 +324,26 @@ ER  -`;
             >
               RIS
             </button>
+            <button
+              onClick={() => setCitationTab('cff')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                citationTab === 'cff'
+                  ? 'bg-amber-600 text-white shadow-xs font-bold'
+                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
+              }`}
+            >
+              CFF (YAML)
+            </button>
+            <button
+              onClick={() => setCitationTab('enw')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                citationTab === 'enw'
+                  ? 'bg-amber-600 text-white shadow-xs font-bold'
+                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
+              }`}
+            >
+              EndNote (.enw)
+            </button>
           </div>
 
           {/* Quick Copy Pills */}
@@ -314,6 +371,17 @@ ER  -`;
             >
               {copiedFormat === 'ris' ? '✓ RIS' : '+ RIS'}
             </button>
+            <button
+              type="button"
+              onClick={() => handleCopySpecific('cff')}
+              className={`px-2 py-1 rounded-lg border font-bold transition-all cursor-pointer ${
+                copiedFormat === 'cff'
+                  ? 'bg-emerald-600 text-white border-emerald-600'
+                  : 'bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:border-amber-500'
+              }`}
+            >
+              {copiedFormat === 'cff' ? '✓ CFF' : '+ CFF'}
+            </button>
           </div>
         </div>
 
@@ -334,20 +402,34 @@ ER  -`;
         {/* Footer Button Row: [Download / Export] [Copy Citation] [Close] */}
         <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 shrink-0">
           {/* Download Formats */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={handleDownloadBibtex}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold transition-colors cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-stone-500" />
-              <span>Download .bib</span>
+              <span>.bib</span>
             </button>
             <button
               onClick={handleDownloadRis}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold transition-colors cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-stone-500" />
-              <span>Download .ris</span>
+              <span>.ris</span>
+            </button>
+            <button
+              onClick={handleDownloadCff}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold transition-colors cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5 text-stone-500" />
+              <span>.cff</span>
+            </button>
+            <button
+              onClick={handleDownloadEnw}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-semibold transition-colors cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5 text-stone-500" />
+              <span>.enw</span>
             </button>
           </div>
 

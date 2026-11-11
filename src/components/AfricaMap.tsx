@@ -98,6 +98,7 @@ import { HeritageSanctuarySite } from '../data/akpCulturalReserves';
 import { UnescoSiteMetadata } from '../data/slaveTradeIllustrations';
 import { INITIAL_UNESCO_HERITAGE_SITES } from '../data/unescoHeritageRegistry';
 import { UnescoSiteDetailModal } from './cartography/UnescoSiteDetailModal';
+import { CartographicScaleBar } from './cartography/CartographicScaleBar';
 import { prewarmUnescoHeritageCache } from '../utils/imagePrecache';
 import { triggerHaptic } from '../utils/mobileHaptics';
 import { 
@@ -3259,17 +3260,12 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           </div>
         )}
 
-        {/* Precision Geodesic Coordinates HUD (WGS 84 Readout) */}
-        {geoCoordinatesHud && (
-          <div className="absolute bottom-3 left-3 z-20 pointer-events-none flex items-center gap-2 px-2.5 py-1 rounded-lg bg-white/90 dark:bg-zinc-950/90 border border-zinc-200/90 dark:border-zinc-800/90 backdrop-blur-md shadow-xs text-[11px] font-mono text-zinc-700 dark:text-zinc-300">
-            <Compass className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span className="font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider text-[10px]">WGS 84</span>
-            <span className="text-zinc-300 dark:text-zinc-700">·</span>
-            <span className="font-bold text-zinc-900 dark:text-zinc-100">{geoCoordinatesHud.lat}</span>
-            <span className="text-zinc-300 dark:text-zinc-700">·</span>
-            <span className="font-bold text-zinc-900 dark:text-zinc-100">{geoCoordinatesHud.lon}</span>
-          </div>
-        )}
+        {/* Dynamic Cartographic Scale Bar & Precision WGS 84 Geodesic Coordinates HUD */}
+        <CartographicScaleBar
+          zoomLevel={zoomLevel}
+          centerLat={geoCoordinatesHud ? parseFloat(geoCoordinatesHud.lat) * (geoCoordinatesHud.lat.includes('S') ? -1 : 1) : 4.5}
+          centerLon={geoCoordinatesHud ? parseFloat(geoCoordinatesHud.lon) * (geoCoordinatesHud.lon.includes('W') ? -1 : 1) : 21.7}
+        />
       </div>
 
       <Suspense fallback={null}>

@@ -7,11 +7,12 @@ import {
   getCorrelationDataset, 
   getMultiCountryTimeSeries 
 } from '../data/atlas-selectors';
-import { IndicatorDefinition } from '../data/types';
+import { IndicatorDefinition, AtlasEntity, Observation } from '../data/types';
 import { CountryFlag } from '../components/CountryFlag';
 import { DataSourceBadge } from '../components/DataSourceBadge';
 import { IndicatorQuickSearch, getDomainColorClasses } from '../components/IndicatorQuickSearch';
 import { exportBivariateCorrelationToCsv } from '../utils/exportUtils';
+import { formatValueByUnit } from '../data/atlas-formatters';
 import { 
   ResponsiveContainer, 
   ScatterChart, 
@@ -37,7 +38,13 @@ import {
   Info,
   SlidersHorizontal,
   Globe2,
-  Check
+  Check,
+  Play,
+  Pause,
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight,
+  Calendar
 } from 'lucide-react';
 
 interface AnalyticsViewProps {
@@ -139,9 +146,58 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
     [selectedIndicatorId, allIndicators]
   );
 
+  // Historical Timeline Playback State (2015–2024)
+  const [timelineYear, setTimelineYear] = useState<number>(2024);
+  const [isPlayingTimeline, setIsPlayingTimeline] = useState<boolean>(false);
+  const [playSpeed, setPlaySpeed] = useState<number>(1.0);
+  const playbackTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  // Autoplay loop timer with variable speed
+  React.useEffect(() => {
+    if (isPlayingTimeline) {
+      const intervalMs = Math.round(800 / playSpeed);
+      playbackTimerRef.current = setInterval(() => {
+        setTimelineYear(prev => (prev >= 2024 ? 2015 : prev + 1));
+      }, intervalMs);
+    } else if (playbackTimerRef.current) {
+      clearInterval(playbackTimerRef.current);
+    }
+    return () => {
+      if (playbackTimerRef.current) clearInterval(playbackTimerRef.current);
+    };
+  }, [isPlayingTimeline, playSpeed]);
+
   const rankings = useMemo(() => {
-    return getIndicatorRankings(selectedIndicatorId, 54, sortAscending);
-  }, [selectedIndicatorId, sortAscending]);
+    const indicator = atlas.getIndicator(selectedIndicatorId);
+    if (!indicator) return [];
+
+    const entities = atlas.getAllEntities();
+    const items: { entity: AtlasEntity; obs: Observation }[] = [];
+
+    for (const ent of entities) {
+      const obsList = atlas.getObservations(ent.id, selectedIndicatorId);
+      // Find observation for selected timelineYear, or closest prior observation
+      const matched = obsList.find(o => o.period === timelineYear) ||
+        [...obsList].reverse().find(o => o.period <= timelineYear) ||
+        atlas.getLatestObservation(ent.id, selectedIndicatorId);
+
+      if (matched && matched.value !== null && !isNaN(matched.value)) {
+        items.push({ entity: ent, obs: matched });
+      }
+    }
+
+    items.sort((a, b) => sortAscending ? a.obs.value - b.obs.value : b.obs.value - a.obs.value);
+
+    return items.map((item, idx) => ({
+      rank: idx + 1,
+      entity: item.entity,
+      value: item.obs.value,
+      formattedValue: formatValueByUnit(item.obs.value, indicator.unit),
+      unit: indicator.unit,
+      year: item.obs.period,
+      source: item.obs.sourceId
+    }));
+  }, [selectedIndicatorId, sortAscending, timelineYear]);
 
   // Correlation Dataset
   const correlationData = useMemo(() => {
@@ -443,6 +499,105 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                 <ArrowUpDown className="w-3.5 h-3.5 text-emerald-500" /> 
                 <span>{sortAscending ? 'Lowest First (Ascending)' : 'Highest First (Descending)'}</span>
               </button>
+            </div>
+          </div>
+
+          {/* Interactive Historical Playback Scrubber (2015–2024) */}
+          <div className="rounded-2xl border border-emerald-500/30 bg-emerald-50/60 dark:bg-emerald-950/30 p-3 sm:p-4 backdrop-blur-md flex flex-col md:flex-row items-center justify-between gap-3 shadow-xs">
+            <div className="flex items-center gap-2.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsPlayingTimeline(prev => !prev)}
+                className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer shadow-xs ${
+                  isPlayingTimeline
+                    ? 'bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/30'
+                    : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/30'
+                }`}
+                title={isPlayingTimeline ? 'Pause temporal playback' : 'Play 2015–2024 temporal progression'}
+                aria-label={isPlayingTimeline ? 'Pause playback' : 'Play progression'}
+              >
+                {isPlayingTimeline ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+              </button>
+
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setTimelineYear(prev => Math.max(2015, prev - 1))}
+                  disabled={timelineYear <= 2015}
+                  className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 disabled:opacity-40 cursor-pointer"
+                  title="Step backward 1 year"
+                  aria-label="Step backward 1 year"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setTimelineYear(prev => Math.min(2024, prev + 1))}
+                  disabled={timelineYear >= 2024}
+                  className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 disabled:opacity-40 cursor-pointer"
+                  title="Step forward 1 year"
+                  aria-label="Step forward 1 year"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setTimelineYear(2024)}
+                  className="p-1.5 rounded-lg text-zinc-400 hover:text-emerald-600 transition-colors cursor-pointer"
+                  title="Reset to latest 2024 observation baseline"
+                  aria-label="Reset to 2024"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+
+                {/* Speed Controls */}
+                <div className="flex items-center ml-1 bg-white dark:bg-zinc-900 p-0.5 rounded-lg border border-emerald-200/80 dark:border-emerald-800/80">
+                  {[0.5, 1, 2].map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setPlaySpeed(s)}
+                      className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold transition-all cursor-pointer ${
+                        playSpeed === s
+                          ? 'bg-emerald-600 text-white shadow-2xs'
+                          : 'text-zinc-600 dark:text-zinc-400 hover:text-emerald-700'
+                      }`}
+                      title={`Play at ${s}x speed`}
+                    >
+                      {s}x
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col pl-2 border-l border-emerald-300 dark:border-emerald-800">
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-xl font-black font-mono font-tabular tabular-nums text-emerald-950 dark:text-emerald-100">
+                    {timelineYear}
+                  </span>
+                  <span className="text-[10px] font-mono font-bold uppercase text-emerald-700 dark:text-emerald-400">
+                    {timelineYear === 2024 ? 'Baseline' : `${2024 - timelineYear}y ago`}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Slider Scrubber */}
+            <div className="flex-1 w-full max-w-lg flex items-center gap-3">
+              <span className="text-[10px] font-mono font-bold text-zinc-400">2015</span>
+              <input
+                type="range"
+                min={2015}
+                max={2024}
+                step={1}
+                value={timelineYear}
+                onChange={(e) => setTimelineYear(Number(e.target.value))}
+                className="w-full h-1.5 bg-emerald-200 dark:bg-emerald-900/60 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                aria-label="Select Observation Year"
+              />
+              <span className="text-[10px] font-mono font-bold text-zinc-400">2024</span>
             </div>
           </div>
 

@@ -355,3 +355,5 @@ export const BilateralTradeComplementaritySection: React.FC<BilateralTradeComple
     </div>
   );
 };
+
+export default BilateralTradeComplementaritySection;

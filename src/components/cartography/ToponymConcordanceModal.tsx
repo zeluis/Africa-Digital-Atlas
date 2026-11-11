@@ -301,3 +301,5 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
     </div>
   );
 };
+
+export default ToponymConcordanceModal;
