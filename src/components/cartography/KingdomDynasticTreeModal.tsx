@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { KingdomDetailedRecord, DynasticNode } from '../../data/preColonialKingdomsDetailed';
-import { speakAcademicNarration, stopAfriataSpeech } from '../../utils/afriataVoiceEngine';
+import { 
+  speakAcademicNarration, 
+  stopAfriataSpeech,
+  HISTORICAL_ENTITY_PRONUNCIATIONS 
+} from '../../utils/afriataVoiceEngine';
 import { 
   Crown, 
   Sparkles, 
@@ -38,6 +42,15 @@ export const KingdomDynasticTreeModal: React.FC<KingdomDynasticTreeModalProps> =
       stopAfriataSpeech();
     };
   }, [selectedNode?.id]);
+
+  const phoneticGuide = useMemo(() => {
+    if (!selectedNode) return null;
+    const match = Object.values(HISTORICAL_ENTITY_PRONUNCIATIONS).find(e => 
+      e.name.toLowerCase().includes(selectedNode.name.toLowerCase()) || 
+      selectedNode.name.toLowerCase().includes(e.name.toLowerCase())
+    );
+    return match ? match.phonetic : null;
+  }, [selectedNode]);
 
   const handleSpeak = (text: string) => {
     if (isSpeaking) {
@@ -280,8 +293,13 @@ export const KingdomDynasticTreeModal: React.FC<KingdomDynasticTreeModalProps> =
                       <Volume2 className="w-3.5 h-3.5 text-amber-600" />
                     </button>
                   </div>
-                  <h3 className="text-base font-serif font-bold text-stone-900 dark:text-stone-100">
-                    {selectedNode.name}
+                  <h3 className="text-base font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2 flex-wrap">
+                    <span>{selectedNode.name}</span>
+                    {phoneticGuide && (
+                      <span className="text-[11px] font-mono font-normal text-purple-700 dark:text-purple-300">
+                        {phoneticGuide}
+                      </span>
+                    )}
                   </h3>
                   <p className="text-xs font-mono font-bold text-amber-800 dark:text-amber-400">
                     {selectedNode.title} ({selectedNode.reign})

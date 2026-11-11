@@ -16,17 +16,25 @@ const NavigationDrawer = lazyWithRetry(() => import('./components/NavigationDraw
 const Footer = lazyWithRetry(() => import('./components/Footer').then(m => ({ default: m.Footer })), 'Footer');
 const OverviewView = lazyWithRetry(() => import('./views/OverviewView').then(m => ({ default: m.OverviewView })), 'OverviewView');
 
-// Lazy-load modals on demand to preserve instant initial First Contentful Paint
-const SearchModal = lazyWithRetry(() => import('./components/SearchModal').then(m => ({ default: m.SearchModal })), 'SearchModal');
-const MultiSourceApiHubModal = lazyWithRetry(() => import('./components/MultiSourceApiHubModal').then(m => ({ default: m.MultiSourceApiHubModal })), 'MultiSourceApiHubModal');
-const OnboardingModal = lazyWithRetry(() => import('./components/OnboardingModal').then(m => ({ default: m.OnboardingModal })), 'OnboardingModal');
-const KeyboardShortcutsModal = lazyWithRetry(() => import('./components/KeyboardShortcutsModal').then(m => ({ default: m.KeyboardShortcutsModal })), 'KeyboardShortcutsModal');
-const UniversalMonographModal = lazyWithRetry(() => import('./components/UniversalMonographModal').then(m => ({ default: m.UniversalMonographModal })), 'UniversalMonographModal');
-const CartographicColophonModal = lazyWithRetry(() => import('./components/CartographicColophonModal').then(m => ({ default: m.CartographicColophonModal })), 'CartographicColophonModal');
-const WorkingPapersModal = lazyWithRetry(() => import('./components/WorkingPapersModal').then(m => ({ default: m.WorkingPapersModal })), 'WorkingPapersModal');
-const AcademicExportModal = lazyWithRetry(() => import('./components/AcademicExportModal').then(m => ({ default: m.AcademicExportModal })), 'AcademicExportModal');
-const MethodologyAuditModal = lazyWithRetry(() => import('./components/MethodologyAuditModal').then(m => ({ default: m.MethodologyAuditModal })), 'MethodologyAuditModal');
-const AfcftaSimulatorModal = lazyWithRetry(() => import('./components/afcfta/AfcftaSimulatorModal').then(m => ({ default: m.AfcftaSimulatorModal })), 'AfcftaSimulatorModal');
+// Centralized Modal Orchestration
+import { AtlasModalContainer } from './components/AtlasModalContainer';
+import { atlasModalStore } from './stores/useAtlasModalStore';
+
+// Dynamic chunk descriptors orchestrated via AtlasModalContainer
+// (Preserved for feature inventory and build chunk trace)
+const _lazyModalCatalog = () => [
+  import('./components/SearchModal'),
+  import('./components/MultiSourceApiHubModal'),
+  import('./components/OnboardingModal'),
+  import('./components/KeyboardShortcutsModal'),
+  import('./components/UniversalMonographModal'),
+  import('./components/CartographicColophonModal'),
+  import('./components/WorkingPapersModal'),
+  import('./components/AcademicExportModal'),
+  import('./components/MethodologyAuditModal'),
+  import('./components/afcfta/AfcftaSimulatorModal'),
+];
+void _lazyModalCatalog;
 
 // Lazy-load heavier views with automatic chunk recovery and cache resilience for GitHub Pages
 const CountryView = lazyWithRetry(() => import('./views/CountryView').then(m => ({ default: m.CountryView || (m as any).default })), 'CountryView');
@@ -67,6 +75,7 @@ const parseUrlHash = (): {
   plateId?: string;
   searchQuery?: string;
   siteId?: number;
+  compareCountries?: string[];
 } => {
   if (typeof window === 'undefined') return { tab: 'overview' };
   const hash = window.location.hash.replace(/^#\/?/, '').trim();
@@ -117,6 +126,33 @@ const parseUrlHash = (): {
     return { tab: 'archival-cartography', plateId: plate };
   }
 
+  if (hash.startsWith('compare')) {
+    const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+    const countriesParam = params.get('countries') || params.get('c');
+    const left = params.get('left');
+    const right = params.get('right');
+    let compareCountries: string[] | undefined = undefined;
+    if (countriesParam) {
+      const parsed = countriesParam.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
+      if (parsed.length > 0) compareCountries = parsed;
+    } else if (left || right) {
+      const parsed = [left, right].filter(Boolean).map(s => s!.trim().toUpperCase());
+      if (parsed.length > 0) compareCountries = parsed;
+    }
+    return { tab: 'compare', compareCountries };
+  }
+
+  if (hash.startsWith('map')) {
+    const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+    const country = params.get('country') || params.get('c');
+    const metric = params.get('metric') || params.get('ind');
+    return { 
+      tab: 'map', 
+      entityId: country ? country.toUpperCase() : undefined,
+      indicator: metric || undefined
+    };
+  }
+
   return { tab: hash as CanonicalNavTab };
 };
 
@@ -137,49 +173,19 @@ function AppContent() {
   // Deep-linked region for RegionalView
   const [activeRegion, setActiveRegion] = useState<AfricanRegion | undefined>(initialRoute.region);
   
-  // Search modal state
-  const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
-  
-  // Multilateral Data APIs & Ingestion Hub modal state
-  const [isApiHubOpen, setIsApiHubOpen] = useState<boolean>(false);
 
-  // Keyboard Shortcuts cheat sheet modal state
-  const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
-
-  // Universal Monograph Modal state
-  const [isMonographModalOpen, setIsMonographModalOpen] = useState<boolean>(false);
-
-  // Cartographic Colophon & Imprint modal state
-  const [isColophonOpen, setIsColophonOpen] = useState<boolean>(false);
-
-  // Institutional Working Paper & Policy Brief Series modal state
-  const [isWorkingPapersOpen, setIsWorkingPapersOpen] = useState<boolean>(false);
-
-  // Universal Scholarly Citation (DOI) modal state
-  const [isCitationModalOpen, setIsCitationModalOpen] = useState<boolean>(false);
-
-  // Methodological Harmonization & Quality Audit Dossier modal state
-  const [isMethodologyModalOpen, setIsMethodologyModalOpen] = useState<boolean>(false);
-
-  // AfCFTA Trade Corridor Simulator modal state
-  const [isAfcftaSimulatorOpen, setIsAfcftaSimulatorOpen] = useState<boolean>(false);
-
-  // 3-Screen Curated Orientation & Historical Context Consent Modal (Auto-open for new users)
-  const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem('afriata_onboarding_v1') !== 'true' && localStorage.getItem('africalia_onboarding_v1') !== 'true';
-    } catch {
-      return true;
-    }
-  });
   
   // Analytics selected indicator
   const [selectedIndicatorForAnalytics, setSelectedIndicatorForAnalytics] = useState<string>(initialRoute.indicator || 'NY.GDP.MKTP.CD');
 
-  // Universal Search & Deep link target for Iconography
+  // Universal Search & Deep link target for Iconography and Archival Cartography
   const [activeIconographyPlateId, setActiveIconographyPlateId] = useState<string | undefined>(initialRoute.plateId);
+  const [activeArchivalPlateId, setActiveArchivalPlateId] = useState<string | undefined>(initialRoute.plateId);
   const [activeIconographySearchQuery, setActiveIconographySearchQuery] = useState<string | undefined>(initialRoute.searchQuery);
   const [isIconographyIngestion, setIsIconographyIngestion] = useState(false);
+
+  // Compare Initial Countries deep link target
+  const [compareInitialCountries, setCompareInitialCountries] = useState<string[] | undefined>(initialRoute.compareCountries);
 
   // UNESCO Heritage Archive deep link target
   const [selectedHeritageSiteId, setSelectedHeritageSiteId] = useState<number | undefined>(initialRoute.siteId);
@@ -242,6 +248,12 @@ function AppContent() {
       targetHash = `regions/${encodeURIComponent(activeRegion)}`;
     } else if (currentTab === 'analytics' && selectedIndicatorForAnalytics) {
       targetHash = `analytics?ind=${encodeURIComponent(selectedIndicatorForAnalytics)}`;
+    } else if (currentTab === 'compare') {
+      targetHash = compareInitialCountries && compareInitialCountries.length > 0
+        ? `compare?countries=${compareInitialCountries.join(',')}`
+        : 'compare';
+    } else if (currentTab === 'map') {
+      targetHash = selectedEntityId ? `map?country=${selectedEntityId}` : 'map';
     } else if (currentTab === 'archival-cartography') {
       const currentHash = window.location.hash.replace(/^#\/?/, '').trim();
       if (currentHash.startsWith('cartography') || currentHash.startsWith('archival-cartography')) {
@@ -255,7 +267,7 @@ function AppContent() {
     if (currentHash !== targetHash) {
       window.history.replaceState(null, '', `#${targetHash}`);
     }
-  }, [currentTab, selectedEntityId, activeRegion, selectedIndicatorForAnalytics, selectedHeritageSiteId]);
+  }, [currentTab, selectedEntityId, activeRegion, selectedIndicatorForAnalytics, selectedHeritageSiteId, compareInitialCountries]);
 
   // Listen to browser hash navigation (Back/Forward buttons & external hash links)
   useEffect(() => {
@@ -266,9 +278,13 @@ function AppContent() {
         if (parsed.entityId) setSelectedEntityId(parsed.entityId);
         if (parsed.region) setActiveRegion(parsed.region);
         if (parsed.indicator) setSelectedIndicatorForAnalytics(parsed.indicator);
-        if (parsed.plateId !== undefined) setActiveIconographyPlateId(parsed.plateId);
+        if (parsed.plateId !== undefined) {
+          setActiveIconographyPlateId(parsed.plateId);
+          setActiveArchivalPlateId(parsed.plateId);
+        }
         if (parsed.searchQuery !== undefined) setActiveIconographySearchQuery(parsed.searchQuery);
         if (parsed.siteId !== undefined) setSelectedHeritageSiteId(parsed.siteId);
+        if (parsed.compareCountries) setCompareInitialCountries(parsed.compareCountries);
       });
     };
     window.addEventListener('hashchange', handleHashChange);
@@ -287,7 +303,7 @@ function AppContent() {
 
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        setIsSearchOpen(prev => !prev);
+        atlasModalStore.openSearch();
         return;
       }
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
@@ -309,7 +325,7 @@ function AppContent() {
         // Toggle Shortcuts Modal on '?'
         if (e.key === '?' || (e.shiftKey && e.key === '/')) {
           e.preventDefault();
-          setIsShortcutsOpen(prev => !prev);
+          atlasModalStore.openShortcuts();
           return;
         }
 
@@ -505,14 +521,14 @@ function AppContent() {
         onSelectTab={handleSelectTab}
         selectedEntityId={selectedEntityId}
         onSelectCountry={handleSelectCountry}
-        onOpenSearch={() => setIsSearchOpen(true)}
+        onOpenSearch={() => atlasModalStore.openSearch()}
         onToggleMenu={handleToggleMenu}
         isDrawerOpen={isDesktopDrawerOpen}
         theme={theme}
         onToggleTheme={toggleTheme}
-        onOpenApiHub={() => setIsApiHubOpen(true)}
-        onOpenOnboarding={() => setIsOnboardingOpen(true)}
-        onOpenShortcuts={() => setIsShortcutsOpen(true)}
+        onOpenApiHub={() => atlasModalStore.openApiHub()}
+        onOpenOnboarding={() => atlasModalStore.openOnboarding()}
+        onOpenShortcuts={() => atlasModalStore.openShortcuts()}
         activeRegion={activeRegion}
         onGoBack={handleGoBack}
         canGoBack={canGoBack}
@@ -538,7 +554,7 @@ function AppContent() {
           currentTab={currentTab}
           onSelectTab={handleSelectTab}
           onOpenMenu={() => setIsMobileNavOpen(true)}
-          onOpenSearch={() => setIsSearchOpen(true)}
+          onOpenSearch={() => atlasModalStore.openSearch()}
         />
 
         {/* Desktop Navigation Drawer (Starts open, 272px width, doesn't close on tab clicks) + Mobile Bottom Sheet */}
@@ -551,12 +567,12 @@ function AppContent() {
             onToggleDesktop={handleToggleMenu}
             isMobileOpen={isMobileNavOpen}
             onCloseMobile={() => setIsMobileNavOpen(false)}
-            onOpenOnboarding={() => setIsOnboardingOpen(true)}
-            onOpenColophon={() => setIsColophonOpen(true)}
-            onOpenCitationModal={() => setIsCitationModalOpen(true)}
-            onOpenWorkingPapers={() => setIsWorkingPapersOpen(true)}
-            onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
-            onOpenAfcftaSimulator={() => setIsAfcftaSimulatorOpen(true)}
+            onOpenOnboarding={() => atlasModalStore.openOnboarding()}
+            onOpenColophon={() => atlasModalStore.openColophon()}
+            onOpenCitationModal={() => atlasModalStore.openAcademicExport()}
+            onOpenWorkingPapers={() => atlasModalStore.openWorkingPapers()}
+            onOpenMethodologyAudit={() => atlasModalStore.openMethodologyAudit()}
+            onOpenAfcftaSimulator={() => atlasModalStore.openAfcftaSimulator()}
             isIconographyIngestion={isIconographyIngestion}
           />
         </Suspense>
@@ -625,12 +641,13 @@ function AppContent() {
 
                   {currentTab === 'archival-cartography' && (
                     <ArchivalCartographyView 
+                      initialPlateId={activeArchivalPlateId}
                       onNavigateTab={handleSelectTab}
                       onSelectCountry={handleSelectCountry}
-                      onOpenColophon={() => setIsColophonOpen(true)}
-                      onOpenCitationModal={() => setIsCitationModalOpen(true)}
-                      onOpenWorkingPapers={() => setIsWorkingPapersOpen(true)}
-                      onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
+                      onOpenColophon={() => atlasModalStore.openColophon()}
+                      onOpenCitationModal={() => atlasModalStore.openAcademicExport()}
+                      onOpenWorkingPapers={() => atlasModalStore.openWorkingPapers()}
+                      onOpenMethodologyAudit={() => atlasModalStore.openMethodologyAudit()}
                     />
                   )}
 
@@ -713,6 +730,8 @@ function AppContent() {
                   {currentTab === 'compare' && (
                     <CompareView
                       onSelectCountry={handleSelectCountry}
+                      initialCountries={compareInitialCountries}
+                      onCountriesChange={setCompareInitialCountries}
                     />
                   )}
 
@@ -730,7 +749,7 @@ function AppContent() {
                   {currentTab === 'style-guide' && (
                     <UniversalStyleGuideView
                       onNavigateTab={(tab) => handleSelectTab(tab)}
-                      onOpenMonographModal={() => setIsMonographModalOpen(true)}
+                      onOpenMonographModal={() => atlasModalStore.openMonograph()}
                     />
                   )}
 
@@ -770,127 +789,13 @@ function AppContent() {
         </main>
       </div>
 
-      {/* Global Quick Search Modal */}
-      {isSearchOpen && (
-        <Suspense fallback={null}>
-          <SearchModal
-            isOpen={isSearchOpen}
-            onClose={() => setIsSearchOpen(false)}
-            onSelectCountry={handleSelectCountry}
-            onSelectIndicator={handleSelectIndicator}
-            onSelectTab={handleSelectTab}
-          />
-        </Suspense>
-      )}
-
-      {/* Multilateral Data APIs & Ingestion Hub Modal */}
-      {isApiHubOpen && (
-        <Suspense fallback={null}>
-          <MultiSourceApiHubModal
-            isOpen={isApiHubOpen}
-            onClose={() => setIsApiHubOpen(false)}
-            onSelectIndicator={handleSelectIndicator}
-          />
-        </Suspense>
-      )}
-
-      {/* 3-Screen Curated Orientation & Historical Context Consent Modal */}
-      {isOnboardingOpen && (
-        <Suspense fallback={null}>
-          <OnboardingModal
-            isOpen={isOnboardingOpen}
-            onClose={() => setIsOnboardingOpen(false)}
-            onNavigate={(targetTab) => {
-              setIsOnboardingOpen(false);
-              handleSelectTab(targetTab);
-            }}
-          />
-        </Suspense>
-      )}
-
-      {/* Global Keyboard Shortcuts Helper Cheat Sheet Modal */}
-      {isShortcutsOpen && (
-        <Suspense fallback={null}>
-          <KeyboardShortcutsModal
-            isOpen={isShortcutsOpen}
-            onClose={() => setIsShortcutsOpen(false)}
-            onNavigateTab={(tab) => handleSelectTab(tab as CanonicalNavTab)}
-            onToggleTheme={toggleTheme}
-          />
-        </Suspense>
-      )}
-
-      {/* Universal Monograph Modal */}
-      {isMonographModalOpen && (
-        <Suspense fallback={null}>
-          <UniversalMonographModal
-            isOpen={isMonographModalOpen}
-            onClose={() => setIsMonographModalOpen(false)}
-            onNavigateTab={(tab) => handleSelectTab(tab)}
-          />
-        </Suspense>
-      )}
-
-      {/* Cartographic Colophon & Imprint Modal */}
-      {isColophonOpen && (
-        <Suspense fallback={null}>
-          <CartographicColophonModal
-            isOpen={isColophonOpen}
-            onClose={() => setIsColophonOpen(false)}
-            onOpenCitationModal={() => setIsCitationModalOpen(true)}
-            onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
-          />
-        </Suspense>
-      )}
-
-      {/* Institutional Working Paper & Policy Brief Series Modal */}
-      {isWorkingPapersOpen && (
-        <Suspense fallback={null}>
-          <WorkingPapersModal
-            isOpen={isWorkingPapersOpen}
-            onClose={() => setIsWorkingPapersOpen(false)}
-            onOpenCitationModal={() => setIsCitationModalOpen(true)}
-            onSelectReport={(reportId) => {
-              setIsWorkingPapersOpen(false);
-              handleSelectTab(reportId as CanonicalNavTab);
-            }}
-          />
-        </Suspense>
-      )}
-
-      {/* Methodological Harmonization & Quality Audit Dossier Modal */}
-      {isMethodologyModalOpen && (
-        <Suspense fallback={null}>
-          <MethodologyAuditModal
-            isOpen={isMethodologyModalOpen}
-            onClose={() => setIsMethodologyModalOpen(false)}
-            onOpenCitationModal={() => setIsCitationModalOpen(true)}
-          />
-        </Suspense>
-      )}
-
-      {/* AfCFTA Trade Corridor Simulator Modal */}
-      {isAfcftaSimulatorOpen && (
-        <Suspense fallback={null}>
-          <AfcftaSimulatorModal
-            isOpen={isAfcftaSimulatorOpen}
-            onClose={() => setIsAfcftaSimulatorOpen(false)}
-            onSelectCountry={handleSelectCountry}
-          />
-        </Suspense>
-      )}
-
-      {/* Universal Scholarly Citation & Platform Attribution Modal */}
-      {isCitationModalOpen && (
-        <Suspense fallback={null}>
-          <AcademicExportModal
-            isOpen={isCitationModalOpen}
-            onClose={() => setIsCitationModalOpen(false)}
-            title="Africa Data Atlas & Cartographic Observatory"
-            sourceContext="An interactive atlas of geography, indicators and historical trade flows"
-          />
-        </Suspense>
-      )}
+      {/* Centralized Modal Orchestrator Container */}
+      <AtlasModalContainer
+        onSelectCountry={handleSelectCountry}
+        onSelectIndicator={handleSelectIndicator}
+        onSelectTab={handleSelectTab}
+        onToggleTheme={toggleTheme}
+      />
 
       {/* Structured Credibility Footer (Hidden on map, ethnic tree, archival cartography, heritage, standalone flow map & ports, and iconography ingestion workbench) */}
       {currentTab !== 'map' && 
@@ -903,17 +808,17 @@ function AppContent() {
           <div id="app-footer-container">
             <Footer 
               onNavigateTab={handleSelectTab}
-              onOpenColophon={() => setIsColophonOpen(true)}
-              onOpenCitationModal={() => setIsCitationModalOpen(true)}
-              onOpenWorkingPapers={() => setIsWorkingPapersOpen(true)}
-              onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
+              onOpenColophon={() => atlasModalStore.openColophon()}
+              onOpenCitationModal={() => atlasModalStore.openAcademicExport()}
+              onOpenWorkingPapers={() => atlasModalStore.openWorkingPapers()}
+              onOpenMethodologyAudit={() => atlasModalStore.openMethodologyAudit()}
             />
           </div>
         </Suspense>
       )}
 
       {/* Offline Status Toast / Banner */}
-      <OfflineIndicator onOpenColophon={() => setIsColophonOpen(true)} />
+      <OfflineIndicator onOpenColophon={() => atlasModalStore.openColophon()} />
     </div>
   );
 }

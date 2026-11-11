@@ -19,6 +19,8 @@ import {
   BookOpen, 
   Check, 
   Copy,
+  Download,
+  FileDown,
   ExternalLink,
   ChevronRight,
   Eye,
@@ -68,6 +70,11 @@ import {
   TradeCorridorPath,
   TOPONYM_CONCORDANCE_INDEX
 } from '../../data/preColonialKingdomsDetailed';
+import { 
+  exportHistoricalPlatePDF,
+  exportHistoricalMapPlateBibTeX,
+  exportHistoricalMapPlateRIS
+} from '../../utils/academicExport';
 
 interface ToponymLocation {
   x: number;
@@ -248,6 +255,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
 
   // Deep link sharing state
   const [copiedDeepLink, setCopiedDeepLink] = useState<boolean>(false);
+  const [isExportingPlatePDF, setIsExportingPlatePDF] = useState<boolean>(false);
 
   // Vector map country hover in side-by-side
   const [hoveredCountryInfo, setHoveredCountryInfo] = useState<{ name: string; region: string } | null>(null);
@@ -2253,17 +2261,26 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
           )}
         </AnimatePresence>
 
-        {/* Docked Dossier Panel */}
+        {/* Docked Dossier Panel / Mobile Bottom Sheet */}
         <AnimatePresence>
           {isDossierOpen && (
             <motion.aside
-              initial={{ opacity: 0, x: 100, width: 0 }}
-              animate={{ opacity: 1, x: 0, width: 380 }}
-              exit={{ opacity: 0, x: 100, width: 0 }}
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 100 }}
               transition={{ type: "spring", damping: 28, stiffness: 350 }}
-              className="w-80 sm:w-96 lg:w-[380px] shrink-0 h-full border-l border-stone-200 dark:border-stone-800 bg-white/98 dark:bg-stone-900/98 backdrop-blur-xl flex flex-col z-20 shadow-md overflow-hidden"
+              className="fixed inset-x-0 bottom-0 max-h-[85dvh] lg:static lg:max-h-none w-full lg:w-[380px] lg:h-full shrink-0 z-40 lg:z-20 rounded-t-3xl lg:rounded-none border-t lg:border-t-0 lg:border-l border-stone-200 dark:border-stone-800 bg-white/98 dark:bg-stone-900/98 backdrop-blur-xl flex flex-col shadow-2xl lg:shadow-md overflow-hidden touch-sheet"
               id="cartographic-dossier-panel"
             >
+              {/* Mobile Tactile Grab Handle */}
+              <div 
+                onClick={handleCloseDossier}
+                className="lg:hidden pt-2.5 pb-1 flex justify-center cursor-grab shrink-0"
+                title="Tap to close"
+              >
+                <div className="w-12 h-1.5 bg-stone-300 dark:bg-stone-700 rounded-full" />
+              </div>
+
               {/* Dossier Header (Unobscured & below main header) */}
               <div className="p-4 border-b border-stone-200 dark:border-stone-800 flex items-start justify-between gap-3 bg-[#FAF8F5]/80 dark:bg-stone-950/80 shrink-0">
                 <div className="space-y-0.5 min-w-0 text-left">
@@ -2337,6 +2354,44 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                           <span>Copy Citation</span>
                         </>
                       )}
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={isExportingPlatePDF}
+                      onClick={async () => {
+                        setIsExportingPlatePDF(true);
+                        try {
+                          await exportHistoricalPlatePDF(selectedPlate);
+                        } finally {
+                          setIsExportingPlatePDF(false);
+                        }
+                      }}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-xs font-mono font-bold transition-all shadow-2xs cursor-pointer active:scale-95 disabled:opacity-50 shrink-0"
+                      title="Download publication-grade academic PDF dossier with high-resolution plate scan"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>{isExportingPlatePDF ? 'Rendering PDF...' : 'Archival PDF'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => exportHistoricalMapPlateBibTeX(selectedPlate)}
+                      className="inline-flex items-center gap-1 px-2.5 py-2 rounded-xl border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs font-mono font-semibold transition-colors shrink-0 cursor-pointer"
+                      title="Download BibTeX citation (.bib) for LaTeX, Overleaf, and Paperpile"
+                    >
+                      <FileDown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                      <span>.bib</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => exportHistoricalMapPlateRIS(selectedPlate)}
+                      className="inline-flex items-center gap-1 px-2.5 py-2 rounded-xl border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs font-mono font-semibold transition-colors shrink-0 cursor-pointer"
+                      title="Download RIS citation (.ris) for Zotero, EndNote, and Mendeley"
+                    >
+                      <FileDown className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                      <span>.ris</span>
                     </button>
 
                     <a

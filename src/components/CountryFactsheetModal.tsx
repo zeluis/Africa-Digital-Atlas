@@ -15,10 +15,15 @@ import {
   formatArea 
 } from '../data/atlas-formatters';
 import { downloadFile } from '../utils/exportUtils';
-import { exportCountryIntelligenceBriefingPDF } from '../utils/academicExport';
+import { 
+  exportCountryIntelligenceBriefingPDF,
+  exportCountryDossierBibTeX,
+  exportCountryDossierRIS
+} from '../utils/academicExport';
 import { 
   Printer, 
   Download, 
+  FileDown,
   Copy, 
   Check, 
   X, 
@@ -311,12 +316,32 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
 
             <button
               type="button"
-              onClick={() => exportCountryIntelligenceBriefingPDF(country)}
+              onClick={() => exportCountryIntelligenceBriefingPDF(country, { headerElementId: 'country-dossier-header-card' })}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
               title="Download Publication-Grade 2-Page Intelligence Dossier PDF"
             >
               <FileText className="w-3.5 h-3.5" />
               <span>2-Page Dossier (PDF)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => exportCountryDossierBibTeX(country)}
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-800 dark:text-zinc-200 text-xs font-mono font-semibold border border-zinc-300 dark:border-zinc-700 transition-all cursor-pointer"
+              title="Download BibTeX academic reference (.bib)"
+            >
+              <FileDown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+              <span>.bib</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => exportCountryDossierRIS(country)}
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-800 dark:text-zinc-200 text-xs font-mono font-semibold border border-zinc-300 dark:border-zinc-700 transition-all cursor-pointer"
+              title="Download RIS academic reference (.ris) for Zotero and EndNote"
+            >
+              <FileDown className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+              <span>.ris</span>
             </button>
 
             <button

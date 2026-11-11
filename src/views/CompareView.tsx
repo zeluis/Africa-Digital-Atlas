@@ -63,6 +63,7 @@ import { getMultiCountryTimeSeries } from '../data/atlas-selectors';
 interface CompareViewProps {
   onSelectCountry: (entityId: string) => void;
   initialCountries?: string[];
+  onCountriesChange?: (countries: string[]) => void;
 }
 
 const PPP_PRICE_LEVEL_FACTORS: Record<string, number> = {
@@ -79,9 +80,25 @@ const PPP_PRICE_LEVEL_FACTORS: Record<string, number> = {
 
 export const CompareView: React.FC<CompareViewProps> = ({
   onSelectCountry,
-  initialCountries = ['NGA', 'ZAF', 'EGY', 'KEN']
+  initialCountries = ['NGA', 'ZAF', 'EGY', 'KEN'],
+  onCountriesChange
 }) => {
   const [selectedIds, setSelectedIds] = useState<string[]>(initialCountries);
+
+  // Sync external initialCountries (e.g., from deep link or browser navigation)
+  useEffect(() => {
+    if (initialCountries && initialCountries.length > 0) {
+      setSelectedIds(prev => {
+        const isSame = prev.length === initialCountries.length && prev.every((id, idx) => id === initialCountries[idx]);
+        return isSame ? prev : initialCountries;
+      });
+    }
+  }, [initialCountries]);
+
+  // Notify parent container of country selection updates for URL hash permalinks
+  useEffect(() => {
+    onCountriesChange?.(selectedIds);
+  }, [selectedIds, onCountriesChange]);
   const [activeCompareTab, setActiveCompareTab] = useState<'matrix' | 'afcfta'>('matrix');
   const [showSilhouettes, setShowSilhouettes] = useState(true);
   const [valuationMode, setValuationMode] = useState<'nominal' | 'ppp'>('nominal');

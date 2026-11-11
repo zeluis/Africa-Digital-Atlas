@@ -116,9 +116,9 @@ export const prewarmUnescoHeritageCache = async (): Promise<{ cached: number; to
   return { cached: cachedCount, total: urlsToCache.length };
 };
 
-// Gather the top 100 critical archival thumbnail URLs
+// Gather the top 100 critical archival thumbnail URLs and core vector cartography
 export const getTopArchivalImageUrls = async (): Promise<string[]> => {
-  const urls: string[] = [];
+  const urls: string[] = [resolveAssetPath('africa-final.svg')];
 
   // 1. Castas 32 plates and thumbnails (loaded on demand)
   try {

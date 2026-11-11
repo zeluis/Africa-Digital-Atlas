@@ -431,6 +431,7 @@ export default defineConfig(({ command }) => {
         'topojson-client',
         '@iconify/react',
         'jspdf',
+        'html-to-image',
       ],
     },
     build: {

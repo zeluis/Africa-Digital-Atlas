@@ -661,6 +661,18 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
+  // 2-Finger Touch HUD state & automatic dismiss timer
+  const [showTouchHud, setShowTouchHud] = useState<boolean>(false);
+  const touchHudTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const triggerTouchHud = useCallback((_message = 'Use 2 fingers to zoom & pan') => {
+    setShowTouchHud(true);
+    if (touchHudTimerRef.current) clearTimeout(touchHudTimerRef.current);
+    touchHudTimerRef.current = setTimeout(() => {
+      setShowTouchHud(false);
+    }, 2400);
+  }, []);
+
   const handleSelectMode = (mode: 'authentic' | 'choropleth' | 'schematic' | 'bivariate' | 'antique') => {
     if (mode === 'authentic') {
       setCartographySource('authentic_final');
@@ -1325,6 +1337,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         moved: true
       };
       setIsDragging(false);
+      triggerTouchHud('Use 2 fingers to zoom & pan');
     }
   };
 
@@ -3305,6 +3318,50 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             onNavigateToHeritage={onNavigateToHeritage}
           />
         )}
+
+        {/* Accessible 2-Finger Touch HUD cue */}
+        <AnimatePresence>
+          {showTouchHud && (
+            <motion.div
+              initial={{ opacity: 0, y: -12, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -12, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none px-4 py-2 rounded-full bg-zinc-900/90 dark:bg-zinc-100/90 text-white dark:text-zinc-900 text-xs font-mono font-bold shadow-2xl backdrop-blur-md flex items-center gap-2 border border-zinc-700/50 dark:border-zinc-300/50"
+              role="status"
+              aria-live="polite"
+            >
+              <Compass className="w-4 h-4 text-amber-400 dark:text-amber-600 animate-spin" />
+              <span>Use 2 fingers to zoom &amp; pan</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Thumb-friendly Floating 1-Tap "Recenter / Reset View" Button pinned above mobile bottom nav */}
+        <div className="fixed bottom-20 right-4 z-30 lg:hidden">
+          <button
+            type="button"
+            onClick={() => {
+              triggerHaptic('medium');
+              handleResetZoom();
+            }}
+            className={`flex items-center gap-2 px-3.5 py-2.5 rounded-2xl shadow-xl backdrop-blur-md transition-all active-tactile cursor-pointer ${
+              zoomLevel !== DEFAULT_MAP_ZOOM || panOffset.x !== 0 || panOffset.y !== 0
+                ? 'bg-amber-600 hover:bg-amber-700 text-white border border-amber-500/80 shadow-amber-500/25'
+                : 'bg-white/95 dark:bg-zinc-900/95 text-zinc-700 dark:text-zinc-200 border border-zinc-200/90 dark:border-zinc-800/90'
+            }`}
+            title="Recenter and reset map view (100%)"
+            aria-label="Recenter / Reset Map View"
+          >
+            <RotateCcw className={`w-4 h-4 ${zoomLevel !== DEFAULT_MAP_ZOOM || panOffset.x !== 0 || panOffset.y !== 0 ? 'text-white' : 'text-zinc-500 dark:text-zinc-400'}`} />
+            <span className="text-xs font-mono font-bold tracking-tight">Recenter</span>
+            {zoomLevel !== DEFAULT_MAP_ZOOM && (
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-black/25 text-white font-bold">
+                {Math.round(zoomLevel * 100)}%
+              </span>
+            )}
+          </button>
+        </div>
       </Suspense>
     </div>
   );

@@ -120,13 +120,16 @@ export const MapView: React.FC<MapViewProps> = ({
           onToggleCriticalMinerals={() => setShowCriticalMinerals(prev => !prev)}
         />
 
-        {/* Mobile Country Peek Sheet */}
+        {/* Standardized 3-Snap Mobile Country Peek Sheet */}
         <MobileCountryPeekSheet
           countryId={peekCountryId}
           isOpen={isPeekOpen}
           onClose={() => setIsPeekOpen(false)}
           onOpenDossier={(cid) => {
             onSelectCountry(cid);
+          }}
+          onOpenCompare={(cid) => {
+            window.location.hash = `#compare?countries=${cid}`;
           }}
         />
       </div>

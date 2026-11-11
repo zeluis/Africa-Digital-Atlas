@@ -10,11 +10,12 @@ const CACHE_HERITAGE = `africa-atlas-heritage-${VERSION}`;
 
 const CURRENT_CACHES = [CACHE_STATIC, CACHE_IMMUTABLE, CACHE_FONTS, CACHE_DATA, CACHE_HERITAGE];
 
-// Essential core precache assets (App Shell & Metadata)
+// Essential core precache assets (App Shell, Map Topology & Metadata)
 const PRECACHE_ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './africa-final.svg',
   './favicon.svg',
   './favicon-32x32.png',
   './icon-192.png',
@@ -24,6 +25,14 @@ const PRECACHE_ASSETS = [
   './apple-touch-icon.png',
   './icon.svg'
 ];
+
+const OFFLINE_IMAGE_FALLBACK = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="260" viewBox="0 0 400 260" fill="#f8fafc">
+  <rect width="400" height="260" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+  <circle cx="200" cy="110" r="28" fill="#e2e8f0"/>
+  <path d="M188 110 L200 98 L212 110 M200 98 L200 122" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <text x="200" y="160" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold" fill="#64748b">Archival Media Offline</text>
+  <text x="200" y="180" text-anchor="middle" font-family="monospace" font-size="10" fill="#94a3b8">Afriata Cartographic Observatory</text>
+</svg>`;
 
 // Install Event: Precache App Shell & core metadata
 self.addEventListener('install', (event) => {
@@ -155,6 +164,11 @@ async function cacheFirstStrategy(request, cacheName) {
     return networkResponse;
   } catch (error) {
     console.warn('[SW] Cache-First fetch failed for:', request.url);
+    if (request.destination === 'image' || /\.(?:png|jpe?g|webp|avif|svg)$/i.test(request.url)) {
+      return new Response(OFFLINE_IMAGE_FALLBACK, {
+        headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'no-store' }
+      });
+    }
     return cachedResponse || new Response('', { status: 404, statusText: 'Not Found' });
   }
 }

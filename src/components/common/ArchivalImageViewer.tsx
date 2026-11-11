@@ -500,7 +500,9 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
     setIsExportingPDF(true);
     try {
       const citation = generateCitation(activeCitationStyle);
-      await exportHighDpiPlatePDF(illustration, citation);
+      const rawUrl = illustration.imageUrls?.[0] || '';
+      const localCandidates = getAssetCandidateUrls(rawUrl);
+      await exportHighDpiPlatePDF(illustration, citation, { candidateUrls: localCandidates });
     } catch {
       // PDF export fallback
     } finally {

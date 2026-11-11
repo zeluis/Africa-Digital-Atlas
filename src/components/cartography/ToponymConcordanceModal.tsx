@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { TOPONYM_CONCORDANCE_INDEX, ToponymConcordanceItem } from '../../data/preColonialKingdomsDetailed';
+import { speakToponymConcordance, stopAfriataSpeech } from '../../utils/afriataVoiceEngine';
 import { 
   Search, 
   MapPin, 
@@ -10,7 +11,9 @@ import {
   Crosshair, 
   ArrowRight, 
   Sparkles, 
-  Filter 
+  Filter,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 
 interface ToponymConcordanceModalProps {
@@ -26,6 +29,14 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>(initialToponym);
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'polity' | 'metropolis' | 'coast' | 'mountain' | 'river'>('all');
+  const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
+
+  // Stop audio on unmount
+  useEffect(() => {
+    return () => {
+      stopAfriataSpeech();
+    };
+  }, []);
 
   const filteredItems = useMemo(() => {
     return TOPONYM_CONCORDANCE_INDEX.filter(item => {
@@ -45,15 +56,47 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
     });
   }, [searchQuery, categoryFilter]);
 
+  const dragStartY = React.useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    dragStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (dragStartY.current === null) return;
+    const dy = e.touches[0].clientY - dragStartY.current;
+    if (dy > 90) {
+      dragStartY.current = null;
+      onClose();
+    }
+  };
+
+  const handleTouchEnd = () => {
+    dragStartY.current = null;
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-md select-none">
+    <div 
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/75 backdrop-blur-md select-none touch-sheet"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <motion.div
-        initial={{ opacity: 0, scale: 0.94, y: 20 }}
+        initial={{ opacity: 0, scale: 0.96, y: 40 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.94, y: 20 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="relative w-full max-w-4xl max-h-[88vh] flex flex-col rounded-3xl bg-[#FAF7F2] dark:bg-[#181614] border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl overflow-hidden"
+        exit={{ opacity: 0, scale: 0.96, y: 40 }}
+        transition={{ type: 'spring', damping: 26, stiffness: 320 }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className="relative w-full max-w-4xl max-h-[92dvh] sm:max-h-[88vh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-[#FAF7F2] dark:bg-[#181614] border-t sm:border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl overflow-hidden"
       >
+        {/* Mobile Tactile Grab Handle */}
+        <div className="sm:hidden pt-2.5 pb-1 flex justify-center cursor-grab shrink-0">
+          <div className="w-12 h-1.5 bg-stone-300 dark:bg-stone-700 rounded-full" />
+        </div>
+
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-[#E5DDD0] dark:border-[#38322B] flex items-center justify-between gap-4 shrink-0 bg-stone-100/60 dark:bg-stone-900/60">
           <div className="space-y-0.5 text-left">
@@ -206,14 +249,44 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => onLocateToponym(item)}
-                className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-600 text-amber-900 dark:text-amber-200 hover:text-white text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
-              >
-                <Crosshair className="w-3.5 h-3.5" />
-                <span>Locate on Curtain</span>
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (speakingIndex === idx) {
+                      stopAfriataSpeech();
+                      setSpeakingIndex(null);
+                    } else {
+                      setSpeakingIndex(idx);
+                      speakToponymConcordance(item, {
+                        onEnd: () => setSpeakingIndex(null),
+                        onError: () => setSpeakingIndex(null)
+                      });
+                    }
+                  }}
+                  className={`p-2 rounded-xl transition-all cursor-pointer ${
+                    speakingIndex === idx
+                      ? 'bg-amber-600 text-white shadow-xs'
+                      : 'bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300'
+                  }`}
+                  title="Pronounce antique toponym and scholarly concordance audio"
+                >
+                  {speakingIndex === idx ? (
+                    <VolumeX className="w-3.5 h-3.5" />
+                  ) : (
+                    <Volume2 className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onLocateToponym(item)}
+                  className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-600 text-amber-900 dark:text-amber-200 hover:text-white text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                >
+                  <Crosshair className="w-3.5 h-3.5" />
+                  <span>Locate on Curtain</span>
+                </button>
+              </div>
             </div>
           ))}
           </div>

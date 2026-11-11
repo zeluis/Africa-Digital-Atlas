@@ -54,6 +54,7 @@ import {
   Trees,
   Star,
   FileText,
+  FileDown,
   Printer,
   Pickaxe,
   BatteryCharging,
@@ -62,7 +63,11 @@ import {
 } from 'lucide-react';
 import { CountryFactsheetModal } from '../components/CountryFactsheetModal';
 import { getCountryMineralsProfile, getCountryTradeFlows } from '../data/criticalMineralsData';
-import { exportCountryIntelligenceBriefingPDF } from '../utils/academicExport';
+import { 
+  exportCountryIntelligenceBriefingPDF,
+  exportCountryDossierBibTeX,
+  exportCountryDossierRIS
+} from '../utils/academicExport';
 import { speakAcademicNarration, stopAfriataSpeech } from '../utils/afriataVoiceEngine';
 import { getCountryHeaderData } from '../data/countryHeaderData';
 
@@ -156,6 +161,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
     <section aria-label={`${entity.name} Sovereign Country Dossier and Demographic Observatory`} className="space-y-6 animate-in fade-in duration-200">
       {/* Top Country Dossier Header Card with Pure Regional Tonal Directional Gradient */}
       <div 
+        id="country-dossier-header-card"
         className="relative rounded-3xl p-6 md:p-8 shadow-sm overflow-hidden transition-all duration-300"
         style={{
           background: `linear-gradient(135deg, ${regionPalette.gradientStart} 0%, ${regionPalette.gradientMid} 48%, ${regionPalette.gradientEnd} 100%)`,
@@ -241,12 +247,32 @@ export const CountryView: React.FC<CountryViewProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => exportCountryIntelligenceBriefingPDF(entity)}
+                    onClick={() => exportCountryIntelligenceBriefingPDF(entity, { headerElementId: 'country-dossier-header-card' })}
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-semibold shadow-xs transition-all cursor-pointer hover:bg-purple-100 dark:hover:bg-purple-900/60"
                     title="Download Publication-Grade 2-Page Intelligence Dossier (PDF)"
                   >
                     <FileText className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                     <span>2-Page Dossier (PDF)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => exportCountryDossierBibTeX(entity)}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/95 border border-zinc-200/90 text-zinc-700 hover:text-amber-700 text-xs font-mono font-semibold shadow-xs transition-all cursor-pointer"
+                    title="Download BibTeX citation (.bib) for this sovereign country dossier"
+                  >
+                    <FileDown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                    <span>.bib</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => exportCountryDossierRIS(entity)}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/95 border border-zinc-200/90 text-zinc-700 hover:text-purple-700 text-xs font-mono font-semibold shadow-xs transition-all cursor-pointer"
+                    title="Download RIS reference (.ris) for Zotero and EndNote"
+                  >
+                    <FileDown className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                    <span>.ris</span>
                   </button>
                 </div>
                 <p className="text-xs md:text-sm text-zinc-600 font-medium">
