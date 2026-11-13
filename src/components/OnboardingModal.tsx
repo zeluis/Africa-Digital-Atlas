@@ -553,7 +553,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
             {/* Direct Close & Enter Default App */}
             <button
               onClick={handleDirectCloseToDefaultApp}
-              className="p-2 rounded-xl text-stone-500 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 border border-stone-200 transition-colors cursor-pointer"
+              className="min-touch-target p-2 rounded-xl text-stone-500 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 border border-stone-200 transition-colors cursor-pointer"
               title="Close & Enter Data Atlas"
               aria-label="Close onboarding and enter default app"
             >
@@ -588,7 +588,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
         </AnimatePresence>
 
         {/* 4. Centered Content Slides & Cards Area */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 flex items-center justify-center min-h-0 z-10 transition-opacity duration-300">
+        <div className="flex-1 overflow-y-auto overscroll-contain sleek-scrollbar px-4 sm:px-6 md:px-8 py-4 sm:py-6 flex items-center justify-center min-h-0 z-10 transition-opacity duration-300">
           <div className="w-full max-w-5xl mx-auto my-auto">
             <AnimatePresence mode="wait" custom={slideDirection}>
               <motion.div
@@ -756,13 +756,13 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                     {!showDualEntryPanels ? (
                       <div className="space-y-4">
                         <div className="p-4 sm:p-5 rounded-2xl bg-stone-50/90 border border-stone-200 text-sm text-stone-700 leading-relaxed shadow-xs">
-                          {/* Main Title & Status Badge */}
+                          {/* Main Title & Status */}
                           <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
                             <div className="flex items-center gap-2 text-amber-900 font-bold font-serif text-base">
                               <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0" />
-                              <span>Academic Protocol, Provenance & Institutional Independence</span>
+                              <span>Academic Protocol, Provenance &amp; Institutional Independence</span>
                             </div>
-                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-100/70 text-amber-900 border border-amber-300/60">
+                            <span className="text-[11px] font-mono font-bold text-amber-900">
                               Open-Access Scholarly Standard
                             </span>
                           </div>
@@ -938,8 +938,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                                     </h4>
                                   </div>
                                 </div>
-                                <span className="text-[11px] uppercase font-semibold tracking-wider px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
-                                  TAST & Lineages
+                                <span className="text-[11px] uppercase font-mono font-semibold tracking-wider text-amber-800 shrink-0">
+                                  TAST · Lineages
                                 </span>
                               </div>
 
@@ -1006,8 +1006,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                                     </h4>
                                   </div>
                                 </div>
-                                <span className="text-[11px] uppercase font-semibold tracking-wider px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
-                                  Overview & GIS
+                                <span className="text-[11px] uppercase font-mono font-semibold tracking-wider text-emerald-800 shrink-0">
+                                  Overview · GIS
                                 </span>
                               </div>
 
@@ -1067,7 +1067,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
         </div>
 
         {/* 5. Bottom Navigation Footer */}
-        <footer className="flex items-center justify-between px-4 sm:px-8 py-3 border-t border-stone-200/80 bg-white/90 backdrop-blur-md shrink-0 z-20 shadow-xs">
+        <footer className="flex items-center justify-between px-4 sm:px-8 py-3 safe-pb border-t border-stone-200/80 bg-white/90 backdrop-blur-md shrink-0 z-20 shadow-xs">
           {/* Step Progression Indicators with Step Names */}
           <div className="flex items-center gap-2 sm:gap-3">
             {ONBOARDING_SCREENS.map((screen, idx) => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from './CountryFlag';
 import { CountrySilhouette } from './CountrySilhouette';
@@ -63,6 +63,15 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
   onClose
 }) => {
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -291,23 +300,40 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 print:p-0 print:bg-white">
+    <div
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 atlas-modal-backdrop print:p-0 print:bg-white print:block"
+      onClick={onClose}
+    >
       {/* Modal Dialog Card */}
-      <div className="relative w-full max-w-4xl bg-white dark:bg-zinc-950 rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden print:border-none print:shadow-none print:rounded-none">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${country.name} 1-Page Executive Factsheet`}
+        onClick={e => e.stopPropagation()}
+        className="relative w-full max-w-4xl max-h-[92dvh] flex flex-col overflow-hidden bg-white dark:bg-zinc-950 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 atlas-modal-panel print:max-h-none print:overflow-visible print:border-none print:shadow-none print:rounded-none"
+      >
         {/* Action Header Controls (Hidden during browser print) */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 print:hidden">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 shrink-0 print:hidden">
+          <div className="flex items-center justify-between gap-2">
             <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-              <Printer className="w-3.5 h-3.5" />
-              1-Page Executive Factsheet Brief
+              <Printer className="w-3.5 h-3.5 shrink-0" />
+              <span>1-Page Executive Factsheet Brief</span>
             </span>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close factsheet modal"
+              className="sm:hidden min-touch-target p-2 rounded-xl text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-shadow-x pb-0.5 sm:pb-0">
             <button
               type="button"
               onClick={handlePrint}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer shrink-0 whitespace-nowrap"
               title="Print or Save as PDF (A4/Letter)"
             >
               <Printer className="w-3.5 h-3.5" />
@@ -317,7 +343,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
             <button
               type="button"
               onClick={() => exportCountryIntelligenceBriefingPDF(country, { headerElementId: 'country-dossier-header-card' })}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer shrink-0 whitespace-nowrap"
               title="Download Publication-Grade 2-Page Intelligence Dossier PDF"
             >
               <FileText className="w-3.5 h-3.5" />
@@ -327,7 +353,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
             <button
               type="button"
               onClick={() => exportCountryDossierBibTeX(country)}
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-800 dark:text-zinc-200 text-xs font-mono font-semibold border border-zinc-300 dark:border-zinc-700 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-800 dark:text-zinc-200 text-xs font-mono font-semibold border border-zinc-300 dark:border-zinc-700 transition-all cursor-pointer shrink-0 whitespace-nowrap"
               title="Download BibTeX academic reference (.bib)"
             >
               <FileDown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
@@ -337,7 +363,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
             <button
               type="button"
               onClick={() => exportCountryDossierRIS(country)}
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-800 dark:text-zinc-200 text-xs font-mono font-semibold border border-zinc-300 dark:border-zinc-700 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-800 dark:text-zinc-200 text-xs font-mono font-semibold border border-zinc-300 dark:border-zinc-700 transition-all cursor-pointer shrink-0 whitespace-nowrap"
               title="Download RIS academic reference (.ris) for Zotero and EndNote"
             >
               <FileDown className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
@@ -347,7 +373,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
             <button
               type="button"
               onClick={handleExportSvg}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-800 dark:text-zinc-200 text-xs font-semibold border border-zinc-300 dark:border-zinc-700 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-800 dark:text-zinc-200 text-xs font-semibold border border-zinc-300 dark:border-zinc-700 transition-all cursor-pointer shrink-0 whitespace-nowrap"
               title="Download vector SVG card"
             >
               <Download className="w-3.5 h-3.5" />
@@ -357,7 +383,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
             <button
               type="button"
               onClick={handleExportHtml}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-800 dark:text-zinc-200 text-xs font-semibold border border-zinc-300 dark:border-zinc-700 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-800 dark:text-zinc-200 text-xs font-semibold border border-zinc-300 dark:border-zinc-700 transition-all cursor-pointer shrink-0 whitespace-nowrap"
               title="Download standalone offline HTML factsheet"
             >
               <FileText className="w-3.5 h-3.5" />
@@ -367,7 +393,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
             <button
               type="button"
               onClick={handleCopyMarkdown}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-800 dark:text-zinc-200 text-xs font-semibold border border-zinc-300 dark:border-zinc-700 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 text-zinc-800 dark:text-zinc-200 text-xs font-semibold border border-zinc-300 dark:border-zinc-700 transition-all cursor-pointer shrink-0 whitespace-nowrap"
               title="Copy markdown summary"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
@@ -377,7 +403,8 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer ml-2"
+              aria-label="Close factsheet modal"
+              className="hidden sm:inline-flex min-touch-target p-1.5 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer ml-1 shrink-0"
             >
               <X className="w-4 h-4" />
             </button>
@@ -385,13 +412,13 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
         </div>
 
         {/* Printable 1-Page Document Body */}
-        <div id="printable-country-factsheet" className="p-6 md:p-8 space-y-6 text-zinc-900 dark:text-zinc-100 print:text-black print:p-0">
+        <div id="printable-country-factsheet" className="flex-1 min-h-0 overflow-y-auto overscroll-contain sleek-scrollbar p-5 sm:p-6 md:p-8 safe-pb space-y-6 text-zinc-900 dark:text-zinc-100 print:overflow-visible print:text-black print:p-0">
           {/* Header Banner */}
-          <div className="flex items-start justify-between gap-6 pb-6 border-b border-zinc-200 dark:border-zinc-800 print:border-black/20">
-            <div className="space-y-2">
+          <div className="flex items-start justify-between gap-4 sm:gap-6 pb-6 border-b border-zinc-200 dark:border-zinc-800 print:border-black/20">
+            <div className="space-y-2 min-w-0">
               <div className="flex items-center gap-3">
-                <CountryFlag entityId={entityId} size="lg" className="shadow-sm" />
-                <div>
+                <CountryFlag entityId={entityId} size="lg" className="shadow-sm shrink-0" />
+                <div className="min-w-0">
                   <h1 className="text-2xl md:text-3xl font-black font-display tracking-tight text-zinc-950 dark:text-white print:text-black">
                     {country.name}
                   </h1>
@@ -401,15 +428,15 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-                <span className="font-bold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 print:border print:border-emerald-600">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-mono text-zinc-600 dark:text-zinc-300">
+                <span className="font-bold text-emerald-700 dark:text-emerald-300">
                   ISO-3: {country.id}
                 </span>
-                <span className="text-zinc-400">•</span>
+                <span className="text-zinc-400">·</span>
                 <span>Region: {country.region}</span>
-                <span className="text-zinc-400">•</span>
+                <span className="text-zinc-400">·</span>
                 <span>Capital: {country.capital || 'N/A'}</span>
-                <span className="text-zinc-400">•</span>
+                <span className="text-zinc-400">·</span>
                 <span>M49: {m49}</span>
               </div>
             </div>
@@ -577,16 +604,12 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2">
                 <div>
                   <span className="text-[10px] text-zinc-500 block font-medium">Regional Economic Blocs (RECs)</span>
-                  <div className="flex flex-wrap gap-1.5 mt-1">
-                    {memberBlocs.map(bloc => (
-                      <span key={bloc} className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-emerald-700 dark:text-emerald-300">
-                        {bloc}
-                      </span>
-                    ))}
+                  <div className="text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-300 mt-1">
+                    {memberBlocs.join(' · ')}
                   </div>
                 </div>
 
-                <div className="text-right">
+                <div className="text-start sm:text-end">
                   <span className="text-[10px] text-zinc-500 block font-medium">Independence Date</span>
                   <span className="font-semibold text-zinc-800 dark:text-zinc-200">
                     {header?.independenceDate || country.independenceYear || 'Historical Statehood'}
@@ -599,13 +622,9 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
                   Registered UNESCO World Heritage Sites ({heritageSites.length})
                 </span>
                 {heritageSites.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5">
-                    {heritageSites.map(s => (
-                      <span key={s.id} className="text-[11px] px-2 py-0.5 rounded-md bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300">
-                        {s.name} ({s.category})
-                      </span>
-                    ))}
-                  </div>
+                  <p className="text-[11px] text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                    {heritageSites.map(s => `${s.name} (${s.category})`).join(' · ')}
+                  </p>
                 ) : (
                   <span className="text-[11px] text-zinc-500 italic">No formal UNESCO inscriptions recorded in repository.</span>
                 )}

@@ -1699,7 +1699,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       {/* Unified Map Header & Controls Bar — Sticky & Fully Responsive */}
       <div
         id="unified-africa-map-control-card"
-        className="sticky top-16 z-30 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-2 sm:p-2.5 shadow-sm backdrop-blur-md space-y-2 transition-all"
+        className="relative md:sticky md:top-16 z-30 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-2 sm:p-2.5 shadow-sm backdrop-blur-md space-y-2 transition-all"
       >
         {/* Row 1: Brand + Mode Switcher (Left) & Unified Scale HUD + Zoom + Export (Right) */}
         <div className="flex flex-wrap items-center justify-between gap-2">

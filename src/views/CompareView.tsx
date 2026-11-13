@@ -361,10 +361,10 @@ export const CompareView: React.FC<CompareViewProps> = ({
   return (
     <section aria-label="Multi-Nation Comparative Matrix and Head-to-Head Observatory" className="space-y-8 animate-in fade-in duration-200">
       {/* Header Banner */}
-      <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-2xl transition-colors">
+      <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 sm:p-6 md:p-8 shadow-2xl transition-colors">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700/60 text-xs font-mono font-semibold text-emerald-700 dark:text-emerald-300 mb-2">
+            <div className="inline-flex items-center gap-2 text-xs font-mono font-semibold text-emerald-700 dark:text-emerald-300 mb-2">
               <GitCompare className="w-3.5 h-3.5" /> Head-to-Head Comparative Matrix
             </div>
             <h1 className="text-2xl md:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
@@ -376,11 +376,11 @@ export const CompareView: React.FC<CompareViewProps> = ({
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => setShowSilhouettes(!showSilhouettes)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-2 min-h-[40px] rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                 showSilhouettes
                   ? 'bg-emerald-500 text-zinc-950 font-bold border-emerald-400 shadow-xs'
                   : 'bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
@@ -395,13 +395,10 @@ export const CompareView: React.FC<CompareViewProps> = ({
               <button
                 type="button"
                 onClick={handleOpenAdd}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-500 transition-all cursor-pointer shadow-xs"
+                className="flex items-center gap-1.5 px-3.5 py-2 min-h-[40px] rounded-xl text-xs font-bold border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-500 transition-all cursor-pointer shadow-xs tabular-nums"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Add Country</span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-md bg-emerald-200/60 dark:bg-emerald-900/60 font-bold">
-                  {selectedIds.length}/4
-                </span>
+                <span>Add Country ({selectedIds.length}/4)</span>
               </button>
             )}
           </div>
@@ -433,15 +430,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
                     <CountryFlag entityId={country.id} size="md" />
                   </div>
                   <div className="min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span 
-                        className="w-2 h-2 rounded-full shrink-0" 
-                        style={{ backgroundColor: tonal.unBaseColor }}
-                        title={country.region}
-                      />
-                      <span className="font-extrabold text-sm text-zinc-900 dark:text-zinc-100 truncate">
-                        {country.name}
-                      </span>
+                    <div className="font-extrabold text-sm text-zinc-900 dark:text-zinc-100 truncate">
+                      {country.name}
                     </div>
                     <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 mt-0.5">
                       <span>{country.id}</span>
@@ -456,7 +446,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                   <button
                     type="button"
                     onClick={() => handleOpenSwap(idx)}
-                    className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-emerald-600 transition-colors cursor-pointer shadow-2xs"
+                    className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-emerald-600 transition-colors cursor-pointer shadow-2xs"
                     title={`Swap ${country.name} with another nation`}
                     aria-label={`Swap ${country.name}`}
                   >
@@ -466,7 +456,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                     <button
                       type="button"
                       onClick={() => handleRemoveCountry(country.id)}
-                      className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-zinc-500 hover:text-rose-600 transition-colors cursor-pointer shadow-2xs"
+                      className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-zinc-500 hover:text-rose-600 transition-colors cursor-pointer shadow-2xs"
                       title={`Remove ${country.name} from comparison`}
                       aria-label={`Remove ${country.name}`}
                     >
@@ -477,7 +467,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
               </div>
 
               {/* Bottom Quick Metric Indicator */}
-              <div className="mt-3 pt-2.5 border-t border-zinc-200/60 dark:border-zinc-800/60 flex items-center justify-between text-[11px] font-mono text-zinc-600 dark:text-zinc-400">
+              <div className="mt-3 pt-2.5 border-t border-zinc-200/60 dark:border-zinc-800/60 flex items-center justify-between text-[11px] font-mono text-zinc-600 dark:text-zinc-400 tabular-nums">
                 <span>Pop: {formatPopulation(pop)}</span>
                 <span className="font-semibold text-zinc-800 dark:text-zinc-200">
                   GDP: {formatGDP(gdp)}
@@ -516,7 +506,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
 
       {/* Compare View Switcher Tabs with SlidingPill */}
       <div 
-        className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-fit" 
+        className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-fit max-w-full overflow-x-auto scroll-shadow-x no-scrollbar" 
         role="tablist" 
         aria-label="Comparative analysis perspective"
       >
@@ -525,7 +515,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
           role="tab"
           aria-selected={activeCompareTab === 'matrix'}
           onClick={() => setActiveCompareTab('matrix')}
-          className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
+          className={`relative flex items-center gap-2 px-4 py-2 min-h-[40px] whitespace-nowrap shrink-0 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
             activeCompareTab === 'matrix'
               ? 'text-zinc-900 dark:text-zinc-100'
               : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
@@ -545,7 +535,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
           role="tab"
           aria-selected={activeCompareTab === 'afcfta'}
           onClick={() => setActiveCompareTab('afcfta')}
-          className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
+          className={`relative flex items-center gap-2 px-4 py-2 min-h-[40px] whitespace-nowrap shrink-0 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
             activeCompareTab === 'afcfta'
               ? 'text-zinc-900 dark:text-zinc-100'
               : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
@@ -609,7 +599,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Convergence trajectory indicator">
+          <div className="flex flex-nowrap overflow-x-auto scroll-shadow-x no-scrollbar sm:flex-wrap items-center gap-1.5 pb-1 sm:pb-0 max-w-full" role="tablist" aria-label="Convergence trajectory indicator">
             {convergenceMetrics.map(m => {
               const isSelected = convergenceMetricId === m.id;
               return (
@@ -619,7 +609,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                   role="tab"
                   aria-selected={isSelected}
                   onClick={() => setConvergenceMetricId(m.id)}
-                  className={`relative px-3 py-1 rounded-xl text-xs font-mono font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 ${
+                  className={`relative px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl text-xs font-mono font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 ${
                     isSelected
                       ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
                       : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
@@ -678,16 +668,16 @@ export const CompareView: React.FC<CompareViewProps> = ({
       {/* Interactive Switchers Row: Valuation (Nominal vs PPP) and Scale (Aggregate vs Per-Capita) */}
       <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white dark:bg-zinc-900/90 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
         {/* Valuation Switcher */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono font-bold text-zinc-500 uppercase flex items-center gap-1">
+        <div className="flex flex-wrap items-center gap-2 max-w-full">
+          <span className="text-xs font-mono font-bold text-zinc-500 uppercase flex items-center gap-1 shrink-0">
             <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
             Currency &amp; Valuation:
           </span>
-          <div className="relative flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1 border border-zinc-200 dark:border-zinc-700">
+          <div className="relative flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1 border border-zinc-200 dark:border-zinc-700 overflow-x-auto scroll-shadow-x no-scrollbar max-w-full">
             <button
               type="button"
               onClick={() => setValuationMode('nominal')}
-              className={`relative px-3 py-1 rounded-lg text-xs font-bold transition-colors duration-150 cursor-pointer select-none ${
+              className={`relative px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shrink-0 transition-colors duration-150 cursor-pointer select-none ${
                 valuationMode === 'nominal'
                   ? 'text-emerald-700 dark:text-emerald-400 font-bold shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
@@ -705,7 +695,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <button
               type="button"
               onClick={() => setValuationMode('ppp')}
-              className={`relative px-3 py-1 rounded-lg text-xs font-bold transition-colors duration-150 cursor-pointer select-none ${
+              className={`relative px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shrink-0 transition-colors duration-150 cursor-pointer select-none ${
                 valuationMode === 'ppp'
                   ? 'text-purple-700 dark:text-purple-300 font-bold shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-purple-600'
@@ -724,13 +714,13 @@ export const CompareView: React.FC<CompareViewProps> = ({
         </div>
 
         {/* Normalization Scale Switcher */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono font-bold text-zinc-500 uppercase">Aggregation Scale:</span>
-          <div className="relative flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1 border border-zinc-200 dark:border-zinc-700">
+        <div className="flex flex-wrap items-center gap-2 max-w-full">
+          <span className="text-xs font-mono font-bold text-zinc-500 uppercase shrink-0">Aggregation Scale:</span>
+          <div className="relative flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1 border border-zinc-200 dark:border-zinc-700 overflow-x-auto scroll-shadow-x no-scrollbar max-w-full">
             <button
               type="button"
               onClick={() => setNormalizationScale('aggregate')}
-              className={`relative px-3 py-1 rounded-lg text-xs font-bold transition-colors duration-150 cursor-pointer select-none ${
+              className={`relative px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shrink-0 transition-colors duration-150 cursor-pointer select-none ${
                 normalizationScale === 'aggregate'
                   ? 'text-emerald-700 dark:text-emerald-400 font-bold shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
@@ -748,7 +738,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <button
               type="button"
               onClick={() => setNormalizationScale('perCapita')}
-              className={`relative px-3 py-1 rounded-lg text-xs font-bold transition-colors duration-150 cursor-pointer select-none ${
+              className={`relative px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shrink-0 transition-colors duration-150 cursor-pointer select-none ${
                 normalizationScale === 'perCapita'
                   ? 'text-emerald-700 dark:text-emerald-400 font-bold shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
@@ -767,140 +757,141 @@ export const CompareView: React.FC<CompareViewProps> = ({
         </div>
 
         {/* Dynamic Context Explanation Banner */}
-        <div className="w-full pt-2 border-t border-zinc-100 dark:border-zinc-800 text-[11px] font-mono flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-          <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span>
-              {valuationMode === 'ppp' 
-                ? 'PPP Mode: Macro values adjusted via World Bank ICP 2021/2024 price level parity multipliers (reflects real domestic consumer & capital purchasing volume).'
-                : 'Nominal USD Mode: Values converted using official market exchange rates.'}
-            </span>
-          </div>
-          <span className="hidden md:inline text-[10px] text-zinc-400">
+        <div className="w-full pt-2 border-t border-zinc-100 dark:border-zinc-800 text-[11px] font-mono flex items-center justify-between gap-2 text-zinc-500 dark:text-zinc-400">
+          <span>
+            {valuationMode === 'ppp' 
+              ? 'PPP Mode: Macro values adjusted via World Bank ICP 2021/2024 price level parity multipliers (reflects real domestic consumer & capital purchasing volume).'
+              : 'Nominal USD Mode: Values converted using official market exchange rates.'}
+          </span>
+          <span className="hidden md:inline text-[10px] text-zinc-400 shrink-0">
             {normalizationScale === 'perCapita' ? 'Normalized per capita / per 1k residents' : 'Absolute national totals'}
           </span>
         </div>
       </div>
 
-      {/* Comparison Grid Matrix Table */}
+      {/* Comparison Grid Matrix Table (Horizontal scroll-shadow-x with sticky indicator column on mobile) */}
       <div 
         className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-md overflow-hidden transition-colors"
         style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
       >
-        {/* Table Header with Country Dossiers */}
-        <div className="grid border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950" style={{ gridTemplateColumns: `240px repeat(${countries.length}, 1fr)` }}>
-          <div className="p-4 md:p-6 flex items-end font-bold text-xs text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-            Indicators &amp; Metrics
-          </div>
-
-          {countries.map((country, idx) => (
-            <div key={country.id} className="p-4 md:p-6 border-l border-zinc-200 dark:border-zinc-800 flex flex-col justify-between relative group">
-              <div className="absolute top-3 right-3 flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => handleOpenSwap(idx)}
-                  className="p-1 rounded-full bg-zinc-200/80 dark:bg-zinc-900 text-zinc-500 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition-colors cursor-pointer"
-                  title={`Swap ${country.name} with another nation`}
-                  aria-label={`Swap ${country.name}`}
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                </button>
-                {selectedIds.length > 2 && (
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveCountry(country.id)}
-                    className="p-1 rounded-full bg-zinc-200/80 dark:bg-zinc-900 text-zinc-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-colors cursor-pointer"
-                    title={`Remove ${country.name}`}
-                    aria-label={`Remove ${country.name}`}
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
+        <div className="overflow-x-auto scroll-shadow-x">
+          <div className="min-w-[640px]">
+            {/* Table Header with Country Dossiers */}
+            <div className="grid border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950" style={{ gridTemplateColumns: `minmax(150px, 220px) repeat(${countries.length}, minmax(135px, 1fr))` }}>
+              <div className="sticky start-0 z-10 bg-zinc-50 dark:bg-zinc-950 p-3.5 sm:p-4 md:p-6 flex items-end font-bold text-xs text-zinc-500 dark:text-zinc-400 uppercase tracking-wider border-e border-zinc-200/80 dark:border-zinc-800">
+                Indicators &amp; Metrics
               </div>
 
-              <div className="space-y-2">
-                <CountryFlag entityId={country.id} size="lg" />
-                <div>
-                  <h3 className="font-extrabold text-base md:text-lg text-zinc-900 dark:text-zinc-100 font-display">
-                    {country.name}
-                  </h3>
-                  <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-mono mt-0.5">
-                    <span>{country.region}</span>
-                    <span>•</span>
-                    <span className="font-bold text-emerald-600 dark:text-emerald-400">{country.id}</span>
+              {countries.map((country, idx) => (
+                <div key={country.id} className="p-3.5 sm:p-4 md:p-6 border-s border-zinc-200 dark:border-zinc-800 flex flex-col justify-between relative group">
+                  <div className="absolute top-2.5 end-2.5 flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenSwap(idx)}
+                      className="min-w-[34px] min-h-[34px] flex items-center justify-center rounded-full bg-zinc-200/80 dark:bg-zinc-900 text-zinc-500 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition-colors cursor-pointer"
+                      title={`Swap ${country.name} with another nation`}
+                      aria-label={`Swap ${country.name}`}
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                    </button>
+                    {selectedIds.length > 2 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveCountry(country.id)}
+                        className="min-w-[34px] min-h-[34px] flex items-center justify-center rounded-full bg-zinc-200/80 dark:bg-zinc-900 text-zinc-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-colors cursor-pointer"
+                        title={`Remove ${country.name}`}
+                        aria-label={`Remove ${country.name}`}
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="space-y-2 pe-14 sm:pe-0">
+                    <CountryFlag entityId={country.id} size="lg" />
+                    <div>
+                      <h3 className="font-extrabold text-sm sm:text-base md:text-lg text-zinc-900 dark:text-zinc-100 font-display">
+                        {country.name}
+                      </h3>
+                      <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-zinc-500 font-mono mt-0.5">
+                        <span className="truncate">{country.region}</span>
+                        <span>·</span>
+                        <span className="font-bold text-emerald-600 dark:text-emerald-400">{country.id}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-1 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => setFactsheetCountryId(country.id)}
+                      className="inline-flex items-center gap-1 text-[11px] font-bold font-mono text-purple-600 dark:text-purple-400 hover:underline cursor-pointer"
+                      title="Open printable 1-page executive factsheet brief"
+                    >
+                      <FileText className="w-3 h-3" /> 1-Page Brief
+                    </button>
+                    <button
+                      onClick={() => onSelectCountry(country.id)}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                    >
+                      Full Dossier <ArrowRight className="w-3 h-3" />
+                    </button>
                   </div>
                 </div>
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-1 flex-wrap">
-                <button
-                  type="button"
-                  onClick={() => setFactsheetCountryId(country.id)}
-                  className="inline-flex items-center gap-1 text-[11px] font-bold font-mono text-purple-600 dark:text-purple-400 hover:underline cursor-pointer"
-                  title="Open printable 1-page executive factsheet brief"
-                >
-                  <FileText className="w-3 h-3" /> 1-Page Brief
-                </button>
-                <button
-                  onClick={() => onSelectCountry(country.id)}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
-                >
-                  Full Dossier <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* Indicator Groups */}
-        <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
-          {metricGroups.map(group => (
-            <div key={group.group}>
-              <div className="bg-zinc-100 dark:bg-zinc-950/80 px-4 md:px-6 py-2.5 font-bold text-xs text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-mono flex items-center gap-2">
-                <span>{group.group}</span>
-              </div>
+            {/* Indicator Groups */}
+            <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
+              {metricGroups.map(group => (
+                <div key={group.group}>
+                  <div className="bg-zinc-100 dark:bg-zinc-950/80 px-4 md:px-6 py-2.5 font-bold text-xs text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-mono flex items-center gap-2">
+                    <span>{group.group}</span>
+                  </div>
 
-              <div className="divide-y divide-zinc-100 dark:divide-zinc-800/40">
-                {group.items.map(item => {
-                  const values = countries.map(c => item.getValue(c.id));
-                  const leaderVal = item.isLeader(values);
+                  <div className="divide-y divide-zinc-100 dark:divide-zinc-800/40">
+                    {group.items.map(item => {
+                      const values = countries.map(c => item.getValue(c.id));
+                      const leaderVal = item.isLeader(values);
 
-                  return (
-                    <div
-                      key={item.label}
-                      className="grid hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors"
-                      style={{ gridTemplateColumns: `240px repeat(${countries.length}, 1fr)` }}
-                    >
-                      <div className="p-3.5 md:px-6 md:py-4 text-xs font-medium text-zinc-700 dark:text-zinc-300 flex items-center">
-                        {item.label}
-                      </div>
-
-                      {countries.map(country => {
-                        const val = item.getValue(country.id);
-                        const isLeading = leaderVal !== 0 && val === leaderVal;
-
-                        return (
-                          <div
-                            key={country.id}
-                            className={`p-3.5 md:px-6 md:py-4 border-l border-zinc-200 dark:border-zinc-800 font-mono font-tabular tabular-nums text-xs md:text-sm flex items-center justify-between ${
-                              isLeading ? 'font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20' : 'text-zinc-800 dark:text-zinc-200'
-                            }`}
-                          >
-                            <span>{item.format(country.id)}</span>
-                            {isLeading && (
-                              <span className="text-[10px] font-mono font-normal px-1.5 py-0.5 rounded-sm bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center gap-0.5">
-                                <Check className="w-2.5 h-2.5" /> High
-                              </span>
-                            )}
+                      return (
+                        <div
+                          key={item.label}
+                          className="grid hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors"
+                          style={{ gridTemplateColumns: `minmax(150px, 220px) repeat(${countries.length}, minmax(135px, 1fr))` }}
+                        >
+                          <div className="sticky start-0 z-10 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xs p-3 sm:p-3.5 md:px-6 md:py-4 text-xs font-medium text-zinc-700 dark:text-zinc-300 flex items-center border-e border-zinc-200/80 dark:border-zinc-800">
+                            {item.label}
                           </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })}
-              </div>
+
+                          {countries.map(country => {
+                            const val = item.getValue(country.id);
+                            const isLeading = leaderVal !== 0 && val === leaderVal;
+
+                            return (
+                              <div
+                                key={country.id}
+                                className={`p-3 sm:p-3.5 md:px-6 md:py-4 border-s border-zinc-200 dark:border-zinc-800 font-mono tabular-nums text-xs md:text-sm flex items-center justify-between gap-1.5 ${
+                                  isLeading ? 'font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20' : 'text-zinc-800 dark:text-zinc-200'
+                                }`}
+                              >
+                                <span>{item.format(country.id)}</span>
+                                {isLeading && (
+                                  <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 inline-flex items-center gap-0.5 shrink-0">
+                                    <Check className="w-3 h-3" /> High
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
       </>
@@ -910,32 +901,33 @@ export const CompareView: React.FC<CompareViewProps> = ({
       <AnimatePresence>
         {isSelectorOpen && (
           <div 
-            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/60 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/60 backdrop-blur-md atlas-modal-backdrop"
             onClick={() => setIsSelectorOpen(false)}
             role="dialog"
             aria-modal="true"
             aria-labelledby="country-selector-modal-title"
           >
             <motion.div
-              initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 16 }}
+              initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 20 }}
               animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
-              exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 16 }}
+              exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 20 }}
               transition={SPRING_SNAPPY}
-              className="w-full max-w-4xl max-h-[88vh] flex flex-col rounded-3xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden"
+              className="atlas-modal-panel w-full max-w-4xl max-h-[92dvh] sm:max-h-[88dvh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
               {/* Modal Masthead */}
-              <div className="p-5 md:p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-4 bg-zinc-50/80 dark:bg-zinc-900/60">
+              <div className="p-4 sm:p-5 md:p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-4 bg-zinc-50/80 dark:bg-zinc-900/60 shrink-0">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700/60 text-emerald-700 dark:text-emerald-300">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] font-mono tabular-nums">
+                    <span className="font-bold text-emerald-700 dark:text-emerald-300">
                       {swapTargetIndex !== null ? `SWAPPING SLOT ${swapTargetIndex + 1}` : 'ADD NATION TO COMPARISON'}
                     </span>
-                    <span className="text-[11px] font-mono text-zinc-500">
+                    <span aria-hidden="true" className="text-zinc-300 dark:text-zinc-700">·</span>
+                    <span className="text-zinc-500">
                       {selectedIds.length}/4 Active Slots
                     </span>
                   </div>
-                  <h2 id="country-selector-modal-title" className="text-xl md:text-2xl font-bold font-display text-zinc-900 dark:text-zinc-100 mt-1">
+                  <h2 id="country-selector-modal-title" className="text-lg sm:text-xl md:text-2xl font-bold font-display text-zinc-900 dark:text-zinc-100 mt-1">
                     {swapTargetIndex !== null 
                       ? `Replace ${atlas.getEntity(selectedIds[swapTargetIndex])?.name || 'Selected Nation'}`
                       : 'Choose an African Nation to Compare'}
@@ -948,7 +940,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsSelectorOpen(false)}
-                  className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-600 dark:text-zinc-300 transition-colors cursor-pointer"
+                  className="min-touch-target rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-600 dark:text-zinc-300 transition-colors cursor-pointer shrink-0"
                   aria-label="Close country selector"
                 >
                   <X className="w-4 h-4" />
@@ -956,22 +948,23 @@ export const CompareView: React.FC<CompareViewProps> = ({
               </div>
 
               {/* Search & Region Filter Bar */}
-              <div className="p-4 md:px-6 md:py-3.5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/40 dark:bg-zinc-900/30 space-y-3">
+              <div className="p-4 md:px-6 md:py-3.5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/40 dark:bg-zinc-900/30 space-y-3 shrink-0">
                 <div className="relative">
-                  <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
+                  <Search className="w-4 h-4 absolute start-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
                   <input
                     type="text"
                     value={selectorSearch}
                     onChange={e => setSelectorSearch(e.target.value)}
                     placeholder="Search by country name, ISO code (e.g. NGA, KEN, MAR), or capital..."
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs md:text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-hidden focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-sans"
+                    className="w-full ps-10 pe-10 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs md:text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-hidden focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-sans"
                     autoFocus
                   />
                   {selectorSearch && (
                     <button
                       type="button"
                       onClick={() => setSelectorSearch('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
+                      aria-label="Clear search"
+                      className="min-touch-target absolute end-1 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -979,7 +972,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 </div>
 
                 {/* Region Filter Chips with SlidingPill */}
-                <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Geoscheme region filter">
+                <div className="flex flex-nowrap overflow-x-auto scroll-shadow-x no-scrollbar sm:flex-wrap items-center gap-1.5 pb-1 sm:pb-0" role="tablist" aria-label="Geoscheme region filter">
                   {REGION_OPTIONS.map(opt => {
                     const isSelected = selectedRegionFilter === opt.id;
                     return (
@@ -989,7 +982,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                         role="tab"
                         aria-selected={isSelected}
                         onClick={() => setSelectedRegionFilter(opt.id)}
-                        className={`relative px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 ${
+                        className={`relative px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl text-xs font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 ${
                           isSelected
                             ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
                             : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
@@ -1006,7 +999,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
               </div>
 
               {/* Nations Grid */}
-              <div className="p-4 md:p-6 overflow-y-auto flex-1">
+              <div className="p-4 md:p-6 overflow-y-auto overscroll-contain sleek-scrollbar flex-1">
                 {candidateCountries.length === 0 ? (
                   <div className="py-12 text-center text-zinc-500">
                     <Globe className="w-8 h-8 mx-auto text-zinc-400 mb-2 opacity-50" />
@@ -1018,7 +1011,6 @@ export const CompareView: React.FC<CompareViewProps> = ({
                     {candidateCountries.map(entity => {
                       const isCurrentlyCompared = selectedIds.includes(entity.id);
                       const isTargetSlotCountry = swapTargetIndex !== null && selectedIds[swapTargetIndex] === entity.id;
-                      const tonal = getRegionCardTonalStyle(entity.region);
                       const pop = atlas.getIndicatorValue(entity.id, 'SP.POP.TOTL') || 0;
                       const gdp = atlas.getIndicatorValue(entity.id, 'NY.GDP.MKTP.CD') || 0;
 
@@ -1028,7 +1020,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                             type="button"
                             disabled={isCurrentlyCompared && !isTargetSlotCountry}
                             onClick={() => handleSelectCountry(entity.id)}
-                            className={`w-full p-3.5 rounded-2xl border text-left transition-all relative flex flex-col justify-between h-full cursor-pointer ${
+                            className={`w-full p-3.5 rounded-2xl border text-start transition-all relative flex flex-col justify-between h-full cursor-pointer ${
                               isTargetSlotCountry
                                 ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-950/30 ring-1 ring-amber-500'
                                 : isCurrentlyCompared
@@ -1040,12 +1032,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
                               <div className="flex items-center gap-2.5 min-w-0">
                                 <CountryFlag entityId={entity.id} size="md" />
                                 <div className="min-w-0">
-                                  <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100 truncate flex items-center gap-1.5">
-                                    <span
-                                      className="w-1.5 h-1.5 rounded-full shrink-0"
-                                      style={{ backgroundColor: tonal.unBaseColor }}
-                                    />
-                                    <span>{entity.name}</span>
+                                  <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100 truncate">
+                                    {entity.name}
                                   </div>
                                   <div className="text-[10px] font-mono text-zinc-500 flex items-center gap-1">
                                     <span>{entity.id}</span>
@@ -1056,17 +1044,17 @@ export const CompareView: React.FC<CompareViewProps> = ({
                               </div>
 
                               {isCurrentlyCompared ? (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/60 shrink-0">
+                                <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 shrink-0">
                                   <Check className="w-3 h-3" /> In Matrix
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 group-hover:bg-emerald-500 group-hover:text-zinc-950 shrink-0">
+                                <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-zinc-500 dark:text-zinc-400 shrink-0">
                                   Select
                                 </span>
                               )}
                             </div>
 
-                            <div className="mt-3 pt-2 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+                            <div className="mt-3 pt-2 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-[10px] font-mono text-zinc-500 tabular-nums">
                               <span>Pop: {formatPopulation(pop)}</span>
                               <span className="font-semibold text-zinc-700 dark:text-zinc-300">GDP: {formatGDP(gdp)}</span>
                             </div>
@@ -1079,7 +1067,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
               </div>
 
               {/* Modal Footer */}
-              <div className="p-3 md:px-6 md:py-3 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex items-center justify-between text-xs text-zinc-500 font-mono">
+              <div className="p-3 sm:px-6 sm:py-3 safe-pb border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex items-center justify-between text-xs text-zinc-500 font-mono tabular-nums shrink-0">
                 <span>Showing {candidateCountries.length} of 54 African Nations</span>
                 <span className="hidden sm:inline">Press Esc to Close</span>
               </div>

@@ -249,7 +249,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
       {activeGroup !== 'overview' ? (
         <header
           id="country-compact-header-bar"
-          className="sticky top-16 z-20 rounded-2xl border px-4 py-3 shadow-xs backdrop-blur-md transition-colors"
+          className="relative md:sticky md:top-16 z-20 rounded-2xl border px-4 py-3 shadow-xs backdrop-blur-md transition-colors"
           style={{
             backgroundColor: 'rgba(255, 255, 255, 0.94)',
             borderColor: regionPalette.atlasBorder,

@@ -180,6 +180,12 @@
     --tast-amber-accent:    #D97706;
     --tast-amber-pale:      #FEF3C7;
     --tast-maritime-navy:   #1E293B;
+
+    /* Hardware & Viewport Safe Area Variables (iOS Notch & Dynamic Island, Android Nav Bar) */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
   }
 
   html.light,
@@ -303,11 +309,6 @@
     --region-southern-calm:  #24191E; /* Deep Berry-Rose-Slate, lightness ~12.5% */
     --region-western-calm:   #15231C; /* Balanced Sage-Pine-Slate, lightness ~12.5% */
     --region-pan-african-calm: #181D26; /* Universal Swiss Obsidian-Slate Card */
-    /* Hardware & Viewport Safe Area Variables (iOS Notch & Dynamic Island, Android Nav Bar) */
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-    --safe-left: env(safe-area-inset-left, 0px);
-    --safe-right: env(safe-area-inset-right, 0px);
   }
 
   html, body {
@@ -935,23 +936,25 @@ abbr {
    Modern Future-Proof CSS Enhancements (Chrome 115+ Baseline Compatible)
    ========================================================================= */
 
-/* 1. View Transitions API Declarations */
-@view-transition {
-  navigation: auto;
-}
+/* 1. View Transitions API Declarations (Gated by reduced motion) */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
 
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 0.22s;
-  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-}
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.24s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
 
-::view-transition-old(dossier-panel) {
-  animation: 0.18s ease-out both fade-out;
-}
+  ::view-transition-old(dossier-panel) {
+    animation: 0.18s ease-out both fade-out;
+  }
 
-::view-transition-new(dossier-panel) {
-  animation: 0.24s cubic-bezier(0.16, 1, 0.3, 1) both fade-in;
+  ::view-transition-new(dossier-panel) {
+    animation: 0.24s cubic-bezier(0.16, 1, 0.3, 1) both fade-in;
+  }
 }
 
 @keyframes fade-out {
@@ -1135,6 +1138,11 @@ html[dir="rtl"] .font-mono {
     page-break-inside: auto !important;
     break-inside: auto !important;
   }
+
+  .cv-auto {
+    content-visibility: visible !important;
+    contain-intrinsic-size: auto !important;
+  }
 }
 
 /* Hide App Footer when African Ports Map or immersive map view is active */
@@ -1271,6 +1279,14 @@ body.hide-app-footer #app-footer-container {
 }
 
 /* Safe Area Inset Classes */
+.safe-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-pb-dock {
+  padding-bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px));
+}
+
 .pb-safe {
   padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
 }
@@ -1283,10 +1299,125 @@ body.hide-app-footer #app-footer-container {
   bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
 }
 
+/* Editorial Anchor Offset below sticky navbar & chapter bars */
+[id^="sec-"] {
+  scroll-margin-top: 4.5rem;
+}
+
+@media (min-width: 768px) {
+  [id^="sec-"] {
+    scroll-margin-top: 8.25rem;
+  }
+}
+
+/* Smooth Details Disclosure (Baseline interpolate-size + ::details-content) */
+@supports (interpolate-size: allow-keywords) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+
+  .atlas-details::details-content {
+    block-size: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+      block-size 260ms var(--ease-japandi),
+      opacity 200ms var(--ease-japandi),
+      content-visibility 260ms allow-discrete;
+  }
+
+  .atlas-details[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
+}
+
+.atlas-details-chevron {
+  transition: transform 220ms var(--ease-spring-snappy);
+}
+
+.atlas-details[open] .atlas-details-chevron {
+  transform: rotate(180deg);
+}
+
+/* Scroll-Driven Entrance Animation for Long-Form Chapters & Cards */
+@keyframes atlas-scroll-reveal {
+  from {
+    opacity: 0.25;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .scroll-reveal-item {
+      animation: atlas-scroll-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 20%;
+    }
+  }
+}
+
+/* Horizontal Touch Scroll Ribbon */
+.scroll-shadow-x {
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+
+/* Offscreen Content Visibility Rendering Optimization */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 260px;
+}
+
+/* CSS @starting-style Dialog & Bottom Sheet Transitions */
+.atlas-modal-backdrop {
+  opacity: 1;
+  transition: opacity 180ms var(--ease-japandi);
+}
+
+@starting-style {
+  .atlas-modal-backdrop {
+    opacity: 0;
+  }
+}
+
+.atlas-modal-panel {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  transition:
+    opacity 200ms var(--ease-japandi),
+    transform 240ms var(--ease-spring-snappy);
+}
+
+@starting-style {
+  .atlas-modal-panel {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0) scale(0.985);
+  }
+}
+
 /* Responsive Container Query Enhancements */
 @container (min-width: 440px) {
   .cq-col-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 640px) {
+  .cq-adaptive-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 920px) {
+  .cq-adaptive-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

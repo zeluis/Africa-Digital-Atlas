@@ -141,102 +141,102 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           <span className="text-[11px] font-mono text-zinc-400">UN DESA · IMF · UNDP</span>
         </div>
 
-        {/* Unified High-Density 6-Metric Benchmark Ribbon (Single sleek bar replacing bulky cards) */}
-        <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/95 dark:bg-zinc-900/95 shadow-xs backdrop-blur-sm overflow-hidden">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-y sm:divide-y-0 lg:divide-x divide-zinc-200/70 dark:divide-zinc-800/70">
+        {/* Unified High-Density 6-Metric Benchmark Ribbon (Symmetrical gap-px hairline dividers across 2/3/6 cols) */}
+        <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-200/70 dark:bg-zinc-800/70 shadow-xs backdrop-blur-sm overflow-hidden">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px tabular-nums">
             {/* 1. Population */}
-            <div className="p-3.5 sm:p-4 flex flex-col justify-between space-y-1.5 hover:bg-zinc-50/60 dark:hover:bg-zinc-800/40 transition-colors">
+            <div className="bg-white/95 dark:bg-zinc-900/95 p-3.5 sm:p-4 flex flex-col justify-between space-y-1.5 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/70 transition-colors">
               <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                 <Users className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                 <span className="text-[11px] font-mono font-semibold uppercase tracking-wider truncate">
                   Population
                 </span>
               </div>
-              <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-zinc-900 dark:text-zinc-100 tabular-nums">
+              <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-zinc-900 dark:text-zinc-100">
                 1.48 Billion
               </div>
-              <div className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-semibold">
-                <span>+2.4% YoY</span>
+              <div className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                +2.4% YoY
               </div>
             </div>
 
             {/* 2. Combined GDP */}
-            <div className="p-3.5 sm:p-4 flex flex-col justify-between space-y-1.5 hover:bg-zinc-50/60 dark:hover:bg-zinc-800/40 transition-colors">
+            <div className="bg-white/95 dark:bg-zinc-900/95 p-3.5 sm:p-4 flex flex-col justify-between space-y-1.5 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/70 transition-colors">
               <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                 <DollarSign className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
                 <span className="text-[11px] font-mono font-semibold uppercase tracking-wider truncate">
                   Combined GDP
                 </span>
               </div>
-              <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-cyan-700 dark:text-cyan-300 tabular-nums">
+              <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-cyan-700 dark:text-cyan-300">
                 $3.12 Trillion
               </div>
-              <div className="text-[11px] font-mono text-cyan-600 dark:text-cyan-400 flex items-center gap-1 font-semibold">
-                <span>+3.8% Real</span>
+              <div className="text-[11px] font-mono text-cyan-600 dark:text-cyan-400 font-semibold">
+                +3.8% Real
               </div>
             </div>
 
             {/* 3. GDP Per Capita */}
-            <div className="p-3.5 sm:p-4 flex flex-col justify-between space-y-1.5 hover:bg-zinc-50/60 dark:hover:bg-zinc-800/40 transition-colors">
+            <div className="bg-white/95 dark:bg-zinc-900/95 p-3.5 sm:p-4 flex flex-col justify-between space-y-1.5 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/70 transition-colors">
               <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                 <Sparkles className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
                 <span className="text-[11px] font-mono font-semibold uppercase tracking-wider truncate">
                   GDP Per Capita
                 </span>
               </div>
-              <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-zinc-900 dark:text-zinc-100 tabular-nums">
+              <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-zinc-900 dark:text-zinc-100">
                 $2,094
               </div>
-              <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
-                <span>Weighted</span>
+              <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
+                Weighted
               </div>
             </div>
 
             {/* 4. Continental HDI */}
-            <div className="p-3.5 sm:p-4 flex flex-col justify-between space-y-1.5 hover:bg-zinc-50/60 dark:hover:bg-zinc-800/40 transition-colors">
+            <div className="bg-white/95 dark:bg-zinc-900/95 p-3.5 sm:p-4 flex flex-col justify-between space-y-1.5 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/70 transition-colors">
               <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                 <HeartHandshake className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                 <span className="text-[11px] font-mono font-semibold uppercase tracking-wider truncate">
                   Continental HDI
                 </span>
               </div>
-              <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-amber-700 dark:text-amber-400 tabular-nums">
+              <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-amber-700 dark:text-amber-400">
                 0.536
               </div>
-              <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
-                <span>Top: 0.802</span>
+              <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
+                Top: 0.802
               </div>
             </div>
 
             {/* 5. Electrification */}
-            <div className="p-3.5 sm:p-4 flex flex-col justify-between space-y-1.5 hover:bg-zinc-50/60 dark:hover:bg-zinc-800/40 transition-colors">
+            <div className="bg-white/95 dark:bg-zinc-900/95 p-3.5 sm:p-4 flex flex-col justify-between space-y-1.5 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/70 transition-colors">
               <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                 <Zap className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                 <span className="text-[11px] font-mono font-semibold uppercase tracking-wider truncate">
                   Electrification
                 </span>
               </div>
-              <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-zinc-900 dark:text-zinc-100 tabular-nums">
+              <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-zinc-900 dark:text-zinc-100">
                 56.4%
               </div>
-              <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
-                <span>Access Trajectory</span>
+              <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
+                Access Trajectory
               </div>
             </div>
 
             {/* 6. Heritage Properties */}
-            <div className="p-3.5 sm:p-4 flex flex-col justify-between space-y-1.5 hover:bg-zinc-50/60 dark:hover:bg-zinc-800/40 transition-colors">
+            <div className="bg-white/95 dark:bg-zinc-900/95 p-3.5 sm:p-4 flex flex-col justify-between space-y-1.5 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/70 transition-colors">
               <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                 <Landmark className="w-3.5 h-3.5 text-pink-500 shrink-0" />
                 <span className="text-[11px] font-mono font-semibold uppercase tracking-wider truncate">
                   Heritage Properties
                 </span>
               </div>
-              <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-pink-700 dark:text-pink-400 tabular-nums">
+              <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-pink-700 dark:text-pink-400">
                 104 Sites
               </div>
-              <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
-                <span>across 42 Nations</span>
+              <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
+                across 42 Nations
               </div>
             </div>
           </div>
@@ -263,7 +263,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                   role="tab"
                   aria-selected={isActive}
                   onClick={() => setActivePerspective(pId)}
-                  className={`relative w-full px-3 py-2.5 sm:px-3.5 sm:py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                  className={`relative w-full min-h-[44px] px-3 py-2.5 sm:px-3.5 sm:py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                     isActive 
                       ? `${cfg.activeText} shadow-xs font-bold` 
                       : `text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 ${cfg.hoverBg}`
@@ -298,9 +298,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           </div>
 
           {/* Status & Provenance Metadata Row with ample horizontal space */}
-          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 dark:text-zinc-500 px-1 pt-0.5 min-w-0">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-            <span className="font-medium text-zinc-500 dark:text-zinc-400 truncate">
+          <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 dark:text-zinc-400 px-1 pt-0.5 min-w-0">
+            <span className="font-medium truncate">
               Curated Pan-African Observatory · 54 Sovereign States
             </span>
           </div>
@@ -371,12 +370,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                     >
                       <div className="flex items-center justify-between border-b border-zinc-200/60 dark:border-zinc-800/80 pb-2">
                         <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">{reg.region}</h4>
-                        <span className="rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[10px] font-mono text-zinc-600 dark:text-zinc-400">
+                        <span className="text-[11px] font-mono font-semibold text-zinc-600 dark:text-zinc-400 tabular-nums">
                           {reg.countryCount} States
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="grid grid-cols-2 gap-2 text-xs tabular-nums">
                         <div>
                           <span className="text-zinc-500">Population</span>
                           <div className="font-mono font-bold text-zinc-800 dark:text-zinc-200">
@@ -510,7 +509,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
         {/* Tab 3: Research Observatories & Gateways */}
         {activePerspective === 'observatories' && (
-          <div role="tabpanel" aria-label="Research Observatories and Gateways" className="space-y-6">
+          <div role="tabpanel" aria-label="Research Observatories and Gateways" className="cv-auto space-y-6">
             <div>
               <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-100 flex items-center gap-2 font-display">
                 <Compass className="w-5 h-5 text-emerald-500" /> Curated Research Observatories & Monographs
@@ -520,7 +519,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 tabular-nums">
               <ExplorationCard
                 title="Transatlantic Slave Trade GIS"
                 badge="36,108 VOYAGES"
@@ -580,7 +579,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
         {/* Tab 4: Harmonization & Provenance Standards */}
         {activePerspective === 'provenance' && (
-          <div role="tabpanel" aria-label="Harmonization Standards and Provenance" className="space-y-6">
+          <div role="tabpanel" aria-label="Harmonization Standards and Provenance" className="cv-auto space-y-6">
             <div>
               <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-100 flex items-center gap-2 font-display">
                 <ShieldCheck className="w-5 h-5 text-emerald-500" /> Methodological Standards & Provenance Registry

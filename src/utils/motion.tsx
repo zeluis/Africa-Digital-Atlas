@@ -88,6 +88,24 @@ export const usePrefersReducedMotion = (): boolean => {
   return reduced;
 };
 
+/**
+ * Wraps DOM-mutating state transitions (e.g., theme toggles, view switches) in
+ * the Baseline View Transitions API when supported and reduced motion is off.
+ */
+export const runViewTransition = (update: () => void): void => {
+  if (
+    typeof document !== 'undefined' &&
+    !isReducedMotionActive() &&
+    typeof (document as Document & { startViewTransition?: (cb: () => void) => unknown }).startViewTransition === 'function'
+  ) {
+    (document as Document & { startViewTransition: (cb: () => void) => unknown }).startViewTransition(() => {
+      update();
+    });
+    return;
+  }
+  update();
+};
+
 // ============================================================================
 // 4. Standard Reusable Framer Motion Variants
 // ============================================================================

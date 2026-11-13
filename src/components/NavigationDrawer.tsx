@@ -39,6 +39,7 @@ import { getCategorizedReports, getAllReports, isReportOrPaperTab, NavReportGrou
 import { DynamicIcon } from './DynamicIcon';
 import { AfricaUnLogo } from './AfricaUnLogo';
 import { triggerHaptic } from '../utils/mobileHaptics';
+import { usePrefersReducedMotion } from '../utils/motion';
 
 export type MainNavId = 
   | 'overview'
@@ -259,6 +260,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   isIconographyIngestion
 }) => {
   const { t } = useTranslation();
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   // Determine if current page triggers auto-collapse rail mode on desktop
   const isAutoCollapsePage = 
@@ -1282,7 +1284,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           '--drawer-scrollbar-thumb': selectedScrollbarColor.thumb,
           '--drawer-scrollbar-thumb-hover': selectedScrollbarColor.hover,
         } as React.CSSProperties}
-        className={`hidden lg:flex flex-col shrink-0 sticky top-16 h-[calc(100vh-4rem)] border-r border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl z-30 transition-all duration-300 ease-out relative overflow-hidden ${
+        className={`hidden lg:flex flex-col shrink-0 sticky top-14 sm:top-16 h-[calc(100dvh-3.5rem)] sm:h-[calc(100dvh-4rem)] border-r border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl z-30 transition-all duration-300 ease-out relative overflow-hidden ${
           !isDesktopOpen
             ? 'w-0 p-0 border-r-0 overflow-hidden'
             : isAutoCollapsePage
@@ -1295,7 +1297,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
         {isDesktopOpen && (
           <div className="relative flex-1 min-h-0 w-full overflow-hidden flex flex-col">
             <div 
-              className={`flex-1 overflow-y-auto overflow-x-hidden stable-gutter sleek-scrollbar pb-12 ${
+              className={`flex-1 overflow-y-auto overflow-x-hidden overscroll-contain stable-gutter sleek-scrollbar pb-12 ${
                 isAutoCollapsePage && !isDrawerHovered ? 'p-2' : 'p-4'
               }`}
             >
@@ -1319,19 +1321,20 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: prefersReducedMotion ? 0.01 : 0.2 }}
               onClick={onCloseMobile}
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 lg:hidden"
             />
             <motion.div
-              initial={{ x: '-100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
-              transition={{ duration: 0.25, ease: MD3_STANDARD_EASE }}
+              initial={prefersReducedMotion ? { opacity: 0 } : { x: '-100%' }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={prefersReducedMotion ? { opacity: 0 } : { x: '-100%' }}
+              transition={{ duration: prefersReducedMotion ? 0.01 : 0.25, ease: MD3_STANDARD_EASE }}
               style={{
                 '--drawer-scrollbar-thumb': selectedScrollbarColor.thumb,
                 '--drawer-scrollbar-thumb-hover': selectedScrollbarColor.hover,
               } as React.CSSProperties}
-              className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 z-50 overflow-hidden lg:hidden flex flex-col justify-between shadow-2xl touch-sheet safe-pb"
+              className="fixed inset-y-0 left-0 w-80 max-w-[85vw] h-dvh max-h-dvh bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 z-50 overflow-hidden lg:hidden flex flex-col justify-between shadow-2xl touch-sheet safe-pb"
             >
               <div className="p-5 pb-0 flex flex-col flex-1 min-h-0 relative overflow-hidden">
                 <div className="flex items-center justify-between pb-4 mb-2 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
@@ -1350,7 +1353,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                   </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto overflow-x-hidden stable-gutter sleek-scrollbar pb-12 pr-1">
+                <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain stable-gutter sleek-scrollbar pb-12 pr-1">
                   {navContent(true)}
                 </div>
 

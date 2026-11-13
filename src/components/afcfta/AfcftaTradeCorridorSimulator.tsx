@@ -150,23 +150,24 @@ Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
   };
 
   return (
-    <div className={`w-full bg-[#FAF8F5] dark:bg-stone-950 text-stone-900 dark:text-stone-100 rounded-3xl border border-stone-200/90 dark:border-stone-800 shadow-xl overflow-hidden transition-all ${
-      isModal ? 'max-h-[92vh] flex flex-col' : 'p-6 sm:p-8 space-y-8'
+    <div className={`w-full bg-[#FAF8F5] dark:bg-stone-950 text-stone-900 dark:text-stone-100 rounded-t-3xl sm:rounded-3xl border border-stone-200/90 dark:border-stone-800 shadow-xl overflow-hidden transition-all ${
+      isModal ? 'max-h-[94dvh] sm:max-h-[92dvh] flex flex-col' : 'p-4 sm:p-8 space-y-8'
     }`}>
       {/* Simulator Masthead */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 sm:p-6 border-b border-stone-200/90 dark:border-stone-800 bg-white/60 dark:bg-stone-900/40 shrink-0">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300">
-              AfCFTA TRADE &amp; CUSTOMS SIMULATOR
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 p-4 sm:p-6 border-b border-stone-200/90 dark:border-stone-800 bg-white/60 dark:bg-stone-900/40 shrink-0">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2 text-[10px] font-mono">
+            <span className="font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">
+              AfCFTA Trade &amp; Customs Simulator
             </span>
-            <span className="text-[10px] font-mono text-stone-500 dark:text-stone-400">
+            <span className="text-stone-400">·</span>
+            <span className="text-stone-500 dark:text-stone-400">
               JEL Codes: F13 · F15 · R41
             </span>
           </div>
-          <h2 id="afcfta-simulator-modal-title" className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 mt-1 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-            AfCFTA Trade Corridor &amp; Tariff Impact Simulator
+          <h2 id="afcfta-simulator-modal-title" className="text-lg sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 mt-1 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span>AfCFTA Trade Corridor &amp; Tariff Impact Simulator</span>
           </h2>
           <p className="text-xs text-stone-600 dark:text-stone-400 mt-0.5 max-w-3xl">
             Simulate bilateral tariff phase-downs, One-Stop Border Post (OSBP) clearance bottlenecks, PAPSS currency conversion savings, and Rules of Origin compliance across continental trade corridors.
@@ -198,7 +199,7 @@ Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-xl border border-stone-200 dark:border-stone-800 hover:bg-stone-200/50 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300 transition-colors cursor-pointer"
+              className="min-touch-target flex items-center justify-center p-2 rounded-xl border border-stone-200 dark:border-stone-800 hover:bg-stone-200/50 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300 transition-colors cursor-pointer"
               aria-label="Close Simulator"
             >
               ✕
@@ -208,9 +209,9 @@ Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
       </div>
 
       {/* Simulator Perspective Navigation Tabs with SlidingPill */}
-      <div className="px-5 sm:px-6 pt-4 pb-2 border-b border-stone-200/60 dark:border-stone-800/60 shrink-0 bg-stone-50/50 dark:bg-stone-950/50">
+      <div className="px-4 sm:px-6 pt-3 sm:pt-4 pb-2 border-b border-stone-200/60 dark:border-stone-800/60 shrink-0 bg-stone-50/50 dark:bg-stone-950/50">
         <div 
-          className="flex items-center gap-2 p-1.5 rounded-2xl bg-stone-200/60 dark:bg-stone-900 border border-stone-300/60 dark:border-stone-800 w-fit shrink-0"
+          className="flex items-center flex-nowrap overflow-x-auto no-scrollbar scroll-shadow-x gap-1.5 sm:gap-2 p-1.5 rounded-2xl bg-stone-200/60 dark:bg-stone-900 border border-stone-300/60 dark:border-stone-800 w-full sm:w-fit shrink-0"
           role="tablist"
           aria-label="Simulator Perspective"
         >

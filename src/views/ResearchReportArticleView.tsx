@@ -24,7 +24,8 @@ import {
   ShieldCheck,
   Globe2,
   Cpu,
-  Hash
+  Hash,
+  ChevronDown
 } from 'lucide-react';
 import { RESEARCH_REPORTS, ResearchReport } from '../data/reportsData';
 import { getAllReports } from '../data/reportsDataLoader';
@@ -136,33 +137,45 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
     };
   }, [report]);
 
-  // Reading progress and active section spy on scroll
+  // Compositor progress fallback (for browsers without CSS animation-timeline: scroll())
   useEffect(() => {
+    const supportsScrollTimeline = typeof CSS !== 'undefined' && typeof CSS.supports === 'function' && CSS.supports('animation-timeline', 'scroll()');
+    if (supportsScrollTimeline) return;
+
     const handleScroll = () => {
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
       if (totalHeight > 0) {
         const progress = Math.min(Math.max((window.scrollY / totalHeight) * 100, 0), 100);
         setReadingProgress(progress);
       }
-
-      // Section spy
-      const scrollPosition = window.scrollY + 200;
-      for (const section of report.sections) {
-        const el = document.getElementById(section.id);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSectionId(section.id);
-            break;
-          }
-        }
-      }
     };
 
+    handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [report]);
+  }, []);
+
+  // Zero-reflow IntersectionObserver section spy
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActiveSectionId(entry.target.id);
+          }
+        }
+      },
+      { rootMargin: '-18% 0px -65% 0px', threshold: 0 }
+    );
+
+    const targets = report.sections
+      .map(s => document.getElementById(s.id))
+      .filter((el): el is HTMLElement => Boolean(el));
+    targets.forEach(el => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [report.sections]);
 
   const handleExportJson = () => {
     const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
@@ -185,32 +198,29 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
       />
 
       {/* Navigation Breadcrumb Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs no-print">
-        <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs no-print">
+        <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400 min-w-0">
           {onBackToDirectory && (
             <button
               type="button"
               onClick={onBackToDirectory}
-              className="hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-1 font-medium transition-colors cursor-pointer"
+              className="hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-1 font-medium transition-colors cursor-pointer min-h-[40px] px-1 -ms-1 rounded-lg shrink-0"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Research Reports</span>
             </button>
           )}
-          <span>/</span>
-          <span 
-            className="font-semibold px-2 py-0.5 rounded-full"
-            style={{ 
-              backgroundColor: `${report.categoryColor}18`, 
-              color: report.categoryColor 
-            }}
+          <span aria-hidden="true">/</span>
+          <span
+            className="font-semibold truncate"
+            style={{ color: report.categoryColor }}
           >
             {report.categoryLabel}
           </span>
         </div>
 
         {/* Reader Controls */}
-        <div className="flex flex-wrap items-center gap-2 no-print">
+        <div className="flex items-center gap-2 overflow-x-auto scroll-shadow-x no-scrollbar pb-1 sm:pb-0 sm:flex-wrap no-print">
           {/* Audio Voice Narration Engine */}
           <ReportVoiceReader
             title={report.title}
@@ -248,7 +258,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
           <button
             type="button"
             onClick={() => setIsDoiModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-900 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 font-bold transition-all cursor-pointer text-xs shadow-2xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-900 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 font-bold transition-all cursor-pointer text-xs shadow-2xs"
             title="Verify DOIs against Crossref API or upload custom publication mapping JSON"
           >
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
@@ -259,7 +269,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
           <button
             type="button"
             onClick={() => setIsCitationModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-800/80 font-bold transition-all cursor-pointer text-xs shadow-2xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-800/80 font-bold transition-all cursor-pointer text-xs shadow-2xs"
             title="Cite this monograph across 6 scholarly citation formats"
           >
             <Quote className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
@@ -271,7 +281,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
             type="button"
             onClick={handleDownloadPdf}
             disabled={isGeneratingPdf}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold transition-all cursor-pointer text-xs shadow-2xs disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold transition-all cursor-pointer text-xs shadow-2xs disabled:opacity-50"
             title="Download publication-grade academic PDF"
           >
             <Download className="w-3.5 h-3.5" />
@@ -282,7 +292,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
           <button
             type="button"
             onClick={handleExportJson}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 font-medium transition-all cursor-pointer text-xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 font-medium transition-all cursor-pointer text-xs"
             title="Download canonical AfriataReport JSON format"
           >
             <FileText className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
@@ -293,7 +303,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
           <button
             type="button"
             onClick={() => window.print()}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 font-medium transition-all cursor-pointer text-xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 font-medium transition-all cursor-pointer text-xs"
             title="Print Monograph directly from browser"
           >
             <Printer className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
@@ -310,24 +320,30 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
         />
 
         <div className="relative space-y-4 max-w-4xl">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <span className="text-[11px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-xs">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 inline-flex items-center gap-1.5">
               <Sparkles className="w-3 h-3" />
               <span>{pubType}</span>
             </span>
 
-            <span className="text-[11px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+            <span aria-hidden="true" className="text-zinc-300 dark:text-zinc-700">·</span>
+
+            <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">
               {typeof report.classification === 'string' 
                 ? report.classification 
                 : (report.classification?.disciplines?.[0] || report.classification?.pillar || 'Scholarly Research')}
             </span>
 
-            <span className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
+            <span aria-hidden="true" className="text-zinc-300 dark:text-zinc-700">·</span>
+
+            <span className="text-xs text-zinc-500 dark:text-zinc-400 inline-flex items-center gap-1.5 tabular-nums">
               <Calendar className="w-3.5 h-3.5 text-zinc-400" />
               <span>{report.publicationDate}</span>
             </span>
 
-            <span className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
+            <span aria-hidden="true" className="text-zinc-300 dark:text-zinc-700">·</span>
+
+            <span className="text-xs text-zinc-500 dark:text-zinc-400 inline-flex items-center gap-1.5 tabular-nums">
               <Clock className="w-3.5 h-3.5 text-zinc-400" />
               <span>{report.readingTimeMinutes} min read</span>
             </span>
@@ -341,28 +357,21 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
             {report.subtitle}
           </p>
 
-          {/* Geographic Coverage ISO-3 Badges */}
+          {/* Geographic Coverage ISO-3 Metadata */}
           {geoCoverage.length > 0 && (
-            <div className="flex flex-wrap items-center gap-1.5 pt-1">
-              <span className="text-[11px] font-mono text-zinc-400 dark:text-zinc-500 flex items-center gap-1 mr-1">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 pt-1 text-[11px]">
+              <span className="font-mono text-zinc-400 dark:text-zinc-500 flex items-center gap-1">
                 <Globe2 className="w-3 h-3" />
-                <span>Geographic Scope:</span>
+                <span>Scope:</span>
               </span>
-              {geoCoverage.map(iso => (
-                <span
-                  key={iso}
-                  translate="no"
-                  className="notranslate px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-[10px] font-mono font-bold text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700"
-                >
-                  {iso}
+              {geoCoverage.map((iso, idx) => (
+                <span key={iso} translate="no" className="notranslate font-mono font-bold text-zinc-700 dark:text-zinc-300">
+                  {iso}{idx < geoCoverage.length - 1 || primaryRegions.length > 0 ? ' ·' : ''}
                 </span>
               ))}
-              {primaryRegions.map(reg => (
-                <span
-                  key={reg}
-                  className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-[10px] font-sans font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
-                >
-                  {reg}
+              {primaryRegions.map((reg, idx) => (
+                <span key={reg} className="font-sans font-semibold text-emerald-700 dark:text-emerald-300">
+                  {reg}{idx < primaryRegions.length - 1 ? ' ·' : ''}
                 </span>
               ))}
             </div>
@@ -428,9 +437,9 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
 
       {/* Main Two-Column Academic Article Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Sticky Column: Table of Contents & Cross-Links (4 Cols) */}
-        <aside className="lg:col-span-4 space-y-4 lg:sticky lg:top-24 no-print">
-          <div className="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-3">
+        {/* Left Sticky Column: Table of Contents (lg+) & Cross-Links (4 Cols, placed below article on mobile) */}
+        <aside className="lg:col-span-4 space-y-4 lg:sticky lg:top-24 order-2 lg:order-1 no-print">
+          <div className="hidden lg:block p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-3">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 pb-2 border-b border-zinc-100 dark:border-zinc-800">
               <BookOpen className="w-4 h-4 text-amber-500" />
               <span>Table of Contents</span>
@@ -507,12 +516,51 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
           </div>
         </aside>
 
-        {/* Right Academic Column: Article Body (8 Cols) */}
-        <main className="lg:col-span-8 space-y-8">
+        {/* Right Academic Column: Article Body (8 Cols, first on mobile) */}
+        <main className="lg:col-span-8 space-y-6 sm:space-y-8 order-1 lg:order-2">
+          {/* Mobile Collapsible Table of Contents (Baseline interpolate-size details) */}
+          <details className="atlas-details lg:hidden rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xs no-print">
+            <summary className="list-none cursor-pointer px-4 py-3.5 min-h-[44px] flex items-center justify-between text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-200 select-none">
+              <span className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-amber-500" />
+                <span>Table of Contents</span>
+                <span className="font-mono font-normal text-zinc-400 tabular-nums">({report.sections.length + 2})</span>
+              </span>
+              <ChevronDown className="w-4 h-4 text-zinc-400 atlas-details-chevron shrink-0" />
+            </summary>
+            <nav className="px-3 pb-3 pt-1.5 border-t border-zinc-100 dark:border-zinc-800 space-y-1 text-xs">
+              <a
+                href="#sec-abstract"
+                className="block px-3 py-2 rounded-xl text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors font-medium"
+              >
+                Executive Abstract
+              </a>
+              {report.sections.map(section => (
+                <a
+                  key={section.id}
+                  href={`#${section.id}`}
+                  className={`block px-3 py-2 rounded-xl transition-colors font-medium ${
+                    activeSectionId === section.id
+                      ? 'bg-amber-500/10 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 font-bold'
+                      : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-200'
+                  }`}
+                >
+                  {section.title}
+                </a>
+              ))}
+              <a
+                href="#sec-bibliography"
+                className="block px-3 py-2 rounded-xl text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors font-medium"
+              >
+                References &amp; Primary Sources
+              </a>
+            </nav>
+          </details>
+
           {/* Executive Abstract Box */}
           <section 
             id="sec-abstract"
-            className="p-6 sm:p-8 rounded-3xl bg-amber-500/5 dark:bg-amber-500/10 border-l-4 border-amber-500 border-y border-r border-amber-500/20 space-y-3"
+            className="p-5 sm:p-8 rounded-3xl bg-amber-500/5 dark:bg-amber-500/10 border-s-4 border-amber-500 border-y border-e border-amber-500/20 space-y-3"
           >
             <div className="text-xs font-mono font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 flex items-center gap-2">
               <FileText className="w-4 h-4" />
@@ -530,7 +578,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
             <article 
               key={section.id} 
               id={section.id} 
-              className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4"
+              className="cv-auto scroll-reveal-item p-5 sm:p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4"
             >
               <h2 className="type-headline-md font-serif-display font-bold text-zinc-900 dark:text-white tracking-tight">
                 {section.title}
@@ -572,13 +620,13 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
           ))}
 
           {/* Cryptographic Provenance & Editorial Audit Card */}
-          <section className="p-6 rounded-3xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 space-y-3">
-            <div className="flex items-center justify-between">
+          <section className="cv-auto p-5 sm:p-6 rounded-3xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2 text-xs font-bold text-zinc-900 dark:text-zinc-100">
                 <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                <span>Scholarly Provenance & Integrity Audit</span>
+                <span>Scholarly Provenance &amp; Integrity Audit</span>
               </div>
-              <span className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+              <span className="text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-300 tabular-nums">
                 Peer-Audited Schema v1.0
               </span>
             </div>
@@ -605,16 +653,16 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
           {/* Bibliography & References Section */}
           <section 
             id="sec-bibliography"
-            className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4"
+            className="cv-auto p-5 sm:p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4"
           >
             <div className="flex items-center gap-2 pb-3 border-b border-zinc-100 dark:border-zinc-800 text-sm font-bold text-zinc-900 dark:text-white">
               <BookOpen className="w-4 h-4 text-amber-500" />
-              <span>Scholarly Bibliography & Primary Archives</span>
+              <span>Scholarly Bibliography &amp; Primary Archives</span>
             </div>
 
             <div className="divide-y divide-zinc-100 dark:divide-zinc-800/80 text-xs">
               {report.citations.map(cit => (
-                <div key={cit.id} id={cit.id} translate="no" className="notranslate py-3.5 space-y-1 p-2 rounded-xl transition-all duration-300">
+                <div key={cit.id} id={cit.id} translate="no" className="notranslate cv-auto py-3.5 space-y-1 p-2 rounded-xl transition-all duration-300 tabular-nums">
                   <div className="font-semibold text-zinc-800 dark:text-zinc-200">
                     {cit.authors} ({cit.year}).
                   </div>

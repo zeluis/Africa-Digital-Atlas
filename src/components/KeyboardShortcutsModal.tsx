@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { usePrefersReducedMotion } from '../utils/motion';
 import { 
   Keyboard, 
   X, 
@@ -43,6 +44,8 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
   onNavigateTab,
   onToggleTheme
 }) => {
+  const reducedMotion = usePrefersReducedMotion();
+
   // Close on Escape
   useEffect(() => {
     if (!isOpen) return;
@@ -111,32 +114,36 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+        <div
+          onClick={onClose}
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs overflow-hidden"
+        >
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 12 }}
-            transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+            initial={reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.95, y: 12 }}
+            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
+            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 12 }}
+            transition={reducedMotion ? { duration: 0.01 } : { type: 'spring', damping: 28, stiffness: 350 }}
+            onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-labelledby="keyboard-shortcuts-modal-title"
-            className="w-full max-w-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            className="w-full max-w-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90dvh]"
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-900/60 backdrop-blur-md">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+            <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3.5 sm:py-4 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-900/60 backdrop-blur-md shrink-0">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="p-2 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 shrink-0">
                   <Keyboard className="w-5 h-5" />
                 </div>
-                <div>
-                  <h2 id="keyboard-shortcuts-modal-title" className="text-base font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                <div className="min-w-0">
+                  <h2 id="keyboard-shortcuts-modal-title" className="text-sm sm:text-base font-extrabold text-zinc-900 dark:text-zinc-100 flex flex-wrap items-center gap-x-2 gap-y-0.5">
                     <span>Keyboard Navigation &amp; Hotkeys</span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300/60 dark:border-emerald-700/60">
-                      Power-User Cheat Sheet
+                    <span className="text-[10px] font-mono text-emerald-700 dark:text-emerald-300 font-bold">
+                      · Reference Sheet
                     </span>
                   </h2>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    High-efficiency keyboard controls for desktop research and cartographic exploration.
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
+                    Keyboard controls for desktop research and cartographic exploration.
                   </p>
                 </div>
               </div>
@@ -144,15 +151,16 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="p-1.5 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                className="min-touch-target flex items-center justify-center p-2 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
                 title="Close Shortcuts Modal (Esc)"
+                aria-label="Close Keyboard Shortcuts modal"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Modal Content - Categories */}
-            <div className="p-6 overflow-y-auto space-y-6">
+            <div className="flex-1 min-h-0 p-4 sm:p-6 overflow-y-auto overscroll-contain sleek-scrollbar space-y-6">
               {categories.map((category, catIdx) => (
                 <div key={catIdx} className="space-y-2.5">
                   <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
@@ -203,15 +211,15 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-3 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
+            <div className="px-4 sm:px-6 py-3 safe-pb border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
               <span className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                <span>Tip: Press <kbd className="font-mono font-bold px-1.5 py-0.5 rounded bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 text-[10px]">?</kbd> anywhere in the app to summon this dialog.</span>
+                <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                <span>Tip: Press <kbd className="font-mono font-bold px-1.5 py-0.5 rounded bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 text-[10px]">?</kbd> anywhere to summon this dialog.</span>
               </span>
               <button
                 type="button"
                 onClick={onClose}
-                className="px-3 py-1 rounded-xl bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-bold transition-all shadow-xs cursor-pointer"
+                className="px-3.5 py-1.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-bold transition-all shadow-xs cursor-pointer"
               >
                 Got it
               </button>

@@ -545,7 +545,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
             </div>
           </header>
         ) : (
-          <header className="sticky top-16 z-20 p-3 sm:p-4 rounded-2xl bg-[#FAF6EE]/95 dark:bg-zinc-950/95 backdrop-blur-md border border-[#DCD3C1] dark:border-zinc-800 shadow-sm space-y-3">
+          <header className="relative md:sticky md:top-16 z-20 p-3 sm:p-4 rounded-2xl bg-[#FAF6EE]/95 dark:bg-zinc-950/95 backdrop-blur-md border border-[#DCD3C1] dark:border-zinc-800 shadow-sm space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2.5 min-w-0">
                 <Anchor className="w-4 h-4 text-[#C2410C] dark:text-[#FB923C] shrink-0" />

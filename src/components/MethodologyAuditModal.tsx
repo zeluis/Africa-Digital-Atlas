@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { usePrefersReducedMotion } from '../utils/motion';
 import { 
   ShieldCheck, 
   Database, 
@@ -49,6 +50,19 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [verificationStates, setVerificationStates] = useState<Record<string, HashVerificationState>>({});
   const [isVerifyingAll, setIsVerifyingAll] = useState(false);
+  const reducedMotion = usePrefersReducedMotion();
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   const handleCopy = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
@@ -99,12 +113,12 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 overflow-hidden">
         {/* Backdrop */}
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={reducedMotion ? { opacity: 1 } : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          exit={reducedMotion ? { opacity: 0 } : { opacity: 0 }}
           onClick={onClose}
           className="fixed inset-0 bg-stone-950/80 backdrop-blur-md"
         />
@@ -114,43 +128,52 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
           role="dialog"
           aria-modal="true"
           aria-labelledby="methodology-audit-modal-title"
-          initial={{ opacity: 0, scale: 0.96, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full max-w-5xl max-h-[92vh] bg-[#FAF8F5] dark:bg-stone-950 rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden flex flex-col z-10"
+          initial={reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.96, y: 20 }}
+          animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
+          exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.98, y: 12 }}
+          transition={reducedMotion ? { duration: 0.01 } : { duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          className="relative w-full max-w-5xl max-h-[92dvh] bg-[#FAF8F5] dark:bg-stone-950 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden flex flex-col z-10"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-700 dark:text-emerald-400">
+          <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3.5 sm:py-4 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 shrink-0">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="p-2 sm:p-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-700 dark:text-emerald-400 shrink-0">
                 <ShieldCheck className="w-5 h-5" />
               </div>
-              <div>
-                <h2 id="methodology-audit-modal-title" className="text-sm font-extrabold text-stone-900 dark:text-stone-100 font-serif tracking-tight">
+              <div className="min-w-0">
+                <h2 id="methodology-audit-modal-title" className="text-sm font-extrabold text-stone-900 dark:text-stone-100 font-serif tracking-tight truncate">
                   Methodological &amp; Data Provenance Dossier
                 </h2>
-                <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
-                  Data Provenance, Status Flags, SlaveVoyages &amp; Ethnic Frameworks, and Build-Time SHA-256 Checksums
+                <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono truncate">
+                  Data Provenance, Status Flags, SlaveVoyages &amp; Ethnic Frameworks · Build-Time SHA-256
                 </p>
               </div>
             </div>
 
             <button
+              type="button"
               onClick={onClose}
-              className="p-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 transition-colors cursor-pointer"
+              className="min-touch-target flex items-center justify-center p-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 transition-colors cursor-pointer shrink-0"
               title="Close Dossier"
+              aria-label="Close Methodology & Data Provenance Dossier"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Navigation Bar */}
-          <div className="bg-white/95 dark:bg-stone-900/95 border-b border-stone-200 dark:border-stone-800 px-6 py-3 shrink-0 shadow-xs">
-            <div className="p-1 rounded-2xl bg-stone-100 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 flex flex-wrap items-center gap-1">
+          <div className="bg-white/95 dark:bg-stone-900/95 border-b border-stone-200 dark:border-stone-800 px-4 sm:px-6 py-2.5 shrink-0 shadow-xs">
+            <div
+              role="tablist"
+              aria-label="Methodology Dossier Sections"
+              className="p-1 rounded-2xl bg-stone-100 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 flex flex-nowrap overflow-x-auto no-scrollbar scroll-shadow-x items-center gap-1"
+            >
               <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'provenance'}
                 onClick={() => setActiveTab('provenance')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap ${
                   activeTab === 'provenance'
                     ? 'bg-emerald-600 text-white shadow-xs font-bold'
                     : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
@@ -160,8 +183,11 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                 <span>1. Data Provenance</span>
               </button>
               <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'flags'}
                 onClick={() => setActiveTab('flags')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap ${
                   activeTab === 'flags'
                     ? 'bg-emerald-600 text-white shadow-xs font-bold'
                     : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
@@ -171,8 +197,11 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                 <span>2. Status Flags</span>
               </button>
               <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'voyages_ethnic'}
                 onClick={() => setActiveTab('voyages_ethnic')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap ${
                   activeTab === 'voyages_ethnic'
                     ? 'bg-emerald-600 text-white shadow-xs font-bold'
                     : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
@@ -182,8 +211,11 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                 <span>3–4. Voyages &amp; Ethnic Framework</span>
               </button>
               <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'hashes'}
                 onClick={() => setActiveTab('hashes')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap ${
                   activeTab === 'hashes'
                     ? 'bg-emerald-600 text-white shadow-xs font-bold'
                     : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
@@ -193,8 +225,11 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                 <span>5. Dataset Integrity (SHA-256)</span>
               </button>
               <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'limitations'}
                 onClick={() => setActiveTab('limitations')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap ${
                   activeTab === 'limitations'
                     ? 'bg-emerald-600 text-white shadow-xs font-bold'
                     : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
@@ -207,7 +242,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
           </div>
 
           {/* Scrollable Content Body */}
-          <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 text-stone-800 dark:text-stone-200 font-sans">
+          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain sleek-scrollbar p-4 sm:p-8 space-y-6 text-stone-800 dark:text-stone-200 font-sans">
             {/* TAB 1: Data Provenance & Harmonization */}
             {activeTab === 'provenance' && (
               <div className="space-y-6">
@@ -238,7 +273,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                             {rule.reconciliationProtocol}
                           </h4>
                         </div>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 self-start sm:self-auto">
+                        <span className="text-[10px] font-mono font-semibold text-stone-500 dark:text-stone-400 self-start sm:self-auto">
                           Documented Rule
                         </span>
                       </div>
@@ -462,9 +497,11 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                             </button>
 
                             <button
+                              type="button"
                               onClick={() => handleCopy(hash.sha256, hash.fileScope)}
-                              className="p-1.5 rounded-lg bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 text-xs cursor-pointer"
+                              className="min-touch-target inline-flex items-center justify-center p-2 rounded-lg bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 text-xs cursor-pointer"
                               title="Copy Published SHA-256 Checksum"
+                              aria-label={`Copy SHA-256 checksum for ${hash.datasetName}`}
                             >
                               {copiedKey === hash.fileScope ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                             </button>
@@ -600,13 +637,14 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
           </div>
 
           {/* Footer Actions */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 shrink-0">
-            <span className="text-xs text-stone-500 font-mono">
-              Methodology &amp; Provenance Dossier • Browser SHA-256 Checksum Verifier
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-3.5 sm:py-4 safe-pb bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 shrink-0">
+            <span className="text-[11px] sm:text-xs text-stone-500 font-mono text-center sm:text-left">
+              Methodology &amp; Provenance Dossier · Browser SHA-256 Checksum Verifier
             </span>
             <div className="flex items-center gap-2">
               {onOpenCitationModal && (
                 <button
+                  type="button"
                   onClick={() => {
                     onClose();
                     onOpenCitationModal();
@@ -617,6 +655,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                 </button>
               )}
               <button
+                type="button"
                 onClick={onClose}
                 className="px-4 py-2 rounded-xl bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 text-white dark:text-stone-900 text-xs font-bold transition-colors cursor-pointer"
               >

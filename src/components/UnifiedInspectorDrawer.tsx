@@ -6,6 +6,7 @@ import { CountryFlag } from './CountryFlag';
 import { formatPopulation, formatGDP, formatHDI } from '../data/atlas-formatters';
 import { AfriataAdmin1 } from '../data/types';
 import { CountryFactsheetModal } from './CountryFactsheetModal';
+import { usePrefersReducedMotion } from '../utils/motion';
 import {
   X,
   Sparkles,
@@ -43,6 +44,7 @@ export const UnifiedInspectorDrawer: React.FC<UnifiedInspectorDrawerProps> = ({
   hoveredAdmin1
 }) => {
   const [showFactsheet, setShowFactsheet] = useState(false);
+  const reducedMotion = usePrefersReducedMotion();
 
   // Listen for Escape key
   useEffect(() => {
@@ -71,30 +73,32 @@ export const UnifiedInspectorDrawer: React.FC<UnifiedInspectorDrawerProps> = ({
   return (
     <AnimatePresence>
       <motion.aside
-        initial={{ opacity: 0, y: -24, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -16, scale: 0.98 }}
-        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute top-3 right-3 left-3 md:left-auto md:w-[460px] z-50 rounded-2xl bg-[#faf8f5]/98 dark:bg-stone-900/98 text-stone-900 dark:text-stone-100 border border-[#dcd3c1] dark:border-stone-800 shadow-2xl backdrop-blur-xl overflow-hidden font-sans select-none pointer-events-auto"
+        initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -24, scale: 0.98 }}
+        animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+        exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.98 }}
+        transition={reducedMotion ? { duration: 0.1 } : { duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        className="absolute top-3 right-3 left-3 md:left-auto md:w-[460px] max-h-[calc(88dvh-1.5rem)] flex flex-col z-50 rounded-2xl bg-[#faf8f5]/98 dark:bg-stone-900/98 text-stone-900 dark:text-stone-100 border border-[#dcd3c1] dark:border-stone-800 shadow-2xl backdrop-blur-xl overflow-hidden font-sans select-none pointer-events-auto"
         role="region"
         aria-label={`Tactical Inspector for ${entity.name}`}
       >
         {/* Top Architectural Banner: Editorial Parchment Styling */}
-        <div className="p-4 border-b border-[#e5dccb] dark:border-stone-800/80 bg-[#f4eee1] dark:bg-stone-900/90 flex items-start justify-between gap-3">
+        <div className="p-4 border-b border-[#e5dccb] dark:border-stone-800/80 bg-[#f4eee1] dark:bg-stone-900/90 flex items-start justify-between gap-3 shrink-0">
           <div className="flex items-start gap-3 min-w-0">
             <CountryFlag entityId={entity.id} size="md" className="shadow-md rounded-md shrink-0 mt-0.5" />
             <div className="min-w-0">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-[10px] font-mono font-bold tracking-widest px-2 py-0.5 rounded bg-stone-200/90 dark:bg-stone-800 text-stone-800 dark:text-stone-300">
+              <div className="flex items-center gap-1.5 flex-wrap text-[10px] font-mono text-stone-600 dark:text-stone-400">
+                <span className="font-bold tracking-widest text-stone-900 dark:text-stone-100">
                   {entity.id}
                 </span>
-                <span className="text-[10px] font-mono uppercase tracking-wider font-semibold text-emerald-800 dark:text-emerald-400 bg-emerald-100/70 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-300/60 dark:border-emerald-800/60">
+                <span aria-hidden="true">·</span>
+                <span className="uppercase tracking-wider font-semibold text-emerald-800 dark:text-emerald-400">
                   {entity.region}
                 </span>
                 {entity.geographicType && (
-                  <span className="text-[10px] font-mono text-stone-600 dark:text-stone-400 bg-stone-100 dark:bg-stone-800/60 px-1.5 py-0.5 rounded">
-                    {entity.geographicType}
-                  </span>
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <span>{entity.geographicType}</span>
+                  </>
                 )}
               </div>
               <h3 className="text-base font-extrabold tracking-tight text-stone-950 dark:text-stone-50 truncate mt-1">
@@ -109,8 +113,9 @@ export const UnifiedInspectorDrawer: React.FC<UnifiedInspectorDrawerProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-stone-200/60 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-600 hover:text-stone-900 dark:text-stone-300 dark:hover:text-white transition-colors cursor-pointer shrink-0"
+            className="min-touch-target p-2 rounded-xl bg-stone-200/60 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-600 hover:text-stone-900 dark:text-stone-300 dark:hover:text-white transition-colors cursor-pointer shrink-0"
             title="Dismiss Inspector Drawer (Esc)"
+            aria-label="Close tactical inspector"
           >
             <X className="w-4 h-4" />
           </button>
@@ -118,20 +123,20 @@ export const UnifiedInspectorDrawer: React.FC<UnifiedInspectorDrawerProps> = ({
 
         {/* Admin-1 Subdivision Highlight (if active) */}
         {currentAdmin1 && (
-          <div className="px-4 py-2 bg-emerald-50/80 dark:bg-emerald-950/40 border-b border-emerald-200/80 dark:border-emerald-800/60 flex items-center justify-between text-xs text-emerald-900 dark:text-emerald-200">
+          <div className="px-4 py-2 bg-emerald-50/80 dark:bg-emerald-950/40 border-b border-emerald-200/80 dark:border-emerald-800/60 flex items-center justify-between text-xs text-emerald-900 dark:text-emerald-200 shrink-0">
             <div className="flex items-center gap-1.5 min-w-0">
               <MapPin className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span className="font-bold truncate">{currentAdmin1.name}</span>
-              <span className="text-[10px] text-emerald-700 dark:text-emerald-400">Subdivision</span>
+              <span className="text-[10px] text-emerald-700 dark:text-emerald-400">· Subdivision</span>
             </div>
-            <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300">
+            <span className="font-mono text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
               {currentAdmin1.id || 'ADMIN-1'}
             </span>
           </div>
         )}
 
         {/* Content Body: Tactical Telemetry & Quantitative Metrics */}
-        <div className="p-4 space-y-3.5 max-h-[calc(80vh-140px)] overflow-y-auto">
+        <div className="p-4 space-y-3.5 flex-1 min-h-0 overflow-y-auto overscroll-contain sleek-scrollbar">
           {/* Tactical Telemetry Chips */}
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="p-2.5 rounded-xl bg-white/70 dark:bg-stone-950/60 border border-[#e5dccb] dark:border-stone-800">
@@ -174,19 +179,12 @@ export const UnifiedInspectorDrawer: React.FC<UnifiedInspectorDrawerProps> = ({
           {/* Regional Economic Communities (RECs) */}
           {entity.blocs && entity.blocs.length > 0 && (
             <div className="p-2.5 rounded-xl bg-white/60 dark:bg-stone-950/50 border border-[#e5dccb] dark:border-stone-800">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 block mb-1.5">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 block mb-1">
                 Regional Economic Blocs & Free Trade
               </span>
-              <div className="flex flex-wrap gap-1.5">
-                {entity.blocs.map(bloc => (
-                  <span
-                    key={bloc}
-                    className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-[#efe7d8] dark:bg-stone-800 text-stone-800 dark:text-stone-200 border border-[#ded4c3] dark:border-stone-700"
-                  >
-                    {bloc}
-                  </span>
-                ))}
-              </div>
+              <p className="text-[11px] font-mono font-semibold text-stone-800 dark:text-stone-200 leading-relaxed">
+                {entity.blocs.join(' · ')}
+              </p>
             </div>
           )}
 

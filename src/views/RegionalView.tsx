@@ -511,7 +511,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
               </div>
             </div>
           ) : (
-            <div className="sticky top-16 z-20 p-3 sm:p-4 rounded-2xl bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-wrap items-center justify-between gap-3">
+            <div className="relative md:sticky md:top-16 z-20 p-3 sm:p-4 rounded-2xl bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2.5 min-w-0">
                 <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: selectedRegionTonal.warmAccent }} />
                 <div className="min-w-0">
@@ -539,7 +539,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
               id="region-subtabs-ribbon"
               role="tablist"
               aria-label="Regional dossier thematic sections"
-              className="flex items-center gap-1.5 overflow-x-auto no-scrollbar p-1.5 rounded-2xl bg-zinc-100/90 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800"
+              className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-shadow-x p-1.5 rounded-2xl bg-zinc-100/90 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800"
             >
               {PRIMARY_REGION_GROUPS.map((grp, idx) => {
                 const Icon = grp.icon;

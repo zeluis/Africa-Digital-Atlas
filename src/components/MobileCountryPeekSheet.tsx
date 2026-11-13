@@ -18,6 +18,7 @@ import {
 import { formatPopulation, formatGDP, formatHDI } from '../data/atlas-formatters';
 import { AFRICA_FINAL_MAP } from '../data/africaFinalGeometry';
 import { triggerHaptic } from '../utils/mobileHaptics';
+import { usePrefersReducedMotion } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 
 export type SheetSnapTier = 'peek' | 'half' | 'full';
@@ -38,6 +39,7 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
   onOpenCompare
 }) => {
   const sheetRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = usePrefersReducedMotion();
   const dragStartY = useRef<number | null>(null);
   const dragStartTime = useRef<number>(0);
   const lastTouchY = useRef<number | null>(null);
@@ -122,8 +124,8 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
   // half = 55% height (macro indicators)
   // full = 92% height (full-bleed dossier reader)
   const snapHeights = {
-    peek: 'h-[25dvh] max-h-[25dvh]',
-    half: 'h-[55dvh] max-h-[55dvh]',
+    peek: 'h-[max(168px,26dvh)] max-h-[36dvh]',
+    half: 'h-[56dvh] max-h-[56dvh]',
     full: 'h-[92dvh] max-h-[92dvh]'
   };
 
@@ -155,28 +157,29 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
         {/* Sliding 3-Snap Bottom Sheet Container */}
         <motion.div
           ref={sheetRef}
-          initial={{ y: '100%' }}
-          animate={{ y: 0 }}
-          exit={{ y: '100%' }}
-          transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+          initial={reducedMotion ? { opacity: 0 } : { y: '100%' }}
+          animate={reducedMotion ? { opacity: 1 } : { y: 0 }}
+          exit={reducedMotion ? { opacity: 0 } : { y: '100%' }}
+          transition={reducedMotion ? { duration: 0.1 } : { type: 'spring', damping: 28, stiffness: 320 }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           className={`relative bg-white dark:bg-zinc-900 rounded-t-3xl border-t border-zinc-200/90 dark:border-zinc-800 shadow-2xl safe-pb px-4 flex flex-col select-none transition-all duration-300 ${snapHeights[snapTier]}`}
         >
           {/* Tactile Ergonomic Grab Handle Bar */}
-          <div 
+          <button
+            type="button"
             onClick={cycleSnapTier}
-            className="pt-2.5 pb-2 shrink-0 cursor-grab active:cursor-grabbing flex flex-col items-center justify-center gap-1"
+            className="w-full pt-2.5 pb-2 shrink-0 cursor-grab active:cursor-grabbing flex flex-col items-center justify-center gap-1"
             title="Drag or tap to change view height"
-            aria-label="Sheet height toggle"
+            aria-label={`Change sheet height (currently ${snapTier})`}
           >
-            <div className="w-12 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full hover:bg-zinc-400 dark:hover:bg-zinc-600 transition-colors" />
-            <div className="flex items-center gap-1 text-[10px] font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+            <span className="w-12 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full hover:bg-zinc-400 dark:hover:bg-zinc-600 transition-colors" aria-hidden="true" />
+            <span className="flex items-center gap-1 text-[10px] font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
               <span>{snapTier === 'peek' ? 'Peek 25%' : snapTier === 'half' ? 'Indicators 55%' : 'Full Dossier 92%'}</span>
               <ChevronUp className={`w-3 h-3 transition-transform ${snapTier === 'full' ? 'rotate-180' : ''}`} />
-            </div>
-          </div>
+            </span>
+          </button>
 
           {/* Sheet Header: Flag, Name, Code, Region & Close Button */}
           <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-100 dark:border-zinc-800/80 shrink-0">
@@ -184,7 +187,7 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
               <div className="w-11 h-8 rounded-md overflow-hidden shrink-0 shadow-xs border border-zinc-200 dark:border-zinc-800">
                 <CountryFlag entityId={countryId} size="md" className="w-full h-full object-cover" />
               </div>
-              <div className="min-w-0 text-left">
+              <div className="min-w-0 text-start">
                 <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 truncate leading-tight">
                   {country.name}
                 </h3>
@@ -221,12 +224,13 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
 
           {/* Tier Content: Peek Mode (25%) Summary */}
           {snapTier === 'peek' && (
-            <div 
+            <button
+              type="button"
               onClick={() => {
                 triggerHaptic('light');
                 setSnapTier('half');
               }}
-              className="flex-1 flex items-center justify-between py-2 text-left cursor-pointer active:opacity-80"
+              className="w-full flex-1 flex items-center justify-between py-2 text-start cursor-pointer active:opacity-80"
             >
               <div className="flex items-center gap-3 text-xs text-zinc-600 dark:text-zinc-300 font-mono">
                 <span>Pop: <strong className="text-zinc-900 dark:text-zinc-100">{population ? formatPopulation(population) : '—'}</strong></span>
@@ -237,12 +241,12 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
                 <span>Expand</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </span>
-            </div>
+            </button>
           )}
 
           {/* Tier Content: Half Mode (55%) & Full Mode (92%) */}
           {snapTier !== 'peek' && (
-            <div className="flex-1 overflow-y-auto min-h-0 sleek-scrollbar-amber py-3 space-y-3 text-left">
+            <div className="flex-1 overflow-y-auto overscroll-contain min-h-0 sleek-scrollbar-amber py-3 space-y-3 text-start">
               {/* Macro Indicators Row */}
               <div className="grid grid-cols-3 gap-2">
                 <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200/60 dark:border-zinc-700/50 flex flex-col justify-between">

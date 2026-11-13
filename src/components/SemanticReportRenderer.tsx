@@ -117,15 +117,15 @@ export const SemanticReportRenderer: React.FC<SemanticReportRendererProps> = ({
           {cit && (
             <span
               translate="no"
-              className="notranslate pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:flex flex-col w-64 p-2.5 rounded-xl bg-zinc-900 text-zinc-100 text-[11px] shadow-xl border border-zinc-700 z-50 animate-in fade-in zoom-in-95"
+              className="notranslate pointer-events-none absolute bottom-full start-1/2 -translate-x-1/2 mb-2 hidden group-hover:flex group-focus-within:flex flex-col w-64 max-w-[min(18rem,calc(100vw-2rem))] p-2.5 rounded-xl bg-zinc-900 text-zinc-100 text-[11px] shadow-xl border border-zinc-700 z-50 animate-in fade-in zoom-in-95"
             >
               <span className="font-bold text-amber-300">{cit.authors} ({cit.year})</span>
               <span className="text-zinc-300 italic text-[10px] mt-0.5">{cit.title}</span>
               <span className="text-zinc-400 text-[10px]">{cit.journalOrPublisher}</span>
               {cit.doiOrUrl && (
-                <span className="mt-1 pt-1 border-t border-zinc-800 text-[9.5px] font-mono text-emerald-400 flex items-center gap-1">
+                <span className="mt-1 pt-1 border-t border-zinc-800 text-[9.5px] font-mono text-emerald-400 flex items-center gap-1 break-all">
                   <span>DOI: {resolveDoi(cit.doiOrUrl).replace('https://doi.org/', '')}</span>
-                  <ExternalLink className="w-2.5 h-2.5" />
+                  <ExternalLink className="w-2.5 h-2.5 shrink-0" />
                 </span>
               )}
             </span>
@@ -287,8 +287,8 @@ export const SemanticReportRenderer: React.FC<SemanticReportRendererProps> = ({
 
         if (block.type === 'table') {
           return (
-            <div key={bIdx} className="my-6 overflow-x-auto rounded-xl border border-stone-200 dark:border-zinc-800 shadow-2xs">
-              <table className="w-full text-left border-collapse font-sans text-xs sm:text-sm">
+            <div key={bIdx} className="my-6 overflow-x-auto scroll-shadow-x rounded-xl border border-stone-200 dark:border-zinc-800 shadow-2xs">
+              <table className="w-full text-left border-collapse font-sans text-xs sm:text-sm tabular-nums">
                 <thead>
                   <tr className="bg-stone-100/90 dark:bg-zinc-900 border-b border-stone-200 dark:border-zinc-800">
                     {block.headers.map((h, hIdx) => (

@@ -207,6 +207,18 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
     setTargetPipeline(defaultTargetPipeline);
   }, [defaultTargetPipeline]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handlePipelineSwitch = (mode: 'reports' | 'working-papers') => {
@@ -290,29 +302,49 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden">
+    <div
+      onClick={onClose}
+      className="atlas-modal-backdrop fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md overflow-hidden"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="notebook-ingestion-modal-title"
+        onClick={(e) => e.stopPropagation()}
+        className="atlas-modal-panel relative w-full max-w-4xl max-h-[92dvh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden"
+      >
         
         {/* Modal Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-950/50">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500">
-              <Sparkles className="w-5 h-5" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-6 py-3.5 sm:py-4 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-950/50 shrink-0">
+          <div className="flex items-start sm:items-center justify-between gap-3 min-w-0">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 shrink-0">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <h2 id="notebook-ingestion-modal-title" className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                  <span>Universal Markdown Ingestion Pipeline</span>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                    · {targetPipeline === 'working-papers' ? 'content/working-papers' : 'content/reports'}
+                  </span>
+                </h2>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
+                  Parses YAML frontmatter, pillar routing, tables, and [REF] citations
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                <span>Universal Markdown Ingestion Pipeline</span>
-                <span className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider bg-amber-500/15 text-amber-600 dark:text-amber-400 rounded-md border border-amber-500/30">
-                  {targetPipeline === 'working-papers' ? 'content/working-papers' : 'content/reports'}
-                </span>
-              </h2>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                Automatically parses YAML frontmatter, pillar & category routing, tables, and [REF] citations
-              </p>
-            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close Markdown Ingestion Pipeline modal"
+              className="sm:hidden min-touch-target flex items-center justify-center p-2 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
             {/* Target Directory / Pipeline Selector */}
             <div className="inline-flex p-1 rounded-xl bg-zinc-200/80 dark:bg-zinc-800 border border-zinc-300/60 dark:border-zinc-700 text-xs font-mono">
               <button
@@ -342,8 +374,10 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
             </div>
 
             <button
+              type="button"
               onClick={onClose}
-              className="p-2 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              aria-label="Close Markdown Ingestion Pipeline modal"
+              className="hidden sm:flex min-touch-target items-center justify-center p-2 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -351,12 +385,18 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex items-center justify-between px-6 py-2.5 bg-zinc-100/70 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 text-xs font-mono">
-          <div className="flex items-center gap-2 overflow-x-auto">
+        <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 px-4 sm:px-6 py-2.5 bg-zinc-100/70 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 text-xs font-mono shrink-0">
+          <div
+            role="tablist"
+            aria-label="Ingestion Pipeline Views"
+            className="flex flex-nowrap items-center gap-1.5 overflow-x-auto no-scrollbar scroll-shadow-x min-w-0 flex-1"
+          >
             <button
               type="button"
+              role="tab"
+              aria-selected={activeTab === 'editor'}
               onClick={() => setActiveTab('editor')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 activeTab === 'editor'
                   ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white font-bold shadow-2xs'
                   : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'
@@ -367,11 +407,13 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
             </button>
             <button
               type="button"
+              role="tab"
+              aria-selected={activeTab === 'preview'}
               onClick={() => {
                 if (!ingestionResult) handleParse();
                 else setActiveTab('preview');
               }}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 activeTab === 'preview'
                   ? 'bg-white dark:bg-zinc-800 text-amber-600 dark:text-amber-400 font-bold shadow-2xs'
                   : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'
@@ -382,11 +424,13 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
             </button>
             <button
               type="button"
+              role="tab"
+              aria-selected={activeTab === 'json'}
               onClick={() => {
                 if (!ingestionResult) handleParse();
                 setActiveTab('json');
               }}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 activeTab === 'json'
                   ? 'bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 font-bold shadow-2xs'
                   : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'
@@ -397,19 +441,21 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
             </button>
             <button
               type="button"
+              role="tab"
+              aria-selected={activeTab === 'schema'}
               onClick={() => setActiveTab('schema')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                 activeTab === 'schema'
                   ? 'bg-white dark:bg-zinc-800 text-indigo-600 dark:text-indigo-400 font-bold shadow-2xs'
                   : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
-              <span>Universal Frontmatter Spec</span>
+              <span>Frontmatter Spec</span>
             </button>
           </div>
 
-          <div>
+          <div className="shrink-0">
             <input
               ref={fileInputRef}
               type="file"
@@ -429,7 +475,7 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
         </div>
 
         {/* Body Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain sleek-scrollbar p-4 sm:p-6 space-y-4">
           {activeTab === 'editor' && (
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
@@ -573,16 +619,13 @@ publication:
 
               {/* Title & Metadata Card */}
               <div className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 space-y-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span 
-                    className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-white inline-block"
-                    style={{ backgroundColor: ingestionResult.report.categoryColor }}
-                  >
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] font-mono font-bold uppercase tracking-wider">
+                  <span style={{ color: ingestionResult.report.categoryColor }}>
                     {ingestionResult.report.categoryLabel}
                   </span>
                   {ingestionResult.report.isWorkingPaper && (
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
-                      {ingestionResult.report.seriesNumber || 'Afriata Working Paper Series'}
+                    <span className="text-amber-600 dark:text-amber-400">
+                      · {ingestionResult.report.seriesNumber || 'Afriata Working Paper Series'}
                     </span>
                   )}
                 </div>
@@ -673,15 +716,15 @@ publication:
         </div>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-950/60">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-6 py-3.5 sm:py-4 safe-pb border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-950/60 shrink-0">
           <div className="text-xs text-zinc-500">
             {ingestionResult ? (
               <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
-                <CheckCircle2 className="w-4 h-4" /> Ready to publish to{' '}
+                <CheckCircle2 className="w-4 h-4 shrink-0" /> Ready to publish to{' '}
                 {ingestionResult.report.isWorkingPaper ? 'Working Papers & Pillar Directory' : 'Research Reports Directory'}
               </span>
             ) : (
-              <span>Click "Parse & Validate" to extract citations, pillar, and structure</span>
+              <span>Click &ldquo;Parse &amp; Validate&rdquo; to extract citations, pillar, and structure</span>
             )}
           </div>
 
@@ -693,7 +736,7 @@ publication:
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold text-xs transition-all shadow-md cursor-pointer"
               >
                 <Sparkles className="w-4 h-4" />
-                <span>Parse & Validate</span>
+                <span>Parse &amp; Validate</span>
               </button>
             ) : (
               <>
@@ -723,3 +766,5 @@ publication:
     </div>
   );
 };
+
+export default NotebookIngestionModal;

@@ -37,18 +37,18 @@ export const AfcftaSimulatorModal: React.FC<AfcftaSimulatorModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-8 bg-black/60 backdrop-blur-md overflow-hidden"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-5 md:p-8 bg-black/60 backdrop-blur-md overflow-hidden"
           onClick={onClose}
           role="dialog"
           aria-modal="true"
           aria-labelledby="afcfta-simulator-modal-title"
         >
           <motion.div 
-            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 16 }}
+            initial={reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.95, y: 16 }}
             animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 16 }}
-            transition={SPRING_SNAPPY}
-            className="w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden rounded-3xl shadow-2xl border border-stone-200/90 dark:border-stone-800 bg-[#FAF8F5] dark:bg-stone-950"
+            transition={reducedMotion ? { duration: 0.01 } : SPRING_SNAPPY}
+            className="w-full max-w-6xl max-h-[94dvh] sm:max-h-[92dvh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl shadow-2xl border border-stone-200/90 dark:border-stone-800 bg-[#FAF8F5] dark:bg-stone-950 safe-pb"
             onClick={e => e.stopPropagation()}
           >
             <AfcftaTradeCorridorSimulator

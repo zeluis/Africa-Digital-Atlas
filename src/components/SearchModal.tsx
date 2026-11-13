@@ -368,31 +368,33 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 md:pt-24 bg-black/75 backdrop-blur-md animate-enter-japandi"
+      className="fixed inset-0 z-50 flex items-start justify-center p-2.5 pt-3 sm:p-4 sm:pt-16 md:pt-24 bg-black/75 backdrop-blur-md atlas-modal-backdrop"
       onClick={onClose}
     >
       <div 
         role="dialog"
         aria-modal="true"
         aria-label="Universal Platform Search & Command Palette"
-        className="w-full max-w-2xl overflow-hidden rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-2xl text-zinc-900 dark:text-zinc-100 transition-colors"
+        className="w-full max-w-2xl max-h-[92dvh] flex flex-col overflow-hidden rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-2xl text-zinc-900 dark:text-zinc-100 transition-colors atlas-modal-panel"
         onClick={e => e.stopPropagation()}
       >
         {/* Search Input Bar */}
-        <div className="flex items-center gap-3 border-b border-zinc-200 dark:border-zinc-800 px-5 py-4 bg-zinc-50/70 dark:bg-zinc-900/50">
+        <div className="flex items-center gap-2 sm:gap-3 border-b border-zinc-200 dark:border-zinc-800 px-4 sm:px-5 py-3 sm:py-4 bg-zinc-50/70 dark:bg-zinc-900/50 shrink-0">
           <Search className="w-5 h-5 text-emerald-500 flex-shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={e => setQuery(e.target.value)}
-            placeholder="Search African countries, historical plates, castas archive, monographs, indicators..."
+            placeholder="Search African countries, plates, monographs, indicators..."
             className="w-full bg-transparent text-sm md:text-base text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none font-sans"
           />
           {query && (
             <button
+              type="button"
               onClick={() => setQuery('')}
-              className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-1 cursor-pointer"
+              aria-label="Clear search query"
+              className="min-touch-target text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-1.5 rounded-lg cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -400,14 +402,22 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           <span className="hidden sm:flex items-center gap-1 text-[10px] font-mono text-zinc-500 border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 px-2 py-0.5 rounded-lg">
             ESC
           </span>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close search modal"
+            className="sm:hidden min-touch-target p-2 rounded-xl text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-100 hover:bg-zinc-200/70 dark:hover:bg-zinc-800 cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Category Filter Pills Bar */}
-        <div className="flex items-center gap-1.5 px-5 py-2.5 bg-zinc-50/50 dark:bg-zinc-900/30 border-b border-zinc-200 dark:border-zinc-800/80 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-1.5 px-4 sm:px-5 py-2.5 bg-zinc-50/50 dark:bg-zinc-900/30 border-b border-zinc-200 dark:border-zinc-800/80 overflow-x-auto no-scrollbar scroll-shadow-x shrink-0">
           <button
             type="button"
             onClick={() => setSelectedCategory('all')}
-            className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer shrink-0 whitespace-nowrap ${
               selectedCategory === 'all'
                 ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold shadow-xs'
                 : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800'
@@ -418,7 +428,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           <button
             type="button"
             onClick={() => setSelectedCategory('commands')}
-            className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
               selectedCategory === 'commands'
                 ? 'bg-emerald-600 text-white font-bold shadow-xs'
                 : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800'
@@ -430,7 +440,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           <button
             type="button"
             onClick={() => setSelectedCategory('countries')}
-            className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
               selectedCategory === 'countries'
                 ? 'bg-blue-600 text-white font-bold shadow-xs'
                 : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800'
@@ -442,7 +452,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           <button
             type="button"
             onClick={() => setSelectedCategory('reports')}
-            className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
               selectedCategory === 'reports'
                 ? 'bg-indigo-600 text-white font-bold shadow-xs'
                 : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800'
@@ -454,7 +464,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           <button
             type="button"
             onClick={() => setSelectedCategory('iconography')}
-            className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
               selectedCategory === 'iconography'
                 ? 'bg-amber-600 text-white font-bold shadow-xs'
                 : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800'
@@ -466,7 +476,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           <button
             type="button"
             onClick={() => setSelectedCategory('indicators')}
-            className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
               selectedCategory === 'indicators'
                 ? 'bg-emerald-600 text-white font-bold shadow-xs'
                 : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800'
@@ -478,8 +488,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         </div>
 
         {/* Results Container with Sleek Scrollbar & Click-Through Bottom Fade */}
-        <div className="relative overflow-hidden">
-          <div className="max-h-[60vh] overflow-y-auto stable-gutter sleek-scrollbar p-4 space-y-2 pb-8">
+        <div className="relative flex-1 min-h-0 overflow-hidden">
+          <div className="max-h-[58dvh] overflow-y-auto overscroll-contain stable-gutter sleek-scrollbar p-3 sm:p-4 space-y-2 pb-8">
           {flattenedItems.length === 0 ? (
             <div className="p-8 text-center space-y-2">
               <Search className="w-8 h-8 text-zinc-400 mx-auto opacity-50" />

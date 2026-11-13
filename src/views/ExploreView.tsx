@@ -182,13 +182,12 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   return (
     <section aria-label="Sovereign African Nations Continental Explorer" className="space-y-8 animate-in fade-in duration-200">
       {/* Header Banner */}
-      <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-2xl transition-colors">
+      <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 sm:p-6 md:p-8 shadow-2xl transition-colors">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            {/* Active Page Pill Indicator */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700/60 text-xs font-mono font-semibold text-emerald-700 dark:text-emerald-300 mb-3 shadow-2xs">
+            <div className="inline-flex items-center gap-2 text-xs font-mono font-semibold text-emerald-700 dark:text-emerald-300 mb-2">
               <Compass className="w-3.5 h-3.5" />
-              <span>AFRICA ATLAS • CONTINENTAL EXPLORATION</span>
+              <span>AFRICA ATLAS · CONTINENTAL EXPLORATION</span>
             </div>
             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100">
               Explore 54 Sovereign African Nations
@@ -245,9 +244,9 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             />
           </div>
 
-          {/* Region Tabs Filter - Fully Wrapping with UN Geoscheme Colors */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs text-zinc-400 font-medium mr-1 hidden lg:inline flex items-center gap-1">
+          {/* Region Tabs Filter - Horizontal Swipe on Mobile, Wrapping on sm+ */}
+          <div className="flex flex-nowrap overflow-x-auto scroll-shadow-x no-scrollbar sm:flex-wrap items-center gap-1.5 pb-1 sm:pb-0">
+            <span className="text-xs text-zinc-400 font-medium me-1 hidden lg:inline-flex items-center gap-1">
               <Filter className="w-3 h-3" /> Region:
             </span>
             {regions.map(r => {
@@ -257,7 +256,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                 <button
                   key={r}
                   onClick={() => setRegionFilter(r)}
-                  className={`relative px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors duration-150 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                  className={`relative px-3 py-1.5 min-h-[36px] rounded-xl text-xs font-bold whitespace-nowrap shrink-0 transition-colors duration-150 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                     isSelected
                       ? 'text-white font-bold shadow-xs'
                       : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
@@ -271,12 +270,6 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                     />
                   )}
                   <span className="relative z-10 flex items-center gap-1.5">
-                    <span 
-                      className={`w-1.5 h-1.5 rounded-full shrink-0 transition-opacity ${
-                        isSelected ? 'bg-white opacity-90' : ''
-                      }`}
-                      style={!isSelected ? { backgroundColor: accentColor } : undefined}
-                    />
                     <span>{r}</span>
                   </span>
                 </button>
@@ -287,9 +280,9 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
         {/* Topology & Special Category Filters */}
         <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-900/60 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs text-zinc-400 font-mono flex items-center gap-1 mr-1">
-              <Globe className="w-3.5 h-3.5 text-cyan-500" /> Geographic Topology:
+          <div className="flex flex-nowrap overflow-x-auto scroll-shadow-x no-scrollbar sm:flex-wrap items-center gap-1.5 pb-1 sm:pb-0 max-w-full">
+            <span className="text-xs text-zinc-400 font-mono flex items-center gap-1 me-1 shrink-0 whitespace-nowrap">
+              <Globe className="w-3.5 h-3.5 text-cyan-500" /> Topology:
             </span>
             {[
               { id: 'all' as TopologyFilter, label: 'All (54)' },
@@ -302,7 +295,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                 <button
                   key={tf.id}
                   onClick={() => setTopologyFilter(tf.id)}
-                  className={`relative px-3 py-1 rounded-xl text-xs font-mono font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 ${
+                  className={`relative px-3 py-1 min-h-[34px] rounded-xl text-xs font-mono font-semibold whitespace-nowrap shrink-0 transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 ${
                     isSelected
                       ? 'text-cyan-900 dark:text-cyan-200 font-bold shadow-xs'
                       : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
@@ -342,7 +335,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
               )}
             </motion.button>
 
-            <span className="text-xs font-mono text-zinc-400">
+            <span className="text-xs font-mono text-zinc-400 tabular-nums">
               Showing {filteredAndSortedEntities.length} of 54 sovereign nations
             </span>
           </div>
@@ -359,7 +352,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             transition={SPRING_SNAPPY}
             className="overflow-hidden"
           >
-            <div className="rounded-3xl border border-purple-200/80 dark:border-purple-900/60 bg-purple-50/40 dark:bg-purple-950/20 p-6 space-y-4 shadow-sm">
+            <div className="rounded-3xl border border-purple-200/80 dark:border-purple-900/60 bg-purple-50/40 dark:bg-purple-950/20 p-4 sm:p-6 space-y-4 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 dark:border-purple-900/40 pb-3">
                 <div className="flex items-center gap-2">
                   <SlidersHorizontal className="w-4 h-4 text-purple-600 dark:text-purple-400" />
@@ -367,7 +360,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                     Multivariate Econometric Screener &amp; Threshold Filters
                   </h4>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3 tabular-nums">
                   {activeScreenerCount > 0 && (
                     <button
                       type="button"
@@ -377,7 +370,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                       <RotateCcw className="w-3 h-3" /> Reset Thresholds
                     </button>
                   )}
-                  <span className="text-xs font-mono font-bold text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/60 px-2.5 py-1 rounded-lg">
+                  <span className="text-xs font-mono font-bold text-purple-700 dark:text-purple-300">
                     {filteredAndSortedEntities.length} of 54 nations match
                   </span>
                 </div>
@@ -503,10 +496,10 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           {regionFilter !== 'All' && ` in ${regionFilter}`}
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-zinc-400 font-medium mr-0.5">Sort by:</span>
+        <div className="flex items-center gap-2 flex-wrap max-w-full">
+          <span className="text-zinc-400 font-medium me-0.5 shrink-0">Sort by:</span>
           <div 
-            className="flex items-center bg-zinc-100 dark:bg-zinc-900 p-0.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs"
+            className="flex items-center overflow-x-auto scroll-shadow-x no-scrollbar max-w-full bg-zinc-100 dark:bg-zinc-900 p-0.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs"
             role="group"
             aria-label="Sort nations criteria"
           >
@@ -516,7 +509,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                 <button
                   key={field}
                   onClick={() => toggleSort(field)}
-                  className={`relative px-2.5 py-1 rounded-lg font-semibold cursor-pointer select-none transition-colors duration-150 flex items-center gap-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 ${
+                  className={`relative px-2.5 py-1.5 rounded-lg font-semibold whitespace-nowrap shrink-0 cursor-pointer select-none transition-colors duration-150 flex items-center gap-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 ${
                     isSelected
                       ? 'text-emerald-950 dark:text-emerald-100 font-bold shadow-2xs'
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -621,14 +614,14 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                         transition: SPRING_TACTILE
                       }
                 }
-                className="group rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xs transition-colors duration-200 cursor-pointer flex flex-col justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 select-none"
+                className="cv-auto group rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-5 sm:p-6 shadow-xs transition-colors duration-200 cursor-pointer flex flex-col justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 select-none"
               >
                 <div>
                   {/* Card Header: Flag + Regional ISO3 code on left, Prominent UN Geoscheme Vector Silhouette on right */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2.5">
                       <CountryFlag entityId={entity.id} size="md" />
-                      <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded-md border ${tonal.badge.bg} ${tonal.badge.border} ${tonal.badge.text}`}>
+                      <span className={`text-xs font-mono font-bold ${tonal.badge.text}`}>
                         {entity.id}
                       </span>
                     </div>
@@ -681,7 +674,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                     </span>
                   </div>
 
-                  <div className="space-y-2 pt-3 border-t border-zinc-100 dark:border-zinc-800 text-xs">
+                  <div className="space-y-2 pt-3 border-t border-zinc-100 dark:border-zinc-800 text-xs tabular-nums">
                     <div className="flex justify-between items-center">
                       <span className="text-zinc-500 dark:text-zinc-400 font-medium font-mono text-[11px] uppercase tracking-wider">Population</span>
                       <span className="font-bold text-zinc-900 dark:text-zinc-100 font-mono">
@@ -716,8 +709,8 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
       {/* TABLE VIEW */}
       {viewLayout === 'table' && filteredAndSortedEntities.length > 0 && (
         <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden shadow-xl">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
+          <div className="overflow-x-auto scroll-shadow-x">
+            <table className="w-full text-start text-xs border-collapse tabular-nums">
               <thead>
                 <tr className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 font-mono uppercase text-[10px]">
                   <th className="py-3.5 px-4 font-semibold">Country</th>
@@ -824,7 +817,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                         scale: 0.985
                       }
                 }
-                className="p-3.5 rounded-2xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-emerald-500/60 dark:hover:border-emerald-500/60 transition-colors cursor-pointer shadow-xs hover:shadow-md space-y-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 select-none"
+                className="cv-auto p-3.5 rounded-2xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-emerald-500/60 dark:hover:border-emerald-500/60 transition-colors cursor-pointer shadow-xs hover:shadow-md space-y-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 select-none"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -839,18 +832,18 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                     </div>
                   </div>
 
-                  <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border shrink-0 ${
+                  <span className={`text-[10px] font-mono font-bold uppercase tracking-wider shrink-0 ${
                     isSids
-                      ? 'bg-cyan-50 dark:bg-cyan-950/70 border-cyan-400/40 text-cyan-800 dark:text-cyan-300'
+                      ? 'text-cyan-700 dark:text-cyan-300'
                       : isLandlocked
-                      ? 'bg-amber-50 dark:bg-amber-950/70 border-amber-400/40 text-amber-800 dark:text-amber-300'
-                      : 'bg-emerald-50 dark:bg-emerald-950/70 border-emerald-400/40 text-emerald-800 dark:text-emerald-300'
+                      ? 'text-amber-700 dark:text-amber-300'
+                      : 'text-emerald-700 dark:text-emerald-300'
                   }`}>
                     {isSids ? 'SIDS' : isLandlocked ? 'Landlocked' : 'Coastal'}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-4 gap-1.5 pt-2 border-t border-zinc-100 dark:border-zinc-800/80 text-[10px] font-mono">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-2 border-t border-zinc-100 dark:border-zinc-800/80 text-[10px] font-mono tabular-nums">
                   <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/60">
                     <span className="text-zinc-400 block text-[9px]">POPULATION</span>
                     <span className="font-bold text-zinc-800 dark:text-zinc-200">{formatPopulation(pop)}</span>

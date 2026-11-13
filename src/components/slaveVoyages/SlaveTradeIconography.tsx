@@ -210,7 +210,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
   return (
     <div className="space-y-6 text-left">
       {/* Sticky, Unified Header & Custom Themes selector panel */}
-      <div className="sticky top-[64px] z-30 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 py-4 bg-stone-50/95 dark:bg-stone-950/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-800/80 space-y-4 shadow-sm transition-all">
+      <div className="relative md:sticky md:top-[64px] z-30 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 py-4 bg-stone-50/95 dark:bg-stone-950/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-800/80 space-y-4 shadow-sm transition-all">
         {/* Row 1: Registry Branding & Unified Toolbar Controls */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           {/* Branding Left */}

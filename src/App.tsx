@@ -8,6 +8,7 @@ import { DensityProvider } from './contexts/DensityContext';
 import { SavedEntitiesProvider } from './contexts/SavedEntitiesContext';
 import { AfricanRegion } from './data/types';
 import { lazyWithRetry, ViewErrorBoundary } from './utils/lazyWithRetry';
+import { runViewTransition } from './utils/motion';
 import { PanelLeftOpen } from 'lucide-react';
 import { getPageInfo, isReportOrPaperTab } from './utils/navigationTitles';
 import { MobileBottomNav } from './components/MobileBottomNav';
@@ -292,7 +293,9 @@ function AppContent() {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+    runViewTransition(() => {
+      setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+    });
   };
 
   // Keyboard shortcuts: Cmd+K / Ctrl+K search, Cmd+B / Ctrl+B drawer, Alt+Left back, '?' shortcuts modal, 1-5 regions, 0 overview
@@ -587,9 +590,9 @@ function AppContent() {
             currentTab === 'heritage' || 
             (currentTab === 'iconography' && isIconographyIngestion) ||
             (currentTab === 'slave-trade' && (slaveTradeSubTab === 'flow-map' || slaveTradeSubTab === 'ports'))
-              ? 'p-0 max-w-none flex flex-col pb-16 lg:pb-0'
+              ? 'p-0 max-w-none flex flex-col safe-pb-dock lg:pb-0'
               : currentTab === 'slave-trade' || currentTab === 'molecular-legacies' || currentTab === 'african-development-foundations'
-                ? 'px-3 sm:px-5 lg:px-6 py-4 md:py-6 pb-20 lg:pb-6 max-w-none flex flex-col'
+                ? 'px-3 sm:px-5 lg:px-6 py-4 md:py-6 pb-24 lg:pb-6 max-w-none flex flex-col'
                 : 'px-4 sm:px-6 lg:px-8 py-6 md:py-8 pb-24 lg:pb-8 max-w-[1440px] mx-auto'
           }`}
           id="main-content-workspace"

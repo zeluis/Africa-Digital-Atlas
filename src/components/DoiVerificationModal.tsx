@@ -58,6 +58,18 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
   const allReports = React.useMemo(() => Object.values(getAllReports()), []);
 
   useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
     if (isOpen) {
       setUserOverrides(getUserConcordanceOverrides());
       if (initialReportId) {
@@ -223,26 +235,32 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div 
-        className="w-full max-w-4xl max-h-[92vh] flex flex-col rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden"
+    <div
+      onClick={onClose}
+      className="atlas-modal-backdrop fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs overflow-hidden"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="doi-verification-modal-title"
+        className="atlas-modal-panel w-full max-w-4xl max-h-[92dvh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="p-5 sm:p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-4 bg-zinc-50/50 dark:bg-zinc-900/50">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+        <div className="p-4 sm:p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-3 bg-zinc-50/50 dark:bg-zinc-900/50 shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="p-2 sm:p-2.5 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
               <ShieldCheck className="w-5 h-5" />
             </div>
-            <div>
-              <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                <span>Crossref DOI Runtime Verification & Concordance</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                  Live API
+            <div className="min-w-0">
+              <h2 id="doi-verification-modal-title" className="text-sm sm:text-lg font-bold text-zinc-900 dark:text-white flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                <span>Crossref DOI Runtime Verification &amp; Concordance</span>
+                <span className="text-[10px] font-mono text-emerald-700 dark:text-emerald-300 font-bold">
+                  · Live API
                 </span>
               </h2>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                Validate DOIs against the Crossref registry, prevent 404 dead ends, or upload custom publication mappings.
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
+                Validate DOIs against Crossref, prevent 404s, or upload custom mappings.
               </p>
             </div>
           </div>
@@ -250,56 +268,67 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+            aria-label="Close DOI verification modal"
+            className="min-touch-target flex items-center justify-center p-2 rounded-xl text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-zinc-200 dark:border-zinc-800 px-6 bg-white dark:bg-zinc-900 text-xs font-medium">
+        <div
+          role="tablist"
+          aria-label="DOI Verification Sections"
+          className="flex flex-nowrap overflow-x-auto no-scrollbar scroll-shadow-x border-b border-zinc-200 dark:border-zinc-800 px-4 sm:px-6 bg-white dark:bg-zinc-900 text-xs font-medium shrink-0"
+        >
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === 'audit'}
             onClick={() => setActiveTab('audit')}
-            className={`py-3 px-4 border-b-2 font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+            className={`py-3 px-3 sm:px-4 border-b-2 font-semibold transition-all cursor-pointer flex items-center gap-2 shrink-0 whitespace-nowrap ${
               activeTab === 'audit'
                 ? 'border-amber-500 text-amber-600 dark:text-amber-400'
                 : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'
             }`}
           >
             <Database className="w-3.5 h-3.5" />
-            <span>Live Crossref Audit ({allReports.length} Reports)</span>
+            <span>Live Crossref Audit ({allReports.length})</span>
           </button>
 
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === 'upload'}
             onClick={() => setActiveTab('upload')}
-            className={`py-3 px-4 border-b-2 font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+            className={`py-3 px-3 sm:px-4 border-b-2 font-semibold transition-all cursor-pointer flex items-center gap-2 shrink-0 whitespace-nowrap ${
               activeTab === 'upload'
                 ? 'border-amber-500 text-amber-600 dark:text-amber-400'
                 : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'
             }`}
           >
             <Upload className="w-3.5 h-3.5" />
-            <span>Upload Concordance JSON {Object.keys(userOverrides).length > 0 && `(${Object.keys(userOverrides).length} Active)`}</span>
+            <span>Upload JSON {Object.keys(userOverrides).length > 0 && `(${Object.keys(userOverrides).length})`}</span>
           </button>
 
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === 'template'}
             onClick={() => setActiveTab('template')}
-            className={`py-3 px-4 border-b-2 font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+            className={`py-3 px-3 sm:px-4 border-b-2 font-semibold transition-all cursor-pointer flex items-center gap-2 shrink-0 whitespace-nowrap ${
               activeTab === 'template'
                 ? 'border-amber-500 text-amber-600 dark:text-amber-400'
                 : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300'
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
-            <span>JSON Template & Schema</span>
+            <span>Template &amp; Schema</span>
           </button>
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-6">
+        <div className="p-4 sm:p-6 overflow-y-auto overscroll-contain sleek-scrollbar flex-1 min-h-0 space-y-6">
           {/* TAB 1: LIVE AUDIT */}
           {activeTab === 'audit' && (
             <div className="space-y-5">
@@ -352,23 +381,20 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
                     >
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="space-y-1 max-w-2xl">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span 
-                              className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full"
-                              style={{ backgroundColor: `${report.categoryColor}18`, color: report.categoryColor }}
-                            >
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] font-mono font-bold">
+                            <span style={{ color: report.categoryColor }}>
                               {report.categoryLabel}
                             </span>
 
                             {isUserOverridden && (
-                              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-                                User Concordance Override
+                              <span className="text-purple-700 dark:text-purple-300">
+                                · User Concordance Override
                               </span>
                             )}
 
                             {concordance && !isUserOverridden && (
-                              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                                {concordance.status.replace(/_/g, ' ').toUpperCase()}
+                              <span className="text-emerald-700 dark:text-emerald-300">
+                                · {concordance.status.replace(/_/g, ' ').toUpperCase()}
                               </span>
                             )}
                           </div>
@@ -686,9 +712,9 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 sm:p-5 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-xs bg-zinc-50/50 dark:bg-zinc-900/50">
+        <div className="p-4 sm:p-5 safe-pb border-t border-zinc-200 dark:border-zinc-800 flex flex-wrap items-center justify-between gap-3 text-xs bg-zinc-50/50 dark:bg-zinc-900/50 shrink-0">
           <div className="flex items-center gap-2 text-zinc-500">
-            <Globe2 className="w-4 h-4 text-emerald-500" />
+            <Globe2 className="w-4 h-4 text-emerald-500 shrink-0" />
             <span>Connected to Crossref Open REST API (<code className="font-mono">api.crossref.org</code>)</span>
           </div>
 
@@ -704,3 +730,5 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
     </div>
   );
 };
+
+export default DoiVerificationModal;

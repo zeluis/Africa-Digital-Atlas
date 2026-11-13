@@ -70,7 +70,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header className="sticky top-0 z-40 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/90 backdrop-blur-md transition-colors duration-200">
       <div className="w-full px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
+        <div className="flex items-center justify-between h-14 sm:h-16 gap-2 sm:gap-4">
           
           {/* ========================================================= */}
           {/* ZONE 1: BACK BUTTON, BRAND & ACTIVE PAGE TITLE (LEFT)     */}
@@ -81,7 +81,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               type="button"
               onClick={onGoBack}
               disabled={!canGoBack}
-              className={`flex items-center justify-center p-2 rounded-xl border transition-all shrink-0 cursor-pointer ${
+              className={`flex items-center justify-center min-w-[40px] min-h-[40px] sm:min-w-0 sm:min-h-0 p-2 rounded-xl border transition-all shrink-0 cursor-pointer ${
                 canGoBack
                   ? 'border-zinc-200/90 dark:border-zinc-800/90 bg-zinc-100/90 dark:bg-zinc-900/90 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-100 hover:border-amber-400/70 dark:hover:border-amber-600/70 active:scale-95 shadow-2xs'
                   : 'border-zinc-200/30 dark:border-zinc-800/30 bg-zinc-50/40 dark:bg-zinc-900/20 text-zinc-300 dark:text-zinc-700 cursor-not-allowed opacity-40'
@@ -95,7 +95,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Logo & Brand Identity (Standalone Masthead) */}
             <div className="flex items-center gap-2 sm:gap-2.5 select-none shrink-0">
               <div 
-                className="relative flex items-center justify-center cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 shrink-0"
+                className="relative flex items-center justify-center cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 shrink-0 scale-[0.82] sm:scale-100 origin-center"
                 onClick={() => onSelectTab('overview')}
                 title="Afriata Continental Atlas - Return to Primary Overview"
               >
@@ -232,12 +232,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   title="Open Multilateral Data APIs & Ingestion Hub"
                   aria-label="Open 16 Multilateral Data APIs hub"
                 >
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
+                  <Database className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                   <span className="tracking-tight hidden md:inline">16 APIs</span>
-                  <Database className="w-3.5 h-3.5 md:hidden text-emerald-600 dark:text-emerald-400" />
                 </button>
               </JapandiTooltip>
             )}

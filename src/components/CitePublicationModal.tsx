@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ResearchReport } from '../data/reportsData';
 import { AfriataReport } from '../types/afriataReport';
 import { Copy, Check, Download, BookOpen, X, Code2, Share2 } from 'lucide-react';
@@ -17,6 +17,15 @@ export const CitePublicationModal: React.FC<CitePublicationModalProps> = ({
   const [style, setStyle] = useState<'chicago' | 'apa' | 'mla' | 'bibtex' | 'harvard' | 'ris' | 'jsonld'>('chicago');
   const [copied, setCopied] = useState(false);
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -122,31 +131,48 @@ ER  - `;
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-2xl rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 md:p-8 shadow-2xl space-y-6">
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 atlas-modal-backdrop"
+      onClick={onClose}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Cite publication: ${title}`}
+        onClick={e => e.stopPropagation()}
+        className="w-full max-w-2xl max-h-[92dvh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 md:p-8 shadow-2xl space-y-4 sm:space-y-6 atlas-modal-panel safe-pb"
+      >
         {/* Header */}
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-1">
+        <div className="flex items-start justify-between gap-3 sm:gap-4 shrink-0">
+          <div className="space-y-1 min-w-0">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-              <BookOpen className="w-4 h-4" />
+              <BookOpen className="w-4 h-4 shrink-0" />
               <span>Cite Publication</span>
             </div>
-            <h3 className="text-lg md:text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif">
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif line-clamp-2">
               {title}
             </h3>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+            className="min-touch-target p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer shrink-0"
+            aria-label="Close citation modal"
             title="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
+        {/* Scrollable Content Body */}
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain sleek-scrollbar space-y-4 sm:space-y-5 pr-1">
         {/* Style Selector Tabs */}
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 text-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div
+            role="tablist"
+            aria-label="Citation styles"
+            className="flex flex-nowrap items-center gap-1.5 p-1 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 text-xs overflow-x-auto no-scrollbar scroll-shadow-x"
+          >
             {(
               [
                 { id: 'chicago', label: 'Chicago' },
@@ -160,8 +186,11 @@ ER  - `;
             ).map(tab => (
               <button
                 key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={style === tab.id}
                 onClick={() => setStyle(tab.id)}
-                className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer shrink-0 whitespace-nowrap ${
                   style === tab.id
                     ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-xs font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
@@ -215,9 +244,10 @@ ER  - `;
         <div className="relative rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-4 font-mono text-xs text-zinc-800 dark:text-zinc-200 overflow-x-auto whitespace-pre-wrap max-h-56 leading-relaxed select-all">
           {citationText}
         </div>
+        </div>
 
         {/* Actions Footer */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-zinc-100 dark:border-zinc-800 shrink-0">
           <div className="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
             <span>{hasDoi ? 'DOI:' : 'ORCID:'}</span>
             <span className="font-mono font-medium text-zinc-700 dark:text-zinc-300">{hasDoi ? doi : '0000-0001-9421-6555'}</span>

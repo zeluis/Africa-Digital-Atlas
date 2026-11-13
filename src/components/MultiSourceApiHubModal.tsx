@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { motion } from 'motion/react';
+import { usePrefersReducedMotion } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { ExternalApiConnector, LiveApiTestResult } from '../data/externalApisIngestion';
 import { OrganizationLogo } from './OrganizationLogo';
@@ -47,6 +48,19 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
   const [isBatchSyncing, setIsBatchSyncing] = useState<boolean>(false);
   const [batchProgress, setBatchProgress] = useState<number>(0);
   const [inspectedConnector, setInspectedConnector] = useState<ExternalApiConnector | null>(null);
+  const reducedMotion = usePrefersReducedMotion();
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   const connectors = useMemo(() => atlas.getApiConnectors(), []);
   const entities = useMemo(() => atlas.getAllEntities().filter(e => e.sovereign), []);
@@ -133,47 +147,60 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-2 sm:p-4 lg:p-6 bg-[#EEDBB8]/90 dark:bg-[#231C11]/90 backdrop-blur-lg overflow-y-auto">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 lg:p-6 bg-[#EEDBB8]/90 dark:bg-[#231C11]/90 backdrop-blur-lg overflow-hidden"
+    >
       <motion.div 
         role="dialog"
         aria-modal="true"
         aria-labelledby="api-hub-modal-title"
-        initial={{ opacity: 0, scale: 0.97, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.97, y: 10 }}
-        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full max-w-[1440px] max-h-[94vh] h-full my-auto flex flex-col rounded-3xl bg-[#FCF9F2] dark:bg-[#181510] border border-[#DFCBB0] dark:border-[#382F22] shadow-2xl text-stone-900 dark:text-stone-100 overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+        initial={reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.97, y: 12 }}
+        animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
+        exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97, y: 12 }}
+        transition={reducedMotion ? { duration: 0.01 } : { duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+        className="relative w-full max-w-[1440px] max-h-[94dvh] h-full flex flex-col rounded-t-3xl sm:rounded-3xl bg-[#FCF9F2] dark:bg-[#181510] border border-[#DFCBB0] dark:border-[#382F22] shadow-2xl text-stone-900 dark:text-stone-100 overflow-hidden"
       >
         {/* Top Swiss Precision Accent Bar */}
         <div className="h-1.5 w-full bg-gradient-to-r from-amber-600 via-amber-700 to-emerald-700 shrink-0" />
 
         {/* Modal Header */}
-        <div className="px-5 py-4 sm:px-7 sm:py-5 border-b border-[#DFCBB0] dark:border-[#382F22] flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#FAF3E7]/95 dark:bg-[#1C1813]/95 backdrop-blur-sm shrink-0">
-          <div className="flex items-start sm:items-center gap-3.5">
-            <div className="p-3 rounded-2xl bg-[#EFE3CF] dark:bg-[#2C2419] border border-[#DFCBB0] dark:border-[#423624] text-amber-900 dark:text-amber-400 shadow-sm shrink-0">
+        <div className="px-4 py-3.5 sm:px-7 sm:py-5 border-b border-[#DFCBB0] dark:border-[#382F22] flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 bg-[#FAF3E7]/95 dark:bg-[#1C1813]/95 backdrop-blur-sm shrink-0">
+          <div className="flex items-start sm:items-center gap-3 min-w-0">
+            <div className="p-2.5 sm:p-3 rounded-2xl bg-[#EFE3CF] dark:bg-[#2C2419] border border-[#DFCBB0] dark:border-[#423624] text-amber-900 dark:text-amber-400 shadow-sm shrink-0">
               <Database className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <div>
-              <div className="flex flex-wrap items-center gap-2.5">
-                <h2 id="api-hub-modal-title" className="text-lg sm:text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50 font-display">
-                  Multilateral Data APIs & Ingestion Hub
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
+                <h2 id="api-hub-modal-title" className="text-base sm:text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50 font-display">
+                  Multilateral Data APIs &amp; Ingestion Hub
                 </h2>
-                <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                  16 Live Connectors
+                <span className="text-xs font-mono font-bold text-emerald-800 dark:text-emerald-300">
+                  · 16 Connectors
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 mt-0.5 max-w-3xl leading-relaxed">
                 Aggregating curated macroeconomic, governance, health, trade, and climate series across 54 sovereign African states.
               </p>
             </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="md:hidden min-touch-target flex items-center justify-center p-2 rounded-xl bg-white dark:bg-stone-800 hover:bg-[#EFE5D3] dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 border border-[#DFCBB0] dark:border-stone-700 transition-colors shadow-sm shrink-0 cursor-pointer"
+              aria-label="Close modal"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
 
           {/* Header Action Buttons */}
           <div className="flex items-center gap-2 shrink-0">
             <button
+              type="button"
               onClick={handleBatchSync}
               disabled={isBatchSyncing}
-              className={`px-3.5 py-2 text-xs font-bold rounded-xl flex items-center gap-2 border transition-all shadow-sm ${
+              className={`px-3.5 py-2 text-xs font-bold rounded-xl flex items-center gap-2 border transition-all shadow-sm cursor-pointer ${
                 isBatchSyncing 
                   ? 'bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border-stone-300 dark:border-stone-700 cursor-wait' 
                   : 'bg-stone-900 dark:bg-amber-500 text-stone-50 dark:text-stone-950 border-stone-900 dark:border-amber-400 hover:bg-stone-800 dark:hover:bg-amber-400 hover:shadow'
@@ -183,15 +210,18 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
               <span>{isBatchSyncing ? `Testing (${batchProgress}%)` : 'Live Test All 16 APIs'}</span>
             </button>
             <button
+              type="button"
               onClick={handleDownloadApiManifest}
-              className="p-2 sm:p-2.5 rounded-xl bg-white dark:bg-stone-800 hover:bg-[#EFE5D3] dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 border border-[#DFCBB0] dark:border-stone-700 transition-colors shadow-sm"
+              className="min-touch-target flex items-center justify-center p-2 sm:p-2.5 rounded-xl bg-white dark:bg-stone-800 hover:bg-[#EFE5D3] dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 border border-[#DFCBB0] dark:border-stone-700 transition-colors shadow-sm cursor-pointer"
               title="Export Full JSON API Ingestion Manifest"
+              aria-label="Export Full JSON API Ingestion Manifest"
             >
               <Download className="w-4 h-4" />
             </button>
             <button
+              type="button"
               onClick={onClose}
-              className="p-2 sm:p-2.5 rounded-xl bg-white dark:bg-stone-800 hover:bg-[#EFE5D3] dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 border border-[#DFCBB0] dark:border-stone-700 transition-colors shadow-sm"
+              className="hidden md:flex min-touch-target items-center justify-center p-2 sm:p-2.5 rounded-xl bg-white dark:bg-stone-800 hover:bg-[#EFE5D3] dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 border border-[#DFCBB0] dark:border-stone-700 transition-colors shadow-sm cursor-pointer"
               aria-label="Close modal"
             >
               <X className="w-4 h-4" />
@@ -200,45 +230,48 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
         </div>
 
         {/* Swiss Precision Metrics & Telemetry Strip */}
-        <div className="px-5 py-2.5 sm:px-7 border-b border-[#DFCBB0] dark:border-[#382F22] bg-[#F4EADA]/80 dark:bg-[#14110C] flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-stone-800 dark:text-stone-300 shrink-0">
-          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-              <span className="font-bold text-stone-900 dark:text-stone-100">16/16 Connected</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-stone-600 dark:text-stone-400">Harmonized Series:</span>
-              <span className="font-bold text-stone-900 dark:text-stone-100">{totalIndicatorsCount}+ Indicators</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-stone-600 dark:text-stone-400">Coverage:</span>
-              <span className="font-bold text-stone-900 dark:text-stone-100">54 Sovereign Nations</span>
-            </div>
+        <div className="px-4 py-2 sm:px-7 border-b border-[#DFCBB0] dark:border-[#382F22] bg-[#F4EADA]/80 dark:bg-[#14110C] flex flex-nowrap overflow-x-auto no-scrollbar scroll-shadow-x items-center justify-between gap-4 text-[11px] sm:text-xs font-mono text-stone-800 dark:text-stone-300 shrink-0 tabular-nums">
+          <div className="flex items-center gap-3 sm:gap-5 shrink-0 whitespace-nowrap">
+            <span className="font-bold text-emerald-800 dark:text-emerald-300">16/16 Connectors</span>
+            <span className="text-stone-400">·</span>
+            <span>
+              <span className="text-stone-600 dark:text-stone-400">Series: </span>
+              <strong className="text-stone-900 dark:text-stone-100">{totalIndicatorsCount}+ Indicators</strong>
+            </span>
+            <span className="text-stone-400">·</span>
+            <span>
+              <span className="text-stone-600 dark:text-stone-400">Scope: </span>
+              <strong className="text-stone-900 dark:text-stone-100">54 Sovereign Nations</strong>
+            </span>
             {verifiedSuccessCount > 0 && (
-              <div className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300 font-bold">
-                <Check className="w-3.5 h-3.5" />
-                <span>{verifiedSuccessCount} Handshakes Verified</span>
-              </div>
+              <>
+                <span className="text-stone-400">·</span>
+                <span className="inline-flex items-center gap-1 text-emerald-800 dark:text-emerald-300 font-bold">
+                  <Check className="w-3.5 h-3.5" />
+                  <span>{verifiedSuccessCount} Verified</span>
+                </span>
+              </>
             )}
           </div>
 
-          <div className="text-[11px] text-stone-600 dark:text-stone-400 flex items-center gap-1">
+          <div className="text-[11px] text-stone-600 dark:text-stone-400 hidden sm:flex items-center gap-1 shrink-0 whitespace-nowrap">
             <ShieldCheck className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
             <span>ISO-3166-1 / UN M49 Harmonized</span>
           </div>
         </div>
 
         {/* Filter Toolbar & Test Target Selector */}
-        <div className="px-5 py-3 sm:px-7 border-b border-[#DFCBB0] dark:border-[#382F22] bg-[#FAF3E7]/70 dark:bg-[#181510]/80 flex flex-wrap items-center justify-between gap-3 shrink-0">
-          {/* Category Pills */}
-          <div className="flex flex-wrap items-center gap-1.5">
+        <div className="px-4 py-3 sm:px-7 border-b border-[#DFCBB0] dark:border-[#382F22] bg-[#FAF3E7]/70 dark:bg-[#181510]/80 flex flex-col lg:flex-row lg:items-center justify-between gap-2.5 shrink-0">
+          {/* Category Buttons */}
+          <div className="flex flex-nowrap overflow-x-auto no-scrollbar scroll-shadow-x items-center gap-1.5 pb-0.5 lg:pb-0">
             {categories.map(cat => {
               const isSelected = selectedCategory === cat;
               return (
                 <button
+                  type="button"
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                  className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shrink-0 whitespace-nowrap cursor-pointer ${
                     isSelected 
                       ? 'bg-amber-700 text-white shadow-sm ring-1 ring-amber-700 dark:bg-amber-500 dark:text-stone-950 dark:ring-amber-400' 
                       : 'bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-200 hover:bg-[#EFE5D3] dark:hover:bg-stone-700 border border-[#DFCBB0] dark:border-stone-700'
@@ -251,27 +284,27 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
           </div>
 
           {/* Search & Country Selector */}
-          <div className="flex items-center gap-2.5 w-full md:w-auto">
-            <div className="relative flex-1 md:w-56">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-600 dark:text-stone-400" />
+          <div className="flex items-center gap-2 w-full lg:w-auto">
+            <div className="relative flex-1 lg:w-56">
+              <Search className="w-3.5 h-3.5 absolute start-3 top-1/2 -translate-y-1/2 text-stone-600 dark:text-stone-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search APIs, tags, sources..."
-                className="w-full pl-8 pr-3 py-1.5 text-xs bg-white dark:bg-stone-900 border border-[#DFCBB0] dark:border-stone-700 rounded-lg text-stone-900 dark:text-stone-100 placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-600"
+                className="w-full ps-8 pe-3 py-1.5 text-xs bg-white dark:bg-stone-900 border border-[#DFCBB0] dark:border-stone-700 rounded-lg text-stone-900 dark:text-stone-100 placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-600"
               />
             </div>
 
             <div className="flex items-center gap-1.5 text-xs text-stone-800 dark:text-stone-300 shrink-0">
-              <span className="font-bold text-[11px] uppercase tracking-wider text-stone-600 dark:text-stone-400">Target:</span>
+              <span className="hidden sm:inline font-bold text-[11px] uppercase tracking-wider text-stone-600 dark:text-stone-400">Target:</span>
               <AtlasSelect
                 aria-label="Select target country for API probe"
                 value={testCountry}
                 onChange={e => setTestCountry(e.target.value)}
                 accent="amber"
                 size="xs"
-                className="font-bold py-1.5 max-w-[200px]"
+                className="font-bold py-1.5 max-w-[160px] sm:max-w-[200px]"
               >
                 {entities.slice(0, 25).map(e => (
                   <option key={e.id} value={e.id}>{e.name} ({e.id})</option>
@@ -282,7 +315,7 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
         </div>
 
         {/* Content Body: 3 in a row Grid of Connectors with clean scroll bounds */}
-        <div className="flex-1 min-h-0 p-4 sm:p-6 overflow-y-auto bg-[#F7EFE1] dark:bg-[#12100C]">
+        <div className="flex-1 min-h-0 p-4 sm:p-6 overflow-y-auto overscroll-contain sleek-scrollbar bg-[#F7EFE1] dark:bg-[#12100C]">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pb-6">
             {filteredConnectors.map(connector => {
               const result = testResults[connector.id];
@@ -418,7 +451,7 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="px-5 py-3 sm:px-7 border-t border-[#DFCBB0] dark:border-[#382F22] bg-[#FAF3E7]/95 dark:bg-[#1C1813] flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-stone-700 dark:text-stone-400 shrink-0">
+        <div className="px-4 py-3 sm:px-7 safe-pb border-t border-[#DFCBB0] dark:border-[#382F22] bg-[#FAF3E7]/95 dark:bg-[#1C1813] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-stone-700 dark:text-stone-400 shrink-0">
           <div className="flex items-center gap-2">
             <span className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300 font-bold">
               <ShieldCheck className="w-4 h-4" />
@@ -426,7 +459,7 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center gap-1 text-stone-800 dark:text-stone-300 font-medium">
+          <div className="flex items-center gap-1 text-stone-800 dark:text-stone-300 font-medium text-center sm:text-left">
             <Info className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 shrink-0" />
             <span>Click any indicator badge to launch instant analytics.</span>
           </div>
