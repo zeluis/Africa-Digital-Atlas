@@ -2,32 +2,24 @@ import React, { useState, useMemo } from 'react';
 import { atlas } from '../data/atlas-store';
 import { COUNTRY_HEADER_DATA } from '../data/countryHeaderData';
 import { CountryFlag } from '../components/CountryFlag';
-import { useTranslation } from '../i18n/LanguageContext';
 import { getCountryRegionTonalPalette, getRegionTonalPalette } from '../data/unGeoschemeColors';
 import { getCountrySilhouette } from '../data/countrySilhouettes';
 import { 
-  Languages, 
   Search, 
   Globe2, 
   BookOpen, 
-  Users, 
   Sparkles, 
-  Filter, 
   ChevronRight,
-  Landmark,
   Layers,
-  Award,
-  Volume2,
   Radio,
-  Sliders,
   ArrowRightLeft
 } from 'lucide-react';
 import { VoiceWelcomeFab } from '../components/VoiceWelcomeFab';
 import { LANGUAGE_FAMILY_GREETINGS } from '../utils/afriataVoiceEngine';
 import { MotherTonguesWaveformScrubber } from '../components/MotherTonguesWaveformScrubber';
-import { AFRICAN_TYPOLOGICAL_FEATURES, TypologicalFeature } from '../data/africanLinguisticTypology';
+import { AFRICAN_TYPOLOGICAL_FEATURES } from '../data/africanLinguisticTypology';
 import { LinguisticTypologyComparator } from '../components/languages/LinguisticTypologyComparator';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { SPRING_TACTILE, AnimatedTabPanel } from '../utils/motion';
 
 interface LanguageFamily {
@@ -210,11 +202,45 @@ interface LanguagesViewProps {
   onSelectCountry: (entityId: string) => void;
 }
 
+type LangSubTab = 'families' | 'waveforms' | 'comparator' | 'typology' | 'lingua-francas' | 'countries';
+type LangPrimaryGroup = 'families' | 'phonetics-labs' | 'lingua-francas' | 'countries';
+
+const LANG_TAB_TO_GROUP: Record<LangSubTab, LangPrimaryGroup> = {
+  families: 'families',
+  waveforms: 'phonetics-labs',
+  comparator: 'phonetics-labs',
+  typology: 'phonetics-labs',
+  'lingua-francas': 'lingua-francas',
+  countries: 'countries',
+};
+
+const handleLangTabKeyDown = (
+  e: React.KeyboardEvent<HTMLButtonElement>,
+  ids: string[],
+  currentIndex: number,
+  onSelect: (id: string) => void
+) => {
+  if (ids.length === 0) return;
+  let nextIdx = -1;
+  if (e.key === 'ArrowRight') nextIdx = (currentIndex + 1) % ids.length;
+  else if (e.key === 'ArrowLeft') nextIdx = (currentIndex - 1 + ids.length) % ids.length;
+  else if (e.key === 'Home') nextIdx = 0;
+  else if (e.key === 'End') nextIdx = ids.length - 1;
+
+  if (nextIdx !== -1) {
+    e.preventDefault();
+    onSelect(ids[nextIdx]);
+    const nextBtn = e.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[nextIdx];
+    nextBtn?.focus();
+  }
+};
+
 export const LanguagesView: React.FC<LanguagesViewProps> = ({
   onSelectCountry
 }) => {
-  const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'families' | 'waveforms' | 'lingua-francas' | 'countries' | 'typology' | 'comparator'>('families');
+  const prefersReducedMotion = useReducedMotion();
+  const [activeTab, setActiveTab] = useState<LangSubTab>('families');
+  const [lastLabTab, setLastLabTab] = useState<'waveforms' | 'comparator' | 'typology'>('waveforms');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFamilyId, setSelectedFamilyId] = useState<string>('niger-congo');
   const [activeWaveformLangId, setActiveWaveformLangId] = useState<string>('yoruba');
@@ -235,44 +261,80 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
     });
   }, [allEntities, searchQuery]);
 
+  const activeGroup = LANG_TAB_TO_GROUP[activeTab];
+
+  const selectSubTab = (tab: LangSubTab) => {
+    setActiveTab(tab);
+    if (tab === 'waveforms' || tab === 'comparator' || tab === 'typology') {
+      setLastLabTab(tab);
+    }
+  };
+
+  const selectPrimaryGroup = (group: LangPrimaryGroup) => {
+    if (group === 'phonetics-labs') {
+      setActiveTab(lastLabTab);
+    } else {
+      setActiveTab(group);
+    }
+  };
+
+  const primaryGroups: { id: LangPrimaryGroup; label: string; icon: React.ReactNode }[] = [
+    { id: 'families', label: 'Language Families (6)', icon: null },
+    { id: 'phonetics-labs', label: 'Phonetics & Typology Labs', icon: <Radio className="w-3.5 h-3.5" /> },
+    { id: 'lingua-francas', label: 'Major Lingua Francas', icon: null },
+    { id: 'countries', label: 'Country Matrix (54)', icon: null },
+  ];
+
+  const labSubTabs: { id: 'waveforms' | 'comparator' | 'typology'; label: string; icon: React.ReactNode }[] = [
+    { id: 'waveforms', label: 'Waveform Lab (10)', icon: <Radio className="w-3.5 h-3.5" /> },
+    { id: 'comparator', label: 'Typology Comparator', icon: <ArrowRightLeft className="w-3.5 h-3.5" /> },
+    { id: 'typology', label: 'Phonemic & Typology Lab (5)', icon: <Sparkles className="w-3.5 h-3.5" /> },
+  ];
+
   return (
-    <section aria-label="Languages and Linguistics of Africa Observatory" className="space-y-8 animate-in fade-in duration-200">
+    <section aria-label="Languages and Linguistics of Africa Observatory" className="space-y-6 animate-in fade-in duration-200">
       {/* Header Banner */}
-      <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-2xl transition-colors">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            {/* Active Page Pill Indicator */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700/60 text-xs font-mono font-semibold text-emerald-700 dark:text-emerald-300 mb-3 shadow-2xs">
-              <Languages className="w-3.5 h-3.5" />
-              <span>AFRICA ATLAS • LANGUAGES & LINGUISTICS</span>
-            </div>
-            <h1 className="text-2xl md:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
-              Languages & Linguistics of Africa
+      <header className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-sm transition-colors space-y-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="space-y-1.5">
+            <p className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+              Africa Atlas · Languages &amp; Linguistics
+            </p>
+            <h1 className="text-2xl md:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display text-balance">
+              Languages &amp; Linguistics of Africa
             </h1>
-            <p className="text-sm md:text-base text-zinc-600 dark:text-zinc-400 mt-1 max-w-3xl">
-              Home to over 2,000 distinct living languages across 6 major linguistic phyla, representing extraordinary phonetic diversity, unique writing systems, and dynamic cross-border lingua francas.
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-3xl leading-relaxed">
+              Home to over 2,000 distinct living languages across 6 major linguistic phyla, representing extraordinary phonetic diversity, indigenous scripts, and dynamic cross-border lingua francas.
             </p>
           </div>
 
-          {/* Nav Tabs */}
-          <div role="tablist" aria-label="Linguistic views" className="flex flex-wrap items-center gap-2 bg-zinc-100 dark:bg-zinc-900 p-1.5 rounded-2xl border border-zinc-200 dark:border-zinc-800">
-            {[
-              { id: 'families', label: 'Language Families (6)', icon: null },
-              { id: 'waveforms', label: 'Waveform Lab (10)', icon: Radio },
-              { id: 'comparator', label: 'Typology Comparator', icon: ArrowRightLeft },
-              { id: 'lingua-francas', label: 'Major Lingua Francas', icon: null },
-              { id: 'countries', label: 'Country Matrix (54)', icon: null },
-              { id: 'typology', label: 'Phonemic & Typology Lab (5)', icon: Sparkles }
-            ].map(tab => {
-              const isActive = activeTab === tab.id;
-              const Icon = tab.icon;
+          {/* Primary 4-Section WAI-ARIA Tablist */}
+          <div
+            role="tablist"
+            aria-label="Linguistic sections"
+            className="flex flex-nowrap lg:flex-wrap items-center gap-1.5 bg-zinc-100 dark:bg-zinc-900 p-1.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-x-auto no-scrollbar shrink-0"
+          >
+            {primaryGroups.map((group, idx) => {
+              const isActive = activeGroup === group.id;
               return (
                 <button
-                  key={tab.id}
+                  key={group.id}
+                  type="button"
+                  id={`lang-group-tab-${group.id}`}
                   role="tab"
                   aria-selected={isActive}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`relative px-3.5 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                  aria-controls={`lang-group-panel-${group.id}`}
+                  tabIndex={isActive ? 0 : -1}
+                  onClick={() => selectPrimaryGroup(group.id)}
+                  onKeyDown={(e) =>
+                    handleLangTabKeyDown(
+                      e,
+                      primaryGroups.map((g) => g.id),
+                      idx,
+                      (id) => selectPrimaryGroup(id as LangPrimaryGroup)
+                    )
+                  }
+                  className={`relative px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap shrink-0 transition-colors cursor-pointer select-none flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                     isActive
                       ? 'text-white shadow-xs'
                       : 'text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -282,19 +344,74 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                     <motion.div
                       layoutId="languagesViewTabPill"
                       className="absolute inset-0 rounded-xl bg-emerald-600 shadow-md shadow-emerald-950/20"
-                      transition={SPRING_TACTILE}
+                      transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
                     />
                   )}
                   <span className="relative z-10 flex items-center gap-1.5">
-                    {Icon && <Icon className="w-3.5 h-3.5" />}
-                    <span>{tab.label}</span>
+                    {group.icon}
+                    <span>{group.label}</span>
                   </span>
                 </button>
               );
             })}
           </div>
         </div>
-      </div>
+
+        {/* Contextual Sub-Switcher for Phonetics & Typology Labs */}
+        {activeGroup === 'phonetics-labs' && (
+          <div className="pt-3 border-t border-zinc-200/80 dark:border-zinc-800/80">
+            <div
+              role="tablist"
+              aria-label="Phonetics and typology laboratory tools"
+              className="inline-flex flex-wrap items-center gap-1 p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800"
+            >
+              {labSubTabs.map((sub, idx) => {
+                const isSelected = activeTab === sub.id;
+                return (
+                  <button
+                    key={sub.id}
+                    type="button"
+                    id={`lang-subtab-${sub.id}`}
+                    role="tab"
+                    aria-selected={isSelected}
+                    aria-controls={`lang-subpanel-${sub.id}`}
+                    tabIndex={isSelected ? 0 : -1}
+                    onClick={() => selectSubTab(sub.id)}
+                    onKeyDown={(e) =>
+                      handleLangTabKeyDown(
+                        e,
+                        labSubTabs.map((s) => s.id),
+                        idx,
+                        (id) => selectSubTab(id as LangSubTab)
+                      )
+                    }
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                      isSelected
+                        ? 'bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-300 shadow-2xs'
+                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
+                    }`}
+                  >
+                    {sub.icon}
+                    <span>{sub.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </header>
+
+      <div
+        id={`lang-group-panel-${activeGroup}`}
+        role="tabpanel"
+        aria-labelledby={`lang-group-tab-${activeGroup}`}
+      >
+        <div
+          id={`lang-subpanel-${activeTab}`}
+          role={activeGroup === 'phonetics-labs' ? 'tabpanel' : undefined}
+          aria-labelledby={activeGroup === 'phonetics-labs' ? `lang-subtab-${activeTab}` : undefined}
+        >
+        <AnimatedTabPanel tabKey={activeTab} className="space-y-6">
 
       {/* TAB: TYPOLOGICAL DISTANCE COMPARATOR */}
       {activeTab === 'comparator' && (
@@ -323,23 +440,20 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {LANGUAGE_FAMILIES.map(family => {
               const greeting = LANGUAGE_FAMILY_GREETINGS[family.id];
+              const isFamilySelected = selectedFamilyId === family.id;
               return (
-                <div
+                <article
                   key={family.id}
-                  onClick={() => setSelectedFamilyId(family.id)}
-                  className={`relative group/familyCard rounded-3xl border p-6 transition-all cursor-pointer ${
-                    selectedFamilyId === family.id
+                  className={`relative rounded-3xl border p-6 transition-all flex flex-col justify-between ${
+                    isFamilySelected
                       ? 'border-emerald-500 bg-emerald-950/10 dark:bg-emerald-950/30 shadow-xl ring-1 ring-emerald-500'
                       : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-zinc-300 dark:hover:border-zinc-700'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-3 gap-2">
-                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">
-                      {family.languagesCount}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 hidden xs:inline">
-                        {family.speakers}
+                  <div>
+                    <div className="flex items-center justify-between mb-3 gap-2 text-xs">
+                      <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">
+                        {family.languagesCount} · {family.speakers}
                       </span>
                       {greeting && (
                         <VoiceWelcomeFab
@@ -352,32 +466,31 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                         />
                       )}
                     </div>
-                  </div>
 
-                  <h3 className="text-xl font-extrabold text-zinc-900 dark:text-zinc-100 mb-2">
-                    {family.name}
-                  </h3>
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4 line-clamp-3">
-                    {family.description}
-                  </p>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedFamilyId(family.id)}
+                      aria-pressed={isFamilySelected}
+                      className="text-left w-full group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-lg"
+                    >
+                      <h3 className="text-xl font-extrabold text-zinc-900 dark:text-zinc-100 mb-2 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+                        {family.name}
+                      </h3>
+                      <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4 line-clamp-3">
+                        {family.description}
+                      </p>
+                    </button>
+                  </div>
 
                   <div className="space-y-2 pt-3 border-t border-zinc-200 dark:border-zinc-800">
                     <div className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
-                      Key Languages:
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {family.keyLanguages.slice(0, 4).map(l => (
-                        <span key={l} className="text-[10px] font-medium bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-300 px-2 py-0.5 rounded-md border border-zinc-200 dark:border-zinc-800">
-                          {l}
-                        </span>
-                      ))}
+                      Key Languages: <span className="font-medium text-zinc-800 dark:text-zinc-200">{family.keyLanguages.slice(0, 4).join(' · ')}</span>
                     </div>
 
                     <div className="pt-2 flex items-center justify-between border-t border-zinc-100 dark:border-zinc-900 mt-2">
                       <button
                         type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
+                        onClick={() => {
                           const targetMap: Record<string, string> = {
                             'niger-congo': 'yoruba',
                             'afroasiatic': 'hausa',
@@ -387,16 +500,23 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                             'indo-european': 'kabuverdianu'
                           };
                           setActiveWaveformLangId(targetMap[family.id] || 'yoruba');
-                          setActiveTab('waveforms');
+                          selectSubTab('waveforms');
                         }}
-                        className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 font-bold flex items-center gap-1 cursor-pointer"
+                        className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 font-bold flex items-center gap-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
                       >
                         <Radio className="w-3 h-3" />
                         <span>Inspect Phonetic Waveform →</span>
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedFamilyId(family.id)}
+                        className="text-[11px] font-mono font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                      >
+                        {isFamilySelected ? 'Inspecting ↓' : 'Deep Dive'}
+                      </button>
                     </div>
                   </div>
-                </div>
+                </article>
               );
             })}
           </div>
@@ -416,20 +536,17 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                       {family.name} Phylum
                     </h2>
                   </div>
-                  <div className="flex items-center gap-3 text-xs font-mono">
-                    <div className="bg-zinc-100 dark:bg-zinc-900 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800">
-                      Speakers: <strong className="text-zinc-900 dark:text-zinc-100">{family.speakers}</strong>
-                    </div>
-                    <div className="bg-zinc-100 dark:bg-zinc-900 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800">
-                      Total: <strong className="text-zinc-900 dark:text-zinc-100">{family.languagesCount}</strong>
-                    </div>
+                  <div className="flex items-center gap-2.5 text-xs font-mono text-zinc-600 dark:text-zinc-400 tabular-nums">
+                    <span>Speakers: <strong className="text-zinc-900 dark:text-zinc-100">{family.speakers}</strong></span>
+                    <span aria-hidden="true">·</span>
+                    <span>Total: <strong className="text-zinc-900 dark:text-zinc-100">{family.languagesCount}</strong></span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-2 space-y-4">
                     <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
-                      Phylum Overview & Origins
+                      Phylum Overview &amp; Origins
                     </h4>
                     <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
                       {family.description}
@@ -439,17 +556,14 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                     {deepGreeting && (
                       <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-3">
                         <div className="space-y-0.5">
-                          <div className="text-[10px] font-mono uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1.5">
-                            <span>Welcome Greeting Voice</span>
-                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-sans">
-                              {deepGreeting.languageName}
-                            </span>
+                          <div className="text-[11px] font-mono uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-bold">
+                            Welcome Greeting · {deepGreeting.languageName}
                           </div>
                           <p className="text-sm font-serif font-bold text-zinc-900 dark:text-zinc-100 italic">
                             "{deepGreeting.nativePhrase}"
                           </p>
                           <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                            Phonetics: <code className="font-mono text-[11px] text-emerald-600 dark:text-emerald-400">{deepGreeting.phoneticGuide}</code> • <em>"{deepGreeting.meaningEn}"</em>
+                            Phonetics: <code className="font-mono text-[11px] text-emerald-600 dark:text-emerald-400">{deepGreeting.phoneticGuide}</code> · <em>"{deepGreeting.meaningEn}"</em>
                           </p>
                         </div>
                         <VoiceWelcomeFab
@@ -462,17 +576,18 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                       </div>
                     )}
 
-                    <div className="space-y-2 pt-3">
+                    <div className="space-y-1.5 pt-3">
                       <h5 className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase">
                         Primary Geographic Regions
                       </h5>
-                      <div className="flex flex-wrap gap-2">
-                        {family.primaryRegions.map(r => {
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold">
+                        {family.primaryRegions.map((r, rIdx) => {
                           const tonal = getRegionTonalPalette(r);
                           return (
-                            <span key={r} className={`px-3 py-1 rounded-xl text-xs font-semibold border ${tonal.badge.bg} ${tonal.badge.border} ${tonal.badge.text}`}>
-                              {r}
-                            </span>
+                            <React.Fragment key={r}>
+                              {rIdx > 0 && <span aria-hidden="true" className="text-zinc-400">·</span>}
+                              <span className={tonal.badge.text}>{r}</span>
+                            </React.Fragment>
                           );
                         })}
                       </div>
@@ -496,16 +611,12 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                     </div>
 
                     <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800">
-                      <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider mb-2">
+                      <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider mb-1.5">
                         Key Exemplar Languages
                       </h4>
-                      <div className="flex flex-wrap gap-1.5">
-                        {family.keyLanguages.map(l => (
-                          <span key={l} className="text-xs bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-2 py-1 rounded-lg text-zinc-800 dark:text-zinc-200 font-medium">
-                            {l}
-                          </span>
-                        ))}
-                      </div>
+                      <p className="text-xs text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
+                        {family.keyLanguages.join(' · ')}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -518,12 +629,12 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
       {/* TAB 2: INDIGENOUS LINGUA FRANCAS */}
       {activeTab === 'lingua-francas' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {INDIGENOUS_LINGUA_FRANCAS.map((lf, idx) => (
+          {INDIGENOUS_LINGUA_FRANCAS.map(lf => (
             <div
               key={lf.name}
               className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xl space-y-4 hover:border-emerald-500/50 transition-all"
             >
-              <div className="flex items-start justify-between">
+              <div className="flex items-start justify-between gap-2">
                 <div>
                   <span className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase">
                     {lf.family}
@@ -532,7 +643,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                     {lf.name} <span className="text-sm font-normal text-zinc-500 font-sans">({lf.nativeName})</span>
                   </h3>
                 </div>
-                <span className="text-xs font-mono font-bold bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-2.5 py-1 rounded-xl text-zinc-800 dark:text-zinc-200">
+                <span className="text-xs font-mono font-bold text-zinc-800 dark:text-zinc-200 tabular-nums shrink-0">
                   {lf.speakers}
                 </span>
               </div>
@@ -542,19 +653,15 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
               </p>
 
               <div className="space-y-2 pt-2 border-t border-zinc-200 dark:border-zinc-800 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">Writing Systems:</span>
-                  <span className="font-semibold text-zinc-800 dark:text-zinc-200">{lf.writingSystems.join(', ')}</span>
+                <div className="flex justify-between gap-2">
+                  <span className="text-zinc-500 shrink-0">Writing Systems:</span>
+                  <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-right">{lf.writingSystems.join(', ')}</span>
                 </div>
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-0.5">
                   <span className="text-zinc-500">Primary Countries:</span>
-                  <div className="flex flex-wrap gap-1">
-                    {lf.countriesSpoken.map(c => (
-                      <span key={c} className="text-[11px] bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 px-2 py-0.5 rounded-md border border-zinc-200 dark:border-zinc-800">
-                        {c}
-                      </span>
-                    ))}
-                  </div>
+                  <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                    {lf.countriesSpoken.join(' · ')}
+                  </span>
                 </div>
                 <div className="pt-2 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
                   {lf.status}
@@ -573,6 +680,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
             <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3.5" />
             <input
               type="text"
+              aria-label="Filter countries by name or spoken language"
               placeholder="Search country, language (e.g. Swahili, French, Hausa, Arabic)..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
@@ -599,11 +707,12 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                           <h4 className="font-extrabold text-base text-zinc-900 dark:text-zinc-100">
                             {entity.name}
                           </h4>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-md border ${tonal.badge.bg} ${tonal.badge.border} ${tonal.badge.text}`}>
+                          <div className="flex items-center gap-1.5 mt-0.5 text-xs">
+                            <span className={`font-mono font-bold ${tonal.badge.text}`}>
                               {entity.id}
                             </span>
-                            <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                            <span aria-hidden="true" className="text-zinc-400">·</span>
+                            <span className="text-zinc-500 dark:text-zinc-400">
                               {entity.region}
                             </span>
                           </div>
@@ -651,32 +760,25 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
 
                     <div className="space-y-3 pt-2 border-t border-zinc-200 dark:border-zinc-800 text-xs">
                       <div>
-                        <span className="text-zinc-500 dark:text-zinc-400 block mb-1 font-semibold">Official Languages:</span>
-                        <div className="flex flex-wrap gap-1">
-                          {meta?.languages.official.map(l => (
-                            <span key={l} className="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded-md font-medium text-[11px]">
-                              {l}
-                            </span>
-                          )) || <span className="text-zinc-500">Not specified</span>}
-                        </div>
+                        <span className="text-zinc-500 dark:text-zinc-400 block mb-0.5 font-semibold">Official Languages</span>
+                        <p className="text-emerald-800 dark:text-emerald-300 font-medium text-[11px] leading-relaxed">
+                          {meta?.languages.official.join(' · ') || 'Not specified'}
+                        </p>
                       </div>
 
                       <div>
-                        <span className="text-zinc-500 dark:text-zinc-400 block mb-1 font-semibold">Widely Spoken / National:</span>
-                        <div className="flex flex-wrap gap-1">
-                          {meta?.languages.mostSpoken.map(l => (
-                            <span key={l} className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 px-2 py-0.5 rounded-md text-[11px]">
-                              {l}
-                            </span>
-                          )) || <span className="text-zinc-500">Standard regional</span>}
-                        </div>
+                        <span className="text-zinc-500 dark:text-zinc-400 block mb-0.5 font-semibold">Widely Spoken / National</span>
+                        <p className="text-zinc-700 dark:text-zinc-300 text-[11px] leading-relaxed">
+                          {meta?.languages.mostSpoken.join(' · ') || 'Standard regional'}
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   <button
+                    type="button"
                     onClick={() => onSelectCountry(entity.id)}
-                    className="w-full mt-2 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-emerald-600 hover:text-white text-zinc-700 dark:text-zinc-300 text-xs font-semibold transition-all cursor-pointer"
+                    className="w-full mt-2 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-emerald-600 hover:text-white text-zinc-700 dark:text-zinc-300 text-xs font-semibold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                   >
                     <span>View Country Dossier</span>
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -700,8 +802,10 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                 return (
                   <button
                     key={feat.id}
+                    type="button"
+                    aria-pressed={isSelected}
                     onClick={() => setSelectedTypologyId(feat.id)}
-                    className={`relative p-4 rounded-2xl border text-left transition-colors cursor-pointer select-none flex flex-col justify-between min-h-[118px] overflow-hidden group ${
+                    className={`relative p-4 rounded-2xl border text-left transition-colors cursor-pointer select-none flex flex-col justify-between min-h-[118px] overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                       isSelected
                         ? 'text-white border-zinc-900 dark:border-zinc-100 shadow-lg shadow-zinc-950/15'
                         : 'bg-white dark:bg-zinc-900/90 border-zinc-200/90 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50/60 dark:hover:bg-zinc-850'
@@ -711,7 +815,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                       <motion.div
                         layoutId="languagesTypologyPill"
                         className="absolute inset-0 rounded-2xl bg-zinc-900 dark:bg-zinc-100 ring-2 ring-emerald-500/60"
-                        transition={SPRING_TACTILE}
+                        transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
                       />
                     )}
                     <div className="relative z-10 space-y-1.5 w-full">
@@ -732,10 +836,10 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                       <span className={isSelected ? 'text-zinc-300 dark:text-zinc-600' : 'text-zinc-500 dark:text-zinc-400'}>
                         {feat.leadSummary}
                       </span>
-                      <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md ${
+                      <span className={`text-[10px] font-mono font-bold tabular-nums ${
                         isSelected 
-                          ? 'bg-white/15 dark:bg-zinc-900/15 text-white dark:text-zinc-900' 
-                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                          ? 'text-white dark:text-zinc-900' 
+                          : 'text-zinc-600 dark:text-zinc-400'
                       }`}>
                         {feat.keyPhonemesOrClasses.length}
                       </span>
@@ -751,14 +855,14 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
               <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 border-b border-zinc-200/90 dark:border-zinc-800/90 pb-6">
                 <div className="space-y-2.5 max-w-2xl">
                   <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-                    <span className="font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+                    <span className="font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
                       {activeFeature.category} System
                     </span>
-                    <span className="text-zinc-400">·</span>
+                    <span aria-hidden="true" className="text-zinc-400">·</span>
                     <span className="text-zinc-500 dark:text-zinc-400 font-medium">
                       World Atlas of Language Structures (WALS)
                     </span>
-                    <span className="text-zinc-400">·</span>
+                    <span aria-hidden="true" className="text-zinc-400">·</span>
                     <span className="text-zinc-500 dark:text-zinc-400 font-semibold">
                       Phonological Typology
                     </span>
@@ -856,12 +960,12 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                                 </span>
                               </div>
 
-                              {/* Row 2: IPA transcription and Language badge */}
+                              {/* Row 2: IPA transcription and Language attribution */}
                               <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-zinc-100 dark:border-zinc-900 text-xs font-mono">
-                                <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                                <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
                                   IPA: {sample.ipa}
                                 </span>
-                                <span className="text-[11px] text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-2 py-0.5 rounded border border-zinc-200/60 dark:border-zinc-700/60 font-semibold">
+                                <span className="text-[11px] text-zinc-600 dark:text-zinc-400 font-semibold">
                                   {sample.language}
                                 </span>
                               </div>
@@ -888,6 +992,9 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
           </div>
         );
       })()}
+        </AnimatedTabPanel>
+        </div>
+      </div>
     </section>
   );
 };

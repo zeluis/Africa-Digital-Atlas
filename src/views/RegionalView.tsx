@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { SPRING_TACTILE } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { getRegionalSummaries, getBlocSummaries } from '../data/atlas-selectors';
@@ -78,17 +78,74 @@ type RegionSectionId =
   | 'tast' 
   | 'climate';
 
+type RegionalPrimaryGroup =
+  | 'overview'
+  | 'economy-infra'
+  | 'people-politics'
+  | 'ecology-climate'
+  | 'historical';
+
+const GROUP_FOR_SECTION: Record<RegionSectionId, RegionalPrimaryGroup> = {
+  overview: 'overview',
+  economy: 'economy-infra',
+  afcfta: 'economy-infra',
+  'power-pools': 'economy-infra',
+  demographics: 'people-politics',
+  politics: 'people-politics',
+  languages: 'people-politics',
+  ecology: 'ecology-climate',
+  climate: 'ecology-climate',
+  'historic-routes': 'historical',
+  tast: 'historical'
+};
+
+const PRIMARY_REGION_GROUPS: Array<{
+  id: RegionalPrimaryGroup;
+  label: string;
+  shortLabel: string;
+  defaultSection: RegionSectionId;
+  icon: React.ComponentType<{ className?: string }>;
+}> = [
+  { id: 'overview', label: '01. Overview & Nations', shortLabel: 'Overview', defaultSection: 'overview', icon: Globe2 },
+  { id: 'economy-infra', label: '02. Economy & Grids', shortLabel: 'Economy', defaultSection: 'economy', icon: DollarSign },
+  { id: 'people-politics', label: '03. People & RECs', shortLabel: 'Society', defaultSection: 'demographics', icon: Users },
+  { id: 'ecology-climate', label: '04. Ecology & Climate', shortLabel: 'Ecology', defaultSection: 'ecology', icon: Trees },
+  { id: 'historical', label: '05. Trade & History', shortLabel: 'History', defaultSection: 'historic-routes', icon: Compass }
+];
+
 export const RegionalView: React.FC<RegionalViewProps> = ({
   onSelectCountry,
   initialRegion = 'Western Africa',
   onSelectRegion
 }) => {
+  const prefersReducedMotion = useReducedMotion();
   const [viewMode, setViewMode] = useState<RegionalTabMode>('region-dossier');
   const [selectedRegion, setSelectedRegion] = useState<AfricanRegion>(initialRegion);
   const [activeSection, setActiveSection] = useState<RegionSectionId>('overview');
+  const [lastSectionByGroup, setLastSectionByGroup] = useState<Record<RegionalPrimaryGroup, RegionSectionId>>({
+    overview: 'overview',
+    'economy-infra': 'economy',
+    'people-politics': 'demographics',
+    'ecology-climate': 'ecology',
+    historical: 'historic-routes'
+  });
   const [hoveredMapRegion, setHoveredMapRegion] = useState<UNRegionName | null>(null);
   const [selectedBloc, setSelectedBloc] = useState<RegionalBloc>('ECOWAS');
   const [matrixSubTab, setMatrixSubTab] = useState<'regions' | 'blocs'>('regions');
+
+  const activeGroup: RegionalPrimaryGroup = GROUP_FOR_SECTION[activeSection] || 'overview';
+
+  const selectSubSection = (sectionId: RegionSectionId) => {
+    const grp = GROUP_FOR_SECTION[sectionId];
+    setLastSectionByGroup(prev => ({ ...prev, [grp]: sectionId }));
+    setActiveSection(sectionId);
+  };
+
+  const selectPrimaryGroup = (groupId: RegionalPrimaryGroup) => {
+    const def = PRIMARY_REGION_GROUPS.find(g => g.id === groupId);
+    const target = lastSectionByGroup[groupId] || def?.defaultSection || 'overview';
+    setActiveSection(target);
+  };
 
   const handleRegionChange = (reg: AfricanRegion) => {
     setSelectedRegion(reg);
@@ -162,41 +219,100 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
     'Southern Africa'
   ];
 
-  const regionSubSections = [
-    { id: 'overview', label: 'Overview & Nations', icon: Globe2 },
-    { id: 'economy', label: 'Economy & GDP', icon: DollarSign },
-    { id: 'afcfta', label: 'AfCFTA & Trade Corridors', icon: TrendingUp },
-    { id: 'historic-routes', label: 'Historic Trade Corridors', icon: Compass },
-    { id: 'ecology', label: 'Cross-Border Ecology', icon: Trees },
-    { id: 'power-pools', label: 'Power Pools & Grids', icon: Zap },
-    { id: 'demographics', label: 'Demographics', icon: Users },
-    { id: 'politics', label: 'Politics & RECs', icon: Building2 },
-    { id: 'languages', label: 'Languages & Scripts', icon: Languages },
-    { id: 'tast', label: 'TAST & History', icon: Anchor },
-    { id: 'climate', label: 'Climate & Biomes', icon: CloudSun }
+  const subGroupTabs: Record<Exclude<RegionalPrimaryGroup, 'overview'>, Array<{ id: RegionSectionId; label: string; icon: React.ComponentType<{ className?: string }> }>> = {
+    'economy-infra': [
+      { id: 'economy', label: 'Economy & GDP', icon: DollarSign },
+      { id: 'afcfta', label: 'AfCFTA & Trade Corridors', icon: TrendingUp },
+      { id: 'power-pools', label: 'Power Pools & Grids', icon: Zap }
+    ],
+    'people-politics': [
+      { id: 'demographics', label: 'Demographics', icon: Users },
+      { id: 'politics', label: 'Politics & RECs', icon: Building2 },
+      { id: 'languages', label: 'Languages & Scripts', icon: Languages }
+    ],
+    'ecology-climate': [
+      { id: 'ecology', label: 'Cross-Border Ecology', icon: Trees },
+      { id: 'climate', label: 'Climate & Biomes', icon: CloudSun }
+    ],
+    historical: [
+      { id: 'historic-routes', label: 'Historic Trade Corridors', icon: Compass },
+      { id: 'tast', label: 'TAST & History', icon: Anchor }
+    ]
+  };
+
+  const masterSelectorItems: Array<{ id: string; label: string; region?: AfricanRegion }> = [
+    ...allFiveRegions.map(reg => ({
+      id: `btn-region-${reg.toLowerCase().replace(/\s+/g, '-')}`,
+      label: reg,
+      region: reg
+    })),
+    { id: 'btn-regional-matrix-all', label: 'Comparative Matrix' }
   ];
+
+  const handleMasterTabKeyDown = (e: React.KeyboardEvent, idx: number) => {
+    let nextIdx = idx;
+    if (e.key === 'ArrowRight') nextIdx = (idx + 1) % masterSelectorItems.length;
+    else if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + masterSelectorItems.length) % masterSelectorItems.length;
+    else if (e.key === 'Home') nextIdx = 0;
+    else if (e.key === 'End') nextIdx = masterSelectorItems.length - 1;
+    else return;
+    e.preventDefault();
+    const target = masterSelectorItems[nextIdx];
+    if (target.region) handleRegionChange(target.region);
+    else setViewMode('matrix');
+    document.getElementById(target.id)?.focus();
+  };
+
+  const handlePrimaryGroupKeyDown = (e: React.KeyboardEvent, idx: number) => {
+    let nextIdx = idx;
+    if (e.key === 'ArrowRight') nextIdx = (idx + 1) % PRIMARY_REGION_GROUPS.length;
+    else if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + PRIMARY_REGION_GROUPS.length) % PRIMARY_REGION_GROUPS.length;
+    else if (e.key === 'Home') nextIdx = 0;
+    else if (e.key === 'End') nextIdx = PRIMARY_REGION_GROUPS.length - 1;
+    else return;
+    e.preventDefault();
+    const target = PRIMARY_REGION_GROUPS[nextIdx];
+    selectPrimaryGroup(target.id);
+    document.getElementById(`region-group-tab-${target.id}`)?.focus();
+  };
+
+  const handleSubGroupKeyDown = (
+    e: React.KeyboardEvent,
+    items: Array<{ id: RegionSectionId }>,
+    idx: number
+  ) => {
+    let nextIdx = idx;
+    if (e.key === 'ArrowRight') nextIdx = (idx + 1) % items.length;
+    else if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + items.length) % items.length;
+    else if (e.key === 'Home') nextIdx = 0;
+    else if (e.key === 'End') nextIdx = items.length - 1;
+    else return;
+    e.preventDefault();
+    const target = items[nextIdx];
+    selectSubSection(target.id);
+    document.getElementById(`subtab-${target.id}`)?.focus();
+  };
 
   return (
     <section aria-label="UN M49 African Regional Portals and Macro-Geoscheme Observatory" className="space-y-6 animate-in fade-in duration-200">
-      {/* 1. MASTER REGIONAL SELECTOR PANEL - NO CLIPPING, ALL BUTTONS FULLY VISIBLE */}
+      {/* 1. MASTER REGIONAL SELECTOR PANEL */}
       <div 
         id="regional-selector-panel"
-        className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 sm:p-5 shadow-xl transition-all"
+        className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 sm:p-5 shadow-sm transition-all"
       >
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
           <div className="space-y-1">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
               <Compass className="w-3.5 h-3.5 text-emerald-500" />
-              AFRICAN REGIONAL PORTAL • UN GEOSCHEME M49
+              African Regional Portal · UN Geoscheme M49
             </span>
             <div className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
-              Select an African Region or View the Continental Comparative Matrix:
+              Select an African Region or Continental Matrix:
             </div>
           </div>
 
-          {/* Region Buttons Panel - Fully Wrapping with No Hidden Elements */}
           <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto" role="tablist" aria-label="Select regional dossier">
-            {allFiveRegions.map(reg => {
+            {allFiveRegions.map((reg, idx) => {
               const isSelected = viewMode === 'region-dossier' && selectedRegion === reg;
               const tonal = getRegionTonalPalette(reg);
               const summary = regionalSummaries.find(r => r.region === reg);
@@ -204,23 +320,29 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                 <button
                   key={reg}
                   id={`btn-region-${reg.toLowerCase().replace(/\s+/g, '-')}`}
+                  type="button"
                   role="tab"
                   aria-selected={isSelected}
-                  onClick={() => {
-                    handleRegionChange(reg);
-                  }}
-                  className={`relative inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl text-xs font-semibold cursor-pointer select-none transition-colors duration-150 border border-zinc-200 dark:border-zinc-800 ${
+                  aria-controls="regional-main-tabpanel"
+                  tabIndex={isSelected ? 0 : -1}
+                  onClick={() => handleRegionChange(reg)}
+                  onKeyDown={(e) => handleMasterTabKeyDown(e, idx)}
+                  className={`relative inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl text-xs font-semibold cursor-pointer select-none transition-colors duration-150 border border-zinc-200 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                     isSelected
                       ? `${tonal.badge.text} font-bold shadow-xs`
                       : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                   }`}
                 >
                   {isSelected && (
-                    <motion.div
-                      layoutId="regionalActiveSelector"
-                      className={`absolute inset-0 rounded-2xl ${tonal.badge.bg} ${tonal.badge.border} border shadow-xs`}
-                      transition={SPRING_TACTILE}
-                    />
+                    prefersReducedMotion ? (
+                      <span className={`absolute inset-0 rounded-2xl ${tonal.badge.bg} ${tonal.badge.border} border shadow-xs`} aria-hidden="true" />
+                    ) : (
+                      <motion.div
+                        layoutId="regionalActiveSelector"
+                        className={`absolute inset-0 rounded-2xl ${tonal.badge.bg} ${tonal.badge.border} border shadow-xs`}
+                        transition={SPRING_TACTILE}
+                      />
+                    )
                   )}
                   <span
                     className="relative z-10 w-2.5 h-2.5 rounded-full shrink-0 shadow-xs"
@@ -230,7 +352,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                     }}
                   />
                   <span className="relative z-10">{reg}</span>
-                  <span className="relative z-10 text-[10px] font-mono opacity-70 font-normal">
+                  <span className="relative z-10 text-[10px] font-mono tabular-nums opacity-70 font-normal">
                     ({summary?.countryCount || 0})
                   </span>
                 </button>
@@ -240,181 +362,267 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
             {/* Matrix Button */}
             <button
               id="btn-regional-matrix-all"
+              type="button"
               role="tab"
               aria-selected={viewMode === 'matrix'}
+              aria-controls="regional-main-tabpanel"
+              tabIndex={viewMode === 'matrix' ? 0 : -1}
               onClick={() => setViewMode('matrix')}
-              className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-semibold cursor-pointer select-none transition-colors duration-150 border border-zinc-200 dark:border-zinc-800 ${
+              onKeyDown={(e) => handleMasterTabKeyDown(e, allFiveRegions.length)}
+              className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-semibold cursor-pointer select-none transition-colors duration-150 border border-zinc-200 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                 viewMode === 'matrix'
                   ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
                   : 'bg-zinc-100 dark:bg-zinc-900/90 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800'
               }`}
             >
               {viewMode === 'matrix' && (
-                <motion.div
-                  layoutId="regionalActiveSelector"
-                  className="absolute inset-0 rounded-2xl bg-zinc-900 dark:bg-zinc-100 border border-zinc-900 dark:border-zinc-100 shadow-xs"
-                  transition={SPRING_TACTILE}
-                />
+                prefersReducedMotion ? (
+                  <span className="absolute inset-0 rounded-2xl bg-zinc-900 dark:bg-zinc-100 border border-zinc-900 dark:border-zinc-100 shadow-xs" aria-hidden="true" />
+                ) : (
+                  <motion.div
+                    layoutId="regionalActiveSelector"
+                    className="absolute inset-0 rounded-2xl bg-zinc-900 dark:bg-zinc-100 border border-zinc-900 dark:border-zinc-100 shadow-xs"
+                    transition={SPRING_TACTILE}
+                  />
+                )
               )}
               <TableProperties className="relative z-10 w-3.5 h-3.5 text-emerald-500" />
-              <span className="relative z-10">Comparative Matrix (All Regions & Blocs)</span>
+              <span className="relative z-10">Comparative Matrix (All Regions &amp; Blocs)</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* 2. REGION VIEW MODE (Dedicated Polished Intro Hero with Prominent SVG Silhouette) */}
+      {/* 2. REGION VIEW MODE */}
       {viewMode === 'region-dossier' && (
-        <div className="space-y-6 animate-in fade-in duration-200">
-          {/* POLISHED INTRO HERO (Matches CountryView Hero Pattern with SVG Silhouette Plaque) */}
-          <div 
-            id="region-intro-hero"
-            className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-900/90 dark:via-zinc-950 dark:to-zinc-950 p-6 md:p-8 shadow-2xl relative overflow-hidden"
-          >
-            {/* Ambient Background Glow */}
+        <div
+          id="regional-main-tabpanel"
+          role="tabpanel"
+          aria-labelledby={`btn-region-${selectedRegion.toLowerCase().replace(/\s+/g, '-')}`}
+          className="space-y-6 animate-in fade-in duration-200"
+        >
+          {/* Full Hero on Overview; Compact Sticky Regional Header on Deep-Dive Tabs */}
+          {activeSection === 'overview' ? (
             <div 
-              className="absolute -top-24 -left-24 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-20 dark:opacity-25"
-              style={{ background: selectedRegionTonal.warmAccent }}
-            />
+              id="region-intro-hero"
+              className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-900/90 dark:via-zinc-950 dark:to-zinc-950 p-6 md:p-8 shadow-sm relative overflow-hidden"
+            >
+              <div 
+                className="absolute -top-24 -left-24 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-20 dark:opacity-25"
+                style={{ background: selectedRegionTonal.warmAccent }}
+              />
 
-            <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-8 relative z-10">
-              {/* Left Side: Region Identity & Rich Wikipedia Encyclopedic Dossier */}
-              <div className="flex-1 space-y-4 max-w-3xl">
-                {/* Meta Badges */}
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-mono font-bold shadow-2xs ${selectedRegionTonal.badge.bg} ${selectedRegionTonal.badge.border} ${selectedRegionTonal.badge.text}`}>
-                    <Globe2 className="w-3.5 h-3.5" />
-                    <span>UN M49: {wikiDossier.m49Code}</span>
+              <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-8 relative z-10">
+                <div className="flex-1 space-y-4 max-w-3xl">
+                  {/* Clean Unboxed Metadata */}
+                  <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-zinc-600 dark:text-zinc-400">
+                    <span className={`font-bold ${selectedRegionTonal.badge.text}`}>
+                      UN M49: {wikiDossier.m49Code}
+                    </span>
+                    <span aria-hidden="true">·</span>
+                    <span>{wikiDossier.auRegion}</span>
+                    <span aria-hidden="true">·</span>
+                    <span>{currentRegionSummary.countryCount} Member States &amp; Territories</span>
                   </div>
-                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
-                    {wikiDossier.auRegion}
-                  </span>
-                  <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
-                    {currentRegionSummary.countryCount} Member States & Territories
-                  </span>
+
+                  <div>
+                    <h1 className="text-3xl md:text-5xl font-black text-zinc-900 dark:text-zinc-100 font-display tracking-tight">
+                      {selectedRegion}
+                    </h1>
+                    <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 mt-1 font-medium">
+                      Geographic, Economic, and Demographic Division of the African Continent
+                    </p>
+                  </div>
+
+                  <div 
+                    className="p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs space-y-2.5 transition-colors"
+                    style={{ backgroundColor: selectedRegionCalmBg }}
+                  >
+                    <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
+                      <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]">
+                        <BookOpen className="w-3.5 h-3.5 text-emerald-500" />
+                        Wikipedia Encyclopedic Overview
+                      </span>
+                      <a
+                        href={wikiDossier.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                      >
+                        <span>Article: {wikiDossier.canonicalTitle}</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+
+                    <p className="text-xs md:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                      {wikiDossier.extract}
+                    </p>
+                  </div>
+
+                  {/* Quick Indicators Capsule */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-1 font-mono text-xs tabular-nums">
+                    <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
+                      <span className="text-zinc-400 block text-[9px] uppercase font-bold">Total GDP</span>
+                      <span className="font-bold text-cyan-600 dark:text-cyan-400 text-sm">
+                        {formatGDP(currentRegionSummary.totalGdp)}
+                      </span>
+                    </div>
+                    <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
+                      <span className="text-zinc-400 block text-[9px] uppercase font-bold">Population</span>
+                      <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+                        {formatPopulation(currentRegionSummary.totalPopulation)}
+                      </span>
+                    </div>
+                    <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
+                      <span className="text-zinc-400 block text-[9px] uppercase font-bold">GDP Per Capita</span>
+                      <span className="font-bold text-zinc-800 dark:text-zinc-200 text-sm">
+                        ${wikiDossier.economy.gdpPerCapitaAvg.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
+                      <span className="text-zinc-400 block text-[9px] uppercase font-bold">Avg HDI</span>
+                      <span className="font-bold text-amber-600 dark:text-amber-400 text-sm">
+                        {formatHDI(currentRegionSummary.averageHdi)}
+                      </span>
+                    </div>
+                    <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
+                      <span className="text-zinc-400 block text-[9px] uppercase font-bold">Land Area</span>
+                      <span className="font-bold text-zinc-800 dark:text-zinc-200 text-xs">
+                        {wikiDossier.geography.landAreaFormatted}
+                      </span>
+                    </div>
+                    <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
+                      <span className="text-zinc-400 block text-[9px] uppercase font-bold">Urbanization</span>
+                      <span className="font-bold text-indigo-600 dark:text-indigo-400 text-xs">
+                        {wikiDossier.demographics.urbanizationRate}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Region Title */}
-                <div>
-                  <h1 className="text-3xl md:text-5xl font-black text-zinc-900 dark:text-zinc-100 font-display tracking-tight">
-                    {selectedRegion}
-                  </h1>
-                  <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 mt-1 font-medium">
-                    Geographic, Economic, and Demographic Division of the African Continent
-                  </p>
+                <div className="flex-shrink-0 flex items-center justify-center lg:justify-end">
+                  <RegionalSilhouette
+                    region={selectedRegion}
+                    size="header"
+                    onSelectCountry={onSelectCountry}
+                    showMemberList={false}
+                  />
                 </div>
-
-                {/* Wikipedia Extract */}
-                <div 
-                  className="p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs space-y-2.5 transition-colors"
-                  style={{ backgroundColor: selectedRegionCalmBg }}
-                >
-                  <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
-                    <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]">
-                      <BookOpen className="w-3.5 h-3.5 text-emerald-500" />
-                      Wikipedia Encyclopedic Overview
-                    </span>
-                    <a
-                      href={wikiDossier.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
-                    >
-                      <span>Article: {wikiDossier.canonicalTitle}</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
-
-                  <p className="text-xs md:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                    {wikiDossier.extract}
-                  </p>
-                </div>
-
-                {/* Quick Indicators Capsule */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-1 font-mono text-xs">
-                  <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
-                    <span className="text-zinc-400 block text-[9px] uppercase font-bold">Total GDP</span>
-                    <span className="font-bold text-cyan-600 dark:text-cyan-400 text-sm">
-                      {formatGDP(currentRegionSummary.totalGdp)}
-                    </span>
-                  </div>
-
-                  <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
-                    <span className="text-zinc-400 block text-[9px] uppercase font-bold">Population</span>
-                    <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
-                      {formatPopulation(currentRegionSummary.totalPopulation)}
-                    </span>
-                  </div>
-
-                  <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
-                    <span className="text-zinc-400 block text-[9px] uppercase font-bold">GDP Per Capita</span>
-                    <span className="font-bold text-zinc-800 dark:text-zinc-200 text-sm">
-                      ${wikiDossier.economy.gdpPerCapitaAvg.toLocaleString()}
-                    </span>
-                  </div>
-
-                  <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
-                    <span className="text-zinc-400 block text-[9px] uppercase font-bold">Avg HDI</span>
-                    <span className="font-bold text-amber-600 dark:text-amber-400 text-sm">
-                      {formatHDI(currentRegionSummary.averageHdi)}
-                    </span>
-                  </div>
-
-                  <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
-                    <span className="text-zinc-400 block text-[9px] uppercase font-bold">Land Area</span>
-                    <span className="font-bold text-zinc-800 dark:text-zinc-200 text-xs">
-                      {wikiDossier.geography.landAreaFormatted}
-                    </span>
-                  </div>
-
-                  <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
-                    <span className="text-zinc-400 block text-[9px] uppercase font-bold">Urbanization</span>
-                    <span className="font-bold text-indigo-600 dark:text-indigo-400 text-xs">
-                      {wikiDossier.demographics.urbanizationRate}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Side: Prominent Region SVG Silhouette Plaque (Country Header Treatment) */}
-              <div className="flex-shrink-0 flex items-center justify-center lg:justify-end">
-                <RegionalSilhouette
-                  region={selectedRegion}
-                  size="header"
-                  onSelectCountry={onSelectCountry}
-                  showMemberList={false}
-                />
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="sticky top-16 z-20 p-3 sm:p-4 rounded-2xl bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: selectedRegionTonal.warmAccent }} />
+                <div className="min-w-0">
+                  <h1 className="text-sm sm:text-base font-extrabold text-zinc-900 dark:text-zinc-100 font-display truncate">
+                    {selectedRegion}
+                  </h1>
+                  <p className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 truncate tabular-nums">
+                    UN M49 {wikiDossier.m49Code} · {currentRegionSummary.countryCount} States · {formatGDP(currentRegionSummary.totalGdp)} · {formatPopulation(currentRegionSummary.totalPopulation)}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => selectSubSection('overview')}
+                className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer shrink-0"
+              >
+                ← Full Regional Overview
+              </button>
+            </div>
+          )}
 
-          {/* 3. REGIONAL DEEP-DIVE SUB-TABS RIBBON - FULLY VISIBLE, NO TRUNCATION */}
-          <div 
-            id="region-subtabs-ribbon"
-            className="flex flex-wrap items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-3"
-          >
-            {regionSubSections.map(tab => {
-              const Icon = tab.icon;
-              const isActive = activeSection === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  id={`subtab-${tab.id}`}
-                  onClick={() => setActiveSection(tab.id as RegionSectionId)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    isActive
-                      ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-md scale-[1.02]'
-                      : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800'
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
+          {/* 3. CONSOLIDATED 5-SECTION PRIMARY TABLIST + IN-PANEL SUB-SWITCHER */}
+          <div className="space-y-3 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+            <nav
+              id="region-subtabs-ribbon"
+              role="tablist"
+              aria-label="Regional dossier thematic sections"
+              className="flex items-center gap-1.5 overflow-x-auto no-scrollbar p-1.5 rounded-2xl bg-zinc-100/90 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800"
+            >
+              {PRIMARY_REGION_GROUPS.map((grp, idx) => {
+                const Icon = grp.icon;
+                const isActive = activeGroup === grp.id;
+                return (
+                  <button
+                    key={grp.id}
+                    type="button"
+                    role="tab"
+                    id={`region-group-tab-${grp.id}`}
+                    aria-selected={isActive}
+                    aria-controls={`region-group-panel-${grp.id}`}
+                    tabIndex={isActive ? 0 : -1}
+                    onClick={() => selectPrimaryGroup(grp.id)}
+                    onKeyDown={(e) => handlePrimaryGroupKeyDown(e, idx)}
+                    className={`relative flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 cursor-pointer select-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
+                      isActive
+                        ? 'text-white dark:text-zinc-950 font-bold'
+                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-white/60 dark:hover:bg-zinc-800/70'
+                    }`}
+                  >
+                    {isActive && (
+                      prefersReducedMotion ? (
+                        <span className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs" aria-hidden="true" />
+                      ) : (
+                        <motion.div
+                          layoutId="regionalPrimaryGroupPill"
+                          className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs"
+                          transition={SPRING_TACTILE}
+                        />
+                      )
+                    )}
+                    <span className="relative z-10 flex items-center gap-1.5">
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      <span className="hidden sm:inline">{grp.label}</span>
+                      <span className="sm:hidden">{grp.shortLabel}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </nav>
+
+            {activeGroup !== 'overview' && (
+              <div
+                role="tablist"
+                aria-label="Sub-section views"
+                className="flex items-center gap-1 overflow-x-auto no-scrollbar p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800 w-fit max-w-full"
+              >
+                {subGroupTabs[activeGroup].map((tab, idx) => {
+                  const Icon = tab.icon;
+                  const isActive = activeSection === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      id={`subtab-${tab.id}`}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActive}
+                      aria-controls={`region-subpanel-${tab.id}`}
+                      tabIndex={isActive ? 0 : -1}
+                      onClick={() => selectSubSection(tab.id)}
+                      onKeyDown={(e) => handleSubGroupKeyDown(e, subGroupTabs[activeGroup], idx)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap shrink-0 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
+                        isActive
+                          ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-bold'
+                          : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* 4. ACTIVE SECTION CONTENT */}
+          <div
+            role="tabpanel"
+            id={`region-group-panel-${activeGroup}`}
+            aria-labelledby={`region-group-tab-${activeGroup}`}
+          >
 
           {/* Section: Overview & Member Nations */}
           {activeSection === 'overview' && (
@@ -467,11 +675,12 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                   {sortedMemberCountries.map(country => {
                     const countryM49 = UN_M49_NUMERIC_CODES[country.id] || '—';
                     return (
-                      <div
+                      <button
                         key={country.id}
+                        type="button"
                         id={`member-card-${country.id.toLowerCase()}`}
                         onClick={() => onSelectCountry(country.id)}
-                        className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all cursor-pointer group flex items-center justify-between shadow-xs hover:border-emerald-500/50 dark:hover:border-emerald-500/40 hover:shadow-sm"
+                        className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all cursor-pointer group flex items-center justify-between text-left shadow-xs hover:border-emerald-500/50 dark:hover:border-emerald-500/40 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                       >
                         <div className="flex items-center gap-3">
                           <CountryFlag entityId={country.id} size="md" />
@@ -480,12 +689,12 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                               {country.name}
                             </div>
                             <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                              Cap: {country.capital} • <span className="font-mono">M49: {countryM49}</span>
+                              Cap: {country.capital} · <span className="font-mono">M49: {countryM49}</span>
                             </div>
                           </div>
                         </div>
 
-                        <div className="text-right font-mono text-xs">
+                        <div className="text-right font-mono tabular-nums text-xs">
                           <div className="font-bold text-zinc-900 dark:text-zinc-100">
                             ${country.gdp.toFixed(1)}B
                           </div>
@@ -493,7 +702,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                             {country.pop.toFixed(1)}M pop
                           </div>
                         </div>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
@@ -554,16 +763,9 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                     <TrendingUp className="w-4 h-4" />
                     Key Commodities & Exports
                   </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {wikiDossier.economy.topCommodities.map((comm, idx) => (
-                      <span 
-                        key={idx}
-                        className="px-2.5 py-1 rounded-xl bg-white/70 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-medium border border-zinc-200/60 dark:border-zinc-700/60"
-                      >
-                        {comm}
-                      </span>
-                    ))}
-                  </div>
+                  <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                    {wikiDossier.economy.topCommodities.join(' · ')}
+                  </p>
                 </div>
 
                 <div 
@@ -748,7 +950,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                         <span className="font-extrabold text-base font-mono text-emerald-600 dark:text-emerald-400">
                           {rec.acronym}
                         </span>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+                        <span className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
                           Est. {rec.treatyYear}
                         </span>
                       </div>
@@ -767,13 +969,9 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                   <div className="space-y-2">
                     <span className="text-xs font-mono font-bold uppercase text-zinc-500">Major Institutional Hubs</span>
-                    <div className="flex flex-wrap gap-2">
-                      {wikiDossier.politics.institutionalHubs.map((hub, idx) => (
-                        <span key={idx} className="px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-xs font-medium text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
-                          🏛️ {hub}
-                        </span>
-                      ))}
-                    </div>
+                    <p className="text-xs font-medium text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                      {wikiDossier.politics.institutionalHubs.join(' · ')}
+                    </p>
                   </div>
 
                   <div className="space-y-2">
@@ -825,13 +1023,9 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                     <div className="text-xs font-mono font-bold uppercase text-emerald-600 dark:text-emerald-400">
                       Major Vehicular & Trade Languages
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {wikiDossier.languages.vehicularLanguages.map((lang, idx) => (
-                        <span key={idx} className="px-2.5 py-1 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-xs text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
-                          {lang}
-                        </span>
-                      ))}
-                    </div>
+                    <p className="text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                      {wikiDossier.languages.vehicularLanguages.join(' · ')}
+                    </p>
                   </div>
 
                   {/* Indigenous Scripts */}
@@ -867,12 +1061,10 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                 style={{ backgroundColor: selectedRegionCalmBg }}
               >
                 <div className="border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 text-rose-600 dark:text-rose-400">
-                      HISTORICAL LEGACIES & VOYAGES ARCHIVE
-                    </span>
-                  </div>
-                  <h3 className="font-extrabold text-xl text-zinc-900 dark:text-zinc-100 font-display mt-1.5 flex items-center gap-2">
+                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+                    Historical Legacies &amp; Voyages Archive
+                  </span>
+                  <h3 className="font-extrabold text-xl text-zinc-900 dark:text-zinc-100 font-display mt-1 flex items-center gap-2">
                     <Anchor className="w-5 h-5 text-rose-500" />
                     Transatlantic Slave Trade (TAST) Regional Association
                   </h3>
@@ -906,30 +1098,22 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
 
                   <div className="p-5 rounded-2xl bg-white/70 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 space-y-2">
                     <span className="text-zinc-500 block text-[11px] font-mono uppercase font-bold">Primary Historic Ports</span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {wikiDossier.tastAssociation.primaryHistoricPorts.map((port, idx) => (
-                        <span key={idx} className="px-2 py-0.5 rounded-lg bg-zinc-200 dark:bg-zinc-800 text-[11px] font-mono text-zinc-800 dark:text-zinc-200">
-                          {port}
-                        </span>
-                      ))}
-                    </div>
+                    <p className="text-xs font-mono text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                      {wikiDossier.tastAssociation.primaryHistoricPorts.join(' · ')}
+                    </p>
                   </div>
                 </div>
 
                 <div className="p-5 rounded-2xl bg-white/70 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 space-y-2 text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                  <strong className="text-zinc-900 dark:text-zinc-100 font-bold block">Historical Analysis & Archival Context:</strong>
+                  <strong className="text-zinc-900 dark:text-zinc-100 font-bold block">Historical Analysis &amp; Archival Context:</strong>
                   <p>{wikiDossier.tastAssociation.voyagesHistoricalNotes}</p>
                 </div>
 
                 <div>
-                  <span className="text-xs font-mono font-bold uppercase text-zinc-500 block mb-2">Major Diasporic Destinations</span>
-                  <div className="flex flex-wrap gap-2">
-                    {wikiDossier.tastAssociation.diasporicDestinations.map((dest, idx) => (
-                      <span key={idx} className="px-3 py-1 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-semibold">
-                        📍 {dest}
-                      </span>
-                    ))}
-                  </div>
+                  <span className="text-xs font-mono font-bold uppercase text-zinc-500 block mb-1.5">Major Diasporic Destinations</span>
+                  <p className="text-xs font-semibold text-rose-700 dark:text-rose-300">
+                    {wikiDossier.tastAssociation.diasporicDestinations.join(' · ')}
+                  </p>
                 </div>
               </div>
             </div>
@@ -1006,33 +1190,41 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
               </div>
             </div>
           )}
+          </div>
         </div>
       )}
 
       {/* 3. CONTINENTAL COMPARATIVE MATRIX MODE (Across All 5 Regions & 8 RECs) */}
       {viewMode === 'matrix' && (
-        <div className="space-y-8 animate-in fade-in duration-200">
+        <div
+          id="regional-main-tabpanel"
+          role="tabpanel"
+          aria-labelledby="btn-regional-matrix-all"
+          className="space-y-8 animate-in fade-in duration-200"
+        >
           {/* Header Banner */}
-          <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-2xl transition-colors">
+          <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-sm transition-colors">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-mono font-semibold mb-3 shadow-2xs bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300">
+                <div className="inline-flex items-center gap-2 text-xs font-mono font-semibold text-emerald-700 dark:text-emerald-300 mb-2">
                   <Globe2 className="w-3.5 h-3.5" />
-                  <span>AFRICA CONTINENTAL COMPARATIVE MATRIX</span>
+                  <span>Africa Continental Comparative Matrix · UN M49 &amp; RECs</span>
                 </div>
                 <h1 className="text-2xl md:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
-                  Regional & Economic Blocs Matrix
+                  Regional &amp; Economic Blocs Matrix
                 </h1>
                 <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
                   Macro comparative analysis across the 5 AU Geographic Regions and 8 Regional Economic Communities (RECs).
                 </p>
               </div>
 
-              {/* Sub-mode switcher - Wrapped, No Clipping */}
-              <div className="flex flex-wrap gap-1 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-2xl">
+              <div role="tablist" aria-label="Matrix perspective" className="flex flex-wrap gap-1 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-2xl">
                 <button
+                  type="button"
+                  role="tab"
+                  aria-selected={matrixSubTab === 'regions'}
                   onClick={() => setMatrixSubTab('regions')}
-                  className={`px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all cursor-pointer ${
+                  className={`px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                     matrixSubTab === 'regions'
                       ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-md'
                       : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
@@ -1041,8 +1233,11 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                   5 Geographic Regions
                 </button>
                 <button
+                  type="button"
+                  role="tab"
+                  aria-selected={matrixSubTab === 'blocs'}
                   onClick={() => setMatrixSubTab('blocs')}
-                  className={`px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all cursor-pointer ${
+                  className={`px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                     matrixSubTab === 'blocs'
                       ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-md'
                       : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
@@ -1236,16 +1431,16 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                   <div className="flex items-center gap-4">
                     <OrganizationLogo org={currentBlocSummary.bloc} size={48} />
                     <div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <h2 className="text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">{currentBlocSummary.bloc}</h2>
-                        <span className="font-mono text-xs bg-emerald-50 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full">
-                          {currentBlocSummary.countriesCount} Member States
+                        <span className="font-mono text-xs text-emerald-700 dark:text-emerald-300">
+                          · {currentBlocSummary.countriesCount} Member States
                         </span>
                       </div>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{currentBlocSummary.name}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 font-mono text-xs">
+                  <div className="flex items-center gap-3 font-mono text-xs tabular-nums">
                     <div className="bg-white/80 dark:bg-zinc-950/60 border border-zinc-200/80 dark:border-zinc-800/80 px-3 py-1.5 rounded-xl shadow-xs">
                       <span className="text-zinc-500">Combined GDP: </span>
                       <span className="font-bold text-cyan-600 dark:text-cyan-400">{formatGDP(currentBlocSummary.totalGdp)}</span>
@@ -1262,19 +1457,20 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                   <h3 className="font-bold text-sm text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">Treaty Member States</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     {currentBlocSummary.countries.map(country => (
-                      <div
+                      <button
                         key={country.id}
+                        type="button"
                         onClick={() => onSelectCountry(country.id)}
-                        className="p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-black/20 hover:bg-white dark:hover:bg-zinc-800/80 transition-all cursor-pointer group flex items-center justify-between shadow-xs"
+                        className="p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-black/20 hover:bg-white dark:hover:bg-zinc-800/80 transition-all cursor-pointer group flex items-center justify-between text-left shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                       >
-                        <div className="flex items-center gap-2.5">
+                        <div className="flex items-center gap-2.5 min-w-0">
                           <CountryFlag entityId={country.id} size="sm" />
                           <div className="font-semibold text-xs text-zinc-800 dark:text-zinc-200 group-hover:text-emerald-500 transition-colors truncate">
                             {country.name}
                           </div>
                         </div>
-                        <span className="font-mono text-[10px] text-zinc-500">{country.id}</span>
-                      </div>
+                        <span className="font-mono text-[10px] text-zinc-500 shrink-0">{country.id}</span>
+                      </button>
                     ))}
                   </div>
                 </div>

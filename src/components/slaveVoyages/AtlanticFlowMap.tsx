@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { REGIONAL_ROUTE_FLOWS } from '../../data/slaveVoyagesData';
 import { RegionalRouteFlow, EpistemicMode } from '../../data/slaveVoyagesTypes';
 import { AfricaVectorContinent } from '../common/AfricaVectorContinent';
+import { AtlasSelect } from '../common/AtlasSelect';
 import { 
   Play, 
   Pause, 
@@ -72,6 +73,7 @@ interface AtlanticFlowMapProps {
   isSeasonalityOpen?: boolean;
   onToggleSeasonality?: () => void;
   onBackToOverview?: () => void;
+  onSwitchToPorts?: () => void;
 }
 
 // Major coastal nodes for visual geographic grounding
@@ -112,7 +114,8 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
   onNavigateToCartography,
   isSeasonalityOpen,
   onToggleSeasonality,
-  onBackToOverview
+  onBackToOverview,
+  onSwitchToPorts
 }) => {
   const [hoveredRoute, setHoveredRoute] = useState<RegionalRouteFlow | null>(null);
   const [hoveredNode, setHoveredNode] = useState<any | null>(null);
@@ -412,12 +415,16 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
         {/* Interactive Layer Toggles */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Destination Corridor Filter */}
-          <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white dark:bg-zinc-800/80 border border-[#DCD3C1] dark:border-zinc-700 text-xs font-mono">
-            <Filter className="w-3.5 h-3.5 text-[#78716C] dark:text-zinc-400" />
-            <select
+          <div className="flex items-center gap-1 ps-2.5 pe-1 py-0.5 rounded-lg bg-white dark:bg-zinc-800/80 border border-[#DCD3C1] dark:border-zinc-700 text-xs font-mono">
+            <Filter className="w-3.5 h-3.5 text-[#78716C] dark:text-zinc-400 shrink-0" />
+            <AtlasSelect
+              aria-label="Filter trans-Atlantic destination corridor"
               value={destinationFilter}
               onChange={(e) => setDestinationFilter(e.target.value as any)}
-              className="bg-transparent text-[#1C1917] dark:text-zinc-200 font-bold focus:outline-none cursor-pointer text-xs"
+              accent="amber"
+              size="xs"
+              variant="ghost"
+              className="text-[#1C1917] dark:text-zinc-200 font-bold text-xs py-1"
             >
               <option value="all">All Destinations</option>
               <option value="Brazil">Brazil Corridors</option>
@@ -425,7 +432,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
               <option value="French Caribbean">French Caribbean</option>
               <option value="Spanish Americas">Spanish Americas</option>
               <option value="North America">North America</option>
-            </select>
+            </AtlasSelect>
           </div>
 
           <button
@@ -500,6 +507,19 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
               {selectedSeason.toUpperCase()}
             </span>
           </button>
+
+          {/* Switch to African Ports & Forts Map */}
+          {onSwitchToPorts && (
+            <button
+              type="button"
+              onClick={onSwitchToPorts}
+              className="px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all border border-[#DCD3C1] dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-emerald-700 dark:text-emerald-300 hover:border-emerald-500/60 flex items-center gap-1.5 shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+              title="Switch directly to African Embarkation Ports & Forts GIS"
+            >
+              <MapPin className="w-3.5 h-3.5" />
+              <span>Ports &amp; Forts GIS</span>
+            </button>
+          )}
 
           {/* ← Back to Overview button in Map Canvas Toolbar */}
           {onBackToOverview && (

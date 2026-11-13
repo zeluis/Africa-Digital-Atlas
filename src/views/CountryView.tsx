@@ -1,8 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { SPRING_TACTILE, AnimatedTabPanel } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
-import { AtlasEntity, HeritageSite, SubnationalUnit } from '../data/types';
 import { CountryFlag } from '../components/CountryFlag';
 import { CountrySilhouette } from '../components/CountrySilhouette';
 import { CountryHeaderInfo } from '../components/CountryHeaderInfo';
@@ -43,23 +42,20 @@ import {
   Landmark, 
   ExternalLink, 
   TrendingUp, 
-  MapPin, 
-  Building2, 
   Layers, 
   Award, 
   AlertTriangle,
-  ChevronRight,
   Sparkles,
   BookOpen,
   Trees,
   Star,
   FileText,
   FileDown,
-  Printer,
   Pickaxe,
   BatteryCharging,
   ArrowUpRight,
-  Volume2
+  Volume2,
+  ArrowLeft
 } from 'lucide-react';
 import { CountryFactsheetModal } from '../components/CountryFactsheetModal';
 import { getCountryMineralsProfile, getCountryTradeFlows } from '../data/criticalMineralsData';
@@ -78,14 +74,66 @@ interface CountryViewProps {
 }
 
 type TabType = 'overview' | 'climate' | 'economy' | 'demographics' | 'health_edu' | 'infrastructure' | 'governance' | 'heritage' | 'subnational' | 'provenance';
+type PrimaryGroup = 'overview' | 'economy-infra' | 'people-society' | 'territory-heritage' | 'provenance';
+
+const TAB_TO_GROUP: Record<TabType, PrimaryGroup> = {
+  overview: 'overview',
+  economy: 'economy-infra',
+  infrastructure: 'economy-infra',
+  demographics: 'people-society',
+  health_edu: 'people-society',
+  governance: 'people-society',
+  climate: 'territory-heritage',
+  subnational: 'territory-heritage',
+  heritage: 'territory-heritage',
+  provenance: 'provenance',
+};
+
+const GROUP_SUBTABS: Record<PrimaryGroup, TabType[]> = {
+  overview: ['overview'],
+  'economy-infra': ['economy', 'infrastructure'],
+  'people-society': ['demographics', 'health_edu', 'governance'],
+  'territory-heritage': ['climate', 'subnational', 'heritage'],
+  provenance: ['provenance'],
+};
+
+const handleTabListKeyDown = (
+  e: React.KeyboardEvent<HTMLButtonElement>,
+  ids: string[],
+  currentIndex: number,
+  onSelect: (id: string) => void
+) => {
+  if (ids.length === 0) return;
+  let nextIndex = -1;
+  if (e.key === 'ArrowRight') nextIndex = (currentIndex + 1) % ids.length;
+  else if (e.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + ids.length) % ids.length;
+  else if (e.key === 'Home') nextIndex = 0;
+  else if (e.key === 'End') nextIndex = ids.length - 1;
+
+  if (nextIndex !== -1) {
+    e.preventDefault();
+    const nextId = ids[nextIndex];
+    onSelect(nextId);
+    const nextEl = e.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[nextIndex];
+    nextEl?.focus();
+  }
+};
 
 export const CountryView: React.FC<CountryViewProps> = ({
   entityId,
   onSelectCountry
 }) => {
   const { t } = useTranslation();
+  const prefersReducedMotion = useReducedMotion();
   const { isCountrySaved, toggleSaveCountry } = useSavedEntities();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const [lastTabByGroup, setLastTabByGroup] = useState<Record<PrimaryGroup, TabType>>({
+    overview: 'overview',
+    'economy-infra': 'economy',
+    'people-society': 'demographics',
+    'territory-heritage': 'climate',
+    provenance: 'provenance',
+  });
   const [showFactsheet, setShowFactsheet] = useState<boolean>(false);
   const [isSpeakingName, setIsSpeakingName] = useState<boolean>(false);
   
@@ -141,271 +189,471 @@ export const CountryView: React.FC<CountryViewProps> = ({
     return getCountryTradeFlows(entity.id, entity.name);
   }, [entity.id, entity.name]);
 
-  const tabs = [
-    { id: 'overview' as TabType, label: t('tab.overview', 'Overview & Facts'), icon: <Globe className="w-4 h-4" /> },
-    { id: 'climate' as TabType, label: t('tab.climate', 'Climate & Ecology'), icon: <Trees className="w-4 h-4 text-emerald-400" /> },
-    { id: 'economy' as TabType, label: t('tab.economy', 'Economy & Trade'), icon: <DollarSign className="w-4 h-4" /> },
-    { id: 'demographics' as TabType, label: t('tab.demographics', 'Demographics'), icon: <Users className="w-4 h-4" /> },
-    { id: 'health_edu' as TabType, label: t('tab.health_edu', 'Health & Education'), icon: <HeartHandshake className="w-4 h-4" /> },
-    { id: 'infrastructure' as TabType, label: t('tab.infrastructure', 'Infrastructure & Tech'), icon: <Zap className="w-4 h-4" /> },
-    { id: 'governance' as TabType, label: t('tab.governance', 'Governance & Peace'), icon: <ShieldCheck className="w-4 h-4" /> },
-    { id: 'heritage' as TabType, label: `${t('tab.heritage', 'UNESCO Heritage')} (${heritageSites.length})`, icon: <Landmark className="w-4 h-4" /> },
-    { id: 'subnational' as TabType, label: `${t('tab.subnational', 'Regions')} (${subnationalUnits.length})`, icon: <Layers className="w-4 h-4" /> },
-    { id: 'provenance' as TabType, label: t('tab.provenance', 'Provenance & Sources'), icon: <BookOpen className="w-4 h-4" /> },
+  const activeGroup = TAB_TO_GROUP[activeTab];
+
+  const selectTab = (tab: TabType) => {
+    const group = TAB_TO_GROUP[tab];
+    setActiveTab(tab);
+    setLastTabByGroup((prev) => ({ ...prev, [group]: tab }));
+  };
+
+  const selectGroup = (group: PrimaryGroup) => {
+    const preferred = lastTabByGroup[group] || GROUP_SUBTABS[group][0];
+    setActiveTab(preferred);
+  };
+
+  const primaryGroups: { id: PrimaryGroup; label: string; icon: React.ReactNode }[] = [
+    { id: 'overview', label: t('tab.overview', 'Overview'), icon: <Globe className="w-4 h-4" /> },
+    { id: 'economy-infra', label: 'Economy & Infra', icon: <DollarSign className="w-4 h-4" /> },
+    { id: 'people-society', label: 'People & Policy', icon: <Users className="w-4 h-4" /> },
+    { id: 'territory-heritage', label: 'Climate & Territory', icon: <Trees className="w-4 h-4 text-emerald-500" /> },
+    { id: 'provenance', label: t('tab.provenance', 'Provenance'), icon: <BookOpen className="w-4 h-4" /> },
   ];
 
+  const subTabMeta: Record<TabType, { label: string; icon: React.ReactNode }> = {
+    overview: { label: t('tab.overview', 'Overview & Facts'), icon: <Globe className="w-3.5 h-3.5" /> },
+    economy: { label: t('tab.economy', 'Economy & Trade'), icon: <DollarSign className="w-3.5 h-3.5" /> },
+    infrastructure: { label: t('tab.infrastructure', 'Infrastructure & Tech'), icon: <Zap className="w-3.5 h-3.5" /> },
+    demographics: { label: t('tab.demographics', 'Demographics'), icon: <Users className="w-3.5 h-3.5" /> },
+    health_edu: { label: t('tab.health_edu', 'Health & Education'), icon: <HeartHandshake className="w-3.5 h-3.5" /> },
+    governance: { label: t('tab.governance', 'Governance & Peace'), icon: <ShieldCheck className="w-3.5 h-3.5" /> },
+    climate: { label: t('tab.climate', 'Climate & Ecology'), icon: <Trees className="w-3.5 h-3.5 text-emerald-500" /> },
+    subnational: { label: `${t('tab.subnational', 'Regions')} (${subnationalUnits.length})`, icon: <Layers className="w-3.5 h-3.5" /> },
+    heritage: { label: `${t('tab.heritage', 'UNESCO Heritage')} (${heritageSites.length})`, icon: <Landmark className="w-3.5 h-3.5" /> },
+    provenance: { label: t('tab.provenance', 'Provenance & Sources'), icon: <BookOpen className="w-3.5 h-3.5" /> },
+  };
+
+  const activeGroupSubTabs = GROUP_SUBTABS[activeGroup];
   const regionPalette = getCountryRegionTonalPalette(entity.id);
   const countryCalmBg = getRegionCalmColor(entity.region);
 
+  const handleSpeakCountry = () => {
+    if (isSpeakingName) {
+      stopAfriataSpeech();
+      setIsSpeakingName(false);
+    } else {
+      const headerMeta = getCountryHeaderData(entity.id);
+      const speechText = `${entity.name}. Capital city: ${headerMeta.capital || entity.capital}. Located in ${entity.region}.`;
+      speakAcademicNarration({
+        text: speechText,
+        onStart: () => setIsSpeakingName(true),
+        onEnd: () => setIsSpeakingName(false),
+        onError: () => setIsSpeakingName(false)
+      });
+    }
+  };
+
   return (
     <section aria-label={`${entity.name} Sovereign Country Dossier and Demographic Observatory`} className="space-y-6 animate-in fade-in duration-200">
-      {/* Top Country Dossier Header Card with Pure Regional Tonal Directional Gradient */}
-      <div 
-        id="country-dossier-header-card"
-        className="relative rounded-3xl p-6 md:p-8 shadow-sm overflow-hidden transition-all duration-300"
-        style={{
-          background: `linear-gradient(135deg, ${regionPalette.gradientStart} 0%, ${regionPalette.gradientMid} 48%, ${regionPalette.gradientEnd} 100%)`,
-          borderColor: regionPalette.atlasBorder,
-          borderWidth: '1px'
-        }}
-      >
-        {/* Subtle Ambient Regional Radial Glow in top-left */}
-        <div 
-          className="pointer-events-none absolute -top-28 -left-28 w-96 h-96 rounded-full blur-3xl opacity-30"
-          style={{ background: regionPalette.ambientAura }}
-        />
-
-        <div className="relative z-10 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6">
-          {/* Left Side: Country Identity & Key Metrics Capsule */}
-          <div className="flex-1 space-y-5">
-            {/* Country Identity Block */}
-            <div className="flex items-start gap-5">
-              <CountryFlag entityId={entity.id} size="xl" className="shadow-md mt-1" />
-              <div className="space-y-1.5">
+      {/* Compact Sticky Country Bar on Deep-Dive Tabs */}
+      {activeGroup !== 'overview' ? (
+        <header
+          id="country-compact-header-bar"
+          className="sticky top-16 z-20 rounded-2xl border px-4 py-3 shadow-xs backdrop-blur-md transition-colors"
+          style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.94)',
+            borderColor: regionPalette.atlasBorder,
+          }}
+        >
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <CountryFlag entityId={entity.id} size="sm" className="shadow-xs shrink-0" />
+              <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-2xl md:text-4xl font-extrabold text-zinc-900 font-display">
+                  <h1 className="text-base md:text-lg font-extrabold text-zinc-900 font-display truncate">
                     {entity.name}
                   </h1>
                   <button
                     type="button"
-                    onClick={() => {
-                      if (isSpeakingName) {
-                        stopAfriataSpeech();
-                        setIsSpeakingName(false);
-                      } else {
-                        const headerMeta = getCountryHeaderData(entity.id);
-                        const speechText = `${entity.name}. Capital city: ${headerMeta.capital || entity.capital}. Located in ${entity.region}.`;
-                        speakAcademicNarration({
-                          text: speechText,
-                          onStart: () => setIsSpeakingName(true),
-                          onEnd: () => setIsSpeakingName(false),
-                          onError: () => setIsSpeakingName(false)
-                        });
-                      }
-                    }}
-                    className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
+                    onClick={handleSpeakCountry}
+                    className={`p-1 rounded-lg border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                       isSpeakingName
-                        ? 'bg-emerald-500 text-white border-emerald-600 shadow-xs animate-pulse'
-                        : 'bg-white/90 border-zinc-200 text-zinc-500 hover:text-emerald-600 hover:border-emerald-300'
+                        ? 'bg-emerald-500 text-white border-emerald-600'
+                        : 'bg-white border-zinc-200 text-zinc-500 hover:text-emerald-600'
                     }`}
                     title={isSpeakingName ? 'Stop pronunciation' : 'Listen to country name and capital pronunciation'}
                     aria-label={`Pronounce ${entity.name}`}
                   >
-                    <Volume2 className="w-4 h-4" />
+                    <Volume2 className="w-3.5 h-3.5" />
                   </button>
                   <button
+                    type="button"
                     onClick={() => toggleSaveCountry(entity.id)}
-                    className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
+                    className={`p-1 rounded-lg border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                       isSaved
-                        ? 'bg-amber-50 border-amber-300 text-amber-500 shadow-xs'
-                        : 'bg-white/90 border-zinc-200 text-zinc-400 hover:text-amber-500'
+                        ? 'bg-amber-50 border-amber-300 text-amber-500'
+                        : 'bg-white border-zinc-200 text-zinc-400 hover:text-amber-500'
                     }`}
                     title={isSaved ? 'Remove from Saved Countries' : 'Save Country to Quick Access'}
+                    aria-label={isSaved ? `Remove ${entity.name} from saved countries` : `Save ${entity.name} to quick access`}
                   >
-                    <Star className={`w-4 h-4 ${isSaved ? 'fill-amber-400 text-amber-500' : ''}`} />
-                  </button>
-                  <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-white/95 border border-zinc-200/90 text-zinc-700">
-                    {entity.id} / {entity.iso2}
-                  </span>
-                  <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium border ${
-                    entity.sovereign 
-                      ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
-                      : 'bg-indigo-50 border-indigo-200 text-indigo-800'
-                  }`}>
-                    {entity.sovereign ? 'Sovereign AU Member' : 'Autonomous Territory'}
-                  </span>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowFactsheet(true)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/95 border border-zinc-200/90 hover:border-emerald-300 text-zinc-700 hover:text-emerald-700 text-xs font-semibold shadow-xs transition-all cursor-pointer"
-                    title="Export 1-Page Executive Factsheet Brief (Printable PDF / SVG / HTML)"
-                  >
-                    <FileText className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>1-Page Factsheet</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => exportCountryIntelligenceBriefingPDF(entity, { headerElementId: 'country-dossier-header-card' })}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-semibold shadow-xs transition-all cursor-pointer hover:bg-purple-100 dark:hover:bg-purple-900/60"
-                    title="Download Publication-Grade 2-Page Intelligence Dossier (PDF)"
-                  >
-                    <FileText className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-                    <span>2-Page Dossier (PDF)</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => exportCountryDossierBibTeX(entity)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/95 border border-zinc-200/90 text-zinc-700 hover:text-amber-700 text-xs font-mono font-semibold shadow-xs transition-all cursor-pointer"
-                    title="Download BibTeX citation (.bib) for this sovereign country dossier"
-                  >
-                    <FileDown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                    <span>.bib</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => exportCountryDossierRIS(entity)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/95 border border-zinc-200/90 text-zinc-700 hover:text-purple-700 text-xs font-mono font-semibold shadow-xs transition-all cursor-pointer"
-                    title="Download RIS reference (.ris) for Zotero and EndNote"
-                  >
-                    <FileDown className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-                    <span>.ris</span>
+                    <Star className={`w-3.5 h-3.5 ${isSaved ? 'fill-amber-400 text-amber-500' : ''}`} />
                   </button>
                 </div>
-                <p className="text-xs md:text-sm text-zinc-600 font-medium">
-                  {entity.officialName}
+                <p className="text-[11px] text-zinc-600 font-mono tabular-nums truncate">
+                  {entity.id} / {entity.iso2} · {entity.region} · Pop {formatPopulation(pop)} · GDP {formatGDP(gdp)} · HDI {formatHDI(hdi)}
                 </p>
-                
-                {/* Badges / Regional Blocs */}
-                <div className="flex flex-wrap items-center gap-2 pt-1">
-                  <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-md border ${regionPalette.badge.bg} ${regionPalette.badge.border} ${regionPalette.badge.text}`}>
-                    {entity.region}
-                  </span>
-                  {entity.blocs.map(bloc => (
-                    <span key={bloc} className="text-[11px] font-mono bg-white/95 border border-zinc-200/90 text-zinc-700 px-2 py-0.5 rounded-md">
-                      {bloc}
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-1.5">
+              {qualityFlags.length > 0 && activeTab !== 'provenance' && (
+                <button
+                  type="button"
+                  onClick={() => selectTab('provenance')}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 hover:bg-amber-100 text-[11px] font-semibold cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                >
+                  <AlertTriangle className="w-3 h-3 text-amber-600" />
+                  <span>Audit Note</span>
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setShowFactsheet(true)}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-zinc-200 hover:border-emerald-300 text-zinc-700 hover:text-emerald-700 text-[11px] font-semibold cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                title="Export 1-Page Executive Factsheet Brief"
+              >
+                <FileText className="w-3 h-3 text-emerald-600" />
+                <span>Factsheet</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => exportCountryIntelligenceBriefingPDF(entity)}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-50 border border-purple-200 text-purple-700 hover:bg-purple-100 text-[11px] font-semibold cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                title="Download 2-Page Intelligence Dossier (PDF)"
+              >
+                <FileText className="w-3 h-3 text-purple-600" />
+                <span>PDF</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => exportCountryDossierBibTeX(entity)}
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-white border border-zinc-200 text-zinc-700 hover:text-amber-700 text-[11px] font-mono font-semibold cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                title="Download BibTeX citation (.bib)"
+              >
+                .bib
+              </button>
+              <button
+                type="button"
+                onClick={() => exportCountryDossierRIS(entity)}
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-white border border-zinc-200 text-zinc-700 hover:text-purple-700 text-[11px] font-mono font-semibold cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                title="Download RIS reference (.ris)"
+              >
+                .ris
+              </button>
+              <button
+                type="button"
+                onClick={() => selectTab('overview')}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 text-[11px] font-semibold cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+              >
+                <ArrowLeft className="w-3 h-3" />
+                <span>Overview</span>
+              </button>
+            </div>
+          </div>
+        </header>
+      ) : (
+        /* Top Country Dossier Header Card with Pure Regional Tonal Directional Gradient */
+        <header 
+          id="country-dossier-header-card"
+          className="relative rounded-3xl p-6 md:p-8 shadow-sm overflow-hidden transition-all duration-300"
+          style={{
+            background: `linear-gradient(135deg, ${regionPalette.gradientStart} 0%, ${regionPalette.gradientMid} 48%, ${regionPalette.gradientEnd} 100%)`,
+            borderColor: regionPalette.atlasBorder,
+            borderWidth: '1px'
+          }}
+        >
+          {/* Subtle Ambient Regional Radial Glow in top-left */}
+          <div 
+            className="pointer-events-none absolute -top-28 -left-28 w-96 h-96 rounded-full blur-3xl opacity-30"
+            style={{ background: regionPalette.ambientAura }}
+          />
+
+          <div className="relative z-10 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6">
+            {/* Left Side: Country Identity & Key Metrics Capsule */}
+            <div className="flex-1 space-y-5">
+              {/* Country Identity Block */}
+              <div className="flex items-start gap-5">
+                <CountryFlag entityId={entity.id} size="xl" className="shadow-md mt-1" />
+                <div className="space-y-1.5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h1 className="text-2xl md:text-4xl font-extrabold text-zinc-900 font-display">
+                      {entity.name}
+                    </h1>
+                    <button
+                      type="button"
+                      onClick={handleSpeakCountry}
+                      className={`p-1.5 rounded-xl border transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                        isSpeakingName
+                          ? 'bg-emerald-500 text-white border-emerald-600 shadow-xs'
+                          : 'bg-white/90 border-zinc-200 text-zinc-500 hover:text-emerald-600 hover:border-emerald-300'
+                      }`}
+                      title={isSpeakingName ? 'Stop pronunciation' : 'Listen to country name and capital pronunciation'}
+                      aria-label={`Pronounce ${entity.name}`}
+                    >
+                      <Volume2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => toggleSaveCountry(entity.id)}
+                      className={`p-1.5 rounded-xl border transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                        isSaved
+                          ? 'bg-amber-50 border-amber-300 text-amber-500 shadow-xs'
+                          : 'bg-white/90 border-zinc-200 text-zinc-400 hover:text-amber-500'
+                      }`}
+                      title={isSaved ? 'Remove from Saved Countries' : 'Save Country to Quick Access'}
+                      aria-label={isSaved ? `Remove ${entity.name} from saved countries` : `Save ${entity.name} to quick access`}
+                    >
+                      <Star className={`w-4 h-4 ${isSaved ? 'fill-amber-400 text-amber-500' : ''}`} />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowFactsheet(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/95 border border-zinc-200/90 hover:border-emerald-300 text-zinc-700 hover:text-emerald-700 text-xs font-semibold shadow-xs transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                      title="Export 1-Page Executive Factsheet Brief (Printable PDF / SVG / HTML)"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>1-Page Factsheet</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => exportCountryIntelligenceBriefingPDF(entity, { headerElementId: 'country-dossier-header-card' })}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-semibold shadow-xs transition-all cursor-pointer hover:bg-purple-100 dark:hover:bg-purple-900/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                      title="Download Publication-Grade 2-Page Intelligence Dossier (PDF)"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                      <span>2-Page Dossier (PDF)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => exportCountryDossierBibTeX(entity)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/95 border border-zinc-200/90 text-zinc-700 hover:text-amber-700 text-xs font-mono font-semibold shadow-xs transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                      title="Download BibTeX citation (.bib) for this sovereign country dossier"
+                    >
+                      <FileDown className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                      <span>.bib</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => exportCountryDossierRIS(entity)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/95 border border-zinc-200/90 text-zinc-700 hover:text-purple-700 text-xs font-mono font-semibold shadow-xs transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                      title="Download RIS reference (.ris) for Zotero and EndNote"
+                    >
+                      <FileDown className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                      <span>.ris</span>
+                    </button>
+                  </div>
+
+                  <p className="text-xs md:text-sm text-zinc-700 font-medium">
+                    {entity.officialName}
+                  </p>
+
+                  {/* Unboxed Typographic Identity & Bloc Metadata */}
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 pt-0.5 text-xs text-zinc-600">
+                    <span className="font-mono font-semibold text-zinc-800">{entity.id} / {entity.iso2}</span>
+                    <span aria-hidden="true">·</span>
+                    <span className={`font-semibold ${entity.sovereign ? 'text-emerald-800' : 'text-indigo-800'}`}>
+                      {entity.sovereign ? 'Sovereign AU Member' : 'Autonomous Territory'}
                     </span>
-                  ))}
+                    <span aria-hidden="true">·</span>
+                    <span className={`font-semibold ${regionPalette.badge.text}`}>{entity.region}</span>
+                    {entity.blocs.length > 0 && (
+                      <>
+                        <span aria-hidden="true">·</span>
+                        <span className="font-mono text-[11px] text-zinc-700">
+                          {entity.blocs.join(' · ')}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Core Metrics Capsule - Elevated Crisp White Tile */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white/95 border border-zinc-200/90 p-3.5 rounded-2xl shadow-xs">
+                <div className="space-y-0.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">Population</span>
+                    {atlas.getObservations(entity.id, 'SP.POP.TOTL').length > 1 && (
+                      <MicroSparkline 
+                        data={atlas.getObservations(entity.id, 'SP.POP.TOTL').map(o => o.value)} 
+                        width={44} 
+                        height={14} 
+                        color="#059669" 
+                      />
+                    )}
+                  </div>
+                  <div className="font-mono font-bold text-sm text-zinc-900 tabular-nums">{formatPopulation(pop)}</div>
+                  <DataSourceBadge entityId={entity.id} indicatorId="SP.POP.TOTL" />
+                </div>
+                <div className="space-y-0.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">Nominal GDP</span>
+                    {atlas.getObservations(entity.id, 'NY.GDP.MKTP.CD').length > 1 && (
+                      <MicroSparkline 
+                        data={atlas.getObservations(entity.id, 'NY.GDP.MKTP.CD').map(o => o.value)} 
+                        width={44} 
+                        height={14} 
+                        color="#0284c7" 
+                      />
+                    )}
+                  </div>
+                  <div className="font-mono font-bold text-sm text-cyan-700 tabular-nums">{formatGDP(gdp)}</div>
+                  <DataSourceBadge entityId={entity.id} indicatorId="NY.GDP.MKTP.CD" />
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">GDP Per Capita</span>
+                  <div className="font-mono font-bold text-sm text-emerald-700 tabular-nums">{formatCurrency(gdpPerCapita)}</div>
+                  <span className="text-[10px] text-zinc-500 font-mono">Calculated</span>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">Human Dev. (HDI)</span>
+                  <div className="font-mono font-bold text-sm text-amber-700 tabular-nums">{formatHDI(hdi)}</div>
+                  <span className="text-[11px] font-sans font-semibold text-zinc-600">
+                    {hdiCat.label.split(' ')[0]} Development
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Quick Core Metrics Capsule - Elevated Crisp White Tile */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white/95 border border-zinc-200/90 p-3.5 rounded-2xl shadow-xs">
-              <div className="space-y-0.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">Population</span>
-                  {atlas.getObservations(entity.id, 'SP.POP.TOTL').length > 1 && (
-                    <MicroSparkline 
-                      data={atlas.getObservations(entity.id, 'SP.POP.TOTL').map(o => o.value)} 
-                      width={44} 
-                      height={14} 
-                      color="#059669" 
-                    />
-                  )}
-                </div>
-                <div className="font-mono font-bold text-sm text-zinc-900">{formatPopulation(pop)}</div>
-                <DataSourceBadge entityId={entity.id} indicatorId="SP.POP.TOTL" />
-              </div>
-              <div className="space-y-0.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">Nominal GDP</span>
-                  {atlas.getObservations(entity.id, 'NY.GDP.MKTP.CD').length > 1 && (
-                    <MicroSparkline 
-                      data={atlas.getObservations(entity.id, 'NY.GDP.MKTP.CD').map(o => o.value)} 
-                      width={44} 
-                      height={14} 
-                      color="#0284c7" 
-                    />
-                  )}
-                </div>
-                <div className="font-mono font-bold text-sm text-cyan-700">{formatGDP(gdp)}</div>
-                <DataSourceBadge entityId={entity.id} indicatorId="NY.GDP.MKTP.CD" />
-              </div>
-              <div className="space-y-0.5">
-                <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">GDP Per Capita</span>
-                <div className="font-mono font-bold text-sm text-emerald-700">{formatCurrency(gdpPerCapita)}</div>
-                <span className="text-[10px] text-zinc-500 font-mono">Calculated</span>
-              </div>
-              <div className="space-y-0.5">
-                <span className="text-[10px] uppercase font-bold text-zinc-500 font-mono tracking-wider">Human Dev. (HDI)</span>
-                <div className="font-mono font-bold text-sm text-amber-700">{formatHDI(hdi)}</div>
-                <span className={`text-[10px] font-sans font-semibold px-2 py-0.5 rounded-full border ${hdiCat.color}`}>
-                  {hdiCat.label.split(' ')[0]}
+            {/* Right Side: Prominent Country SVG Silhouette Plaque */}
+            <div className="flex-shrink-0 flex items-center justify-center lg:justify-end">
+              <CountrySilhouette entityId={entity.id} size="header" />
+            </div>
+          </div>
+
+          {/* Detailed Country Header Metadata: Capital, Government, Independence, UN Member, Languages, Religion, Live Time & Temperature */}
+          <div className="pt-4 border-t border-zinc-200/80">
+            <CountryHeaderInfo entityId={entity.id} />
+          </div>
+
+          {/* Quality Alerts Banner if applicable */}
+          {qualityFlags.length > 0 && (
+            <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50/90 p-3.5 flex items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2.5 text-amber-900">
+                <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                <span>
+                  <strong>Data Reconciliation Note:</strong> {qualityFlags[0].description}
                 </span>
               </div>
+              <button
+                type="button"
+                onClick={() => selectTab('provenance')}
+                className="text-amber-800 hover:text-amber-900 font-semibold underline underline-offset-2 flex-shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+              >
+                View Provenance Audit →
+              </button>
             </div>
-          </div>
+          )}
+        </header>
+      )}
 
-          {/* Right Side: Prominent Country SVG Silhouette Plaque */}
-          <div className="flex-shrink-0 flex items-center justify-center lg:justify-end">
-            <CountrySilhouette entityId={entity.id} size="header" />
-          </div>
+      {/* Primary Consolidated 5-Section WAI-ARIA Tablist */}
+      <div className="space-y-3 border-b border-zinc-200 dark:border-zinc-800 pb-3">
+        <div
+          className="flex flex-wrap items-center gap-2"
+          role="tablist"
+          aria-label="Country dossier primary sections"
+        >
+          {primaryGroups.map((group, idx) => {
+            const isActive = activeGroup === group.id;
+            return (
+              <button
+                key={group.id}
+                type="button"
+                id={`country-group-tab-${group.id}`}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`country-group-panel-${group.id}`}
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => selectGroup(group.id)}
+                onKeyDown={(e) =>
+                  handleTabListKeyDown(
+                    e,
+                    primaryGroups.map((g) => g.id),
+                    idx,
+                    (id) => selectGroup(id as PrimaryGroup)
+                  )
+                }
+                style={!isActive ? { backgroundColor: countryCalmBg } : undefined}
+                className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold whitespace-nowrap cursor-pointer select-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 ${
+                  isActive
+                    ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
+                    : 'border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:opacity-90'
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="countryDossierTabPill"
+                    className="absolute inset-0 rounded-xl bg-emerald-600 dark:bg-zinc-100 shadow-xs"
+                    transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
+                  />
+                )}
+                <span className="relative z-10">{group.icon}</span>
+                <span className="relative z-10">{group.label}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Detailed Country Header Metadata: Capital, Government, Independence, UN Member, Languages, Religion, Live Time & Temperature */}
-        <div className="pt-4 border-t border-zinc-200/80">
-          <CountryHeaderInfo entityId={entity.id} />
-        </div>
-
-        {/* Quality Alerts Banner if applicable */}
-        {qualityFlags.length > 0 && (
-          <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50/90 p-3.5 flex items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2.5 text-amber-900">
-              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-              <span>
-                <strong>Data Reconciliation Note:</strong> {qualityFlags[0].description}
-              </span>
-            </div>
-            <button
-              onClick={() => setActiveTab('provenance')}
-              className="text-amber-800 hover:text-amber-900 font-semibold underline underline-offset-2 flex-shrink-0 cursor-pointer"
-            >
-              View Provenance Audit →
-            </button>
+        {/* Contextual In-Panel Sub-Switcher for multi-view groups */}
+        {activeGroupSubTabs.length > 1 && (
+          <div
+            role="tablist"
+            aria-label="Section sub-views"
+            className="inline-flex flex-wrap items-center gap-1 p-1 rounded-xl bg-zinc-100/90 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800"
+          >
+            {activeGroupSubTabs.map((subId, idx) => {
+              const isSelected = activeTab === subId;
+              const meta = subTabMeta[subId];
+              return (
+                <button
+                  key={subId}
+                  type="button"
+                  id={`country-subtab-${subId}`}
+                  role="tab"
+                  aria-selected={isSelected}
+                  aria-controls={`country-subpanel-${subId}`}
+                  tabIndex={isSelected ? 0 : -1}
+                  onClick={() => selectTab(subId)}
+                  onKeyDown={(e) =>
+                    handleTabListKeyDown(
+                      e,
+                      activeGroupSubTabs,
+                      idx,
+                      (id) => selectTab(id as TabType)
+                    )
+                  }
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                    isSelected
+                      ? 'bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-300 shadow-2xs'
+                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
+                  }`}
+                >
+                  {meta.icon}
+                  <span>{meta.label}</span>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
 
-      {/* Tabs Navigation Bar - Fully Wrapping so All Buttons are Visible */}
-      <div 
-        className="flex flex-wrap items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-3"
-        role="tablist"
-        aria-label="Country dossier thematic tabs"
+      {/* Tab Content Container with WAI-ARIA Tabpanel Role */}
+      <div
+        id={`country-group-panel-${activeGroup}`}
+        role="tabpanel"
+        aria-labelledby={`country-group-tab-${activeGroup}`}
       >
-        {tabs.map(t => {
-          const isActive = activeTab === t.id;
-          return (
-            <button
-              key={t.id}
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => setActiveTab(t.id)}
-              style={!isActive ? { backgroundColor: countryCalmBg } : undefined}
-              className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold whitespace-nowrap cursor-pointer select-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                isActive
-                  ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
-                  : 'border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:opacity-90'
-              }`}
-            >
-              {isActive && (
-                <motion.div
-                  layoutId="countryDossierTabPill"
-                  className="absolute inset-0 rounded-xl bg-emerald-600 dark:bg-zinc-100 shadow-xs"
-                  transition={SPRING_TACTILE}
-                />
-              )}
-              <span className="relative z-10">{t.icon}</span>
-              <span className="relative z-10">{t.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Tab Content Container with Fluid Cross-Fade */}
+        <div
+          id={`country-subpanel-${activeTab}`}
+          role={activeGroupSubTabs.length > 1 ? 'tabpanel' : undefined}
+          aria-labelledby={activeGroupSubTabs.length > 1 ? `country-subtab-${activeTab}` : undefined}
+        >
       <AnimatedTabPanel tabKey={activeTab} className="space-y-6">
         {/* TAB 1: OVERVIEW & KEY FACTS */}
         {activeTab === 'overview' && (
@@ -421,7 +669,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
                   <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" /> Macroeconomic & Regional Role
                   </span>
-                  <span className="text-[10px] font-mono text-zinc-400">Harmonized 2024</span>
+                  <span className="text-[10px] font-mono text-zinc-500">Harmonized 2024</span>
                 </div>
                 <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100 font-display">
                   Why {entity.name} Matters in Pan-African Growth
@@ -429,23 +677,20 @@ export const CountryView: React.FC<CountryViewProps> = ({
                 <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                   As a leading constituent of {entity.region}, {entity.name} accounts for an estimated {formatPopulation(pop)} population and {formatGDP(gdp)} in economic output. With membership in {entity.blocs.join(', ')}, the nation plays a central role in regional trade corridors, infrastructure harmonization, and continental workforce dynamics.
                 </p>
-                <div className="pt-2 flex flex-wrap gap-2 text-[11px] font-mono">
-                  <span className="px-2.5 py-1 rounded-xl bg-white/80 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300">
-                    Capita: <strong>{formatCurrency(gdpPerCapita)}</strong>
-                  </span>
-                  <span className="px-2.5 py-1 rounded-xl bg-white/80 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300">
-                    HDI: <strong>{formatHDI(hdi)} ({hdiCat.label.split(' ')[0]})</strong>
-                  </span>
-                  <span className="px-2.5 py-1 rounded-xl bg-white/80 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300">
-                    Grid: <strong>{formatPercentage(electricity)}</strong>
-                  </span>
+                <div className="pt-2 border-t border-zinc-200/60 dark:border-zinc-800 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-mono text-zinc-700 dark:text-zinc-300 tabular-nums">
+                  <span>Capita: <strong className="text-zinc-900 dark:text-zinc-100">{formatCurrency(gdpPerCapita)}</strong></span>
+                  <span aria-hidden="true" className="text-zinc-400">·</span>
+                  <span>HDI: <strong className="text-zinc-900 dark:text-zinc-100">{formatHDI(hdi)} ({hdiCat.label.split(' ')[0]})</strong></span>
+                  <span aria-hidden="true" className="text-zinc-400">·</span>
+                  <span>Grid: <strong className="text-zinc-900 dark:text-zinc-100">{formatPercentage(electricity)}</strong></span>
                 </div>
               </div>
 
               {/* Climate Teaser Banner in Overview */}
-              <div 
-                onClick={() => setActiveTab('climate')}
-                className="rounded-2xl border border-emerald-200 bg-white/95 p-4 flex items-center justify-between gap-4 cursor-pointer hover:border-emerald-300 shadow-xs transition-all group"
+              <button
+                type="button"
+                onClick={() => selectTab('climate')}
+                className="w-full text-left rounded-2xl border border-emerald-200 bg-white/95 p-4 flex items-center justify-between gap-4 cursor-pointer hover:border-emerald-300 shadow-xs transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
               >
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 group-hover:scale-105 transition-transform">
@@ -456,14 +701,14 @@ export const CountryView: React.FC<CountryViewProps> = ({
                       {t('tab.climate', 'Climate & Ecology Profile')}
                     </h4>
                     <p className="text-xs text-zinc-600">
-                      12-Month Cycles, Live Weather, Vulnerability Matrix & Resilience
+                      12-Month Cycles, Live Weather, Vulnerability Matrix &amp; Resilience
                     </p>
                   </div>
                 </div>
-                <span className="text-xs font-semibold text-emerald-700 group-hover:translate-x-1 transition-transform flex items-center gap-1 font-mono">
+                <span className="text-xs font-semibold text-emerald-700 group-hover:translate-x-1 transition-transform flex items-center gap-1 font-mono shrink-0">
                   Explore →
                 </span>
-              </div>
+              </button>
 
               <div 
                 className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 space-y-4 shadow-xs transition-colors"
@@ -541,31 +786,19 @@ export const CountryView: React.FC<CountryViewProps> = ({
                 </h3>
                 <div className="space-y-3">
                   <div>
-                    <span className="text-xs text-zinc-500">Key Export Commodities:</span>
-                    <div className="flex flex-wrap gap-2 mt-1.5">
-                      {Array.isArray(entity.facts.majorExports) ? (
-                        entity.facts.majorExports.map((exp: string, idx: number) => (
-                          <span key={idx} className="rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
-                            {exp}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-xs text-zinc-400">Petroleum, mineral ores, agricultural produce</span>
-                      )}
+                    <span className="text-xs text-zinc-500">Key Export Commodities</span>
+                    <div className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 mt-1 leading-relaxed">
+                      {Array.isArray(entity.facts.majorExports)
+                        ? entity.facts.majorExports.join(' · ')
+                        : 'Petroleum · Mineral ores · Agricultural produce'}
                     </div>
                   </div>
-                  <div>
-                    <span className="text-xs text-zinc-500">Major Trading Partners:</span>
-                    <div className="flex flex-wrap gap-2 mt-1.5">
-                      {Array.isArray(entity.facts.majorTradingPartners) ? (
-                        entity.facts.majorTradingPartners.map((tp: string, idx: number) => (
-                          <span key={idx} className="rounded-lg bg-white/80 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700 px-3 py-1 text-xs text-zinc-700 dark:text-zinc-300 shadow-xs">
-                            {tp}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-xs text-zinc-400">African Union / EU / Global Partners</span>
-                      )}
+                  <div className="pt-2 border-t border-zinc-200/60 dark:border-zinc-800">
+                    <span className="text-xs text-zinc-500">Major Trading Partners</span>
+                    <div className="text-xs font-medium text-zinc-700 dark:text-zinc-300 mt-1 leading-relaxed">
+                      {Array.isArray(entity.facts.majorTradingPartners)
+                        ? entity.facts.majorTradingPartners.join(' · ')
+                        : 'African Union · EU · Global Partners'}
                     </div>
                   </div>
                 </div>
@@ -1040,14 +1273,14 @@ export const CountryView: React.FC<CountryViewProps> = ({
         {/* TAB 7: UNESCO HERITAGE */}
         {activeTab === 'heritage' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
               <div>
                 <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                   <Landmark className="w-5 h-5 text-amber-500" /> UNESCO World Heritage Sites in {entity.name}
                 </h3>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">Properties of outstanding universal cultural and natural value</p>
               </div>
-              <span className="text-xs font-mono text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/50 px-2.5 py-1 rounded-lg">
+              <span className="text-xs font-mono font-semibold text-amber-700 dark:text-amber-400 tabular-nums shrink-0">
                 {heritageSites.length} Inscribed Sites
               </span>
             </div>
@@ -1062,10 +1295,10 @@ export const CountryView: React.FC<CountryViewProps> = ({
                   >
                     <div className="flex items-start justify-between gap-2">
                       <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">{site.name}</h4>
-                      <span className={`text-[10px] uppercase font-semibold px-2 py-0.5 rounded border ${
-                        site.category === 'Cultural' ? 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800/50' :
-                        site.category === 'Natural' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800/50' :
-                        'bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border-cyan-300 dark:border-cyan-800/50'
+                      <span className={`text-[10px] uppercase font-bold tracking-wider shrink-0 ${
+                        site.category === 'Cultural' ? 'text-amber-700 dark:text-amber-400' :
+                        site.category === 'Natural' ? 'text-emerald-700 dark:text-emerald-400' :
+                        'text-cyan-700 dark:text-cyan-400'
                       }`}>
                         {site.category}
                       </span>
@@ -1093,14 +1326,14 @@ export const CountryView: React.FC<CountryViewProps> = ({
         {/* TAB 8: SUBNATIONAL UNITS */}
         {activeTab === 'subnational' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
               <div>
                 <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                   <Layers className="w-5 h-5 text-emerald-500" /> First-Level Administrative Units
                 </h3>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">Provinces, regions, and federal states in {entity.name}</p>
               </div>
-              <span className="text-xs font-mono text-zinc-700 dark:text-zinc-400 bg-white/80 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-2.5 py-1 rounded-lg">
+              <span className="text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300 tabular-nums shrink-0">
                 {subnationalUnits.length} Primary Divisions
               </span>
             </div>
@@ -1210,6 +1443,8 @@ export const CountryView: React.FC<CountryViewProps> = ({
           </div>
         )}
       </AnimatedTabPanel>
+        </div>
+      </div>
 
       {/* 1-Page Printable Executive Country Factsheet Modal */}
       <CountryFactsheetModal

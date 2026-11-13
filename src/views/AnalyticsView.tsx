@@ -1,16 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'motion/react';
-import { SPRING_TACTILE } from '../utils/motion';
+import { motion, useReducedMotion } from 'motion/react';
+import { SPRING_TACTILE, AnimatedTabPanel } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { 
-  getIndicatorRankings, 
   getCorrelationDataset, 
   getMultiCountryTimeSeries 
 } from '../data/atlas-selectors';
 import { IndicatorDefinition, AtlasEntity, Observation } from '../data/types';
 import { CountryFlag } from '../components/CountryFlag';
 import { DataSourceBadge } from '../components/DataSourceBadge';
-import { IndicatorQuickSearch, getDomainColorClasses } from '../components/IndicatorQuickSearch';
+import { IndicatorQuickSearch } from '../components/IndicatorQuickSearch';
 import { exportBivariateCorrelationToCsv } from '../utils/exportUtils';
 import { formatValueByUnit } from '../data/atlas-formatters';
 import { 
@@ -34,17 +33,13 @@ import {
   ArrowUpDown,
   Sparkles,
   Layers,
-  BarChart2,
-  Info,
-  SlidersHorizontal,
   Globe2,
   Check,
   Play,
   Pause,
   RotateCcw,
   ChevronLeft,
-  ChevronRight,
-  Calendar
+  ChevronRight
 } from 'lucide-react';
 
 interface AnalyticsViewProps {
@@ -72,10 +67,32 @@ const DOMAIN_CONFIGS: DomainConfig[] = [
   { id: 'Infrastructure', label: 'Infrastructure', aliases: ['Infrastructure'], defaultIndicator: 'EG.ELC.ACCS.ZS', corrPreset: { x: 'EG.ELC.ACCS.ZS', y: 'IT.NET.USER.ZS' } },
 ];
 
+const handleAnalyticsTabKeyDown = (
+  e: React.KeyboardEvent<HTMLButtonElement>,
+  ids: string[],
+  currentIndex: number,
+  onSelect: (id: string) => void
+) => {
+  if (ids.length === 0) return;
+  let nextIdx = -1;
+  if (e.key === 'ArrowRight') nextIdx = (currentIndex + 1) % ids.length;
+  else if (e.key === 'ArrowLeft') nextIdx = (currentIndex - 1 + ids.length) % ids.length;
+  else if (e.key === 'Home') nextIdx = 0;
+  else if (e.key === 'End') nextIdx = ids.length - 1;
+
+  if (nextIdx !== -1) {
+    e.preventDefault();
+    onSelect(ids[nextIdx]);
+    const nextBtn = e.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[nextIdx];
+    nextBtn?.focus();
+  }
+};
+
 export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   onSelectCountry,
   initialIndicatorId = 'NY.GDP.MKTP.CD'
 }) => {
+  const prefersReducedMotion = useReducedMotion();
   const [activeTab, setActiveTab] = useState<'rankings' | 'timeseries' | 'correlation'>('rankings');
   const [selectedDomain, setSelectedDomain] = useState<string>('All');
   const [selectedIndicatorId, setSelectedIndicatorId] = useState<string>(initialIndicatorId);
@@ -334,17 +351,16 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   return (
     <section aria-label="Indicator Analytics and Comparative Engine" className="space-y-8 animate-in fade-in duration-200">
       {/* Header Banner - Matches Global Japandi Standard */}
-      <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-2xl transition-colors">
+      <header className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-sm transition-colors">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700/60 text-xs font-mono font-semibold text-emerald-700 dark:text-emerald-300 mb-3 shadow-2xs">
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>AFRICA ATLAS • INDICATOR ANALYTICS</span>
-            </div>
-            <h1 className="text-2xl md:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
+          <div className="space-y-1.5">
+            <p className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+              Africa Atlas · Indicator Analytics
+            </p>
+            <h1 className="text-2xl md:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display text-balance">
               Indicator Analytics &amp; Comparative Engine
             </h1>
-            <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+            <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400">
               Explore 50+ normalized socio-economic indicators across 54 African nations with real-time domain filtering and live search.
             </p>
           </div>
@@ -355,16 +371,28 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
               { id: 'rankings', label: 'Rankings', icon: TrendingUp },
               { id: 'timeseries', label: 'Time Series', icon: Layers },
               { id: 'correlation', label: 'Correlations', icon: ScatterIcon },
-            ].map(tab => {
+            ].map((tab, idx, arr) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
+                  type="button"
+                  id={`analytics-mode-tab-${tab.id}`}
                   role="tab"
                   aria-selected={isActive}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`relative px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold transition-colors duration-150 cursor-pointer select-none flex items-center gap-2 ${
+                  aria-controls={`analytics-mode-panel-${tab.id}`}
+                  tabIndex={isActive ? 0 : -1}
+                  onClick={() => setActiveTab(tab.id as 'rankings' | 'timeseries' | 'correlation')}
+                  onKeyDown={(e) =>
+                    handleAnalyticsTabKeyDown(
+                      e,
+                      arr.map((t) => t.id),
+                      idx,
+                      (id) => setActiveTab(id as 'rankings' | 'timeseries' | 'correlation')
+                    )
+                  }
+                  className={`relative px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold transition-colors duration-150 cursor-pointer select-none flex items-center gap-2 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                     isActive
                       ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
@@ -374,7 +402,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                     <motion.div
                       layoutId="analyticsModeSwitch"
                       className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-white shadow-xs"
-                      transition={SPRING_TACTILE}
+                      transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
                     />
                   )}
                   <Icon className="w-4 h-4 relative z-10" />
@@ -384,32 +412,42 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             })}
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Universal Domain Selector & Quick Search Card - Matches Header Card Style */}
-      <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-7 shadow-xl transition-colors space-y-5">
-        {/* Domain Filter Pills */}
+      {/* Universal Domain Selector & Quick Search Card */}
+      <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-7 shadow-sm transition-colors space-y-5">
+        {/* Domain Filter Controls */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5 font-mono uppercase tracking-wider">
               <ListFilter className="w-3.5 h-3.5 text-emerald-500" />
-              SELECT DOMAIN (CLICK TO UPDATE TABLE &amp; INDICATORS INSTANTLY):
+              Select Domain
             </span>
-            <span className="text-[11px] font-mono text-zinc-400 dark:text-zinc-500">
+            <span className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
               Active Domain: <strong className="text-zinc-900 dark:text-zinc-200">{selectedDomain}</strong>
             </span>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 pt-1" role="tablist" aria-label="Select indicator domain">
-            {DOMAIN_CONFIGS.map(d => {
+            {DOMAIN_CONFIGS.map((d, idx) => {
               const isSelected = selectedDomain === d.id;
               return (
                 <button
                   key={d.id}
+                  type="button"
                   role="tab"
                   aria-selected={isSelected}
+                  tabIndex={isSelected ? 0 : -1}
                   onClick={() => handleDomainChange(d.id)}
-                  className={`relative px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap flex items-center gap-1.5 border border-zinc-200 dark:border-zinc-800 ${
+                  onKeyDown={(e) =>
+                    handleAnalyticsTabKeyDown(
+                      e,
+                      DOMAIN_CONFIGS.map((dom) => dom.id),
+                      idx,
+                      handleDomainChange
+                    )
+                  }
+                  className={`relative px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap flex items-center gap-1.5 border border-zinc-200 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                     isSelected
                       ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
                       : 'bg-zinc-50 dark:bg-zinc-900/80 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-300 dark:hover:border-zinc-700'
@@ -419,7 +457,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                     <motion.div
                       layoutId="analyticsDomainPill"
                       className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs"
-                      transition={SPRING_TACTILE}
+                      transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
                     />
                   )}
                   {isSelected && <Check className="w-3 h-3 text-emerald-400 dark:text-emerald-600 relative z-10" />}
@@ -439,7 +477,6 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                 setSelectedIndicatorId(id);
                 const ind = atlas.getIndicator(id);
                 if (ind) {
-                  // Optionally sync domain
                   const matchingDomain = DOMAIN_CONFIGS.find(d => indicatorMatchesDomain(ind, d.id));
                   if (matchingDomain && selectedDomain !== 'All') {
                     setSelectedDomain(matchingDomain.id);
@@ -453,15 +490,17 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
 
           <div className="flex items-center gap-2 shrink-0">
             <button
+              type="button"
               onClick={handleExportCSV}
-              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-semibold border border-zinc-200 dark:border-zinc-800 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-semibold border border-zinc-200 dark:border-zinc-800 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
               title="Download full indicator rankings as CSV"
             >
               <Download className="w-3.5 h-3.5 text-emerald-500" /> Export CSV
             </button>
             <button
+              type="button"
               onClick={handleExportJSON}
-              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-semibold border border-zinc-200 dark:border-zinc-800 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-semibold border border-zinc-200 dark:border-zinc-800 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
               title="Download full indicator dataset as JSON"
             >
               <Download className="w-3.5 h-3.5 text-cyan-500" /> Export JSON
@@ -470,9 +509,16 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
         </div>
       </div>
 
+      {/* Mode Content Tabpanel */}
+      <div
+        id={`analytics-mode-panel-${activeTab}`}
+        role="tabpanel"
+        aria-labelledby={`analytics-mode-tab-${activeTab}`}
+      >
+      <AnimatedTabPanel tabKey={activeTab} className="space-y-6">
       {/* VIEW MODE 1: RANKINGS TABLE */}
       {activeTab === 'rankings' && (
-        <div className="space-y-6 animate-in fade-in duration-150">
+        <div className="space-y-6">
           {/* Indicator Info Banner - Styled as elevated sub-card */}
           <div 
             className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs shadow-xs transition-colors"
@@ -480,21 +526,23 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           >
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-mono font-semibold border ${getDomainColorClasses(currentIndicator.domain)}`}>
+                <span className="text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-400">
                   {currentIndicator.domain}
                 </span>
+                <span aria-hidden="true" className="text-zinc-400">·</span>
                 <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100">{currentIndicator.name}</span>
-                <span className="font-mono text-zinc-400 dark:text-zinc-500">[{currentIndicator.id}]</span>
+                <span className="font-mono text-zinc-500 dark:text-zinc-400">{currentIndicator.id}</span>
               </div>
               <p className="text-zinc-600 dark:text-zinc-400 max-w-3xl leading-relaxed">{currentIndicator.definition}</p>
             </div>
 
             <div className="flex items-center gap-3 font-mono text-zinc-600 dark:text-zinc-400 shrink-0">
               <span>Unit: <strong className="text-zinc-900 dark:text-zinc-200">{currentIndicator.unit}</strong></span>
-              <span>•</span>
+              <span aria-hidden="true">·</span>
               <button
+                type="button"
                 onClick={() => setSortAscending(!sortAscending)}
-                className="flex items-center gap-1.5 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 transition-colors cursor-pointer font-semibold shadow-2xs"
+                className="flex items-center gap-1.5 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 transition-colors cursor-pointer font-semibold shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
               >
                 <ArrowUpDown className="w-3.5 h-3.5 text-emerald-500" /> 
                 <span>{sortAscending ? 'Lowest First (Ascending)' : 'Highest First (Descending)'}</span>
@@ -618,27 +666,30 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                 {rankings.map(item => (
                   <tr
                     key={item.entity.id}
-                    onClick={() => onSelectCountry(item.entity.id)}
-                    className="hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors cursor-pointer group"
+                    className="hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors group"
                   >
-                    <td className="py-3.5 px-4 font-mono font-bold text-center text-zinc-400 group-hover:text-emerald-500">
+                    <td className="py-3.5 px-4 font-mono tabular-nums font-bold text-center text-zinc-500 group-hover:text-emerald-600">
                       #{item.rank}
                     </td>
                     <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-2.5">
+                      <button
+                        type="button"
+                        onClick={() => onSelectCountry(item.entity.id)}
+                        className="flex items-center gap-2.5 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-md"
+                      >
                         <CountryFlag entityId={item.entity.id} size="sm" />
                         <span className="font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                           {item.entity.name}
                         </span>
-                        <span className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500">[{item.entity.id}]</span>
-                      </div>
+                        <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">{item.entity.id}</span>
+                      </button>
                     </td>
                     <td className="py-3.5 px-4 text-zinc-600 dark:text-zinc-400">{item.entity.region}</td>
-                    <td className="py-3.5 px-4 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+                    <td className="py-3.5 px-4 text-right font-mono tabular-nums font-bold text-emerald-600 dark:text-emerald-400 text-sm">
                       {item.value != null && !isNaN(item.value) ? item.value.toLocaleString() : '—'}{' '}
                       <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">{item.unit}</span>
                     </td>
-                    <td className="py-3.5 px-4 text-right font-mono text-zinc-500 dark:text-zinc-400">{item.year}</td>
+                    <td className="py-3.5 px-4 text-right font-mono tabular-nums text-zinc-500 dark:text-zinc-400">{item.year}</td>
                     <td className="py-3.5 px-4 text-center">
                       <DataSourceBadge entityId={item.entity.id} indicatorId={selectedIndicatorId} />
                     </td>
@@ -706,10 +757,11 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 space-y-6 shadow-xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-100 dark:border-zinc-800 pb-4">
               <div>
-                <div className="flex items-center gap-2">
-                  <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold border ${getDomainColorClasses(currentIndicator.domain)}`}>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-400">
                     {currentIndicator.domain}
                   </span>
+                  <span aria-hidden="true" className="text-zinc-400">·</span>
                   <h3 className="font-bold text-base md:text-lg text-zinc-900 dark:text-zinc-100">
                     {currentIndicator.name} Trajectory (2015–2024)
                   </h3>
@@ -845,8 +897,8 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           </div>
 
           {/* Statistical Regression Readout Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-md">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 tabular-nums">
+            <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-sm">
               <p className="text-[11px] font-mono uppercase text-zinc-500 dark:text-zinc-400">Pearson Correlation (r)</p>
               <p className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-1">
                 {correlationStats.r >= 0 ? `+${correlationStats.r.toFixed(3)}` : correlationStats.r.toFixed(3)}
@@ -854,7 +906,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
               <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-1">{correlationStats.strength}</p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-md">
+            <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-sm">
               <p className="text-[11px] font-mono uppercase text-zinc-500 dark:text-zinc-400">Determination (R²)</p>
               <p className="text-2xl font-bold font-mono text-cyan-600 dark:text-cyan-400 mt-1">
                 {(correlationStats.r2 * 100).toFixed(1)}%
@@ -862,7 +914,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
               <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-1">Variance explained</p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-md">
+            <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-sm">
               <p className="text-[11px] font-mono uppercase text-zinc-500 dark:text-zinc-400">Linear Slope (m)</p>
               <p className="text-2xl font-bold font-mono text-zinc-900 dark:text-zinc-100 mt-1">
                 {correlationStats.slope.toFixed(4)}
@@ -870,7 +922,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
               <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-1">ΔY per 1.0 unit of X</p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-md">
+            <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-sm">
               <p className="text-[11px] font-mono uppercase text-zinc-500 dark:text-zinc-400">Sample Size</p>
               <p className="text-2xl font-bold font-mono text-amber-600 dark:text-amber-400 mt-1">
                 N = {correlationData.length}
@@ -1000,6 +1052,8 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           </div>
         </div>
       )}
+      </AnimatedTabPanel>
+      </div>
     </section>
   );
 };

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { atlas } from '../data/atlas-store';
 import { ExternalApiConnector, LiveApiTestResult } from '../data/externalApisIngestion';
 import { OrganizationLogo } from './OrganizationLogo';
+import { AtlasSelect } from './common/AtlasSelect';
 import { 
   Database, 
   X, 
@@ -264,15 +265,18 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
 
             <div className="flex items-center gap-1.5 text-xs text-stone-800 dark:text-stone-300 shrink-0">
               <span className="font-bold text-[11px] uppercase tracking-wider text-stone-600 dark:text-stone-400">Target:</span>
-              <select
+              <AtlasSelect
+                aria-label="Select target country for API probe"
                 value={testCountry}
                 onChange={e => setTestCountry(e.target.value)}
-                className="bg-white dark:bg-stone-900 border border-[#DFCBB0] dark:border-stone-700 text-stone-900 dark:text-stone-100 font-bold rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-600 shadow-sm"
+                accent="amber"
+                size="xs"
+                className="font-bold py-1.5 max-w-[200px]"
               >
                 {entities.slice(0, 25).map(e => (
                   <option key={e.id} value={e.id}>{e.name} ({e.id})</option>
                 ))}
-              </select>
+              </AtlasSelect>
             </div>
           </div>
         </div>

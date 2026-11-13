@@ -13,6 +13,7 @@ import {
   Mic 
 } from 'lucide-react';
 import { speakAcademicNarration } from '../../utils/afriataVoiceEngine';
+import { AtlasSelect } from '../common/AtlasSelect';
 
 export interface LanguageTypologyProfile {
   id: string;
@@ -265,10 +266,12 @@ export const LinguisticTypologyComparator: React.FC = () => {
 
           {/* Language Pair Selectors */}
           <div className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800/80 p-2 rounded-2xl border border-zinc-200 dark:border-zinc-700">
-            <select
+            <AtlasSelect
               value={langAId}
               onChange={(e) => setLangAId(e.target.value)}
-              className="bg-white dark:bg-zinc-900 text-xs font-bold text-zinc-800 dark:text-zinc-200 py-1.5 px-3 rounded-xl border border-zinc-200 dark:border-zinc-700 focus:outline-none"
+              accent="amber"
+              size="xs"
+              className="font-bold py-1.5"
               aria-label="Select first language for comparison"
             >
               {COMPARATIVE_LANGUAGES.map(l => (
@@ -276,12 +279,14 @@ export const LinguisticTypologyComparator: React.FC = () => {
                   {l.name} ({l.nativeName})
                 </option>
               ))}
-            </select>
-            <ArrowRightLeft className="w-4 h-4 text-zinc-400" />
-            <select
+            </AtlasSelect>
+            <ArrowRightLeft className="w-4 h-4 text-zinc-400 shrink-0" />
+            <AtlasSelect
               value={langBId}
               onChange={(e) => setLangBId(e.target.value)}
-              className="bg-white dark:bg-zinc-900 text-xs font-bold text-zinc-800 dark:text-zinc-200 py-1.5 px-3 rounded-xl border border-zinc-200 dark:border-zinc-700 focus:outline-none"
+              accent="amber"
+              size="xs"
+              className="font-bold py-1.5"
               aria-label="Select second language for comparison"
             >
               {COMPARATIVE_LANGUAGES.map(l => (
@@ -289,7 +294,7 @@ export const LinguisticTypologyComparator: React.FC = () => {
                   {l.name} ({l.nativeName})
                 </option>
               ))}
-            </select>
+            </AtlasSelect>
           </div>
         </div>
 

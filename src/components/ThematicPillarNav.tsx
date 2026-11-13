@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { SPRING_TACTILE } from '../utils/motion';
 import { THEMATIC_PILLARS, ThematicPillarId } from '../services/wikipediaService';
 import { 
@@ -39,16 +39,16 @@ export const ThematicPillarNav: React.FC<ThematicPillarNavProps> = ({
   className = '',
   isEmbedded = false
 }) => {
+  const prefersReducedMotion = useReducedMotion();
+
   // Global keyboard shortcut: Press 1-8 to switch pillars
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if typing in an input or textarea
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) {
         return;
       }
-      
-      const key = e.key;
-      const num = parseInt(key, 10);
+
+      const num = parseInt(e.key, 10);
       if (num >= 1 && num <= 8) {
         const pillar = THEMATIC_PILLARS.find(p => p.number === num);
         if (pillar) {
@@ -62,15 +62,43 @@ export const ThematicPillarNav: React.FC<ThematicPillarNavProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onSelectPillar]);
 
+  const handleTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, currentIndex: number) => {
+    const total = THEMATIC_PILLARS.length;
+    let nextIndex = -1;
+    if (e.key === 'ArrowRight') nextIndex = (currentIndex + 1) % total;
+    else if (e.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + total) % total;
+    else if (e.key === 'Home') nextIndex = 0;
+    else if (e.key === 'End') nextIndex = total - 1;
+
+    if (nextIndex !== -1) {
+      e.preventDefault();
+      const target = THEMATIC_PILLARS[nextIndex];
+      onSelectPillar(target.id);
+      const nextBtn = e.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[nextIndex];
+      nextBtn?.focus();
+    }
+  };
+
   const pillsContent = (
-    <div className="flex flex-wrap items-center gap-1.5 py-0.5 w-full">
-      {THEMATIC_PILLARS.map(pillar => {
+    <div
+      role="tablist"
+      aria-label="Eight thematic analysis pillars"
+      className="flex flex-nowrap lg:flex-wrap items-center gap-1.5 py-0.5 w-full overflow-x-auto no-scrollbar"
+    >
+      {THEMATIC_PILLARS.map((pillar, idx) => {
         const isActive = activePillar === pillar.id;
         return (
           <button
             key={pillar.id}
+            type="button"
+            id={`pillar-tab-${pillar.id}`}
+            role="tab"
+            aria-selected={isActive}
+            aria-controls="thematic-pillar-panel"
+            tabIndex={isActive ? 0 : -1}
             onClick={() => onSelectPillar(pillar.id)}
-            className={`relative flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors duration-150 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
+            onKeyDown={(e) => handleTabKeyDown(e, idx)}
+            className={`relative flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 transition-colors duration-150 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
               isActive
                 ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
                 : 'bg-zinc-100/90 dark:bg-zinc-900/90 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 border border-zinc-200/70 dark:border-zinc-800/70'
@@ -81,17 +109,17 @@ export const ThematicPillarNav: React.FC<ThematicPillarNavProps> = ({
               <motion.div
                 layoutId="thematicPillarActivePill"
                 className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-white shadow-xs"
-                transition={SPRING_TACTILE}
+                transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
               />
             )}
             <span className={`relative z-10 ${isActive ? 'text-amber-400 dark:text-amber-600' : 'text-zinc-400'}`}>
               {PILLAR_ICONS[pillar.id]}
             </span>
             <span className="relative z-10">{pillar.shortLabel}</span>
-            <span className={`relative z-10 text-[10px] font-mono px-1.5 py-0.2 rounded-md ${
+            <span className={`relative z-10 text-[10px] font-mono tabular-nums ${
               isActive
-                ? 'bg-zinc-800 text-zinc-300 dark:bg-zinc-200 dark:text-zinc-800'
-                : 'bg-zinc-200/80 dark:bg-zinc-800/80 text-zinc-500 dark:text-zinc-400'
+                ? 'text-zinc-300 dark:text-zinc-700'
+                : 'text-zinc-400 dark:text-zinc-500'
             }`}>
               {pillar.number}
             </span>
@@ -115,8 +143,7 @@ export const ThematicPillarNav: React.FC<ThematicPillarNavProps> = ({
         {pillsContent}
 
         {entityName && (
-          <div className="hidden lg:flex items-center gap-1.5 shrink-0 text-xs font-mono text-zinc-500 dark:text-zinc-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <div className="hidden lg:flex items-center shrink-0 text-xs font-mono text-zinc-500 dark:text-zinc-400">
             <span className="truncate max-w-[140px]">{entityName}</span>
           </div>
         )}
@@ -124,3 +151,4 @@ export const ThematicPillarNav: React.FC<ThematicPillarNavProps> = ({
     </div>
   );
 };
+

@@ -5,6 +5,7 @@ import { WIKIPEDIA_BLOC_DOSSIERS } from '../data/wikipediaBlocAtlas';
 import { COUNTRY_HEADER_DATA } from '../data/countryHeaderData';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from './CountryFlag';
+import { AtlasSelect } from './common/AtlasSelect';
 import { formatPopulation, formatGDP, formatCurrency } from '../data/atlas-formatters';
 import { 
   Layers, 
@@ -203,17 +204,20 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
               {/* Left Bloc Selection */}
               <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-3xl space-y-4 shadow-sm">
                 <label className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 font-mono">Primary Bloc</label>
-                <select
+                <AtlasSelect
+                  aria-label="Select primary regional bloc"
                   value={selectedBlocId}
                   onChange={e => setSelectedBlocId(e.target.value as EntityBlocId)}
-                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 p-3 rounded-2xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  accent="emerald"
+                  size="md"
+                  className="w-full font-bold rounded-2xl"
                 >
                   {allBlocs.map(b => (
                     <option key={b.id} value={b.id}>
                       {b.shortName} ({b.memberCount} nations) — {b.category}
                     </option>
                   ))}
-                </select>
+                </AtlasSelect>
 
                 <div className="grid grid-cols-2 gap-3.5 pt-2">
                   <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800">
@@ -238,17 +242,20 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
               {/* Right Bloc Selection */}
               <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-3xl space-y-4 shadow-sm">
                 <label className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 font-mono">Benchmark Bloc</label>
-                <select
+                <AtlasSelect
+                  aria-label="Select benchmark regional bloc"
                   value={compareBlocId}
                   onChange={e => setCompareBlocId(e.target.value as EntityBlocId)}
-                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 p-3 rounded-2xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  accent="emerald"
+                  size="md"
+                  className="w-full font-bold rounded-2xl"
                 >
                   {allBlocs.map(b => (
                     <option key={b.id} value={b.id}>
                       {b.shortName} ({b.memberCount} nations) — {b.category}
                     </option>
                   ))}
-                </select>
+                </AtlasSelect>
 
                 <div className="grid grid-cols-2 gap-3.5 pt-2">
                   <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800">

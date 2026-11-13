@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, Suspense } from 'react';
 import { lazyWithRetry } from '../../utils/lazyWithRetry';
 import { motion, AnimatePresence } from 'motion/react';
+import { AtlasSelect } from '../common/AtlasSelect';
 import { 
   ZoomIn, 
   ZoomOut, 
@@ -2274,7 +2275,8 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                     <label className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
                       UN Geoscheme Region
                     </label>
-                    <select
+                    <AtlasSelect
+                      aria-label="Filter lineages by UN Geoscheme region"
                       value={selectedRegion}
                       onChange={(e) => {
                         const reg = e.target.value;
@@ -2298,13 +2300,15 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                           fitView();
                         }
                       }}
-                      className="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] text-xs text-[#2B241E] dark:text-[#F5EFE6] outline-none font-medium cursor-pointer"
+                      accent="amber"
+                      size="sm"
+                      className="w-full font-medium"
                     >
-                      <option value="All" className="bg-[#FAF7F2] dark:bg-[#1E1B18]">All Sovereign Regions</option>
+                      <option value="All">All Sovereign Regions</option>
                       {AFRIATA_REGIONS.map(r => (
-                        <option key={r.value} value={r.label} className="bg-[#FAF7F2] dark:bg-[#1E1B18]">{r.label}</option>
+                        <option key={r.value} value={r.label}>{r.label}</option>
                       ))}
-                    </select>
+                    </AtlasSelect>
                   </div>
 
                   {/* Country Conduit Selector */}
@@ -2312,7 +2316,8 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                     <label className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
                       Nation / Conduit ({availableCountries.length})
                     </label>
-                    <select
+                    <AtlasSelect
+                      aria-label="Select sovereign nation conduit"
                       value={selectedCountry}
                       onChange={(e) => {
                         const countryName = e.target.value;
@@ -2335,13 +2340,15 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                           }
                         }
                       }}
-                      className="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] text-xs text-[#2B241E] dark:text-[#F5EFE6] outline-none font-medium cursor-pointer"
+                      accent="amber"
+                      size="sm"
+                      className="w-full font-medium"
                     >
-                      <option value="All" className="bg-[#FAF7F2] dark:bg-[#1E1B18]">All Sovereign Nations</option>
+                      <option value="All">All Sovereign Nations</option>
                       {availableCountries.map(c => (
-                        <option key={c.id} value={c.name} className="bg-[#FAF7F2] dark:bg-[#1E1B18]">{c.name} ({c.region})</option>
+                        <option key={c.id} value={c.name}>{c.name} ({c.region})</option>
                       ))}
-                    </select>
+                    </AtlasSelect>
                   </div>
 
                   {/* Linguistic Phylum Selector from Wikipedia Atlas */}
@@ -2361,17 +2368,20 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                         </button>
                       )}
                     </div>
-                    <select
+                    <AtlasSelect
+                      aria-label="Filter lineages by linguistic phylum"
                       value={selectedLinguisticFamily}
                       onChange={(e) => {
                         setSelectedLinguisticFamily(e.target.value);
                       }}
-                      className="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] text-xs text-[#2B241E] dark:text-[#F5EFE6] outline-none font-medium cursor-pointer"
+                      accent="amber"
+                      size="sm"
+                      className="w-full font-medium"
                     >
                       {majorLinguisticFamilies.map(fam => (
-                        <option key={fam} value={fam} className="bg-[#FAF7F2] dark:bg-[#1E1B18]">{fam}</option>
+                        <option key={fam} value={fam}>{fam}</option>
                       ))}
-                    </select>
+                    </AtlasSelect>
                   </div>
 
                   {/* Quick List for Selected Linguistic Phylum */}

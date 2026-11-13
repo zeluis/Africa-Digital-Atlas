@@ -14,6 +14,7 @@
 
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { AtlasSelect } from '../common/AtlasSelect';
 import {
   Castle,
   Shield,
@@ -60,6 +61,7 @@ import { DynamicIcon } from '../DynamicIcon';
 interface AfricanPortsMapProps {
   onSelectPort?: (port: AfricanEmbarkationPort) => void;
   onClose?: () => void;
+  onSwitchToFlowMap?: () => void;
   mode?: 'embedded' | 'fullscreen' | 'modal';
 }
 
@@ -196,6 +198,7 @@ const COASTAL_REGIONS_META = [
 export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
   onSelectPort,
   onClose,
+  onSwitchToFlowMap,
   mode = 'embedded'
 }) => {
   // Hide global app footer while AfricanPortsMap is mounted
@@ -847,11 +850,22 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-all border border-stone-300 dark:border-stone-700 bg-white/90 dark:bg-stone-800/90 text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:border-amber-600/50 flex items-center gap-1 shadow-2xs cursor-pointer shrink-0"
+                className="px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-all border border-stone-300 dark:border-stone-700 bg-white/90 dark:bg-stone-800/90 text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:border-amber-600/50 flex items-center gap-1 shadow-2xs cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                 title="Return to Transatlantic Slave Trade Overview"
               >
                 <span>← Back</span>
                 <span className="hidden sm:inline text-stone-600 dark:text-stone-300 font-medium">to Overview</span>
+              </button>
+            )}
+            {onSwitchToFlowMap && (
+              <button
+                type="button"
+                onClick={onSwitchToFlowMap}
+                className="px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-all border border-amber-300/80 dark:border-amber-700/70 bg-amber-50/90 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/60 flex items-center gap-1 shadow-2xs cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                title="Switch directly to Atlantic Geodesic Flow Map"
+              >
+                <Compass className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Flow Map</span>
               </button>
             )}
             {activePort && (
@@ -1206,16 +1220,19 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                   />
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <select
+                  <AtlasSelect
+                    aria-label="Filter ports by coastal embarkation corridor"
                     value={selectedRegion}
                     onChange={(e) => setSelectedRegion(e.target.value)}
-                    className="flex-1 text-[11px] bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-lg px-2 py-1 text-stone-800 dark:text-stone-200 font-medium outline-none cursor-pointer"
+                    accent="amber"
+                    size="xs"
+                    className="flex-1 font-medium"
                   >
                     <option value="All">All 8 Corridors</option>
                     {COASTAL_REGIONS_META.map(reg => (
                       <option key={reg.name} value={reg.name}>{reg.name}</option>
                     ))}
-                  </select>
+                  </AtlasSelect>
                   {selectedRegion !== 'All' && (
                     <button
                       onClick={() => setSelectedRegion('All')}
@@ -1383,10 +1400,13 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
 
                       {/* Filter Selectors Deck inside Legend */}
                       <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-stone-200 dark:border-stone-800">
-                        <select
+                        <AtlasSelect
+                          aria-label="Filter ports by imperial flag"
                           value={selectedPower}
                           onChange={(e) => setSelectedPower(e.target.value)}
-                          className="text-[11px] bg-stone-100 dark:bg-stone-800 border-none rounded-lg px-2 py-1 text-stone-800 dark:text-stone-200 font-medium focus:ring-1 focus:ring-amber-600 outline-none cursor-pointer"
+                          accent="amber"
+                          size="xs"
+                          className="font-medium"
                         >
                           <option value="All">All Flags</option>
                           <option value="Portugal">Portugal</option>
@@ -1395,19 +1415,22 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                           <option value="Netherlands">Netherlands</option>
                           <option value="Denmark">Denmark</option>
                           <option value="Brandenburg/Prussia">Brandenburg/Prussia</option>
-                        </select>
+                        </AtlasSelect>
 
-                        <select
+                        <AtlasSelect
+                          aria-label="Filter ports by century"
                           value={selectedCentury}
                           onChange={(e) => setSelectedCentury(e.target.value)}
-                          className="text-[11px] bg-stone-100 dark:bg-stone-800 border-none rounded-lg px-2 py-1 text-stone-800 dark:text-stone-200 font-medium focus:ring-1 focus:ring-amber-600 outline-none cursor-pointer"
+                          accent="amber"
+                          size="xs"
+                          className="font-medium"
                         >
                           <option value="All">All Centuries</option>
                           <option value="16th">16th C.</option>
                           <option value="17th">17th C.</option>
                           <option value="18th">18th C.</option>
                           <option value="19th">19th C.</option>
-                        </select>
+                        </AtlasSelect>
 
                         <div className="relative flex items-center ml-auto">
                           <Search className="w-3 h-3 text-stone-400 absolute left-2 pointer-events-none" />

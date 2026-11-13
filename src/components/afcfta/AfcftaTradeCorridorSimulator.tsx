@@ -10,6 +10,7 @@ import {
   TACTILE_CARD_INTERACTIONS, 
   TACTILE_BUTTON_INTERACTIONS 
 } from '../../utils/motion';
+import { AtlasSelect } from '../common/AtlasSelect';
 import { 
   TrendingUp, 
   Truck, 
@@ -344,20 +345,23 @@ Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
 
                 {/* Dropdown Selector */}
                 <div className="relative">
-                  <select
+                  <AtlasSelect
+                    aria-label="Select harmonized commodity HS code"
                     value={selectedCommodity.hsCode}
                     onChange={(e) => {
                       const match = AFCFTA_COMMODITIES.find(c => c.hsCode === e.target.value);
                       if (match) handleSelectCommodity(match);
                     }}
-                    className="w-full px-4 py-3 rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 text-xs font-semibold cursor-pointer focus:outline-hidden focus:border-amber-500"
+                    accent="amber"
+                    size="md"
+                    className="w-full font-semibold"
                   >
                     {AFCFTA_COMMODITIES.map(c => (
                       <option key={c.hsCode} value={c.hsCode}>
                         {c.hsCode} — {c.name} ({c.category})
                       </option>
                     ))}
-                  </select>
+                  </AtlasSelect>
                 </div>
 
                 {/* Selected Commodity Dossier Card */}

@@ -5,6 +5,7 @@ import { getCountryTradeFlows } from '../../data/criticalMineralsData';
 import { AFCFTA_CORRIDOR_PRESETS, TradeCorridorPreset } from '../../data/afcftaSimulatorData';
 import { ENTITY_BLOCS } from '../../data/entityBlocs';
 import { CountryFlag } from '../CountryFlag';
+import { AtlasSelect } from '../common/AtlasSelect';
 import { 
   formatCurrency, 
   formatGDP, 
@@ -117,29 +118,35 @@ export const BilateralTradeComplementaritySection: React.FC<BilateralTradeComple
           {/* Interactive Bilateral Pair Selector (when > 2 countries in CompareView) */}
           {countryIds.length > 2 && (
             <div className="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800/80 p-2 rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80">
-              <select
+              <AtlasSelect
+                aria-label="Select first bilateral trade partner"
                 value={validPairA}
                 onChange={(e) => setPairA(e.target.value)}
-                className="bg-white dark:bg-zinc-900 text-xs font-bold text-zinc-800 dark:text-zinc-200 py-1.5 px-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 focus:outline-none"
+                accent="emerald"
+                size="xs"
+                className="font-bold py-1.5"
               >
                 {countryIds.map(id => (
                   <option key={`a-${id}`} value={id} disabled={id === validPairB}>
                     {atlas.getEntity(id)?.name || id}
                   </option>
                 ))}
-              </select>
-              <ArrowRightLeft className="w-4 h-4 text-zinc-400" />
-              <select
+              </AtlasSelect>
+              <ArrowRightLeft className="w-4 h-4 text-zinc-400 shrink-0" />
+              <AtlasSelect
+                aria-label="Select second bilateral trade partner"
                 value={validPairB}
                 onChange={(e) => setPairB(e.target.value)}
-                className="bg-white dark:bg-zinc-900 text-xs font-bold text-zinc-800 dark:text-zinc-200 py-1.5 px-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 focus:outline-none"
+                accent="emerald"
+                size="xs"
+                className="font-bold py-1.5"
               >
                 {countryIds.map(id => (
                   <option key={`b-${id}`} value={id} disabled={id === validPairA}>
                     {atlas.getEntity(id)?.name || id}
                   </option>
                 ))}
-              </select>
+              </AtlasSelect>
             </div>
           )}
         </div>

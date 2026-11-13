@@ -96,6 +96,12 @@
     --region-western-on-solid: #111827;
 
     --ease-japandi: cubic-bezier(0.2, 0, 0, 1);
+    --ease-spring-snappy: linear(
+      0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%,
+      1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%,
+      1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%,
+      0.974 53.8%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1
+    );
 
     /* ==========================================
        REPORT — SURFACES (Japandi Washi Architecture)
@@ -1292,3 +1298,315 @@ body.hide-app-footer #app-footer-container {
     font-size: 0.75rem;
   }
 }
+
+/* =========================================================================
+   Atlas Sliding Select System (Baseline 2024 Top-Layer Popover + @starting-style)
+   ========================================================================= */
+
+@keyframes atlas-select-value-slide {
+  from {
+    opacity: 0.35;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.atlas-select-value-animated {
+  animation: atlas-select-value-slide 190ms var(--ease-spring-snappy) both;
+}
+
+.atlas-select-trigger {
+  --atlas-select-accent: #d97706;
+  --atlas-select-accent-soft: color-mix(in oklch, #d97706 12%, transparent);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  text-align: start;
+  transition:
+    background-color 150ms var(--ease-japandi),
+    border-color 160ms var(--ease-japandi),
+    box-shadow 180ms var(--ease-japandi),
+    transform 180ms var(--ease-spring-snappy);
+}
+
+.atlas-select-trigger[data-accent="emerald"] {
+  --atlas-select-accent: #059669;
+  --atlas-select-accent-soft: color-mix(in oklch, #059669 12%, transparent);
+}
+
+.atlas-select-trigger[data-accent="indigo"] {
+  --atlas-select-accent: #4f46e5;
+  --atlas-select-accent-soft: color-mix(in oklch, #4f46e5 12%, transparent);
+}
+
+.atlas-select-trigger[data-accent="stone"] {
+  --atlas-select-accent: #57534e;
+  --atlas-select-accent-soft: color-mix(in oklch, #57534e 12%, transparent);
+}
+
+.dark .atlas-select-trigger[data-accent="amber"] {
+  --atlas-select-accent: #fbbf24;
+  --atlas-select-accent-soft: color-mix(in oklch, #fbbf24 16%, transparent);
+}
+
+.dark .atlas-select-trigger[data-accent="emerald"] {
+  --atlas-select-accent: #34d399;
+  --atlas-select-accent-soft: color-mix(in oklch, #34d399 16%, transparent);
+}
+
+.dark .atlas-select-trigger[data-accent="indigo"] {
+  --atlas-select-accent: #818cf8;
+  --atlas-select-accent-soft: color-mix(in oklch, #818cf8 16%, transparent);
+}
+
+.dark .atlas-select-trigger[data-accent="stone"] {
+  --atlas-select-accent: #a8a29e;
+  --atlas-select-accent-soft: color-mix(in oklch, #a8a29e 16%, transparent);
+}
+
+.atlas-select-trigger:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+.atlas-select-trigger::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0.75rem;
+  inset-block-end: 0;
+  height: 2px;
+  border-radius: 9999px;
+  background-color: var(--atlas-select-accent);
+  transform: scaleX(0);
+  transform-origin: center;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 210ms var(--ease-spring-snappy),
+    opacity 140ms var(--ease-japandi);
+}
+
+.atlas-select-trigger[aria-expanded="true"]::after,
+.atlas-select-trigger:focus-visible::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+.atlas-select-trigger[data-variant="ghost"]::after {
+  inset-inline: 0.25rem;
+}
+
+.atlas-select-chevron {
+  flex-shrink: 0;
+  transition: transform 220ms var(--ease-spring-snappy), color 150ms var(--ease-japandi);
+}
+
+.atlas-select-trigger[aria-expanded="true"] .atlas-select-chevron {
+  transform: rotate(180deg);
+  color: var(--atlas-select-accent);
+}
+
+/* Cross-Browser Top-Layer Sliding Popover Listbox */
+.atlas-select-popover {
+  --atlas-select-accent: #d97706;
+  --atlas-select-accent-soft: color-mix(in oklch, #d97706 12%, transparent);
+  --atlas-slide-y: -8px;
+  display: none;
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  padding: 0.3125rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background-color: var(--surface-card, #ffffff);
+  color: var(--text-primary, #191816);
+  border: 1px solid var(--border-strong, #c8c2b3);
+  border-radius: 0.875rem;
+  box-shadow: var(--tooltip-shadow);
+  opacity: 0;
+  transform: translate3d(0, var(--atlas-slide-y), 0) scale(0.98);
+  transform-origin: top center;
+  transition:
+    opacity 150ms var(--ease-japandi),
+    transform 220ms var(--ease-spring-snappy),
+    display 160ms allow-discrete,
+    overlay 160ms allow-discrete;
+}
+
+.atlas-select-popover[data-placement="top"] {
+  --atlas-slide-y: 8px;
+  transform-origin: bottom center;
+}
+
+.atlas-select-popover[data-accent="emerald"] {
+  --atlas-select-accent: #059669;
+  --atlas-select-accent-soft: color-mix(in oklch, #059669 12%, transparent);
+}
+
+.atlas-select-popover[data-accent="indigo"] {
+  --atlas-select-accent: #4f46e5;
+  --atlas-select-accent-soft: color-mix(in oklch, #4f46e5 12%, transparent);
+}
+
+.atlas-select-popover[data-accent="stone"] {
+  --atlas-select-accent: #57534e;
+  --atlas-select-accent-soft: color-mix(in oklch, #57534e 12%, transparent);
+}
+
+.dark .atlas-select-popover[data-accent="amber"] {
+  --atlas-select-accent: #fbbf24;
+  --atlas-select-accent-soft: color-mix(in oklch, #fbbf24 16%, transparent);
+}
+
+.dark .atlas-select-popover[data-accent="emerald"] {
+  --atlas-select-accent: #34d399;
+  --atlas-select-accent-soft: color-mix(in oklch, #34d399 16%, transparent);
+}
+
+.dark .atlas-select-popover[data-accent="indigo"] {
+  --atlas-select-accent: #818cf8;
+  --atlas-select-accent-soft: color-mix(in oklch, #818cf8 16%, transparent);
+}
+
+.dark .atlas-select-popover[data-accent="stone"] {
+  --atlas-select-accent: #a8a29e;
+  --atlas-select-accent-soft: color-mix(in oklch, #a8a29e 16%, transparent);
+}
+
+.atlas-select-popover:popover-open,
+.atlas-select-popover[data-fallback-open="true"] {
+  display: block;
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+@starting-style {
+  .atlas-select-popover:popover-open,
+  .atlas-select-popover[data-fallback-open="true"] {
+    opacity: 0;
+    transform: translate3d(0, var(--atlas-slide-y), 0) scale(0.98);
+  }
+}
+
+.atlas-select-popover::backdrop {
+  background: transparent;
+  pointer-events: none;
+}
+
+/* Sliding Active Highlight Track inside Listbox */
+.atlas-select-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.atlas-select-highlight-track {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  border-radius: 0.625rem;
+  background-color: var(--atlas-select-accent-soft);
+  pointer-events: none;
+  z-index: 0;
+  transition:
+    transform 170ms var(--ease-spring-snappy),
+    height 150ms var(--ease-japandi),
+    opacity 120ms var(--ease-japandi);
+}
+
+.atlas-select-option {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding-block: 0.4375rem;
+  padding-inline-start: 0.6875rem;
+  padding-inline-end: 0.625rem;
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  text-align: start;
+  color: var(--text-primary, #191816);
+  background: transparent;
+  cursor: pointer;
+  transition: color 120ms var(--ease-japandi);
+}
+
+.atlas-select-option[aria-selected="true"] {
+  font-weight: 700;
+  color: var(--atlas-select-accent);
+}
+
+.atlas-select-option:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.atlas-select-check {
+  flex-shrink: 0;
+  color: var(--atlas-select-accent);
+  transition:
+    transform 180ms var(--ease-spring-snappy),
+    opacity 130ms var(--ease-japandi);
+}
+
+/* Progressive Enhancement for Native <select> on Chromium 135+ */
+@supports (appearance: base-select) {
+  .atlas-select-native,
+  .atlas-select-native::picker(select) {
+    appearance: base-select;
+  }
+
+  .atlas-select-native::picker(select) {
+    background: var(--surface-card, #ffffff);
+    color: var(--text-primary, #191816);
+    border: 1px solid var(--border-strong, #c8c2b3);
+    border-radius: 0.875rem;
+    box-shadow: var(--tooltip-shadow);
+    padding: 0.3125rem;
+    margin-block-start: 0.375rem;
+    opacity: 0;
+    transform: translate3d(0, -8px, 0) scale(0.98);
+    transform-origin: top center;
+    transition:
+      opacity 150ms var(--ease-japandi),
+      transform 220ms var(--ease-spring-snappy),
+      display 160ms allow-discrete,
+      overlay 160ms allow-discrete;
+  }
+
+  .atlas-select-native:open::picker(select) {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  @starting-style {
+    .atlas-select-native:open::picker(select) {
+      opacity: 0;
+      transform: translate3d(0, -8px, 0) scale(0.98);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-select-value-animated,
+  .atlas-select-trigger,
+  .atlas-select-trigger::after,
+  .atlas-select-chevron,
+  .atlas-select-popover,
+  .atlas-select-highlight-track,
+  .atlas-select-check {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+

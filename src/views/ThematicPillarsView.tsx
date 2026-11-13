@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { atlas } from '../data/atlas-store';
-import { AtlasEntity } from '../data/types';
 import { COUNTRY_HEADER_DATA } from '../data/countryHeaderData';
 import { getCountrySilhouette } from '../data/countrySilhouettes';
-import { getCountryLandmarkImage } from '../data/countryLandmarkImages';
 import { 
   getPillarThematicImage, 
-  getPillarWikiSearchCandidates,
-  PillarThematicImage 
+  getPillarWikiSearchCandidates 
 } from '../data/countryPillarImages';
 import { UN_M49_NUMERIC_CODES } from '../data/svgGeographySystem';
 import { 
@@ -21,31 +18,15 @@ import {
 import { ThematicPillarNav } from '../components/ThematicPillarNav';
 import { ThematicPillarBottomSection } from '../components/ThematicPillarBottomSection';
 import { CountryFlag } from '../components/CountryFlag';
+import { AtlasSelect } from '../components/common/AtlasSelect';
 import { getCountryRegionTonalPalette, getRegionCalmColor } from '../data/unGeoschemeColors';
-import { 
-  formatPopulation, 
-  formatGDP, 
-  formatCurrency, 
-  formatPercentage, 
-  formatHDI,
-  formatArea
-} from '../data/atlas-formatters';
+import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
 import {
   ExternalLink,
   BookOpen,
   Sparkles,
-  Layers,
-  ChevronRight,
-  TrendingUp,
   Globe2,
-  Calendar,
-  Building,
-  ShieldCheck,
-  Activity,
-  ArrowUpRight,
-  Compass,
   MapPin,
-  Crosshair,
   Maximize2,
   Download,
   Copy,
@@ -71,6 +52,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
   onSelectCountry,
   onNavigateTab
 }) => {
+  const prefersReducedMotion = useReducedMotion();
   const [selectedEntityId, setSelectedEntityId] = useState<string>(initialEntityId);
   const [activePillar, setActivePillar] = useState<ThematicPillarId>(initialPillar);
   const [wikiData, setWikiData] = useState<WikiSummaryData | null>(null);
@@ -80,6 +62,15 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
   const [copiedPath, setCopiedPath] = useState<boolean>(false);
   const [downloadSuccess, setDownloadSuccess] = useState<boolean>(false);
   const [showFullImgCaption, setShowFullImgCaption] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!isSilhouetteModalOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsSilhouetteModalOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isSilhouetteModalOpen]);
 
   const countries = useMemo(() => atlas.getSovereignCountries(), []);
   const currentEntity = atlas.getEntity(selectedEntityId) || countries[0];
@@ -600,21 +591,23 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
 
   return (
     <section aria-label="Eight Pillars of Continental Analysis Observatory" className="space-y-6 animate-enter-japandi">
-      {/* Consolidated Unified Sticky / Fixed Header */}
-      <div className="sticky top-0 z-40 -mx-3 sm:-mx-6 -mt-3 sm:-mt-6 px-4 sm:px-6 py-3 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-zinc-200/90 dark:border-zinc-800/90 shadow-md transition-all space-y-2.5">
+      {/* Consolidated Header (Sticky only on desktop/tablet to preserve mobile viewport) */}
+      <header className="md:sticky md:top-16 z-30 rounded-3xl px-4 sm:px-6 py-3.5 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border border-zinc-200/90 dark:border-zinc-800/90 shadow-xs transition-all space-y-2.5">
         <div className="max-w-7xl mx-auto space-y-2.5">
-          {/* Top Row: Flag, Country Name, Pillar Badge, Region, Description & Controls */}
+          {/* Top Row: Flag, Country Name, Pillar Context, Region & Controls */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <CountryFlag entityId={currentEntity.id} size="md" />
               <div className="space-y-0.5">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                  <h1 className="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
                     {currentEntity.name}
                   </h1>
-                  <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border shadow-2xs ${tonal.badge.bg} ${tonal.badge.border} ${tonal.badge.text}`}>
-                    PILLAR {currentPillarMeta.number}/8 • {currentPillarMeta.label.toUpperCase()}
+                  <span aria-hidden="true" className="text-zinc-300 dark:text-zinc-700">·</span>
+                  <span className={`text-xs font-mono font-bold uppercase tracking-wider tabular-nums ${tonal.badge.text}`}>
+                    Pillar {currentPillarMeta.number}/8: {currentPillarMeta.label}
                   </span>
+                  <span aria-hidden="true" className="text-zinc-300 dark:text-zinc-700">·</span>
                   <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
                     {currentEntity.region}
                   </span>
@@ -627,23 +620,25 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
 
             {/* Quick Country Switcher & Wiki Link */}
             <div className="flex items-center gap-2.5 self-start md:self-auto shrink-0">
-              <select
+              <AtlasSelect
+                aria-label="Select sovereign nation for thematic pillar inspection"
                 value={selectedEntityId}
                 onChange={e => handleCountrySwitch(e.target.value)}
-                className="bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200/80 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold text-xs py-2 px-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-2xs"
+                accent="amber"
+                size="sm"
+                className="font-bold max-w-[260px] sm:max-w-[300px]"
               >
                 {countries.map(c => (
                   <option key={c.id} value={c.id}>
                     {c.name} ({c.id}) — {c.region}
                   </option>
                 ))}
-              </select>
+              </AtlasSelect>
 
               <a
                 href={`https://en.wikipedia.org/wiki/${encodeURIComponent(currentEntity.name)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-700 dark:text-zinc-300 transition-colors shadow-2xs"
+                {...SAFE_EXTERNAL_LINK_PROPS}
+                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-700 dark:text-zinc-300 transition-colors shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                 title="View Wikipedia Article"
               >
                 <span>Wikipedia</span>
@@ -660,10 +655,15 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
             isEmbedded={true}
           />
         </div>
-      </div>
+      </header>
 
       {/* Main 2-Column Hybrid Layout: Editorial on Left, Empirical on Right */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div
+        id="thematic-pillar-panel"
+        role="tabpanel"
+        aria-labelledby={`pillar-tab-${activePillar}`}
+        className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start"
+      >
         {/* Left Column: Luxury Editorial Encyclopedic Dossier */}
         <div className="lg:col-span-7">
           <div className="rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-6 md:p-8 space-y-6 shadow-xl relative overflow-hidden backdrop-blur-xs flex flex-col lg:max-h-[820px]">
@@ -709,22 +709,21 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                     </div>
                   </div>
 
-                  {/* Classification Pills Row */}
-                  <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                    <span className="px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 shadow-2xs">
-                      ISO: {currentEntity.id}
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 shadow-2xs">
-                      UN M49: {m49Code}
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 shadow-2xs">
-                      {currentEntity.subregion}
-                    </span>
+                  {/* Classification Metadata Row (Zero-Pill) */}
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 pt-0.5 font-mono text-[11px] text-zinc-600 dark:text-zinc-400 tabular-nums">
+                    <span className="font-semibold text-zinc-800 dark:text-zinc-200">ISO {currentEntity.id}</span>
+                    <span aria-hidden="true">·</span>
+                    <span>UN M49 {m49Code}</span>
+                    <span aria-hidden="true">·</span>
+                    <span>{currentEntity.subregion}</span>
                     {silhouette?.capital && (
-                      <span className="px-2.5 py-0.5 rounded-full font-mono text-[10px] font-semibold bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 flex items-center gap-1 shadow-2xs">
-                        <MapPin className="w-2.5 h-2.5 text-amber-500" />
-                        {silhouette.capital.name}
-                      </span>
+                      <>
+                        <span aria-hidden="true">·</span>
+                        <span className="inline-flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-amber-500" />
+                          {silhouette.capital.name}
+                        </span>
+                      </>
                     )}
                   </div>
                 </div>
@@ -779,7 +778,9 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                         {/* Capital Beacon */}
                         {silhouette.capital && (
                           <g transform={`translate(${silhouette.capital.x}, ${silhouette.capital.y})`} className="pointer-events-none">
-                            <circle r="7" fill={tonal.warmAccent} opacity="0.35" className="animate-ping" />
+                            {!prefersReducedMotion && (
+                              <circle r="7" fill={tonal.warmAccent} opacity="0.35" className="animate-ping" />
+                            )}
                             <circle r="3.5" fill={tonal.warmAccent} />
                             <circle r="1.5" fill="#ffffff" />
                           </g>
@@ -791,7 +792,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                     <div className="flex flex-col justify-between items-end h-full text-[9px] font-mono text-zinc-500 dark:text-zinc-400 pl-2.5 border-l border-zinc-200/70 dark:border-zinc-800/70 flex-1 min-w-0">
                       <div className="flex flex-col items-end leading-tight w-full truncate">
                         <span className="text-[8px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-semibold">GEO CENTER</span>
-                        <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-[9px] truncate">
+                        <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-[9px] truncate tabular-nums">
                           {silhouette.geoCenter.lat >= 0 ? `${silhouette.geoCenter.lat.toFixed(1)}°N` : `${Math.abs(silhouette.geoCenter.lat).toFixed(1)}°S`}, {' '}
                           {silhouette.geoCenter.lng >= 0 ? `${silhouette.geoCenter.lng.toFixed(1)}°E` : `${Math.abs(silhouette.geoCenter.lng).toFixed(1)}°W`}
                         </span>
@@ -799,23 +800,29 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
 
                       <div className="flex items-center gap-1.5 pt-0.5">
                         <button
+                          type="button"
                           onClick={handleCopySvgPath}
-                          className="p-1.5 rounded-md bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors border border-zinc-200/80 dark:border-zinc-700/80 shadow-2xs cursor-pointer"
+                          className="p-1.5 rounded-md bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors border border-zinc-200/80 dark:border-zinc-700/80 shadow-2xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                           title={copiedPath ? "Vector path copied!" : "Copy SVG path string"}
+                          aria-label="Copy SVG path string"
                         >
                           {copiedPath ? <CheckCircle2 className="w-2.5 h-2.5 text-emerald-500" /> : <Copy className="w-2.5 h-2.5" />}
                         </button>
                         <button
+                          type="button"
                           onClick={handleDownloadSVG}
-                          className="p-1.5 rounded-md bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors border border-zinc-200/80 dark:border-zinc-700/80 shadow-2xs cursor-pointer"
+                          className="p-1.5 rounded-md bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors border border-zinc-200/80 dark:border-zinc-700/80 shadow-2xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                           title={downloadSuccess ? "Downloaded!" : "Download SVG file"}
+                          aria-label="Download SVG file"
                         >
                           {downloadSuccess ? <CheckCircle2 className="w-2.5 h-2.5 text-emerald-500" /> : <Download className="w-2.5 h-2.5" />}
                         </button>
                         <button
+                          type="button"
                           onClick={() => setIsSilhouetteModalOpen(true)}
-                          className="p-1.5 rounded-md bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors border border-zinc-200/80 dark:border-zinc-700/80 shadow-2xs cursor-pointer"
+                          className="p-1.5 rounded-md bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors border border-zinc-200/80 dark:border-zinc-700/80 shadow-2xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                           title="Expand High-Res Silhouette View"
+                          aria-label="Expand country silhouette view"
                         >
                           <Maximize2 className="w-2.5 h-2.5" />
                         </button>
@@ -827,8 +834,8 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
 
               {/* Pillar Ribbon & Issue Tag */}
               <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-                <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full border shadow-2xs ${tonal.badge.bg} ${tonal.badge.border} ${tonal.badge.text}`}>
-                  THEMATIC PILLAR {currentPillarMeta.number}/8 • {currentPillarMeta.label.toUpperCase()}
+                <span className={`text-[11px] font-mono font-bold uppercase tracking-wider tabular-nums ${tonal.badge.text}`}>
+                  Thematic Pillar {currentPillarMeta.number} of 8 · {currentPillarMeta.label}
                 </span>
                 <span className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
                   <BookOpen className="w-3.5 h-3.5 text-amber-500 shrink-0" />
@@ -866,13 +873,13 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                       }}
                     >
                       <div className="min-w-0 flex-1 space-y-1.5">
-                        {/* Controlled Tonal Colorful Pills */}
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-500/25 text-amber-300 border-0 leading-none">
+                        {/* Unboxed Editorial Overlay Metadata */}
+                        <div className="flex items-center gap-2 flex-wrap text-[10px] font-mono">
+                          <span className="font-bold uppercase tracking-wider text-amber-300">
                             {editorialImage.category}
                           </span>
-                          <span className="text-white/30 text-xs select-none">•</span>
-                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold text-zinc-100 bg-white/15 border-0 leading-none">
+                          <span aria-hidden="true" className="text-white/40">·</span>
+                          <span className="font-semibold text-zinc-100">
                             {editorialImage.title}
                           </span>
                         </div>
@@ -889,11 +896,12 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                             {editorialImage.caption}
                             {editorialImage.caption && editorialImage.caption.length > 40 && (
                               <button
+                                type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setShowFullImgCaption(!showFullImgCaption);
                                 }}
-                                className="ml-1.5 text-[11px] font-semibold text-amber-300 hover:text-amber-200 underline underline-offset-2 inline-flex items-center gap-0.5 cursor-pointer"
+                                className="ml-1.5 text-[11px] font-semibold text-amber-300 hover:text-amber-200 underline underline-offset-2 inline-flex items-center gap-0.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded"
                               >
                                 <span>{showFullImgCaption ? 'Show less' : 'Read more'}</span>
                                 {showFullImgCaption ? <ChevronUp className="w-2.5 h-2.5 inline" /> : <ChevronDown className="w-2.5 h-2.5 inline" />}
@@ -903,10 +911,8 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                         </div>
                       </div>
 
-                      {/* Credit Span: Controlled Tonal Colorful Pill */}
-                      <span 
-                        className="inline-flex items-center justify-center text-center px-3 py-1 rounded-full text-[9px] font-mono font-medium tracking-wide leading-none text-emerald-300 bg-emerald-950/60 border-0 shrink-0 self-start sm:self-center"
-                      >
+                      {/* Credit Span: Unboxed Attribution */}
+                      <span className="text-[10px] font-mono font-medium tracking-wide text-emerald-300 shrink-0 self-start sm:self-center">
                         {editorialImage.credit}
                       </span>
                     </div>
@@ -1028,7 +1034,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                           <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100">{site.name}</div>
                           <div className="text-[11px] text-zinc-600 dark:text-zinc-300 line-clamp-1">{site.description}</div>
                         </div>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700/60 text-amber-800 dark:text-amber-300 shrink-0 font-semibold">
+                        <span className="text-[11px] font-mono text-amber-700 dark:text-amber-400 shrink-0 font-semibold tabular-nums">
                           {site.inscribedYear}
                         </span>
                       </div>
@@ -1044,24 +1050,18 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
         <div className="lg:col-span-5">
           <div className="rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-6 space-y-5 shadow-sm hover:shadow-md transition-all duration-300 lg:max-h-[820px] overflow-y-auto custom-scrollbar flex flex-col">
             <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800/80 pb-3 shrink-0">
-              <div className="flex items-center gap-2.5">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                </span>
-                <div>
-                  <h3 
-                    className="text-base text-zinc-900 dark:text-zinc-100 tracking-tight"
-                    style={{ fontFamily: "'Noto Serif Display', Georgia, 'Times New Roman', serif", fontWeight: 500 }}
-                  >
-                    Empirical Indicator Deck
-                  </h3>
-                  <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">
-                    Official & Harmonized Sovereign Datasets
-                  </p>
-                </div>
+              <div>
+                <h3 
+                  className="text-base text-zinc-900 dark:text-zinc-100 tracking-tight"
+                  style={{ fontFamily: "'Noto Serif Display', Georgia, 'Times New Roman', serif", fontWeight: 500 }}
+                >
+                  Empirical Indicator Deck
+                </h3>
+                <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">
+                  Official &amp; Harmonized Sovereign Datasets
+                </p>
               </div>
-              <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+              <span className="text-[11px] font-mono font-semibold text-emerald-700 dark:text-emerald-400 tabular-nums">
                 2015–2024 Snapshot
               </span>
             </div>
@@ -1081,13 +1081,13 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                     >
                       {ind.name}
                     </span>
-                    <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded-md bg-zinc-200/80 dark:bg-zinc-800/90 text-zinc-700 dark:text-zinc-200 border border-zinc-300/40 dark:border-zinc-700/60 shrink-0 font-semibold">
+                    <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 shrink-0 font-medium text-right">
                       {ind.source}
                     </span>
                   </div>
 
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-xl md:text-2xl font-black font-mono text-zinc-900 dark:text-zinc-100 tracking-tight">
+                    <span className="text-xl md:text-2xl font-black font-mono tabular-nums text-zinc-900 dark:text-zinc-100 tracking-tight">
                       {ind.formattedValue}
                     </span>
                     <span className="text-xs font-mono text-zinc-600 dark:text-zinc-300 shrink-0 font-medium">
@@ -1106,7 +1106,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                         </span>
                       )}
                       {ind.status && (
-                        <span className="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded text-emerald-800 dark:text-emerald-300 bg-emerald-100/70 dark:bg-emerald-500/15 border border-emerald-300/60 dark:border-emerald-500/30 shrink-0 font-semibold">
+                        <span className="text-[10px] font-mono font-semibold text-emerald-700 dark:text-emerald-400 shrink-0">
                           {ind.status}
                         </span>
                       )}
@@ -1116,21 +1116,14 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
               ))}
             </div>
 
-            {/* Regional Bloc Affiliation Quick Tag */}
-            <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 space-y-2 shrink-0">
+            {/* Regional Bloc Affiliation Quick Strip */}
+            <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 space-y-1 shrink-0">
               <div className="text-[10px] font-mono uppercase font-bold text-zinc-500 dark:text-zinc-400">
-                Sovereign Blocs & Communities
+                Sovereign Blocs &amp; Communities
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {currentEntity.blocs.map(bloc => (
-                  <span
-                    key={bloc}
-                    className="px-2.5 py-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 font-mono"
-                  >
-                    {bloc}
-                  </span>
-                ))}
-              </div>
+              <p className="text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300">
+                {currentEntity.blocs.join(' · ')}
+              </p>
             </div>
           </div>
         </div>
@@ -1183,8 +1176,10 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                 </div>
 
                 <button
+                  type="button"
+                  aria-label="Close silhouette preview"
                   onClick={() => setIsSilhouetteModalOpen(false)}
-                  className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+                  className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1233,7 +1228,9 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
 
                   {silhouette.capital && (
                     <g transform={`translate(${silhouette.capital.x}, ${silhouette.capital.y})`}>
-                      <circle r="12" fill={tonal.warmAccent} opacity="0.3" className="animate-ping" />
+                      {!prefersReducedMotion && (
+                        <circle r="12" fill={tonal.warmAccent} opacity="0.3" className="animate-ping" />
+                      )}
                       <circle r="6" fill={tonal.warmAccent} />
                       <circle r="2.5" fill="#ffffff" />
                       <text

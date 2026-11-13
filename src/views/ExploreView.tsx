@@ -12,6 +12,7 @@ import {
 import { atlas } from '../data/atlas-store';
 import { AfricanRegion, AtlasEntity } from '../data/types';
 import { CountryFlag } from '../components/CountryFlag';
+import { AtlasSelect } from '../components/common/AtlasSelect';
 import { formatPopulation, formatGDP, formatHDI, formatArea } from '../data/atlas-formatters';
 import { useTranslation } from '../i18n/LanguageContext';
 import { getCountrySilhouette } from '../data/countrySilhouettes';
@@ -455,10 +456,13 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                 {/* Regional Economic Community (REC) */}
                 <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-1.5">
                   <div className="text-zinc-500 font-mono text-[11px]">Regional Bloc (REC)</div>
-                  <select
+                  <AtlasSelect
+                    aria-label="Filter nations by Regional Economic Community"
                     value={recFilter}
                     onChange={(e) => setRecFilter(e.target.value)}
-                    className="w-full py-1 px-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-xs font-bold text-zinc-800 dark:text-zinc-200 focus:outline-none"
+                    accent="indigo"
+                    size="xs"
+                    className="w-full font-bold py-1.5"
                   >
                     <option value="ALL">All RECs (Continental)</option>
                     <option value="ECOWAS">ECOWAS (West Africa)</option>
@@ -467,7 +471,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                     <option value="AMU">AMU (Maghreb)</option>
                     <option value="ECCAS">ECCAS (Central Africa)</option>
                     <option value="COMESA">COMESA (Common Market)</option>
-                  </select>
+                  </AtlasSelect>
                 </div>
               </div>
 

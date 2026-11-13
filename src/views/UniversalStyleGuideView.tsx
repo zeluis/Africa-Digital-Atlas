@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
+import { SPRING_TACTILE, AnimatedTabPanel } from '../utils/motion';
 import { 
   Palette, 
   Map as MapIcon, 
@@ -11,21 +12,16 @@ import {
   Check, 
   ExternalLink, 
   Sparkles, 
-  Download, 
   Layers, 
   Compass, 
-  Sliders, 
-  Volume2, 
-  Globe2, 
   Maximize2,
   Lock,
-  Code2,
   Award
 } from 'lucide-react';
 import { CanonicalNavTab } from '../components/NavigationDrawer';
-import { AfricaUnLogo } from '../components/AfricaUnLogo';
 import { OrganizationLogo } from '../components/OrganizationLogo';
 import { UN_GEOSCHEME_TONAL_PALETTES as UN_M49_REGIONAL_PALETTES } from '../data/unGeoschemeColors';
+import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
 
 interface UniversalStyleGuideViewProps {
   onNavigateTab: (tab: CanonicalNavTab) => void;
@@ -33,9 +29,42 @@ interface UniversalStyleGuideViewProps {
 }
 
 type GuideTab = 'identity' | 'design-system' | 'cartography' | 'assets' | 'multilateral-apis' | 'ethics-governance';
+type PrimarySection = 'identity' | 'design-system' | 'cartography-assets' | 'multilateral-apis' | 'ethics-governance';
+
+const GUIDE_TAB_TO_SECTION: Record<GuideTab, PrimarySection> = {
+  identity: 'identity',
+  'design-system': 'design-system',
+  cartography: 'cartography-assets',
+  assets: 'cartography-assets',
+  'multilateral-apis': 'multilateral-apis',
+  'ethics-governance': 'ethics-governance',
+};
+
+const handleTabKeyDown = (
+  e: React.KeyboardEvent<HTMLButtonElement>,
+  ids: string[],
+  currentIndex: number,
+  onSelect: (id: string) => void
+) => {
+  if (ids.length === 0) return;
+  let nextIdx = -1;
+  if (e.key === 'ArrowRight') nextIdx = (currentIndex + 1) % ids.length;
+  else if (e.key === 'ArrowLeft') nextIdx = (currentIndex - 1 + ids.length) % ids.length;
+  else if (e.key === 'Home') nextIdx = 0;
+  else if (e.key === 'End') nextIdx = ids.length - 1;
+
+  if (nextIdx !== -1) {
+    e.preventDefault();
+    onSelect(ids[nextIdx]);
+    const nextBtn = e.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[nextIdx];
+    nextBtn?.focus();
+  }
+};
 
 export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = ({ onNavigateTab, onOpenMonographModal }) => {
+  const prefersReducedMotion = useReducedMotion();
   const [activeTab, setActiveTab] = useState<GuideTab>('identity');
+  const [lastCartographyTab, setLastCartographyTab] = useState<'cartography' | 'assets'>('cartography');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const handleCopy = (text: string, key: string) => {
@@ -44,38 +73,52 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  const navTabs: { id: GuideTab; label: string; icon: React.ReactNode }[] = [
+  const activeSection = GUIDE_TAB_TO_SECTION[activeTab];
+
+  const selectSection = (section: PrimarySection) => {
+    if (section === 'cartography-assets') {
+      setActiveTab(lastCartographyTab);
+    } else {
+      setActiveTab(section);
+    }
+  };
+
+  const selectCartographySubTab = (sub: 'cartography' | 'assets') => {
+    setLastCartographyTab(sub);
+    setActiveTab(sub);
+  };
+
+  const primarySections: { id: PrimarySection; label: string; icon: React.ReactNode }[] = [
     { id: 'identity', label: '1. Identity & Charter', icon: <Award className="w-4 h-4" /> },
-    { id: 'design-system', label: '2. Japandi Design System', icon: <Palette className="w-4 h-4" /> },
-    { id: 'cartography', label: '3. Cartography & Geodesy', icon: <MapIcon className="w-4 h-4" /> },
-    { id: 'assets', label: '4. Asset & Seal Registry', icon: <Layers className="w-4 h-4" /> },
-    { id: 'multilateral-apis', label: '5. 16 Multilateral APIs', icon: <Database className="w-4 h-4" /> },
-    { id: 'ethics-governance', label: '6. Governance & Citations', icon: <ShieldCheck className="w-4 h-4" /> }
+    { id: 'design-system', label: '2. Design System', icon: <Palette className="w-4 h-4" /> },
+    { id: 'cartography-assets', label: '3. Cartography & Seals', icon: <MapIcon className="w-4 h-4" /> },
+    { id: 'multilateral-apis', label: '4. 16 Multilateral APIs', icon: <Database className="w-4 h-4" /> },
+    { id: 'ethics-governance', label: '5. Governance & Citations', icon: <ShieldCheck className="w-4 h-4" /> }
   ];
 
   return (
     <section aria-label="Universal Style Guide and Living Systems Matrix" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Editorial Header Masthead */}
-      <div className="rounded-3xl p-6 sm:p-10 border border-stone-200/90 dark:border-stone-800/90 bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5EFE6] dark:from-stone-950 dark:via-stone-900 dark:to-[#1A1816] shadow-sm relative overflow-hidden">
+      <header className="rounded-3xl p-6 sm:p-10 border border-stone-200/90 dark:border-stone-800/90 bg-gradient-to-br from-[#FAF8F5] via-white to-[#F5EFE6] dark:from-stone-950 dark:via-stone-900 dark:to-[#1A1816] shadow-sm relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-800 dark:text-amber-300 text-xs font-mono font-bold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-              <span>Afriata Architectural Monograph & Design Constitution</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-stone-900 dark:text-stone-100 font-serif">
+          <div className="space-y-2.5 max-w-2xl">
+            <p className="text-xs font-mono font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300">
+              Afriata Architectural Monograph · Living Design Constitution
+            </p>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-stone-900 dark:text-stone-100 font-serif text-balance">
               Universal Style Guide & Living Systems Matrix
             </h1>
             <p className="text-stone-600 dark:text-stone-300 text-sm sm:text-base leading-relaxed">
-              An curated architectural manual unifying cartographic coordinate standards, the Japandi-Sahel visual design system, the 16 multilateral API ingestion pipeline, and scholarly attribution frameworks curated by <strong className="text-stone-900 dark:text-stone-100 font-semibold">Zéluis F. Correia</strong>.
+              A curated architectural manual unifying cartographic coordinate standards, the Japandi-Sahel visual design system, the 16 multilateral API ingestion pipeline, and scholarly attribution frameworks curated by <strong className="text-stone-900 dark:text-stone-100 font-semibold">Zéluis F. Correia</strong>.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 shrink-0">
             {onOpenMonographModal && (
               <button
+                type="button"
                 onClick={onOpenMonographModal}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-sm cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
               >
                 <BookOpen className="w-4 h-4" />
                 <span>Open Interactive Monograph</span>
@@ -84,9 +127,8 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
             )}
             <a
               href="./docs/UNIVERSAL_STYLE_GUIDE.md"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 dark:hover:bg-white text-white dark:text-stone-900 text-xs font-bold transition-all shadow-sm cursor-pointer"
+              {...SAFE_EXTERNAL_LINK_PROPS}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 dark:hover:bg-white text-white dark:text-stone-900 text-xs font-bold transition-all shadow-sm cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
             >
               <FileText className="w-4 h-4" />
               <span>Read Markdown Monograph</span>
@@ -94,31 +136,107 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
             </a>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Segmented Top Navigation Bar - Unified Sleek Pill Control */}
-      <div className="p-1.5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-sm flex flex-wrap items-center gap-1.5">
-        {navTabs.map(tab => {
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                isActive
-                  ? 'bg-amber-600 text-white shadow-sm font-bold'
-                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800'
-              }`}
-            >
-              {tab.icon}
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
+      {/* Consolidated 5-Section WAI-ARIA Navigation Bar */}
+      <div className="space-y-3">
+        <div
+          role="tablist"
+          aria-label="Universal style guide chapters"
+          className="p-1.5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-sm flex flex-nowrap lg:flex-wrap items-center gap-1.5 overflow-x-auto no-scrollbar"
+        >
+          {primarySections.map((sec, idx) => {
+            const isActive = activeSection === sec.id;
+            return (
+              <button
+                key={sec.id}
+                type="button"
+                id={`style-guide-tab-${sec.id}`}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`style-guide-panel-${sec.id}`}
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => selectSection(sec.id)}
+                onKeyDown={(e) =>
+                  handleTabKeyDown(
+                    e,
+                    primarySections.map((s) => s.id),
+                    idx,
+                    (id) => selectSection(id as PrimarySection)
+                  )
+                }
+                className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
+                  isActive
+                    ? 'text-white font-bold'
+                    : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800'
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="styleGuidePrimaryTab"
+                    className="absolute inset-0 rounded-xl bg-amber-600 shadow-sm"
+                    transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
+                  />
+                )}
+                <span className="relative z-10">{sec.icon}</span>
+                <span className="relative z-10">{sec.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Contextual In-Panel Sub-Switcher for Cartography & Vector Seals */}
+        {activeSection === 'cartography-assets' && (
+          <div
+            role="tablist"
+            aria-label="Cartography and visual asset registries"
+            className="inline-flex items-center gap-1 p-1 rounded-xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800"
+          >
+            {[
+              { id: 'cartography' as const, label: 'Cartography & Geodesy', icon: <MapIcon className="w-3.5 h-3.5" /> },
+              { id: 'assets' as const, label: 'Vector Seals & Archives', icon: <Layers className="w-3.5 h-3.5" /> },
+            ].map((sub, idx, arr) => {
+              const isSelected = activeTab === sub.id;
+              return (
+                <button
+                  key={sub.id}
+                  type="button"
+                  id={`style-guide-subtab-${sub.id}`}
+                  role="tab"
+                  aria-selected={isSelected}
+                  aria-controls={`style-guide-subpanel-${sub.id}`}
+                  tabIndex={isSelected ? 0 : -1}
+                  onClick={() => selectCartographySubTab(sub.id)}
+                  onKeyDown={(e) =>
+                    handleTabKeyDown(
+                      e,
+                      arr.map((s) => s.id),
+                      idx,
+                      (id) => selectCartographySubTab(id as 'cartography' | 'assets')
+                    )
+                  }
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
+                    isSelected
+                      ? 'bg-white dark:bg-stone-800 text-amber-700 dark:text-amber-300 shadow-2xs'
+                      : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
+                  }`}
+                >
+                  {sub.icon}
+                  <span>{sub.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Main Content Showcase Panel */}
-      <div className="space-y-8">
+      <div
+        id={`style-guide-panel-${activeSection}`}
+        role="tabpanel"
+        aria-labelledby={`style-guide-tab-${activeSection}`}
+      >
+      <AnimatedTabPanel tabKey={activeTab} className="space-y-8">
         {/* TAB 1: IDENTITY & LEGAL CHARTER */}
         {activeTab === 'identity' && (
           <div className="space-y-6">
@@ -151,12 +269,9 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                     </div>
                     <div>
                       <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">Dual Licensing: CC BY 4.0 &amp; MIT</h3>
-                      <p className="text-xs text-stone-500 dark:text-stone-400">LICENSE-ASSETS (CC BY 4.0) • LICENSE-CODE (MIT)</p>
+                      <p className="text-xs text-stone-500 dark:text-stone-400 font-mono">LICENSE-ASSETS (CC BY 4.0) · LICENSE-CODE (MIT)</p>
                     </div>
                   </div>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
-                    CC BY 4.0 / MIT
-                  </span>
                 </div>
                 <div className="p-4 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 text-xs font-mono text-stone-700 dark:text-stone-300 space-y-2">
                   <p className="font-bold text-emerald-800 dark:text-emerald-300">
@@ -242,21 +357,21 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                       <strong className="block text-stone-900 dark:text-stone-100">Compact Density</strong>
                       <span className="text-[11px] text-stone-500">6px padding, 11px text for multi-monitor audits.</span>
                     </div>
-                    <span className="font-mono text-[10px] bg-stone-200 dark:bg-stone-800 px-2 py-0.5 rounded">Workstation</span>
+                    <span className="font-mono text-[11px] text-stone-500 dark:text-stone-400">Workstation</span>
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800">
                     <div>
                       <strong className="block text-stone-900 dark:text-stone-100">Standard Density (Default)</strong>
                       <span className="text-[11px] text-stone-500">16px padding, balanced optical reading flow.</span>
                     </div>
-                    <span className="font-mono text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded">Default</span>
+                    <span className="font-mono text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">Default</span>
                   </div>
                   <div className="flex items-center justify-between p-3 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800">
                     <div>
                       <strong className="block text-stone-900 dark:text-stone-100">Spacious Density</strong>
                       <span className="text-[11px] text-stone-500">24px padding, 48px min touch-targets for kiosks.</span>
                     </div>
-                    <span className="font-mono text-[10px] bg-stone-200 dark:bg-stone-800 px-2 py-0.5 rounded">Touch/Tablet</span>
+                    <span className="font-mono text-[11px] text-stone-500 dark:text-stone-400">Touch / Tablet</span>
                   </div>
                 </div>
               </div>
@@ -486,6 +601,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
             </div>
           </div>
         )}
+      </AnimatedTabPanel>
       </div>
     </section>
   );

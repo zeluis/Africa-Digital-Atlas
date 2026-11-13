@@ -7,6 +7,7 @@ import {
   StaggerGrid, 
   usePrefersReducedMotion 
 } from '../../utils/motion';
+import { AtlasSelect } from '../common/AtlasSelect';
 import { 
   Search, 
   Filter, 
@@ -296,16 +297,19 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
             {/* Language Filter */}
             <div className="flex items-center gap-1.5">
               <Languages className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-              <select
+              <AtlasSelect
+                aria-label="Filter iconography plates by archival language"
                 value={selectedLanguage}
                 onChange={(e) => setSelectedLanguage(e.target.value)}
-                className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-3 py-2 text-xs font-sans text-stone-700 dark:text-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-500 cursor-pointer"
+                accent="amber"
+                size="sm"
+                className="font-sans"
               >
                 <option value="all">All Languages</option>
                 {languages.map(lang => (
                   <option key={lang} value={lang}>{lang}</option>
                 ))}
-              </select>
+              </AtlasSelect>
             </div>
 
             {/* View Mode Toggle */}

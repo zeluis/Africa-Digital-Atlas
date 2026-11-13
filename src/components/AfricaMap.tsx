@@ -69,7 +69,8 @@ import {
   GraduationCap,
   Landmark,
   Columns,
-  AlertTriangle
+  AlertTriangle,
+  ExternalLink
 } from 'lucide-react';
 import { getAdmin1ForCountry, searchAdmin1Subdivisions, ALL_ADMIN1_SUBDIVISIONS } from '../data/afriataGeographyData';
 import { AfriataAdmin1 } from '../data/types';
@@ -519,7 +520,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   };
   const [isAdmin1InspectorOpen, setIsAdmin1InspectorOpen] = useState<boolean>(false);
   const [isUnifiedDeckOpen, setIsUnifiedDeckOpen] = useState<boolean>(false);
-  const [unifiedDeckTab, setUnifiedDeckTab] = useState<'both' | 'inspector' | 'deck'>('both');
+  const [unifiedDeckTab, setUnifiedDeckTab] = useState<'both' | 'regions' | 'atlas' | 'flows' | 'inspector' | 'deck'>('regions');
 
   const thematicActiveCount = useMemo(() => {
     return (
@@ -529,15 +530,47 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     );
   }, [layerVisibility, showPowerPlants, showProtectedAreas]);
 
-  const handleToggleUnifiedDeck = (tab: 'inspector' | 'deck') => {
+  const atlasActiveCount = useMemo(() => {
+    return (
+      (showUnescoSites ? 1 : 0) +
+      (showAdmin1Borders ? 1 : 0) +
+      (showCartouche ? 1 : 0) +
+      (showGraticuleAndCompass ? 1 : 0) +
+      (showItcz ? 1 : 0) +
+      (showSolarTerminator ? 1 : 0) +
+      (showCriticalMinerals ? 1 : 0)
+    );
+  }, [
+    showUnescoSites,
+    showAdmin1Borders,
+    showCartouche,
+    showGraticuleAndCompass,
+    showItcz,
+    showSolarTerminator,
+    showCriticalMinerals
+  ]);
+
+  const flowsPowerActiveCount = useMemo(() => {
+    return (
+      (showPowerPlants ? 1 : 0) +
+      (showProtectedAreas ? 1 : 0) +
+      (showThematicOverlays ? 1 : 0)
+    );
+  }, [showPowerPlants, showProtectedAreas, showThematicOverlays]);
+
+  const handleToggleUnifiedDeck = (tab: 'regions' | 'atlas' | 'flows' | 'inspector' | 'deck') => {
+    triggerHaptic('light');
     if (isUnifiedDeckOpen) {
       if (unifiedDeckTab === tab) {
         setIsUnifiedDeckOpen(false);
+        setIsAdmin1InspectorOpen(false);
       } else {
         setUnifiedDeckTab(tab);
+        setIsAdmin1InspectorOpen(tab === 'inspector');
       }
     } else {
       setUnifiedDeckTab(tab);
+      setIsAdmin1InspectorOpen(tab === 'inspector');
       setIsUnifiedDeckOpen(true);
     }
   };
@@ -961,6 +994,10 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       } else if (e.key === '0' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         handleResetZoom();
+      } else if (e.key === 'Escape') {
+        setIsUnifiedDeckOpen(false);
+        setIsAdmin1InspectorOpen(false);
+        setIsExportMenuOpen(false);
       }
     };
 
@@ -1659,40 +1696,44 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           : "relative w-full rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-3 sm:p-4 shadow-2xl backdrop-blur-md space-y-3"
       }
     >
-      {/* Unified Map Header & Controls Bar — Sticky & Fully Responsive with All Controls Visible */}
-      <div 
-        id="unified-africa-map-control-card" 
+      {/* Unified Map Header & Controls Bar — Sticky & Fully Responsive */}
+      <div
+        id="unified-africa-map-control-card"
         className="sticky top-16 z-30 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-2 sm:p-2.5 shadow-sm backdrop-blur-md space-y-2 transition-all"
       >
-        {/* Row 1: Brand, Map Mode Selector, UN Subregion Pills, Graticule/Cartouche, Admin-1/Inspector, Clean Power, Reserves, Flows */}
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-          {/* Left: Brand + Mode Switcher */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <AfricaUnLogo
-              variant="warm-tonal"
-              fillOpacity={0.65}
-              interactive={false}
-              className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 text-amber-600/80 dark:text-amber-500/80 stroke-amber-700/80 dark:stroke-amber-400/80"
-              strokeColor="currentColor"
-              strokeWidth={1.4}
-            />
-            <div className="hidden sm:block">
-              <div className="flex items-center gap-1.5">
+        {/* Row 1: Brand + Mode Switcher (Left) & Unified Scale HUD + Zoom + Export (Right) */}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          {/* Left: Brand & 5-Mode Segmented Switcher */}
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0">
+            <div className="flex items-center gap-1.5 shrink-0">
+              <AfricaUnLogo
+                variant="warm-tonal"
+                fillOpacity={0.65}
+                interactive={false}
+                className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 text-amber-600/80 dark:text-amber-500/80 stroke-amber-700/80 dark:stroke-amber-400/80"
+                strokeColor="currentColor"
+                strokeWidth={1.4}
+              />
+              <div className="hidden sm:flex items-baseline gap-1.5">
                 <h3 className="font-bold text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight whitespace-nowrap">
                   African Map
                 </h3>
-                <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-700/80">
-                  {isFinalMode ? 'AUTHENTIC' : 'UN M49'}
+                <span className="text-[10px] font-mono font-semibold text-zinc-500 dark:text-zinc-400">
+                  · {isFinalMode ? 'Authentic' : 'UN M49'}
                 </span>
               </div>
             </div>
 
-            {/* Mode Switcher Pill */}
-            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl relative shrink-0">
+            {/* Mode Switcher */}
+            <div
+              role="radiogroup"
+              aria-label="Cartographic Map Mode"
+              className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl relative overflow-x-auto scrollbar-none max-w-full"
+            >
               <button
                 type="button"
                 onClick={() => handleSelectMode('authentic')}
-                className={`relative px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
+                className={`relative px-2 py-1 rounded-lg text-[11px] sm:text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1 z-10 shrink-0 ${
                   mapMode === 'authentic_palette'
                     ? 'text-white font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -1703,7 +1744,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   <motion.div
                     layoutId="activeMapModeHighlight"
                     className="absolute inset-0 bg-emerald-600 rounded-lg shadow-xs -z-10"
-                    transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                    transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
                   />
                 )}
                 <Sparkles className="w-3 h-3" />
@@ -1713,7 +1754,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <button
                 type="button"
                 onClick={() => handleSelectMode('antique')}
-                className={`relative px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
+                className={`relative px-2 py-1 rounded-lg text-[11px] sm:text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1 z-10 shrink-0 ${
                   mapMode === 'antique_parchment'
                     ? 'text-white font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -1724,7 +1765,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   <motion.div
                     layoutId="activeMapModeHighlight"
                     className="absolute inset-0 bg-amber-800 rounded-lg shadow-xs -z-10"
-                    transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                    transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
                   />
                 )}
                 <Compass className="w-3 h-3 text-amber-500" />
@@ -1734,7 +1775,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <button
                 type="button"
                 onClick={() => handleSelectMode('choropleth')}
-                className={`relative px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
+                className={`relative px-2 py-1 rounded-lg text-[11px] sm:text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1 z-10 shrink-0 ${
                   mapMode === 'choropleth'
                     ? 'text-white font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -1745,7 +1786,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   <motion.div
                     layoutId="activeMapModeHighlight"
                     className="absolute inset-0 bg-cyan-600 rounded-lg shadow-xs -z-10"
-                    transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                    transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
                   />
                 )}
                 <Layers className="w-3 h-3" />
@@ -1755,7 +1796,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <button
                 type="button"
                 onClick={() => handleSelectMode('bivariate')}
-                className={`relative px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
+                className={`relative px-2 py-1 rounded-lg text-[11px] sm:text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1 z-10 shrink-0 ${
                   mapMode === 'bivariate'
                     ? 'text-white font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -1766,7 +1807,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   <motion.div
                     layoutId="activeMapModeHighlight"
                     className="absolute inset-0 bg-purple-600 rounded-lg shadow-xs -z-10"
-                    transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                    transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
                   />
                 )}
                 <Grid className="w-3 h-3" />
@@ -1776,7 +1817,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <button
                 type="button"
                 onClick={() => handleSelectMode('schematic')}
-                className={`relative px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 z-10 ${
+                className={`relative px-2 py-1 rounded-lg text-[11px] sm:text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1 z-10 shrink-0 ${
                   mapMode === 'un_geoscheme'
                     ? 'text-white font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -1787,7 +1828,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   <motion.div
                     layoutId="activeMapModeHighlight"
                     className="absolute inset-0 bg-amber-600 rounded-lg shadow-xs -z-10"
-                    transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                    transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
                   />
                 )}
                 <Compass className="w-3 h-3" />
@@ -1796,385 +1837,18 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             </div>
           </div>
 
-          {/* UN Subregions Filter Pills */}
-          <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
-            {SUBREGION_PILL_DEFS.map(pill => {
-              const isAll = pill.id === 'All';
-              const regionId = pill.id as AfricanRegion;
-              const isVisible = isAll ? visibleRegions.size === 5 : visibleRegions.has(regionId);
-              const isIsolated = !isAll && visibleRegions.size === 1 && visibleRegions.has(regionId);
-              const isHovered = !isAll && activeRegionHover === regionId;
-
-              return (
-                <div
-                  key={pill.id}
-                  onMouseEnter={() => {
-                    if (!isAll) setActiveRegionHover(regionId);
-                  }}
-                  onMouseLeave={() => {
-                    if (!isAll) setActiveRegionHover(null);
-                  }}
-                  className={`group inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-xl text-xs font-semibold tracking-normal transition-all select-none border cursor-pointer shrink-0 ${
-                    isAll
-                      ? visibleRegions.size === 5
-                        ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 border-zinc-900 dark:border-white shadow-xs ring-1 ring-emerald-500/40 font-bold'
-                        : 'bg-zinc-100/90 dark:bg-zinc-900/80 text-zinc-600 dark:text-zinc-400 border-zinc-200/80 dark:border-zinc-800 hover:bg-zinc-200/80 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-200'
-                      : isIsolated
-                        ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 border-zinc-900 dark:border-white shadow-xs ring-1 ' + pill.activeBorderColor + ' font-bold'
-                        : isVisible
-                          ? isHovered
-                            ? 'bg-zinc-200/90 dark:bg-zinc-800 text-zinc-950 dark:text-white border-zinc-300 dark:border-zinc-600 shadow-xs ring-1 ' + pill.activeBorderColor
-                            : 'bg-zinc-100/90 dark:bg-zinc-900/90 text-zinc-800 dark:text-zinc-200 border-zinc-200/90 dark:border-zinc-800 hover:bg-zinc-200/70 dark:hover:bg-zinc-800/80 shadow-xs'
-                          : 'bg-zinc-100/40 dark:bg-zinc-900/30 text-zinc-400 dark:text-zinc-500 border-zinc-200/50 dark:border-zinc-800/50 opacity-60 hover:opacity-100'
-                  }`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (isAll) {
-                        handleShowAllRegions();
-                        handleResetZoom();
-                      } else {
-                        if (visibleRegions.size === 1 && visibleRegions.has(regionId)) {
-                          handleShowAllRegions();
-                          handleResetZoom();
-                        } else {
-                          handleIsolateRegion(regionId);
-                          handleFocusRegion(regionId);
-                        }
-                      }
-                    }}
-                    className="flex items-center gap-1.5 cursor-pointer text-left focus:outline-none"
-                    title={isAll ? 'Display all 54 African nations' : `Focus ${pill.fullName}`}
-                  >
-                    <span
-                      className={`w-2 h-2 rounded-full shrink-0 transition-transform group-hover:scale-125 ${
-                        isVisible ? 'ring-1 ring-white/40 shadow-xs' : 'opacity-40'
-                      }`}
-                      style={{ backgroundColor: pill.color }}
-                    />
-                    <span className="whitespace-nowrap font-bold text-[11px] sm:text-xs">
-                      {pill.label}
-                    </span>
-                    <span
-                      className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded transition-colors ${
-                        (isAll && visibleRegions.size === 5) || isIsolated
-                          ? 'bg-white/20 text-current dark:bg-black/20'
-                          : 'bg-zinc-200/80 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
-                      }`}
-                    >
-                      {pill.count}
-                    </span>
-                  </button>
-
-                  {!isAll && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleToggleRegion(regionId);
-                      }}
-                      className="p-0.5 rounded text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors cursor-pointer"
-                      title={isVisible ? `Hide ${pill.label}` : `Show ${pill.label}`}
-                      aria-label={isVisible ? `Hide ${pill.label}` : `Show ${pill.label}`}
-                    >
-                      {isVisible ? (
-                        <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-500" />
-                      ) : (
-                        <EyeOff className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-zinc-400 dark:text-zinc-600" />
-                      )}
-                    </button>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Unified Cartographic Extensions Pill (Graticule, ITCZ, Terminator, Cartouche) */}
-          <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl shadow-2xs gap-0.5 shrink-0">
-            <div className="hidden lg:flex items-center gap-1 px-2 py-1 text-[11px] font-bold text-zinc-500 dark:text-zinc-400 select-none">
-              <Compass className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-              <span className="text-[10px] uppercase tracking-wider font-mono">Cartography:</span>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setShowGraticuleAndCompass(prev => !prev)}
-              className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
-                showGraticuleAndCompass
-                  ? 'bg-sky-500/15 text-sky-700 dark:text-sky-300 font-bold'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800'
-              }`}
-              title="Toggle Graticule Coordinate Lines & Nautical Compass Rose"
-            >
-              <Grid className="w-3 h-3 text-sky-500" />
-              <span>Graticule ({showGraticuleAndCompass ? 'ON' : 'OFF'})</span>
-            </button>
-
-            {isFinalMode && (
-              <button
-                type="button"
-                onClick={() => setShowItcz(prev => !prev)}
-                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800 ${
-                  showItcz
-                    ? 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 font-bold'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800'
-                }`}
-                title="Toggle Seasonal Intertropical Convergence Zone (ITCZ) July Monsoon & January Austral Fronts"
-              >
-                <Droplet className="w-3 h-3 text-cyan-500" />
-                <span>ITCZ ({showItcz ? 'ON' : 'OFF'})</span>
-              </button>
-            )}
-
-            {isFinalMode && (
-              <button
-                type="button"
-                onClick={() => setShowSolarTerminator(prev => !prev)}
-                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800 ${
-                  showSolarTerminator
-                    ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300 font-bold'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800'
-                }`}
-                title="Toggle Equinoctial Solar Terminator Day/Night Twilight Isochron Curve"
-              >
-                <SunMedium className="w-3 h-3 text-amber-500" />
-                <span>Terminator ({showSolarTerminator ? 'ON' : 'OFF'})</span>
-              </button>
-            )}
-
-            {isFinalMode && (
-              <button
-                type="button"
-                onClick={() => setShowCartouche(prev => !prev)}
-                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800 ${
-                  showCartouche
-                    ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-800'
-                }`}
-                title="Toggle Official Cartographic Cartouche & Geodetic Scale Bar"
-              >
-                <Compass className="w-3 h-3 text-emerald-500" />
-                <span>Cartouche ({showCartouche ? 'ON' : 'OFF'})</span>
-              </button>
-            )}
-          </div>
-
-          {/* Admin-1 Subdivisions Layer Toggle */}
-          {isFinalMode && (
-            <button
-              type="button"
-              onClick={() => setShowAdmin1Borders(prev => !prev)}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer shrink-0 ${
-                showAdmin1Borders
-                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-300'
-                  : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400'
-              }`}
-              title="Toggle Admin-1 internal subdivisions"
-            >
-              <MapPin className="w-3 h-3" />
-              <span>Admin-1 ({showAdmin1Borders ? 'ON' : 'OFF'})</span>
-            </button>
-          )}
-
-          {/* UNESCO World Heritage Sites Layer Toggle */}
-          {isFinalMode && (
-            <button
-              type="button"
-              onClick={handleToggleUnescoSites}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer shrink-0 ${
-                showUnescoSites
-                  ? 'bg-amber-500/15 border-amber-500/40 text-amber-800 dark:text-amber-300 ring-1 ring-amber-500/30'
-                  : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
-              title="Toggle UNESCO World Heritage Sites Layer (37 Inscribed African & Arab States Properties from JSON data)"
-            >
-              <Landmark className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-              <span>UNESCO Sites ({showUnescoSites ? 'ON' : 'OFF'})</span>
-              <span className="text-[10px] font-mono font-bold px-1 rounded bg-amber-500/20 text-amber-800 dark:text-amber-300">
-                {unescoSites.length}
-              </span>
-            </button>
-          )}
-
-          {/* AKP Clean Energy & Dams Overlay Toggle */}
-          {isFinalMode && (
-            <button
-              type="button"
-              onClick={() => setShowPowerPlants(prev => !prev)}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer shrink-0 ${
-                showPowerPlants
-                  ? 'bg-amber-500/15 border-amber-500/40 text-amber-700 dark:text-amber-300 ring-1 ring-amber-500/30'
-                  : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
-              title="Toggle European Commission AKP Clean Energy Infrastructure & Major Dams Overlay"
-            >
-              <Zap className="w-3 h-3 text-amber-500" />
-              <span>Clean Power ({showPowerPlants ? 'ON' : 'OFF'})</span>
-            </button>
-          )}
-
-          {/* AKP Protected Biospheres Overlay Toggle */}
-          {isFinalMode && (
-            <button
-              type="button"
-              onClick={() => setShowProtectedAreas(prev => !prev)}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer shrink-0 ${
-                showProtectedAreas
-                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-500/30'
-                  : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
-              title="Toggle UNESCO World Heritage & BIOPAMA African Biosphere Reserves Overlay"
-            >
-              <Trees className="w-3 h-3 text-emerald-500" />
-              <span>Reserves ({showProtectedAreas ? 'ON' : 'OFF'})</span>
-            </button>
-          )}
-
-          {/* AKP Animated Thematic Overlays (Power Pools, Corridors, Megacities) */}
-          {isFinalMode && (
-            <button
-              type="button"
-              onClick={() => setShowThematicOverlays(prev => !prev)}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[11px] font-semibold transition-all shadow-xs cursor-pointer shrink-0 ${
-                showThematicOverlays
-                  ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-700 dark:text-cyan-300 ring-1 ring-cyan-500/30'
-                  : 'border-zinc-200/80 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
-              title="Toggle Animated Continental Corridors, Flow Pulses & Metropolitan Hubs"
-            >
-              <Activity className="w-3 h-3 text-cyan-500" />
-              <span>Flows ({showThematicOverlays ? 'ON' : 'OFF'})</span>
-            </button>
-          )}
-
-
-          {/* Unified Admin-1 Inspector & Thematic Layer Deck Pill (Right beside Flows button) */}
-          {isFinalMode && (
-            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl shadow-2xs gap-0.5 shrink-0">
-              <button
-                id="btn-toggle-admin1-inspector-header"
-                type="button"
-                onClick={() => handleToggleUnifiedDeck('inspector')}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
-                  isUnifiedDeckOpen && (unifiedDeckTab === 'inspector' || unifiedDeckTab === 'both')
-                    ? 'bg-emerald-600 text-white shadow-xs font-bold'
-                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-800'
-                }`}
-                title="Toggle Admin-1 Subdivisions Inspector"
-              >
-                <MapPin className="w-3 h-3 text-emerald-500" />
-                <span>Inspector</span>
-                <span className={`text-[10px] font-mono px-1 py-0.2 rounded font-bold ${
-                  isUnifiedDeckOpen && (unifiedDeckTab === 'inspector' || unifiedDeckTab === 'both')
-                    ? 'bg-emerald-700/80 text-white'
-                    : 'bg-zinc-200/80 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
-                }`}>
-                  {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
-                </span>
-              </button>
-
-              <button
-                id="btn-toggle-thematic-deck-header"
-                type="button"
-                onClick={() => handleToggleUnifiedDeck('deck')}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer border-l border-zinc-200/70 dark:border-zinc-800 ${
-                  isUnifiedDeckOpen && (unifiedDeckTab === 'deck' || unifiedDeckTab === 'both')
-                    ? 'bg-cyan-600 text-white shadow-xs font-bold'
-                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-800'
-                }`}
-                title="Toggle Thematic Layers Deck"
-              >
-                <SlidersHorizontal className="w-3 h-3 text-cyan-500" />
-                <span>Layer Deck</span>
-                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${
-                  isUnifiedDeckOpen && (unifiedDeckTab === 'deck' || unifiedDeckTab === 'both')
-                    ? 'bg-cyan-700/80 text-white'
-                    : 'bg-zinc-200/80 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
-                }`}>
-                  {thematicActiveCount}/9
-                </span>
-              </button>
-            </div>
-          )}
-
-          {/* AKP Registry & Cartouche Buttons (Tonal Color Treatment, right beside unified pill) */}
-          <div className="flex items-center gap-1.5 shrink-0">
-            <button
-              type="button"
-              onClick={() => setIsCatalogueModalOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-800 dark:text-cyan-300 border border-cyan-500/30 text-[11px] font-semibold transition-all shadow-xs cursor-pointer active:scale-95 shrink-0"
-              title="Open AKP Data Registry & Geospatial Catalogue"
-            >
-              <Database className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
-              <span>AKP Registry</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setIsColophonOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 text-[11px] font-semibold transition-all shadow-xs cursor-pointer active:scale-95 shrink-0"
-              title="Open Official Cartographic Cartouche, Geodesy Specs & Imprint"
-            >
-              <Compass className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-              <span>Cartouche</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Row 2: Regional Economic Blocs Selector, Citation DOI, Docked Zoom Controls & Export Dropdown */}
-        <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 pt-1.5 border-t border-zinc-200/70 dark:border-zinc-800/70">
-          {/* Left: Bloc selector & Research Citation */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            {/* Regional Economic Blocs Selector */}
-            <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 px-2 py-1 rounded-xl text-xs shrink-0">
-              <span className="text-[10px] font-bold text-zinc-500 mr-1">Bloc:</span>
-              <select
-                value={selectedBlocId}
-                onChange={(e) => setSelectedBlocId(e.target.value)}
-                aria-label="Filter by Regional Economic Bloc"
-                className="bg-transparent text-xs font-semibold text-zinc-800 dark:text-zinc-200 outline-none cursor-pointer"
-              >
-                {REGIONAL_BLOCS_LIST.map(b => (
-                  <option key={b.id} value={b.id} className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
-                    {b.shortName} ({b.count})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setIsCitationModalOpen(true)}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/25 text-[11px] font-semibold transition-all cursor-pointer shrink-0"
-              title="Cite this Research Platform (DOI: 10.6084/m9.figshare.34065711)"
-            >
-              <Quote className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-              <span>Cite (DOI)</span>
-            </button>
-
-            {/* Real-Time Precision WGS 84 Geodesic Coordinates HUD in Unified Header */}
-            <div 
-              className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-[11px] font-mono text-zinc-600 dark:text-zinc-400 shadow-2xs select-none"
-              title="Real-time WGS 84 Geodesic coordinates derived from native 5,796 × 5,867 spatial grid"
-            >
-              <Compass className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span className="font-bold text-zinc-500 dark:text-zinc-400 uppercase text-[10px] tracking-wider">WGS 84:</span>
-              {geoCoordinatesHud ? (
-                <span className="font-bold text-zinc-900 dark:text-zinc-100">
-                  {geoCoordinatesHud.lat} · {geoCoordinatesHud.lon}
-                </span>
-              ) : (
-                <span className="text-zinc-400 dark:text-zinc-500 font-medium text-[10px]">
-                  5,796 × 5,867 Coordinate Space
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Right: Docked Zoom Controls & Export Pill */}
+          {/* Right: Integrated CartographicScaleBar HUD + Zoom Controls + Export */}
           <div className="flex items-center gap-1.5 shrink-0 ml-auto">
-            {/* Zoom Controls Pill */}
+            <CartographicScaleBar
+              variant="inline"
+              showZoom={false}
+              zoomLevel={zoomLevel}
+              centerLat={geoCoordinatesHud ? parseFloat(geoCoordinatesHud.lat) * (geoCoordinatesHud.lat.includes('S') ? -1 : 1) : 4.5}
+              centerLon={geoCoordinatesHud ? parseFloat(geoCoordinatesHud.lon) * (geoCoordinatesHud.lon.includes('W') ? -1 : 1) : 21.7}
+              className="hidden md:inline-flex"
+            />
+
+            {/* Zoom Controls */}
             <div className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl shadow-2xs">
               <button
                 type="button"
@@ -2188,7 +1862,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               >
                 <ZoomOut className="w-3.5 h-3.5" />
               </button>
-              <span className="text-[11px] font-mono font-bold text-zinc-700 dark:text-zinc-300 px-1.5 min-w-[2.75rem] text-center select-none">
+              <span className="text-[11px] font-mono font-bold text-zinc-700 dark:text-zinc-300 px-1.5 min-w-[2.75rem] text-center select-none tabular-nums">
                 {Math.round(zoomLevel * 100)}%
               </span>
               <button
@@ -2217,7 +1891,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               </button>
             </div>
 
-            {/* Export Dropdown Menu Pill */}
+            {/* Export Dropdown Menu */}
             <div className="relative" ref={exportMenuRef}>
               <button
                 type="button"
@@ -2235,7 +1909,6 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 <ChevronDown className="w-3 h-3 opacity-70" />
               </button>
 
-              {/* Export Dropdown Menu */}
               {isExportMenuOpen && (
                 <div className="absolute right-0 top-full mt-1 z-50 w-48 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xl p-1.5 space-y-1 animate-in fade-in zoom-in-95 duration-150">
                   <button
@@ -2268,6 +1941,211 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 </div>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Row 2: Unified Segmented Deck Triggers (Regions & Blocs · Atlas & Heritage · Power & Flows · Inspector · Layer Deck) */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-1.5 border-t border-zinc-200/70 dark:border-zinc-800/70">
+          <div
+            role="toolbar"
+            aria-label="Unified Cartographic Controls"
+            className="flex items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 p-0.5 rounded-xl shadow-2xs gap-0.5 overflow-x-auto scrollbar-none max-w-full relative"
+          >
+            {/* 1. Unified Sub-regions & Regional Economic Blocs Trigger */}
+            <button
+              id="btn-toggle-regions-blocs-header"
+              type="button"
+              onClick={() => handleToggleUnifiedDeck('regions')}
+              aria-expanded={isUnifiedDeckOpen && unifiedDeckTab === 'regions'}
+              className={`relative flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer shrink-0 z-10 ${
+                isUnifiedDeckOpen && unifiedDeckTab === 'regions'
+                  ? 'text-white font-bold'
+                  : 'text-zinc-700 dark:text-zinc-300 hover:bg-white/80 dark:hover:bg-zinc-800/80'
+              }`}
+              title="Filter by UN M49 Sub-regions & Regional Economic Blocs (ECOWAS, SADC, EAC, AMU, ECCAS, COMESA)"
+            >
+              {isUnifiedDeckOpen && unifiedDeckTab === 'regions' && (
+                <motion.div
+                  layoutId="activeHeaderDeckTrigger"
+                  className="absolute inset-0 bg-zinc-900 dark:bg-emerald-600 rounded-lg shadow-xs -z-10"
+                  transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
+                />
+              )}
+              <Globe className={`w-3 h-3 ${isUnifiedDeckOpen && unifiedDeckTab === 'regions' ? 'text-emerald-300 dark:text-white' : 'text-emerald-600 dark:text-emerald-400'}`} />
+              <span>Regions &amp; Blocs</span>
+              <span className={`text-[10px] font-mono font-bold tabular-nums ${
+                isUnifiedDeckOpen && unifiedDeckTab === 'regions'
+                  ? 'text-emerald-200 dark:text-emerald-100'
+                  : 'text-zinc-500 dark:text-zinc-400'
+              }`}>
+                {selectedBlocId !== 'ALL'
+                  ? selectedBlocId
+                  : visibleRegions.size === 5
+                    ? '54'
+                    : visibleRegions.size === 1
+                      ? Array.from(visibleRegions)[0].replace(' Africa', '')
+                      : `${visibleRegions.size}/5`}
+              </span>
+            </button>
+
+            {/* 2. Unified Atlas, Heritage, Cartography & Citation Trigger */}
+            <button
+              id="btn-toggle-atlas-heritage-header"
+              type="button"
+              onClick={() => handleToggleUnifiedDeck('atlas')}
+              aria-expanded={isUnifiedDeckOpen && unifiedDeckTab === 'atlas'}
+              className={`relative flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer shrink-0 z-10 border-l border-zinc-200/70 dark:border-zinc-800 ${
+                isUnifiedDeckOpen && unifiedDeckTab === 'atlas'
+                  ? 'text-white font-bold'
+                  : 'text-zinc-700 dark:text-zinc-300 hover:bg-white/80 dark:hover:bg-zinc-800/80'
+              }`}
+              title="UNESCO Sites, Admin-1, Minerals, Graticule/Cartouche, AKP Registry & Cite (DOI)"
+            >
+              {isUnifiedDeckOpen && unifiedDeckTab === 'atlas' && (
+                <motion.div
+                  layoutId="activeHeaderDeckTrigger"
+                  className="absolute inset-0 bg-amber-700 dark:bg-amber-600 rounded-lg shadow-xs -z-10"
+                  transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
+                />
+              )}
+              <Landmark className={`w-3 h-3 ${isUnifiedDeckOpen && unifiedDeckTab === 'atlas' ? 'text-amber-200' : 'text-amber-600 dark:text-amber-400'}`} />
+              <span>Atlas &amp; Citations</span>
+              <span className={`text-[10px] font-mono font-bold tabular-nums ${
+                isUnifiedDeckOpen && unifiedDeckTab === 'atlas'
+                  ? 'text-amber-100'
+                  : 'text-zinc-500 dark:text-zinc-400'
+              }`}>
+                {atlasActiveCount}/7
+              </span>
+            </button>
+
+            {/* 3. Unified Clean Power, Reserves & Flows Trigger */}
+            {isFinalMode && (
+              <button
+                id="btn-toggle-power-flows-header"
+                type="button"
+                onClick={() => handleToggleUnifiedDeck('flows')}
+                aria-expanded={isUnifiedDeckOpen && unifiedDeckTab === 'flows'}
+                className={`relative flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer shrink-0 z-10 border-l border-zinc-200/70 dark:border-zinc-800 ${
+                  isUnifiedDeckOpen && unifiedDeckTab === 'flows'
+                    ? 'text-white font-bold'
+                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-white/80 dark:hover:bg-zinc-800/80'
+                }`}
+                title="Clean Power & Dams, Biosphere Reserves, and Continental Flows"
+              >
+                {isUnifiedDeckOpen && unifiedDeckTab === 'flows' && (
+                  <motion.div
+                    layoutId="activeHeaderDeckTrigger"
+                    className="absolute inset-0 bg-teal-700 dark:bg-teal-600 rounded-lg shadow-xs -z-10"
+                    transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
+                  />
+                )}
+                <Zap className={`w-3 h-3 ${isUnifiedDeckOpen && unifiedDeckTab === 'flows' ? 'text-teal-200' : 'text-amber-500'}`} />
+                <span>Power &amp; Flows</span>
+                <span className={`text-[10px] font-mono font-bold tabular-nums ${
+                  isUnifiedDeckOpen && unifiedDeckTab === 'flows'
+                    ? 'text-teal-100'
+                    : 'text-zinc-500 dark:text-zinc-400'
+                }`}>
+                  {flowsPowerActiveCount}/3
+                </span>
+              </button>
+            )}
+
+            {/* 4. Admin-1 Subdivisions Inspector Trigger */}
+            {isFinalMode && (
+              <button
+                id="btn-toggle-admin1-inspector-header"
+                type="button"
+                onClick={() => handleToggleUnifiedDeck('inspector')}
+                aria-expanded={isUnifiedDeckOpen && (unifiedDeckTab === 'inspector' || unifiedDeckTab === 'both')}
+                className={`relative flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer shrink-0 z-10 border-l border-zinc-200/70 dark:border-zinc-800 ${
+                  isUnifiedDeckOpen && (unifiedDeckTab === 'inspector' || unifiedDeckTab === 'both')
+                    ? 'text-white font-bold'
+                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-white/80 dark:hover:bg-zinc-800/80'
+                }`}
+                title="Toggle Admin-1 Subdivisions Inspector"
+              >
+                {isUnifiedDeckOpen && (unifiedDeckTab === 'inspector' || unifiedDeckTab === 'both') && (
+                  <motion.div
+                    layoutId="activeHeaderDeckTrigger"
+                    className="absolute inset-0 bg-emerald-600 rounded-lg shadow-xs -z-10"
+                    transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
+                  />
+                )}
+                <MapPin className={`w-3 h-3 ${isUnifiedDeckOpen && (unifiedDeckTab === 'inspector' || unifiedDeckTab === 'both') ? 'text-emerald-100' : 'text-emerald-500'}`} />
+                <span>Inspector</span>
+                <span className={`text-[10px] font-mono font-bold tabular-nums ${
+                  isUnifiedDeckOpen && (unifiedDeckTab === 'inspector' || unifiedDeckTab === 'both')
+                    ? 'text-emerald-100'
+                    : 'text-zinc-500 dark:text-zinc-400'
+                }`}>
+                  {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
+                </span>
+              </button>
+            )}
+
+            {/* 5. Thematic Layer Deck Trigger */}
+            {isFinalMode && (
+              <button
+                id="btn-toggle-thematic-deck-header"
+                type="button"
+                onClick={() => handleToggleUnifiedDeck('deck')}
+                aria-expanded={isUnifiedDeckOpen && (unifiedDeckTab === 'deck' || unifiedDeckTab === 'both')}
+                className={`relative flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer shrink-0 z-10 border-l border-zinc-200/70 dark:border-zinc-800 ${
+                  isUnifiedDeckOpen && (unifiedDeckTab === 'deck' || unifiedDeckTab === 'both')
+                    ? 'text-white font-bold'
+                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-white/80 dark:hover:bg-zinc-800/80'
+                }`}
+                title="Toggle 9-Layer Thematic Overlays Deck"
+              >
+                {isUnifiedDeckOpen && (unifiedDeckTab === 'deck' || unifiedDeckTab === 'both') && (
+                  <motion.div
+                    layoutId="activeHeaderDeckTrigger"
+                    className="absolute inset-0 bg-cyan-600 rounded-lg shadow-xs -z-10"
+                    transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
+                  />
+                )}
+                <SlidersHorizontal className={`w-3 h-3 ${isUnifiedDeckOpen && (unifiedDeckTab === 'deck' || unifiedDeckTab === 'both') ? 'text-cyan-100' : 'text-cyan-500'}`} />
+                <span>Layer Deck</span>
+                <span className={`text-[10px] font-mono font-bold tabular-nums ${
+                  isUnifiedDeckOpen && (unifiedDeckTab === 'deck' || unifiedDeckTab === 'both')
+                    ? 'text-cyan-100'
+                    : 'text-zinc-500 dark:text-zinc-400'
+                }`}>
+                  {thematicActiveCount}/9
+                </span>
+              </button>
+            )}
+          </div>
+
+          {/* Mobile Inline Scale Readout + Contextual Scope Reset */}
+          <div className="flex items-center gap-2 ml-auto">
+            <CartographicScaleBar
+              variant="inline"
+              showZoom={false}
+              zoomLevel={zoomLevel}
+              centerLat={geoCoordinatesHud ? parseFloat(geoCoordinatesHud.lat) * (geoCoordinatesHud.lat.includes('S') ? -1 : 1) : 4.5}
+              centerLon={geoCoordinatesHud ? parseFloat(geoCoordinatesHud.lon) * (geoCoordinatesHud.lon.includes('W') ? -1 : 1) : 21.7}
+              className="md:hidden"
+            />
+            {(selectedBlocId !== 'ALL' || visibleRegions.size < 5) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedBlocId('ALL');
+                  handleShowAllRegions();
+                  handleResetZoom();
+                }}
+                className="text-[11px] font-mono font-semibold text-amber-700 dark:text-amber-400 hover:underline cursor-pointer shrink-0"
+                title="Clear active region or bloc filter and show all 54 nations"
+              >
+                Reset Scope
+              </button>
+            )}
+            <span className="hidden xl:inline text-[11px] font-mono text-zinc-500 dark:text-zinc-400 select-none">
+              54 Nations · 1,017 Admin-1 · {unescoSites.length} UNESCO
+            </span>
           </div>
         </div>
 
@@ -2355,11 +2233,8 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                             }}
                           />
                           <span className="text-[10px] font-medium text-zinc-400">{isRev ? 'Low (Best)' : 'High'}</span>
-                          <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-100 dark:bg-cyan-900/60 text-cyan-800 dark:text-cyan-200 border border-cyan-300/60 dark:border-cyan-700/60">
-                            {currentMetricDef.unit}
-                          </span>
-                          <span className="hidden sm:inline-block text-[10px] font-semibold text-cyan-800/80 dark:text-cyan-300/80 bg-white/70 dark:bg-zinc-900/80 px-2 py-0.5 rounded-full border border-cyan-200 dark:border-cyan-900">
-                            {currentMetricDef.source || 'EC JRC AKP'}
+                          <span className="text-[10px] font-mono font-semibold text-cyan-800 dark:text-cyan-200">
+                            {currentMetricDef.unit} · {currentMetricDef.source || 'EC JRC AKP'}
                           </span>
                         </div>
                       );
@@ -2419,98 +2294,203 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             : "relative w-full flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner p-[6px] aspect-[890/985] max-h-[85vh] min-h-[440px]"
         }
       >
-        {/* Sophisticated Combined 2-Column Sliding Panel: Admin-1 Inspector + Thematic Layers Deck */}
+        {/* Unified Sliding Cartographic Intelligence Deck (Regions & Blocs · Atlas & Citations · Power & Flows · Admin-1 Inspector · Thematic Layers) */}
         <AnimatePresence>
           {(isUnifiedDeckOpen || isAdmin1InspectorOpen) && (
-            <motion.div
+            <motion.aside
               id="unified-cartographic-deck-panel"
-              initial={{ opacity: 0, y: -16, scale: 0.98 }}
+              aria-label="Cartographic Intelligence Deck"
+              initial={{ opacity: 0, y: -12, scale: 0.985 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -16, scale: 0.98 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 32, mass: 0.5 }}
-              className="absolute top-3 right-3 sm:right-4 z-40 w-auto min-w-[320px] sm:min-w-[540px] md:min-w-[760px] lg:min-w-[960px] max-w-[calc(100vw-24px)] rounded-3xl bg-white/95 dark:bg-zinc-950/95 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl backdrop-blur-2xl overflow-hidden flex flex-col max-h-[82vh]"
+              exit={{ opacity: 0, y: -10, scale: 0.985, transition: { duration: 0.14, ease: [0.4, 0, 1, 1] } }}
+              transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
+              className={`fixed inset-x-2 bottom-20 z-40 max-h-[66dvh] md:inset-x-auto md:bottom-auto md:absolute md:top-3 md:right-3 sm:md:right-4 md:max-h-[82vh] w-auto ${
+                unifiedDeckTab === 'both'
+                  ? 'md:w-[760px] lg:w-[960px]'
+                  : 'md:w-[560px] lg:w-[680px]'
+              } max-w-[calc(100vw-16px)] md:max-w-[calc(100vw-32px)] rounded-3xl bg-white/96 dark:bg-zinc-950/96 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl backdrop-blur-2xl overflow-hidden flex flex-col`}
             >
-              {/* Header with Title, Section Tabs & Close Control */}
-              <div className="flex items-center justify-between px-3.5 sm:px-4 py-2.5 sm:py-3 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-900/60 gap-2 shrink-0">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-700 dark:text-emerald-400 shrink-0">
+              {/* Deck Header with WAI-ARIA Tablist & Close Control */}
+              <div className="flex flex-wrap items-center justify-between px-3.5 sm:px-4 py-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-900/60 gap-2 shrink-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="p-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-700 dark:text-emerald-400 shrink-0">
                     <SlidersHorizontal className="w-4 h-4" />
                   </div>
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-extrabold text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 font-serif tracking-tight truncate">
-                        Cartographic Intelligence Deck
-                      </h3>
-                    </div>
+                    <h3 className="font-extrabold text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 font-serif tracking-tight truncate">
+                      Cartographic Intelligence Deck
+                    </h3>
                     <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono truncate">
-                      Admin-1 Topology &amp; Thematic Multi-Layer Overlays
+                      Regions, Overlays, Admin-1 Topology &amp; Citations
                     </p>
                   </div>
                 </div>
 
                 {/* Section Tabs & Close */}
-                <div className="flex items-center gap-2 shrink-0">
-                  <div className="flex items-center bg-zinc-200/70 dark:bg-zinc-800/80 p-0.5 rounded-xl border border-zinc-300/60 dark:border-zinc-700/60">
+                <div className="flex items-center gap-1.5 shrink-0 max-w-full overflow-x-auto scrollbar-none">
+                  <nav
+                    role="tablist"
+                    aria-label="Cartographic Deck Sections"
+                    onKeyDown={(e) => {
+                      const tabs: Array<'regions' | 'atlas' | 'flows' | 'inspector' | 'deck' | 'both'> = isFinalMode
+                        ? ['regions', 'atlas', 'flows', 'inspector', 'deck', 'both']
+                        : ['regions', 'atlas'];
+                      const idx = tabs.indexOf(unifiedDeckTab);
+                      if (idx === -1) return;
+                      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        const nextIdx = e.key === 'ArrowRight'
+                          ? (idx + 1) % tabs.length
+                          : (idx - 1 + tabs.length) % tabs.length;
+                        const nextTab = tabs[nextIdx];
+                        setUnifiedDeckTab(nextTab);
+                        setIsUnifiedDeckOpen(true);
+                        setIsAdmin1InspectorOpen(nextTab === 'inspector');
+                        document.getElementById(`deck-tab-${nextTab}`)?.focus();
+                      }
+                    }}
+                    className="flex items-center bg-zinc-200/70 dark:bg-zinc-800/80 p-0.5 rounded-xl border border-zinc-300/60 dark:border-zinc-700/60 gap-0.5"
+                  >
                     <button
                       type="button"
+                      role="tab"
+                      id="deck-tab-regions"
+                      aria-selected={unifiedDeckTab === 'regions'}
+                      aria-controls="deck-panel-regions"
+                      tabIndex={unifiedDeckTab === 'regions' ? 0 : -1}
                       onClick={() => {
-                        setUnifiedDeckTab('inspector');
+                        setUnifiedDeckTab('regions');
                         setIsUnifiedDeckOpen(true);
-                        setIsAdmin1InspectorOpen(true);
+                        setIsAdmin1InspectorOpen(false);
                       }}
-                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                        unifiedDeckTab === 'inspector'
-                          ? 'bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-300 shadow-xs'
+                      className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
+                        unifiedDeckTab === 'regions'
+                          ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-emerald-300 shadow-xs'
                           : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                       }`}
-                      title="Admin-1 Subdivisions Inspector"
                     >
-                      <MapPin className="w-3.5 h-3.5 text-emerald-500" />
-                      <span className="hidden sm:inline">Admin-1</span>
-                      <span>Inspector</span>
-                      <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold">
-                        {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
-                      </span>
+                      <Globe className="w-3 h-3 text-emerald-500" />
+                      <span>Regions</span>
                     </button>
 
                     <button
                       type="button"
+                      role="tab"
+                      id="deck-tab-atlas"
+                      aria-selected={unifiedDeckTab === 'atlas'}
+                      aria-controls="deck-panel-atlas"
+                      tabIndex={unifiedDeckTab === 'atlas' ? 0 : -1}
                       onClick={() => {
-                        setUnifiedDeckTab('deck');
+                        setUnifiedDeckTab('atlas');
                         setIsUnifiedDeckOpen(true);
+                        setIsAdmin1InspectorOpen(false);
                       }}
-                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                        unifiedDeckTab === 'deck'
-                          ? 'bg-white dark:bg-zinc-900 text-cyan-700 dark:text-cyan-300 shadow-xs'
+                      className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
+                        unifiedDeckTab === 'atlas'
+                          ? 'bg-white dark:bg-zinc-900 text-amber-800 dark:text-amber-300 shadow-xs'
                           : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                       }`}
-                      title="Thematic Layers Deck"
                     >
-                      <Layers className="w-3.5 h-3.5 text-cyan-500" />
-                      <span className="hidden sm:inline">Thematic</span>
-                      <span>Layers</span>
-                      <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-cyan-100 dark:bg-cyan-900/60 text-cyan-800 dark:text-cyan-200 font-bold">
-                        {thematicActiveCount}/9
-                      </span>
+                      <Landmark className="w-3 h-3 text-amber-500" />
+                      <span>Atlas</span>
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setUnifiedDeckTab('both');
-                        setIsUnifiedDeckOpen(true);
-                      }}
-                      className={`hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                        unifiedDeckTab === 'both'
-                          ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-xs'
-                          : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-                      }`}
-                      title="2-Column Split View (Both Inspector &amp; Layers)"
-                    >
-                      <Columns className="w-3.5 h-3.5 text-amber-500" />
-                      <span>2-Column</span>
-                    </button>
-                  </div>
+                    {isFinalMode && (
+                      <button
+                        type="button"
+                        role="tab"
+                        id="deck-tab-flows"
+                        aria-selected={unifiedDeckTab === 'flows'}
+                        aria-controls="deck-panel-flows"
+                        tabIndex={unifiedDeckTab === 'flows' ? 0 : -1}
+                        onClick={() => {
+                          setUnifiedDeckTab('flows');
+                          setIsUnifiedDeckOpen(true);
+                          setIsAdmin1InspectorOpen(false);
+                        }}
+                        className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
+                          unifiedDeckTab === 'flows'
+                            ? 'bg-white dark:bg-zinc-900 text-teal-700 dark:text-teal-300 shadow-xs'
+                            : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                        }`}
+                      >
+                        <Zap className="w-3 h-3 text-teal-500" />
+                        <span>Power &amp; Flows</span>
+                      </button>
+                    )}
+
+                    {isFinalMode && (
+                      <button
+                        type="button"
+                        role="tab"
+                        id="deck-tab-inspector"
+                        aria-selected={unifiedDeckTab === 'inspector'}
+                        aria-controls="deck-panel-inspector"
+                        tabIndex={unifiedDeckTab === 'inspector' ? 0 : -1}
+                        onClick={() => {
+                          setUnifiedDeckTab('inspector');
+                          setIsUnifiedDeckOpen(true);
+                          setIsAdmin1InspectorOpen(true);
+                        }}
+                        className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
+                          unifiedDeckTab === 'inspector'
+                            ? 'bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-300 shadow-xs'
+                            : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                        }`}
+                      >
+                        <MapPin className="w-3 h-3 text-emerald-500" />
+                        <span>Inspector</span>
+                      </button>
+                    )}
+
+                    {isFinalMode && (
+                      <button
+                        type="button"
+                        role="tab"
+                        id="deck-tab-deck"
+                        aria-selected={unifiedDeckTab === 'deck'}
+                        aria-controls="deck-panel-deck"
+                        tabIndex={unifiedDeckTab === 'deck' ? 0 : -1}
+                        onClick={() => {
+                          setUnifiedDeckTab('deck');
+                          setIsUnifiedDeckOpen(true);
+                          setIsAdmin1InspectorOpen(false);
+                        }}
+                        className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
+                          unifiedDeckTab === 'deck'
+                            ? 'bg-white dark:bg-zinc-900 text-cyan-700 dark:text-cyan-300 shadow-xs'
+                            : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                        }`}
+                      >
+                        <Layers className="w-3 h-3 text-cyan-500" />
+                        <span>Layers</span>
+                      </button>
+                    )}
+
+                    {isFinalMode && (
+                      <button
+                        type="button"
+                        role="tab"
+                        id="deck-tab-both"
+                        aria-selected={unifiedDeckTab === 'both'}
+                        aria-controls="deck-panel-both"
+                        tabIndex={unifiedDeckTab === 'both' ? 0 : -1}
+                        onClick={() => {
+                          setUnifiedDeckTab('both');
+                          setIsUnifiedDeckOpen(true);
+                        }}
+                        className={`hidden md:flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
+                          unifiedDeckTab === 'both'
+                            ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-xs'
+                            : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                        }`}
+                        title="2-Column Split View (Inspector &amp; Layers)"
+                      >
+                        <Columns className="w-3 h-3 text-amber-500" />
+                        <span>Split</span>
+                      </button>
+                    )}
+                  </nav>
 
                   <button
                     type="button"
@@ -2518,23 +2498,562 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                       setIsUnifiedDeckOpen(false);
                       setIsAdmin1InspectorOpen(false);
                     }}
-                    className="p-1.5 rounded-xl hover:bg-zinc-200/70 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+                    className="p-1.5 rounded-xl hover:bg-zinc-200/70 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors cursor-pointer shrink-0"
                     title="Close Deck"
+                    aria-label="Close Cartographic Intelligence Deck"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
               </div>
 
-              {/* Panel Content: 2-Column or Single Tab */}
-              <div className={`overflow-y-auto flex-1 ${
-                unifiedDeckTab === 'both'
-                  ? 'grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-zinc-200/80 dark:divide-zinc-800/80'
-                  : 'flex flex-col'
-              }`}>
+              {/* Panel Content */}
+              <div
+                className={`overflow-y-auto flex-1 ${
+                  unifiedDeckTab === 'both'
+                    ? 'grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-zinc-200/80 dark:divide-zinc-800/80'
+                    : 'flex flex-col'
+                }`}
+              >
+                {/* TAB: REGIONS & BLOCS */}
+                {unifiedDeckTab === 'regions' && (
+                  <div
+                    role="tabpanel"
+                    id="deck-panel-regions"
+                    aria-labelledby="deck-tab-regions"
+                    className="p-4 space-y-5"
+                  >
+                    {/* UN M49 Sub-Regions */}
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+                            UN M49 Macro-Regions
+                          </h4>
+                          <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                            Click a region to focus &amp; zoom, or toggle its eye icon to layer visibility.
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleShowAllRegions();
+                            handleResetZoom();
+                          }}
+                          className="text-[11px] font-mono font-semibold text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer"
+                        >
+                          Show All 54
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {SUBREGION_PILL_DEFS.map(pill => {
+                          const isAll = pill.id === 'All';
+                          const regionId = pill.id as AfricanRegion;
+                          const isVisible = isAll ? visibleRegions.size === 5 : visibleRegions.has(regionId);
+                          const isIsolated = !isAll && visibleRegions.size === 1 && visibleRegions.has(regionId);
+
+                          return (
+                            <div
+                              key={pill.id}
+                              onMouseEnter={() => {
+                                if (!isAll) setActiveRegionHover(regionId);
+                              }}
+                              onMouseLeave={() => {
+                                if (!isAll) setActiveRegionHover(null);
+                              }}
+                              className={`flex items-center justify-between p-2.5 rounded-xl border transition-all select-none ${
+                                (isAll && visibleRegions.size === 5) || isIsolated
+                                  ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 border-zinc-900 dark:border-white shadow-sm'
+                                  : isVisible
+                                    ? 'bg-white dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-200 border-zinc-200/90 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700'
+                                    : 'bg-zinc-100/50 dark:bg-zinc-900/30 text-zinc-400 dark:text-zinc-500 border-zinc-200/50 dark:border-zinc-800/50 opacity-65'
+                              }`}
+                            >
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  triggerHaptic('light');
+                                  if (isAll) {
+                                    handleShowAllRegions();
+                                    handleResetZoom();
+                                  } else if (visibleRegions.size === 1 && visibleRegions.has(regionId)) {
+                                    handleShowAllRegions();
+                                    handleResetZoom();
+                                  } else {
+                                    handleIsolateRegion(regionId);
+                                    handleFocusRegion(regionId);
+                                  }
+                                }}
+                                className="flex items-center gap-2.5 flex-1 text-left cursor-pointer"
+                              >
+                                <span
+                                  className="w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-white/40"
+                                  style={{ backgroundColor: pill.color }}
+                                />
+                                <div className="min-w-0">
+                                  <div className="text-xs font-bold truncate">{pill.fullName || pill.label}</div>
+                                  <div className={`text-[10px] font-mono ${
+                                    (isAll && visibleRegions.size === 5) || isIsolated
+                                      ? 'text-zinc-300 dark:text-zinc-600'
+                                      : 'text-zinc-500 dark:text-zinc-400'
+                                  }`}>
+                                    {pill.count} sovereign states
+                                  </div>
+                                </div>
+                              </button>
+
+                              {!isAll && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    triggerHaptic('light');
+                                    handleToggleRegion(regionId);
+                                  }}
+                                  className="p-1.5 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                                  title={isVisible ? `Hide ${pill.label}` : `Show ${pill.label}`}
+                                  aria-label={isVisible ? `Hide ${pill.label}` : `Show ${pill.label}`}
+                                >
+                                  {isVisible ? (
+                                    <Eye className="w-3.5 h-3.5 text-emerald-500" />
+                                  ) : (
+                                    <EyeOff className="w-3.5 h-3.5 text-zinc-400" />
+                                  )}
+                                </button>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Regional Economic Blocs */}
+                    <div className="space-y-2.5 pt-3 border-t border-zinc-200/80 dark:border-zinc-800/80">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+                            Regional Economic Communities (RECs)
+                          </h4>
+                          <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                            Highlight member states across African Union trade blocs.
+                          </p>
+                        </div>
+                        {selectedBlocId !== 'ALL' && (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedBlocId('ALL')}
+                            className="text-[11px] font-mono font-semibold text-amber-700 dark:text-amber-400 hover:underline cursor-pointer"
+                          >
+                            Clear Bloc
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {REGIONAL_BLOCS_LIST.map(bloc => {
+                          const isSelected = selectedBlocId === bloc.id;
+                          return (
+                            <button
+                              key={bloc.id}
+                              type="button"
+                              onClick={() => {
+                                triggerHaptic('light');
+                                setSelectedBlocId(bloc.id);
+                              }}
+                              className={`flex items-center justify-between p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                                isSelected
+                                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                                  : 'bg-zinc-50/80 dark:bg-zinc-900/60 text-zinc-800 dark:text-zinc-200 border-zinc-200/80 dark:border-zinc-800 hover:border-emerald-500/40'
+                              }`}
+                            >
+                              <div className="min-w-0 pr-2">
+                                <div className="text-xs font-bold truncate">{bloc.shortName}</div>
+                                <div className={`text-[10px] truncate ${isSelected ? 'text-emerald-100' : 'text-zinc-500 dark:text-zinc-400'}`}>
+                                  {bloc.name}
+                                </div>
+                              </div>
+                              <span className={`text-[11px] font-mono font-bold shrink-0 ${
+                                isSelected ? 'text-white' : 'text-zinc-500 dark:text-zinc-400'
+                              }`}>
+                                {bloc.count}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB: ATLAS, HERITAGE, CARTOGRAPHY & CITATION */}
+                {unifiedDeckTab === 'atlas' && (
+                  <div
+                    role="tabpanel"
+                    id="deck-panel-atlas"
+                    aria-labelledby="deck-tab-atlas"
+                    className="p-4 space-y-5"
+                  >
+                    {/* Boundaries, Heritage & Minerals */}
+                    <div className="space-y-2.5">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+                        Sovereign Topology, Heritage &amp; Resources
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {isFinalMode && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              triggerHaptic('light');
+                              handleToggleUnescoSites();
+                            }}
+                            className={`flex items-center justify-between p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                              showUnescoSites
+                                ? 'bg-amber-500/12 border-amber-500/40 text-zinc-900 dark:text-zinc-100'
+                                : 'bg-zinc-50/70 dark:bg-zinc-900/50 border-zinc-200/80 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-7 h-7 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center shrink-0">
+                                <Landmark className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="text-xs font-bold truncate">UNESCO Heritage Sites</div>
+                                <div className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">
+                                  {unescoSites.length} inscribed properties
+                                </div>
+                              </div>
+                            </div>
+                            <span className={`text-[10px] font-mono font-bold ${showUnescoSites ? 'text-amber-700 dark:text-amber-400' : 'text-zinc-400'}`}>
+                              {showUnescoSites ? 'ON' : 'OFF'}
+                            </span>
+                          </button>
+                        )}
+
+                        {isFinalMode && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              triggerHaptic('light');
+                              setShowAdmin1Borders(prev => !prev);
+                            }}
+                            className={`flex items-center justify-between p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                              showAdmin1Borders
+                                ? 'bg-emerald-500/12 border-emerald-500/40 text-zinc-900 dark:text-zinc-100'
+                                : 'bg-zinc-50/70 dark:bg-zinc-900/50 border-zinc-200/80 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                                <MapPin className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="text-xs font-bold truncate">Admin-1 Subdivisions</div>
+                                <div className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">
+                                  1,017 internal boundaries
+                                </div>
+                              </div>
+                            </div>
+                            <span className={`text-[10px] font-mono font-bold ${showAdmin1Borders ? 'text-emerald-700 dark:text-emerald-400' : 'text-zinc-400'}`}>
+                              {showAdmin1Borders ? 'ON' : 'OFF'}
+                            </span>
+                          </button>
+                        )}
+
+                        {isFinalMode && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              triggerHaptic('light');
+                              handleToggleCriticalMinerals();
+                            }}
+                            className={`flex items-center justify-between p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                              showCriticalMinerals
+                                ? 'bg-emerald-500/12 border-emerald-500/40 text-zinc-900 dark:text-zinc-100'
+                                : 'bg-zinc-50/70 dark:bg-zinc-900/50 border-zinc-200/80 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                                <Zap className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="text-xs font-bold truncate">Critical Minerals Layer</div>
+                                <div className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">
+                                  Strategic beneficiation nodes
+                                </div>
+                              </div>
+                            </div>
+                            <span className={`text-[10px] font-mono font-bold ${showCriticalMinerals ? 'text-emerald-700 dark:text-emerald-400' : 'text-zinc-400'}`}>
+                              {showCriticalMinerals ? 'ON' : 'OFF'}
+                            </span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Cartographic Framing & Geodesy */}
+                    <div className="space-y-2.5 pt-3 border-t border-zinc-200/80 dark:border-zinc-800/80">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+                        Cartographic Grid &amp; Geodesy Overlays
+                      </h4>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setShowGraticuleAndCompass(prev => !prev)}
+                          className={`flex items-center justify-between p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                            showGraticuleAndCompass
+                              ? 'bg-sky-500/12 border-sky-500/40 text-zinc-900 dark:text-zinc-100'
+                              : 'bg-zinc-50/70 dark:bg-zinc-900/50 border-zinc-200/80 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400'
+                          }`}
+                        >
+                          <span className="flex items-center gap-2 text-xs font-bold">
+                            <Grid className="w-3.5 h-3.5 text-sky-500" />
+                            Graticule
+                          </span>
+                          <span className="text-[10px] font-mono font-bold">{showGraticuleAndCompass ? 'ON' : 'OFF'}</span>
+                        </button>
+
+                        {isFinalMode && (
+                          <button
+                            type="button"
+                            onClick={() => setShowCartouche(prev => !prev)}
+                            className={`flex items-center justify-between p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                              showCartouche
+                                ? 'bg-emerald-500/12 border-emerald-500/40 text-zinc-900 dark:text-zinc-100'
+                                : 'bg-zinc-50/70 dark:bg-zinc-900/50 border-zinc-200/80 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400'
+                            }`}
+                          >
+                            <span className="flex items-center gap-2 text-xs font-bold">
+                              <Compass className="w-3.5 h-3.5 text-emerald-500" />
+                              Cartouche Overlay
+                            </span>
+                            <span className="text-[10px] font-mono font-bold">{showCartouche ? 'ON' : 'OFF'}</span>
+                          </button>
+                        )}
+
+                        {isFinalMode && (
+                          <button
+                            type="button"
+                            onClick={() => setShowItcz(prev => !prev)}
+                            className={`flex items-center justify-between p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                              showItcz
+                                ? 'bg-cyan-500/12 border-cyan-500/40 text-zinc-900 dark:text-zinc-100'
+                                : 'bg-zinc-50/70 dark:bg-zinc-900/50 border-zinc-200/80 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400'
+                            }`}
+                          >
+                            <span className="flex items-center gap-2 text-xs font-bold">
+                              <Droplet className="w-3.5 h-3.5 text-cyan-500" />
+                              ITCZ Monsoon
+                            </span>
+                            <span className="text-[10px] font-mono font-bold">{showItcz ? 'ON' : 'OFF'}</span>
+                          </button>
+                        )}
+
+                        {isFinalMode && (
+                          <button
+                            type="button"
+                            onClick={() => setShowSolarTerminator(prev => !prev)}
+                            className={`flex items-center justify-between p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                              showSolarTerminator
+                                ? 'bg-amber-500/12 border-amber-500/40 text-zinc-900 dark:text-zinc-100'
+                                : 'bg-zinc-50/70 dark:bg-zinc-900/50 border-zinc-200/80 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400'
+                            }`}
+                          >
+                            <span className="flex items-center gap-2 text-xs font-bold">
+                              <SunMedium className="w-3.5 h-3.5 text-amber-500" />
+                              Solar Terminator
+                            </span>
+                            <span className="text-[10px] font-mono font-bold">{showSolarTerminator ? 'ON' : 'OFF'}</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Catalogues, Colophon & Academic Citation */}
+                    <div className="space-y-2.5 pt-3 border-t border-zinc-200/80 dark:border-zinc-800/80">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+                        Registries, Colophon &amp; Citation
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setIsCatalogueModalOpen(true)}
+                          className="flex items-center gap-2 p-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-900 dark:text-cyan-200 border border-cyan-500/30 text-left transition-all cursor-pointer"
+                        >
+                          <Database className="w-4 h-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold truncate">AKP Registry</div>
+                            <div className="text-[10px] opacity-75 truncate">241-Dataset Index</div>
+                          </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setIsColophonOpen(true)}
+                          className="flex items-center gap-2 p-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 dark:text-amber-200 border border-amber-500/30 text-left transition-all cursor-pointer"
+                        >
+                          <Compass className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold truncate">Colophon</div>
+                            <div className="text-[10px] opacity-75 truncate">Geodesy &amp; Specs</div>
+                          </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setIsCitationModalOpen(true)}
+                          className="flex items-center gap-2 p-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 dark:text-amber-200 border border-amber-500/30 text-left transition-all cursor-pointer"
+                        >
+                          <Quote className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold truncate">Cite (DOI)</div>
+                            <div className="text-[10px] opacity-75 truncate">BibTeX · CFF · RIS</div>
+                          </div>
+                        </button>
+                      </div>
+
+                      {onNavigateToHeritage && (
+                        <button
+                          type="button"
+                          onClick={() => onNavigateToHeritage(18)}
+                          className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-stone-100 dark:bg-stone-900 hover:bg-amber-50 dark:hover:bg-amber-950/30 border border-stone-200/80 dark:border-stone-800 text-xs font-semibold text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
+                        >
+                          <span>Open Full UNESCO World Heritage Archive</span>
+                          <ExternalLink className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB: CLEAN POWER, RESERVES & CONTINENTAL FLOWS */}
+                {unifiedDeckTab === 'flows' && isFinalMode && (
+                  <div
+                    role="tabpanel"
+                    id="deck-panel-flows"
+                    aria-labelledby="deck-tab-flows"
+                    className="p-4 space-y-4"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+                          Clean Power, Reserves &amp; Continental Flows
+                        </h4>
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                          Toggle EC AKP energy infrastructure, biosphere sanctuaries, and animated trade arteries.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setUnifiedDeckTab('deck')}
+                        className="text-[11px] font-mono font-semibold text-cyan-700 dark:text-cyan-400 hover:underline cursor-pointer shrink-0"
+                      >
+                        9-Layer Deck →
+                      </button>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          triggerHaptic('light');
+                          setShowPowerPlants(prev => !prev);
+                        }}
+                        className={`w-full flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                          showPowerPlants
+                            ? 'bg-amber-500/12 border-amber-500/40 text-zinc-900 dark:text-zinc-100 shadow-xs'
+                            : 'bg-zinc-50/70 dark:bg-zinc-900/50 border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center shrink-0">
+                            <Zap className="w-4 h-4 text-amber-500" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold">Clean Power &amp; Hydroelectric Dams</div>
+                            <div className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
+                              European Commission AKP renewable stations, solar complexes &amp; major dams
+                            </div>
+                          </div>
+                        </div>
+                        <span className={`text-[11px] font-mono font-bold ml-3 shrink-0 ${
+                          showPowerPlants ? 'text-amber-700 dark:text-amber-400' : 'text-zinc-400'
+                        }`}>
+                          {showPowerPlants ? 'ON' : 'OFF'}
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          triggerHaptic('light');
+                          setShowProtectedAreas(prev => !prev);
+                        }}
+                        className={`w-full flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                          showProtectedAreas
+                            ? 'bg-emerald-500/12 border-emerald-500/40 text-zinc-900 dark:text-zinc-100 shadow-xs'
+                            : 'bg-zinc-50/70 dark:bg-zinc-900/50 border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                            <Trees className="w-4 h-4 text-emerald-500" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold">Protected Biosphere Reserves</div>
+                            <div className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
+                              BIOPAMA ecological sanctuaries, national parks &amp; conservation corridors
+                            </div>
+                          </div>
+                        </div>
+                        <span className={`text-[11px] font-mono font-bold ml-3 shrink-0 ${
+                          showProtectedAreas ? 'text-emerald-700 dark:text-emerald-400' : 'text-zinc-400'
+                        }`}>
+                          {showProtectedAreas ? 'ON' : 'OFF'}
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          triggerHaptic('light');
+                          setShowThematicOverlays(prev => !prev);
+                        }}
+                        className={`w-full flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                          showThematicOverlays
+                            ? 'bg-cyan-500/12 border-cyan-500/40 text-zinc-900 dark:text-zinc-100 shadow-xs'
+                            : 'bg-zinc-50/70 dark:bg-zinc-900/50 border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center shrink-0">
+                            <Activity className="w-4 h-4 text-cyan-500" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold">Animated Continental Flows &amp; Corridors</div>
+                            <div className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
+                              Subsea fiber optics, power pool interconnects &amp; metropolitan pulse nodes
+                            </div>
+                          </div>
+                        </div>
+                        <span className={`text-[11px] font-mono font-bold ml-3 shrink-0 ${
+                          showThematicOverlays ? 'text-cyan-700 dark:text-cyan-400' : 'text-zinc-400'
+                        }`}>
+                          {showThematicOverlays ? 'ON' : 'OFF'}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Column 1: Admin-1 Subdivisions Inspector */}
                 {(unifiedDeckTab === 'both' || unifiedDeckTab === 'inspector') && (
-                  <div className="flex flex-col min-w-0">
+                  <div
+                    role="tabpanel"
+                    id="deck-panel-inspector"
+                    aria-labelledby="deck-tab-inspector"
+                    className="flex flex-col min-w-0"
+                  >
                     <div className="p-2.5 sm:p-3 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/40 dark:bg-zinc-950/40">
                       <div className="relative flex items-center mb-1.5">
                         <Search className="absolute left-2.5 w-3.5 h-3.5 text-zinc-400" />
@@ -2620,7 +3139,12 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
                 {/* Column 2: Thematic Layer Deck */}
                 {(unifiedDeckTab === 'both' || unifiedDeckTab === 'deck') && (
-                  <div className="flex flex-col min-w-0 p-3 sm:p-4 bg-zinc-50/50 dark:bg-zinc-900/30">
+                  <div
+                    role="tabpanel"
+                    id="deck-panel-deck"
+                    aria-labelledby="deck-tab-deck"
+                    className="flex flex-col min-w-0 p-3 sm:p-4 bg-zinc-50/50 dark:bg-zinc-900/30"
+                  >
                     <div className="flex items-center justify-between pb-2.5 mb-2 border-b border-zinc-200 dark:border-zinc-800">
                       <div className="flex items-center gap-2">
                         <Layers className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
@@ -2725,7 +3249,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   </div>
                 )}
               </div>
-            </motion.div>
+            </motion.aside>
           )}
         </AnimatePresence>
 
@@ -3259,13 +3783,6 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             </div>
           </div>
         )}
-
-        {/* Dynamic Cartographic Scale Bar & Precision WGS 84 Geodesic Coordinates HUD */}
-        <CartographicScaleBar
-          zoomLevel={zoomLevel}
-          centerLat={geoCoordinatesHud ? parseFloat(geoCoordinatesHud.lat) * (geoCoordinatesHud.lat.includes('S') ? -1 : 1) : 4.5}
-          centerLon={geoCoordinatesHud ? parseFloat(geoCoordinatesHud.lon) * (geoCoordinatesHud.lon.includes('W') ? -1 : 1) : 21.7}
-        />
       </div>
 
       <Suspense fallback={null}>
