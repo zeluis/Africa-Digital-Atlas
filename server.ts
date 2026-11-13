@@ -15,8 +15,42 @@ const PORT = 3000;
 
 app.use(express.json());
 
-// In-memory speech audio cache keyed by phrase text + language
+// In-memory speech audio cache keyed by phrase text + language (bounded LRU + TTL)
+const MAX_AUDIO_CACHE_ENTRIES = 100;
+const AUDIO_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+const TTS_MAX_CHARS = 800;
 const audioCache = new Map<string, { base64Audio: string; mimeType: string; timestamp: number }>();
+
+function getCachedAudio(key: string) {
+  const entry = audioCache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.timestamp > AUDIO_CACHE_TTL_MS) {
+    audioCache.delete(key);
+    return null;
+  }
+  // Refresh LRU order
+  audioCache.delete(key);
+  audioCache.set(key, entry);
+  return entry;
+}
+
+function setCachedAudio(key: string, entry: { base64Audio: string; mimeType: string; timestamp: number }) {
+  const now = Date.now();
+  for (const [k, v] of audioCache.entries()) {
+    if (now - v.timestamp > AUDIO_CACHE_TTL_MS) {
+      audioCache.delete(k);
+    }
+  }
+  if (audioCache.has(key)) {
+    audioCache.delete(key);
+  }
+  while (audioCache.size >= MAX_AUDIO_CACHE_ENTRIES) {
+    const oldestKey = audioCache.keys().next().value;
+    if (!oldestKey) break;
+    audioCache.delete(oldestKey);
+  }
+  audioCache.set(key, entry);
+}
 
 // Rate-limit backoff tracker to prevent hammering API during quota exhaustion
 let geminiTtsRateLimitedUntil = 0;
@@ -84,17 +118,37 @@ const ALLOWED_TRACKED_DATASETS = new Set([
   "src/data/atlas-observations-seed.ts"
 ]);
 
-app.get("/api/research/dataset-raw", (req, res) => {
+app.get("/api/research/dataset-raw", async (req, res) => {
   const fileScope = String(req.query.file || "");
   if (!ALLOWED_TRACKED_DATASETS.has(fileScope)) {
     return res.status(400).json({ error: "Invalid dataset scope" });
   }
   const fullPath = path.join(process.cwd(), fileScope);
-  if (!fs.existsSync(fullPath)) {
+  try {
+    const stat = await fs.promises.stat(fullPath);
+    if (!stat.isFile()) {
+      return res.status(404).json({ error: "Dataset file not found" });
+    }
+    const etag = `"${stat.size}-${Math.trunc(stat.mtimeMs)}"`;
+    res.setHeader("ETag", etag);
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    if (req.headers["if-none-match"] === etag) {
+      return res.status(304).end();
+    }
+    res.setHeader("Content-Type", "application/octet-stream");
+    res.setHeader("Content-Length", String(stat.size));
+    const stream = fs.createReadStream(fullPath);
+    stream.on("error", () => {
+      if (!res.headersSent) {
+        res.status(500).json({ error: "Failed to stream dataset" });
+      } else {
+        res.end();
+      }
+    });
+    stream.pipe(res);
+  } catch {
     return res.status(404).json({ error: "Dataset file not found" });
   }
-  res.setHeader("Content-Type", "application/octet-stream");
-  res.send(fs.readFileSync(fullPath));
 });
 
 /**
@@ -169,13 +223,18 @@ app.post("/api/tts", async (req, res) => {
   try {
     const { text, langTag = "en-NG", languageName = "African English", voiceGender = "female" } = req.body;
 
-    if (!text || typeof text !== "string") {
+    if (!text || typeof text !== "string" || !text.trim()) {
       return res.status(400).json({ error: "Text parameter is required" });
     }
 
-    const cacheKey = `${langTag}:${text.trim()}`;
-    if (audioCache.has(cacheKey)) {
-      const cached = audioCache.get(cacheKey)!;
+    const normalizedText = text.trim();
+    if (normalizedText.length > TTS_MAX_CHARS) {
+      return res.status(400).json({ error: `Text exceeds maximum allowed length of ${TTS_MAX_CHARS} characters` });
+    }
+
+    const cacheKey = `${langTag}:${normalizedText}`;
+    const cached = getCachedAudio(cacheKey);
+    if (cached) {
       return res.json({
         success: true,
         source: "cache",
@@ -219,12 +278,13 @@ app.post("/api/tts", async (req, res) => {
         const voiceId = process.env.ELEVENLABS_VOICE_ID || defaultVoice;
         const elResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
           method: "POST",
+          signal: AbortSignal.timeout(10000),
           headers: {
             "Content-Type": "application/json",
             "xi-api-key": elevenLabsKey.trim(),
           },
           body: JSON.stringify({
-            text,
+            text: normalizedText,
             model_id: "eleven_multilingual_v2",
             voice_settings: voiceSettings,
           }),
@@ -235,7 +295,7 @@ app.post("/api/tts", async (req, res) => {
           const base64Audio = Buffer.from(arrayBuffer).toString("base64");
           const mimeType = "audio/mpeg";
 
-          audioCache.set(cacheKey, {
+          setCachedAudio(cacheKey, {
             base64Audio,
             mimeType,
             timestamp: Date.now(),
@@ -263,20 +323,28 @@ app.post("/api/tts", async (req, res) => {
 
     if (ai) {
       try {
-        const speechPrompt = `Speak in a warm, welcoming, natural African female voice (mid 30's, friendly, smooth conversational cadence, with a gentle smile and inviting tone): ${text}`;
-        
-        const response = await ai.models.generateContent({
-          model: "gemini-3.1-flash-tts-preview",
-          contents: [{ parts: [{ text: speechPrompt }] }],
-          config: {
-            responseModalities: [Modality.AUDIO],
-            speechConfig: {
-              voiceConfig: {
-                // Kore is a warm, articulate, natural voice with great emotional depth
-                prebuiltVoiceConfig: { voiceName: "Kore" },
+        const speechPrompt = `Speak in a warm, welcoming, natural African female voice (mid 30's, friendly, smooth conversational cadence, with a gentle smile and inviting tone): ${normalizedText}`;
+
+        let timeoutTimer: ReturnType<typeof setTimeout> | undefined;
+        const response = await Promise.race([
+          ai.models.generateContent({
+            model: "gemini-3.1-flash-tts-preview",
+            contents: [{ parts: [{ text: speechPrompt }] }],
+            config: {
+              responseModalities: [Modality.AUDIO],
+              speechConfig: {
+                voiceConfig: {
+                  // Kore is a warm, articulate, natural voice with great emotional depth
+                  prebuiltVoiceConfig: { voiceName: "Kore" },
+                },
               },
             },
-          },
+          }),
+          new Promise<never>((_, reject) => {
+            timeoutTimer = setTimeout(() => reject(new Error("Gemini TTS request timed out")), 10000);
+          }),
+        ]).finally(() => {
+          if (timeoutTimer) clearTimeout(timeoutTimer);
         });
 
         const part = response.candidates?.[0]?.content?.parts?.[0];
@@ -284,7 +352,7 @@ app.post("/api/tts", async (req, res) => {
         const mimeType = part?.inlineData?.mimeType || "audio/wav";
 
         if (audioData) {
-          audioCache.set(cacheKey, {
+          setCachedAudio(cacheKey, {
             base64Audio: audioData,
             mimeType,
             timestamp: Date.now(),

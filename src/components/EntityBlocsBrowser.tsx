@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { ENTITY_BLOCS, EntityBlocId, BlocCategory, getAllBlocs } from '../data/entityBlocs';
 import { WIKIPEDIA_BLOC_DOSSIERS } from '../data/wikipediaBlocAtlas';
 import { COUNTRY_HEADER_DATA } from '../data/countryHeaderData';
@@ -148,7 +148,7 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
   return (
     <section aria-label="Regional Economic Blocs & Free Trade Communities" className="space-y-8 md:space-y-9">
       {/* Top Header Card with MD3 surface elevation */}
-      <motion.div 
+      <m.div 
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
@@ -180,12 +180,12 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
             <span>{showCompareMode ? 'Exit Comparison' : 'Side-by-Side Compare'}</span>
           </button>
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Comparison Mode Deck */}
       <AnimatePresence>
         {showCompareMode && (
-          <motion.div 
+          <m.div 
             initial={{ opacity: 0, height: 0, scale: 0.98 }}
             animate={{ opacity: 1, height: 'auto', scale: 1 }}
             exit={{ opacity: 0, height: 0, scale: 0.98 }}
@@ -277,7 +277,7 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                 </div>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -332,19 +332,19 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                         <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-zinc-200/80 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
                           {blocsInCat.length}
                         </span>
-                        <motion.div
+                        <m.div
                           animate={{ rotate: isOpen ? 180 : 0 }}
                           transition={{ duration: 0.2, ease: 'easeInOut' }}
                         >
                           <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                        </motion.div>
+                        </m.div>
                       </div>
                     </button>
 
                     {/* Accordion Content Panel */}
                     <AnimatePresence initial={false}>
                       {isOpen && (
-                        <motion.div
+                        <m.div
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: 'auto', opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
@@ -355,7 +355,7 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                             {blocsInCat.map(bloc => {
                               const isSelected = selectedBlocId === bloc.id;
                               return (
-                                <motion.button
+                                <m.button
                                   key={bloc.id}
                                   whileHover={{ x: 2 }}
                                   whileTap={{ scale: 0.98 }}
@@ -380,11 +380,11 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                                   }`}>
                                     {bloc.memberCount} states
                                   </span>
-                                </motion.button>
+                                </m.button>
                               );
                             })}
                           </div>
-                        </motion.div>
+                        </m.div>
                       )}
                     </AnimatePresence>
                   </div>
@@ -397,7 +397,7 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
         {/* Right Column: Regional Economic Communities Card with Rich Wikipedia Explorer (8 of 12 cols) */}
         <div className="lg:col-span-8 xl:col-span-8 flex flex-col">
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={selectedBlocId}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -756,14 +756,14 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </div>
       </div>
 
       {/* Bottom Section: Full-Width Member States Panel with Controlled Top Margin */}
       <AnimatePresence mode="wait">
-        <motion.div
+        <m.div
           key={`members-${selectedBlocId}`}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -805,7 +805,7 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
               const capitalCity = headerMeta?.capital || entity.capital;
 
               return (
-                <motion.div
+                <m.div
                   key={entity.id}
                   whileHover={{ y: -3 }}
                   whileTap={{ scale: 0.98 }}
@@ -875,11 +875,11 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                     <span>Inspect Sovereign Profile</span>
                     <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </div>
-                </motion.div>
+                </m.div>
               );
             })}
           </div>
-        </motion.div>
+        </m.div>
       </AnimatePresence>
     </section>
   );

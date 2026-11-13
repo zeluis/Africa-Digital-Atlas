@@ -59,9 +59,10 @@ import {
   CartesianGrid,
   Legend
 } from 'recharts';
-import { motion, useReducedMotion } from 'motion/react';
+import { m, useReducedMotion } from 'motion/react';
 import { SPRING_TACTILE } from '../utils/motion';
 import { AtlasSelect } from '../components/common/AtlasSelect';
+import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
 
 // Lazy-load heavier GIS mapping engines, archival iconography, and scholarly monographs on demand
 const AtlanticFlowMap = lazyWithRetry(
@@ -358,7 +359,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
               prefersReducedMotion ? (
                 <span className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-sm" aria-hidden="true" />
               ) : (
-                <motion.div
+                <m.div
                   layoutId="slaveVoyagesPrimaryTabPill"
                   className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-sm"
                   transition={SPRING_TACTILE}
@@ -734,12 +735,22 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                     contentStyle={{ backgroundColor: '#18181b', borderRadius: '12px', border: '1px solid #27272a', color: '#fff' }}
                   />
                   <Legend />
-                  <Area type="monotone" dataKey="estimates" name="Macro Estimates" stroke="#6366f1" fillOpacity={1} fill="url(#colorEstimates)" />
-                  <Area type="monotone" dataKey="imputed" name="Observed + Imputed" stroke="#10b981" fillOpacity={1} fill="url(#colorImputed)" />
-                  <Area type="monotone" dataKey="observed" name="Observed Logbooks" stroke="#f59e0b" fillOpacity={0.3} fill="#f59e0b" />
+                  <Area type="monotone" dataKey="estimates" name="Macro Estimates" stroke="#6366f1" fillOpacity={1} fill="url(#colorEstimates)" isAnimationActive={!prefersReducedMotion} />
+                  <Area type="monotone" dataKey="imputed" name="Observed + Imputed" stroke="#10b981" fillOpacity={1} fill="url(#colorImputed)" isAnimationActive={!prefersReducedMotion} />
+                  <Area type="monotone" dataKey="observed" name="Observed Logbooks" stroke="#f59e0b" fillOpacity={0.3} fill="#f59e0b" isAnimationActive={!prefersReducedMotion} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
+            <ChartAccessibleTable
+              caption="Century-by-century captives transported from 1501 to 1866"
+              headers={['Century', 'Observed Logbooks', 'Observed + Imputed', 'Macro Estimates']}
+              rows={CENTURY_TIME_SERIES.map(c => [
+                c.century,
+                c.observed.toLocaleString(),
+                c.imputed.toLocaleString(),
+                c.estimates.toLocaleString()
+              ])}
+            />
           </div>
 
           {/* Consolidated Companion Modules & Monograph Band */}
@@ -984,7 +995,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                               prefersReducedMotion ? (
                                 <span className="absolute inset-0 rounded-lg bg-[#C2410C] shadow-xs" aria-hidden="true" />
                               ) : (
-                                <motion.div
+                                <m.div
                                   layoutId="slaveVoyagesDbPill"
                                   className="absolute inset-0 rounded-lg bg-[#C2410C] shadow-xs"
                                   transition={SPRING_TACTILE}
@@ -998,7 +1009,11 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                     </div>
                   </div>
 
-                  <div className="text-xs font-mono tabular-nums text-[#78716C] dark:text-zinc-400">
+                  <div
+                    role="status"
+                    aria-live="polite"
+                    className="text-xs font-mono tabular-nums text-[#78716C] dark:text-zinc-400"
+                  >
                     Matches: <strong className="text-[#C2410C] dark:text-emerald-400">{filterResult.totalMatches.toLocaleString()}</strong> curated voyages
                   </div>
                 </div>
@@ -1621,10 +1636,20 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                           dataKey={filters.epistemicMode === 'observed' ? 'embarkedObserved' : 'embarkedImputed'}
                           fill="#10b981"
                           radius={[0, 8, 8, 0]}
+                          isAnimationActive={!prefersReducedMotion}
                         />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
+                  <ChartAccessibleTable
+                    caption="Captives embarked by national carrier between 1501 and 1866"
+                    headers={['Carrier', 'Captives Embarked', 'Share (%)']}
+                    rows={CARRIER_BREAKDOWN.map(c => [
+                      c.carrier,
+                      c.embarkedImputed.toLocaleString(),
+                      `${c.pct}%`
+                    ])}
+                  />
                 </div>
 
                 <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4">
@@ -1645,10 +1670,20 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                           dataKey={filters.epistemicMode === 'observed' ? 'embarkedObserved' : 'embarkedImputed'}
                           fill="#6366f1"
                           radius={[0, 8, 8, 0]}
+                          isAnimationActive={!prefersReducedMotion}
                         />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
+                  <ChartAccessibleTable
+                    caption="Embarkation distribution by African coastal region"
+                    headers={['Region', 'Captives Embarked', 'Share (%)']}
+                    rows={EMBARKATION_REGION_TOTALS.map(r => [
+                      r.region,
+                      r.embarkedImputed.toLocaleString(),
+                      `${r.pct}%`
+                    ])}
+                  />
                 </div>
               </div>
             </div>

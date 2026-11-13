@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { EpistemicMode } from '../../data/slaveVoyagesTypes';
 import { Info, HelpCircle, CheckCircle2, Sliders, AlertTriangle } from 'lucide-react';
+import { AtlasDialog } from '../common/AtlasDialog';
 
 interface EpistemicStatusBadgeProps {
   currentMode: EpistemicMode;
@@ -112,8 +113,13 @@ export const EpistemicStatusBadge: React.FC<EpistemicStatusBadgeProps> = ({
 
       {/* Epistemic Detail Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in duration-150 text-left">
+        <AtlasDialog
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          label="Epistemic Certainty in SlaveVoyages"
+          overlayClassName="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
+          className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in duration-150 text-left"
+        >
             <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
@@ -127,6 +133,8 @@ export const EpistemicStatusBadge: React.FC<EpistemicStatusBadgeProps> = ({
                 </div>
               </div>
               <button
+                type="button"
+                aria-label="Close epistemic note"
                 onClick={() => setShowModal(false)}
                 className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-700 cursor-pointer"
               >
@@ -174,14 +182,14 @@ export const EpistemicStatusBadge: React.FC<EpistemicStatusBadgeProps> = ({
 
             <div className="pt-2 flex justify-end">
               <button
+                type="button"
                 onClick={() => setShowModal(false)}
                 className="px-4 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs font-bold rounded-xl hover:opacity-90 transition-opacity cursor-pointer"
               >
                 Understood
               </button>
             </div>
-          </div>
-        </div>
+        </AtlasDialog>
       )}
     </div>
   );

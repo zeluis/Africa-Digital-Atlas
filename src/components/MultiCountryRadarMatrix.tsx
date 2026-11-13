@@ -13,6 +13,8 @@ import { atlas } from '../data/atlas-store';
 import { AtlasEntity } from '../data/types';
 import { CountryFlag } from './CountryFlag';
 import { THEMATIC_PILLARS, ThematicPillarId } from '../services/wikipediaService';
+import { usePrefersReducedMotion } from '../utils/motion';
+import { ChartAccessibleTable } from './common/ChartAccessibleTable';
 import { 
   Sparkles, 
   Layers, 
@@ -143,6 +145,7 @@ export const MultiCountryRadarMatrix: React.FC<MultiCountryRadarMatrixProps> = (
   countries,
   onSelectCountry
 }) => {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const [activeView, setActiveView] = useState<'radar' | 'cards' | 'both'>('both');
   const [hoveredPillar, setHoveredPillar] = useState<ThematicPillarId | null>(null);
 
@@ -319,11 +322,20 @@ export const MultiCountryRadarMatrix: React.FC<MultiCountryRadarMatrixProps> = (
                         fill={cd.color.fill}
                         fillOpacity={0.25}
                         strokeWidth={2.5}
+                        isAnimationActive={!prefersReducedMotion}
                       />
                     ))}
                   </RadarChart>
                 </ResponsiveContainer>
               </div>
+              <ChartAccessibleTable
+                caption="8-pillar comparative country benchmark scores (0 to 100 scale)"
+                headers={['Pillar', ...countryDossiers.map(cd => cd.country.name)]}
+                rows={radarChartData.map(row => [
+                  row.fullName,
+                  ...countryDossiers.map(cd => `${row[cd.country.id] ?? 0}/100`)
+                ])}
+              />
             </div>
 
             {/* Country Color Legend Badges */}

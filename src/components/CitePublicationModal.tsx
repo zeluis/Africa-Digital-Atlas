@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ResearchReport } from '../data/reportsData';
 import { AfriataReport } from '../types/afriataReport';
 import { Copy, Check, Download, BookOpen, X, Code2, Share2 } from 'lucide-react';
+import { AtlasDialog } from './common/AtlasDialog';
 
 interface CitePublicationModalProps {
   report: ResearchReport | AfriataReport;
@@ -131,17 +132,13 @@ ER  - `;
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 atlas-modal-backdrop"
-      onClick={onClose}
+    <AtlasDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      label={`Cite publication: ${title}`}
+      overlayClassName="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 atlas-modal-backdrop"
+      className="w-full max-w-2xl max-h-[92dvh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 md:p-8 shadow-2xl space-y-4 sm:space-y-6 atlas-modal-panel safe-pb"
     >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={`Cite publication: ${title}`}
-        onClick={e => e.stopPropagation()}
-        className="w-full max-w-2xl max-h-[92dvh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 md:p-8 shadow-2xl space-y-4 sm:space-y-6 atlas-modal-panel safe-pb"
-      >
         {/* Header */}
         <div className="flex items-start justify-between gap-3 sm:gap-4 shrink-0">
           <div className="space-y-1 min-w-0">
@@ -285,8 +282,7 @@ ER  - `;
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </AtlasDialog>
   );
 };
 export default CitePublicationModal;

@@ -4,6 +4,8 @@ import { fetchLiveWeather, LiveWeatherData, decodeWmoCode } from '../services/we
 import { atlas } from '../data/atlas-store';
 import { getRegionCalmColor, getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
 import { useTranslation } from '../i18n/LanguageContext';
+import { usePrefersReducedMotion } from '../utils/motion';
+import { ChartAccessibleTable } from './common/ChartAccessibleTable';
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -57,6 +59,7 @@ export const ClimateEcologySection: React.FC<ClimateEcologySectionProps> = ({
   className = ''
 }) => {
   const { t, isRTL } = useTranslation();
+  const prefersReducedMotion = usePrefersReducedMotion();
   const [tempUnit, setTempUnit] = useState<'C' | 'F'>('C');
   const [isNarrativeExpanded, setIsNarrativeExpanded] = useState<boolean>(false);
   const [weatherData, setWeatherData] = useState<LiveWeatherData | null>(null);
@@ -348,11 +351,16 @@ export const ClimateEcologySection: React.FC<ClimateEcologySectionProps> = ({
                     name === 'temp' ? 'Mean Temperature' : 'Precipitation'
                   ]}
                 />
-                <Bar yAxisId="precip" dataKey="precip" fill="#06b6d4" opacity={0.65} radius={[4, 4, 0, 0]} maxBarSize={30} />
-                <Area yAxisId="temp" type="monotone" dataKey="temp" stroke="#f59e0b" strokeWidth={2.5} fill="url(#tempGradCycle)" />
+                <Bar yAxisId="precip" dataKey="precip" fill="#06b6d4" opacity={0.65} radius={[4, 4, 0, 0]} maxBarSize={30} isAnimationActive={!prefersReducedMotion} />
+                <Area yAxisId="temp" type="monotone" dataKey="temp" stroke="#f59e0b" strokeWidth={2.5} fill="url(#tempGradCycle)" isAnimationActive={!prefersReducedMotion} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
+          <ChartAccessibleTable
+            caption={`${countryName} 12-month temperature and precipitation cycle`}
+            headers={['Month', `Mean Temp (°${tempUnit})`, 'Precipitation (mm)']}
+            rows={chartCycleData.map(d => [d.month, d.temp, d.precip])}
+          />
 
           {/* Climatology Callout Badges - Elevated Crisp White Tiles */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 border-t border-zinc-200/60 text-xs">
@@ -413,10 +421,15 @@ export const ClimateEcologySection: React.FC<ClimateEcologySectionProps> = ({
                   contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e4e4e7', borderRadius: '0.75rem', color: '#18181b', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
                   formatter={(val: any) => [`${val}°${tempUnit}`, 'Annual Mean Temp']}
                 />
-                <Area type="monotone" dataKey="temp" stroke="#f43f5e" strokeWidth={2.5} fill="url(#warmGrad)" />
+                <Area type="monotone" dataKey="temp" stroke="#f43f5e" strokeWidth={2.5} fill="url(#warmGrad)" isAnimationActive={!prefersReducedMotion} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
+          <ChartAccessibleTable
+            caption={`${countryName} 1970 to 2024 annual mean temperature trend`}
+            headers={['Year', `Mean Temperature (°${tempUnit})`]}
+            rows={chartTrendData.map(d => [d.year, d.temp])}
+          />
 
           {/* Temperature Anomaly Bar Preview - Elevated Crisp White Tiles */}
           <div className="pt-2 border-t border-zinc-200/80">

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, PanInfo } from 'motion/react';
+import React, { useState, useEffect, useRef } from 'react';
+import { m, AnimatePresence } from 'motion/react';
+import { AtlasDialog } from './common/AtlasDialog';
 import { 
   Compass, 
   BookOpen, 
@@ -360,12 +361,23 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
     setShowDualEntryPanels(false);
   };
 
-  const handleDragEnd = (_e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+  const touchStartXRef = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (currentStepIndex < 3 && e.touches.length === 1) {
+      touchStartXRef.current = e.touches[0].clientX;
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || currentStepIndex >= 3) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
+    touchStartXRef.current = null;
     const swipeThreshold = 50;
-    if (info.offset.x < -swipeThreshold && currentStepIndex < ONBOARDING_SCREENS.length - 1) {
+    if (deltaX < -swipeThreshold && currentStepIndex < ONBOARDING_SCREENS.length - 1) {
       setSlideDirection(1);
       setCurrentStepIndex(prev => prev + 1);
-    } else if (info.offset.x > swipeThreshold && currentStepIndex > 0) {
+    } else if (deltaX > swipeThreshold && currentStepIndex > 0) {
       setSlideDirection(-1);
       setCurrentStepIndex(prev => prev - 1);
     }
@@ -421,15 +433,17 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div 
-      className="fixed inset-0 z-50 flex flex-col justify-between overflow-hidden select-none"
+    <AtlasDialog
+      isOpen={isOpen}
+      onClose={onClose}
       id="afriata-onboarding-container"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Afriata Onboarding Experience"
+      label="Afriata Onboarding Experience"
+      closeOnBackdropClick={false}
+      overlayClassName="fixed inset-0 z-50"
+      className="relative w-full h-full flex flex-col justify-between overflow-hidden select-none"
     >
       {/* 1. Fullscreen Calmed Atmospheric Backdrop */}
-      <motion.div
+      <m.div
         key={`backdrop-${activeScreen.id}`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -445,7 +459,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
       {/* 2. Soft, Relaxed Ambient Universal Continental Vector (AfricaUnLogo) Aura */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         <AnimatePresence mode="wait">
-          <motion.div
+          <m.div
             key={`ambient-continent-${activeScreen.id}`}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 0.16, scale: 1 }}
@@ -474,7 +488,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               singleColor={activeScreen.primaryTone}
               className="filter drop-shadow-[0_0_35px_rgba(0,0,0,0.6)] pointer-events-none opacity-80"
             />
-          </motion.div>
+          </m.div>
         </AnimatePresence>
       </div>
 
@@ -565,7 +579,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
         {/* Floating Keyboard Shortcuts Drawer */}
         <AnimatePresence>
           {showKeyboardShortcuts && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
@@ -583,7 +597,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               >
                 Close
               </button>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
 
@@ -591,17 +605,15 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
         <div className="flex-1 overflow-y-auto overscroll-contain sleek-scrollbar px-4 sm:px-6 md:px-8 py-4 sm:py-6 flex items-center justify-center min-h-0 z-10 transition-opacity duration-300">
           <div className="w-full max-w-5xl mx-auto my-auto">
             <AnimatePresence mode="wait" custom={slideDirection}>
-              <motion.div
+              <m.div
                 key={currentStepIndex}
                 custom={slideDirection}
                 initial={{ opacity: 0, x: slideDirection * 40 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: slideDirection * -40 }}
                 transition={{ duration: 0.32, ease: [0.2, 0, 0, 1] }}
-                drag={currentStepIndex < 3 ? "x" : undefined}
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.15}
-                onDragEnd={handleDragEnd}
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
                 className={`rounded-3xl border ${activeScreen.cardBorder} ${activeScreen.cardBg} shadow-[0_12px_40px_rgba(40,25,10,0.06)] p-4 sm:p-6 md:p-8 relative overflow-hidden flex flex-col justify-between gap-4 sm:gap-5 touch-pan-y backdrop-blur-md`}
               >
                 {/* Stage Header, Badge & Narrative */}
@@ -854,7 +866,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                             </button>
 
                             {isMethodologyOpen && (
-                              <motion.div 
+                              <m.div 
                                 initial={{ opacity: 0, y: -6 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className="mt-2.5 p-3.5 rounded-xl bg-white border border-stone-200 text-xs text-stone-700 space-y-2.5 shadow-xs"
@@ -879,7 +891,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                                   <span><strong>Citation Standard:</strong> APA 7th / Chicago 17th / BibTeX formats available in all export modules.</span>
                                   <span><strong>Peer Errata Policy:</strong> Corrections welcomed via open research repository audit.</span>
                                 </div>
-                              </motion.div>
+                              </m.div>
                             )}
                           </div>
                         </div>
@@ -895,7 +907,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                       </div>
                     ) : (
                       /* State 2: Dual Entry Panels */
-                      <motion.div
+                      <m.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ type: 'spring', damping: 24, stiffness: 280 }}
@@ -1057,11 +1069,11 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                             </button>
                           </div>
                         </div>
-                      </motion.div>
+                      </m.div>
                     )}
                   </div>
                 )}
-              </motion.div>
+              </m.div>
             </AnimatePresence>
           </div>
         </div>
@@ -1120,7 +1132,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
           </div>
         </footer>
       </div>
-    </div>
+    </AtlasDialog>
   );
 };
 

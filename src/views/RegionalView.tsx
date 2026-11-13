@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, useReducedMotion } from 'motion/react';
+import { m, useReducedMotion } from 'motion/react';
 import { SPRING_TACTILE } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { getRegionalSummaries, getBlocSummaries } from '../data/atlas-selectors';
@@ -9,6 +9,7 @@ import { AfricaVectorMap } from '../components/AfricaVectorMap';
 import { RegionalSilhouette } from '../components/RegionalSilhouette';
 import { RegionalLivingCanvas } from '../components/regional/RegionalLivingCanvas';
 import { OrganizationLogo } from '../components/OrganizationLogo';
+import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
 import { UN_M49_REGIONS, UN_M49_NUMERIC_CODES } from '../data/svgGeographySystem';
 import { getRegionTonalPalette } from '../data/unGeoschemeColors';
 import { formatPopulation, formatGDP, formatHDI } from '../data/atlas-formatters';
@@ -337,7 +338,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                     prefersReducedMotion ? (
                       <span className={`absolute inset-0 rounded-2xl ${tonal.badge.bg} ${tonal.badge.border} border shadow-xs`} aria-hidden="true" />
                     ) : (
-                      <motion.div
+                      <m.div
                         layoutId="regionalActiveSelector"
                         className={`absolute inset-0 rounded-2xl ${tonal.badge.bg} ${tonal.badge.border} border shadow-xs`}
                         transition={SPRING_TACTILE}
@@ -379,7 +380,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                 prefersReducedMotion ? (
                   <span className="absolute inset-0 rounded-2xl bg-zinc-900 dark:bg-zinc-100 border border-zinc-900 dark:border-zinc-100 shadow-xs" aria-hidden="true" />
                 ) : (
-                  <motion.div
+                  <m.div
                     layoutId="regionalActiveSelector"
                     className="absolute inset-0 rounded-2xl bg-zinc-900 dark:bg-zinc-100 border border-zinc-900 dark:border-zinc-100 shadow-xs"
                     transition={SPRING_TACTILE}
@@ -565,7 +566,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                       prefersReducedMotion ? (
                         <span className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs" aria-hidden="true" />
                       ) : (
-                        <motion.div
+                        <m.div
                           layoutId="regionalPrimaryGroupPill"
                           className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs"
                           transition={SPRING_TACTILE}
@@ -747,10 +748,16 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                         contentStyle={{ backgroundColor: '#18181b', borderColor: '#3f3f46', borderRadius: '0.75rem', color: '#f4f4f5' }}
                         formatter={(val: any) => [`$${val} Billion`, 'GDP']}
                       />
-                      <Bar dataKey="gdp" fill={selectedRegionTonal.warmAccent} radius={[6, 6, 0, 0]} />
+                      <Bar dataKey="gdp" fill={selectedRegionTonal.warmAccent} radius={[6, 6, 0, 0]} isAnimationActive={!prefersReducedMotion} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
+
+                <ChartAccessibleTable
+                  caption={`${selectedRegion} top regional economies by nominal GDP in USD billions`}
+                  headers={['Country', 'Nominal GDP ($B)']}
+                  rows={topEconomiesChartData.map((d: any) => [d.name, d.gdp])}
+                />
               </div>
 
               {/* Economic Highlights & Commodities */}
@@ -868,10 +875,16 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                         contentStyle={{ backgroundColor: '#18181b', borderColor: '#3f3f46', borderRadius: '0.75rem', color: '#f4f4f5' }}
                         formatter={(val: any) => [`${val} Million`, 'Population']}
                       />
-                      <Bar dataKey="pop" fill="#10b981" radius={[6, 6, 0, 0]} />
+                      <Bar dataKey="pop" fill="#10b981" radius={[6, 6, 0, 0]} isAnimationActive={!prefersReducedMotion} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
+
+                <ChartAccessibleTable
+                  caption={`${selectedRegion} population distribution across leading member states`}
+                  headers={['Country', 'Population (Millions)']}
+                  rows={topEconomiesChartData.map((d: any) => [d.name, d.pop])}
+                />
               </div>
 
               {/* Demographic Metrics Cards */}
@@ -1273,6 +1286,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                       outerRadius={80}
                       paddingAngle={4}
                       dataKey="value"
+                      isAnimationActive={!prefersReducedMotion}
                     >
                       {gdpPieData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
@@ -1294,6 +1308,11 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                   </div>
                 ))}
               </div>
+              <ChartAccessibleTable
+                caption="Continental nominal GDP distribution by UN subregion"
+                headers={['Subregion', 'Nominal GDP ($B)']}
+                rows={gdpPieData.map(d => [d.name, d.value.toFixed(1)])}
+              />
             </div>
 
             {/* Population Distribution Pie Chart */}
@@ -1318,6 +1337,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                       outerRadius={80}
                       paddingAngle={4}
                       dataKey="value"
+                      isAnimationActive={!prefersReducedMotion}
                     >
                       {popPieData.map((entry, index) => (
                         <Cell key={`cell-pop-${index}`} fill={entry.color} />
@@ -1339,6 +1359,11 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                   </div>
                 ))}
               </div>
+              <ChartAccessibleTable
+                caption="Continental population share by UN subregion in millions"
+                headers={['Subregion', 'Population (Millions)']}
+                rows={popPieData.map(d => [d.name, d.value.toFixed(1)])}
+              />
             </div>
           </div>
 

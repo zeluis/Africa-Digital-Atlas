@@ -514,6 +514,7 @@ const OceanCurrentParticleCanvasComponent: React.FC<OceanCurrentParticleCanvasPr
   const densityRef = useRef(particleDensity);
   const isPlayingRef = useRef(isPlaying);
   const themeRef = useRef(theme);
+  const wakeLoopRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     if (activeSeasonRef.current !== activeSeasonId) {
@@ -541,6 +542,9 @@ const OceanCurrentParticleCanvasComponent: React.FC<OceanCurrentParticleCanvasPr
 
   useEffect(() => {
     isPlayingRef.current = isPlaying;
+    if (isPlaying) {
+      wakeLoopRef.current?.();
+    }
   }, [isPlaying]);
 
   useEffect(() => {
@@ -674,22 +678,47 @@ const OceanCurrentParticleCanvasComponent: React.FC<OceanCurrentParticleCanvasPr
       resizeObserver.observe(canvas.parentElement);
     }
 
+    let animationFrameId = 0;
+
+    const shouldRun = () => isVisibleRef.current && isPlayingRef.current && !document.hidden;
+
+    const ensureRunning = () => {
+      if (!animationFrameId && shouldRun()) {
+        animationFrameId = requestAnimationFrame(render);
+      }
+    };
+    wakeLoopRef.current = ensureRunning;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         isVisibleRef.current = entry.isIntersecting;
+        if (entry.isIntersecting) {
+          ensureRunning();
+        } else if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = 0;
+        }
       },
       { threshold: 0.05 }
     );
     observer.observe(canvas);
 
-    let animationFrameId: number;
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        ensureRunning();
+      } else if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = 0;
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     const render = () => {
-      animationFrameId = requestAnimationFrame(render);
-
-      if (!isVisibleRef.current || !isPlayingRef.current) {
+      animationFrameId = 0;
+      if (!shouldRun()) {
         return;
       }
+      animationFrameId = requestAnimationFrame(render);
 
       if (transitionTimeRef.current < 1.0) {
         transitionTimeRef.current = Math.min(1.0, transitionTimeRef.current + 0.03);
@@ -881,10 +910,12 @@ const OceanCurrentParticleCanvasComponent: React.FC<OceanCurrentParticleCanvasPr
       }
     };
 
-    render();
+    ensureRunning();
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      wakeLoopRef.current = null;
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       resizeObserver.disconnect();
       observer.disconnect();
     };

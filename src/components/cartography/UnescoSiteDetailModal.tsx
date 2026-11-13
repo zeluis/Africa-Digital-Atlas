@@ -1,6 +1,7 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
 import { UnescoSiteMetadata } from '../../data/slaveTradeIllustrations';
+import { AtlasDialog } from '../common/AtlasDialog';
 import { CountryFlag } from '../CountryFlag';
 import { atlas } from '../../data/atlas-store';
 import {
@@ -55,18 +56,19 @@ export const UnescoSiteDetailModal: React.FC<UnescoSiteDetailModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-950/60 dark:bg-black/75 backdrop-blur-md">
-        {/* Backdrop dismiss */}
-        <div className="absolute inset-0" onClick={onClose} />
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 16 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 16 }}
-          transition={{ type: 'spring', damping: 28, stiffness: 380 }}
-          className="relative w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-3xl bg-[#FAF8F5] dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800/90 shadow-2xl flex flex-col text-left z-10"
-          onClick={e => e.stopPropagation()}
-        >
+      <AtlasDialog
+        isOpen={Boolean(site)}
+        onClose={onClose}
+        label={site.site}
+        overlayClassName="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-950/60 dark:bg-black/75 backdrop-blur-md"
+        className="relative w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-3xl bg-[#FAF8F5] dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800/90 shadow-2xl flex flex-col text-left z-10"
+        motionProps={{
+          initial: { opacity: 0, scale: 0.95, y: 16 },
+          animate: { opacity: 1, scale: 1, y: 0 },
+          exit: { opacity: 0, scale: 0.95, y: 16 },
+          transition: { type: 'spring', damping: 28, stiffness: 380 }
+        }}
+      >
           {/* Header Bar */}
           <div className="px-5 py-3.5 border-b border-stone-200/80 dark:border-stone-800/80 flex items-center justify-between gap-3 bg-[#FAF8F5]/95 dark:bg-stone-900/95 backdrop-blur-xs shrink-0">
             <div className="flex items-center gap-2.5 min-w-0">
@@ -97,7 +99,9 @@ export const UnescoSiteDetailModal: React.FC<UnescoSiteDetailModalProps> = ({
             </div>
 
             <button
+              type="button"
               onClick={onClose}
+              aria-label="Close site details"
               className="p-1.5 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-200/60 dark:hover:bg-stone-800 transition-colors cursor-pointer"
               title="Close modal"
             >
@@ -471,8 +475,7 @@ export const UnescoSiteDetailModal: React.FC<UnescoSiteDetailModalProps> = ({
               </button>
             </div>
           </div>
-        </motion.div>
-      </div>
+      </AtlasDialog>
     </AnimatePresence>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { motion, useReducedMotion } from 'motion/react';
+import { m, useReducedMotion } from 'motion/react';
 import { SPRING_TACTILE, AnimatedTabPanel } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { 
@@ -9,6 +9,7 @@ import {
 import { IndicatorDefinition, AtlasEntity, Observation } from '../data/types';
 import { CountryFlag } from '../components/CountryFlag';
 import { DataSourceBadge } from '../components/DataSourceBadge';
+import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
 import { IndicatorQuickSearch } from '../components/IndicatorQuickSearch';
 import { exportBivariateCorrelationToCsv } from '../utils/exportUtils';
 import { formatValueByUnit } from '../data/atlas-formatters';
@@ -399,7 +400,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                   }`}
                 >
                   {isActive && (
-                    <motion.div
+                    <m.div
                       layoutId="analyticsModeSwitch"
                       className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-white shadow-xs"
                       transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
@@ -454,7 +455,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                   }`}
                 >
                   {isSelected && (
-                    <motion.div
+                    <m.div
                       layoutId="analyticsDomainPill"
                       className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs"
                       transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
@@ -507,6 +508,15 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             </button>
           </div>
         </div>
+      </div>
+
+      <div role="status" aria-live="polite" className="sr-only">
+        {activeTab === 'rankings' &&
+          `Rankings mode: ${currentIndicator.name} for ${timelineYear}, ${rankings.length} nations shown.`}
+        {activeTab === 'timeseries' &&
+          `Time series mode: ${currentIndicator.name} across ${selectedCountries.length} selected countries.`}
+        {activeTab === 'correlation' &&
+          `Correlation mode: ${correlationData.length} nations plotted, Pearson r equals ${correlationStats.r.toFixed(3)}.`}
       </div>
 
       {/* Mode Content Tabpanel */}
@@ -798,11 +808,22 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                       strokeWidth={3}
                       dot={{ r: 4 }}
                       activeDot={{ r: 7 }}
+                      isAnimationActive={!prefersReducedMotion}
                     />
                   ))}
                 </LineChart>
               </ResponsiveContainer>
             </div>
+            <ChartAccessibleTable
+              caption={`${currentIndicator.name} multi-country trajectory from 2015 to 2024`}
+              headers={['Year', ...selectedCountries.map(id => atlas.getEntity(id)?.name || id)]}
+              rows={timeSeriesData.map((pt: any) => [
+                pt.year,
+                ...selectedCountries.map(id =>
+                  pt[id] !== undefined && pt[id] !== null ? formatValueByUnit(Number(pt[id]), currentIndicator.unit) : '—'
+                )
+              ])}
+            />
           </div>
         </div>
       )}
@@ -1036,6 +1057,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                     fill="#10b981" 
                     onClick={(node: any) => node?.entityId && onSelectCountry(node.entityId)}
                     cursor="pointer"
+                    isAnimationActive={!prefersReducedMotion}
                   />
                   {showRegressionLine && trendlineData.length > 0 && (
                     <Scatter
@@ -1044,11 +1066,22 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                       line={{ stroke: '#f59e0b', strokeWidth: 2.5, strokeDasharray: '6 4' }}
                       shape={() => null}
                       legendType="line"
+                      isAnimationActive={!prefersReducedMotion}
                     />
                   )}
                 </ScatterChart>
               </ResponsiveContainer>
             </div>
+            <ChartAccessibleTable
+              caption="Cross-sectional bivariate correlation dataset across African nations"
+              headers={[
+                'Country',
+                'Region',
+                atlas.getIndicator(corrIndicatorX)?.name || corrIndicatorX,
+                atlas.getIndicator(corrIndicatorY)?.name || corrIndicatorY,
+              ]}
+              rows={correlationData.map(d => [d.name, d.region, d.x, d.y])}
+            />
           </div>
         </div>
       )}

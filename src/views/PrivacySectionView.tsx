@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { 
   ShieldCheck, 
   Globe2, 
@@ -282,7 +282,7 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
 
                   {/* Active Indicator Underline with smooth layout transition */}
                   {isActive && (
-                    <motion.div 
+                    <m.div 
                       layoutId="activePillarTabIndicator"
                       className="absolute bottom-0 left-3 right-3 h-0.5 bg-amber-600 dark:bg-amber-400 rounded-full"
                       transition={{ type: 'spring', stiffness: 450, damping: 35 }}
@@ -297,7 +297,7 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
 
       {/* Tab Panels Content */}
       <AnimatePresence mode="wait">
-        <motion.div
+        <m.div
           key={activeTab}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -765,7 +765,7 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
             </div>
           )}
 
-        </motion.div>
+        </m.div>
       </AnimatePresence>
 
       {/* Footer Navigation Bar */}

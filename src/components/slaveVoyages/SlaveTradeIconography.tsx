@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { 
   SPRING_TACTILE, 
   SPRING_SNAPPY, 
@@ -36,7 +36,12 @@ import {
   SlidersHorizontal,
   Layers
 } from 'lucide-react';
-import { SLAVE_TRADE_ILLUSTRATIONS, SlaveTradeIllustration } from '../../data/slaveTradeIllustrations';
+import {
+  SLAVE_TRADE_ILLUSTRATIONS,
+  SlaveTradeIllustration,
+  ensureSlaveTradeIllustrationsHydrated,
+  subscribeSlaveTradeIllustrations
+} from '../../data/slaveTradeIllustrations';
 import { ArchivalLoupeModal } from './ArchivalLoupeModal';
 import { DynamicIcon } from '../DynamicIcon';
 import { ProgressiveImage } from '../common/ProgressiveImage';
@@ -56,7 +61,16 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
   initialSearchTerm = ''
 }) => {
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+  const [illustrationsVersion, setIllustrationsVersion] = useState(0);
   const reducedMotion = usePrefersReducedMotion();
+
+  useEffect(() => {
+    const unsub = subscribeSlaveTradeIllustrations(() => {
+      setIllustrationsVersion(v => v + 1);
+    });
+    ensureSlaveTradeIllustrationsHydrated();
+    return unsub;
+  }, []);
 
   useEffect(() => {
     if (initialSearchTerm !== undefined) {
@@ -115,7 +129,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
       item.collectionNames.forEach(name => list.add(name));
     });
     return Array.from(list);
-  }, []);
+  }, [illustrationsVersion]);
 
   const languages = useMemo(() => {
     const list = new Set<string>();
@@ -123,7 +137,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
       if (item.language) list.add(item.language);
     });
     return Array.from(list);
-  }, []);
+  }, [illustrationsVersion]);
 
   // Calculate illustration counts per historical category/collection dynamically
   const categoryCounts = useMemo(() => {
@@ -134,7 +148,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
       });
     });
     return counts;
-  }, []);
+  }, [illustrationsVersion]);
 
   // Filtered collections for theme search within the selector panel
   const filteredCollections = useMemo(() => {
@@ -163,7 +177,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
 
       return matchesSearch && matchesCollection && matchesLanguage;
     });
-  }, [searchTerm, selectedCollection, selectedLanguage]);
+  }, [searchTerm, selectedCollection, selectedLanguage, illustrationsVersion]);
 
   // Calculate total pages for windowed pagination
   const totalPages = Math.max(1, Math.ceil(filteredIllustrations.length / pageSize));
@@ -222,7 +236,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
               <h3 className="font-serif font-bold text-stone-900 dark:text-stone-100 text-sm tracking-tight leading-none">
                 Visual Registry Catalog
               </h3>
-              <p className="text-[10px] font-mono text-stone-500 dark:text-stone-400 mt-1">
+              <p role="status" aria-live="polite" className="text-[10px] font-mono text-stone-500 dark:text-stone-400 mt-1">
                 Showing {filteredIllustrations.length} of {SLAVE_TRADE_ILLUSTRATIONS.length} cataloged plates
               </p>
             </div>
@@ -490,7 +504,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
           {/* Smooth & Snappy Expanding Sophisticated Selector Panel */}
           <AnimatePresence>
             {isThemePanelOpen && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: -8, scale: 0.985 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.985 }}
@@ -582,7 +596,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                     Reset to All Categories
                   </button>
                 </div>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
         </div>
@@ -625,7 +639,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
             className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
           >
             {visibleIllustrations.map((item, idx) => (
-              <motion.div
+              <m.div
                 key={item.objectId}
                 layout="position"
                 tabIndex={0}
@@ -723,7 +737,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                     </span>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </StaggerGrid>
         ) : (

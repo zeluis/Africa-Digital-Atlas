@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { 
   BookOpen, 
   ExternalLink, 
@@ -111,7 +111,7 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
   // If collapsed, render sleek floating status capsule
   if (isCollapsed) {
     return (
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: -16, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -16, scale: 0.95 }}
@@ -178,12 +178,12 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
-      </motion.div>
+      </m.div>
     );
   }
 
   return (
-    <motion.aside 
+    <m.aside 
       initial={{ opacity: 0, x: 28, scale: 0.98 }}
       animate={{ opacity: 1, x: 0, scale: 1 }}
       exit={{ opacity: 0, x: 20, scale: 0.98 }}
@@ -605,6 +605,6 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
           </a>
         )}
       </div>
-    </motion.aside>
+    </m.aside>
   );
 };

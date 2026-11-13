@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { 
   SPRING_TACTILE, 
   SPRING_SNAPPY,
@@ -314,7 +314,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           </div>
 
           <div className="flex items-center gap-3">
-            <motion.button
+            <m.button
               type="button"
               onClick={() => setIsScreenerOpen(prev => !prev)}
               whileHover={reducedMotion ? undefined : { scale: 1.02 }}
@@ -333,7 +333,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                   {activeScreenerCount}
                 </span>
               )}
-            </motion.button>
+            </m.button>
 
             <span className="text-xs font-mono text-zinc-400 tabular-nums">
               Showing {filteredAndSortedEntities.length} of 54 sovereign nations
@@ -345,7 +345,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
       {/* Multivariate Econometric Screener Panel */}
       <AnimatePresence>
         {isScreenerOpen && (
-          <motion.div
+          <m.div
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, height: 0, scale: 0.98 }}
             animate={reducedMotion ? { opacity: 1 } : { opacity: 1, height: 'auto', scale: 1 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, height: 0, scale: 0.98 }}
@@ -485,7 +485,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                 </div>
               )}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -524,13 +524,13 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                   )}
                   <span className="relative z-10 capitalize">{field}</span>
                   {isSelected && (
-                    <motion.span
+                    <m.span
                       animate={{ rotate: sortOrder === 'asc' ? 180 : 0 }}
                       transition={SPRING_TACTILE}
                       className="relative z-10 inline-block text-[11px] font-mono leading-none"
                     >
                       ↓
-                    </motion.span>
+                    </m.span>
                   )}
                 </button>
               );
@@ -583,7 +583,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             const regionTonal = getRegionCardTonalStyle(entity.region);
 
             return (
-              <motion.div
+              <m.div
                 key={entity.id}
                 layout="position"
                 onClick={() => onSelectCountry(entity.id)}
@@ -700,7 +700,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                   <span>View Full Dossier</span>
                   <ChevronRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-200" />
                 </div>
-              </motion.div>
+              </m.div>
             );
           })}
         </StaggerGrid>
@@ -789,7 +789,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             const gdpPerCap = (pop && gdp && pop > 0) ? Math.round((gdp * 1e9) / (pop * 1e6)) : null;
 
             return (
-              <motion.div
+              <m.div
                 key={entity.id}
                 layout="position"
                 onClick={() => onSelectCountry(entity.id)}
@@ -861,7 +861,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                     <span className="font-bold text-emerald-600 dark:text-emerald-400">{formatHDI(hdi)} · {elec ? `${Math.round(elec)}%` : '—'}</span>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             );
           })}
         </div>

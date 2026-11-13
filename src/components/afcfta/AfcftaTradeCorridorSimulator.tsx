@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { 
   SPRING_TACTILE, 
   SPRING_SNAPPY, 
@@ -298,7 +298,7 @@ Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
                 {AFCFTA_CORRIDOR_PRESETS.map((corridor) => {
                   const isSelected = corridor.id === selectedCorridor.id;
                   return (
-                    <motion.button
+                    <m.button
                       key={corridor.id}
                       type="button"
                       onClick={() => setSelectedCorridor(corridor)}
@@ -329,7 +329,7 @@ Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
                         <span>Trade: {corridor.annualTradeVolumeUSD}</span>
                         <span className="text-emerald-700 dark:text-emerald-400 font-bold">{corridor.borderPosts.length} OSBPs</span>
                       </div>
-                    </motion.button>
+                    </m.button>
                   );
                 })}
               </div>

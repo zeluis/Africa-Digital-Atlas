@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import { TradeCorridorPath } from '../../data/preColonialKingdomsDetailed';
 import { speakAcademicNarration, stopAfriataSpeech } from '../../utils/afriataVoiceEngine';
 import { 
@@ -121,7 +121,7 @@ export const TradeCorridorDetailPanel: React.FC<TradeCorridorDetailPanelProps> =
     : 'left-4 sm:left-6';
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 35, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 35, scale: 0.96 }}
@@ -439,6 +439,6 @@ export const TradeCorridorDetailPanel: React.FC<TradeCorridorDetailPanelProps> =
         <span>Cartographic Space: Native 5796×5867</span>
         <span className="text-amber-600 dark:text-amber-400 font-bold">{corridor.flowDirection.toUpperCase()} FLOW</span>
       </div>
-    </motion.div>
+    </m.div>
   );
 };

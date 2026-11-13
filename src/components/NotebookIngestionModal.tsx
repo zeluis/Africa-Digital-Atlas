@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ingestNotebookMarkdown, IngestionResult } from '../data/notebookIngestionPipeline';
 import { ResearchReport } from '../data/reportsData';
 import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
+import { AtlasDialog } from './common/AtlasDialog';
 import { 
   X, 
   Upload, 
@@ -302,17 +303,13 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
   };
 
   return (
-    <div
-      onClick={onClose}
-      className="atlas-modal-backdrop fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md overflow-hidden"
+    <AtlasDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      labelledBy="notebook-ingestion-modal-title"
+      overlayClassName="atlas-modal-backdrop fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md overflow-hidden"
+      className="atlas-modal-panel relative w-full max-w-4xl max-h-[92dvh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden"
     >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="notebook-ingestion-modal-title"
-        onClick={(e) => e.stopPropagation()}
-        className="atlas-modal-panel relative w-full max-w-4xl max-h-[92dvh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden"
-      >
         
         {/* Modal Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-6 py-3.5 sm:py-4 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-950/50 shrink-0">
@@ -762,8 +759,7 @@ publication:
           </div>
         </div>
 
-      </div>
-    </div>
+    </AtlasDialog>
   );
 };
 

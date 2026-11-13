@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { usePrefersReducedMotion } from '../utils/motion';
+import { AtlasDialog } from './common/AtlasDialog';
 import { 
   Compass, 
   Map as MapIcon, 
@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { AfricaUnLogo } from './AfricaUnLogo';
 import { CartographicCartouche } from './CartographicCartouche';
-import { prewarmArchivalImageCache, checkArchivalCacheReadiness, type CacheReadinessReport } from '../utils/imagePrecache';
+import { prewarmAllArchivalCaches, checkArchivalCacheReadiness, type CacheReadinessReport } from '../utils/imagePrecache';
 
 interface CartographicColophonModalProps {
   isOpen: boolean;
@@ -77,7 +77,7 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
   const handleTriggerPrewarm = async () => {
     setIsPrewarming(true);
     try {
-      const res = await prewarmArchivalImageCache();
+      const res = await prewarmAllArchivalCaches();
       setPrewarmResult(res);
       const updated = await checkArchivalCacheReadiness();
       setCacheStats(updated);
@@ -92,28 +92,25 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 overflow-hidden">
-        {/* Backdrop */}
-        <motion.div
-          initial={reducedMotion ? { opacity: 1 } : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={reducedMotion ? { opacity: 0 } : { opacity: 0 }}
-          onClick={onClose}
-          className="fixed inset-0 bg-stone-950/85 backdrop-blur-md"
-        />
-
-        {/* Modal Window */}
-        <motion.div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="colophon-modal-title"
-          initial={reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.96, y: 20 }}
-          animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
-          exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 20 }}
-          transition={reducedMotion ? { duration: 0.01 } : { duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full max-w-5xl max-h-[94dvh] bg-[#FAF8F5] dark:bg-stone-950 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden flex flex-col z-10"
-        >
+    <AtlasDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      labelledBy="colophon-modal-title"
+      overlayClassName="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-stone-950/85 backdrop-blur-md overflow-hidden"
+      motionProps={{
+        initial: reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.96, y: 20 },
+        animate: reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 },
+        transition: reducedMotion ? { duration: 0.01 } : { duration: 0.25, ease: [0.16, 1, 0.3, 1] }
+      }}
+      className="relative w-full max-w-5xl max-h-[94dvh] bg-[#FAF8F5] dark:bg-stone-950 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden flex flex-col z-10"
+    >
+          <div className="sr-only" aria-live="polite" aria-atomic="true">
+            {isPrewarming
+              ? 'Pre-warming offline archival image and UNESCO cache.'
+              : prewarmResult
+                ? `Cache warm complete: ${prewarmResult.cached} of ${prewarmResult.total} assets primed.`
+                : ''}
+          </div>
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-7 py-3.5 sm:py-4 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 shrink-0">
             <div className="flex items-center justify-between gap-3">
@@ -664,9 +661,7 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
               </button>
             </div>
           </div>
-        </motion.div>
-      </div>
-    </AnimatePresence>
+    </AtlasDialog>
   );
 };
 

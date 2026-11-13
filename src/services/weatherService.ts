@@ -70,7 +70,31 @@ export function degreesToCardinal(deg: number): string {
 }
 
 const CACHE_PREFIX = 'atlas_weather_cache_';
+const CACHE_INDEX_KEY = 'atlas_weather_cache_index_v1';
 const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes fresh cache
+const MAX_WEATHER_CACHE_ENTRIES = 54;
+
+function saveWeatherToCache(cacheKey: string, timestamp: number, data: LiveWeatherData) {
+  try {
+    localStorage.setItem(cacheKey, JSON.stringify({ timestamp, data }));
+    const rawIndex = localStorage.getItem(CACHE_INDEX_KEY);
+    const indexList: string[] = rawIndex ? JSON.parse(rawIndex) : [];
+    const existingIdx = indexList.indexOf(cacheKey);
+    if (existingIdx !== -1) {
+      indexList.splice(existingIdx, 1);
+    }
+    indexList.push(cacheKey);
+    while (indexList.length > MAX_WEATHER_CACHE_ENTRIES) {
+      const oldestKey = indexList.shift();
+      if (oldestKey) {
+        localStorage.removeItem(oldestKey);
+      }
+    }
+    localStorage.setItem(CACHE_INDEX_KEY, JSON.stringify(indexList));
+  } catch {
+    // Ignore storage overflow
+  }
+}
 
 export async function fetchLiveWeather(
   entityId: string,
@@ -150,12 +174,8 @@ export async function fetchLiveWeather(
           source: 'Open-Meteo API',
         };
 
-        // Cache successful response
-        try {
-          localStorage.setItem(cacheKey, JSON.stringify({ timestamp: now, data: liveData }));
-        } catch {
-          // Ignore storage overflow
-        }
+        // Cache successful response with bounded LRU eviction
+        saveWeatherToCache(cacheKey, now, liveData);
 
         return liveData;
       }

@@ -17,6 +17,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { AKP_REGISTRY_241_DATASETS, AKP_PILLARS_META, AkpDatasetRecord } from '../data/akpRegistry241';
+import { AtlasDialog } from './common/AtlasDialog';
 
 export interface AkpCatalogueModalProps {
   isOpen: boolean;
@@ -82,11 +83,13 @@ export const AkpCatalogueModal: React.FC<AkpCatalogueModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-zinc-950/60 backdrop-blur-md animate-in fade-in duration-200">
-      <div
-        className="relative flex flex-col w-full max-w-5xl h-[92vh] max-h-[880px] rounded-3xl bg-[#faf9f6] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 border border-zinc-300/80 dark:border-zinc-800 shadow-2xl overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <AtlasDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      label="European Commission AKP Data Registry"
+      overlayClassName="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-zinc-950/60 backdrop-blur-md animate-in fade-in duration-200"
+      className="relative flex flex-col w-full max-w-5xl h-[92vh] max-h-[880px] rounded-3xl bg-[#faf9f6] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 border border-zinc-300/80 dark:border-zinc-800 shadow-2xl overflow-hidden"
+    >
         {/* Modal Header (Editorial Paper Theme) */}
         <div className="flex items-center justify-between p-4 sm:p-6 sm:px-8 border-b border-zinc-200 dark:border-zinc-800 bg-[#f4efe6] dark:bg-zinc-900/90 flex-shrink-0">
           <div className="flex items-center gap-3.5">
@@ -122,6 +125,7 @@ export const AkpCatalogueModal: React.FC<AkpCatalogueModalProps> = ({
 
             <button
               type="button"
+              aria-label="Close AKP data registry"
               onClick={onClose}
               className="p-2 rounded-xl bg-white/80 dark:bg-zinc-800/80 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-700 flex-shrink-0"
               title="Close Catalogue"
@@ -404,13 +408,15 @@ export const AkpCatalogueModal: React.FC<AkpCatalogueModalProps> = ({
         </div>
 
         {/* Download Success Toast Notification */}
+        <div role="status" aria-live="polite" className="sr-only">
+          {downloadSuccessToast || `${filteredDatasets.length} datasets displayed`}
+        </div>
         {downloadSuccessToast && (
           <div className="absolute bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-2xl animate-in slide-in-from-bottom-3 duration-200 font-semibold text-xs border border-zinc-700">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             <span>{downloadSuccessToast}</span>
           </div>
         )}
-      </div>
-    </div>
+    </AtlasDialog>
   );
 };

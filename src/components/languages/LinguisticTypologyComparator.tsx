@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import { 
   Languages, 
   ArrowRightLeft, 

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback, Suspense } from 'react';
 import { lazyWithRetry } from '../utils/lazyWithRetry';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { atlas } from '../data/atlas-store';
 import { AfricanRegion, AtlasEntity } from '../data/types';
 import { 
@@ -97,10 +97,9 @@ import { ConflictBeacon, CONFLICT_CATEGORY_CONFIG } from '../data/akpConflictSec
 import { SocialInfrastructureFacility } from '../data/akpSocialInfrastructure';
 import { HeritageSanctuarySite } from '../data/akpCulturalReserves';
 import { UnescoSiteMetadata } from '../data/slaveTradeIllustrations';
-import { INITIAL_UNESCO_HERITAGE_SITES } from '../data/unescoHeritageRegistry';
+import { INITIAL_UNESCO_HERITAGE_SITES, ensureUnescoHeritageSitesLoaded } from '../data/unescoHeritageRegistry';
 import { UnescoSiteDetailModal } from './cartography/UnescoSiteDetailModal';
 import { CartographicScaleBar } from './cartography/CartographicScaleBar';
-import { prewarmUnescoHeritageCache } from '../utils/imagePrecache';
 import { triggerHaptic } from '../utils/mobileHaptics';
 import { 
   CriticalMineralsMapLayer, 
@@ -353,7 +352,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   const showUnescoSites = externalShowUnescoSites !== undefined ? externalShowUnescoSites : internalShowUnescoSites;
   const handleToggleUnescoSites = onToggleUnescoSites || (() => setInternalShowUnescoSites(prev => !prev));
 
-  const [unescoSites] = useState<UnescoSiteMetadata[]>(() => {
+  const [unescoSites, setUnescoSites] = useState<UnescoSiteMetadata[]>(() => {
     try {
       const saved = localStorage.getItem('afriata_unesco_xml_sites_v1') || localStorage.getItem('africalia_unesco_xml_sites_v1');
       if (saved) {
@@ -365,15 +364,21 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     }
     return INITIAL_UNESCO_HERITAGE_SITES;
   });
+
+  useEffect(() => {
+    if (!showUnescoSites || unescoSites.length > 0) return;
+    let cancelled = false;
+    ensureUnescoHeritageSitesLoaded().then(loaded => {
+      if (!cancelled && loaded.length > 0) {
+        setUnescoSites(prev => (prev.length === 0 ? [...loaded] : prev));
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [showUnescoSites, unescoSites.length]);
   const [selectedUnescoSite, setSelectedUnescoSite] = useState<UnescoSiteMetadata | null>(null);
   const [hoveredUnescoSite, setHoveredUnescoSite] = useState<UnescoSiteMetadata | null>(null);
-
-  // Pre-warm UNESCO image cache in background when layer is active
-  useEffect(() => {
-    if (showUnescoSites) {
-      prewarmUnescoHeritageCache().catch(() => {});
-    }
-  }, [showUnescoSites]);
 
   // Critical Energy Transition Minerals Layer State
   const [internalShowCriticalMinerals, setInternalShowCriticalMinerals] = useState<boolean>(false);
@@ -1693,13 +1698,13 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       className={
         isFullBleed
           ? "relative w-full flex-1 flex flex-col select-none bg-zinc-50 dark:bg-zinc-950 p-2 sm:p-4 space-y-3"
-          : "relative w-full rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-3 sm:p-4 shadow-2xl backdrop-blur-md space-y-3"
+          : "relative w-full rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-3 sm:p-4 shadow-2xl space-y-3"
       }
     >
       {/* Unified Map Header & Controls Bar — Sticky & Fully Responsive */}
       <div
         id="unified-africa-map-control-card"
-        className="relative md:sticky md:top-16 z-30 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-2 sm:p-2.5 shadow-sm backdrop-blur-md space-y-2 transition-all"
+        className="relative md:sticky md:top-16 z-30 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-2 sm:p-2.5 shadow-sm backdrop-blur-sm space-y-2 transition-all"
       >
         {/* Row 1: Brand + Mode Switcher (Left) & Unified Scale HUD + Zoom + Export (Right) */}
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -1741,7 +1746,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 title="Curated original colors extracted from vector atlas"
               >
                 {mapMode === 'authentic_palette' && (
-                  <motion.div
+                  <m.div
                     layoutId="activeMapModeHighlight"
                     className="absolute inset-0 bg-emerald-600 rounded-lg shadow-xs -z-10"
                     transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
@@ -1762,7 +1767,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 title="Antique Parchment Cartography Map"
               >
                 {mapMode === 'antique_parchment' && (
-                  <motion.div
+                  <m.div
                     layoutId="activeMapModeHighlight"
                     className="absolute inset-0 bg-amber-800 rounded-lg shadow-xs -z-10"
                     transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
@@ -1783,7 +1788,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 title="Socio-economic indicator choropleth"
               >
                 {mapMode === 'choropleth' && (
-                  <motion.div
+                  <m.div
                     layoutId="activeMapModeHighlight"
                     className="absolute inset-0 bg-cyan-600 rounded-lg shadow-xs -z-10"
                     transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
@@ -1804,7 +1809,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 title="Bivariate 2D choropleth"
               >
                 {mapMode === 'bivariate' && (
-                  <motion.div
+                  <m.div
                     layoutId="activeMapModeHighlight"
                     className="absolute inset-0 bg-purple-600 rounded-lg shadow-xs -z-10"
                     transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
@@ -1825,7 +1830,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 title="UN Geoscheme regional macro grouping"
               >
                 {mapMode === 'un_geoscheme' && (
-                  <motion.div
+                  <m.div
                     layoutId="activeMapModeHighlight"
                     className="absolute inset-0 bg-amber-600 rounded-lg shadow-xs -z-10"
                     transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
@@ -1965,7 +1970,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               title="Filter by UN M49 Sub-regions & Regional Economic Blocs (ECOWAS, SADC, EAC, AMU, ECCAS, COMESA)"
             >
               {isUnifiedDeckOpen && unifiedDeckTab === 'regions' && (
-                <motion.div
+                <m.div
                   layoutId="activeHeaderDeckTrigger"
                   className="absolute inset-0 bg-zinc-900 dark:bg-emerald-600 rounded-lg shadow-xs -z-10"
                   transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
@@ -2002,7 +2007,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               title="UNESCO Sites, Admin-1, Minerals, Graticule/Cartouche, AKP Registry & Cite (DOI)"
             >
               {isUnifiedDeckOpen && unifiedDeckTab === 'atlas' && (
-                <motion.div
+                <m.div
                   layoutId="activeHeaderDeckTrigger"
                   className="absolute inset-0 bg-amber-700 dark:bg-amber-600 rounded-lg shadow-xs -z-10"
                   transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
@@ -2034,7 +2039,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 title="Clean Power & Dams, Biosphere Reserves, and Continental Flows"
               >
                 {isUnifiedDeckOpen && unifiedDeckTab === 'flows' && (
-                  <motion.div
+                  <m.div
                     layoutId="activeHeaderDeckTrigger"
                     className="absolute inset-0 bg-teal-700 dark:bg-teal-600 rounded-lg shadow-xs -z-10"
                     transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
@@ -2067,7 +2072,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 title="Toggle Admin-1 Subdivisions Inspector"
               >
                 {isUnifiedDeckOpen && (unifiedDeckTab === 'inspector' || unifiedDeckTab === 'both') && (
-                  <motion.div
+                  <m.div
                     layoutId="activeHeaderDeckTrigger"
                     className="absolute inset-0 bg-emerald-600 rounded-lg shadow-xs -z-10"
                     transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
@@ -2100,7 +2105,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 title="Toggle 9-Layer Thematic Overlays Deck"
               >
                 {isUnifiedDeckOpen && (unifiedDeckTab === 'deck' || unifiedDeckTab === 'both') && (
-                  <motion.div
+                  <m.div
                     layoutId="activeHeaderDeckTrigger"
                     className="absolute inset-0 bg-cyan-600 rounded-lg shadow-xs -z-10"
                     transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
@@ -2152,7 +2157,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         {/* Dedicated Sliding Context Tray: Choropleth Indicator Selector & Dynamic Scale */}
         <AnimatePresence initial={false}>
           {mapMode === 'choropleth' && (
-            <motion.div
+            <m.div
               key="choropleth-sliding-tray"
               initial={{ height: 0, opacity: 0, y: -8 }}
               animate={{ height: 'auto', opacity: 1, y: 0 }}
@@ -2242,7 +2247,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           )}
 
           {mapMode === 'choropleth' && (
@@ -2297,7 +2302,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         {/* Unified Sliding Cartographic Intelligence Deck (Regions & Blocs · Atlas & Citations · Power & Flows · Admin-1 Inspector · Thematic Layers) */}
         <AnimatePresence>
           {(isUnifiedDeckOpen || isAdmin1InspectorOpen) && (
-            <motion.aside
+            <m.aside
               id="unified-cartographic-deck-panel"
               aria-label="Cartographic Intelligence Deck"
               initial={{ opacity: 0, y: -12, scale: 0.985 }}
@@ -2308,7 +2313,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 unifiedDeckTab === 'both'
                   ? 'md:w-[760px] lg:w-[960px]'
                   : 'md:w-[560px] lg:w-[680px]'
-              } max-w-[calc(100vw-16px)] md:max-w-[calc(100vw-32px)] rounded-3xl bg-white/96 dark:bg-zinc-950/96 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl backdrop-blur-2xl overflow-hidden flex flex-col`}
+              } max-w-[calc(100vw-16px)] md:max-w-[calc(100vw-32px)] rounded-3xl bg-white/98 dark:bg-zinc-950/98 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl overflow-hidden flex flex-col`}
             >
               {/* Deck Header with WAI-ARIA Tablist & Close Control */}
               <div className="flex flex-wrap items-center justify-between px-3.5 sm:px-4 py-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-900/60 gap-2 shrink-0">
@@ -3249,7 +3254,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   </div>
                 )}
               </div>
-            </motion.aside>
+            </m.aside>
           )}
         </AnimatePresence>
 
@@ -3381,7 +3386,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 left: `${Math.min(window.innerWidth - 380, Math.max(20, cursorPos.x + 18))}px`,
                 top: `${Math.max(20, Math.min(window.innerHeight - 360, cursorPos.y - 140))}px`,
               }}
-              className="absolute z-40 pointer-events-none w-84 p-4 rounded-2xl bg-white/98 dark:bg-zinc-950/98 text-zinc-900 dark:text-zinc-100 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
+              className="absolute z-40 pointer-events-none w-84 p-4 rounded-2xl bg-white/98 dark:bg-zinc-950/98 text-zinc-900 dark:text-zinc-100 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
             >
               <div className="flex items-center justify-between gap-2 mb-2">
                 <span
@@ -3435,12 +3440,12 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           {selectedThematicItem && (() => {
             const info = getThematicItemDisplay(selectedThematicItem);
             return (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: -24, scale: 0.97 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -24, scale: 0.97 }}
                 transition={{ type: 'spring', stiffness: 420, damping: 32 }}
-                className="absolute top-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-[420px] max-w-[calc(100vw-32px)] z-50 p-5 rounded-2xl bg-white/98 dark:bg-zinc-950/98 text-zinc-900 dark:text-zinc-100 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl backdrop-blur-2xl"
+                className="absolute top-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-[420px] max-w-[calc(100vw-32px)] z-50 p-5 rounded-2xl bg-white/98 dark:bg-zinc-950/98 text-zinc-900 dark:text-zinc-100 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl"
               >
                 <div className="flex items-center justify-between gap-2 mb-2.5">
                   <span
@@ -3500,7 +3505,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                     Dismiss
                   </button>
                 </div>
-              </motion.div>
+              </m.div>
             );
           })()}
         </AnimatePresence>
@@ -3512,7 +3517,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               left: `${Math.min(window.innerWidth - 320, Math.max(20, cursorPos.x + 18))}px`,
               top: `${Math.max(20, Math.min(window.innerHeight - 280, cursorPos.y - 120))}px`,
             }}
-            className="absolute z-40 pointer-events-none w-72 p-3.5 rounded-2xl bg-white/98 dark:bg-zinc-950/98 text-zinc-900 dark:text-zinc-100 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
+            className="absolute z-40 pointer-events-none w-72 p-3.5 rounded-2xl bg-white/98 dark:bg-zinc-950/98 text-zinc-900 dark:text-zinc-100 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
           >
             <div className="flex items-center justify-between gap-2 mb-1.5">
               <span className="text-[10px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/60">
@@ -3572,7 +3577,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               left: `${Math.min(window.innerWidth - 340, Math.max(20, cursorPos.x + 18))}px`,
               top: `${Math.max(20, Math.min(window.innerHeight - 260, cursorPos.y - 120))}px`,
             }}
-            className="absolute z-40 pointer-events-none w-80 p-3.5 rounded-2xl bg-white/98 dark:bg-stone-900/98 text-stone-900 dark:text-stone-100 border border-stone-200/90 dark:border-stone-800/90 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
+            className="absolute z-40 pointer-events-none w-80 p-3.5 rounded-2xl bg-white/98 dark:bg-stone-900/98 text-stone-900 dark:text-stone-100 border border-stone-200/90 dark:border-stone-800/90 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
           >
             <div className="flex items-center justify-between gap-1.5 mb-1.5">
               <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30">
@@ -3630,7 +3635,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             }}
             onMouseEnter={handleTooltipMouseEnter}
             onMouseLeave={handleTooltipMouseLeave}
-            className="absolute z-30 pointer-events-auto w-80 p-4 rounded-2xl border shadow-2xl backdrop-blur-xl transition-all duration-150 animate-in fade-in zoom-in-95 bg-white/95 dark:bg-zinc-950/95 border-zinc-200 dark:border-zinc-800"
+            className="absolute z-30 pointer-events-auto w-80 p-4 rounded-2xl border shadow-2xl transition-all duration-150 animate-in fade-in zoom-in-95 bg-white/96 dark:bg-zinc-950/96 border-zinc-200 dark:border-zinc-800"
           >
             {/* Admin-1 Subdivision Badge when hovered or selected */}
             {(hoveredAdmin1 || (selectedAdmin1 && selectedAdmin1.iso3 === hoveredEntity.id)) && (
@@ -3835,7 +3840,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         {/* Accessible 2-Finger Touch HUD cue */}
         <AnimatePresence>
           {showTouchHud && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: -12, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -12, scale: 0.95 }}
@@ -3846,7 +3851,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             >
               <Compass className="w-4 h-4 text-amber-400 dark:text-amber-600 animate-spin" />
               <span>Use 2 fingers to zoom &amp; pan</span>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
 

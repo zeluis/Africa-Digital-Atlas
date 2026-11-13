@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { 
   SPRING_TACTILE, 
   SPRING_SNAPPY, 
@@ -11,6 +11,8 @@ import {
   TACTILE_CARD_INTERACTIONS, 
   TACTILE_BUTTON_INTERACTIONS 
 } from '../utils/motion';
+import { AtlasDialog } from '../components/common/AtlasDialog';
+import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from '../components/CountryFlag';
 import { CountrySilhouette } from '../components/CountrySilhouette';
@@ -149,18 +151,6 @@ export const CompareView: React.FC<CompareViewProps> = ({
     }
     setIsSelectorOpen(false);
   };
-
-  // Keyboard shortcut (Escape to close selector)
-  useEffect(() => {
-    if (!isSelectorOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setIsSelectorOpen(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isSelectorOpen]);
 
   const allEntities = atlas.getAllEntities();
 
@@ -413,7 +403,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
           const gdp = atlas.getIndicatorValue(country.id, 'NY.GDP.MKTP.CD') || 0;
 
           return (
-            <motion.div
+            <m.div
               key={country.id}
               layout="position"
               whileHover={reducedMotion ? {} : { y: -2 }}
@@ -473,7 +463,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                   GDP: {formatGDP(gdp)}
                 </span>
               </div>
-            </motion.div>
+            </m.div>
           );
         })}
 
@@ -481,7 +471,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
         {Array.from({ length: 4 - selectedIds.length }).map((_, emptyIdx) => {
           const slotNum = selectedIds.length + emptyIdx + 1;
           return (
-            <motion.button
+            <m.button
               key={`empty-slot-${slotNum}`}
               type="button"
               layout="position"
@@ -499,7 +489,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                   + Add Nation to Compare
                 </span>
               </div>
-            </motion.button>
+            </m.button>
           );
         })}
       </div>
@@ -600,15 +590,15 @@ export const CompareView: React.FC<CompareViewProps> = ({
           </div>
 
           <div className="flex flex-nowrap overflow-x-auto scroll-shadow-x no-scrollbar sm:flex-wrap items-center gap-1.5 pb-1 sm:pb-0 max-w-full" role="tablist" aria-label="Convergence trajectory indicator">
-            {convergenceMetrics.map(m => {
-              const isSelected = convergenceMetricId === m.id;
+            {convergenceMetrics.map(metric => {
+              const isSelected = convergenceMetricId === metric.id;
               return (
                 <button
-                  key={m.id}
+                  key={metric.id}
                   type="button"
                   role="tab"
                   aria-selected={isSelected}
-                  onClick={() => setConvergenceMetricId(m.id)}
+                  onClick={() => setConvergenceMetricId(metric.id)}
                   className={`relative px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl text-xs font-mono font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 ${
                     isSelected
                       ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
@@ -616,13 +606,13 @@ export const CompareView: React.FC<CompareViewProps> = ({
                   }`}
                 >
                   {isSelected && (
-                    <motion.div
+                    <m.div
                       layoutId="compareConvergenceMetric"
                       className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs"
                       transition={SPRING_TACTILE}
                     />
                   )}
-                  <span className="relative z-10">{m.label}</span>
+                  <span className="relative z-10">{metric.label}</span>
                 </button>
               );
             })}
@@ -657,12 +647,28 @@ export const CompareView: React.FC<CompareViewProps> = ({
                     strokeWidth={2.5}
                     dot={{ r: 4 }}
                     activeDot={{ r: 6 }}
+                    isAnimationActive={!reducedMotion}
                   />
                 );
               })}
             </LineChart>
           </ResponsiveContainer>
         </div>
+        <div role="status" aria-live="polite" className="sr-only">
+          Comparing {countries.map(c => c.name).join(', ')} on {convergenceMetrics.find(m => m.id === convergenceMetricId)?.label || convergenceMetricId} ({valuationMode.toUpperCase()}, {normalizationScale}).
+        </div>
+        <ChartAccessibleTable
+          caption={`Multi-country convergence trajectory: ${convergenceMetrics.find(m => m.id === convergenceMetricId)?.label || convergenceMetricId}`}
+          headers={['Year', ...countries.map(c => c.name)]}
+          rows={convergenceData.map((pt: Record<string, string | number | undefined>) => [
+            pt.year ?? '—',
+            ...selectedIds.map(id => {
+              const val = pt[id];
+              return typeof val === 'number' ? Number(val.toFixed(2)) : (val ?? '—');
+            })
+          ])}
+          summaryLabel="Inspect multi-country trajectory table"
+        />
       </div>
 
       {/* Interactive Switchers Row: Valuation (Nominal vs PPP) and Scale (Aggregate vs Per-Capita) */}
@@ -684,7 +690,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
               }`}
             >
               {valuationMode === 'nominal' && (
-                <motion.div
+                <m.div
                   layoutId="compareValuationMode"
                   className="absolute inset-0 rounded-lg bg-white dark:bg-zinc-950 shadow-xs"
                   transition={SPRING_TACTILE}
@@ -702,7 +708,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
               }`}
             >
               {valuationMode === 'ppp' && (
-                <motion.div
+                <m.div
                   layoutId="compareValuationMode"
                   className="absolute inset-0 rounded-lg bg-white dark:bg-zinc-950 shadow-xs"
                   transition={SPRING_TACTILE}
@@ -727,7 +733,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
               }`}
             >
               {normalizationScale === 'aggregate' && (
-                <motion.div
+                <m.div
                   layoutId="compareNormalizationScale"
                   className="absolute inset-0 rounded-lg bg-white dark:bg-zinc-950 shadow-xs"
                   transition={SPRING_TACTILE}
@@ -745,7 +751,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
               }`}
             >
               {normalizationScale === 'perCapita' && (
-                <motion.div
+                <m.div
                   layoutId="compareNormalizationScale"
                   className="absolute inset-0 rounded-lg bg-white dark:bg-zinc-950 shadow-xs"
                   transition={SPRING_TACTILE}
@@ -900,21 +906,19 @@ export const CompareView: React.FC<CompareViewProps> = ({
       {/* Sleek Interactive Country Selector Modal */}
       <AnimatePresence>
         {isSelectorOpen && (
-          <div 
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/60 backdrop-blur-md atlas-modal-backdrop"
-            onClick={() => setIsSelectorOpen(false)}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="country-selector-modal-title"
+          <AtlasDialog
+            isOpen={isSelectorOpen}
+            onClose={() => setIsSelectorOpen(false)}
+            labelledBy="country-selector-modal-title"
+            overlayClassName="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/60 backdrop-blur-md atlas-modal-backdrop"
+            className="atlas-modal-panel w-full max-w-4xl max-h-[92dvh] sm:max-h-[88dvh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden"
+            motionProps={{
+              initial: reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 20 },
+              animate: reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 },
+              exit: reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 20 },
+              transition: SPRING_SNAPPY,
+            }}
           >
-            <motion.div
-              initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 20 }}
-              animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
-              exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 20 }}
-              transition={SPRING_SNAPPY}
-              className="atlas-modal-panel w-full max-w-4xl max-h-[92dvh] sm:max-h-[88dvh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden"
-              onClick={e => e.stopPropagation()}
-            >
               {/* Modal Masthead */}
               <div className="p-4 sm:p-5 md:p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-4 bg-zinc-50/80 dark:bg-zinc-900/60 shrink-0">
                 <div>
@@ -1071,8 +1075,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 <span>Showing {candidateCountries.length} of 54 African Nations</span>
                 <span className="hidden sm:inline">Press Esc to Close</span>
               </div>
-            </motion.div>
-          </div>
+          </AtlasDialog>
         )}
       </AnimatePresence>
 

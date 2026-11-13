@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { 
   CRITICAL_MINERALS_REGISTRY, 
   CriticalMineralDeposit, 
@@ -410,7 +410,7 @@ export const CriticalMineralsInspector: React.FC<CriticalMineralsInspectorProps>
   const fullProfile = CRITICAL_MINERALS_REGISTRY[activeNode.countryCode];
 
   return (
-    <motion.aside
+    <m.aside
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
@@ -512,6 +512,6 @@ export const CriticalMineralsInspector: React.FC<CriticalMineralsInspectorProps>
           <ExternalLink className="w-3.5 h-3.5" />
         </button>
       )}
-    </motion.aside>
+    </m.aside>
   );
 };

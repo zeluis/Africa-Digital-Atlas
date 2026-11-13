@@ -1,5 +1,6 @@
 import React from 'react';
 import { CanonicalVoyage } from '../../data/slaveVoyagesTypes';
+import { AtlasDialog } from '../common/AtlasDialog';
 import { 
   Anchor, 
   Compass, 
@@ -27,8 +28,13 @@ export const VoyageDossierModal: React.FC<VoyageDossierModalProps> = ({
   if (!voyage) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-150">
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden my-8 text-left">
+    <AtlasDialog
+      isOpen={Boolean(voyage)}
+      onClose={onClose}
+      label={`${voyage.vessel.name} (${voyage.dates.departureYear})`}
+      overlayClassName="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-150"
+      className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden my-8 text-left"
+    >
         {/* Header */}
         <div className="p-5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/80 flex items-start justify-between gap-4">
           <div className="space-y-1">
@@ -226,13 +232,13 @@ export const VoyageDossierModal: React.FC<VoyageDossierModalProps> = ({
           </a>
 
           <button
+            type="button"
             onClick={onClose}
             className="px-4 py-2 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 text-xs font-bold rounded-xl transition-all cursor-pointer"
           >
             Close Dossier
           </button>
         </div>
-      </div>
-    </div>
+    </AtlasDialog>
   );
 };

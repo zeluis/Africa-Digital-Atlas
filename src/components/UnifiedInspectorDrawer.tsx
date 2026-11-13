@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { AtlasEntity, AfricanRegion } from '../data/types';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from './CountryFlag';
@@ -72,7 +72,7 @@ export const UnifiedInspectorDrawer: React.FC<UnifiedInspectorDrawerProps> = ({
 
   return (
     <AnimatePresence>
-      <motion.aside
+      <m.aside
         initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -24, scale: 0.98 }}
         animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
         exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.98 }}
@@ -292,7 +292,7 @@ export const UnifiedInspectorDrawer: React.FC<UnifiedInspectorDrawerProps> = ({
           isOpen={showFactsheet}
           onClose={() => setShowFactsheet(false)}
         />
-      </motion.aside>
+      </m.aside>
     </AnimatePresence>
   );
 };

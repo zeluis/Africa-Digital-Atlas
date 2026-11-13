@@ -4,6 +4,7 @@ import { getEntityGeographyMetadata, UN_M49_NUMERIC_CODES } from '../data/svgGeo
 import { atlas } from '../data/atlas-store';
 import { getCountryRegionTonalPalette, getRegionCalmColor } from '../data/unGeoschemeColors';
 import { useAfricaFinalMap } from '../utils/svgMapLoader';
+import { AtlasDialog } from './common/AtlasDialog';
 import { 
   MapPin, 
   Maximize2, 
@@ -288,8 +289,13 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
 
       {/* Expanded High-Resolution Vector Inspection Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 md:p-8 shadow-2xl space-y-6">
+        <AtlasDialog
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          label={`${entity?.name || silhouette.name} Vector Silhouette`}
+          overlayClassName="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200"
+          className="relative w-full max-w-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 md:p-8 shadow-2xl space-y-6"
+        >
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-4">
               <div>
@@ -308,6 +314,8 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
               </div>
 
               <button
+                type="button"
+                aria-label="Close vector silhouette modal"
                 onClick={() => setIsModalOpen(false)}
                 className="p-2 rounded-2xl bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer"
               >
@@ -415,8 +423,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
                 </button>
               </div>
             </div>
-          </div>
-        </div>
+        </AtlasDialog>
       )}
     </>
   );

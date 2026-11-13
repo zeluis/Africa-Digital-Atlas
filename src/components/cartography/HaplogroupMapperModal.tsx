@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { Dna, X, Globe, ShieldCheck, Activity, Users, Info } from 'lucide-react';
+import { AtlasDialog } from '../common/AtlasDialog';
 
 export interface HaplogroupRecord {
   lineage: string;
@@ -88,13 +88,18 @@ export const HaplogroupMapperModal: React.FC<HaplogroupMapperModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm select-none">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        className="w-full max-w-4xl max-h-[90vh] bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden"
-      >
+    <AtlasDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      label="Deep Kinship and DNA Haplogroup Mapper"
+      overlayClassName="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm select-none"
+      className="w-full max-w-4xl max-h-[90vh] bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden"
+      motionProps={{
+        initial: { opacity: 0, scale: 0.95, y: 10 },
+        animate: { opacity: 1, scale: 1, y: 0 },
+        exit: { opacity: 0, scale: 0.95, y: 10 }
+      }}
+    >
         {/* Header */}
         <div className="p-6 border-b border-stone-100 dark:border-stone-800 flex items-center justify-between bg-stone-50/80 dark:bg-stone-900/80">
           <div className="flex items-center gap-3">
@@ -112,6 +117,7 @@ export const HaplogroupMapperModal: React.FC<HaplogroupMapperModalProps> = ({
           </div>
           <button
             type="button"
+            aria-label="Close haplogroup mapper"
             onClick={onClose}
             className="p-2 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
           >
@@ -238,7 +244,6 @@ export const HaplogroupMapperModal: React.FC<HaplogroupMapperModalProps> = ({
             Close Mapper
           </button>
         </div>
-      </motion.div>
-    </div>
+    </AtlasDialog>
   );
 };

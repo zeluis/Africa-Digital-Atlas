@@ -1,12 +1,18 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { atlas } from '../data/atlas-store';
 import { AtlasEntity, IndicatorDefinition, HeritageSite } from '../data/types';
-import { SLAVE_TRADE_ILLUSTRATIONS, SlaveTradeIllustration } from '../data/slaveTradeIllustrations';
+import {
+  SLAVE_TRADE_ILLUSTRATIONS,
+  SlaveTradeIllustration,
+  ensureSlaveTradeIllustrationsHydrated,
+  subscribeSlaveTradeIllustrations
+} from '../data/slaveTradeIllustrations';
 import { CASTAS_ARCHIVE_ITEMS, CastasArchivalItem } from '../data/castasArchive';
 import { ResearchReport } from '../data/reportsData';
 import { getAllReports } from '../data/reportsDataLoader';
 import { CountryFlag } from './CountryFlag';
 import { useSavedEntities } from '../contexts/SavedEntitiesContext';
+import { AtlasDialog } from './common/AtlasDialog';
 import { 
   Search, 
   Globe, 
@@ -88,17 +94,23 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<SearchCategory>('all');
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [illustrationsVersion, setIllustrationsVersion] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const { recentSearches, addRecentSearch, clearRecentSearches, isCountrySaved, toggleSaveCountry } = useSavedEntities();
 
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-      setSelectedIndex(0);
-    } else {
+    if (!isOpen) {
       setQuery('');
       setSelectedCategory('all');
+      return;
     }
+    setTimeout(() => inputRef.current?.focus(), 50);
+    setSelectedIndex(0);
+    const unsub = subscribeSlaveTradeIllustrations(() => {
+      setIllustrationsVersion(v => v + 1);
+    });
+    ensureSlaveTradeIllustrationsHydrated();
+    return unsub;
   }, [isOpen]);
 
   const q = query.trim().toLowerCase();
@@ -226,7 +238,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       .sort((a, b) => b.score - a.score)
       .slice(0, 4)
       .map(item => item.ill);
-  }, [q, selectedCategory]);
+  }, [q, selectedCategory, illustrationsVersion]);
 
   // Matched Castas Archive
   const matchedCastas = useMemo<CastasArchivalItem[]>(() => {
@@ -367,17 +379,17 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div 
-      className="fixed inset-0 z-50 flex items-start justify-center p-2.5 pt-3 sm:p-4 sm:pt-16 md:pt-24 bg-black/75 backdrop-blur-md atlas-modal-backdrop"
-      onClick={onClose}
+    <AtlasDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      label="Universal Platform Search & Command Palette"
+      initialFocusRef={inputRef}
+      overlayClassName="fixed inset-0 z-50 flex items-start justify-center p-2.5 pt-3 sm:p-4 sm:pt-16 md:pt-24 bg-black/75 backdrop-blur-md atlas-modal-backdrop"
+      className="w-full max-w-2xl max-h-[92dvh] flex flex-col overflow-hidden rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-2xl text-zinc-900 dark:text-zinc-100 transition-colors atlas-modal-panel"
     >
-      <div 
-        role="dialog"
-        aria-modal="true"
-        aria-label="Universal Platform Search & Command Palette"
-        className="w-full max-w-2xl max-h-[92dvh] flex flex-col overflow-hidden rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-2xl text-zinc-900 dark:text-zinc-100 transition-colors atlas-modal-panel"
-        onClick={e => e.stopPropagation()}
-      >
+        <div className="sr-only" aria-live="polite" aria-atomic="true">
+          {`${flattenedItems.length} result${flattenedItems.length === 1 ? '' : 's'} in ${selectedCategory} index`}
+        </div>
         {/* Search Input Bar */}
         <div className="flex items-center gap-2 sm:gap-3 border-b border-zinc-200 dark:border-zinc-800 px-4 sm:px-5 py-3 sm:py-4 bg-zinc-50/70 dark:bg-zinc-900/50 shrink-0">
           <Search className="w-5 h-5 text-emerald-500 flex-shrink-0" />
@@ -630,8 +642,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           </div>
           <span>Africa Data Atlas Universal Index</span>
         </div>
-      </div>
-    </div>
+    </AtlasDialog>
   );
 };
 

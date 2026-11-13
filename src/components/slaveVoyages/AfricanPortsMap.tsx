@@ -13,7 +13,7 @@
  */
 
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { AtlasSelect } from '../common/AtlasSelect';
 import {
   Castle,
@@ -272,7 +272,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
   useEffect(() => {
     if (!isTimelinePlaying) return;
 
-    let rafId: number;
+    let rafId = 0;
     let lastTime = performance.now();
     // If starting at the historical terminus (1866), loop back to beginning (1514)
     let currentYearFloat = currentEndYearRef.current >= 1866 ? 1514 : currentEndYearRef.current;
@@ -285,6 +285,8 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
     let lastDispatchedYear = Math.round(currentYearFloat);
 
     const tick = (now: number) => {
+      rafId = 0;
+      if (document.hidden) return;
       const deltaSec = Math.min(0.05, (now - lastTime) / 1000);
       lastTime = now;
 
@@ -305,8 +307,27 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
       rafId = requestAnimationFrame(tick);
     };
 
-    rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (rafId) {
+          cancelAnimationFrame(rafId);
+          rafId = 0;
+        }
+      } else if (!rafId) {
+        lastTime = performance.now();
+        rafId = requestAnimationFrame(tick);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    if (!document.hidden) {
+      rafId = requestAnimationFrame(tick);
+    }
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, [isTimelinePlaying]);
 
   // Filtered port list
@@ -984,7 +1005,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
             {/* Collapsible Details Drawer Toggle */}
             <AnimatePresence mode="wait">
               {isMetadataOpen ? (
-                <motion.button
+                <m.button
                   key="hide-details-btn"
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -996,9 +1017,9 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                 >
                   <PanelRightClose className="w-4 h-4 text-amber-800 dark:text-amber-400" />
                   <span className="hidden sm:inline">Hide Dossier</span>
-                </motion.button>
+                </m.button>
               ) : (
-                <motion.button
+                <m.button
                   key="show-details-btn"
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -1016,7 +1037,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                 >
                   <PanelRightOpen className="w-4 h-4 text-amber-800 dark:text-amber-400" />
                   <span className="hidden sm:inline">Show Dossier</span>
-                </motion.button>
+                </m.button>
               )}
             </AnimatePresence>
 
@@ -1174,7 +1195,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
         {/* LEFT VERTICAL PORT TRAY */}
         <AnimatePresence>
           {isFilmstripOpen && (
-            <motion.aside
+            <m.aside
               initial={{ width: 0, opacity: 0 }}
               animate={{ width: 320, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
@@ -1303,7 +1324,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                   <ChevronDown className="w-3 h-3" />
                 </span>
               </div>
-            </motion.aside>
+            </m.aside>
           )}
         </AnimatePresence>
 
@@ -1363,7 +1384,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                 {/* Expandable 8-Corridor Regional Palette Legend with Hover Highlights */}
                 <AnimatePresence>
                   {isLegendOpen && (
-                    <motion.div
+                    <m.div
                       initial={{ opacity: 0, y: -4, height: 0 }}
                       animate={{ opacity: 1, y: 0, height: 'auto' }}
                       exit={{ opacity: 0, y: -4, height: 0 }}
@@ -1443,7 +1464,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
                           />
                         </div>
                       </div>
-                    </motion.div>
+                    </m.div>
                   )}
                 </AnimatePresence>
               </div>

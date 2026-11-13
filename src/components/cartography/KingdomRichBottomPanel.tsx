@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { PreColonialEntity } from '../../data/archivalCartographyData';
 import { DETAILED_KINGDOMS_DATA, KingdomDetailedRecord } from '../../data/preColonialKingdomsDetailed';
 import { speakAcademicNarration, stopAfriataSpeech } from '../../utils/afriataVoiceEngine';
@@ -107,7 +107,7 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
     : 'left-4 sm:left-6';
 
   return (
-    <motion.div
+    <m.div
       layout
       initial={{ opacity: 0, y: 35, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -125,7 +125,7 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
       id="rich-kingdom-bottom-panel"
     >
       {/* 1. Header Bar with Kingdom Pagination */}
-      <motion.div 
+      <m.div 
         layout="position"
         className={`p-3 sm:p-3.5 border-b border-[#E5DDD0] dark:border-[#38322B] flex items-center justify-between gap-2.5 shrink-0 ${
           isMinimized ? 'cursor-pointer hover:bg-stone-500/5' : ''
@@ -156,7 +156,7 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
             </div>
 
             {!isMinimized && (
-              <motion.div 
+              <m.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -165,7 +165,7 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
                 <span>{entity.regionBadge}</span>
                 <span>•</span>
                 <span>{entity.period}</span>
-              </motion.div>
+              </m.div>
             )}
           </div>
         </div>
@@ -253,12 +253,12 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
-      </motion.div>
+      </m.div>
 
       {/* 2. Expanded Content Sections */}
       <AnimatePresence initial={false}>
         {!isMinimized && (
-          <motion.div
+          <m.div
             key="expanded-content"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -629,9 +629,9 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
                 aria-hidden="true" 
               />
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 };

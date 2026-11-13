@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'motion/react';
+import { m, useReducedMotion } from 'motion/react';
 import { SPRING_TACTILE, AnimatedTabPanel } from '../utils/motion';
 import { 
   Palette, 
@@ -172,7 +172,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                 }`}
               >
                 {isActive && (
-                  <motion.div
+                  <m.div
                     layoutId="styleGuidePrimaryTab"
                     className="absolute inset-0 rounded-xl bg-amber-600 shadow-sm"
                     transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}

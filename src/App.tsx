@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { LazyMotion, domAnimation, m, AnimatePresence } from 'motion/react';
 import { Navbar } from './components/Navbar';
 import type { CanonicalNavTab } from './components/NavigationDrawer';
 import { MainContentSkeleton } from './components/MainContentSkeleton';
@@ -598,7 +598,7 @@ function AppContent() {
           id="main-content-workspace"
         >
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={`view-${currentTab}`}
               data-core={activeCore}
               initial={{ opacity: 0, y: 4 }}
@@ -787,7 +787,7 @@ function AppContent() {
                   )}
                 </Suspense>
               </ViewErrorBoundary>
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </main>
       </div>
@@ -828,10 +828,12 @@ function AppContent() {
 
 export default function App() {
   return (
-    <DensityProvider>
-      <SavedEntitiesProvider>
-        <AppContent />
-      </SavedEntitiesProvider>
-    </DensityProvider>
+    <LazyMotion features={domAnimation} strict>
+      <DensityProvider>
+        <SavedEntitiesProvider>
+          <AppContent />
+        </SavedEntitiesProvider>
+      </DensityProvider>
+    </LazyMotion>
   );
 }

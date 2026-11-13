@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, Suspense } from 'react';
 import { lazyWithRetry } from '../../utils/lazyWithRetry';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { AtlasSelect } from '../common/AtlasSelect';
 import { 
   ZoomIn, 
@@ -1604,7 +1604,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
           Horizontally centered across all viewport sizes.
           ========================================================================= */}
       <div className="fixed top-[72px] sm:top-[76px] left-1/2 -translate-x-1/2 z-30 pointer-events-none flex justify-center w-max max-w-[calc(100vw-24px)] sm:max-w-[calc(100vw-48px)]">
-        <motion.div 
+        <m.div 
           layout
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1658,12 +1658,12 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
             {/* Sleek Sliding Dropdown Panel */}
             <AnimatePresence>
               {isLayersDropdownOpen && (
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 8, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 6, scale: 0.96 }}
                   transition={{ duration: 0.15, ease: 'easeOut' }}
-                  className="absolute left-0 top-full mt-2 w-56 p-2 rounded-2xl bg-[#FAF7F2]/98 dark:bg-[#1E1B18]/98 border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl backdrop-blur-2xl z-50 text-xs no-drag select-none"
+                  className="absolute left-0 top-full mt-2 w-56 p-2 rounded-2xl bg-[#FAF7F2]/98 dark:bg-[#1E1B18]/98 border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl z-50 text-xs no-drag select-none"
                   onWheel={(e) => e.stopPropagation()}
                 >
                   <div className="text-[10px] uppercase font-mono font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492] px-2.5 py-1 flex items-center justify-between border-b border-[#E5DDD0]/60 dark:border-[#38322B]/60 mb-1">
@@ -1746,7 +1746,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                       <span className="text-[10px] font-mono">{layerVisibility.tastCohorts ? 'ON' : 'OFF'}</span>
                     </button>
                   </div>
-                </motion.div>
+                </m.div>
               )}
             </AnimatePresence>
           </div>
@@ -1778,12 +1778,12 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
 
             <AnimatePresence>
               {isTastDropdownOpen && (
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 8, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 6, scale: 0.96 }}
                   transition={{ duration: 0.15, ease: 'easeOut' }}
-                  className="absolute left-0 top-full mt-2 w-72 p-2 rounded-2xl bg-[#FAF7F2]/98 dark:bg-[#1E1B18]/98 border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl backdrop-blur-2xl z-50 text-xs no-drag select-none"
+                  className="absolute left-0 top-full mt-2 w-72 p-2 rounded-2xl bg-[#FAF7F2]/98 dark:bg-[#1E1B18]/98 border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl z-50 text-xs no-drag select-none"
                   onWheel={(e) => e.stopPropagation()}
                 >
                   <div className="text-[10px] uppercase font-mono font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492] px-2.5 py-1 flex items-center justify-between border-b border-[#E5DDD0]/60 dark:border-[#38322B]/60 mb-1">
@@ -1903,7 +1903,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                       <span className="text-[10px] font-mono">1701–1867</span>
                     </button>
                   </div>
-                </motion.div>
+                </m.div>
               )}
             </AnimatePresence>
           </div>
@@ -2019,7 +2019,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
           <div className="flex items-center gap-1 px-1 text-[10px] text-[#7D6B5A] dark:text-[#B5A492] font-medium shrink-0">
             <span className="font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6]">Afriata</span>
           </div>
-        </motion.div>
+        </m.div>
       </div>
 
       {/* =========================================================================
@@ -2027,18 +2027,15 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
           ========================================================================= */}
       <AnimatePresence>
         {isUnifiedPanelOpen && (
-          <motion.div 
+          <m.div 
             key="unified-geography-search-dock"
-            drag
-            dragMomentum={false}
-            dragConstraints={containerRef}
             initial={{ opacity: 0, scale: 0.95, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -8 }}
             transition={{ type: "spring", damping: 27, stiffness: 330 }}
-            className={`fixed top-[132px] sm:top-[136px] left-1/2 -translate-x-1/2 z-40 rounded-3xl bg-[#FAF7F2]/96 dark:bg-[#1E1B18]/96 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_50px_rgba(75,55,35,0.18)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl overflow-hidden transition-all duration-200 ${
+            className={`fixed top-[132px] sm:top-[136px] left-1/2 -translate-x-1/2 z-40 rounded-3xl bg-[#FAF7F2]/98 dark:bg-[#1E1B18]/98 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_50px_rgba(75,55,35,0.18)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-200 ${
               isUnifiedPanelMinimized 
-                ? 'w-auto max-w-xs p-3 flex items-center gap-3 cursor-grab active:cursor-grabbing' 
+                ? 'w-auto max-w-xs p-3 flex items-center gap-3' 
                 : 'w-80 sm:w-88 max-h-[calc(100vh-140px)] flex flex-col'
             }`}
             id="unified-geography-search-dock"
@@ -2666,7 +2663,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                 </div>
               </>
             )}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -2957,7 +2954,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
         {/* Radial Tree Geometry Skeleton Indicator Overlay on Initial Master Render */}
         <AnimatePresence>
           {isSvgLoading && (
-            <motion.div
+            <m.div
               key="radial-tree-canvas-skeleton"
               initial={{ opacity: 1 }}
               exit={{ 
@@ -2967,14 +2964,14 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
               className="absolute inset-0 z-40 w-full h-full pointer-events-none"
             >
               <RadialTreeSkeleton canvasBg={canvasBg} />
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
 
         {/* Floating Pinch-to-Zoom Visual Feedback Chip */}
         <AnimatePresence>
           {(showPinchFeedback || isPinching) && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.85, y: -10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: -8, transition: { duration: 0.3 } }}
@@ -2991,7 +2988,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                   </span>
                 )}
               </div>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>
@@ -3104,7 +3101,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
 
         {selectedEntity && selectedEntity.type !== 'ethnic' && (
           isCountryDossierCollapsed ? (
-            <motion.div
+            <m.div
               key="country-dossier-collapsed-pill"
               initial={{ opacity: 0, x: 20, scale: 0.95 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -3125,15 +3122,15 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                   Expand Dossier
                 </span>
               </button>
-            </motion.div>
+            </m.div>
           ) : (
-            <motion.div 
+            <m.div 
               key={`entity-${selectedEntity.id}`}
               initial={{ opacity: 0, x: 28, scale: 0.98 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 20, scale: 0.98 }}
               transition={{ type: "spring", damping: 27, stiffness: 330 }}
-              className="absolute top-4 right-4 bottom-4 z-40 w-80 sm:w-96 max-w-[calc(100vw-32px)] rounded-3xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_15px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.6)] p-5 flex flex-col space-y-4 no-drag backdrop-blur-md"
+              className="absolute top-4 right-4 bottom-4 z-40 w-80 sm:w-96 max-w-[calc(100vw-32px)] rounded-3xl bg-[#FAF7F2]/98 dark:bg-[#1E1B18]/98 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_15px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.6)] p-5 flex flex-col space-y-4 no-drag"
               id="scholarly-dossier-inspector"
             >
               {/* Drawer Header */}
@@ -3309,7 +3306,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
               Close Dossier
             </button>
           </div>
-        </motion.div>
+        </m.div>
       ))}
       </AnimatePresence>
 

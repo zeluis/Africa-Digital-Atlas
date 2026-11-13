@@ -58,7 +58,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
   const currentColorMap = THEME_UN_GEOSCHEME_COLORS[theme];
 
   return (
-    <div className={`relative w-full rounded-3xl ${containerBg} border shadow-sm px-4 sm:px-5 py-[5px] my-0 overflow-hidden flex flex-col items-center justify-between gap-3 sm:gap-4 backdrop-blur-md transition-colors duration-500 ${className}`}>
+    <div className={`relative w-full rounded-3xl ${containerBg} border shadow-sm px-4 sm:px-5 py-[5px] my-0 overflow-hidden flex flex-col items-center justify-between gap-3 sm:gap-4 transition-colors duration-500 ${className}`}>
       {/* 1. Atmospheric Grid & Tonal Underglow Mesh */}
       <div className="absolute inset-0 bg-[radial-gradient(#78716c_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
 
@@ -108,7 +108,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
         <div className="lg:col-span-5 flex flex-col justify-between gap-2.5 sm:gap-3 order-2 lg:order-1">
           {theme === 'history' && (
             <>
-              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs backdrop-blur-md transition-all hover:border-amber-400">
+              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs transition-all hover:border-amber-400">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2 text-stone-900 font-bold text-xs sm:text-sm">
                     <Anchor className="w-4 h-4 text-amber-700 flex-shrink-0" />
@@ -123,7 +123,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                 </p>
               </div>
 
-              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs backdrop-blur-md transition-all hover:border-amber-400">
+              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs transition-all hover:border-amber-400">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2 text-stone-900 font-bold text-xs sm:text-sm">
                     <Dna className="w-4 h-4 text-amber-700 flex-shrink-0" />
@@ -138,7 +138,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                 </p>
               </div>
 
-              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs backdrop-blur-md transition-all hover:border-amber-400">
+              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs transition-all hover:border-amber-400">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2 text-stone-900 font-bold text-xs sm:text-sm">
                     <Globe2 className="w-4 h-4 text-amber-700 flex-shrink-0" />
@@ -157,7 +157,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
 
           {theme === 'economy' && (
             <>
-              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs backdrop-blur-md transition-all hover:border-emerald-400">
+              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs transition-all hover:border-emerald-400">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2 text-stone-900 font-bold text-xs sm:text-sm">
                     <TrendingUp className="w-4 h-4 text-emerald-700 flex-shrink-0" />
@@ -172,7 +172,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                 </p>
               </div>
 
-              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs backdrop-blur-md transition-all hover:border-emerald-400">
+              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs transition-all hover:border-emerald-400">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2 text-stone-900 font-bold text-xs sm:text-sm">
                     <Zap className="w-4 h-4 text-emerald-700 flex-shrink-0" />
@@ -187,7 +187,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                 </p>
               </div>
 
-              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs backdrop-blur-md transition-all hover:border-emerald-400">
+              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs transition-all hover:border-emerald-400">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2 text-stone-900 font-bold text-xs sm:text-sm">
                     <Layers className="w-4 h-4 text-emerald-700 flex-shrink-0" />
@@ -206,7 +206,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
 
           {theme === 'future' && (
             <>
-              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs backdrop-blur-md transition-all hover:border-indigo-400">
+              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs transition-all hover:border-indigo-400">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2 text-stone-900 font-bold text-xs sm:text-sm">
                     <Rocket className="w-4 h-4 text-indigo-700 flex-shrink-0" />
@@ -221,7 +221,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                 </p>
               </div>
 
-              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs backdrop-blur-md transition-all hover:border-indigo-400">
+              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs transition-all hover:border-indigo-400">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2 text-stone-900 font-bold text-xs sm:text-sm">
                     <Cpu className="w-4 h-4 text-indigo-700 flex-shrink-0" />
@@ -236,7 +236,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                 </p>
               </div>
 
-              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs backdrop-blur-md transition-all hover:border-indigo-400">
+              <div className="p-3 rounded-2xl bg-white/90 border border-stone-200/90 shadow-2xs transition-all hover:border-indigo-400">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2 text-stone-900 font-bold text-xs sm:text-sm">
                     <Sparkles className="w-4 h-4 text-amber-700 flex-shrink-0" />

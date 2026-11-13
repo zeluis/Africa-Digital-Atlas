@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { 
   SPRING_TACTILE, 
   SPRING_SNAPPY,
@@ -16,6 +16,8 @@ import { ArchivalLoupeModal } from '../components/slaveVoyages/ArchivalLoupeModa
 import { DynamicIcon } from '../components/DynamicIcon';
 import {
   INITIAL_UNESCO_HERITAGE_SITES,
+  ensureUnescoHeritageSitesLoaded,
+  subscribeUnescoHeritageSites,
   unescoSiteToIllustration,
   parseUnescoXmlRows,
   BIOME_OPTIONS,
@@ -24,6 +26,7 @@ import {
 } from '../data/unescoHeritageRegistry';
 import { SlaveTradeIllustration, UnescoSiteMetadata } from '../data/slaveTradeIllustrations';
 import { EcologicalBiomeSlidePanel } from '../components/heritage/EcologicalBiomeSlidePanel';
+import { AtlasDialog } from '../components/common/AtlasDialog';
 import {
   Landmark,
   Search,
@@ -59,13 +62,26 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
   onSelectCountry,
   initialSiteId
 }) => {
-  // Load either custom ingested XML rows from localStorage or the complete 210 Africa + Arab States registry
+  // Load custom ingested XML rows from localStorage or hydrate the curated Africa + Arab States registry lazily
+  const [hasCustomXml, setHasCustomXml] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem(UNESCO_CUSTOM_XML_STORAGE_KEY) || localStorage.getItem('africalia_unesco_xml_sites_v1');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) && parsed.length > 0 && Boolean(parsed[0]?.license);
+      }
+    } catch {
+      // ignore storage errors
+    }
+    return false;
+  });
+
   const [unescoSites, setUnescoSites] = useState<UnescoSiteMetadata[]>(() => {
     try {
       const saved = localStorage.getItem(UNESCO_CUSTOM_XML_STORAGE_KEY) || localStorage.getItem('africalia_unesco_xml_sites_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length >= INITIAL_UNESCO_HERITAGE_SITES.length && parsed[0]?.license) {
+        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.license) {
           return parsed;
         }
       }
@@ -74,6 +90,22 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
     }
     return INITIAL_UNESCO_HERITAGE_SITES;
   });
+
+  useEffect(() => {
+    const unsub = subscribeUnescoHeritageSites(() => {
+      if (!hasCustomXml) {
+        setUnescoSites([...INITIAL_UNESCO_HERITAGE_SITES]);
+      }
+    });
+    if (!hasCustomXml) {
+      ensureUnescoHeritageSitesLoaded().then(sites => {
+        if (!hasCustomXml && sites.length > 0) {
+          setUnescoSites([...sites]);
+        }
+      });
+    }
+    return unsub;
+  }, [hasCustomXml]);
 
   const reducedMotion = usePrefersReducedMotion();
   const [viewMode, setViewMode] = useState<ViewMode>('viewer');
@@ -451,6 +483,10 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
             </button>
           </div>
         </div>
+        <div role="status" aria-live="polite" className="sr-only">
+          Showing {illustrationsList.length} UNESCO World Heritage {illustrationsList.length === 1 ? 'property' : 'properties'}.
+          {xmlImportStatus?.message ? ` ${xmlImportStatus.message}` : ''}
+        </div>
       </header>
 
       {/* Main Workspace Area: Embedded ArchivalImageViewer or Directory Cards Grid */}
@@ -500,7 +536,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
               const regionTonal = country?.region ? getRegionCardTonalStyle(country.region) : getRegionCardTonalStyle('Northern Africa');
 
               return (
-                <motion.div
+                <m.div
                   key={item.objectId}
                   layout="position"
                   role="button"
@@ -643,7 +679,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </m.div>
               );
             })}
           </StaggerGrid>
@@ -674,21 +710,20 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
 
       {/* UNESCO XML Ingestion Modal */}
       {isXmlModalOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-stone-950/75 backdrop-blur-md flex items-center justify-center p-4"
-          onClick={() => setIsXmlModalOpen(false)}
+        <AtlasDialog
+          isOpen={isXmlModalOpen}
+          onClose={() => setIsXmlModalOpen(false)}
+          labelledBy="unesco-xml-modal-title"
+          overlayClassName="fixed inset-0 z-50 bg-stone-950/75 backdrop-blur-md flex items-center justify-center p-4"
+          className="w-full max-w-2xl rounded-3xl bg-[#FAF8F5] dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-2xl p-6 space-y-4 text-left"
         >
-          <div
-            className="w-full max-w-2xl rounded-3xl bg-[#FAF8F5] dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-2xl p-6 space-y-4 text-left"
-            onClick={e => e.stopPropagation()}
-          >
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 pb-3">
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-xl bg-amber-900/10 dark:bg-amber-400/10 text-amber-900 dark:text-amber-400">
                   <Upload className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="font-serif font-bold text-base text-stone-900 dark:text-stone-100">
+                  <h2 id="unesco-xml-modal-title" className="font-serif font-bold text-base text-stone-900 dark:text-stone-100">
                     Ingest Official UNESCO World Heritage XML
                   </h2>
                   <p className="text-xs font-mono text-stone-500 dark:text-stone-400">
@@ -697,6 +732,8 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                 </div>
               </div>
               <button
+                type="button"
+                aria-label="Close XML ingestion dialog"
                 onClick={() => setIsXmlModalOpen(false)}
                 className="p-1.5 rounded-xl text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 cursor-pointer"
               >
@@ -749,9 +786,11 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
 
             <div className="flex items-center justify-between pt-2 border-t border-stone-200 dark:border-stone-800">
               <button
-                onClick={() => {
+                onClick={async () => {
                   localStorage.removeItem(UNESCO_CUSTOM_XML_STORAGE_KEY);
-                  setUnescoSites(INITIAL_UNESCO_HERITAGE_SITES);
+                  setHasCustomXml(false);
+                  const defaultSites = await ensureUnescoHeritageSitesLoaded();
+                  setUnescoSites([...defaultSites]);
                   setXmlImportStatus({
                     type: 'success',
                     message: 'Restored default curated Africa & Arab States registry.'
@@ -759,7 +798,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                 }}
                 className="text-xs font-mono text-stone-500 hover:text-stone-800 dark:hover:text-stone-300 underline cursor-pointer"
               >
-                Reset to Default Registry ({INITIAL_UNESCO_HERITAGE_SITES.length} sites)
+                Reset to Default Registry ({unescoSites.length || INITIAL_UNESCO_HERITAGE_SITES.length} sites)
               </button>
 
               <div className="flex items-center gap-2">
@@ -778,8 +817,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                 </button>
               </div>
             </div>
-          </div>
-        </div>
+        </AtlasDialog>
       )}
     </section>
   );

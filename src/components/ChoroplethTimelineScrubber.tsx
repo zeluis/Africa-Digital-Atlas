@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Calendar, Sparkles, Clock } from 'lucide-react';
 
 interface ChoroplethTimelineScrubberProps {
@@ -66,7 +66,7 @@ export const ChoroplethTimelineScrubber: React.FC<ChoroplethTimelineScrubberProp
   };
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
@@ -207,6 +207,6 @@ export const ChoroplethTimelineScrubber: React.FC<ChoroplethTimelineScrubberProp
           </div>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 };

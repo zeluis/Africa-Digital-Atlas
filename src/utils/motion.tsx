@@ -7,7 +7,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence, Transition, Variants, HTMLMotionProps } from 'motion/react';
+import { m, AnimatePresence, Transition, Variants } from 'motion/react';
 import { getRegionTonalPalette } from '../data/unGeoschemeColors';
 import { AfricanRegion } from '../data/types';
 
@@ -267,7 +267,7 @@ export const AnimatedSection: React.FC<{
   }
 
   return (
-    <motion.section
+    <m.section
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: '-20px' }}
@@ -286,7 +286,7 @@ export const AnimatedSection: React.FC<{
       className={className}
     >
       {children}
-    </motion.section>
+    </m.section>
   );
 };
 
@@ -299,7 +299,7 @@ export const SlidingPill: React.FC<{
   style?: React.CSSProperties;
 }> = ({ layoutId, className = 'absolute inset-0 rounded-xl bg-white shadow-xs', style }) => {
   return (
-    <motion.div
+    <m.div
       layoutId={layoutId}
       className={className}
       style={style}
@@ -318,7 +318,7 @@ export const AnimatedTabPanel: React.FC<{
 }> = ({ tabKey, children, className = '' }) => {
   return (
     <AnimatePresence mode="wait">
-      <motion.div
+      <m.div
         key={tabKey}
         variants={VARIANTS_TAB_PANEL}
         initial="initial"
@@ -327,7 +327,7 @@ export const AnimatedTabPanel: React.FC<{
         className={className}
       >
         {children}
-      </motion.div>
+      </m.div>
     </AnimatePresence>
   );
 };
@@ -342,7 +342,7 @@ export const StaggerGrid: React.FC<{
   'aria-label'?: string;
 }> = ({ children, className = '', role, 'aria-label': ariaLabel }) => {
   return (
-    <motion.div
+    <m.div
       variants={VARIANTS_STAGGER_GRID}
       initial="hidden"
       animate="visible"
@@ -351,7 +351,7 @@ export const StaggerGrid: React.FC<{
       aria-label={ariaLabel}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 };
 
@@ -363,8 +363,8 @@ export const StaggerGridItem: React.FC<{
   className?: string;
 }> = ({ children, className = '' }) => {
   return (
-    <motion.div variants={VARIANTS_STAGGER_ITEM} className={className}>
+    <m.div variants={VARIANTS_STAGGER_ITEM} className={className}>
       {children}
-    </motion.div>
+    </m.div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { usePrefersReducedMotion } from '../utils/motion';
+import { AtlasDialog } from './common/AtlasDialog';
 import { 
   Keyboard, 
   X, 
@@ -112,23 +112,18 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
   ];
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div
-          onClick={onClose}
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs overflow-hidden"
-        >
-          <motion.div
-            initial={reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.95, y: 12 }}
-            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
-            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 12 }}
-            transition={reducedMotion ? { duration: 0.01 } : { type: 'spring', damping: 28, stiffness: 350 }}
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="keyboard-shortcuts-modal-title"
-            className="w-full max-w-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90dvh]"
-          >
+    <AtlasDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      labelledBy="keyboard-shortcuts-modal-title"
+      overlayClassName="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs overflow-hidden"
+      motionProps={{
+        initial: reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.95, y: 12 },
+        animate: reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 },
+        transition: reducedMotion ? { duration: 0.01 } : { type: 'spring', damping: 28, stiffness: 350 }
+      }}
+      className="w-full max-w-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90dvh]"
+    >
             {/* Modal Header */}
             <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3.5 sm:py-4 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-900/60 backdrop-blur-md shrink-0">
               <div className="flex items-center gap-3 min-w-0">
@@ -224,10 +219,7 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
                 Got it
               </button>
             </div>
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
+    </AtlasDialog>
   );
 };
 

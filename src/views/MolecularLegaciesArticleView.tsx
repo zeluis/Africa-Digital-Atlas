@@ -45,6 +45,8 @@ import {
   Legend 
 } from 'recharts';
 import { ReportVoiceReader } from '../components/ReportVoiceReader';
+import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
+import { usePrefersReducedMotion } from '../utils/motion';
 import { 
   IBD_GENOMIC_CONCORDANCE, 
   SEX_BIASED_GENE_FLOW, 
@@ -144,6 +146,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
   onNavigateToAtlas,
   onNavigateToFoundations
 }) => {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const [activeSection, setActiveSection] = useState<ArticleSectionId>('sec-epistemology');
   const [citationFilter, setCitationFilter] = useState<string>('all');
   const [copiedCitation, setCopiedCitation] = useState<boolean>(false);
@@ -542,16 +545,28 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
                         name="Historical Voyage Manifests (%)" 
                         fill="#3B5B75" 
                         radius={[3, 3, 0, 0]}
+                        isAnimationActive={!prefersReducedMotion}
                       />
                       <Bar 
                         dataKey="presentDayGenomicPct" 
                         name="Modern Genomic Contribution (%)" 
                         fill="#526E58" 
                         radius={[3, 3, 0, 0]}
+                        isAnimationActive={!prefersReducedMotion}
                       />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
+                <ChartAccessibleTable
+                  caption="Historical voyage manifests vs. modern genomic haplotype contributions (Micheletti et al. 2020)"
+                  headers={['Region', 'Historical Voyage Manifests (%)', 'Modern Genomic Contribution (%)']}
+                  rows={IBD_GENOMIC_CONCORDANCE.map(r => [
+                    r.region,
+                    `${r.historicalManifestPct}%`,
+                    `${r.presentDayGenomicPct}%`
+                  ])}
+                  summaryLabel="Inspect empirical genomic alignment table"
+                />
               </div>
             </figure>
 

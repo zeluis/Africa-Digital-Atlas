@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import { atlas } from '../../data/atlas-store';
 import { getCountryTradeFlows } from '../../data/criticalMineralsData';
 import { AFCFTA_CORRIDOR_PRESETS, TradeCorridorPreset } from '../../data/afcftaSimulatorData';

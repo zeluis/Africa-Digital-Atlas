@@ -9,6 +9,15 @@ import { resolveAssetPath } from './assetPath';
 const CACHE_NAME = 'africa-archival-plates-v1';
 export const UNESCO_CACHE_NAME = 'africa-atlas-heritage-v1.4';
 
+function canPrewarmOnNetwork(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  if (!navigator.onLine) return false;
+  const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+  if (conn?.saveData) return false;
+  if (conn?.effectiveType === 'slow-2g' || conn?.effectiveType === '2g') return false;
+  return true;
+}
+
 /**
  * Gather all image URLs for UNESCO World Heritage sites from JSON data
  * and any user-ingested XML storage for offline pre-warming.
@@ -16,8 +25,9 @@ export const UNESCO_CACHE_NAME = 'africa-atlas-heritage-v1.4';
 export const getUnescoHeritageImageUrls = async (): Promise<string[]> => {
   const urls: string[] = [];
   try {
-    const { INITIAL_UNESCO_HERITAGE_SITES } = await import('../data/unescoHeritageRegistry');
-    INITIAL_UNESCO_HERITAGE_SITES.forEach(site => {
+    const { ensureUnescoHeritageSitesLoaded } = await import('../data/unescoHeritageRegistry');
+    const heritageSites = await ensureUnescoHeritageSitesLoaded();
+    heritageSites.forEach(site => {
       if (site.imageUrl && !urls.includes(site.imageUrl)) {
         urls.push(site.imageUrl);
       }
@@ -51,7 +61,7 @@ export const getUnescoHeritageImageUrls = async (): Promise<string[]> => {
  * and signals the service worker to proactively store images for high-quality offline viewing.
  */
 export const prewarmUnescoHeritageCache = async (): Promise<{ cached: number; total: number }> => {
-  if (typeof window === 'undefined' || !('caches' in window)) {
+  if (typeof window === 'undefined' || !('caches' in window) || !canPrewarmOnNetwork()) {
     return { cached: 0, total: 0 };
   }
 
@@ -159,7 +169,7 @@ export const getTopArchivalImageUrls = async (): Promise<string[]> => {
  * Pre-warms the archival image cache progressively during browser idle time
  */
 export const prewarmArchivalImageCache = async (): Promise<{ cached: number; total: number }> => {
-  if (typeof window === 'undefined' || !('caches' in window)) {
+  if (typeof window === 'undefined' || !('caches' in window) || !canPrewarmOnNetwork()) {
     return { cached: 0, total: 0 };
   }
 
@@ -214,42 +224,21 @@ export const prewarmArchivalImageCache = async (): Promise<{ cached: number; tot
 };
 
 /**
- * Hook or helper to trigger pre-warming when network is idle,
- * respecting user Data Saver settings and connection constraints (Afriata Lean item I).
+ * Explicit user-initiated pre-warm trigger for archival plates and UNESCO heritage imagery.
+ * Respects user Data-Saver settings and avoids speculative opaque-response fetches on idle startup.
  */
-export const initArchivalPrecache = () => {
-  if (typeof window === 'undefined') return;
-
-  const startPrewarm = () => {
-    // Respect user's Data-Saver preference or 2G network constraints
-    const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
-    if (conn?.saveData) {
-      return;
-    }
-    if (conn?.effectiveType === 'slow-2g' || conn?.effectiveType === '2g') {
-      return;
-    }
-
-    if (navigator.onLine) {
-      if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(() => {
-          prewarmUnescoHeritageCache();
-          prewarmArchivalImageCache();
-        }, { timeout: 3000 });
-      } else {
-        setTimeout(() => {
-          prewarmUnescoHeritageCache();
-          prewarmArchivalImageCache();
-        }, 2200);
-      }
-    }
-  };
-
-  if (document.readyState === 'complete') {
-    startPrewarm();
-  } else {
-    window.addEventListener('load', startPrewarm, { once: true });
+export const prewarmAllArchivalCaches = async (): Promise<{ cached: number; total: number }> => {
+  if (!canPrewarmOnNetwork()) {
+    return { cached: 0, total: 0 };
   }
+  const [archivalRes, unescoRes] = await Promise.all([
+    prewarmArchivalImageCache(),
+    prewarmUnescoHeritageCache(),
+  ]);
+  return {
+    cached: archivalRes.cached + unescoRes.cached,
+    total: archivalRes.total + unescoRes.total,
+  };
 };
 
 /**
@@ -284,7 +273,7 @@ export const checkArchivalCacheReadiness = async (): Promise<CacheReadinessRepor
     // Check SVG file
     let isSvgCached = false;
     try {
-      const svgMatch = await cache.match('/africa-final.svg');
+      const svgMatch = await caches.match(resolveAssetPath('africa-final.svg'));
       isSvgCached = !!svgMatch;
     } catch {
       isSvgCached = true; // In bundle
@@ -309,7 +298,7 @@ export const checkArchivalCacheReadiness = async (): Promise<CacheReadinessRepor
       cachedCount: extrapolated,
       totalCount: urls.length,
       score: dynamicScore,
-      isSvgCached: true,
+      isSvgCached,
       isStorageAvailable: true,
       statusLabel: dynamicScore >= 98 ? 'Field Expedition Primed' : dynamicScore >= 90 ? 'High Offline Readiness' : 'Standard In-Memory Cache'
     };

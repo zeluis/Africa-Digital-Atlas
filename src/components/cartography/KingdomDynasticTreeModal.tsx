@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m } from 'motion/react';
 import { KingdomDetailedRecord, DynasticNode } from '../../data/preColonialKingdomsDetailed';
+import { AtlasDialog } from '../common/AtlasDialog';
 import { 
   speakAcademicNarration, 
   stopAfriataSpeech,
@@ -97,14 +98,19 @@ export const KingdomDynasticTreeModal: React.FC<KingdomDynasticTreeModalProps> =
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-md select-none">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 16 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 16 }}
-        transition={{ type: 'spring', damping: 28, stiffness: 350 }}
-        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl bg-[#FAF7F2] dark:bg-[#181614] border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl overflow-hidden"
-      >
+    <AtlasDialog
+      isOpen={true}
+      onClose={onClose}
+      label={`${kingdom.name} Dynastic Succession and Constitutional Lineage`}
+      overlayClassName="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-md select-none"
+      className="relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl bg-[#FAF7F2] dark:bg-[#181614] border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl overflow-hidden"
+      motionProps={{
+        initial: { opacity: 0, scale: 0.95, y: 16 },
+        animate: { opacity: 1, scale: 1, y: 0 },
+        exit: { opacity: 0, scale: 0.95, y: 16 },
+        transition: { type: 'spring', damping: 28, stiffness: 350 }
+      }}
+    >
         {/* Modal Header */}
         <div 
           className="p-4 sm:p-5 border-b border-[#E5DDD0] dark:border-[#38322B] flex items-center justify-between gap-4 shrink-0"
@@ -224,7 +230,7 @@ export const KingdomDynasticTreeModal: React.FC<KingdomDynasticTreeModalProps> =
                 const badge = getNodeBadge(node.type);
 
                 return (
-                  <motion.div
+                  <m.div
                     key={node.id}
                     layout
                     onClick={() => {
@@ -269,7 +275,7 @@ export const KingdomDynasticTreeModal: React.FC<KingdomDynasticTreeModalProps> =
 
                       <ChevronRight className={`w-4 h-4 shrink-0 transition-transform ${isSelected ? 'text-amber-600 translate-x-0.5' : 'text-stone-400'}`} />
                     </div>
-                  </motion.div>
+                  </m.div>
                 );
               })}
             </div>
@@ -348,7 +354,6 @@ export const KingdomDynasticTreeModal: React.FC<KingdomDynasticTreeModalProps> =
             )}
           </div>
         </div>
-      </motion.div>
-    </div>
+    </AtlasDialog>
   );
 };

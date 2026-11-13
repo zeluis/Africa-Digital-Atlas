@@ -4,6 +4,7 @@ import { REGIONAL_SILHOUETTES, RegionalSilhouetteData } from '../data/svgGeograp
 import { AFRICA_SVG_MAP } from '../data/svgMaps';
 import { CountryFlag } from './CountryFlag';
 import { getRegionTonalPalette, getRegionCalmColor } from '../data/unGeoschemeColors';
+import { AtlasDialog } from './common/AtlasDialog';
 import { 
   Globe2, 
   Download, 
@@ -239,8 +240,13 @@ export const RegionalSilhouette: React.FC<RegionalSilhouetteProps> = ({
 
         {/* Modal for Fullscreen Vector Inspection */}
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-            <div className="relative max-w-3xl w-full bg-zinc-950 border border-zinc-800 rounded-3xl p-6 shadow-2xl space-y-4">
+          <AtlasDialog
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            label={`${data.name} UN M49 Regional Silhouette`}
+            overlayClassName="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+            className="relative max-w-3xl w-full bg-zinc-950 border border-zinc-800 rounded-3xl p-6 shadow-2xl space-y-4"
+          >
               <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center font-mono text-xs font-bold text-zinc-950" style={{ background: tonal.warmAccent }}>
@@ -251,6 +257,8 @@ export const RegionalSilhouette: React.FC<RegionalSilhouetteProps> = ({
                   </h3>
                 </div>
                 <button
+                  type="button"
+                  aria-label="Close regional silhouette modal"
                   onClick={() => setIsModalOpen(false)}
                   className="p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-colors cursor-pointer"
                 >
@@ -309,8 +317,7 @@ export const RegionalSilhouette: React.FC<RegionalSilhouetteProps> = ({
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
+          </AtlasDialog>
         )}
       </>
     );
@@ -498,8 +505,13 @@ export const RegionalSilhouette: React.FC<RegionalSilhouetteProps> = ({
 
       {/* Modal for Fullscreen Vector Inspection */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="relative max-w-3xl w-full bg-zinc-950 border border-zinc-800 rounded-3xl p-6 shadow-2xl space-y-4">
+        <AtlasDialog
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          label={`${data.name} UN M49 Regional Silhouette`}
+          overlayClassName="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+          className="relative max-w-3xl w-full bg-zinc-950 border border-zinc-800 rounded-3xl p-6 shadow-2xl space-y-4"
+        >
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-lg flex items-center justify-center font-mono text-xs font-bold text-zinc-950" style={{ background: tonal.warmAccent }}>
@@ -510,6 +522,8 @@ export const RegionalSilhouette: React.FC<RegionalSilhouetteProps> = ({
                 </h3>
               </div>
               <button
+                type="button"
+                aria-label="Close regional silhouette modal"
                 onClick={() => setIsModalOpen(false)}
                 className="p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-colors cursor-pointer"
               >
@@ -568,8 +582,7 @@ export const RegionalSilhouette: React.FC<RegionalSilhouetteProps> = ({
                 </button>
               </div>
             </div>
-          </div>
-        </div>
+        </AtlasDialog>
       )}
     </div>
   );

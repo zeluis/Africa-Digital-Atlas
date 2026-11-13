@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { REGIONAL_ROUTE_FLOWS } from '../../data/slaveVoyagesData';
 import { RegionalRouteFlow, EpistemicMode } from '../../data/slaveVoyagesTypes';
 import { AfricaVectorContinent } from '../common/AfricaVectorContinent';
@@ -177,6 +177,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
 
   const showOceanCurrentsRef = useRef<boolean>(showOceanCurrents);
   const showTradeWindsRef = useRef<boolean>(showTradeWinds);
+  const wakeFlowLoopRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const target = mapCalendarSeasonToHydro(selectedSeason);
@@ -189,6 +190,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
 
   useEffect(() => {
     showOceanCurrentsRef.current = showOceanCurrents;
+    wakeFlowLoopRef.current?.();
   }, [showOceanCurrents]);
 
   useEffect(() => {
@@ -242,15 +244,52 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
     window.addEventListener('resize', handleResize);
 
     let lastTime = performance.now();
+    let isCanvasIntersecting = true;
+
+    const shouldAnimate = () =>
+      showOceanCurrentsRef.current && isCanvasIntersecting && !document.hidden;
+
+    const syncLoop = () => {
+      if (shouldAnimate()) {
+        if (!animFrameIdRef.current) {
+          lastTime = performance.now();
+          animFrameIdRef.current = requestAnimationFrame(render);
+        }
+      } else {
+        if (animFrameIdRef.current) {
+          cancelAnimationFrame(animFrameIdRef.current);
+          animFrameIdRef.current = null;
+        }
+        if (!showOceanCurrentsRef.current) {
+          ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+        }
+      }
+    };
+    wakeFlowLoopRef.current = syncLoop;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isCanvasIntersecting = entry.isIntersecting;
+        syncLoop();
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(canvas);
+
+    const handleVisibilityChange = () => {
+      syncLoop();
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     const render = (now: number) => {
-      animFrameIdRef.current = requestAnimationFrame(render);
-
-      if (!showOceanCurrentsRef.current) {
-        ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
-        lastTime = now;
+      animFrameIdRef.current = null;
+      if (!shouldAnimate()) {
+        if (!showOceanCurrentsRef.current) {
+          ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+        }
         return;
       }
+      animFrameIdRef.current = requestAnimationFrame(render);
 
       const dt = Math.min((now - lastTime) / 1000, 0.04);
       lastTime = now;
@@ -346,11 +385,17 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
       }
     };
 
-    animFrameIdRef.current = requestAnimationFrame(render);
+    syncLoop();
 
     return () => {
+      wakeFlowLoopRef.current = null;
       window.removeEventListener('resize', handleResize);
-      if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      observer.disconnect();
+      if (animFrameIdRef.current) {
+        cancelAnimationFrame(animFrameIdRef.current);
+        animFrameIdRef.current = null;
+      }
     };
   }, []);
 
@@ -950,7 +995,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
           {isSeasonalityActive && (
             <>
               {/* Responsive Dimming Backdrop on Small Viewports */}
-              <motion.div
+              <m.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -961,7 +1006,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
               />
 
               {/* Sliding Panel */}
-              <motion.aside
+              <m.aside
                 id="route-seasonality-simulator-panel"
                 role="region"
                 aria-label="Route Seasonality Simulator Panel"
@@ -1226,7 +1271,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                     )}
                   </div>
                 </div>
-              </motion.aside>
+              </m.aside>
             </>
           )}
         </AnimatePresence>

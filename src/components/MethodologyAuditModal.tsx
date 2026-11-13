@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { usePrefersReducedMotion } from '../utils/motion';
+import { AtlasDialog } from './common/AtlasDialog';
 import { 
   ShieldCheck, 
   Database, 
@@ -112,28 +112,21 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 overflow-hidden">
-        {/* Backdrop */}
-        <motion.div
-          initial={reducedMotion ? { opacity: 1 } : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={reducedMotion ? { opacity: 0 } : { opacity: 0 }}
-          onClick={onClose}
-          className="fixed inset-0 bg-stone-950/80 backdrop-blur-md"
-        />
-
-        {/* Modal Window */}
-        <motion.div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="methodology-audit-modal-title"
-          initial={reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.96, y: 20 }}
-          animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
-          exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.98, y: 12 }}
-          transition={reducedMotion ? { duration: 0.01 } : { duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full max-w-5xl max-h-[92dvh] bg-[#FAF8F5] dark:bg-stone-950 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden flex flex-col z-10"
-        >
+    <AtlasDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      labelledBy="methodology-audit-modal-title"
+      overlayClassName="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 bg-stone-950/80 backdrop-blur-md overflow-hidden"
+      motionProps={{
+        initial: reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.96, y: 20 },
+        animate: reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 },
+        transition: reducedMotion ? { duration: 0.01 } : { duration: 0.25, ease: [0.16, 1, 0.3, 1] }
+      }}
+      className="relative w-full max-w-5xl max-h-[92dvh] bg-[#FAF8F5] dark:bg-stone-950 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden flex flex-col z-10"
+    >
+          <div className="sr-only" aria-live="polite" aria-atomic="true">
+            {isVerifyingAll ? 'Verifying SHA-256 checksums across tracked datasets.' : ''}
+          </div>
           {/* Header */}
           <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3.5 sm:py-4 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 shrink-0">
             <div className="flex items-center gap-3 min-w-0">
@@ -663,9 +656,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
               </button>
             </div>
           </div>
-        </motion.div>
-      </div>
-    </AnimatePresence>
+    </AtlasDialog>
   );
 };
 

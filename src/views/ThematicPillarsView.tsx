@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import { m, AnimatePresence, useReducedMotion } from 'motion/react';
 import { atlas } from '../data/atlas-store';
 import { COUNTRY_HEADER_DATA } from '../data/countryHeaderData';
 import { getCountrySilhouette } from '../data/countrySilhouettes';
@@ -19,6 +19,7 @@ import { ThematicPillarNav } from '../components/ThematicPillarNav';
 import { ThematicPillarBottomSection } from '../components/ThematicPillarBottomSection';
 import { CountryFlag } from '../components/CountryFlag';
 import { AtlasSelect } from '../components/common/AtlasSelect';
+import { AtlasDialog } from '../components/common/AtlasDialog';
 import { getCountryRegionTonalPalette, getRegionCalmColor } from '../data/unGeoschemeColors';
 import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
 import {
@@ -1142,21 +1143,19 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
       {/* High-Resolution SVG Silhouette Inspection Modal */}
       <AnimatePresence>
         {isSilhouetteModalOpen && silhouette && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 sm:p-6"
-            onClick={() => setIsSilhouetteModalOpen(false)}
+          <AtlasDialog
+            isOpen={isSilhouetteModalOpen}
+            onClose={() => setIsSilhouetteModalOpen(false)}
+            label={`${currentEntity.name} Vector Silhouette`}
+            overlayClassName="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 sm:p-6"
+            className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl relative space-y-6"
+            motionProps={{
+              initial: { scale: 0.94, opacity: 0 },
+              animate: { scale: 1, opacity: 1 },
+              exit: { scale: 0.94, opacity: 0 },
+              transition: { type: 'spring', damping: 25, stiffness: 300 }
+            }}
           >
-            <motion.div
-              initial={{ scale: 0.94, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.94, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl relative space-y-6"
-              onClick={e => e.stopPropagation()}
-            >
               {/* Modal Header */}
               <div className="flex items-start justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4">
                 <div className="flex items-center gap-3">
@@ -1272,8 +1271,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                   </button>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+          </AtlasDialog>
         )}
       </AnimatePresence>
     </section>

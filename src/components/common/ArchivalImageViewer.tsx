@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { 
   ZoomIn, 
   ZoomOut, 
@@ -38,6 +38,7 @@ import {
   Globe2
 } from 'lucide-react';
 import { DynamicIcon } from '../DynamicIcon';
+import { AtlasDialog } from './AtlasDialog';
 import { SlaveTradeIllustration } from '../../data/slaveTradeIllustrations';
 import { deriveSiteBiome } from '../../data/unescoHeritageRegistry';
 import { 
@@ -201,7 +202,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!illustration) return;
-      if (e.key === 'Escape' && onClose) {
+      if (e.key === 'Escape' && mode === 'embedded' && onClose) {
         onClose();
       } else if (e.key === '+' || e.key === '=') {
         setZoomLevel(z => Math.min(z + 0.5, 5));
@@ -571,7 +572,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
     <div 
       ref={rootRef}
       className={`archival-viewer-root bg-[#FAF8F5] dark:bg-stone-950 text-stone-900 dark:text-stone-100 border border-stone-200/90 dark:border-stone-800 rounded-3xl w-full shadow-2xl relative text-left overflow-hidden flex flex-col transition-all duration-300 ${
-        mode === 'embedded' ? 'h-full border-none rounded-none shadow-none' : isFullscreen ? 'h-full max-h-[98vh] max-w-[98vw]' : 'w-full max-w-7xl h-[92vh] max-h-[95vh]'
+        mode === 'embedded' ? 'h-full border-none rounded-none shadow-none' : 'h-full'
       }`}
       onClick={e => e.stopPropagation()}
     >
@@ -706,7 +707,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
           {/* Collapsible Metadata Drawer Toggle with spring pop-up animation */}
           <AnimatePresence mode="wait">
             {isMetadataOpen ? (
-              <motion.button
+              <m.button
                 key="hide-details-btn"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -718,9 +719,9 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
               >
                 <DynamicIcon icon="codicon:layout-sidebar-right-off" className="w-4 h-4 text-amber-800 dark:text-amber-400" />
                 <span className="hidden sm:inline">Hide Details</span>
-              </motion.button>
+              </m.button>
             ) : (
-              <motion.button
+              <m.button
                 key="show-details-btn"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -732,7 +733,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
               >
                 <DynamicIcon icon="codicon:layout-sidebar-right" className="w-4 h-4 text-amber-800 dark:text-amber-400" />
                 <span className="hidden sm:inline">Show Details</span>
-              </motion.button>
+              </m.button>
             )}
           </AnimatePresence>
 
@@ -2073,11 +2074,14 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
   }
 
   return (
-    <div 
-      className="fixed inset-0 z-50 bg-stone-950/75 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-200"
-      onClick={onClose}
+    <AtlasDialog
+      isOpen={Boolean(illustration)}
+      onClose={onClose || (() => {})}
+      label={illustration.title}
+      overlayClassName="fixed inset-0 z-50 bg-stone-950/75 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-200"
+      className={isFullscreen ? 'w-full h-full max-w-[98vw] max-h-[98vh]' : 'w-full max-w-7xl h-[92vh] max-h-[95vh]'}
     >
       {contentUI}
-    </div>
+    </AtlasDialog>
   );
 };

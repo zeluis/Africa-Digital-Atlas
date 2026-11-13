@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { AtlasDialog } from './common/AtlasDialog';
 import { 
   X, 
   CheckCircle2, 
@@ -235,17 +236,16 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
   };
 
   return (
-    <div
-      onClick={onClose}
-      className="atlas-modal-backdrop fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs overflow-hidden"
+    <AtlasDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      labelledBy="doi-verification-modal-title"
+      overlayClassName="atlas-modal-backdrop fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs overflow-hidden"
+      className="atlas-modal-panel w-full max-w-4xl max-h-[92dvh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden"
     >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="doi-verification-modal-title"
-        className="atlas-modal-panel w-full max-w-4xl max-h-[92dvh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
+        <div className="sr-only" aria-live="polite" aria-atomic="true">
+          {uploadFeedback?.message || ''}
+        </div>
         {/* Modal Header */}
         <div className="p-4 sm:p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-3 bg-zinc-50/50 dark:bg-zinc-900/50 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
@@ -726,8 +726,7 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
             Close
           </button>
         </div>
-      </div>
-    </div>
+    </AtlasDialog>
   );
 };
 

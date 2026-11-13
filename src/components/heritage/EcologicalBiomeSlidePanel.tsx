@@ -1,5 +1,5 @@
-import React, { useEffect, useId } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useId } from 'react';
+import { AnimatePresence } from 'motion/react';
 import {
   X,
   Check,
@@ -18,6 +18,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { BiomeFilter, BIOME_OPTIONS } from '../../data/unescoHeritageRegistry';
+import { AtlasDialog } from '../common/AtlasDialog';
 
 export interface EcologicalBiomeSlidePanelProps {
   isOpen: boolean;
@@ -202,55 +203,29 @@ export const EcologicalBiomeSlidePanel: React.FC<EcologicalBiomeSlidePanelProps>
 }) => {
   const headingId = useId();
 
-  // Escape key handler to close panel
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
-
   const activeMeta = BIOME_CATALOG.find(b => b.id === selectedBiome) || BIOME_CATALOG[0];
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 overflow-hidden" role="region" aria-label="Ecological Biomes Filter Overlay">
-          {/* Backdrop with refined dark glassmorphism */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            onClick={onClose}
-            className="absolute inset-0 bg-stone-950/50 backdrop-blur-xs transition-opacity cursor-pointer"
-            aria-hidden="true"
-          />
-
-          {/* Slide-over Panel Container */}
-          <div className="fixed inset-y-0 right-0 max-w-full flex pl-6 sm:pl-10 pointer-events-none">
-            <motion.section
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby={headingId}
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{
-                type: 'spring',
-                damping: 30,
-                stiffness: 340,
-                mass: 0.8
-              }}
-              className="w-screen max-w-md md:max-w-lg lg:max-w-xl bg-[#FAF8F5] dark:bg-[#151413] border-l border-stone-200/90 dark:border-stone-800 shadow-2xl flex flex-col h-full overflow-hidden pointer-events-auto"
-            >
+        <AtlasDialog
+          isOpen={isOpen}
+          onClose={onClose}
+          labelledBy={headingId}
+          overlayClassName="fixed inset-0 z-50 overflow-hidden bg-stone-950/50 backdrop-blur-xs flex justify-end pl-6 sm:pl-10"
+          className="w-screen max-w-md md:max-w-lg lg:max-w-xl bg-[#FAF8F5] dark:bg-[#151413] border-l border-stone-200/90 dark:border-stone-800 shadow-2xl flex flex-col h-full overflow-hidden pointer-events-auto"
+          motionProps={{
+            initial: { x: '100%' },
+            animate: { x: 0 },
+            exit: { x: '100%' },
+            transition: {
+              type: 'spring',
+              damping: 30,
+              stiffness: 340,
+              mass: 0.8
+            }
+          }}
+        >
               {/* Header Bar */}
               <header className="px-5 sm:px-6 py-4 border-b border-stone-200/90 dark:border-stone-800 bg-[#F4EFE6]/95 dark:bg-stone-950/95 backdrop-blur-md flex items-center justify-between gap-3 shrink-0">
                 <div className="flex items-center gap-3 min-w-0">
@@ -408,9 +383,7 @@ export const EcologicalBiomeSlidePanel: React.FC<EcologicalBiomeSlidePanelProps>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </footer>
-            </motion.section>
-          </div>
-        </div>
+        </AtlasDialog>
       )}
     </AnimatePresence>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { motion, useReducedMotion } from 'motion/react';
+import { m, useReducedMotion } from 'motion/react';
 import { SPRING_TACTILE } from '../utils/motion';
 import { THEMATIC_PILLARS, ThematicPillarId } from '../services/wikipediaService';
 import { 
@@ -106,7 +106,7 @@ export const ThematicPillarNav: React.FC<ThematicPillarNavProps> = ({
             title={`Switch to Pillar ${pillar.number}: ${pillar.label} (Press ${pillar.number})`}
           >
             {isActive && (
-              <motion.div
+              <m.div
                 layoutId="thematicPillarActivePill"
                 className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-white shadow-xs"
                 transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { 
   Compass, 
   Map as MapIcon, 
@@ -626,7 +626,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 {!isDesktopCollapsed && (
                   <AnimatePresence initial={false}>
                     {isExploreExpanded && (
-                      <motion.div
+                      <m.div
                         variants={submenuContainerVariants}
                         initial="hidden"
                         animate="visible"
@@ -636,7 +636,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                         {exploreSubItems.map(sub => {
                           const isSubActive = currentTab === sub.id;
                           return (
-                            <motion.div key={sub.id} variants={submenuItemVariants}>
+                            <m.div key={sub.id} variants={submenuItemVariants}>
                               <button
                                 onClick={() => {
                                   onSelectTab(sub.id as CanonicalNavTab);
@@ -657,10 +657,10 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                 </div>
                                 {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />}
                               </button>
-                            </motion.div>
+                            </m.div>
                           );
                         })}
-                      </motion.div>
+                      </m.div>
                     )}
                   </AnimatePresence>
                 )}
@@ -707,7 +707,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 {!isDesktopCollapsed && (
                   <AnimatePresence initial={false}>
                     {isHistoricalLegaciesExpanded && (
-                      <motion.div
+                      <m.div
                         variants={submenuContainerVariants}
                         initial="hidden"
                         animate="visible"
@@ -717,7 +717,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                         {historicalLegaciesSubItems.map(sub => {
                           const isSubActive = currentTab === sub.id;
                           return (
-                            <motion.div key={sub.id} variants={submenuItemVariants}>
+                            <m.div key={sub.id} variants={submenuItemVariants}>
                               <button
                                 onClick={() => {
                                   onSelectTab(sub.id as CanonicalNavTab);
@@ -745,10 +745,10 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                 </div>
                                 {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />}
                               </button>
-                            </motion.div>
+                            </m.div>
                           );
                         })}
-                      </motion.div>
+                      </m.div>
                     )}
                   </AnimatePresence>
                 )}
@@ -795,7 +795,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 {!isDesktopCollapsed && (
                   <AnimatePresence initial={false}>
                     {isReportsExpanded && (
-                      <motion.div
+                      <m.div
                         variants={submenuContainerVariants}
                         initial="hidden"
                         animate="visible"
@@ -810,7 +810,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                             {group.items.map(sub => {
                               const isSubActive = currentTab === sub.id;
                               return (
-                                <motion.div key={sub.id} variants={submenuItemVariants}>
+                                <m.div key={sub.id} variants={submenuItemVariants}>
                                   <button
                                     onClick={() => {
                                       onSelectTab(sub.id as CanonicalNavTab);
@@ -834,12 +834,12 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                     </div>
                                     {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />}
                                   </button>
-                                </motion.div>
+                                </m.div>
                               );
                             })}
                           </div>
                         ))}
-                      </motion.div>
+                      </m.div>
                     )}
                   </AnimatePresence>
                 )}
@@ -886,7 +886,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 {!isDesktopCollapsed && (
                   <AnimatePresence initial={false}>
                     {isCultureExpanded && (
-                      <motion.div
+                      <m.div
                         variants={submenuContainerVariants}
                         initial="hidden"
                         animate="visible"
@@ -896,7 +896,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                         {cultureSubItems.map(sub => {
                           const isSubActive = currentTab === sub.id;
                           return (
-                            <motion.div key={sub.id} variants={submenuItemVariants}>
+                            <m.div key={sub.id} variants={submenuItemVariants}>
                               <button
                                 onClick={() => {
                                   onSelectTab(sub.id as CanonicalNavTab);
@@ -924,10 +924,10 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                 </div>
                                 {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0" />}
                               </button>
-                            </motion.div>
+                            </m.div>
                           );
                         })}
-                      </motion.div>
+                      </m.div>
                     )}
                   </AnimatePresence>
                 )}
@@ -974,7 +974,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 {!isDesktopCollapsed && (
                   <AnimatePresence initial={false}>
                     {isAnalyticsExpanded && (
-                      <motion.div
+                      <m.div
                         variants={submenuContainerVariants}
                         initial="hidden"
                         animate="visible"
@@ -984,7 +984,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                         {analyticsSubItems.map(sub => {
                           const isSubActive = !sub.isAction && currentTab === sub.id;
                           return (
-                            <motion.div key={sub.id} variants={submenuItemVariants}>
+                            <m.div key={sub.id} variants={submenuItemVariants}>
                               <button
                                 onClick={() => {
                                   if (sub.onClick) {
@@ -1016,10 +1016,10 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                 </div>
                                 {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 shrink-0" />}
                               </button>
-                            </motion.div>
+                            </m.div>
                           );
                         })}
-                      </motion.div>
+                      </m.div>
                     )}
                   </AnimatePresence>
                 )}
@@ -1317,7 +1317,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
       <AnimatePresence>
         {isMobileOpen && (
           <>
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -1325,7 +1325,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               onClick={onCloseMobile}
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 lg:hidden"
             />
-            <motion.div
+            <m.div
               initial={prefersReducedMotion ? { opacity: 0 } : { x: '-100%' }}
               animate={{ opacity: 1, x: 0 }}
               exit={prefersReducedMotion ? { opacity: 0 } : { x: '-100%' }}
@@ -1363,7 +1363,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                   aria-hidden="true" 
                 />
               </div>
-            </motion.div>
+            </m.div>
           </>
         )}
       </AnimatePresence>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { Dna, Compass, Activity, MapPin, Calendar, Layers, X, Sparkles, ChevronRight, ArrowRight } from 'lucide-react';
 import { VBW, VBH, CX, CY } from '../../data/afriataMasterTreeData';
 
@@ -91,7 +91,7 @@ export const MolecularMigrationDrawer: React.FC<MolecularOverlayProps> = ({
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 30, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 30, scale: 0.95 }}
@@ -192,7 +192,7 @@ export const MolecularMigrationDrawer: React.FC<MolecularOverlayProps> = ({
               </div>
             </div>
           )}
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );
@@ -496,7 +496,7 @@ export const MolecularMigrationCanvasLayer: React.FC<{
                 height="320"
                 className="overflow-visible pointer-events-auto z-50"
               >
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, x: -24, scale: 0.95 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, x: -24, scale: 0.95 }}
@@ -558,7 +558,7 @@ export const MolecularMigrationCanvasLayer: React.FC<{
                     <span className="truncate max-w-[280px]">Region: {node.region}</span>
                     <span className="text-[#E67E48] font-bold shrink-0">Selected &amp; Centered</span>
                   </div>
-                </motion.div>
+                </m.div>
               </foreignObject>
             )}
           </g>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from './CountryFlag';
 import { CountrySilhouette } from './CountrySilhouette';
+import { AtlasDialog } from './common/AtlasDialog';
 import { UN_M49_NUMERIC_CODES, getEntityGeographyMetadata } from '../data/svgGeographySystem';
 import { ENTITY_BLOC_MEMBERSHIP } from '../data/entityBlocs';
 import { COUNTRY_HEADER_DATA } from '../data/countryHeaderData';
@@ -300,18 +301,13 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 atlas-modal-backdrop print:p-0 print:bg-white print:block"
-      onClick={onClose}
+    <AtlasDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      label={`${country.name} 1-Page Executive Factsheet`}
+      overlayClassName="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 atlas-modal-backdrop print:p-0 print:bg-white print:block"
+      className="relative w-full max-w-4xl max-h-[92dvh] flex flex-col overflow-hidden bg-white dark:bg-zinc-950 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 atlas-modal-panel print:max-h-none print:overflow-visible print:border-none print:shadow-none print:rounded-none"
     >
-      {/* Modal Dialog Card */}
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={`${country.name} 1-Page Executive Factsheet`}
-        onClick={e => e.stopPropagation()}
-        className="relative w-full max-w-4xl max-h-[92dvh] flex flex-col overflow-hidden bg-white dark:bg-zinc-950 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 atlas-modal-panel print:max-h-none print:overflow-visible print:border-none print:shadow-none print:rounded-none"
-      >
         {/* Action Header Controls (Hidden during browser print) */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 shrink-0 print:hidden">
           <div className="flex items-center justify-between gap-2">
@@ -642,7 +638,6 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </AtlasDialog>
   );
 };

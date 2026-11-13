@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { motion } from 'motion/react';
 import { usePrefersReducedMotion } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { ExternalApiConnector, LiveApiTestResult } from '../data/externalApisIngestion';
 import { OrganizationLogo } from './OrganizationLogo';
 import { AtlasSelect } from './common/AtlasSelect';
+import { AtlasDialog } from './common/AtlasDialog';
 import { 
   Database, 
   X, 
@@ -147,21 +147,23 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div
-      onClick={onClose}
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 lg:p-6 bg-[#EEDBB8]/90 dark:bg-[#231C11]/90 backdrop-blur-lg overflow-hidden"
+    <AtlasDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      labelledBy="api-hub-modal-title"
+      overlayClassName="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 lg:p-6 bg-[#EEDBB8]/90 dark:bg-[#231C11]/90 backdrop-blur-lg overflow-hidden"
+      motionProps={{
+        initial: reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.97, y: 12 },
+        animate: reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 },
+        transition: reducedMotion ? { duration: 0.01 } : { duration: 0.22, ease: [0.16, 1, 0.3, 1] }
+      }}
+      className="relative w-full max-w-[1440px] max-h-[94dvh] h-full flex flex-col rounded-t-3xl sm:rounded-3xl bg-[#FCF9F2] dark:bg-[#181510] border border-[#DFCBB0] dark:border-[#382F22] shadow-2xl text-stone-900 dark:text-stone-100 overflow-hidden"
     >
-      <motion.div 
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="api-hub-modal-title"
-        onClick={(e) => e.stopPropagation()}
-        initial={reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.97, y: 12 }}
-        animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
-        exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97, y: 12 }}
-        transition={reducedMotion ? { duration: 0.01 } : { duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full max-w-[1440px] max-h-[94dvh] h-full flex flex-col rounded-t-3xl sm:rounded-3xl bg-[#FCF9F2] dark:bg-[#181510] border border-[#DFCBB0] dark:border-[#382F22] shadow-2xl text-stone-900 dark:text-stone-100 overflow-hidden"
-      >
+        <div className="sr-only" aria-live="polite" aria-atomic="true">
+          {isBatchSyncing
+            ? `Synchronizing multilateral connectors: ${batchProgress}% complete.`
+            : `${filteredConnectors.length} connectors shown in ${selectedCategory}. ${verifiedSuccessCount} verified online.`}
+        </div>
         {/* Top Swiss Precision Accent Bar */}
         <div className="h-1.5 w-full bg-gradient-to-r from-amber-600 via-amber-700 to-emerald-700 shrink-0" />
 
@@ -464,8 +466,7 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
             <span>Click any indicator badge to launch instant analytics.</span>
           </div>
         </div>
-      </motion.div>
-    </div>
+    </AtlasDialog>
   );
 };
 

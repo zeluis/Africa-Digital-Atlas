@@ -54,8 +54,23 @@ export interface DoiVerificationResult {
 }
 
 const CACHE_PREFIX = 'afriata_crossref_v1_';
+const CACHE_INDEX_KEY = 'afriata_crossref_index_v1';
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const MAX_LOCAL_CACHE_ENTRIES = 100;
+const MAX_MEMORY_CACHE_ENTRIES = 200;
 const memoryCache = new Map<string, { result: DoiVerificationResult; timestamp: number }>();
+
+function setMemoryCacheEntry(key: string, result: DoiVerificationResult, timestamp: number) {
+  if (memoryCache.has(key)) {
+    memoryCache.delete(key);
+  }
+  while (memoryCache.size >= MAX_MEMORY_CACHE_ENTRIES) {
+    const oldestKey = memoryCache.keys().next().value;
+    if (!oldestKey) break;
+    memoryCache.delete(oldestKey);
+  }
+  memoryCache.set(key, { result, timestamp });
+}
 
 /**
  * Standardizes a DOI string (removes URL prefixes, https://doi.org/, dx.doi.org, doi:)
@@ -167,8 +182,12 @@ export async function verifyDoiWithCrossref(
         const stored = localStorage.getItem(CACHE_PREFIX + cleanDoi) || localStorage.getItem('africalia_crossref_v1_' + cleanDoi);
         if (stored) {
           const parsed = JSON.parse(stored) as DoiVerificationResult;
-          memoryCache.set(cacheKey, { result: parsed, timestamp: now });
-          return { ...parsed, source: 'cached' };
+          const verifiedTs = parsed.verifiedAt ? Date.parse(parsed.verifiedAt) : 0;
+          if (!verifiedTs || now - verifiedTs < CACHE_TTL_MS) {
+            setMemoryCacheEntry(cacheKey, parsed, verifiedTs || now);
+            return { ...parsed, source: 'cached' };
+          }
+          localStorage.removeItem(CACHE_PREFIX + cleanDoi);
         }
       } catch {
         // Continue to network request
@@ -356,10 +375,25 @@ export async function searchCrossrefByTitle(title: string, author?: string): Pro
 }
 
 function saveToCache(doi: string, result: DoiVerificationResult) {
-  memoryCache.set(`${doi}_${result.expectedTitle || ''}`, { result, timestamp: Date.now() });
+  const now = Date.now();
+  setMemoryCacheEntry(`${doi}_${result.expectedTitle || ''}`, result, now);
   if (typeof window !== 'undefined' && window.localStorage) {
     try {
       localStorage.setItem(CACHE_PREFIX + doi, JSON.stringify(result));
+      const rawIndex = localStorage.getItem(CACHE_INDEX_KEY);
+      const indexList: string[] = rawIndex ? JSON.parse(rawIndex) : [];
+      const existingIdx = indexList.indexOf(doi);
+      if (existingIdx !== -1) {
+        indexList.splice(existingIdx, 1);
+      }
+      indexList.push(doi);
+      while (indexList.length > MAX_LOCAL_CACHE_ENTRIES) {
+        const oldestDoi = indexList.shift();
+        if (oldestDoi) {
+          localStorage.removeItem(CACHE_PREFIX + oldestDoi);
+        }
+      }
+      localStorage.setItem(CACHE_INDEX_KEY, JSON.stringify(indexList));
     } catch {
       // Storage quota reached or unavailable
     }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { 
   Play, 
   Pause, 
@@ -217,7 +217,14 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
   };
 
   useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopAudio();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       stopAudio();
     };
   }, [stopAudio]);

@@ -19,7 +19,7 @@ import { LANGUAGE_FAMILY_GREETINGS } from '../utils/afriataVoiceEngine';
 import { MotherTonguesWaveformScrubber } from '../components/MotherTonguesWaveformScrubber';
 import { AFRICAN_TYPOLOGICAL_FEATURES } from '../data/africanLinguisticTypology';
 import { LinguisticTypologyComparator } from '../components/languages/LinguisticTypologyComparator';
-import { motion, useReducedMotion } from 'motion/react';
+import { m, useReducedMotion } from 'motion/react';
 import { SPRING_TACTILE, AnimatedTabPanel } from '../utils/motion';
 
 interface LanguageFamily {
@@ -341,7 +341,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                   }`}
                 >
                   {isActive && (
-                    <motion.div
+                    <m.div
                       layoutId="languagesViewTabPill"
                       className="absolute inset-0 rounded-xl bg-emerald-600 shadow-md shadow-emerald-950/20"
                       transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
@@ -812,7 +812,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                     }`}
                   >
                     {isSelected && (
-                      <motion.div
+                      <m.div
                         layoutId="languagesTypologyPill"
                         className="absolute inset-0 rounded-2xl bg-zinc-900 dark:bg-zinc-100 ring-2 ring-emerald-500/60"
                         transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}

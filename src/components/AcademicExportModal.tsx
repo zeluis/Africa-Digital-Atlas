@@ -17,6 +17,7 @@ import {
 import { downloadFile } from '../utils/exportUtils';
 import { exportCustomBriefingDossierPDF } from '../utils/academicExport';
 import { useSavedEntities } from '../contexts/SavedEntitiesContext';
+import { AtlasDialog } from './common/AtlasDialog';
 
 export interface AcademicExportModalProps {
   isOpen: boolean;
@@ -184,17 +185,16 @@ keywords:
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 bg-stone-950/75 backdrop-blur-md atlas-modal-backdrop"
-      onClick={onClose}
+    <AtlasDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      labelledBy="academic-export-modal-title"
+      overlayClassName="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 bg-stone-950/75 backdrop-blur-md atlas-modal-backdrop"
+      className="relative w-full max-w-3xl max-h-[92dvh] bg-[#FAF8F5] dark:bg-stone-950 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden flex flex-col atlas-modal-panel"
     >
-      <div 
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="academic-export-modal-title"
-        onClick={e => e.stopPropagation()}
-        className="relative w-full max-w-3xl max-h-[92dvh] bg-[#FAF8F5] dark:bg-stone-950 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden flex flex-col atlas-modal-panel"
-      >
+        <div className="sr-only" aria-live="polite" aria-atomic="true">
+          {isGeneratingDossier ? 'Generating academic dossier PDF briefing.' : copied ? 'Citation copied to clipboard.' : ''}
+        </div>
         {/* Header */}
         <div className="flex items-center justify-between gap-2 px-4 sm:px-6 py-3.5 sm:py-4 bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
@@ -599,8 +599,7 @@ keywords:
             </div>
           </div>
         )}
-      </div>
-    </div>
+    </AtlasDialog>
   );
 };
 

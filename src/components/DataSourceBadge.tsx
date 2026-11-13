@@ -4,6 +4,7 @@ import { CountryFlag } from './CountryFlag';
 import { ExternalLink, ShieldCheck, AlertCircle, Info, Database, Calendar, Layers, X } from 'lucide-react';
 import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
 import { formatCompactOrgName } from '../data/atlas-formatters';
+import { AtlasDialog } from './common/AtlasDialog';
 
 interface DataProvenanceModalProps {
   isOpen: boolean;
@@ -28,11 +29,13 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
   const qualityFlags = atlas.getQualityFlags(entityId).filter(q => !q.indicatorId || q.indicatorId === indicatorId);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div 
-        className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-zinc-700 bg-zinc-900 shadow-2xl text-zinc-100"
-        onClick={e => e.stopPropagation()}
-      >
+    <AtlasDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      label={`${entity?.name || entityId} — ${indicator?.name || indicatorId}`}
+      overlayClassName="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
+      className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-zinc-700 bg-zinc-900 shadow-2xl text-zinc-100"
+    >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-950/60 px-6 py-4">
           <div className="flex items-center gap-3">
@@ -48,8 +51,10 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"
+            aria-label="Close data provenance modal"
+            className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -180,14 +185,14 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
         <div className="border-t border-zinc-800 bg-zinc-950/60 px-6 py-3 flex items-center justify-between text-xs text-zinc-500">
           <span>Africa Data Atlas Platform • Schema 2025.1</span>
           <button
+            type="button"
             onClick={onClose}
-            className="rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-4 py-1.5 font-medium transition-colors"
+            className="rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-4 py-1.5 font-medium transition-colors cursor-pointer"
           >
             Close Inspector
           </button>
         </div>
-      </div>
-    </div>
+    </AtlasDialog>
   );
 };
 

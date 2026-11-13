@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { 
   SlidersHorizontal, 
   Sun, 
@@ -87,7 +87,7 @@ export const PreferencesDropdown: React.FC<PreferencesDropdownProps> = ({
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.96, y: 6 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 6 }}
@@ -230,7 +230,7 @@ export const PreferencesDropdown: React.FC<PreferencesDropdownProps> = ({
               <span className="text-zinc-400">Zero-Tracker</span>
             </div>
 
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

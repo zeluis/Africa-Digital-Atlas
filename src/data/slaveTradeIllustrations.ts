@@ -1050,7 +1050,12 @@ const buildIllustrationsFromRaw = (rawRecords: RawRecordItem[]): SlaveTradeIllus
 export const SLAVE_TRADE_ILLUSTRATIONS: SlaveTradeIllustration[] = buildIllustrationsFromRaw([]);
 
 let hydrationPromise: Promise<SlaveTradeIllustration[]> | null = null;
+let hydratedFlag = false;
 const hydrationListeners = new Set<() => void>();
+
+export function isSlaveTradeIllustrationsHydrated(): boolean {
+  return hydratedFlag;
+}
 
 export function subscribeSlaveTradeIllustrations(listener: () => void): () => void {
   hydrationListeners.add(listener);
@@ -1060,6 +1065,7 @@ export function subscribeSlaveTradeIllustrations(listener: () => void): () => vo
 }
 
 export function ensureSlaveTradeIllustrationsHydrated(): Promise<SlaveTradeIllustration[]> {
+  if (hydratedFlag) return Promise.resolve(SLAVE_TRADE_ILLUSTRATIONS);
   if (hydrationPromise) return hydrationPromise;
   if (typeof window === 'undefined' || typeof fetch === 'undefined') {
     return Promise.resolve(SLAVE_TRADE_ILLUSTRATIONS);
@@ -1069,13 +1075,10 @@ export function ensureSlaveTradeIllustrationsHydrated(): Promise<SlaveTradeIllus
     .then((data: { records?: RawRecordItem[] }) => {
       const hydrated = buildIllustrationsFromRaw(data.records || []);
       SLAVE_TRADE_ILLUSTRATIONS.splice(0, SLAVE_TRADE_ILLUSTRATIONS.length, ...hydrated);
+      hydratedFlag = true;
       hydrationListeners.forEach(fn => fn());
       return SLAVE_TRADE_ILLUSTRATIONS;
     })
     .catch(() => SLAVE_TRADE_ILLUSTRATIONS);
   return hydrationPromise;
-}
-
-if (typeof window !== 'undefined') {
-  ensureSlaveTradeIllustrationsHydrated();
 }

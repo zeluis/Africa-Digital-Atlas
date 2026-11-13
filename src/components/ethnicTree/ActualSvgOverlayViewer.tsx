@@ -19,6 +19,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { ETHNIC_NODES, CORE_CLUSTERS, EthnicNode } from '../../data/ethnicTreeData';
+import { AtlasDialog } from '../common/AtlasDialog';
 
 interface ActualSvgOverlayViewerProps {
   onSelectReport?: (reportId: string) => void;
@@ -593,7 +594,7 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
 
       {/* Slide-over Inspection Drawer for Selected Hotspot or Inspected SVG Element */}
       {(selectedHotspot || inspectedElement) && (
-        <div className="absolute top-16 right-4 z-40 w-80 sm:w-96 max-h-[calc(100%-80px)] overflow-y-auto bg-zinc-900/95 border border-zinc-800 rounded-3xl p-5 shadow-2xl backdrop-blur-2xl space-y-4 animate-in fade-in slide-in-from-right-4 duration-200">
+        <div className="absolute top-16 right-4 z-40 w-80 sm:w-96 max-h-[calc(100%-80px)] overflow-y-auto bg-zinc-900/98 border border-zinc-800 rounded-3xl p-5 shadow-2xl space-y-4 animate-in fade-in slide-in-from-right-4 duration-200">
           
           <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
             <div className="flex items-center gap-2">
@@ -706,8 +707,13 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
 
       {/* Modal: Upload / Paste Custom SVG */}
       {isUploadModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-3xl p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-200">
+        <AtlasDialog
+          isOpen={isUploadModalOpen}
+          onClose={() => setIsUploadModalOpen(false)}
+          label="Load Your Actual SVG"
+          overlayClassName="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4"
+          className="w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-3xl p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-200"
+        >
             
             <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
               <div className="flex items-center gap-2.5">
@@ -721,6 +727,7 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
               </div>
               <button
                 type="button"
+                aria-label="Close SVG upload modal"
                 onClick={() => setIsUploadModalOpen(false)}
                 className="p-1 rounded-xl text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 cursor-pointer"
               >
@@ -822,9 +829,7 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
                 </button>
               </div>
             </div>
-
-          </div>
-        </div>
+        </AtlasDialog>
       )}
 
     </div>

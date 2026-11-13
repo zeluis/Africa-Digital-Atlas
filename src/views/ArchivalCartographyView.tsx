@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { 
   SPRING_TACTILE, 
   SPRING_SNAPPY, 
@@ -164,7 +164,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
           {/* Main Top Floating Workbench & Attached Multi-Row HUD Unit */}
           <div className="fixed top-[72px] sm:top-[76px] left-1/2 -translate-x-1/2 z-40 pointer-events-none flex flex-col items-center gap-1.5 w-[96%] max-w-[1440px]">
             {/* 1. Main Floating Switcher Bar */}
-            <motion.div 
+            <m.div 
               layout
               initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
@@ -226,10 +226,10 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                   )}
                 </button>
               </div>
-            </motion.div>
+            </m.div>
 
             {/* 2. Directly Attached 3-Row Unified HUD (Seamlessly positioned right below the main bar) */}
-            <motion.div 
+            <m.div 
               layout
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -589,7 +589,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
               {/* Expandable Info Drawers (High-Contrast, Explicit theme text, Editorial Corridors typography) */}
               <AnimatePresence mode="wait">
                 {streamlineDrawer === 'diagnostics' && (
-                  <motion.div
+                  <m.div
                     key="panel-diagnostics"
                     initial={{ opacity: 0, height: 0, y: -6 }}
                     animate={{ opacity: 1, height: 'auto', y: 0 }}
@@ -677,11 +677,11 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                         </p>
                       </div>
                     </div>
-                  </motion.div>
+                  </m.div>
                 )}
 
                 {streamlineDrawer === 'corridors' && (
-                  <motion.div
+                  <m.div
                     key="panel-corridors"
                     initial={{ opacity: 0, height: 0, y: -6 }}
                     animate={{ opacity: 1, height: 'auto', y: 0 }}
@@ -786,11 +786,11 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                         }`}>Indian Ocean Cape Rounding</div>
                       </div>
                     </div>
-                  </motion.div>
+                  </m.div>
                 )}
 
                 {streamlineDrawer === 'commentary' && (
-                  <motion.div
+                  <m.div
                     key="panel-commentary"
                     initial={{ opacity: 0, height: 0, y: -6 }}
                     animate={{ opacity: 1, height: 'auto', y: 0 }}
@@ -822,11 +822,11 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                         </span>
                       </div>
                     </div>
-                  </motion.div>
+                  </m.div>
                 )}
 
                 {streamlineDrawer === 'legend' && (
-                  <motion.div
+                  <m.div
                     key="panel-legend"
                     initial={{ opacity: 0, height: 0, y: -6 }}
                     animate={{ opacity: 1, height: 'auto', y: 0 }}
@@ -861,10 +861,10 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                         <span className={streamlinesTheme === 'light' ? "text-stone-900" : "text-slate-200"}>Harmattan: <strong className={streamlinesTheme === 'light' ? "text-amber-950 font-black" : "text-amber-300 font-black"}>{activeSeason.harmattanIntensity}</strong></span>
                       </div>
                     </div>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
-            </motion.div>
+            </m.div>
           </div>
 
           <OceanCurrentParticleCanvas
@@ -891,7 +891,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
             
             {/* Top Fixed Header Control Bar */}
             <div className="fixed top-[72px] sm:top-[76px] left-1/2 -translate-x-1/2 z-30 pointer-events-none flex justify-center w-max max-w-[calc(100vw-24px)] sm:max-w-[calc(100vw-48px)]">
-              <motion.div 
+              <m.div 
                 layout
                 initial={{ opacity: 0, y: -12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -939,7 +939,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                   <BookOpen className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                   <span>Concordance</span>
                 </button>
-              </motion.div>
+              </m.div>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xs">
@@ -962,7 +962,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 text-left"
             >
               {PRE_COLONIAL_ENTITIES.map(entity => (
-                <motion.div
+                <m.div
                   key={entity.id}
                   layout="position"
                   whileHover={
@@ -1064,7 +1064,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                       </button>
                     </div>
                   </div>
-                </motion.div>
+                </m.div>
               ))}
             </StaggerGrid>
           </div>

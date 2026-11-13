@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { 
   HistoricalMapPlate, 
   PreColonialEntity, 
@@ -1098,7 +1098,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
         {/* Chronology Scrubber Drawer (Expandable when user toggles Chronology) */}
         <AnimatePresence>
           {showPreColonialKingdoms && isChronologyOpen && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
@@ -1197,7 +1197,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                   </button>
                 </div>
               )}
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </header>
@@ -1211,7 +1211,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
         {/* Floating Toponym Callout Indicator */}
         <AnimatePresence>
           {activeToponymFocus && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -1235,14 +1235,14 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
               >
                 Reset View
               </button>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
 
         {/* Floating Left Button when Filmstrip is collapsed */}
         <AnimatePresence>
           {!isFilmstripOpen && (
-            <motion.button
+            <m.button
               type="button"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -1254,19 +1254,19 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
             >
               <PanelLeftOpen className="w-3.5 h-3.5 text-amber-600" />
               <span>Plates ({HISTORICAL_MAP_PLATES.length})</span>
-            </motion.button>
+            </m.button>
           )}
         </AnimatePresence>
 
         {/* Vertical Left-Aligned Thumbnail Filmstrip */}
         <AnimatePresence>
           {isFilmstripOpen && (
-            <motion.aside
+            <m.aside
               initial={{ opacity: 0, x: -60, width: 0 }}
               animate={{ opacity: 1, x: 0, width: 230 }}
               exit={{ opacity: 0, x: -60, width: 0 }}
               transition={{ type: "spring", damping: 28, stiffness: 350 }}
-              className="w-52 sm:w-56 lg:w-[230px] shrink-0 h-full border-r border-stone-200 dark:border-stone-800 bg-[#FAF8F5]/98 dark:bg-stone-950/98 backdrop-blur-xl flex flex-col z-20 shadow-xs overflow-hidden"
+              className="w-52 sm:w-56 lg:w-[230px] shrink-0 h-full border-r border-stone-200 dark:border-stone-800 bg-[#FAF8F5] dark:bg-stone-950 flex flex-col z-20 shadow-xs overflow-hidden"
               id="vertical-thumbnail-filmstrip"
             >
               {/* Vertical Filmstrip Header */}
@@ -1335,7 +1335,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                   );
                 })}
               </div>
-            </motion.aside>
+            </m.aside>
           )}
         </AnimatePresence>
 
@@ -2119,7 +2119,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
               {/* Floating Toponym Concordance Placard */}
               <AnimatePresence>
                 {selectedToponymPin && (
-                  <motion.div
+                  <m.div
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -2188,14 +2188,14 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                         {selectedToponymPin.category}
                       </span>
                     </div>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
 
               {/* Floating Trade Corridor Hover Indicator */}
               <AnimatePresence>
                 {hoveredTradeCorridor && !selectedTradeCorridor && (
-                  <motion.div
+                  <m.div
                     initial={{ opacity: 0, y: -15, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -15, scale: 0.95 }}
@@ -2213,7 +2213,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                     <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-mono uppercase font-bold border border-amber-500/40">
                       Click to Inspect Dossier
                     </span>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
 
@@ -2245,7 +2245,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
         {/* Right-aligned Floating Pill when dossier is collapsed */}
         <AnimatePresence>
           {!isDossierOpen && (
-            <motion.button
+            <m.button
               type="button"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -2257,19 +2257,19 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
             >
               <PanelRightOpen className="w-3.5 h-3.5 text-amber-600" />
               <span className="hidden sm:inline">Dossier</span>
-            </motion.button>
+            </m.button>
           )}
         </AnimatePresence>
 
         {/* Docked Dossier Panel / Mobile Bottom Sheet */}
         <AnimatePresence>
           {isDossierOpen && (
-            <motion.aside
+            <m.aside
               initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 100 }}
               transition={{ type: "spring", damping: 28, stiffness: 350 }}
-              className="fixed inset-x-0 bottom-0 max-h-[85dvh] lg:static lg:max-h-none w-full lg:w-[380px] lg:h-full shrink-0 z-40 lg:z-20 rounded-t-3xl lg:rounded-none border-t lg:border-t-0 lg:border-l border-stone-200 dark:border-stone-800 bg-white/98 dark:bg-stone-900/98 backdrop-blur-xl flex flex-col shadow-2xl lg:shadow-md overflow-hidden touch-sheet"
+              className="fixed inset-x-0 bottom-0 max-h-[85dvh] lg:static lg:max-h-none w-full lg:w-[380px] lg:h-full shrink-0 z-40 lg:z-20 rounded-t-3xl lg:rounded-none border-t lg:border-t-0 lg:border-l border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 flex flex-col shadow-2xl lg:shadow-md overflow-hidden touch-sheet"
               id="cartographic-dossier-panel"
             >
               {/* Mobile Tactile Grab Handle */}
@@ -2476,7 +2476,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                   aria-hidden="true" 
                 />
               </div>
-            </motion.aside>
+            </m.aside>
           )}
         </AnimatePresence>
 

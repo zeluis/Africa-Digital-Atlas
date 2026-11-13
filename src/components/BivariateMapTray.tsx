@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { Grid, Sparkles, ArrowRight, ArrowUp, Sliders, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
 
 export interface BivariatePreset {
@@ -148,7 +148,7 @@ export const BivariateMapTray: React.FC<BivariateMapTrayProps> = ({
   };
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
       exit={{ opacity: 0, height: 0 }}
@@ -290,7 +290,7 @@ export const BivariateMapTray: React.FC<BivariateMapTrayProps> = ({
       {/* Interactive Custom Range Brackets Tuning Panel */}
       <AnimatePresence>
         {showBracketControls && onThresholdsChange && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -528,9 +528,9 @@ export const BivariateMapTray: React.FC<BivariateMapTrayProps> = ({
                 </div>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 };

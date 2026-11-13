@@ -30,6 +30,8 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ onOpenColoph
     return (
       <div 
         id="network-status-restored-toast"
+        role="status"
+        aria-live="polite"
         className="fixed bottom-5 right-5 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-emerald-600 text-white shadow-xl text-xs font-medium animate-in slide-in-from-bottom-5 duration-300"
       >
         <CheckCircle2 className="w-4 h-4 text-emerald-200" />
@@ -43,6 +45,8 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ onOpenColoph
   return (
     <div 
       id="network-offline-banner"
+      role="status"
+      aria-live="polite"
       className="fixed bottom-5 right-5 z-50 flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-zinc-900/95 dark:bg-zinc-800/95 text-zinc-100 border border-zinc-700/80 shadow-2xl backdrop-blur-md text-xs font-medium animate-in slide-in-from-bottom-5 duration-300"
     >
       <div className="flex items-center gap-2">

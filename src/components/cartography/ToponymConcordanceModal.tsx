@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { motion } from 'motion/react';
 import { TOPONYM_CONCORDANCE_INDEX, ToponymConcordanceItem } from '../../data/preColonialKingdomsDetailed';
+import { AtlasDialog } from '../common/AtlasDialog';
 import { speakToponymConcordance, stopAfriataSpeech } from '../../utils/afriataVoiceEngine';
 import { 
   Search, 
@@ -76,21 +76,24 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
   };
 
   return (
-    <div 
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/75 backdrop-blur-md select-none touch-sheet"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+    <AtlasDialog
+      isOpen={true}
+      onClose={onClose}
+      label="Toponymic Concordance Table"
+      overlayClassName="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/75 backdrop-blur-md select-none touch-sheet"
+      className="relative w-full max-w-4xl max-h-[92dvh] sm:max-h-[88vh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-[#FAF7F2] dark:bg-[#181614] border-t sm:border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl overflow-hidden"
+      motionProps={{
+        initial: { opacity: 0, scale: 0.96, y: 40 },
+        animate: { opacity: 1, scale: 1, y: 0 },
+        exit: { opacity: 0, scale: 0.96, y: 40 },
+        transition: { type: 'spring', damping: 26, stiffness: 320 }
       }}
     >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 40 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, y: 40 }}
-        transition={{ type: 'spring', damping: 26, stiffness: 320 }}
+      <div
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className="relative w-full max-w-4xl max-h-[92dvh] sm:max-h-[88vh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-[#FAF7F2] dark:bg-[#181614] border-t sm:border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl overflow-hidden"
+        className="flex flex-col flex-1 min-h-0"
       >
         {/* Mobile Tactile Grab Handle */}
         <div className="sm:hidden pt-2.5 pb-1 flex justify-center cursor-grab shrink-0">
@@ -297,8 +300,8 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
             aria-hidden="true" 
           />
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </AtlasDialog>
   );
 };
 

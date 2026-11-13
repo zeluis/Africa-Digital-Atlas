@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { AtlasDialog } from '../common/AtlasDialog';
+import { ChartAccessibleTable } from '../common/ChartAccessibleTable';
 import { 
   Dna, 
   Skull, 
@@ -44,6 +46,7 @@ import {
   MOLECULAR_RESEARCH_CITATIONS,
   ResearchCitation
 } from '../../data/molecularLegaciesData';
+import { usePrefersReducedMotion } from '../../utils/motion';
 
 export type MolecularSubSection = 
   | 'overview'
@@ -56,6 +59,7 @@ export type MolecularSubSection =
   | 'synthesis';
 
 export const MolecularLegaciesView: React.FC = () => {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const [activeSection, setActiveSection] = useState<MolecularSubSection>('overview');
   const [selectedCitation, setSelectedCitation] = useState<ResearchCitation | null>(null);
   const [citationFilter, setCitationFilter] = useState<string>('all');
@@ -262,11 +266,20 @@ export const MolecularLegaciesView: React.FC = () => {
                       contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '0.75rem', color: '#f4f4f5' }}
                     />
                     <Legend />
-                    <Bar dataKey="historicalManifestPct" name="Historical Shipping Manifest Share (%)" fill="#64748b" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="presentDayGenomicPct" name="Present-Day Genomic Proportion (%)" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="historicalManifestPct" name="Historical Shipping Manifest Share (%)" fill="#64748b" radius={[4, 4, 0, 0]} isAnimationActive={!prefersReducedMotion} />
+                    <Bar dataKey="presentDayGenomicPct" name="Present-Day Genomic Proportion (%)" fill="#6366f1" radius={[4, 4, 0, 0]} isAnimationActive={!prefersReducedMotion} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+              <ChartAccessibleTable
+                caption="Archival shipping manifest proportions versus present-day genomic retention percentages"
+                headers={['Region', 'Manifest Share (%)', 'Genomic Retention (%)']}
+                rows={IBD_GENOMIC_CONCORDANCE.map(d => [
+                  d.region,
+                  `${d.historicalManifestPct}%`,
+                  `${d.presentDayGenomicPct}%`
+                ])}
+              />
             </div>
 
             {/* Regional Genomic Nuances & Overrepresentation */}
@@ -391,13 +404,24 @@ export const MolecularLegaciesView: React.FC = () => {
                       contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '0.75rem', color: '#f4f4f5' }}
                     />
                     <Legend />
-                    <Bar dataKey="europeanPaternalY" name="European Paternal (Y-Chromosome) %" fill="#ef4444" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="africanPaternalY" name="African Paternal (Y-Chromosome) %" fill="#10b981" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="africanMaternalMt" name="African Maternal (mtDNA) %" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="europeanMaternalMt" name="European Maternal (mtDNA) %" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="europeanPaternalY" name="European Paternal (Y-Chromosome) %" fill="#ef4444" radius={[4, 4, 0, 0]} isAnimationActive={!prefersReducedMotion} />
+                    <Bar dataKey="africanPaternalY" name="African Paternal (Y-Chromosome) %" fill="#10b981" radius={[4, 4, 0, 0]} isAnimationActive={!prefersReducedMotion} />
+                    <Bar dataKey="africanMaternalMt" name="African Maternal (mtDNA) %" fill="#6366f1" radius={[4, 4, 0, 0]} isAnimationActive={!prefersReducedMotion} />
+                    <Bar dataKey="europeanMaternalMt" name="European Maternal (mtDNA) %" fill="#f59e0b" radius={[4, 4, 0, 0]} isAnimationActive={!prefersReducedMotion} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+              <ChartAccessibleTable
+                caption="Paternal Y-DNA and maternal mtDNA ancestry percentages across Americas populations"
+                headers={['Population', 'European Y-DNA (%)', 'African Y-DNA (%)', 'African mtDNA (%)', 'European mtDNA (%)']}
+                rows={SEX_BIASED_GENE_FLOW.map(d => [
+                  d.population,
+                  `${d.europeanPaternalY}%`,
+                  `${d.africanPaternalY}%`,
+                  `${d.africanMaternalMt}%`,
+                  `${d.europeanMaternalMt}%`
+                ])}
+              />
             </div>
 
             {/* Detailed Population Breakdowns */}
@@ -842,13 +866,20 @@ export const MolecularLegaciesView: React.FC = () => {
 
       {/* Selected Citation Dossier Modal */}
       {selectedCitation && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-xl p-6 rounded-3xl bg-zinc-900 text-white border border-zinc-800 space-y-4 shadow-2xl animate-in zoom-in-95">
+        <AtlasDialog
+          isOpen={Boolean(selectedCitation)}
+          onClose={() => setSelectedCitation(null)}
+          label={selectedCitation.title}
+          overlayClassName="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4"
+          className="w-full max-w-xl p-6 rounded-3xl bg-zinc-900 text-white border border-zinc-800 space-y-4 shadow-2xl animate-in zoom-in-95"
+        >
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-mono font-bold">
                 {selectedCitation.category} • {selectedCitation.year}
               </span>
               <button
+                type="button"
+                aria-label="Close publication citation"
                 onClick={() => setSelectedCitation(null)}
                 className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 cursor-pointer"
               >
@@ -884,8 +915,7 @@ export const MolecularLegaciesView: React.FC = () => {
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             )}
-          </div>
-        </div>
+        </AtlasDialog>
       )}
     </div>
   );

@@ -1342,7 +1342,7 @@ export const exportCountryIntelligenceBriefingPDF = async (
   const { jsPDF } = await import('jspdf');
   const { atlas } = await import('../data/atlas-store');
   const { getCountryTradeFlows, getCountryMineralsProfile } = await import('../data/criticalMineralsData');
-  const { INITIAL_UNESCO_HERITAGE_SITES } = await import('../data/unescoHeritageRegistry');
+  const { ensureUnescoHeritageSitesLoaded } = await import('../data/unescoHeritageRegistry');
   const { formatGDP, formatPopulation, formatCurrency } = await import('../data/atlas-formatters');
 
   const doc = new jsPDF({
@@ -1362,7 +1362,8 @@ export const exportCountryIntelligenceBriefingPDF = async (
   const gdpPerCapita = population > 0 && nominalGdp > 0 ? Math.round((nominalGdp * 1e9) / (population * 1e6)) : 0;
   const tradeProfile = getCountryTradeFlows(country.id, country.name);
   const mineralsProfile = getCountryMineralsProfile(country.id, country.name);
-  const heritageSites = INITIAL_UNESCO_HERITAGE_SITES.filter(s => s.entityId === country.id || s.isoCode === country.id);
+  const allHeritageSites = await ensureUnescoHeritageSitesLoaded();
+  const heritageSites = allHeritageSites.filter(s => s.entityId === country.id || s.isoCode === country.id);
 
   // ================= PAGE 1 =================
   doc.setFillColor(252, 250, 247);

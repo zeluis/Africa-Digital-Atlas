@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { Compass, Sparkles, GitBranch } from 'lucide-react';
 
 interface BranchGeometry {
@@ -177,7 +177,7 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
           {/* 1. RECURSIVE CRUCIBLE RESONANCE: Tilted nested ellipses */}
           <g transform="rotate(-24 500 500)">
             {CRUCIBLE_ELLIPSES.map((e, idx) => (
-              <motion.ellipse
+              <m.ellipse
                 key={`crucible-${idx}`}
                 cx="500"
                 cy="500"
@@ -207,7 +207,7 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
           {TAST_BRANCHES.map((b, i) => (
             <g key={`branch-${b.name}`}>
               {/* Primary Trunk Path (Continuous breathing pulse) */}
-              <motion.path
+              <m.path
                 d={b.main}
                 fill="none"
                 className="stroke-[#8C532B] dark:stroke-[#F97316]"
@@ -228,7 +228,7 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
               />
 
               {/* Luminous Energy Flow Particle along Trunk */}
-              <motion.path
+              <m.path
                 d={b.main}
                 fill="none"
                 stroke="#E67E48"
@@ -249,7 +249,7 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
               />
 
               {/* Sub-Branch 1 */}
-              <motion.path
+              <m.path
                 d={b.sub1}
                 fill="none"
                 className="stroke-[#C86D3B]/80 dark:stroke-[#FBBF24]/85"
@@ -270,7 +270,7 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
               />
 
               {/* Sub-Branch 2 */}
-              <motion.path
+              <m.path
                 d={b.sub2}
                 fill="none"
                 className="stroke-[#C86D3B]/80 dark:stroke-[#FBBF24]/85"
@@ -302,7 +302,7 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
                 return (
                   <g key={`node-${b.name}-${nodeIdx}`}>
                     {/* Pulsing Aura */}
-                    <motion.circle
+                    <m.circle
                       cx={node.x}
                       cy={node.y}
                       r={node.r * 2.2}
@@ -319,7 +319,7 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
                       }}
                     />
                     {/* Node Core */}
-                    <motion.circle
+                    <m.circle
                       cx={node.x}
                       cy={node.y}
                       r={node.r}
@@ -345,7 +345,7 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
           {/* 3. CONTINENTAL ROOT (Central Ancestral Nexus) */}
           <g>
             {/* Pulsing Core Aura */}
-            <motion.circle
+            <m.circle
               cx="500"
               cy="500"
               r="34"
@@ -388,7 +388,7 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
 
       {/* Floating Status Pill (Sovereign Crucible & Canopy Metadata) */}
       <div className="relative z-20 flex flex-col items-center justify-center pointer-events-none p-4 text-center max-w-md">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: 'easeOut' }}
@@ -406,7 +406,7 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
             <Sparkles className="w-3 h-3 animate-spin text-[#D97706]" style={{ animationDuration: '4s' }} />
             <span className="tabular-nums">8 Basins</span>
           </div>
-        </motion.div>
+        </m.div>
       </div>
 
       {/* Bottom Editorial Narrative & Staggered Micro-Telemetry */}
@@ -422,7 +422,7 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
         {/* Dynamic Micro-Telemetry Phase Text */}
         <div className="h-5 flex items-center justify-center overflow-hidden mt-1">
           <AnimatePresence mode="wait">
-            <motion.span
+            <m.span
               key={phaseIndex}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
@@ -431,13 +431,13 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
               className="text-[11px] font-mono text-[#C86D3B] dark:text-[#FBBF24] font-medium tracking-wide"
             >
               {TELEMETRY_PHASES[phaseIndex]}
-            </motion.span>
+            </m.span>
           </AnimatePresence>
         </div>
 
         {/* Hairline Terracotta Progress Track */}
         <div className="w-48 sm:w-64 h-[2px] rounded-full bg-[#E5DDD0] dark:bg-[#38322B] overflow-hidden mt-1 shadow-inner relative">
-          <motion.div
+          <m.div
             className="absolute top-0 bottom-0 w-24 rounded-full bg-gradient-to-r from-[#C86D3B] via-[#D97706] to-[#059669]"
             animate={{
               x: [-100, 260]

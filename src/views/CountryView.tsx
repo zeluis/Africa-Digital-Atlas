@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { motion, useReducedMotion } from 'motion/react';
+import { m, useReducedMotion } from 'motion/react';
 import { SPRING_TACTILE, AnimatedTabPanel } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from '../components/CountryFlag';
@@ -8,6 +8,7 @@ import { CountryHeaderInfo } from '../components/CountryHeaderInfo';
 import { ClimateEcologySection } from '../components/ClimateEcologySection';
 import { MicroSparkline } from '../components/common/MicroSparkline';
 import { DataSourceBadge } from '../components/DataSourceBadge';
+import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
 import { getRegionCalmColor, getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
 import { useTranslation } from '../i18n/LanguageContext';
 import { useSavedEntities } from '../contexts/SavedEntitiesContext';
@@ -587,7 +588,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
                 }`}
               >
                 {isActive && (
-                  <motion.div
+                  <m.div
                     layoutId="countryDossierTabPill"
                     className="absolute inset-0 rounded-xl bg-emerald-600 dark:bg-zinc-100 shadow-xs"
                     transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
@@ -837,10 +838,16 @@ export const CountryView: React.FC<CountryViewProps> = ({
                         contentStyle={{ backgroundColor: '#18181b', borderColor: '#3f3f46', borderRadius: '0.75rem', color: '#f4f4f5' }}
                         formatter={(val: any) => [`$${Number(val).toFixed(2)} Billion`, 'Nominal GDP']}
                       />
-                      <Area type="monotone" dataKey="gdp" stroke="#06b6d4" strokeWidth={2.5} fill="url(#gdpGrad)" />
+                      <Area type="monotone" dataKey="gdp" stroke="#06b6d4" strokeWidth={2.5} fill="url(#gdpGrad)" isAnimationActive={!prefersReducedMotion} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
+
+                <ChartAccessibleTable
+                  caption={`${entity.name} nominal GDP trajectory in USD billions`}
+                  headers={['Year', 'Nominal GDP (USD Billions)', 'Real Growth (%)']}
+                  rows={gdpSeries.map(d => [d.year, d.gdp, d.growth])}
+                />
               </div>
 
               {/* Population Trajectory Chart */}
@@ -874,10 +881,16 @@ export const CountryView: React.FC<CountryViewProps> = ({
                         contentStyle={{ backgroundColor: '#18181b', borderColor: '#3f3f46', borderRadius: '0.75rem', color: '#f4f4f5' }}
                         formatter={(val: any) => [`${Number(val).toFixed(2)} Million`, 'Population']}
                       />
-                      <Area type="monotone" dataKey="population" stroke="#10b981" strokeWidth={2.5} fill="url(#popGrad)" />
+                      <Area type="monotone" dataKey="population" stroke="#10b981" strokeWidth={2.5} fill="url(#popGrad)" isAnimationActive={!prefersReducedMotion} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
+
+                <ChartAccessibleTable
+                  caption={`${entity.name} population expansion in millions`}
+                  headers={['Year', 'Population (Millions)']}
+                  rows={popSeries.map(d => [d.year, d.population])}
+                />
               </div>
             </div>
           </div>
@@ -946,10 +959,16 @@ export const CountryView: React.FC<CountryViewProps> = ({
                       contentStyle={{ backgroundColor: '#18181b', borderColor: '#3f3f46', borderRadius: '0.75rem', color: '#f4f4f5' }}
                       formatter={(val: any) => [`${Number(val).toFixed(2)}%`, 'Real GDP Growth']}
                     />
-                    <Bar dataKey="growth" fill="#10b981" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="growth" fill="#10b981" radius={[6, 6, 0, 0]} isAnimationActive={!prefersReducedMotion} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+
+              <ChartAccessibleTable
+                caption={`${entity.name} multi-year real GDP growth rate in percent`}
+                headers={['Year', 'Real GDP Growth (%)', 'Nominal GDP ($B)']}
+                rows={gdpSeries.map(d => [d.year, d.growth, d.gdp])}
+              />
             </div>
 
             {/* Critical Energy Transition Minerals Card */}

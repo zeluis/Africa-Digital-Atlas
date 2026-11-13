@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { SlidingPill, usePrefersReducedMotion } from '../utils/motion';
 import { 
   BookOpen, 
@@ -14,7 +14,12 @@ import {
   SlidersHorizontal,
   Maximize2
 } from 'lucide-react';
-import { SLAVE_TRADE_ILLUSTRATIONS, SlaveTradeIllustration } from '../data/slaveTradeIllustrations';
+import {
+  SLAVE_TRADE_ILLUSTRATIONS,
+  SlaveTradeIllustration,
+  ensureSlaveTradeIllustrationsHydrated,
+  subscribeSlaveTradeIllustrations
+} from '../data/slaveTradeIllustrations';
 import { CASTAS_ARCHIVE_ITEMS } from '../data/castasArchive';
 import { SlaveTradeIconography } from '../components/slaveVoyages/SlaveTradeIconography';
 import { ArchivalLoupeModal } from '../components/slaveVoyages/ArchivalLoupeModal';
@@ -82,6 +87,16 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
 }) => {
   const [heroState, setHeroState] = useState<HeroState>(() => getCandidateState());
   const [inspectedIllustration, setInspectedIllustration] = useState<SlaveTradeIllustration | null>(null);
+  const [illustrationsVersion, setIllustrationsVersion] = useState(0);
+
+  useEffect(() => {
+    const unsub = subscribeSlaveTradeIllustrations(() => {
+      setIllustrationsVersion(v => v + 1);
+      setHeroState(prev => getCandidateState(prev.id));
+    });
+    ensureSlaveTradeIllustrationsHydrated();
+    return unsub;
+  }, []);
   
   // Navigation tabs state ('registry' vs 'ingestion' / 'castas')
   const [activeTab, setActiveTab] = useState<'registry' | 'ingestion'>('registry');
@@ -121,7 +136,7 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
       setActiveCastasItem(foundCastas);
       setInspectedIllustration(foundCastas);
     }
-  }, [initialPlateId]);
+  }, [initialPlateId, illustrationsVersion]);
 
   const rotateHeroImage = useCallback(() => {
     setHeroState(prev => getCandidateState(prev.id));
@@ -198,6 +213,9 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
               </span>
             </button>
           </div>
+          <div role="status" aria-live="polite" className="sr-only">
+            Castas and Colonial Visual Archive active. Viewing Plate {activeCastasItem.regId}: {activeCastasItem.title}.
+          </div>
         </header>
 
         {/* Full-Bleed Archival Image Viewer Workspace */}
@@ -237,7 +255,7 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
         <div className="absolute inset-0 z-0 select-none overflow-hidden">
           <AnimatePresence mode="popLayout">
             {heroState.url && (
-              <motion.div
+              <m.div
                 key={heroState.url}
                 initial={{ opacity: 0, scale: 1.04 }}
                 animate={{ opacity: 0.52, scale: 1 }}
@@ -310,7 +328,7 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
 
           {/* Archival Showcase Card on Large Screens */}
           <div className="hidden lg:block shrink-0">
-            <motion.div 
+            <m.div 
               key={heroState.id}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -366,7 +384,7 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
                   </span>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </div>
@@ -389,6 +407,9 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
         onClose={() => setInspectedIllustration(null)}
         academiaVariant="slavery-images"
       />
+      <div role="status" aria-live="polite" className="sr-only">
+        Archival Plates Grid active. Featured plate SI-OB-{heroState.id}: {heroState.title}.
+      </div>
     </section>
   );
 };

@@ -58,6 +58,8 @@ import {
   ComposedChart
 } from 'recharts';
 import { ReportVoiceReader } from '../components/ReportVoiceReader';
+import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
+import { usePrefersReducedMotion } from '../utils/motion';
 
 interface AfricanDevelopmentMasterReportViewProps {
   onNavigateToAtlas?: () => void;
@@ -68,6 +70,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
   onNavigateToAtlas,
   onNavigateToMolecular
 }) => {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const [activeSectionId, setActiveSectionId] = useState<string>('executive_summary');
   const [activeEpochIndex, setActiveEpochIndex] = useState<number>(0);
   const [activeCommodityIndex, setActiveCommodityIndex] = useState<number>(0);
@@ -470,6 +473,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                         stroke="#A64E3E"
                         strokeWidth={1.8}
                         strokeDasharray="4 4"
+                        isAnimationActive={!prefersReducedMotion}
                       />
                       <Line
                         type="monotone"
@@ -478,6 +482,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                         stroke="#3F6955"
                         strokeWidth={2.4}
                         dot={{ r: 4 }}
+                        isAnimationActive={!prefersReducedMotion}
                       />
                       <Line
                         type="monotone"
@@ -486,6 +491,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                         stroke="#9E6A2E"
                         strokeWidth={2.4}
                         dot={{ r: 4 }}
+                        isAnimationActive={!prefersReducedMotion}
                       />
                       <Line
                         type="monotone"
@@ -494,6 +500,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                         stroke="#3B5B75"
                         strokeWidth={2.4}
                         dot={{ r: 4 }}
+                        isAnimationActive={!prefersReducedMotion}
                       />
                     </ComposedChart>
                   </ResponsiveContainer>
@@ -727,6 +734,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                         stroke="#9E6A2E"
                         strokeWidth={2.2}
                         dot={{ r: 3.5 }}
+                        isAnimationActive={!prefersReducedMotion}
                       />
                       <Line
                         type="monotone"
@@ -735,6 +743,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                         stroke="#3B5B75"
                         strokeWidth={2.2}
                         dot={{ r: 3.5 }}
+                        isAnimationActive={!prefersReducedMotion}
                       />
                       <Area
                         type="monotone"
@@ -744,6 +753,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                         fillOpacity={0.12}
                         stroke="#3F6955"
                         strokeWidth={2.5}
+                        isAnimationActive={!prefersReducedMotion}
                       />
                     </ComposedChart>
                   </ResponsiveContainer>
@@ -862,6 +872,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                         name="Total Slave Exports (Millions)"
                         fill="#A64E3E"
                         radius={[3, 3, 0, 0]}
+                        isAnimationActive={!prefersReducedMotion}
                       />
                       <Bar
                         yAxisId="right"
@@ -869,10 +880,21 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                         name="Current GDP per Capita ($ USD)"
                         fill="#3B5B75"
                         radius={[3, 3, 0, 0]}
+                        isAnimationActive={!prefersReducedMotion}
                       />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
+                <ChartAccessibleTable
+                  caption="Regional slave extraction intensity vs. current GDP per capita (Nunn 2008)"
+                  headers={['Region / Modern Country', 'Total Slave Exports (Millions)', 'Current GDP per Capita (USD)']}
+                  rows={NUNN_SLAVE_TRADE_EXTRACTION.map(r => [
+                    r.regionOrModernCountry,
+                    r.totalExportsMillions,
+                    `$${r.currentGdpPerCapitaUsd.toLocaleString()}`
+                  ])}
+                  summaryLabel="Inspect slave extraction regression table"
+                />
               </div>
             </figure>
           </section>

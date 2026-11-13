@@ -1,6 +1,7 @@
 import { SlaveTradeIllustration, UnescoSiteMetadata } from './slaveTradeIllustrations';
-import rawUnescoSitesJson from './unescoHeritageSites.json';
-import rawPhotoRegistry from './unescoPhotoRegistry.json';
+
+const unescoSitesJsonUrl = new URL('./unescoHeritageSites.json', import.meta.url).href;
+const unescoPhotoRegistryUrl = new URL('./unescoPhotoRegistry.json', import.meta.url).href;
 
 /**
  * ISO-2 to ISO-3 mapping for African & Arab States Parties
@@ -21,11 +22,6 @@ export const ISO2_TO_ISO3_MAP: Record<string, string> = {
 };
 
 const photoMap = new Map<number, any>();
-if (rawPhotoRegistry && (rawPhotoRegistry as any).sites) {
-  for (const s of (rawPhotoRegistry as any).sites) {
-    photoMap.set(s.whcId, s);
-  }
-}
 
 /**
  * Enriches UNESCO site metadata with curated photo registry metadata (photographer, licenses, attribution, URLs).
@@ -288,8 +284,52 @@ export const unescoSiteToIllustration = (site: UnescoSiteMetadata): SlaveTradeIl
 
 /**
  * Curated initial UNESCO World Heritage registry covering Africa and Arab States enriched with photo registry metadata.
+ * Hydrated lazily via ensureUnescoHeritageSitesLoaded() to keep initial JS bundle lean while preserving offline precache of JSON assets.
  */
-export const INITIAL_UNESCO_HERITAGE_SITES: UnescoSiteMetadata[] = (rawUnescoSitesJson as UnescoSiteMetadata[]).map(enrichWithPhotoRegistry);
+export const INITIAL_UNESCO_HERITAGE_SITES: UnescoSiteMetadata[] = [];
+
+let unescoLoadPromise: Promise<UnescoSiteMetadata[]> | null = null;
+let unescoLoadedFlag = false;
+const unescoListeners = new Set<() => void>();
+
+export function isUnescoHeritageSitesLoaded(): boolean {
+  return unescoLoadedFlag;
+}
+
+export function subscribeUnescoHeritageSites(listener: () => void): () => void {
+  unescoListeners.add(listener);
+  return () => {
+    unescoListeners.delete(listener);
+  };
+}
+
+export function ensureUnescoHeritageSitesLoaded(): Promise<UnescoSiteMetadata[]> {
+  if (unescoLoadedFlag) return Promise.resolve(INITIAL_UNESCO_HERITAGE_SITES);
+  if (unescoLoadPromise) return unescoLoadPromise;
+  if (typeof window === 'undefined' || typeof fetch === 'undefined') {
+    return Promise.resolve(INITIAL_UNESCO_HERITAGE_SITES);
+  }
+
+  unescoLoadPromise = Promise.all([
+    fetch(unescoSitesJsonUrl).then(r => (r.ok ? r.json() : [])),
+    fetch(unescoPhotoRegistryUrl).then(r => (r.ok ? r.json() : null)).catch(() => null)
+  ])
+    .then(([sitesRaw, photoRaw]: [UnescoSiteMetadata[], any]) => {
+      if (photoRaw && Array.isArray(photoRaw.sites)) {
+        for (const s of photoRaw.sites) {
+          photoMap.set(s.whcId, s);
+        }
+      }
+      const enriched = (Array.isArray(sitesRaw) ? sitesRaw : []).map(enrichWithPhotoRegistry);
+      INITIAL_UNESCO_HERITAGE_SITES.splice(0, INITIAL_UNESCO_HERITAGE_SITES.length, ...enriched);
+      unescoLoadedFlag = true;
+      unescoListeners.forEach(fn => fn());
+      return INITIAL_UNESCO_HERITAGE_SITES;
+    })
+    .catch(() => INITIAL_UNESCO_HERITAGE_SITES);
+
+  return unescoLoadPromise;
+}
 
 export const BIOME_OPTIONS = [
   'All Biomes',

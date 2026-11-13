@@ -11,7 +11,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { atlas } from '../data/atlas-store';
 import { AfricanRegion, AtlasEntity } from '../data/types';
 import { CountryFlag } from './CountryFlag';
@@ -248,7 +248,7 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
               >
                 {/* Snappy sliding animated background pill with regional color */}
                 {isSelected && (
-                  <motion.div
+                  <m.div
                     layoutId="mosaicRegionPill"
                     className="absolute inset-0 rounded-xl shadow-xs"
                     style={{ backgroundColor: tab.color }}
@@ -296,7 +296,7 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
                   title={metric.title}
                 >
                   {isActive && (
-                    <motion.div
+                    <m.div
                       layoutId="mosaicMetricPill"
                       className="absolute inset-0 rounded-lg bg-white dark:bg-zinc-900 shadow-xs border border-zinc-200/50 dark:border-zinc-700/50"
                       transition={SPRING_TACTILE}
@@ -329,7 +329,7 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
                   title={`Sort by ${opt.label}`}
                 >
                   {isSelected && (
-                    <motion.div
+                    <m.div
                       layoutId="mosaicSortPill"
                       className="absolute inset-0 rounded-lg bg-white dark:bg-zinc-900 shadow-xs border border-zinc-200/50 dark:border-zinc-700/50"
                       transition={SPRING_TACTILE}
@@ -377,7 +377,7 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
           const tonal = getRegionCardTonalStyle(item.region);
 
           return (
-            <motion.button
+            <m.button
               key={item.entity.id}
               layout={!reducedMotion}
               onClick={() => {
@@ -440,7 +440,7 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
                   {renderMetricValue(item)}
                 </span>
               </div>
-            </motion.button>
+            </m.button>
           );
         })}
       </div>

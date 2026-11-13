@@ -285,7 +285,7 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
             </button>
 
             {isLayersDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-52 bg-zinc-900/95 dark:bg-zinc-950/95 border border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150 space-y-1">
+              <div className="absolute right-0 top-full mt-2 w-52 bg-zinc-900/98 dark:bg-zinc-950/98 border border-zinc-800 rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150 space-y-1">
                 <div className="text-[10px] uppercase font-mono tracking-wider text-zinc-500 px-2.5 py-1">
                   Layer Filters
                 </div>
@@ -389,7 +389,7 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
 
             {/* Search Dropdown with Sleek Scrollbar & Bottom Fade */}
             {isSearchOpen && searchResults.length > 0 && (
-              <div className="absolute right-0 top-full mt-2 w-72 bg-zinc-900/95 dark:bg-zinc-950/95 border border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150 relative overflow-hidden">
+              <div className="absolute right-0 top-full mt-2 w-72 bg-zinc-900/98 dark:bg-zinc-950/98 border border-zinc-800 rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150 relative overflow-hidden">
                 <div className="text-[10px] uppercase font-mono tracking-wider text-zinc-500 px-2.5 py-1">
                   Matching Ethnic Groups
                 </div>
@@ -821,7 +821,7 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
       {/* Floating Desktop Info Surface Card */}
       {selectedNode && (
         <div 
-          className="absolute bottom-6 right-6 z-30 w-80 sm:w-96 p-5 rounded-3xl bg-zinc-950/95 border border-zinc-800 shadow-2xl backdrop-blur-2xl text-zinc-100 animate-in fade-in slide-in-from-bottom-4 duration-200"
+          className="absolute bottom-6 right-6 z-30 w-80 sm:w-96 p-5 rounded-3xl bg-zinc-950/98 border border-zinc-800 shadow-2xl text-zinc-100 animate-in fade-in slide-in-from-bottom-4 duration-200"
           id="ethnic-node-info-surface"
         >
           <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-800">
@@ -925,7 +925,7 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
       {/* Floating Cluster Info Surface Card */}
       {selectedCluster && !selectedNode && (
         <div 
-          className="absolute bottom-6 right-6 z-30 w-80 sm:w-96 p-5 rounded-3xl bg-zinc-950/95 border border-zinc-800 shadow-2xl backdrop-blur-2xl text-zinc-100 animate-in fade-in slide-in-from-bottom-4 duration-200"
+          className="absolute bottom-6 right-6 z-30 w-80 sm:w-96 p-5 rounded-3xl bg-zinc-950/98 border border-zinc-800 shadow-2xl text-zinc-100 animate-in fade-in slide-in-from-bottom-4 duration-200"
           id="cluster-info-surface"
         >
           <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-800">

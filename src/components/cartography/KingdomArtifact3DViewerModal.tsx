@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { KingdomDetailedRecord, Artifact3DRecord, DETAILED_KINGDOMS_DATA } from '../../data/preColonialKingdomsDetailed';
+import { AtlasDialog } from '../common/AtlasDialog';
+import { usePrefersReducedMotion } from '../../utils/motion';
 import { 
   Box, 
   RotateCw, 
@@ -60,17 +61,36 @@ export const KingdomArtifact3DViewerModal: React.FC<KingdomArtifact3DViewerModal
   const [copiedCitation, setCopiedCitation] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'materiality' | 'provenance' | 'significance'>('overview');
 
+  const reducedMotion = usePrefersReducedMotion();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
-  // Auto-rotation loop with smooth delta
+  // Auto-rotation loop respecting reduced-motion preference and tab visibility
   useEffect(() => {
-    if (!isAutoRotating || isDragging) return;
-    const interval = setInterval(() => {
-      setRotationY(prev => (prev + 0.6) % 360);
-    }, 30);
-    return () => clearInterval(interval);
-  }, [isAutoRotating, isDragging]);
+    if (!isAutoRotating || isDragging || reducedMotion) return;
+    let interval: ReturnType<typeof setInterval> | null = null;
+    const startLoop = () => {
+      if (!document.hidden && !interval) {
+        interval = setInterval(() => {
+          setRotationY(prev => (prev + 0.6) % 360);
+        }, 30);
+      }
+    };
+    const handleVisibility = () => {
+      if (document.hidden && interval) {
+        clearInterval(interval);
+        interval = null;
+      } else {
+        startLoop();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    startLoop();
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+      if (interval) clearInterval(interval);
+    };
+  }, [isAutoRotating, isDragging, reducedMotion]);
 
   // Pointer drag controls
   const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -883,45 +903,47 @@ export const KingdomArtifact3DViewerModal: React.FC<KingdomArtifact3DViewerModal
     kingdom
   ]);
 
-  // Request Animation Frame loop
+  // Render on state/interaction updates rather than spinning an unconditional 60fps loop
   useEffect(() => {
-    const loop = () => {
+    animFrameRef.current = requestAnimationFrame(() => {
       render3DScene();
-      animFrameRef.current = requestAnimationFrame(loop);
-    };
-    animFrameRef.current = requestAnimationFrame(loop);
+    });
     return () => {
-      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      if (animFrameRef.current) {
+        cancelAnimationFrame(animFrameRef.current);
+        animFrameRef.current = null;
+      }
     };
   }, [render3DScene]);
 
-  // Keyboard shortcut listener
+  // Keyboard shortcut listener (Space toggles auto-rotation outside buttons/inputs; Esc handled by AtlasDialog)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
       if (e.key === ' ') {
+        const target = e.target as HTMLElement | null;
+        if (target && target.closest('button, input, textarea, select, a')) return;
         e.preventDefault();
         setIsAutoRotating(prev => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md overflow-hidden text-left"
+    <AtlasDialog
+      isOpen={true}
+      onClose={onClose}
+      label={`${kingdom.name} 360 degree artifact inspector`}
+      overlayClassName="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md overflow-hidden text-left"
+      className="relative w-full max-w-6xl h-[92vh] max-h-[900px] flex flex-col rounded-3xl bg-zinc-950 border border-zinc-800 shadow-2xl overflow-hidden text-zinc-100"
+      motionProps={{
+        initial: { scale: 0.95, y: 15 },
+        animate: { scale: 1, y: 0 },
+        exit: { scale: 0.95, y: 15 },
+        transition: { type: 'spring', damping: 25, stiffness: 300 }
+      }}
     >
-      <motion.div
-        initial={{ scale: 0.95, y: 15 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.95, y: 15 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="relative w-full max-w-6xl h-[92vh] max-h-[900px] flex flex-col rounded-3xl bg-zinc-950 border border-zinc-800 shadow-2xl overflow-hidden text-zinc-100"
-      >
         {/* 1. Header Toolbar */}
         <div className="shrink-0 flex items-center justify-between px-6 py-4 border-b border-zinc-800/90 bg-zinc-900/60 backdrop-blur-md">
           <div className="flex items-center gap-3">
@@ -1259,7 +1281,6 @@ export const KingdomArtifact3DViewerModal: React.FC<KingdomArtifact3DViewerModal
             </div>
           </div>
         </div>
-      </motion.div>
-    </motion.div>
+    </AtlasDialog>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import { Download, Share2, X, Smartphone, Check } from 'lucide-react';
+import { AtlasDialog } from './common/AtlasDialog';
 
 export const PWAInstallButton: React.FC<{ className?: string }> = ({ className = '' }) => {
   const { isInstallable, isInstalled, isIOS, install } = usePWAInstall();
@@ -57,16 +58,23 @@ export const PWAInstallButton: React.FC<{ className?: string }> = ({ className =
         </button>
 
         {showIOSGuide && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-            <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 shadow-2xl space-y-4">
+          <AtlasDialog
+            isOpen={showIOSGuide}
+            onClose={() => setShowIOSGuide(false)}
+            label="Install on iPhone or iPad"
+            overlayClassName="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200"
+            className="w-full max-w-sm rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 shadow-2xl space-y-4"
+          >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 font-bold text-base text-zinc-900 dark:text-zinc-100">
                   <Smartphone className="w-5 h-5 text-emerald-500" />
                   <span>Install on iPhone / iPad</span>
                 </div>
                 <button
+                  type="button"
+                  aria-label="Close installation guide"
                   onClick={() => setShowIOSGuide(false)}
-                  className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                  className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -88,13 +96,13 @@ export const PWAInstallButton: React.FC<{ className?: string }> = ({ className =
               </div>
 
               <button
+                type="button"
                 onClick={() => setShowIOSGuide(false)}
                 className="w-full py-2.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs font-semibold hover:opacity-90 transition cursor-pointer"
               >
                 Got it
               </button>
-            </div>
-          </div>
+          </AtlasDialog>
         )}
       </>
     );

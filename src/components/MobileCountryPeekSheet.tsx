@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { CountryFlag } from './CountryFlag';
 import { 
   X, 
@@ -144,7 +144,7 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
       >
         {/* Backdrop for outside tap dismiss (only active in half or full tier) */}
         {snapTier !== 'peek' && (
-          <motion.div 
+          <m.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -155,7 +155,7 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
         )}
 
         {/* Sliding 3-Snap Bottom Sheet Container */}
-        <motion.div
+        <m.div
           ref={sheetRef}
           initial={reducedMotion ? { opacity: 0 } : { y: '100%' }}
           animate={reducedMotion ? { opacity: 1 } : { y: 0 }}
@@ -372,7 +372,7 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
               </div>
             </div>
           )}
-        </motion.div>
+        </m.div>
       </div>
     </AnimatePresence>
   );

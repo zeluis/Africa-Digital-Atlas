@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence } from 'motion/react';
 import { 
   getContinentalSummary, 
   getRegionalSummaries, 
@@ -271,7 +271,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 >
                   {/* Snappy sliding animated background pill */}
                   {isActive && (
-                    <motion.div
+                    <m.div
                       layoutId="overviewPerspectivePill"
                       className={`absolute inset-0 rounded-xl ${cfg.activeBg} border ${cfg.activeBorder} shadow-xs`}
                       transition={{ type: 'spring', stiffness: 500, damping: 35 }}
@@ -307,7 +307,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
         {/* Animated Perspective Content Panels */}
         <AnimatePresence mode="wait">
-          <motion.div
+          <m.div
             key={activePerspective}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -622,7 +622,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             </div>
           </div>
         )}
-          </motion.div>
+          </m.div>
         </AnimatePresence>
       </section>
     </section>
