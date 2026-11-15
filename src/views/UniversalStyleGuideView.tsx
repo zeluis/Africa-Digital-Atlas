@@ -22,6 +22,7 @@ import { CanonicalNavTab } from '../components/NavigationDrawer';
 import { OrganizationLogo } from '../components/OrganizationLogo';
 import { UN_GEOSCHEME_TONAL_PALETTES as UN_M49_REGIONAL_PALETTES } from '../data/unGeoschemeColors';
 import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 
 interface UniversalStyleGuideViewProps {
   onNavigateTab: (tab: CanonicalNavTab) => void;
@@ -65,12 +66,10 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
   const prefersReducedMotion = useReducedMotion();
   const [activeTab, setActiveTab] = useState<GuideTab>('identity');
   const [lastCartographyTab, setLastCartographyTab] = useState<'cartography' | 'assets'>('cartography');
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const { copiedKey, liveAnnouncement, copyToClipboard } = useCopyToClipboard();
 
   const handleCopy = (text: string, key: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedKey(key);
-    setTimeout(() => setCopiedKey(null), 2000);
+    void copyToClipboard(text, key, 'Copied token value to clipboard');
   };
 
   const activeSection = GUIDE_TAB_TO_SECTION[activeTab];

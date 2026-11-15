@@ -60,7 +60,8 @@ import {
   TradeWindVector,
   HISTORIC_RIVERS,
   HISTORIC_INTERNAL_BOUNDARIES,
-  INTERNATIONAL_BORDERS_PATH
+  INTERNATIONAL_BORDERS_PATH,
+  useAtlanticPathsLoaded
 } from './atlanticMapGeometry';
 
 interface AtlanticFlowMapProps {
@@ -117,6 +118,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
   onBackToOverview,
   onSwitchToPorts
 }) => {
+  useAtlanticPathsLoaded();
   const [hoveredRoute, setHoveredRoute] = useState<RegionalRouteFlow | null>(null);
   const [hoveredNode, setHoveredNode] = useState<any | null>(null);
   const [hoveredWind, setHoveredWind] = useState<TradeWindVector | null>(null);
@@ -445,7 +447,8 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
             <div className="flex items-center gap-2">
               <h3 className="font-extrabold text-sm text-[#1C1917] dark:text-zinc-100 tracking-tight flex items-center gap-2">
                 <span>Interactive Atlantic Geodesic Flow Network</span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#EFE7D5] dark:bg-emerald-950 border border-[#D8CCB5] dark:border-emerald-600/60 text-[10px] font-mono text-[#9A3412] dark:text-emerald-400 font-bold">
+                <span className="inline-flex items-center gap-1 text-[11px] font-mono text-[#9A3412] dark:text-emerald-400 font-bold">
+                  <span className="text-stone-400" aria-hidden="true">·</span>
                   <Sparkles className="w-3 h-3 text-[#C2410C] dark:text-emerald-400" />
                   1514–1866 Canonical System
                 </span>
@@ -1220,7 +1223,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                         <Waves className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 animate-pulse" />
                         <span>Hydrodynamic Stream Engine</span>
                       </span>
-                      <span className="text-[9.5px] font-mono px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 font-bold">
+                      <span className="text-[10px] font-mono text-cyan-800 dark:text-cyan-300 font-bold">
                         {SEASONAL_HYDRO_METRICS[mapCalendarSeasonToHydro(selectedSeason)].quarterLabel.split(' ')[0]}
                       </span>
                     </div>

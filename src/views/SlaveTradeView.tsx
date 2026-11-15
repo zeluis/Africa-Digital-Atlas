@@ -89,10 +89,6 @@ const AfricanDevelopmentMasterReportView = lazyWithRetry(
   () => import('./AfricanDevelopmentMasterReportView').then(m => ({ default: m.AfricanDevelopmentMasterReportView || (m as any).default })),
   'AfricanDevelopmentMasterReportView'
 );
-const AcademicExportModal = lazyWithRetry(
-  () => import('../components/AcademicExportModal').then(m => ({ default: m.AcademicExportModal || (m as any).default })),
-  'AcademicExportModal'
-);
 const SlaveVoyagesEssaysViewer = lazyWithRetry(
   () => import('../components/slaveVoyages/SlaveVoyagesEssaysViewer').then(m => ({ default: m.SlaveVoyagesEssaysViewer || (m as any).default })),
   'SlaveVoyagesEssaysViewer'
@@ -224,7 +220,6 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
   const [selectedRoute, setSelectedRoute] = useState<RegionalRouteFlow | null>(null);
   const [peopleSearch, setPeopleSearch] = useState('');
   const [enslaverSearch, setEnslaverSearch] = useState('');
-  const [isExportOpen, setIsExportOpen] = useState(false);
   const [activeEssayId, setActiveEssayId] = useState<string>('essay-global-magnitude');
   const [isSeasonalityOpen, setIsSeasonalityOpen] = useState(false);
   const [showMobileVoyageFilters, setShowMobileVoyageFilters] = useState(false);
@@ -537,7 +532,22 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
               {renderPrimaryTablist()}
               <button
                 type="button"
-                onClick={() => setIsExportOpen(true)}
+                onClick={async () => {
+                  const { atlasModalStore } = await import('../stores/useAtlasModalStore');
+                  atlasModalStore.openAcademicExport({
+                    title: 'Atlantic Slave Trade Data Atlas & Maritime Flow Corridors',
+                    sourceContext: 'SlaveVoyages Consortium (api.slavevoyages.org), TAST Database v2026.1',
+                    citationMetadata: {
+                      authors: ['SlaveVoyages Consortium', 'Afriata Historical Analytics Group', 'Eltis et al.'],
+                      year: 2026,
+                      datasetName: 'Trans-Atlantic and Intra-American Slave Trade Databases',
+                      url: typeof window !== 'undefined' ? window.location.href : 'https://afriata.org/#slave-trade',
+                      doi: '10.6084/m9.figshare.34065711',
+                      version: SLAVEVOYAGES_METADATA.version,
+                    },
+                    svgContainerId: 'atlantic-flow-map-svg',
+                  });
+                }}
                 className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-zinc-900 hover:bg-[#FAF6EE] dark:hover:bg-zinc-800 text-[#1C1917] dark:text-zinc-200 border border-[#DCD3C1] dark:border-zinc-700 text-xs font-semibold cursor-pointer transition-colors shadow-xs shrink-0 self-start xl:self-auto"
               >
                 <Download className="w-3.5 h-3.5 text-[#C2410C] dark:text-emerald-400" />
@@ -567,7 +577,22 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                 />
                 <button
                   type="button"
-                  onClick={() => setIsExportOpen(true)}
+                  onClick={async () => {
+                    const { atlasModalStore } = await import('../stores/useAtlasModalStore');
+                    atlasModalStore.openAcademicExport({
+                      title: 'Atlantic Slave Trade Data Atlas & Maritime Flow Corridors',
+                      sourceContext: 'SlaveVoyages Consortium (api.slavevoyages.org), TAST Database v2026.1',
+                      citationMetadata: {
+                        authors: ['SlaveVoyages Consortium', 'Afriata Historical Analytics Group', 'Eltis et al.'],
+                        year: 2026,
+                        datasetName: 'Trans-Atlantic and Intra-American Slave Trade Databases',
+                        url: typeof window !== 'undefined' ? window.location.href : 'https://afriata.org/#slave-trade',
+                        doi: '10.6084/m9.figshare.34065711',
+                        version: SLAVEVOYAGES_METADATA.version,
+                      },
+                      svgContainerId: 'atlantic-flow-map-svg',
+                    });
+                  }}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-[#1C1917] dark:text-zinc-200 border border-[#DCD3C1] dark:border-zinc-700 text-xs font-semibold cursor-pointer transition-colors shadow-xs"
                 >
                   <Download className="w-3.5 h-3.5 text-[#C2410C] dark:text-emerald-400" />
@@ -1879,27 +1904,6 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
           <VoyageDossierModal
             voyage={selectedVoyage}
             onClose={() => setSelectedVoyage(null)}
-          />
-        </Suspense>
-      )}
-
-      {/* Academic Citation & Vector Export Modal */}
-      {isExportOpen && (
-        <Suspense fallback={null}>
-          <AcademicExportModal
-            isOpen={isExportOpen}
-            onClose={() => setIsExportOpen(false)}
-            title="Atlantic Slave Trade Data Atlas & Maritime Flow Corridors"
-            sourceContext="SlaveVoyages Consortium (api.slavevoyages.org), TAST Database v2026.1"
-            citationMetadata={{
-              authors: ['SlaveVoyages Consortium', 'Afriata Historical Analytics Group', 'Eltis et al.'],
-              year: 2026,
-              datasetName: 'Trans-Atlantic and Intra-American Slave Trade Databases',
-              url: window?.location?.href || 'https://afriata.org/#slave-trade',
-              doi: '10.6084/m9.figshare.34065711',
-              version: SLAVEVOYAGES_METADATA.version
-            }}
-            svgContainerId="atlantic-flow-map-svg"
           />
         </Suspense>
       )}

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { TOPONYM_CONCORDANCE_INDEX, ToponymConcordanceItem } from '../../data/preColonialKingdomsDetailed';
+import { TOPONYM_CONCORDANCE_INDEX, ToponymConcordanceItem, useDetailedKingdomsLoaded } from '../../data/preColonialKingdomsDetailed';
 import { AtlasDialog } from '../common/AtlasDialog';
 import { speakToponymConcordance, stopAfriataSpeech } from '../../utils/afriataVoiceEngine';
 import { 
@@ -27,6 +27,7 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
   onClose,
   onLocateToponym
 }) => {
+  const kingdomsLoaded = useDetailedKingdomsLoaded();
   const [searchQuery, setSearchQuery] = useState<string>(initialToponym);
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'polity' | 'metropolis' | 'coast' | 'mountain' | 'river'>('all');
   const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
@@ -54,7 +55,7 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
         item.note.toLowerCase().includes(cleanQ)
       );
     });
-  }, [searchQuery, categoryFilter]);
+  }, [searchQuery, categoryFilter, kingdomsLoaded]);
 
   const dragStartY = React.useRef<number | null>(null);
 
@@ -104,7 +105,7 @@ export const ToponymConcordanceModal: React.FC<ToponymConcordanceModalProps> = (
         <div className="p-4 sm:p-5 border-b border-[#E5DDD0] dark:border-[#38322B] flex items-center justify-between gap-4 shrink-0 bg-stone-100/60 dark:bg-stone-900/60">
           <div className="space-y-0.5 text-left">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30 text-[10px] font-mono font-bold flex items-center gap-1">
+              <span className="text-amber-800 dark:text-amber-300 text-[10px] font-mono font-bold uppercase tracking-wider flex items-center gap-1">
                 <BookOpen className="w-3.5 h-3.5 text-amber-600" />
                 <span>Epistemological Cartography Index</span>
               </span>

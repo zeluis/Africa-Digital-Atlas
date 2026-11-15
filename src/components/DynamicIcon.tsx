@@ -1,12 +1,12 @@
 import React from 'react';
-import { Icon as IconifyIcon } from '@iconify/react';
-import { 
-  LucideIcon, 
+import {
+  LucideIcon,
   HelpCircle,
   Dna,
   Scale,
   BookOpen,
   Globe,
+  Globe2,
   Activity,
   Database,
   FileText,
@@ -26,27 +26,35 @@ import {
   Search,
   Download,
   Share2,
-  Image as ImageIcon,
   GalleryThumbnails,
   BookImage,
   BookOpenText,
   Network,
+  PanelLeft,
   PanelRightClose,
   PanelRightOpen,
+  LayoutGrid,
   Grid,
+  Maximize2,
+  Expand,
   Map as MapIcon,
-  Anchor
+  Anchor,
 } from 'lucide-react';
 
-const LOCAL_ICON_FALLBACKS: Record<string, LucideIcon> = {
+const LOCAL_ICON_MAP: Record<string, LucideIcon> = {
   'lucide:dna': Dna,
+  'ph:dna-bold': Dna,
   'dna': Dna,
   'lucide:scale': Scale,
+  'ph:scales-bold': Scale,
   'scales': Scale,
   'lucide:book-open': BookOpen,
+  'lucide:book-a': BookOpen,
+  'fluent-mdl2:knowledge-article': BookOpen,
   'book-open': BookOpen,
   'lucide:globe': Globe,
   'globe': Globe,
+  'game-icons:africa': Globe2,
   'lucide:activity': Activity,
   'activity': Activity,
   'lucide:database': Database,
@@ -70,15 +78,18 @@ const LOCAL_ICON_FALLBACKS: Record<string, LucideIcon> = {
   'lucide:layers': Layers,
   'layers': Layers,
   'lucide:compass': Compass,
+  'gis:search-globe': Compass,
   'compass': Compass,
   'lucide:bar-chart-2': BarChart2,
   'bar-chart-2': BarChart2,
   'lucide:bar-chart-3': BarChart3,
+  'glyphs-poly:analytics': BarChart3,
   'bar-chart-3': BarChart3,
   'lucide:sparkles': Sparkles,
   'sparkles': Sparkles,
   'lucide:tree-pine': TreePine,
   'tree-pine': TreePine,
+  'mdi:family-tree': Network,
   'lucide:search': Search,
   'search': Search,
   'lucide:download': Download,
@@ -93,16 +104,22 @@ const LOCAL_ICON_FALLBACKS: Record<string, LucideIcon> = {
   'book-open-text': BookOpenText,
   'lucide:grid': Grid,
   'grid': Grid,
+  'fluent-mdl2:picture-tile': LayoutGrid,
+  'fluent-mdl2:picture-center': Maximize2,
+  'carbon:expand-screen': Expand,
+  'codicon:layout-sidebar-right-off': PanelRightClose,
+  'codicon:layout-sidebar-right': PanelRightOpen,
+  'codicon:layout-sidebar-left-dock': PanelLeft,
   'lucide:map': MapIcon,
   'map': MapIcon,
   'lucide:anchor': Anchor,
-  'anchor': Anchor
+  'anchor': Anchor,
 };
 
 export interface DynamicIconProps {
   /**
-   * Can be an Iconify icon string (e.g. "lucide:dna", "fluent-mdl2:picture-center", "fluent-mdl2:picture-tile", "gis:search-globe", "game-icons:africa"),
-   * a Lucide icon component, or a standard icon identifier.
+   * Accepts an icon identifier string (mapped locally to Lucide icons),
+   * a Lucide icon component, or null/undefined.
    */
   icon?: string | LucideIcon | null;
   className?: string;
@@ -113,8 +130,8 @@ export interface DynamicIconProps {
 }
 
 /**
- * Dynamic universal icon renderer supporting both standard Lucide icons and
- * any Iconify icon name.
+ * Dynamic universal icon renderer backed by tree-shaken local Lucide icons
+ * for zero-latency offline reliability.
  */
 export const DynamicIcon: React.FC<DynamicIconProps> = ({
   icon,
@@ -122,89 +139,48 @@ export const DynamicIcon: React.FC<DynamicIconProps> = ({
   size,
   color,
   title,
-  fallbackIcon: Fallback = HelpCircle
+  fallbackIcon: Fallback = HelpCircle,
 }) => {
+  const renderWithTitle = (element: React.ReactElement) =>
+    title ? (
+      <span title={title} className="inline-flex items-center justify-center">
+        {element}
+      </span>
+    ) : (
+      element
+    );
+
   if (!icon) {
-    return <Fallback className={className} size={size} color={color} />;
+    return renderWithTitle(<Fallback className={className} size={size} color={color} />);
   }
 
-  // If a React / Lucide component is passed directly
   if (typeof icon === 'function' || (typeof icon === 'object' && icon && 'render' in (icon as Record<string, unknown>))) {
     const Component = icon as LucideIcon;
-    return <Component className={className} size={size} color={color} />;
+    return renderWithTitle(<Component className={className} size={size} color={color} />);
   }
 
   if (typeof icon === 'string') {
     const raw = icon.trim();
     const cleanKey = raw.toLowerCase();
 
-    // If icon explicitly contains an external collection prefix with a colon (e.g. "gis:search-globe", "fluent-mdl2:picture-center", "game-icons:africa")
-    // Render with IconifyIcon so the exact icon is displayed!
-    if (raw.includes(':') && !raw.startsWith('lucide:')) {
-      const iconElement = (
-        <IconifyIcon
-          icon={raw}
-          className={className}
-          width={size}
-          height={size}
-          color={color}
-        />
-      );
+    if (LOCAL_ICON_MAP[cleanKey]) {
+      const LocalComponent = LOCAL_ICON_MAP[cleanKey];
+      return renderWithTitle(<LocalComponent className={className} size={size} color={color} />);
+    }
 
-      if (title) {
-        return (
-          <span title={title} className="inline-flex items-center justify-center">
-            {iconElement}
-          </span>
-        );
+    if (!raw.includes(':') && !raw.includes('-') && /^[A-Z]/.test(raw)) {
+      const kebab = raw.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+      const prefixedKey = `lucide:${kebab}`;
+      if (LOCAL_ICON_MAP[prefixedKey]) {
+        const LocalComponent = LOCAL_ICON_MAP[prefixedKey];
+        return renderWithTitle(<LocalComponent className={className} size={size} color={color} />);
       }
-      return iconElement;
     }
 
-    // Check local lookup for lucide icons and aliases
-    if (LOCAL_ICON_FALLBACKS[cleanKey]) {
-      const LocalComponent = LOCAL_ICON_FALLBACKS[cleanKey];
-      return <LocalComponent className={className} size={size} color={color} />;
-    }
-
-    // Normalise icon string format if provided without prefix
-    let iconName = raw;
-    if (!iconName.includes(':') && !iconName.includes('-') && /^[A-Z]/.test(iconName)) {
-      // CamelCase to kebab-case lucide (e.g. "BookOpen" -> "lucide:book-open")
-      const kebab = iconName
-        .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-        .toLowerCase();
-      iconName = `lucide:${kebab}`;
-    }
-
-    // Check if transformed iconName matches local fallback
-    if (LOCAL_ICON_FALLBACKS[iconName.toLowerCase()]) {
-      const LocalComponent = LOCAL_ICON_FALLBACKS[iconName.toLowerCase()];
-      return <LocalComponent className={className} size={size} color={color} />;
-    }
-
-    const iconElement = (
-      <IconifyIcon
-        icon={iconName}
-        className={className}
-        width={size}
-        height={size}
-        color={color}
-      />
-    );
-
-    if (title) {
-      return (
-        <span title={title} className="inline-flex items-center justify-center">
-          {iconElement}
-        </span>
-      );
-    }
-
-    return iconElement;
+    return renderWithTitle(<Fallback className={className} size={size} color={color} />);
   }
 
-  return <Fallback className={className} size={size} color={color} />;
+  return renderWithTitle(<Fallback className={className} size={size} color={color} />);
 };
 
 export default DynamicIcon;

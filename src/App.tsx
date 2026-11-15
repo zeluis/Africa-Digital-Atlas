@@ -34,6 +34,8 @@ const _lazyModalCatalog = () => [
   import('./components/AcademicExportModal'),
   import('./components/MethodologyAuditModal'),
   import('./components/afcfta/AfcftaSimulatorModal'),
+  import('./components/CitePublicationModal'),
+  import('./components/DoiVerificationModal'),
 ];
 void _lazyModalCatalog;
 

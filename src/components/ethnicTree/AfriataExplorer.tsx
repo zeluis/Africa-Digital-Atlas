@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo, Suspense } from 'react';
-import { lazyWithRetry } from '../../utils/lazyWithRetry';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { m, AnimatePresence } from 'motion/react';
 import { AtlasSelect } from '../common/AtlasSelect';
 import { 
@@ -36,8 +35,7 @@ import {
   Quote,
   Award
 } from 'lucide-react';
-const AcademicExportModal = lazyWithRetry(() => import('../AcademicExportModal').then(m => ({ default: m.AcademicExportModal })), 'AcademicExportModal');
-const CartographicColophonModal = lazyWithRetry(() => import('../CartographicColophonModal').then(m => ({ default: m.CartographicColophonModal })), 'CartographicColophonModal');
+import { atlasModalStore } from '../../stores/useAtlasModalStore';
 import { MolecularMigrationDrawer, MolecularMigrationCanvasLayer, MolecularDivergenceNode } from './MolecularMigrationOverlay';
 import { 
   VBW, 
@@ -51,7 +49,7 @@ import { AFRIATA_REGIONS } from '../../data/afriataSourceData';
 import { WikipediaEthnicDossier } from './WikipediaEthnicDossier';
 import { RichEditorialCountryDevelopmentPanel } from './RichEditorialCountryDevelopmentPanel';
 import { getMajorLinguisticFamilies } from '../../services/wikipediaService';
-import { findWikipediaEntry, WIKIPEDIA_TABLE_ENTRIES } from '../../data/wikipediaEthnicAtlas';
+import { findWikipediaEntry, WIKIPEDIA_TABLE_ENTRIES, useWikipediaAtlasLoaded } from '../../data/wikipediaEthnicAtlas';
 import { ALL_ADMIN1_SUBDIVISIONS } from '../../data/afriataGeographyData';
 import { RadialTreeSkeleton } from './RadialTreeSkeleton';
 import { useCanvasViewport } from '../../hooks/useCanvasViewport';
@@ -307,6 +305,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
   onNavigateToFoundations,
   onNavigateToLanguages
 }) => {
+  const wikiAtlasLoaded = useWikipediaAtlasLoaded();
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -568,8 +567,6 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
   // Single Left Dock Collapse State (never stacks with other panels)
   const [isLeftDockOpen, setIsLeftDockOpen] = useState<boolean>(true);
   const [methodologyModalOpen, setMethodologyModalOpen] = useState<boolean>(false);
-  const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
-  const [isColophonOpen, setIsColophonOpen] = useState<boolean>(false);
 
   // Fit View: Full continental tree overview (hard minimum scale limit 64% enforced, centered)
   const fitView = useCallback(() => {
@@ -1042,7 +1039,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
     });
 
     return list;
-  }, []);
+  }, [wikiAtlasLoaded]);
 
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
@@ -1403,7 +1400,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
     }
 
     return null;
-  }, []);
+  }, [wikiAtlasLoaded]);
 
   // Active sovereign country resolution for SVG contour spotlight & tree dimming
   const activeCountryName = useMemo(() => {
@@ -1996,7 +1993,21 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
           {/* 7. Cite (DOI) & Colophon Triggers */}
           <button
             type="button"
-            onClick={() => setIsExportModalOpen(true)}
+            onClick={() =>
+              atlasModalStore.openAcademicExport({
+                title: 'Afriata Sovereign Ethnic Tree of Life',
+                sourceContext: 'Afriata Sovereign Lineage Vector Atlas & Harvard / Wikipedia Anthropological Corpus',
+                citationMetadata: {
+                  authors: ['Zéluis F. Correia', 'Afriata Cartographic Observatory'],
+                  year: 2026,
+                  datasetName: 'Pan-African Ethno-Linguistic Continuum and Conduit Lineages',
+                  url: typeof window !== 'undefined' ? window.location.href : 'https://afriata.org/#ethnic-tree',
+                  doi: '10.6084/m9.figshare.34065711',
+                  version: '2026.2',
+                },
+                svgContainerId: 'afriata-master-sovereign-svg',
+              })
+            }
             className="flex px-2 py-1 rounded-xl text-[10px] font-bold items-center gap-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition-colors cursor-pointer shadow-xs active:scale-95"
             title="Cite this Research Platform (DOI: 10.6084/m9.figshare.34065711)"
           >
@@ -2006,7 +2017,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
 
           <button
             type="button"
-            onClick={() => setIsColophonOpen(true)}
+            onClick={() => atlasModalStore.openColophon()}
             className="hidden 2xl:flex px-2 py-1 rounded-xl text-[10px] font-medium items-center gap-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 transition-colors cursor-pointer"
             title="Open Cartographic Colophon"
           >
@@ -3309,38 +3320,6 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
         </m.div>
       ))}
       </AnimatePresence>
-
-      {/* Academic Citation & Vector Export Modal */}
-      {isExportModalOpen && (
-        <Suspense fallback={null}>
-          <AcademicExportModal
-            isOpen={isExportModalOpen}
-            onClose={() => setIsExportModalOpen(false)}
-            title="Afriata Sovereign Ethnic Tree of Life"
-            sourceContext="Afriata Sovereign Lineage Vector Atlas & Harvard / Wikipedia Anthropological Corpus"
-            citationMetadata={{
-              authors: ['Zéluis F. Correia', 'Afriata Cartographic Observatory'],
-              year: 2026,
-              datasetName: 'Pan-African Ethno-Linguistic Continuum and Conduit Lineages',
-              url: typeof window !== 'undefined' ? window.location.href : 'https://afriata.org/#ethnic-tree',
-              doi: '10.6084/m9.figshare.34065711',
-              version: '2026.2'
-            }}
-            svgContainerId="afriata-master-sovereign-svg"
-          />
-        </Suspense>
-      )}
-
-      {/* Cartographic Colophon & Imprint Modal */}
-      {isColophonOpen && (
-        <Suspense fallback={null}>
-          <CartographicColophonModal
-            isOpen={isColophonOpen}
-            onClose={() => setIsColophonOpen(false)}
-            onOpenCitationModal={() => setIsExportModalOpen(true)}
-          />
-        </Suspense>
-      )}
     </div>
   );
 };

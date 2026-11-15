@@ -76,11 +76,8 @@ export const MolecularLegaciesView: React.FC = () => {
           <span className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
             <Dna className="w-5 h-5 animate-pulse" />
           </span>
-          <span className="px-3 py-1 rounded-full bg-indigo-950/90 border border-indigo-700/60 text-xs font-mono font-bold text-indigo-300">
-            Genomics • Bioarchaeology • Historiography
-          </span>
-          <span className="px-2.5 py-0.5 rounded-md bg-zinc-800 text-[11px] font-mono text-zinc-400">
-            Interdisciplinary Synthesis
+          <span className="text-xs font-mono font-semibold text-indigo-300">
+            Genomics · Bioarchaeology · Historiography · Interdisciplinary Synthesis
           </span>
         </div>
 
@@ -245,7 +242,7 @@ export const MolecularLegaciesView: React.FC = () => {
                     Data synthesized from Micheletti et al. (2020) and Fortes-Lima et al. (2017)
                   </p>
                 </div>
-                <span className="px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-mono font-bold border border-indigo-500/20">
+                <span className="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 shrink-0">
                   IBD Haplotype Analysis
                 </span>
               </div>
@@ -332,11 +329,11 @@ export const MolecularLegaciesView: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {ANCIENT_DNA_STUDIES.map(study => (
                   <div key={study.id} className="p-5 rounded-2xl bg-zinc-950 text-white border border-zinc-800 space-y-3">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px] font-mono font-bold">
+                    <div className="flex items-center justify-between gap-2 text-[11px] font-mono">
+                      <span className="font-bold text-emerald-400">
                         {study.dating}
                       </span>
-                      <span className="text-[11px] font-mono text-zinc-400">{study.leadAuthor}</span>
+                      <span className="text-zinc-400">{study.leadAuthor}</span>
                     </div>
 
                     <h5 className="font-extrabold text-base text-zinc-100">
@@ -638,7 +635,7 @@ export const MolecularLegaciesView: React.FC = () => {
                   <p className="text-xs text-zinc-400">{NY_AFRICAN_BURIAL_GROUND.location} • Discovered in {NY_AFRICAN_BURIAL_GROUND.discoveryYear}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-mono font-bold">
+                  <span className="text-xs font-mono font-bold text-emerald-300">
                     {NY_AFRICAN_BURIAL_GROUND.individualsAnalyzed} Individuals Analyzed
                   </span>
                 </div>
@@ -874,8 +871,8 @@ export const MolecularLegaciesView: React.FC = () => {
           className="w-full max-w-xl p-6 rounded-3xl bg-zinc-900 text-white border border-zinc-800 space-y-4 shadow-2xl animate-in zoom-in-95"
         >
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-              <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-mono font-bold">
-                {selectedCitation.category} • {selectedCitation.year}
+              <span className="text-indigo-300 text-xs font-mono font-bold">
+                {selectedCitation.category} · {selectedCitation.year}
               </span>
               <button
                 type="button"

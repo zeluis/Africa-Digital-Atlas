@@ -53,16 +53,14 @@ export const EditorialCard: React.FC<EditorialCardProps> = ({
         borderLeft: `4px solid ${regionalAccent}`
       }}
     >
-      <div className="flex items-center justify-between gap-3 mb-3">
-        <span 
-          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800"
-        >
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-3 text-[11px] font-mono">
+        <span className="inline-flex items-center gap-1.5 font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
           <BookOpen className="w-3 h-3 text-emerald-500" />
           {category}
         </span>
         {authorOrSource && (
-          <span className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
-            {authorOrSource}
+          <span className="text-zinc-500 dark:text-zinc-400">
+            · {authorOrSource}
           </span>
         )}
       </div>

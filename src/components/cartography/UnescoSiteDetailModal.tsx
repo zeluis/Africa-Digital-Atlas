@@ -23,6 +23,7 @@ import {
   Download
 } from 'lucide-react';
 import { UNESCO_CATEGORY_PALETTES } from './UnescoHeritageMapLayer';
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 
 export interface UnescoSiteDetailModalProps {
   site: UnescoSiteMetadata | null;
@@ -37,7 +38,7 @@ export const UnescoSiteDetailModal: React.FC<UnescoSiteDetailModalProps> = ({
   onSelectCountry,
   onNavigateToHeritage
 }) => {
-  const [hasCopiedAttribution, setHasCopiedAttribution] = React.useState(false);
+  const { copied: hasCopiedAttribution, liveAnnouncement, copyToClipboard } = useCopyToClipboard({ resetMs: 2500 });
   if (!site) return null;
 
   const palette = UNESCO_CATEGORY_PALETTES[site.category] || UNESCO_CATEGORY_PALETTES.Cultural;
@@ -83,13 +84,13 @@ export const UnescoSiteDetailModal: React.FC<UnescoSiteDetailModalProps> = ({
                   <span className="font-mono text-xs font-bold text-amber-800 dark:text-amber-400">
                     UNESCO WHC #{site.idNumber}
                   </span>
-                  <span
-                    className={`text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded-full border ${palette.badgeBg} ${palette.badgeText} ${palette.badgeBorder}`}
-                  >
+                  <span className="text-stone-400" aria-hidden="true">·</span>
+                  <span className={`text-[10px] uppercase font-mono font-bold ${palette.badgeText}`}>
                     {site.category} Heritage
                   </span>
                   {site.danger && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-rose-700 dark:text-rose-300">
+                      <span className="text-stone-400" aria-hidden="true">·</span>
                       <AlertTriangle className="w-3 h-3" />
                       <span>In Danger</span>
                     </span>
@@ -137,11 +138,11 @@ export const UnescoSiteDetailModal: React.FC<UnescoSiteDetailModalProps> = ({
 
               {/* Photographer & License Pill on Image */}
               <div className="absolute top-3 right-3 flex items-center gap-2">
-                <span className="px-3 py-1 rounded-full bg-black/75 backdrop-blur-md text-amber-300 font-mono text-[10px] font-bold flex items-center gap-1.5 border border-white/20 shadow-md">
+                <span className="px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md text-amber-300 font-mono text-[10px] font-bold flex items-center gap-1.5 border border-white/20 shadow-md">
                   <Camera className="w-3 h-3 text-amber-400 shrink-0" />
                   <span className="truncate max-w-[140px] sm:max-w-[220px]">{site.photographer || 'UNESCO Photobank / Official Inscription Archives'}</span>
-                  <span className="w-1 h-1 rounded-full bg-stone-400" />
-                  <span className="px-1.5 py-0.2 rounded bg-amber-400/20 text-amber-200 font-bold text-[9px]">{site.license || 'CC BY-SA 3.0 IGO'}</span>
+                  <span aria-hidden="true">·</span>
+                  <span className="text-amber-200 font-bold text-[9.5px]">{site.license || 'CC BY-SA 3.0 IGO'}</span>
                 </span>
               </div>
 
@@ -255,7 +256,7 @@ export const UnescoSiteDetailModal: React.FC<UnescoSiteDetailModalProps> = ({
                   </span>
                 </div>
                 <span 
-                  className="px-2.5 py-0.5 rounded-full bg-amber-900/15 dark:bg-amber-400/15 text-amber-950 dark:text-amber-300 font-mono text-[10px] font-bold border border-amber-900/25 dark:border-amber-400/30"
+                  className="text-amber-950 dark:text-amber-300 font-mono text-[10px] font-bold shrink-0"
                   title="Creative Commons Attribution-ShareAlike 3.0 Intergovernmental Organizations"
                 >
                   {site.license || 'CC BY-SA 3.0 IGO'}
@@ -270,16 +271,9 @@ export const UnescoSiteDetailModal: React.FC<UnescoSiteDetailModalProps> = ({
                   </span>
                   <button
                     type="button"
-                    onClick={async () => {
+                    onClick={() => {
                       const text = site.attributionText || `Photo © UNESCO / WHC (${site.states}) • WHC #${site.idNumber} (CC BY-SA 3.0 IGO)`;
-                      try {
-                        await navigator.clipboard.writeText(text);
-                        setHasCopiedAttribution(true);
-                        setTimeout(() => setHasCopiedAttribution(false), 2500);
-                      } catch {
-                        setHasCopiedAttribution(true);
-                        setTimeout(() => setHasCopiedAttribution(false), 2500);
-                      }
+                      void copyToClipboard(text, 'attribution', 'Copied UNESCO attribution notice to clipboard');
                     }}
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-[10px] font-mono font-semibold text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 transition-colors cursor-pointer"
                     title="Copy formal attribution notice"
@@ -296,6 +290,7 @@ export const UnescoSiteDetailModal: React.FC<UnescoSiteDetailModalProps> = ({
                       </>
                     )}
                   </button>
+                  <span className="sr-only" role="status" aria-live="polite">{liveAnnouncement}</span>
                 </div>
 
                 <div className="p-2.5 rounded-lg bg-amber-50/70 dark:bg-stone-950/70 border border-amber-200/70 dark:border-stone-800 font-serif text-[12.5px] text-stone-900 dark:text-stone-100 leading-relaxed select-all">

@@ -1,7 +1,7 @@
 {
   "public/africa-final.svg": {
-    "sha256": "72ca7fdd5e125eeac27b9db7b4900bcd5a54ae47bac371a446620493fdd0c85f",
-    "bytes": 2484848
+    "sha256": "273f2eaa0adbf29defd768175ade8fbcbfcc5d426e0d6fcb40be8aefa8abbdea",
+    "bytes": 2115114
   },
   "src/data/africaFinalGeometry.ts": {
     "sha256": "1cb8e2603cc86863124c2048fd476e716d8c12171c569ea13f471a37ad0df86a",
@@ -20,12 +20,12 @@
     "bytes": 65317
   },
   "src/data/records-with-descriptions.json": {
-    "sha256": "985dce6cff9419389ac56ea1db3d249217d9aaca3e936e7d31cfae1cee0673a6",
-    "bytes": 2930535
+    "sha256": "f36b014643fb0297a8d49e2974a0015e6a5fcc941313c4a8e7e45f1fbf6ba63c",
+    "bytes": 2443257
   },
   "src/data/wikipediaTableEntries.json": {
-    "sha256": "73010b2e9f6d612ab9bd87c96cc4b13afb3fc1b9ce4ee95d278d9f5c057f3f1e",
-    "bytes": 79806
+    "sha256": "22cf59f0827a8e9077a9866d8959697cab8d38a3048a30cdd7a1c4e95788d046",
+    "bytes": 66785
   },
   "src/data/atlas-observations-seed.ts": {
     "sha256": "ed18972d310f48b070395eafba990068ba22a93f2bc15f9540f18edac71637dc",

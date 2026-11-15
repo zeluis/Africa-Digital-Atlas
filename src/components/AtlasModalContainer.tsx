@@ -7,7 +7,12 @@
 
 import React, { Suspense } from 'react';
 import { lazyWithRetry } from '../utils/lazyWithRetry';
-import { useAtlasModalStore, AtlasModalType } from '../stores/useAtlasModalStore';
+import {
+  useAtlasModalStore,
+  AcademicExportPayload,
+  CitePublicationPayload,
+  DoiVerificationPayload
+} from '../stores/useAtlasModalStore';
 
 // Lazy-load modal chunks strictly on demand
 const SearchModal = lazyWithRetry(
@@ -49,6 +54,14 @@ const MethodologyAuditModal = lazyWithRetry(
 const AfcftaSimulatorModal = lazyWithRetry(
   () => import('./afcfta/AfcftaSimulatorModal').then((m) => ({ default: m.AfcftaSimulatorModal })),
   'AfcftaSimulatorModal'
+);
+const CitePublicationModal = lazyWithRetry(
+  () => import('./CitePublicationModal').then((m) => ({ default: m.CitePublicationModal })),
+  'CitePublicationModal'
+);
+const DoiVerificationModal = lazyWithRetry(
+  () => import('./DoiVerificationModal').then((m) => ({ default: m.DoiVerificationModal })),
+  'DoiVerificationModal'
 );
 
 export interface AtlasModalContainerProps {
@@ -165,17 +178,45 @@ export const AtlasModalContainer: React.FC<AtlasModalContainerProps> = ({
         />
       )}
 
-      {activeModal === 'academicExport' && (
-        <AcademicExportModal
-          isOpen={true}
-          onClose={() => closeModal('academicExport')}
-          title={payload?.title || 'Africa Data Atlas & Cartographic Observatory'}
-          sourceContext={
-            payload?.sourceContext ||
-            'An interactive atlas of geography, indicators and historical trade flows'
-          }
-        />
-      )}
+      {activeModal === 'academicExport' && (() => {
+        const exportPayload = (payload as AcademicExportPayload | null);
+        return (
+          <AcademicExportModal
+            isOpen={true}
+            onClose={() => closeModal('academicExport')}
+            title={exportPayload?.title || 'Africa Data Atlas & Cartographic Observatory'}
+            sourceContext={
+              exportPayload?.sourceContext ||
+              'An interactive atlas of geography, indicators and historical trade flows'
+            }
+            citationMetadata={exportPayload?.citationMetadata}
+            svgContainerId={exportPayload?.svgContainerId}
+          />
+        );
+      })()}
+
+      {activeModal === 'citePublication' && (() => {
+        const citePayload = payload as CitePublicationPayload | null;
+        if (!citePayload?.report) return null;
+        return (
+          <CitePublicationModal
+            report={citePayload.report}
+            isOpen={true}
+            onClose={() => closeModal('citePublication')}
+          />
+        );
+      })()}
+
+      {activeModal === 'doiVerification' && (() => {
+        const doiPayload = payload as DoiVerificationPayload | null;
+        return (
+          <DoiVerificationModal
+            isOpen={true}
+            onClose={() => closeModal('doiVerification')}
+            initialReportId={doiPayload?.initialReportId}
+          />
+        );
+      })()}
     </Suspense>
   );
 };

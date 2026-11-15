@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { m, AnimatePresence, useReducedMotion } from 'motion/react';
 import { atlas } from '../data/atlas-store';
-import { COUNTRY_HEADER_DATA } from '../data/countryHeaderData';
-import { getCountrySilhouette } from '../data/countrySilhouettes';
+import { COUNTRY_HEADER_DATA, useCountryHeaderDataLoaded } from '../data/countryHeaderData';
+import { getCountrySilhouette, useCountrySilhouettesLoaded } from '../data/countrySilhouettes';
 import { 
   getPillarThematicImage, 
   getPillarWikiSearchCandidates 
@@ -22,6 +22,8 @@ import { AtlasSelect } from '../components/common/AtlasSelect';
 import { AtlasDialog } from '../components/common/AtlasDialog';
 import { getCountryRegionTonalPalette, getRegionCalmColor } from '../data/unGeoschemeColors';
 import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
+import { downloadFile } from '../utils/exportUtils';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 import {
   ExternalLink,
   BookOpen,
@@ -54,13 +56,14 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
   onNavigateTab
 }) => {
   const prefersReducedMotion = useReducedMotion();
+  const headerLoaded = useCountryHeaderDataLoaded();
   const [selectedEntityId, setSelectedEntityId] = useState<string>(initialEntityId);
   const [activePillar, setActivePillar] = useState<ThematicPillarId>(initialPillar);
   const [wikiData, setWikiData] = useState<WikiSummaryData | null>(null);
   const [isLoadingWiki, setIsLoadingWiki] = useState<boolean>(false);
   const [showFullWiki, setShowFullWiki] = useState<boolean>(false);
   const [isSilhouetteModalOpen, setIsSilhouetteModalOpen] = useState<boolean>(false);
-  const [copiedPath, setCopiedPath] = useState<boolean>(false);
+  const { copied: copiedPath, copyToClipboard } = useCopyToClipboard();
   const [downloadSuccess, setDownloadSuccess] = useState<boolean>(false);
   const [showFullImgCaption, setShowFullImgCaption] = useState<boolean>(false);
 
@@ -73,20 +76,19 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isSilhouetteModalOpen]);
 
+  const silhouettesLoaded = useCountrySilhouettesLoaded();
   const countries = useMemo(() => atlas.getSovereignCountries(), []);
   const currentEntity = atlas.getEntity(selectedEntityId) || countries[0];
   const tonal = getCountryRegionTonalPalette(currentEntity.id);
   const calmBg = getRegionCalmColor(currentEntity.region);
   const currentPillarMeta = THEMATIC_PILLARS.find(p => p.id === activePillar) || THEMATIC_PILLARS[0];
-  const silhouette = useMemo(() => getCountrySilhouette(currentEntity.id), [currentEntity.id]);
+  const silhouette = useMemo(() => getCountrySilhouette(currentEntity.id), [currentEntity.id, silhouettesLoaded]);
   const m49Code = UN_M49_NUMERIC_CODES[currentEntity.id.toUpperCase()] || '000';
   const silhouetteGradId = `editorial-silhouette-grad-${currentEntity.id}`;
 
   const handleCopySvgPath = () => {
     if (silhouette?.path) {
-      navigator.clipboard.writeText(silhouette.path);
-      setCopiedPath(true);
-      setTimeout(() => setCopiedPath(false), 2000);
+      void copyToClipboard(silhouette.path, 'svg-path', 'Copied country SVG path to clipboard');
     }
   };
 
@@ -97,15 +99,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
     const serializer = new XMLSerializer();
     const source = serializer.serializeToString(svgElement);
     const commentedSource = `<!-- African Continental Atlas: ${currentEntity.name} (ISO3: ${currentEntity.id}, M49: ${m49Code}) -->\n${source}`;
-    const blob = new Blob([commentedSource], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `UN_M49_${m49Code}_${currentEntity.id}_silhouette.svg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    downloadFile(`UN_M49_${m49Code}_${currentEntity.id}_silhouette.svg`, commentedSource, 'image/svg+xml;charset=utf-8');
 
     setDownloadSuccess(true);
     setTimeout(() => setDownloadSuccess(false), 2500);
@@ -196,7 +190,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
   // Specific Pillar Data calculations
   const headerData = useMemo(() => {
     return COUNTRY_HEADER_DATA[currentEntity.id];
-  }, [currentEntity.id]);
+  }, [currentEntity.id, headerLoaded]);
 
   // Country heritage sites if culture pillar
   const heritageSites = useMemo(() => {
@@ -696,14 +690,12 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                     />
                     <div className="min-w-0 flex-1">
                       <h2 
-                        className="text-2xl sm:text-3xl text-zinc-950 dark:text-zinc-50 tracking-tight leading-tight truncate"
-                        style={{ fontFamily: "'Noto Serif Display', Georgia, 'Times New Roman', serif", fontWeight: 500 }}
+                        className="font-serif-display font-medium text-2xl sm:text-3xl text-zinc-950 dark:text-zinc-50 tracking-tight leading-tight truncate"
                       >
                         {currentEntity.name}
                       </h2>
                       <p 
-                        className="text-xs text-zinc-600 dark:text-zinc-400 italic mt-0.5"
-                        style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+                        className="font-serif-book text-xs text-zinc-600 dark:text-zinc-400 italic mt-0.5"
                       >
                         {headerData?.governmentType || currentEntity.governmentType}
                       </p>
@@ -888,11 +880,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                         {/* Paragraph: Clear Contrasting Font, No Pill Decoration */}
                         <div>
                           <p 
-                            className={`text-xs sm:text-[13px] font-normal leading-relaxed drop-shadow-xs transition-all duration-300 ${showFullImgCaption ? '' : 'line-clamp-2'}`}
-                            style={{ 
-                              fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-                              color: '#F4F4F5' 
-                            }}
+                            className={`font-sans text-xs sm:text-[13px] font-normal leading-relaxed text-zinc-100 drop-shadow-xs transition-all duration-300 ${showFullImgCaption ? '' : 'line-clamp-2'}`}
                           >
                             {editorialImage.caption}
                             {editorialImage.caption && editorialImage.caption.length > 40 && (
@@ -931,8 +919,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                   </div>
 
                   <p 
-                    className="text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed"
-                    style={{ fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif" }}
+                    className="font-sans text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed"
                   >
                     {showFullWiki ? (wikiData?.extract || curatedNarrative.narrative.join(' ')) : ((wikiData?.extract || curatedNarrative.narrative.join(' ')).slice(0, 260) + '...')}
                   </p>
@@ -963,22 +950,19 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                 <div className="flex items-center gap-2 pb-2 border-b border-zinc-100 dark:border-zinc-800/80">
                   <Quote className="w-4 h-4 text-amber-500 shrink-0" />
                   <h4 
-                    className="text-base md:text-lg text-zinc-950 dark:text-zinc-100 tracking-tight"
-                    style={{ fontFamily: "'Noto Serif Display', Georgia, 'Times New Roman', serif", fontWeight: 500 }}
+                    className="font-serif-display font-medium text-base md:text-lg text-zinc-950 dark:text-zinc-100 tracking-tight"
                   >
                     {curatedNarrative.headline}
                   </h4>
                 </div>
 
                 <div 
-                  className="space-y-3.5 text-xs md:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed"
-                  style={{ fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif" }}
+                  className="font-sans space-y-3.5 text-xs md:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed"
                 >
                   {curatedNarrative.narrative.map((paragraph, idx) => (
                     <p 
                       key={idx} 
-                      className={idx === 0 ? "first-letter:text-3xl first-letter:font-light first-letter:float-left first-letter:mr-2.5 first-letter:text-zinc-950 dark:first-letter:text-zinc-50" : ""}
-                      style={idx === 0 ? { fontFamily: "'Plus Jakarta Sans', sans-serif" } : undefined}
+                      className={idx === 0 ? "font-sans first-letter:text-3xl first-letter:font-light first-letter:float-left first-letter:mr-2.5 first-letter:text-zinc-950 dark:first-letter:text-zinc-50" : ""}
                     >
                       {paragraph}
                     </p>
@@ -1053,8 +1037,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
             <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800/80 pb-3 shrink-0">
               <div>
                 <h3 
-                  className="text-base text-zinc-900 dark:text-zinc-100 tracking-tight"
-                  style={{ fontFamily: "'Noto Serif Display', Georgia, 'Times New Roman', serif", fontWeight: 500 }}
+                  className="font-serif-display font-medium text-base text-zinc-900 dark:text-zinc-100 tracking-tight"
                 >
                   Empirical Indicator Deck
                 </h3>
@@ -1077,8 +1060,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                 >
                   <div className="flex items-start justify-between gap-2">
                     <span 
-                      className="text-xs font-bold text-zinc-900 dark:text-zinc-100 leading-snug"
-                      style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                      className="font-sans text-xs font-bold text-zinc-900 dark:text-zinc-100 leading-snug"
                     >
                       {ind.name}
                     </span>
@@ -1100,8 +1082,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                     <div className="flex items-center justify-between gap-2 pt-1 border-t border-zinc-200/40 dark:border-zinc-700/60 text-[11px]">
                       {ind.subtext && (
                         <span 
-                          className="text-zinc-600 dark:text-zinc-300 font-medium truncate"
-                          style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                          className="font-sans text-zinc-600 dark:text-zinc-300 font-medium truncate"
                         >
                           {ind.subtext}
                         </span>

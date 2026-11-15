@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, Suspense } from 'react';
+import { lazyWithRetry } from '../utils/lazyWithRetry';
 import { m, AnimatePresence } from 'motion/react';
 import { 
   SPRING_TACTILE, 
@@ -7,6 +8,7 @@ import {
   StaggerGrid, 
   usePrefersReducedMotion 
 } from '../utils/motion';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 import { 
   HISTORICAL_MAP_PLATES, 
   PRE_COLONIAL_ENTITIES, 
@@ -20,10 +22,11 @@ import {
 import { HistoricalMapCurtainViewer } from '../components/cartography/HistoricalMapCurtainViewer';
 import { OceanCurrentParticleCanvas, TelemetryData } from '../components/cartography/OceanCurrentParticleCanvas';
 import { AntiquePlateCanvas } from '../components/cartography/AntiquePlateCanvas';
-import { KingdomDynasticTreeModal } from '../components/cartography/KingdomDynasticTreeModal';
-import { KingdomArtifact3DViewerModal } from '../components/cartography/KingdomArtifact3DViewerModal';
-import { ToponymConcordanceModal } from '../components/cartography/ToponymConcordanceModal';
-import { DETAILED_KINGDOMS_DATA, KingdomDetailedRecord, ToponymConcordanceItem } from '../data/preColonialKingdomsDetailed';
+import { DETAILED_KINGDOMS_DATA, KingdomDetailedRecord, ToponymConcordanceItem, useDetailedKingdomsLoaded, ensureDetailedKingdomsLoaded } from '../data/preColonialKingdomsDetailed';
+
+const KingdomDynasticTreeModal = lazyWithRetry(() => import('../components/cartography/KingdomDynasticTreeModal').then(m => ({ default: m.KingdomDynasticTreeModal })), 'KingdomDynasticTreeModal');
+const KingdomArtifact3DViewerModal = lazyWithRetry(() => import('../components/cartography/KingdomArtifact3DViewerModal').then(m => ({ default: m.KingdomArtifact3DViewerModal })), 'KingdomArtifact3DViewerModal');
+const ToponymConcordanceModal = lazyWithRetry(() => import('../components/cartography/ToponymConcordanceModal').then(m => ({ default: m.ToponymConcordanceModal })), 'ToponymConcordanceModal');
 import { SEASONAL_HYDRO_METRICS } from '../services/oceanHydrodynamicsService';
 import { Footer } from '../components/Footer';
 import { CanonicalNavTab } from '../components/NavigationDrawer';
@@ -93,6 +96,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
     };
   }, [initialPlateId]);
 
+  useDetailedKingdomsLoaded();
   const [activeTab, setActiveTab] = useState<CartographyWorkbenchTab>(initialData.tab);
   const reducedMotion = usePrefersReducedMotion();
   const [selectedPlate, setSelectedPlate] = useState<HistoricalMapPlate>(initialData.plate);
@@ -108,7 +112,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
   const [particleDensity, setParticleDensity] = useState<'low' | 'medium' | 'high'>('medium');
   const [streamlineDrawer, setStreamlineDrawer] = useState<'none' | 'diagnostics' | 'corridors' | 'commentary' | 'legend'>('none');
   const [streamlinesTheme, setStreamlinesTheme] = useState<'dark' | 'light'>('dark');
-  const [copiedCitation, setCopiedCitation] = useState<string | null>(null);
+  const { copiedKey: copiedCitation, liveAnnouncement, copyToClipboard } = useCopyToClipboard({ resetMs: 2500 });
   const [telemetry, setTelemetry] = useState<TelemetryData | null>(null);
 
   const handleTelemetryChange = useCallback((data: TelemetryData | null) => {
@@ -119,11 +123,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
   const activeHydroMetrics = SEASONAL_HYDRO_METRICS[activeSeasonId];
 
   const handleCopyCitation = async (text: string, id: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedCitation(id);
-      setTimeout(() => setCopiedCitation(null), 2500);
-    } catch {}
+    await copyToClipboard(text, id, 'Copied archival cartography citation to clipboard');
   };
 
   const handleFooterNavigate = (tab: CanonicalNavTab) => {
@@ -136,6 +136,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
 
   return (
     <section aria-label="Archival Cartography and Oceanic Streamlines Observatory" className={`w-full ${activeTab === 'curtain' || activeTab === 'streamlines' ? 'h-[calc(100dvh-64px)] min-h-[600px] overflow-hidden' : 'min-h-[calc(100dvh-64px)]'} flex flex-col relative bg-[#FAF8F5] dark:bg-stone-950 select-none`}>
+      <span className="sr-only" role="status" aria-live="polite">{liveAnnouncement}</span>
       
       {/* =========================================================================
           TAB 1: IMMERSIVE FULL-BLEED GEOREFERENCED MAP CURTAIN VIEWER
@@ -1032,7 +1033,17 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 mt-2">
                       <button
                         type="button"
-                        onClick={() => setSelectedArtifactKingdom(DETAILED_KINGDOMS_DATA[entity.id] || DETAILED_KINGDOMS_DATA['benin-kingdom'])}
+                        onClick={() => {
+                          const rec = DETAILED_KINGDOMS_DATA[entity.id] || DETAILED_KINGDOMS_DATA['benin-kingdom'];
+                          if (rec) {
+                            setSelectedArtifactKingdom(rec);
+                          } else {
+                            ensureDetailedKingdomsLoaded().then(() => {
+                              const loadedRec = DETAILED_KINGDOMS_DATA[entity.id] || DETAILED_KINGDOMS_DATA['benin-kingdom'];
+                              if (loadedRec) setSelectedArtifactKingdom(loadedRec);
+                            });
+                          }
+                        }}
                         className="py-2 px-2 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-900 dark:text-purple-200 border border-purple-500/30 text-[10.5px] font-mono font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer shadow-2xs"
                         title={`Inspect ${entity.name} 3D Material Culture Artifacts`}
                       >
@@ -1042,7 +1053,17 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
 
                       <button
                         type="button"
-                        onClick={() => setSelectedDynastyKingdom(DETAILED_KINGDOMS_DATA[entity.id] || DETAILED_KINGDOMS_DATA['kongo-kingdom'])}
+                        onClick={() => {
+                          const rec = DETAILED_KINGDOMS_DATA[entity.id] || DETAILED_KINGDOMS_DATA['kongo-kingdom'];
+                          if (rec) {
+                            setSelectedDynastyKingdom(rec);
+                          } else {
+                            ensureDetailedKingdomsLoaded().then(() => {
+                              const loadedRec = DETAILED_KINGDOMS_DATA[entity.id] || DETAILED_KINGDOMS_DATA['kongo-kingdom'];
+                              if (loadedRec) setSelectedDynastyKingdom(loadedRec);
+                            });
+                          }
+                        }}
                         className="py-2 px-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 dark:text-amber-200 border border-amber-500/30 text-[10.5px] font-mono font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer shadow-2xs"
                         title={`Inspect ${entity.name} Dynastic Succession & Queen Mothers`}
                       >
@@ -1069,38 +1090,40 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
             </StaggerGrid>
           </div>
 
-          {/* Interactive Dynastic Lineage Modal in Kingdoms Workbench */}
-          <AnimatePresence>
-            {selectedDynastyKingdom && (
-              <KingdomDynasticTreeModal
-                kingdom={selectedDynastyKingdom}
-                onClose={() => setSelectedDynastyKingdom(null)}
-              />
-            )}
-          </AnimatePresence>
+          <Suspense fallback={null}>
+            {/* Interactive Dynastic Lineage Modal in Kingdoms Workbench */}
+            <AnimatePresence>
+              {selectedDynastyKingdom && (
+                <KingdomDynasticTreeModal
+                  kingdom={selectedDynastyKingdom}
+                  onClose={() => setSelectedDynastyKingdom(null)}
+                />
+              )}
+            </AnimatePresence>
 
-          {/* Interactive 3D Artifact Inspector Modal in Kingdoms Workbench */}
-          <AnimatePresence>
-            {selectedArtifactKingdom && (
-              <KingdomArtifact3DViewerModal
-                kingdom={selectedArtifactKingdom}
-                onClose={() => setSelectedArtifactKingdom(null)}
-              />
-            )}
-          </AnimatePresence>
+            {/* Interactive 3D Artifact Inspector Modal in Kingdoms Workbench */}
+            <AnimatePresence>
+              {selectedArtifactKingdom && (
+                <KingdomArtifact3DViewerModal
+                  kingdom={selectedArtifactKingdom}
+                  onClose={() => setSelectedArtifactKingdom(null)}
+                />
+              )}
+            </AnimatePresence>
 
-          {/* Toponymic Concordance Table Modal */}
-          <AnimatePresence>
-            {isToponymConcordanceOpen && (
-              <ToponymConcordanceModal
-                onClose={() => setIsToponymConcordanceOpen(false)}
-                onLocateToponym={(item: ToponymConcordanceItem) => {
-                  setIsToponymConcordanceOpen(false);
-                  setActiveTab('curtain');
-                }}
-              />
-            )}
-          </AnimatePresence>
+            {/* Toponymic Concordance Table Modal */}
+            <AnimatePresence>
+              {isToponymConcordanceOpen && (
+                <ToponymConcordanceModal
+                  onClose={() => setIsToponymConcordanceOpen(false)}
+                  onLocateToponym={(item: ToponymConcordanceItem) => {
+                    setIsToponymConcordanceOpen(false);
+                    setActiveTab('curtain');
+                  }}
+                />
+              )}
+            </AnimatePresence>
+          </Suspense>
 
           {/* Structured Credibility Footer */}
           <Footer

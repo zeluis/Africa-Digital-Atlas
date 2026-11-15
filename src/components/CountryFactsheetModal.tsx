@@ -5,7 +5,7 @@ import { CountrySilhouette } from './CountrySilhouette';
 import { AtlasDialog } from './common/AtlasDialog';
 import { UN_M49_NUMERIC_CODES, getEntityGeographyMetadata } from '../data/svgGeographySystem';
 import { ENTITY_BLOC_MEMBERSHIP } from '../data/entityBlocs';
-import { COUNTRY_HEADER_DATA } from '../data/countryHeaderData';
+import { COUNTRY_HEADER_DATA, useCountryHeaderDataLoaded } from '../data/countryHeaderData';
 import { getCountryHistoricalDevelopmentDossier } from '../data/countryHistoricalDevelopmentData';
 import { 
   formatPopulation, 
@@ -16,6 +16,7 @@ import {
   formatArea 
 } from '../data/atlas-formatters';
 import { downloadFile } from '../utils/exportUtils';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 import { 
   exportCountryIntelligenceBriefingPDF,
   exportCountryDossierBibTeX,
@@ -63,7 +64,8 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
   isOpen,
   onClose
 }) => {
-  const [copied, setCopied] = useState(false);
+  useCountryHeaderDataLoaded();
+  const { copied, copyToClipboard } = useCopyToClipboard({ resetMs: 2200 });
 
   useEffect(() => {
     if (!isOpen) return;
@@ -135,15 +137,12 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
 ---
 *Source: Afriata Africa Data Atlas (World Bank WDI, IMF WEO, UN DESA, UNESCO, AfDB).*`;
 
-    navigator.clipboard.writeText(md).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2200);
-    });
+    void copyToClipboard(md, 'factsheet', `Copied ${country.name} markdown brief to clipboard`);
   };
 
   const handleExportSvg = () => {
     const svgContent = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" width="1200" height="1600" style="background:#ffffff;font-family:'Plus Jakarta Sans',sans-serif;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" width="1200" height="1600" style="background:#ffffff;font-family:'Plus Jakarta Sans Variable','Plus Jakarta Sans',sans-serif;">
   <style>
     .title { font-size: 48px; font-weight: 900; fill: #111827; }
     .subtitle { font-size: 20px; fill: #4b5563; font-weight: 600; }

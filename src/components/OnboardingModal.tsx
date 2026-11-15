@@ -618,13 +618,13 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               >
                 {/* Stage Header, Badge & Narrative */}
                 <div className="relative z-10">
-                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border ${activeScreen.accentBadgeBg} ${activeScreen.accentBadgeBorder} ${activeScreen.accentBadgeText}`}>
+                  <div className="flex flex-wrap items-center gap-2 mb-2 text-xs font-mono">
+                    <span className="inline-flex items-center gap-1.5 font-semibold uppercase tracking-wider text-amber-800">
                       <Sparkles className="w-3.5 h-3.5 text-amber-600" />
                       <span>{activeScreen.stageBadge}</span>
                     </span>
-
-                    <span className="text-[11px] font-mono text-stone-600 font-medium bg-stone-100 px-2.5 py-1 rounded-lg border border-stone-200">
+                    <span className="text-stone-400" aria-hidden="true">·</span>
+                    <span className="text-[11px] font-mono text-stone-600 font-medium">
                       {activeScreen.regionFocus}
                     </span>
                   </div>

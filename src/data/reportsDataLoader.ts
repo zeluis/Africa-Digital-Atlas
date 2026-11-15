@@ -1,105 +1,182 @@
 /**
  * Automated Drop-in Reports & Working Papers Loader
- * 
- * Uses Vite's `import.meta.glob` to automatically discover, parse, and register:
- * 1. All Markdown (.md) monographs dropped into `/src/content/reports/*.md`
- * 2. All Markdown (.md) working papers dropped into `/src/content/working-papers/*.md`
- * 
- * Pipeline flow:
- * 1. Discovers every .md file in `/src/content/reports/` and `/src/content/working-papers/` at compile time.
- * 2. Ingests and normalizes metadata, sections, and semantic [REF] tags via `notebookIngestionPipeline`.
- * 3. Merges them with baseline statically compiled monographs in `reportsData.ts` and `methodologyDossierData.ts`.
- * 4. Provides dynamic grouping utilities for NavigationDrawer, ResearchReportsDirectoryView, and WorkingPapersModal.
+ *
+ * Keeps startup bundles lean by separating lightweight bibliographic metadata
+ * (in `reportsData.ts` and `markdownReportsManifest.ts`) from full article bodies
+ * (`reportsDataBodies.json` and lazy-loaded `/src/content/{reports,working-papers}/*.md`).
  */
 
-import { ingestNotebookMarkdown } from './notebookIngestionPipeline';
-import { ResearchReport, ReportCategory, RESEARCH_REPORTS as BASELINE_REPORTS } from './reportsData';
+import { useState, useEffect } from 'react';
+import {
+  ResearchReport,
+  ReportCategory,
+  RESEARCH_REPORTS as BASELINE_REPORTS,
+  ensureReportsBodiesLoaded,
+  isReportsBodiesLoaded,
+  subscribeReportsBodies
+} from './reportsData';
+import { MARKDOWN_REPORTS_MANIFEST } from './markdownReportsManifest';
 import { AfriataReport } from '../types/afriataReport';
 import { WorkingPaperEntry, WORKING_PAPERS_SERIES as BASELINE_WORKING_PAPERS } from './methodologyDossierData';
-import { LucideIcon, BookOpen, Dna, Scale, TrendingUp, Cpu, FileText } from 'lucide-react';
-import rawBantu from '../content/reports/bantu-expansion-genomics.md?raw';
-import rawTransSaharan from '../content/reports/trans-saharan-jurisprudence.md?raw';
-import rawEuropeAtlanticWorkingPaper from '../content/working-papers/economics-europe-atlantic.md?raw';
+import { LucideIcon, Dna, Scale, TrendingUp } from 'lucide-react';
 
 /**
- * Direct seed raw markdown imports to guarantee availability in all environments
- */
-const SEED_REPORT_FILES: Record<string, string> = {
-  '../content/reports/bantu-expansion-genomics.md': rawBantu,
-  '../content/reports/trans-saharan-jurisprudence.md': rawTransSaharan
-};
-
-const SEED_WORKING_PAPER_FILES: Record<string, string> = {
-  '../content/working-papers/economics-europe-atlantic.md': rawEuropeAtlanticWorkingPaper
-};
-
-/**
- * Vite eagerly loads any additional markdown files in /src/content/reports/ as raw strings
+ * Lazy Vite globs for markdown monographs & working papers (not eager-bundled at startup)
  */
 const dynamicReportFiles = import.meta.glob('../content/reports/*.md', {
   query: '?raw',
-  import: 'default',
-  eager: true
-}) as Record<string, string>;
+  import: 'default'
+}) as Record<string, () => Promise<string>>;
 
-/**
- * Vite eagerly loads any markdown files in /src/content/working-papers/ as raw strings
- */
 const dynamicWorkingPaperFiles = import.meta.glob('../content/working-papers/*.md', {
   query: '?raw',
-  import: 'default',
-  eager: true
-}) as Record<string, string>;
+  import: 'default'
+}) as Record<string, () => Promise<string>>;
 
-const reportMarkdownFiles: Record<string, string> = {
-  ...SEED_REPORT_FILES,
-  ...dynamicReportFiles
-};
+const hydratedMarkdownReports: Record<string, ResearchReport> = {};
+const markdownLoadPromises = new Map<string, Promise<ResearchReport | undefined>>();
+const reportListeners = new Set<() => void>();
 
-const workingPaperMarkdownFiles: Record<string, string> = {
-  ...SEED_WORKING_PAPER_FILES,
-  ...dynamicWorkingPaperFiles
-};
+function notifyReportListeners() {
+  reportListeners.forEach((fn) => fn());
+}
 
-/**
- * Ingests all discovered markdown monographs from /src/content/reports/
- */
-export function loadDropInReports(): Record<string, ResearchReport> {
-  const dropInCatalog: Record<string, ResearchReport> = {};
+export function subscribeReportContent(listener: () => void): () => void {
+  reportListeners.add(listener);
+  return () => {
+    reportListeners.delete(listener);
+  };
+}
 
-  for (const [path, rawContent] of Object.entries(reportMarkdownFiles)) {
-    try {
-      if (typeof rawContent === 'string' && rawContent.trim()) {
-        const { report } = ingestNotebookMarkdown(rawContent, path.replace('../content/reports/', 'reports/'));
-        dropInCatalog[report.id] = report;
-      }
-    } catch (err) {
-      console.warn(`[DropInReportsLoader] Failed to ingest report at "${path}":`, err);
+function buildMarkdownCatalog(filterWorkingPapers: boolean): Record<string, ResearchReport> {
+  const catalog: Record<string, ResearchReport> = {};
+  for (const entry of MARKDOWN_REPORTS_MANIFEST) {
+    const isWp = Boolean(entry.report.isWorkingPaper);
+    if (isWp !== filterWorkingPapers) continue;
+    const hydrated = hydratedMarkdownReports[entry.report.id];
+    catalog[entry.report.id] = hydrated || entry.report;
+  }
+  // Include any extra runtime-ingested markdown reports
+  for (const [id, rep] of Object.entries(hydratedMarkdownReports)) {
+    if (!catalog[id] && Boolean(rep.isWorkingPaper) === filterWorkingPapers) {
+      catalog[id] = rep;
     }
   }
-
-  return dropInCatalog;
+  return catalog;
 }
 
 /**
- * Ingests all discovered markdown working papers from /src/content/working-papers/
+ * Returns metadata/hydrated dictionary of markdown monographs from /src/content/reports/
+ */
+export function loadDropInReports(): Record<string, ResearchReport> {
+  return buildMarkdownCatalog(false);
+}
+
+/**
+ * Returns metadata/hydrated dictionary of markdown working papers from /src/content/working-papers/
  */
 export function loadDropInWorkingPapers(): Record<string, ResearchReport> {
-  const wpCatalog: Record<string, ResearchReport> = {};
+  return buildMarkdownCatalog(true);
+}
 
-  for (const [path, rawContent] of Object.entries(workingPaperMarkdownFiles)) {
-    try {
-      if (typeof rawContent === 'string' && rawContent.trim()) {
-        const { report } = ingestNotebookMarkdown(rawContent, path.replace('../content/working-papers/', 'working-papers/'));
-        report.isWorkingPaper = true;
-        wpCatalog[report.id] = report;
-      }
-    } catch (err) {
-      console.warn(`[DropInWorkingPapersLoader] Failed to ingest working paper at "${path}":`, err);
+function resolveCandidateIds(id: string): string[] {
+  return [
+    id,
+    id.replace(/^report-/, 'rep-'),
+    id.replace(/^rep-/, 'report-'),
+    id.replace(/^rep-/, 'wkp-'),
+    id.replace(/^wp-/, 'wkp-'),
+    id.replace(/^wkp-/, 'wp-')
+  ];
+}
+
+/**
+ * Lazily loads full sections & citations for a baseline report or markdown publication.
+ */
+export async function ensureReportLoaded(id: string): Promise<ResearchReport | undefined> {
+  if (!id) return undefined;
+  const candidateIds = resolveCandidateIds(id);
+
+  // 1. Check baseline static reports (sections/citations live in reportsDataBodies.json)
+  for (const cid of candidateIds) {
+    if (BASELINE_REPORTS[cid]) {
+      await ensureReportsBodiesLoaded();
+      notifyReportListeners();
+      return BASELINE_REPORTS[cid];
     }
   }
 
-  return wpCatalog;
+  // 2. Check already-hydrated markdown cache
+  for (const cid of candidateIds) {
+    if (hydratedMarkdownReports[cid]?.sections.length > 0) {
+      return hydratedMarkdownReports[cid];
+    }
+  }
+
+  // 3. Match against markdown manifest entry
+  const manifestEntry = MARKDOWN_REPORTS_MANIFEST.find((e) => candidateIds.includes(e.report.id));
+  const loaderKey = manifestEntry?.sourceKey;
+  const loaderFn =
+    (loaderKey && (dynamicReportFiles[loaderKey] || dynamicWorkingPaperFiles[loaderKey])) ||
+    null;
+
+  if (loaderFn && manifestEntry) {
+    const cacheKey = manifestEntry.report.id;
+    const existingPromise = markdownLoadPromises.get(cacheKey);
+    if (existingPromise) return existingPromise;
+
+    const promise = (async () => {
+      try {
+        const [rawContent, { ingestNotebookMarkdown }] = await Promise.all([
+          loaderFn(),
+          import('./notebookIngestionPipeline')
+        ]);
+        const folderPath = manifestEntry.sourceKey.replace('../content/', '');
+        const { report } = ingestNotebookMarkdown(rawContent, folderPath);
+        if (manifestEntry.report.isWorkingPaper) {
+          report.isWorkingPaper = true;
+        }
+        hydratedMarkdownReports[report.id] = report;
+        notifyReportListeners();
+        return report;
+      } catch (err) {
+        console.warn(`[DropInReportsLoader] Failed to lazily load "${manifestEntry.sourceKey}":`, err);
+        return manifestEntry.report;
+      } finally {
+        markdownLoadPromises.delete(cacheKey);
+      }
+    })();
+
+    markdownLoadPromises.set(cacheKey, promise);
+    return promise;
+  }
+
+  return getReportById(id);
+}
+
+/**
+ * React hook that ensures a report's full sections/citations are loaded and triggers re-render on arrival.
+ */
+export function useReportContentLoaded(reportId: string): boolean {
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    const bump = () => {
+      if (active) setTick((t) => t + 1);
+    };
+    const unsub1 = subscribeReportContent(bump);
+    const unsub2 = subscribeReportsBodies(bump);
+    void ensureReportLoaded(reportId);
+    return () => {
+      active = false;
+      unsub1();
+      unsub2();
+    };
+  }, [reportId]);
+
+  const current = getReportById(reportId);
+  return Boolean(current && current.sections && current.sections.length > 0) || isReportsBodiesLoaded() || tick > 0;
 }
 
 /**
@@ -149,19 +226,25 @@ export function getAllWorkingPapers(): Record<string, ResearchReport> {
  */
 export function getUnifiedWorkingPaperEntries(): Array<WorkingPaperEntry & { reportId?: string; isIngestedMarkdown?: boolean }> {
   const markdownWps = Object.values(getAllWorkingPapers());
+  const manifestKeyFindingsById = new Map(
+    MARKDOWN_REPORTS_MANIFEST.map((m) => [m.report.id, m.keyFindings])
+  );
+
   const convertedEntries: Array<WorkingPaperEntry & { reportId?: string; isIngestedMarkdown?: boolean }> = markdownWps.map((wp, idx) => {
-    const keyFindings = wp.sections.slice(0, 6).map(sec => {
-      if (sec.keyTakeaway) {
-        return `${sec.title}: ${sec.keyTakeaway}`;
-      }
-      const cleanParagraph = sec.content
-        .replace(/\[REF:[^|\]]+(?:\|([^\]]+))?\]/g, '($1)')
-        .replace(/[#*`|]/g, '')
-        .split('\n\n')[0]
-        .trim()
-        .slice(0, 260);
-      return `${sec.title} — ${cleanParagraph}${cleanParagraph.length >= 260 ? '...' : ''}`;
-    });
+    const computedFindings = wp.sections.length > 0
+      ? wp.sections.slice(0, 6).map(sec => {
+          if (sec.keyTakeaway) {
+            return `${sec.title}: ${sec.keyTakeaway}`;
+          }
+          const cleanParagraph = sec.content
+            .replace(/\[REF:[^|\]]+(?:\|([^\]]+))?\]/g, '($1)')
+            .replace(/[#*`|]/g, '')
+            .split('\n\n')[0]
+            .trim()
+            .slice(0, 260);
+          return `${sec.title} — ${cleanParagraph}${cleanParagraph.length >= 260 ? '...' : ''}`;
+        })
+      : (manifestKeyFindingsById.get(wp.id) || []);
 
     const seriesNum = wp.seriesNumber || `Afriata Working Paper No. 0${8 + idx}`;
     const authorStr = wp.authors.join(', ') || 'Afriata';
@@ -181,7 +264,7 @@ export function getUnifiedWorkingPaperEntries(): Array<WorkingPaperEntry & { rep
       date: wp.publicationDate,
       jelCodes: wp.jelCodes || ['N17', 'O10', 'N37', 'F54'],
       abstract: wp.executiveSummary.replace(/\[REF:[^|\]]+(?:\|([^\]]+))?\]/g, '($1)'),
-      keyFindings: keyFindings.length > 0 ? keyFindings : [wp.executiveSummary],
+      keyFindings: computedFindings.length > 0 ? computedFindings : [wp.executiveSummary],
       citationApa: `${authorStr} (${yearStr}). ${wp.title}: ${wp.subtitle || wp.categoryLabel}. ${seriesNum}. Afriata Research Platform. https://doi.org/${wp.doi.replace('https://doi.org/', '')}`,
       downloadFilename: `${wp.id}.pdf`
     };
@@ -203,23 +286,20 @@ export function getAllAfriataReports(): Record<string, AfriataReport> {
 
 /**
  * Returns unified dictionary of all reports AND working papers:
- * 1. Base hardcoded reports
- * 2. Drop-in markdown files from /src/content/reports/
- * 3. Drop-in markdown working papers from /src/content/working-papers/
- * 4. Client-side dynamically imported reports & working papers (from localStorage)
+ * 1. Base reports (metadata synchronous, bodies hydrated lazily)
+ * 2. Drop-in markdown reports & working papers (metadata from manifest / hydrated bodies)
+ * 3. Client-side dynamically imported reports & working papers (from localStorage)
  */
 export function getAllReports(): Record<string, ResearchReport> {
   const dropInReports = loadDropInReports();
   const dropInWorkingPapers = loadDropInWorkingPapers();
-  
-  // Merge baseline + drop-in reports + drop-in working papers
+
   const unified: Record<string, ResearchReport> = {
     ...BASELINE_REPORTS,
     ...dropInReports,
     ...dropInWorkingPapers
   };
 
-  // Merge client-side dynamically imported localStorage reports & working papers if in browser
   if (typeof window !== 'undefined' && window.localStorage) {
     try {
       const savedReports = localStorage.getItem('afriata_custom_reports') || localStorage.getItem('africalia_custom_reports');
@@ -246,12 +326,7 @@ export function getReportById(id: string): ResearchReport | undefined {
   if (unified[id]) return unified[id];
 
   // Resolve legacy prefix aliases cleanly without polluting Object.values(getAllReports())
-  const candidates = [
-    id.replace(/^report-/, 'rep-'),
-    id.replace(/^rep-/, 'report-'),
-    id.replace(/^rep-/, 'wkp-'),
-    id.replace(/^wp-/, 'wkp-')
-  ];
+  const candidates = resolveCandidateIds(id);
   for (const candidate of candidates) {
     if (unified[candidate]) return unified[candidate];
   }
@@ -283,9 +358,6 @@ export interface NavReportGroup {
   items: NavReportItem[];
 }
 
-/**
- * Helper to determine an appropriate badge for a report item
- */
 function getReportBadge(report: ResearchReport): string {
   if (report.isWorkingPaper) {
     return 'Working Paper';
@@ -306,9 +378,6 @@ function getReportBadge(report: ResearchReport): string {
   return 'Development';
 }
 
-/**
- * Helper to select an appropriate Lucide icon for report category
- */
 function getReportIcon(category: ReportCategory): LucideIcon {
   switch (category) {
     case 'genetics':
@@ -321,11 +390,6 @@ function getReportIcon(category: ReportCategory): LucideIcon {
   }
 }
 
-/**
- * Dynamic categorized report subgroups for the navigation drawer.
- * Every uploaded report or working paper displays in its pillar/category
- * AND working papers also display in the dedicated Working Papers subgroup.
- */
 export function getCategorizedReports(): NavReportGroup[] {
   const allReports = getAllReports();
   const reportsList = Object.values(allReports);
@@ -360,7 +424,6 @@ export function getCategorizedReports(): NavReportGroup[] {
     }
   ];
 
-  // Map known badges for existing reports to retain bespoke curated labels
   const knownBadges: Record<string, string> = {
     'report-genetic-linguistic-blueprints': 'Creole DNA',
     'report-genetic-social-structure-cape-verde': 'Genealogies',
@@ -394,7 +457,6 @@ export function getCategorizedReports(): NavReportGroup[] {
       category: rep.category
     };
 
-    // If it is an Afriata Working Paper, register exclusively under the Working Papers group
     if (rep.isWorkingPaper) {
       groups[4].items.push({
         ...item,
@@ -402,7 +464,6 @@ export function getCategorizedReports(): NavReportGroup[] {
         category: 'working-papers'
       });
     } else {
-      // Standard thematic research reports register in their designated category
       if (rep.category === 'genetics') {
         groups[1].items.push(item);
       } else if (rep.category === 'international-law') {

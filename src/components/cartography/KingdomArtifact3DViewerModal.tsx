@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { KingdomDetailedRecord, Artifact3DRecord, DETAILED_KINGDOMS_DATA } from '../../data/preColonialKingdomsDetailed';
+import type { KingdomDetailedRecord, Artifact3DRecord } from '../../data/preColonialKingdomsDetailed';
 import { AtlasDialog } from '../common/AtlasDialog';
 import { usePrefersReducedMotion } from '../../utils/motion';
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 import { 
   Box, 
   RotateCw, 
@@ -58,7 +59,7 @@ export const KingdomArtifact3DViewerModal: React.FC<KingdomArtifact3DViewerModal
   const [isAutoRotating, setIsAutoRotating] = useState<boolean>(true);
   const [showWireframe, setShowWireframe] = useState<boolean>(false);
   const [showParticleSparkles, setShowParticleSparkles] = useState<boolean>(true);
-  const [copiedCitation, setCopiedCitation] = useState<boolean>(false);
+  const { copied: copiedCitation, liveAnnouncement, copyToClipboard } = useCopyToClipboard({ resetMs: 2400 });
   const [activeTab, setActiveTab] = useState<'overview' | 'materiality' | 'provenance' | 'significance'>('overview');
 
   const reducedMotion = usePrefersReducedMotion();
@@ -150,9 +151,7 @@ export const KingdomArtifact3DViewerModal: React.FC<KingdomArtifact3DViewerModal
   const handleCopyCitation = () => {
     if (!selectedArtifact) return;
     const citation = `"${selectedArtifact.title} (${selectedArtifact.nativeTitle})." ${selectedArtifact.period}, ${selectedArtifact.provenance}. Currently curated at ${selectedArtifact.currentLocation}. Afriata Archival Database.`;
-    navigator.clipboard.writeText(citation);
-    setCopiedCitation(true);
-    setTimeout(() => setCopiedCitation(false), 2400);
+    void copyToClipboard(citation, 'citation', 'Copied artifact citation to clipboard');
   };
 
   // 3D Rendering Engine with true depth, specular lighting and material shaders
@@ -955,8 +954,8 @@ export const KingdomArtifact3DViewerModal: React.FC<KingdomArtifact3DViewerModal
               <div className="flex items-center gap-2">
                 <h2 className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-2">
                   <span>360° Material Culture &amp; Artifact Inspector</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                    {kingdom.name}
+                  <span className="text-[11px] font-mono font-bold text-amber-400">
+                    · {kingdom.name}
                   </span>
                 </h2>
               </div>
@@ -1284,3 +1283,6 @@ export const KingdomArtifact3DViewerModal: React.FC<KingdomArtifact3DViewerModal
     </AtlasDialog>
   );
 };
+
+export default KingdomArtifact3DViewerModal;
+

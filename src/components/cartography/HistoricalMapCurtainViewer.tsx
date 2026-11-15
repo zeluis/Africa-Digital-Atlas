@@ -1,4 +1,5 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, Suspense } from 'react';
+import { lazyWithRetry } from '../../utils/lazyWithRetry';
 import { m, AnimatePresence } from 'motion/react';
 import { 
   HistoricalMapPlate, 
@@ -58,17 +59,20 @@ import { AFRICA_FINAL_VIEWBOX, AFRICA_FINAL_TRANSFORM } from '../../data/africaF
 import { getCanonicalCountryColor } from '../../data/africaCanonicalColorPalette';
 import { AntiquePlateCanvas } from './AntiquePlateCanvas';
 import { KingdomRichBottomPanel } from './KingdomRichBottomPanel';
-import { KingdomDynasticTreeModal } from './KingdomDynasticTreeModal';
-import { KingdomArtifact3DViewerModal } from './KingdomArtifact3DViewerModal';
 import { TradeCorridorParticleCanvas, TradeCorridorVectorLayer } from './TradeCorridorParticleCanvas';
 import { TradeCorridorDetailPanel } from './TradeCorridorDetailPanel';
-import { ToponymConcordanceModal } from './ToponymConcordanceModal';
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
+
+const KingdomDynasticTreeModal = lazyWithRetry(() => import('./KingdomDynasticTreeModal').then(m => ({ default: m.KingdomDynasticTreeModal })), 'KingdomDynasticTreeModal');
+const KingdomArtifact3DViewerModal = lazyWithRetry(() => import('./KingdomArtifact3DViewerModal').then(m => ({ default: m.KingdomArtifact3DViewerModal })), 'KingdomArtifact3DViewerModal');
+const ToponymConcordanceModal = lazyWithRetry(() => import('./ToponymConcordanceModal').then(m => ({ default: m.ToponymConcordanceModal })), 'ToponymConcordanceModal');
 import { 
   DETAILED_KINGDOMS_DATA, 
   ToponymConcordanceItem, 
   ALL_TRADE_CORRIDORS, 
   TradeCorridorPath,
-  TOPONYM_CONCORDANCE_INDEX
+  TOPONYM_CONCORDANCE_INDEX,
+  useDetailedKingdomsLoaded
 } from '../../data/preColonialKingdomsDetailed';
 import { 
   exportHistoricalPlatePDF,
@@ -205,6 +209,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
   onNavigateToCountry
 }) => {
   const { mapData } = useAfricaFinalMap();
+  useDetailedKingdomsLoaded();
 
   // Mode & Controls state
   const [comparisonMode, setComparisonMode] = useState<ComparisonMode>('curtain');
@@ -253,8 +258,14 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
   const [showToponymPins, setShowToponymPins] = useState<boolean>(false);
   const [selectedToponymPin, setSelectedToponymPin] = useState<ToponymConcordanceItem | null>(null);
 
-  // Deep link sharing state
-  const [copiedDeepLink, setCopiedDeepLink] = useState<boolean>(false);
+  // Deep link & citation sharing state
+  const {
+    copiedKey: copiedItemKey,
+    liveAnnouncement: copyLiveAnnouncement,
+    copyToClipboard,
+  } = useCopyToClipboard({ resetMs: 2500 });
+  const copiedDeepLink = copiedItemKey === 'deeplink';
+  const copiedCitation = copiedItemKey === 'citation';
   const [isExportingPlatePDF, setIsExportingPlatePDF] = useState<boolean>(false);
 
   // Vector map country hover in side-by-side
@@ -273,7 +284,6 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
     }
     return false;
   });
-  const [copiedCitation, setCopiedCitation] = useState<boolean>(false);
 
   // Single-Active Drawer System: Prevents overlapping panels from cluttering the cartographic canvas
   const handleOpenFilmstrip = useCallback(() => {
@@ -726,29 +736,21 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
 
   // Deep-link copy handler
   const handleCopyDeepLink = async () => {
-    try {
-      const origin = window.location.origin;
-      const pathname = window.location.pathname;
-      const params = new URLSearchParams();
-      params.set('plate', selectedPlate.id);
-      if (comparisonMode !== 'curtain') params.set('mode', comparisonMode);
-      if (selectedEntity) params.set('kingdom', selectedEntity.id);
-      if (selectedChronologyYear !== null) params.set('year', String(selectedChronologyYear));
-      const url = `${origin}${pathname}#archival-cartography?${params.toString()}`;
-      await navigator.clipboard.writeText(url);
-      setCopiedDeepLink(true);
-      setTimeout(() => setCopiedDeepLink(false), 2500);
-    } catch {}
+    const origin = window.location.origin;
+    const pathname = window.location.pathname;
+    const params = new URLSearchParams();
+    params.set('plate', selectedPlate.id);
+    if (comparisonMode !== 'curtain') params.set('mode', comparisonMode);
+    if (selectedEntity) params.set('kingdom', selectedEntity.id);
+    if (selectedChronologyYear !== null) params.set('year', String(selectedChronologyYear));
+    const url = `${origin}${pathname}#archival-cartography?${params.toString()}`;
+    await copyToClipboard(url, 'deeplink', 'Copied deep link to clipboard');
   };
 
   // Copy citation handler
   const handleCopyCitation = async () => {
-    try {
-      const text = `${selectedPlate.cartographer} (${selectedPlate.year}). "${selectedPlate.title}." ${selectedPlate.source}. Preserved at ${selectedPlate.institution}.`;
-      await navigator.clipboard.writeText(text);
-      setCopiedCitation(true);
-      setTimeout(() => setCopiedCitation(false), 2500);
-    } catch {}
+    const text = `${selectedPlate.cartographer} (${selectedPlate.year}). "${selectedPlate.title}." ${selectedPlate.source}. Preserved at ${selectedPlate.institution}.`;
+    await copyToClipboard(text, 'citation', 'Copied archival plate citation to clipboard');
   };
 
   // Dynamic Country fill function
@@ -797,11 +799,12 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
             <h1 className="font-serif font-bold text-xs sm:text-sm md:text-base text-stone-900 dark:text-stone-100 whitespace-nowrap">
               Georeferenced Map Curtain
             </h1>
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-900 dark:text-amber-300 font-mono text-[9.5px] font-bold border border-amber-500/30 whitespace-nowrap">
-              {selectedPlate.year} • {selectedPlate.shortTitle || selectedPlate.cartographer}
+            <span className="text-stone-400" aria-hidden="true">·</span>
+            <span className="font-mono text-[10px] font-bold text-amber-900 dark:text-amber-300 whitespace-nowrap">
+              {selectedPlate.year} · {selectedPlate.shortTitle || selectedPlate.cartographer}
             </span>
             <span className="text-[10px] font-mono text-stone-500 dark:text-stone-400 hidden xl:inline truncate">
-              17th–18th Century Cartography vs. 2026 Borders
+              · 17th–18th Century Cartography vs. 2026 Borders
             </span>
           </div>
 
@@ -1165,10 +1168,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                 <div className="flex items-center gap-2">
                   <History className="w-3.5 h-3.5 text-purple-700 dark:text-purple-300" />
                   <span className="text-[10.5px] font-mono font-bold text-purple-950 dark:text-purple-200">
-                    Dynastic Chronology Scrubber:
-                  </span>
-                  <span className="px-2 py-0.5 rounded-full bg-purple-700 text-white font-mono text-[10px] font-bold shadow-2xs">
-                    {selectedChronologyYear ? `${selectedChronologyYear} CE` : 'All Eras (100–1900 CE)'}
+                    Dynastic Chronology Scrubber · {selectedChronologyYear ? `${selectedChronologyYear} CE` : 'All Eras (100–1900 CE)'}
                   </span>
                 </div>
 
@@ -1423,8 +1423,8 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
               >
                 {/* Pane Header Info */}
                 <div className="absolute top-2.5 left-2.5 z-20 flex items-center gap-2 max-w-[calc(100%-170px)] pointer-events-none">
-                  <div className="px-2.5 py-0.5 rounded-full bg-stone-900/85 text-amber-300 font-mono text-[10px] font-bold backdrop-blur-md border border-amber-500/30 truncate shadow-xs">
-                    {selectedPlate.year} • {selectedPlate.shortTitle || selectedPlate.cartographer}
+                  <div className="px-2.5 py-0.5 rounded-md bg-stone-900/85 text-amber-300 font-mono text-[10px] font-bold backdrop-blur-md border border-amber-500/30 truncate shadow-xs">
+                    {selectedPlate.year} · {selectedPlate.shortTitle || selectedPlate.cartographer}
                   </div>
                 </div>
 
@@ -1490,7 +1490,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
               >
                 {/* Pane Header Info */}
                 <div className="absolute top-2.5 left-2.5 z-20 flex items-center gap-2 max-w-[calc(100%-170px)] pointer-events-none">
-                  <div className="px-2.5 py-0.5 rounded-full bg-emerald-950/85 text-emerald-300 font-mono text-[10px] font-bold backdrop-blur-md border border-emerald-500/30 truncate shadow-xs">
+                  <div className="px-2.5 py-0.5 rounded-md bg-emerald-950/85 text-emerald-300 font-mono text-[10px] font-bold backdrop-blur-md border border-emerald-500/30 truncate shadow-xs">
                     2026 Sovereign Map (54 Nations)
                   </div>
                 </div>
@@ -2596,40 +2596,42 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
           )}
         </AnimatePresence>
 
-        {/* 1. Interactive Dynastic Succession & Queen Mothers Tree Modal */}
-        <AnimatePresence>
-          {isDynasticTreeOpen && (
-            <KingdomDynasticTreeModal
-              kingdom={DETAILED_KINGDOMS_DATA[selectedEntity?.id || 'kongo-kingdom'] || DETAILED_KINGDOMS_DATA['kongo-kingdom']}
-              onClose={() => setIsDynasticTreeOpen(false)}
-            />
-          )}
-        </AnimatePresence>
+        <Suspense fallback={null}>
+          {/* 1. Interactive Dynastic Succession & Queen Mothers Tree Modal */}
+          <AnimatePresence>
+            {isDynasticTreeOpen && (DETAILED_KINGDOMS_DATA[selectedEntity?.id || 'kongo-kingdom'] || DETAILED_KINGDOMS_DATA['kongo-kingdom']) && (
+              <KingdomDynasticTreeModal
+                kingdom={DETAILED_KINGDOMS_DATA[selectedEntity?.id || 'kongo-kingdom'] || DETAILED_KINGDOMS_DATA['kongo-kingdom']}
+                onClose={() => setIsDynasticTreeOpen(false)}
+              />
+            )}
+          </AnimatePresence>
 
-        {/* 2. Interactive 3D & 360° Material Culture Artifact Inspector Modal */}
-        <AnimatePresence>
-          {isArtifact3DOpen && (
-            <KingdomArtifact3DViewerModal
-              kingdom={DETAILED_KINGDOMS_DATA[selectedEntity?.id || 'benin-kingdom'] || DETAILED_KINGDOMS_DATA['benin-kingdom']}
-              initialArtifactId={activeArtifactId}
-              onClose={() => setIsArtifact3DOpen(false)}
-            />
-          )}
-        </AnimatePresence>
+          {/* 2. Interactive 3D & 360° Material Culture Artifact Inspector Modal */}
+          <AnimatePresence>
+            {isArtifact3DOpen && (DETAILED_KINGDOMS_DATA[selectedEntity?.id || 'benin-kingdom'] || DETAILED_KINGDOMS_DATA['benin-kingdom']) && (
+              <KingdomArtifact3DViewerModal
+                kingdom={DETAILED_KINGDOMS_DATA[selectedEntity?.id || 'benin-kingdom'] || DETAILED_KINGDOMS_DATA['benin-kingdom']}
+                initialArtifactId={activeArtifactId}
+                onClose={() => setIsArtifact3DOpen(false)}
+              />
+            )}
+          </AnimatePresence>
 
-        {/* 3. Toponymic Concordance Table Modal */}
-        <AnimatePresence>
-          {isToponymConcordanceOpen && (
-            <ToponymConcordanceModal
-              initialToponym={selectedToponymForModal}
-              onClose={() => setIsToponymConcordanceOpen(false)}
-              onLocateToponym={(item: ToponymConcordanceItem) => {
-                setIsToponymConcordanceOpen(false);
-                handleFocusToponym(item.antiqueName);
-              }}
-            />
-          )}
-        </AnimatePresence>
+          {/* 3. Toponymic Concordance Table Modal */}
+          <AnimatePresence>
+            {isToponymConcordanceOpen && (
+              <ToponymConcordanceModal
+                initialToponym={selectedToponymForModal}
+                onClose={() => setIsToponymConcordanceOpen(false)}
+                onLocateToponym={(item: ToponymConcordanceItem) => {
+                  setIsToponymConcordanceOpen(false);
+                  handleFocusToponym(item.antiqueName);
+                }}
+              />
+            )}
+          </AnimatePresence>
+        </Suspense>
       </div>
     </div>
   );

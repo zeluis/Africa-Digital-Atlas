@@ -2,8 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { ThematicPillarId } from '../services/wikipediaService';
 import { AtlasEntity, AfricanRegion } from '../data/types';
 import { atlas } from '../data/atlas-store';
-import { COUNTRY_HEADER_DATA } from '../data/countryHeaderData';
-import { getCountrySilhouette } from '../data/countrySilhouettes';
+import { COUNTRY_HEADER_DATA, useCountryHeaderDataLoaded } from '../data/countryHeaderData';
+import { getCountrySilhouette, useCountrySilhouettesLoaded } from '../data/countrySilhouettes';
 import { getCountryRegionTonalPalette, getRegionCalmColor } from '../data/unGeoschemeColors';
 import { EntityBlocsBrowser } from './EntityBlocsBrowser';
 import { RegionalAfcftaTradeSection } from './RegionalAfcftaTradeSection';
@@ -63,6 +63,8 @@ export const ThematicPillarBottomSection: React.FC<ThematicPillarBottomSectionPr
   onSelectCountry,
   onNavigateTab
 }) => {
+  useCountrySilhouettesLoaded();
+  useCountryHeaderDataLoaded();
   const tonal = getCountryRegionTonalPalette(currentEntity.id);
   const calmBg = getRegionCalmColor(currentEntity.region);
   const headerData = COUNTRY_HEADER_DATA[currentEntity.id];

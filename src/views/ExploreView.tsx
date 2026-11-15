@@ -15,7 +15,7 @@ import { CountryFlag } from '../components/CountryFlag';
 import { AtlasSelect } from '../components/common/AtlasSelect';
 import { formatPopulation, formatGDP, formatHDI, formatArea } from '../data/atlas-formatters';
 import { useTranslation } from '../i18n/LanguageContext';
-import { getCountrySilhouette } from '../data/countrySilhouettes';
+import { getCountrySilhouette, useCountrySilhouettesLoaded } from '../data/countrySilhouettes';
 import { getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
 import { 
   Search, 
@@ -55,6 +55,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 }) => {
   const { t } = useTranslation();
   const reducedMotion = usePrefersReducedMotion();
+  useCountrySilhouettesLoaded();
   const [searchQuery, setSearchQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<AfricanRegion | 'All'>('All');
   const [topologyFilter, setTopologyFilter] = useState<TopologyFilter>('all');

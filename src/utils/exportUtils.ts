@@ -3,10 +3,9 @@ import { AtlasEntity, IndicatorDefinition } from '../data/types';
 import { REGIONAL_ROUTE_FLOWS } from '../data/slaveVoyagesData';
 
 /**
- * Triggers a client-side file download with the specified filename and MIME type
+ * Triggers a client-side Blob download with proper URL lifecycle cleanup
  */
-export function downloadFile(filename: string, content: string, mimeType: string = 'text/plain;charset=utf-8'): void {
-  const blob = new Blob([content], { type: mimeType });
+export function downloadBlob(filename: string, blob: Blob): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
@@ -14,7 +13,15 @@ export function downloadFile(filename: string, content: string, mimeType: string
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  window.setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+
+/**
+ * Triggers a client-side file download with the specified filename and MIME type
+ */
+export function downloadFile(filename: string, content: string, mimeType: string = 'text/plain;charset=utf-8'): void {
+  const blob = new Blob([content], { type: mimeType });
+  downloadBlob(filename, blob);
 }
 
 /**

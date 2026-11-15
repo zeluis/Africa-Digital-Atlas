@@ -6,23 +6,17 @@
 import type { SlaveTradeIllustration } from '../data/slaveTradeIllustrations';
 import type { HistoricalMapPlate } from '../data/archivalCartographyData';
 import { resolveAssetPath, getAssetCandidateUrls } from './assetPath';
-import { COUNTRY_SILHOUETTES } from '../data/countrySilhouettes';
+import { COUNTRY_SILHOUETTES, ensureCountrySilhouettesLoaded } from '../data/countrySilhouettes';
 import { getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
 import { UN_M49_NUMERIC_CODES } from '../data/svgGeographySystem';
+
+import { downloadFile } from './exportUtils';
 
 /**
  * Downloads a string as a formatted academic reference file
  */
 export const downloadAcademicFile = (content: string, filename: string, mimeType: string) => {
-  const blob = new Blob([content], { type: mimeType });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  downloadFile(filename, content, mimeType);
 };
 
 /**
@@ -315,6 +309,7 @@ export async function renderCountrySilhouetteToCanvas(
   height: number = 320
 ): Promise<LoadedImageData | null> {
   if (typeof window === 'undefined') return null;
+  await ensureCountrySilhouettesLoaded();
 
   const silhouette = COUNTRY_SILHOUETTES[countryId.toUpperCase()];
   if (!silhouette || !silhouette.path) return null;
@@ -471,16 +466,16 @@ export async function composeCountryHeaderCanvas(country: {
   // 3. Country Titles & Identity
   const textLeft = 145;
   ctx.fillStyle = '#18181B';
-  ctx.font = 'bold 44px "Plus Jakarta Sans", system-ui, sans-serif';
+  ctx.font = 'bold 44px "Plus Jakarta Sans Variable", "Plus Jakarta Sans", system-ui, sans-serif';
   ctx.fillText(country.name, textLeft, 74);
 
   // Region Badge
-  ctx.font = 'bold 16px "Plus Jakarta Sans", monospace';
+  ctx.font = 'bold 16px "Plus Jakarta Sans Variable", "Plus Jakarta Sans", monospace';
   ctx.fillStyle = '#047857';
   ctx.fillText(`• ${country.region}`, textLeft + ctx.measureText(country.name).width + 18, 70);
 
   ctx.fillStyle = '#52525B';
-  ctx.font = 'normal 20px "Plus Jakarta Sans", system-ui, sans-serif';
+  ctx.font = 'normal 20px "Plus Jakarta Sans Variable", "Plus Jakarta Sans", system-ui, sans-serif';
   const official = country.officialName || country.name;
   ctx.fillText(official.slice(0, 55), textLeft, 108);
 

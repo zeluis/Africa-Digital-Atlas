@@ -4,6 +4,14 @@ import { AfriataReport } from '../types/afriataReport';
 import { Copy, Check, Download, BookOpen, X, Code2, Share2 } from 'lucide-react';
 import { AtlasDialog } from './common/AtlasDialog';
 import { getConcordanceEntry } from '../data/reportDoiConcordance';
+import { downloadFile } from '../utils/exportUtils';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
+import {
+  AFRIATA_ORCID,
+  ReportCitationFormat,
+  buildReportCitation,
+  resolveReportDoi,
+} from '../utils/citationFormatter';
 
 interface CitePublicationModalProps {
   report: ResearchReport | AfriataReport;
@@ -16,9 +24,8 @@ export const CitePublicationModal: React.FC<CitePublicationModalProps> = ({
   isOpen,
   onClose
 }) => {
-  const [style, setStyle] = useState<'chicago' | 'apa' | 'mla' | 'bibtex' | 'harvard' | 'ris' | 'jsonld'>('chicago');
-  const [copied, setCopied] = useState(false);
-  const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
+  const [style, setStyle] = useState<ReportCitationFormat>('chicago');
+  const { copied, copiedKey: copiedFormat, liveAnnouncement, copyToClipboard } = useCopyToClipboard();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -31,88 +38,20 @@ export const CitePublicationModal: React.FC<CitePublicationModalProps> = ({
 
   if (!isOpen) return null;
 
-  const authorsList = Array.isArray(report.authors) 
-    ? report.authors 
-    : [String(report.authors)];
-  const authorsStr = authorsList.join(', ');
-  const year = report.publicationDate?.split(' ').pop() || new Date().getFullYear().toString();
   const hasDoi = true;
-  const doi = (report.doi && !report.doi.includes('afriata')) ? report.doi : '10.6084/m9.figshare.34065711';
-  const doiUrl = doi.startsWith('http') ? doi : `https://doi.org/${doi}`;
+  const { doi } = resolveReportDoi(report.doi);
   const title = report.title;
-  const subtitle = report.subtitle ? `: ${report.subtitle}` : '';
   const concordance = getConcordanceEntry(report.id);
   const isWorkingPaper = Boolean((report as Partial<ResearchReport>).isWorkingPaper);
 
-  const generateCitationText = (targetStyle = style) => {
-    switch (targetStyle) {
-      case 'chicago':
-        return `${authorsStr}. ${year}. "${title}${subtitle}." Afriata: Africa Data Atlas & Cartographic Observatory. ${doiUrl} (ORCID: https://orcid.org/0000-0001-9421-6555).`;
-      case 'apa':
-        return `${authorsStr} (${year}). ${title}${subtitle}. Afriata: Africa Data Atlas & Cartographic Observatory. ${doiUrl} (ORCID: https://orcid.org/0000-0001-9421-6555)`;
-      case 'mla':
-        return `${authorsStr}. "${title}${subtitle}." Afriata: Africa Data Atlas & Cartographic Observatory, ${year}, ${doiUrl}. ORCID: 0000-0001-9421-6555.`;
-      case 'harvard':
-        return `${authorsStr}, ${year}. ${title}${subtitle}. Afriata: Africa Data Atlas & Cartographic Observatory. Available at: <${doiUrl}> (ORCID: 0000-0001-9421-6555).`;
-      case 'bibtex': {
-        const citeKey = report.id.replace(/[^a-zA-Z0-9]/g, '_') + '_' + year;
-        return `@article{${citeKey},
-  title={${title}},
-  subtitle={${report.subtitle || ''}},
-  author={${authorsList.join(' and ')}},
-  journal={Afriata: Africa Data Atlas \\& Cartographic Observatory},
-  year={${year}},${hasDoi ? `\n  doi={${doi}},` : ''}
-  url={${doiUrl}},
-  note={Repository: https://github.com/zeluis/Africa-Digital-Atlas; ORCID: 0000-0001-9421-6555}
-}`;
-      }
-      case 'ris':
-        return `TY  - JOUR
-TI  - ${title}${subtitle}
-${authorsList.map(a => `AU  - ${a}`).join('\n')}
-JO  - Afriata: Africa Data Atlas & Cartographic Observatory
-PY  - ${year}${hasDoi ? `\nDO  - ${doi}` : ''}
-UR  - ${doiUrl}
-N1  - ORCID: https://orcid.org/0000-0001-9421-6555
-ER  - `;
-      case 'jsonld': {
-        const schema = {
-          "@context": "https://schema.org",
-          "@type": "ScholarlyArticle",
-          "headline": title,
-          "name": `${title}${subtitle}`,
-          "description": report.executiveSummary,
-          "author": authorsList.map(a => ({
-            "@type": "Person",
-            "name": a,
-            "sameAs": "https://orcid.org/0000-0001-9421-6555"
-          })),
-          "datePublished": report.publicationDate,
-          "identifier": doiUrl,
-          "publisher": {
-            "@type": "Organization",
-            "name": "Afriata: Africa Data Atlas & Cartographic Observatory",
-            "url": "https://zeluis.github.io/Africa-Digital-Atlas/"
-          }
-        };
-        return JSON.stringify(schema, null, 2);
-      }
-      default:
-        return '';
-    }
-  };
+  const generateCitationText = (targetStyle = style) =>
+    buildReportCitation(report, targetStyle);
 
   const citationText = generateCitationText();
 
   const handleCopySpecific = async (format: typeof style, text?: string) => {
     const toCopy = text || generateCitationText(format);
-    await navigator.clipboard.writeText(toCopy);
-    setCopiedFormat(format);
-    setCopied(true);
-    setTimeout(() => {
-      setCopied(false);
-      setCopiedFormat(null);
-    }, 2000);
+    await copyToClipboard(toCopy, format, `Copied ${format.toUpperCase()} citation to clipboard`);
   };
 
   const handleCopy = () => {
@@ -123,15 +62,7 @@ ER  - `;
     const text = generateCitationText(targetStyle);
     const ext = targetStyle === 'bibtex' ? 'bib' : targetStyle === 'ris' ? 'ris' : targetStyle === 'jsonld' ? 'json' : 'txt';
     const mime = targetStyle === 'jsonld' ? 'application/json' : 'text/plain';
-    const blob = new Blob([text], { type: mime });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${report.id}_citation.${ext}`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    downloadFile(`${report.id}_citation.${ext}`, text, mime);
   };
 
   return (
@@ -143,6 +74,7 @@ ER  - `;
       className="w-full max-w-2xl max-h-[92dvh] flex flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 md:p-8 shadow-2xl space-y-4 sm:space-y-6 atlas-modal-panel safe-pb"
     >
         {/* Header */}
+        <span className="sr-only" role="status" aria-live="polite">{liveAnnouncement}</span>
         <div className="flex items-start justify-between gap-3 sm:gap-4 shrink-0">
           <div className="space-y-1 min-w-0">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
@@ -255,7 +187,7 @@ ER  - `;
         <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-zinc-100 dark:border-zinc-800 shrink-0">
           <div className="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
             <span>{hasDoi ? 'DOI:' : 'ORCID:'}</span>
-            <span className="font-mono font-medium text-zinc-700 dark:text-zinc-300">{hasDoi ? doi : '0000-0001-9421-6555'}</span>
+            <span className="font-mono font-medium text-zinc-700 dark:text-zinc-300">{hasDoi ? doi : AFRIATA_ORCID}</span>
           </div>
 
           <div className="flex items-center gap-2">

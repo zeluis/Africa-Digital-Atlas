@@ -28,16 +28,16 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { RESEARCH_REPORTS, ResearchReport } from '../data/reportsData';
-import { getReportById } from '../data/reportsDataLoader';
+import { getReportById, useReportContentLoaded } from '../data/reportsDataLoader';
 import { ReportVoiceReader } from '../components/ReportVoiceReader';
 import { resolveDoi, SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
 import { SemanticReportRenderer } from '../components/SemanticReportRenderer';
-import { CitePublicationModal } from '../components/CitePublicationModal';
-import { DoiVerificationModal } from '../components/DoiVerificationModal';
+import { atlasModalStore } from '../stores/useAtlasModalStore';
 import { getConcordanceEntry, getVerifiedPublicationUrl } from '../data/reportDoiConcordance';
 import { verifyDoiWithCrossref, DoiVerificationResult } from '../services/crossrefService';
 import { exportPublicationPDF } from '../utils/academicExport';
 import { AfriataReport } from '../types/afriataReport';
+import { downloadFile } from '../utils/exportUtils';
 
 interface ResearchReportArticleViewProps {
   reportId: string;
@@ -54,15 +54,20 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
   onNavigateToSlaveTrade,
   onSelectOtherReport
 }) => {
+  const isReportBodyLoaded = useReportContentLoaded(reportId);
   const report: ResearchReport = React.useMemo(
     () => getReportById(reportId) || RESEARCH_REPORTS[reportId] || RESEARCH_REPORTS['report-genetic-linguistic-blueprints'],
-    [reportId]
+    [reportId, isReportBodyLoaded]
   );
 
   const [activeSectionId, setActiveSectionId] = useState<string>(report.sections[0]?.id || 'sec-intro');
+
+  useEffect(() => {
+    if (report.sections.length > 0 && !report.sections.some(s => s.id === activeSectionId)) {
+      setActiveSectionId(report.sections[0].id);
+    }
+  }, [report.sections, activeSectionId]);
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
-  const [isCitationModalOpen, setIsCitationModalOpen] = useState<boolean>(false);
-  const [isDoiModalOpen, setIsDoiModalOpen] = useState<boolean>(false);
   const [crossrefStatus, setCrossrefStatus] = useState<DoiVerificationResult | null>(null);
   const [readingProgress, setReadingProgress] = useState<number>(0);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState<boolean>(false);
@@ -188,15 +193,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
   }, [report.sections]);
 
   const handleExportJson = () => {
-    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${report.id}_afriata_report.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    downloadFile(`${report.id}_afriata_report.json`, JSON.stringify(report, null, 2), 'application/json');
   };
 
   return (
@@ -267,7 +264,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
           {/* DOI Verification & Concordance Button */}
           <button
             type="button"
-            onClick={() => setIsDoiModalOpen(true)}
+            onClick={() => atlasModalStore.openDoiVerification(report.id)}
             className="flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-900 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 font-bold transition-all cursor-pointer text-xs shadow-2xs"
             title="Verify DOIs against Crossref API or upload custom publication mapping JSON"
           >
@@ -278,7 +275,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
           {/* Cite Monograph Button */}
           <button
             type="button"
-            onClick={() => setIsCitationModalOpen(true)}
+            onClick={() => atlasModalStore.openCitePublication(report)}
             className="flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-800/80 font-bold transition-all cursor-pointer text-xs shadow-2xs"
             title="Cite this monograph across 6 scholarly citation formats"
           >
@@ -414,7 +411,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
             {/* Dynamic Crossref Verification Badge */}
             <button
               type="button"
-              onClick={() => setIsDoiModalOpen(true)}
+              onClick={() => atlasModalStore.openDoiVerification(report.id)}
               className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold transition-all cursor-pointer ${
                 verifiedPub.isVerified || crossrefStatus?.status === 'verified'
                   ? 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-200'
@@ -609,6 +606,11 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
           </section>
 
           {/* Structured Report Sections */}
+          {report.sections.length === 0 && (
+            <div className="p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-sm text-zinc-500 dark:text-zinc-400">
+              Loading full research monograph sections and bibliography...
+            </div>
+          )}
           {report.sections.map(section => (
             <article 
               key={section.id} 
@@ -732,20 +734,6 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
           </section>
         </main>
       </div>
-
-      {/* Citation Modal with 6 formats (Chicago, APA, Harvard, BibTeX, RIS, Schema.org) */}
-      <CitePublicationModal
-        report={report}
-        isOpen={isCitationModalOpen}
-        onClose={() => setIsCitationModalOpen(false)}
-      />
-
-      {/* Crossref DOI Verification & Concordance Modal */}
-      <DoiVerificationModal
-        isOpen={isDoiModalOpen}
-        onClose={() => setIsDoiModalOpen(false)}
-        initialReportId={report.id}
-      />
     </article>
   );
 };

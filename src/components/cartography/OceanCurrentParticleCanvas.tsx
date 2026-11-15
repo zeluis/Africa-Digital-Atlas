@@ -25,7 +25,8 @@ import {
   SARDINIA_CORSICA_PATH,
   SICILY_PATH,
   INTERNATIONAL_BORDERS_PATH,
-  HISTORIC_RIVERS
+  HISTORIC_RIVERS,
+  useAtlanticPathsLoaded
 } from '../slaveVoyages/atlanticMapGeometry';
 import { AfricaVectorContinent } from '../common/AfricaVectorContinent';
 import { AFRICA_FINAL_TRANSFORM } from '../../data/africaFinalGeometry';
@@ -494,6 +495,7 @@ const OceanCurrentParticleCanvasComponent: React.FC<OceanCurrentParticleCanvasPr
   onSelectCurrent,
   onTelemetryChange
 }) => {
+  useAtlanticPathsLoaded();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isVisibleRef = useRef<boolean>(true);

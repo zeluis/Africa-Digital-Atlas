@@ -34,6 +34,7 @@ import {
 } from '../data/reportDoiConcordance';
 import { getAllReports } from '../data/reportsDataLoader';
 import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
+import { downloadFile } from '../utils/exportUtils';
 
 interface DoiVerificationModalProps {
   isOpen: boolean;
@@ -183,15 +184,7 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
    */
   const handleExportJson = () => {
     const jsonStr = exportCurrentConcordanceJson();
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'afriata_doi_concordance.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    downloadFile('afriata_doi_concordance.json', jsonStr, 'application/json');
   };
 
   /**
@@ -212,15 +205,7 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
       };
     });
 
-    const blob = new Blob([JSON.stringify(template, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'afriata_reports_doi_template.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    downloadFile('afriata_reports_doi_template.json', JSON.stringify(template, null, 2), 'application/json');
   };
 
   /**

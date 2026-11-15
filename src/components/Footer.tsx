@@ -1,5 +1,4 @@
 import React from 'react';
-import { Icon } from '@iconify/react';
 import { 
   Globe, 
   ShieldCheck, 
@@ -65,8 +64,7 @@ export const Footer: React.FC<FooterProps> = ({
               </div>
               <div className="flex flex-col justify-center">
                 <span 
-                  style={{ fontFamily: '"Noto Serif Display", Georgia, Cambria, "Times New Roman", serif' }}
-                  className="font-extrabold text-xl tracking-tight text-amber-900 dark:text-amber-400 leading-tight"
+                  className="font-serif-display font-extrabold text-xl tracking-tight text-amber-900 dark:text-amber-400 leading-tight"
                 >
                   Afriata
                 </span>
@@ -94,7 +92,7 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Group 1: AFRICA */}
           <div className="space-y-3">
             <h4 className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
-              <Icon icon="game-icons:africa" className="w-4 h-4 text-emerald-500 shrink-0" />
+              <Globe2 className="w-4 h-4 text-emerald-500 shrink-0" />
               <span>AFRICA</span>
             </h4>
             <ul className="space-y-2.5 text-xs">

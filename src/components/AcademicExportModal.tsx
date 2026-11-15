@@ -18,6 +18,12 @@ import { downloadFile } from '../utils/exportUtils';
 import { exportCustomBriefingDossierPDF } from '../utils/academicExport';
 import { useSavedEntities } from '../contexts/SavedEntitiesContext';
 import { AtlasDialog } from './common/AtlasDialog';
+import {
+  AFRIATA_DOI,
+  PlatformCitationFormat,
+  buildPlatformCitations,
+  copyTextToClipboard,
+} from '../utils/citationFormatter';
 
 export interface AcademicExportModalProps {
   isOpen: boolean;
@@ -51,7 +57,7 @@ export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
   svgContainerId
 }) => {
   const [activeMainTab, setActiveMainTab] = useState<'citation' | 'dossier_builder'>('citation');
-  const [citationTab, setCitationTab] = useState<'apa' | 'chicago' | 'harvard' | 'mla' | 'bibtex' | 'ris' | 'cff' | 'enw'>('apa');
+  const [citationTab, setCitationTab] = useState<PlatformCitationFormat>('apa');
   const [copied, setCopied] = useState<boolean>(false);
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
   const [isExportingImage, setIsExportingImage] = useState<boolean>(false);
@@ -69,93 +75,26 @@ export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
 
   if (!isOpen) return null;
 
-  const accessDate = new Date().toISOString().split('T')[0];
   const pageUrl = typeof window !== 'undefined' ? window.location.href : 'https://afriata.org';
-  const doi = citationMetadata.doi || '10.6084/m9.figshare.34065711';
+  const doi = citationMetadata.doi || AFRIATA_DOI;
 
-  // Standardized Academic Citations
-  const apaCitation = `Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Afriata. https://github.com/zeluis/Africa-Digital-Atlas · https://doi.org/${doi}`;
+  const {
+    bibtex: bibtexCitation,
+    ris: risCitation,
+    cff: cffCitation,
+    enw: enwCitation,
+    ...restCitations
+  } = buildPlatformCitations({
+    doi,
+    pageUrl,
+    version: citationMetadata.version,
+  });
+  const citations = { ...restCitations, bibtex: bibtexCitation, ris: risCitation, cff: cffCitation, enw: enwCitation };
 
-  const chicagoCitation = `Correia, Zéluis F. 2026. Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Lisbon/Praia: Afriata. https://doi.org/${doi}.`;
-
-  const mlaCitation = `Correia, Zéluis F. "Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows." Afriata, 2026, https://doi.org/${doi}. Accessed ${accessDate}.`;
-
-  const harvardCitation = `Correia, Z.F. (2026) Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Afriata. Available at: ${pageUrl} (Accessed: ${accessDate}). https://doi.org/${doi}.`;
-
-  const bibtexCitation = `@dataset{correia_africa_data_atlas_2026,
-  author    = {Correia, Z{\\'e}luis F.},
-  orcid     = {0000-0001-9421-6555},
-  title     = {{Africa Data Atlas \\& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows}},
-  year      = {2026},
-  publisher = {Afriata},
-  doi       = {${doi}},
-  url       = {${pageUrl}},
-  version   = {${citationMetadata.version || '2026.1'}},
-  note      = {Accessed: ${accessDate}}
-}
-
-@software{correia_afriata_vector_engine_2026,
-  author    = {Correia, Z{\\'e}luis F.},
-  orcid     = {0000-0001-9421-6555},
-  title     = {{Afriata Continental Vector Topology \\& High-Precision Geodetic Engine (5,796 x 5,867)}},
-  year      = {2026},
-  publisher = {Afriata Cartographic Observatory},
-  doi       = {${doi}},
-  url       = {${pageUrl}}
-}`;
-
-  const risCitation = `TY  - DATA
-TI  - Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows
-AU  - Correia, Zéluis F.
-PY  - 2026
-PB  - Afriata
-DO  - ${doi}
-UR  - ${pageUrl}
-Y2  - ${accessDate}
-ER  -`;
-
-  const cffCitation = `cff-version: 1.2.0
-message: "If you use this atlas or software in your research, please cite it as below."
-title: "Africa Data Atlas & Cartographic Observatory"
-authors:
-  - family-names: "Correia"
-    given-names: "Zéluis F."
-    orcid: "https://orcid.org/0000-0001-9421-6555"
-version: "${citationMetadata.version || '2026.1'}"
-doi: "${doi}"
-date-released: "2026-01-15"
-url: "${pageUrl}"
-repository-code: "https://github.com/zeluis/Africa-Digital-Atlas"
-keywords:
-  - "Africa"
-  - "Cartography"
-  - "Socioeconomic Indicators"
-  - "SlaveVoyages"
-  - "AfCFTA"`;
-
-  const enwCitation = `%0 Dataset
-%T Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows
-%A Correia, Zéluis F.
-%D 2026
-%I Afriata
-%R ${doi}
-%U ${pageUrl}`;
-
-  const getActiveCitation = (tab = citationTab) => {
-    switch (tab) {
-      case 'apa': return apaCitation;
-      case 'chicago': return chicagoCitation;
-      case 'mla': return mlaCitation;
-      case 'harvard': return harvardCitation;
-      case 'bibtex': return bibtexCitation;
-      case 'ris': return risCitation;
-      case 'cff': return cffCitation;
-      case 'enw': return enwCitation;
-    }
-  };
+  const getActiveCitation = (tab = citationTab) => citations[tab];
 
   const handleCopySpecific = async (tab: typeof citationTab) => {
-    await navigator.clipboard.writeText(getActiveCitation(tab));
+    await copyTextToClipboard(getActiveCitation(tab));
     setCopiedFormat(tab);
     setCopied(true);
     setTimeout(() => {

@@ -825,7 +825,12 @@ export const BASE_SLAVE_TRADE_ILLUSTRATIONS: SlaveTradeIllustration[] = [
   }
 ];
 
-import { EXTENDED_ILLUSTRATION_RECORDS, mapCompactToFullIllustration } from './slaveTradeIllustrationsExtended';
+import {
+  EXTENDED_ILLUSTRATION_RECORDS,
+  extendedIllustrationsJsonAssetUrl,
+  mapCompactToFullIllustration,
+  type CompactIllustrationRecord
+} from './slaveTradeIllustrationsExtended';
 
 // Categorization helper based on original object ID ranges
 function getCategoryForObjectId(id: number): { cardId: number; cardTitle: string } {
@@ -1070,10 +1075,17 @@ export function ensureSlaveTradeIllustrationsHydrated(): Promise<SlaveTradeIllus
   if (typeof window === 'undefined' || typeof fetch === 'undefined') {
     return Promise.resolve(SLAVE_TRADE_ILLUSTRATIONS);
   }
-  hydrationPromise = fetch(recordsJsonAssetUrl)
-    .then(res => (res.ok ? res.json() : { records: [] }))
-    .then((data: { records?: RawRecordItem[] }) => {
-      const hydrated = buildIllustrationsFromRaw(data.records || []);
+  hydrationPromise = Promise.all([
+    fetch(recordsJsonAssetUrl).then(res => (res.ok ? res.json() : { records: [] })),
+    fetch(extendedIllustrationsJsonAssetUrl)
+      .then(res => (res.ok ? res.json() : []))
+      .catch(() => [])
+  ])
+    .then(([data, extRecords]: [{ records?: RawRecordItem[] }, CompactIllustrationRecord[]]) => {
+      if (Array.isArray(extRecords) && extRecords.length > 0 && EXTENDED_ILLUSTRATION_RECORDS.length === 0) {
+        EXTENDED_ILLUSTRATION_RECORDS.push(...extRecords);
+      }
+      const hydrated = buildIllustrationsFromRaw(data?.records || []);
       SLAVE_TRADE_ILLUSTRATIONS.splice(0, SLAVE_TRADE_ILLUSTRATIONS.length, ...hydrated);
       hydratedFlag = true;
       hydrationListeners.forEach(fn => fn());

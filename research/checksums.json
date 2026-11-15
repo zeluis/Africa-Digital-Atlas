@@ -1,13 +1,13 @@
 {
   "_readme": "Build-time SHA-256 checksums for the 8 foundational datasets listed in research/datasets.json. Re-verify with `npm run research:integrity` or update with `node scripts/research-integrity.mjs --update-checksums`.",
-  "generatedAt": "2026-11-08T15:30:14.863Z",
+  "generatedAt": "2026-11-15T12:21:52.719Z",
   "algorithm": "SHA-256",
   "datasets": {
     "public/africa-final.svg": {
       "datasetName": "Master Continental Vector Cartography SVG",
       "recordCount": 1071,
-      "bytes": 2484848,
-      "sha256": "72ca7fdd5e125eeac27b9db7b4900bcd5a54ae47bac371a446620493fdd0c85f",
+      "bytes": 2115114,
+      "sha256": "273f2eaa0adbf29defd768175ade8fbcbfcc5d426e0d6fcb40be8aefa8abbdea",
       "license": "CC-BY-4.0 (LICENSE-ASSETS)",
       "author": "ZéLuis F. Correia"
     },
@@ -46,15 +46,15 @@
     "src/data/records-with-descriptions.json": {
       "datasetName": "Archival Visual Plates & Curatorial Descriptions",
       "recordCount": 1220,
-      "bytes": 2930535,
-      "sha256": "985dce6cff9419389ac56ea1db3d249217d9aaca3e936e7d31cfae1cee0673a6",
+      "bytes": 2443257,
+      "sha256": "f36b014643fb0297a8d49e2974a0015e6a5fcc941313c4a8e7e45f1fbf6ba63c",
       "license": "Archival Source Terms"
     },
     "src/data/wikipediaTableEntries.json": {
       "datasetName": "Wikipedia Contemporary Ethnic Groups Table (310 Entries)",
       "recordCount": 310,
-      "bytes": 79806,
-      "sha256": "73010b2e9f6d612ab9bd87c96cc4b13afb3fc1b9ce4ee95d278d9f5c057f3f1e",
+      "bytes": 66785,
+      "sha256": "22cf59f0827a8e9077a9866d8959697cab8d38a3048a30cdd7a1c4e95788d046",
       "license": "CC-BY-SA-4.0",
       "source": "Wikipedia: List of contemporary ethnic groups of Africa (retrieved 2026-01)"
     },

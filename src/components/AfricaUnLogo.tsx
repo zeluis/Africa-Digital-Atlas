@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AFRICA_SVG_MAP, AFRICA_UN_REGIONS_STRUCTURED, AFRICA_REGIONS_VIEWBOX } from '../data/svgMaps';
+import { AFRICA_SVG_MAP, AFRICA_UN_REGIONS_STRUCTURED, AFRICA_REGIONS_VIEWBOX, useAfricaSvgMapLoaded } from '../data/svgMaps';
 import { UN_REGIONS, REGION_META } from '../data/africaData';
 import { AfricanRegion } from '../data/types';
 
@@ -51,6 +51,7 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
   showIslands = false,
   children
 }) => {
+  useAfricaSvgMapLoaded();
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
 
   // Normalize activeRegion

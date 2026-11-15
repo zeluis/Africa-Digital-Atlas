@@ -4,7 +4,8 @@ import { UNRegionName, LiveCountryData } from '../data/types';
 import {
   AFRICA_SVG_MAP,
   AFRICA_REGIONS_VIEWBOX,
-  AFRICA_UN_REGIONS_STRUCTURED
+  AFRICA_UN_REGIONS_STRUCTURED,
+  useAfricaSvgMapLoaded
 } from '../data/svgMaps';
 import {
   UN_REGIONS,
@@ -29,6 +30,7 @@ export const AfricaVectorMap: React.FC<AfricaVectorMapProps> = ({
   onHoverRegion,
   liveData = {}
 }) => {
+  useAfricaSvgMapLoaded();
   const containerRef = useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);

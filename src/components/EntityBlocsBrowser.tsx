@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { m, AnimatePresence } from 'motion/react';
 import { ENTITY_BLOCS, EntityBlocId, BlocCategory, getAllBlocs } from '../data/entityBlocs';
-import { WIKIPEDIA_BLOC_DOSSIERS } from '../data/wikipediaBlocAtlas';
-import { COUNTRY_HEADER_DATA } from '../data/countryHeaderData';
+import { WIKIPEDIA_BLOC_DOSSIERS, useWikipediaBlocAtlasLoaded } from '../data/wikipediaBlocAtlas';
+import { COUNTRY_HEADER_DATA, useCountryHeaderDataLoaded } from '../data/countryHeaderData';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from './CountryFlag';
 import { AtlasSelect } from './common/AtlasSelect';
@@ -50,6 +50,8 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
   const [showCompareMode, setShowCompareMode] = useState(false);
   const [activeWikiTab, setActiveWikiTab] = useState<WikiTabId>('overview');
 
+  const wikiLoaded = useWikipediaBlocAtlasLoaded();
+  const headerLoaded = useCountryHeaderDataLoaded();
   const allBlocs = getAllBlocs();
 
   const categories: BlocCategory[] = [
@@ -97,7 +99,7 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
           govt.toLowerCase().includes(q)
         );
       });
-  }, [currentBloc, searchFilter]);
+  }, [currentBloc, searchFilter, headerLoaded]);
 
   // Aggregate stats calculator
   const calculateBlocAggregates = (blocId: EntityBlocId) => {
@@ -435,39 +437,43 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                           Est. {currentBloc.establishedYear}
                         </span>
                       )}
-                      <a
-                        href={wikiDossier.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/70 text-xs font-mono font-bold text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors"
-                      >
-                        <BookOpen className="w-3.5 h-3.5" />
-                        <span>Wikipedia</span>
-                        <ExternalLink className="w-3 h-3 opacity-70" />
-                      </a>
+                      {wikiDossier && (
+                        <a
+                          href={wikiDossier.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/70 text-xs font-mono font-bold text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors"
+                        >
+                          <BookOpen className="w-3.5 h-3.5" />
+                          <span>Wikipedia</span>
+                          <ExternalLink className="w-3 h-3 opacity-70" />
+                        </a>
+                      )}
                     </div>
                   </div>
 
                   {/* Summary Extract */}
                   <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-normal">
-                    {wikiDossier.extract}
+                    {wikiDossier ? wikiDossier.extract : 'Loading bloc overview dossier...'}
                   </p>
 
                   {/* Metadata Chips */}
-                  <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-zinc-600 dark:text-zinc-400">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-zinc-100/80 dark:bg-zinc-800/80">
-                      <Building2 className="w-3.5 h-3.5 text-zinc-500" />
-                      <span><strong>Headquarters:</strong> {wikiDossier.headquartersCity}</span>
+                  {wikiDossier && (
+                    <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-zinc-600 dark:text-zinc-400">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-zinc-100/80 dark:bg-zinc-800/80">
+                        <Building2 className="w-3.5 h-3.5 text-zinc-500" />
+                        <span><strong>Headquarters:</strong> {wikiDossier.headquartersCity}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-zinc-100/80 dark:bg-zinc-800/80">
+                        <FileText className="w-3.5 h-3.5 text-zinc-500" />
+                        <span><strong>Founding Treaty:</strong> {wikiDossier.foundingTreaty}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-zinc-100/80 dark:bg-zinc-800/80">
+                        <Languages className="w-3.5 h-3.5 text-zinc-500" />
+                        <span><strong>Working Languages:</strong> {wikiDossier.officialWorkingLanguages.join(', ')}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-zinc-100/80 dark:bg-zinc-800/80">
-                      <FileText className="w-3.5 h-3.5 text-zinc-500" />
-                      <span><strong>Founding Treaty:</strong> {wikiDossier.foundingTreaty}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-zinc-100/80 dark:bg-zinc-800/80">
-                      <Languages className="w-3.5 h-3.5 text-zinc-500" />
-                      <span><strong>Working Languages:</strong> {wikiDossier.officialWorkingLanguages.join(', ')}</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Quick Metrics Bar - 5 High Contrast MD3 Tonal Indicators */}
@@ -566,7 +572,12 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                     aria-labelledby={`bloc-tab-${activeWikiTab}`} 
                     className="p-4 rounded-2xl bg-zinc-50/80 dark:bg-zinc-950/60 border border-zinc-200/70 dark:border-zinc-800 min-h-[140px]"
                   >
-                    {activeWikiTab === 'overview' && (
+                    {!wikiDossier && (
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 py-4">
+                        Loading institutional and geographic bloc dossier...
+                      </p>
+                    )}
+                    {wikiDossier && activeWikiTab === 'overview' && (
                       <div className="space-y-3">
                         <div className="space-y-2">
                           {wikiDossier.summaryNarrative.map((para, idx) => (
@@ -578,7 +589,7 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                       </div>
                     )}
 
-                    {activeWikiTab === 'indicators' && (
+                    {wikiDossier && activeWikiTab === 'indicators' && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                         <div className="space-y-1.5 p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
                           <div className="font-mono text-[10px] uppercase font-bold text-zinc-500">Customs Union Status</div>
@@ -609,7 +620,7 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                       </div>
                     )}
 
-                    {activeWikiTab === 'demographics' && (
+                    {wikiDossier && activeWikiTab === 'demographics' && (
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
                         <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
                           <div className="text-[10px] uppercase font-mono font-bold text-zinc-500">Total Population</div>
@@ -639,7 +650,7 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                       </div>
                     )}
 
-                    {activeWikiTab === 'geography' && (
+                    {wikiDossier && activeWikiTab === 'geography' && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
                         <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
                           <div className="text-[10px] uppercase font-mono font-bold text-zinc-500">Total Land Territory</div>
@@ -668,7 +679,7 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                       </div>
                     )}
 
-                    {activeWikiTab === 'landmarks' && (
+                    {wikiDossier && activeWikiTab === 'landmarks' && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
                         <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-1.5">
                           <div className="text-[10px] uppercase font-mono font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
@@ -717,7 +728,7 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                       </div>
                     )}
 
-                    {activeWikiTab === 'institutions' && (
+                    {wikiDossier && activeWikiTab === 'institutions' && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
                         <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-1.5">
                           <div className="text-[10px] uppercase font-mono font-bold text-zinc-500">Executive Organs & Councils</div>

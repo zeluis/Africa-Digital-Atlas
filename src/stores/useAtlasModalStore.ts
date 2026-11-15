@@ -6,6 +6,8 @@
  */
 
 import { useSyncExternalStore } from 'react';
+import type { ResearchReport } from '../data/reportsData';
+import type { AfriataReport } from '../types/afriataReport';
 
 export type AtlasModalType =
   | 'search'
@@ -17,16 +19,41 @@ export type AtlasModalType =
   | 'academicExport'
   | 'methodologyAudit'
   | 'afcftaSimulator'
-  | 'monograph';
+  | 'monograph'
+  | 'citePublication'
+  | 'doiVerification';
 
 export interface AcademicExportPayload {
   title?: string;
   sourceContext?: string;
+  citationMetadata?: {
+    authors?: string[];
+    year?: number;
+    datasetName?: string;
+    url?: string;
+    doi?: string;
+    version?: string;
+  };
+  svgContainerId?: string;
 }
+
+export interface CitePublicationPayload {
+  report: ResearchReport | AfriataReport;
+}
+
+export interface DoiVerificationPayload {
+  initialReportId?: string;
+}
+
+export type AtlasModalPayload =
+  | AcademicExportPayload
+  | CitePublicationPayload
+  | DoiVerificationPayload
+  | null;
 
 export interface AtlasModalState {
   activeModal: AtlasModalType | null;
-  payload: AcademicExportPayload | null;
+  payload: AtlasModalPayload;
 }
 
 type Listener = () => void;
@@ -70,7 +97,7 @@ class AtlasModalStore {
     this.listeners.forEach((listener) => listener());
   };
 
-  public openModal = (modal: AtlasModalType, payload: AcademicExportPayload | null = null) => {
+  public openModal = (modal: AtlasModalType, payload: AtlasModalPayload = null) => {
     this.state = {
       activeModal: modal,
       payload
@@ -108,6 +135,10 @@ class AtlasModalStore {
   public openMethodologyAudit = () => this.openModal('methodologyAudit');
   public openAfcftaSimulator = () => this.openModal('afcftaSimulator');
   public openMonograph = () => this.openModal('monograph');
+  public openCitePublication = (report: ResearchReport | AfriataReport) =>
+    this.openModal('citePublication', { report });
+  public openDoiVerification = (initialReportId?: string) =>
+    this.openModal('doiVerification', initialReportId ? { initialReportId } : null);
 }
 
 export const atlasModalStore = new AtlasModalStore();
@@ -138,7 +169,9 @@ export function useAtlasModalStore() {
     openAcademicExport: atlasModalStore.openAcademicExport,
     openMethodologyAudit: atlasModalStore.openMethodologyAudit,
     openAfcftaSimulator: atlasModalStore.openAfcftaSimulator,
-    openMonograph: atlasModalStore.openMonograph
+    openMonograph: atlasModalStore.openMonograph,
+    openCitePublication: atlasModalStore.openCitePublication,
+    openDoiVerification: atlasModalStore.openDoiVerification
   };
 }
 

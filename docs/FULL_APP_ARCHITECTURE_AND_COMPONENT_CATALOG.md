@@ -173,7 +173,7 @@ The application features 21 modular views dynamically routed via URL hash fragme
 - **Data Hook**: `archivalCartographyData.ts`, `oceanHydrodynamicsService.ts`.
 
 ### 15. `MolecularLegaciesArticleView.tsx` — Paleogenomics & Population Genetics
-- **Core Function**: Peer-reviewed scientific synthesis on the biological and genomic legacies of the transatlantic slave trade.
+- **Core Function**: Curated literature synthesis on the biological and genomic legacies of the transatlantic slave trade.
 - **Key Modules**:
   - Multi-cohort analysis of 50,000+ population genomes utilizing Identity-By-Descent (IBD) haplotype deconvolution.
   - Ancient DNA sequencing benchmarks (Zoutsteeg c. 1660s, St. Helena Liberated African depot c. 1840s).

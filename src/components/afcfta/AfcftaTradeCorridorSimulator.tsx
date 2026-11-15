@@ -12,6 +12,8 @@ import {
 } from '../../utils/motion';
 import { AtlasSelect } from '../common/AtlasSelect';
 import { ChartAccessibleTable } from '../common/ChartAccessibleTable';
+import { downloadFile } from '../../utils/exportUtils';
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 import { 
   TrendingUp, 
   Truck, 
@@ -96,7 +98,7 @@ export const AfcftaTradeCorridorSimulator: React.FC<AfcftaTradeCorridorSimulator
   const [localContentPct, setLocalContentPct] = useState<number>(45);
 
   // 5. Export state
-  const [copiedDossier, setCopiedDossier] = useState<boolean>(false);
+  const { copied: copiedDossier, copyToClipboard } = useCopyToClipboard({ resetMs: 2500 });
   const [statusMessage, setStatusMessage] = useState<string>('');
 
   // Synchronize typical consignment value when commodity changes
@@ -180,10 +182,11 @@ Rules of Origin Compliance: ${simulation.rooCompliant ? 'VALIDATED' : 'NON-COMPL
 Audit Reference: AfCFTA Secretariat Modalities Annex 2
 ======================================================`;
 
-    navigator.clipboard.writeText(text);
-    setCopiedDossier(true);
-    setStatusMessage(`Copied AfCFTA simulation dossier for ${selectedCorridor.name} to clipboard.`);
-    setTimeout(() => setCopiedDossier(false), 2500);
+    void copyToClipboard(text, 'dossier').then((ok) => {
+      if (ok) {
+        setStatusMessage(`Copied AfCFTA simulation dossier for ${selectedCorridor.name} to clipboard.`);
+      }
+    });
   };
 
   const handleDownloadCsv = () => {
@@ -193,13 +196,11 @@ Audit Reference: AfCFTA Secretariat Modalities Annex 2
       headers.join(','),
       ...regimeComparisonRows.map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')),
     ];
-    const blob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `afriata-afcfta-${selectedCorridor.id}-${selectedCommodity.hsCode.replace(/\s+/g, '')}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadFile(
+      `afriata-afcfta-${selectedCorridor.id}-${selectedCommodity.hsCode.replace(/\s+/g, '')}.csv`,
+      csvLines.join('\n'),
+      'text/csv;charset=utf-8;'
+    );
     setStatusMessage(`Downloaded CSV regime comparison for ${selectedCorridor.name}.`);
   };
 

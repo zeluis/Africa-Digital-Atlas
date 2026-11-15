@@ -114,7 +114,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                     <Anchor className="w-4 h-4 text-amber-700 flex-shrink-0" />
                     <span>Archival Voyage Logs</span>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-semibold">
+                  <span className="text-[10px] font-mono text-amber-800 font-semibold shrink-0">
                     36,000+ Expeditions
                   </span>
                 </div>
@@ -129,7 +129,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                     <Dna className="w-4 h-4 text-amber-700 flex-shrink-0" />
                     <span>Lineages & Ethnolinguistics</span>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-semibold">
+                  <span className="text-[10px] font-mono text-amber-800 font-semibold shrink-0">
                     DNA Markers
                   </span>
                 </div>
@@ -144,7 +144,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                     <Globe2 className="w-4 h-4 text-amber-700 flex-shrink-0" />
                     <span>Diaspora Cultural Arc</span>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-semibold">
+                  <span className="text-[10px] font-mono text-amber-800 font-semibold shrink-0">
                     Global Bridges
                   </span>
                 </div>
@@ -163,7 +163,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                     <TrendingUp className="w-4 h-4 text-emerald-700 flex-shrink-0" />
                     <span>AfCFTA Single Market</span>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold">
+                  <span className="text-[10px] font-mono text-emerald-800 font-semibold shrink-0">
                     $3.4T GDP
                   </span>
                 </div>
@@ -178,8 +178,8 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                     <Zap className="w-4 h-4 text-emerald-700 flex-shrink-0" />
                     <span>Power Interconnectors</span>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold">
-                    WAPP • EAPP • SAPP
+                  <span className="text-[10px] font-mono text-emerald-800 font-semibold shrink-0">
+                    WAPP · EAPP · SAPP
                   </span>
                 </div>
                 <p className="text-xs text-stone-600 leading-relaxed font-normal">
@@ -193,7 +193,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                     <Layers className="w-4 h-4 text-emerald-700 flex-shrink-0" />
                     <span>PAPSS Settlement Rails</span>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold">
+                  <span className="text-[10px] font-mono text-emerald-800 font-semibold shrink-0">
                     Instant Clearing
                   </span>
                 </div>
@@ -212,7 +212,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                     <Rocket className="w-4 h-4 text-indigo-700 flex-shrink-0" />
                     <span>Demographic Dividend</span>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-800 border border-indigo-200 font-semibold">
+                  <span className="text-[10px] font-mono text-indigo-800 font-semibold shrink-0">
                     Median Age 19.7
                   </span>
                 </div>
@@ -227,7 +227,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                     <Cpu className="w-4 h-4 text-indigo-700 flex-shrink-0" />
                     <span>Silicon Savannah & 4IR</span>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-800 border border-indigo-200 font-semibold">
+                  <span className="text-[10px] font-mono text-indigo-800 font-semibold shrink-0">
                     5 Tech Megahubs
                   </span>
                 </div>
@@ -242,7 +242,7 @@ export const OnboardingContinentVisualizer: React.FC<OnboardingContinentVisualiz
                     <Sparkles className="w-4 h-4 text-amber-700 flex-shrink-0" />
                     <span>Green Minerals & Energy</span>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-800 border border-indigo-200 font-semibold">
+                  <span className="text-[10px] font-mono text-indigo-800 font-semibold shrink-0">
                     AU Agenda 2063
                   </span>
                 </div>

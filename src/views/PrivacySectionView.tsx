@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { CanonicalNavTab } from '../components/NavigationDrawer';
 import { useTranslation } from '../i18n/LanguageContext';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 
 interface PrivacySectionViewProps {
   onBackToOverview: () => void;
@@ -69,7 +70,7 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
 }) => {
   const { t, language } = useTranslation();
   const [activeTab, setActiveTab] = useState<PillarTab>('privacy');
-  const [copiedCitation, setCopiedCitation] = useState<string | null>(null);
+  const { copiedKey: copiedCitation, liveAnnouncement, copyToClipboard } = useCopyToClipboard({ resetMs: 3000 });
   const [localCacheCleared, setLocalCacheCleared] = useState<boolean>(false);
   const [storageItems, setStorageItems] = useState<LocalStorageEntry[]>([]);
   const [showRawJson, setShowRawJson] = useState<boolean>(false);
@@ -141,9 +142,7 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
   };
 
   const handleCopyCitationText = (text: string, type: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedCitation(type);
-    setTimeout(() => setCopiedCitation(null), 3000);
+    void copyToClipboard(text, type, `Copied ${type} citation to clipboard`);
   };
 
   const bibtexText = `@software{correia_africa_atlas_2026,

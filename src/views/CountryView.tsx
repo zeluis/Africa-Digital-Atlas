@@ -66,7 +66,7 @@ import {
   exportCountryDossierRIS
 } from '../utils/academicExport';
 import { speakAcademicNarration, stopAfriataSpeech } from '../utils/afriataVoiceEngine';
-import { getCountryHeaderData } from '../data/countryHeaderData';
+import { getCountryHeaderData, useCountryHeaderDataLoaded } from '../data/countryHeaderData';
 
 interface CountryViewProps {
   entityId: string;
@@ -125,6 +125,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
   onSelectCountry
 }) => {
   const { t } = useTranslation();
+  useCountryHeaderDataLoaded();
   const prefersReducedMotion = useReducedMotion();
   const { isCountrySaved, toggleSaveCountry } = useSavedEntities();
   const [activeTab, setActiveTab] = useState<TabType>('overview');

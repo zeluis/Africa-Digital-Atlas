@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { m } from 'motion/react';
 import { TradeCorridorPath } from '../../data/preColonialKingdomsDetailed';
 import { speakAcademicNarration, stopAfriataSpeech } from '../../utils/afriataVoiceEngine';
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 import { 
   Compass, 
   MapPin, 
@@ -46,7 +47,7 @@ export const TradeCorridorDetailPanel: React.FC<TradeCorridorDetailPanelProps> =
   onNavigateToKingdom
 }) => {
   const [activeTab, setActiveTab] = useState<CorridorTabKey>('overview');
-  const [copiedCitation, setCopiedCitation] = useState<boolean>(false);
+  const { copied: copiedCitation, liveAnnouncement, copyToClipboard } = useCopyToClipboard({ resetMs: 2400 });
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   const currentIndex = allCorridors.findIndex(c => c.id === corridor.id);
@@ -90,11 +91,7 @@ export const TradeCorridorDetailPanel: React.FC<TradeCorridorDetailPanelProps> =
 
   const handleCopyCitation = async () => {
     const text = `Archival Cartography Record: ${corridor.name} (${corridor.historicalPeriod || corridor.activeCenturies.map(c => `${c}th c.`).join(', ')}). Commodity: ${corridor.commodity}. Trajectory: ${corridor.startName} to ${corridor.endName}. Africa Data Atlas Cartographic Corpus.`;
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedCitation(true);
-      setTimeout(() => setCopiedCitation(false), 2400);
-    } catch {}
+    await copyToClipboard(text, 'citation', 'Copied trade corridor citation to clipboard');
   };
 
   const getTransportBadge = (mode?: string) => {
@@ -142,27 +139,23 @@ export const TradeCorridorDetailPanel: React.FC<TradeCorridorDetailPanelProps> =
       {/* Main Header */}
       <div className="px-4 py-3 sm:px-5 sm:py-3.5 border-b border-[#E5DDD0] dark:border-[#38322B] flex items-start justify-between gap-3 bg-white/[0.02]">
         <div className="space-y-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap text-[10px] font-mono">
             <span 
-              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider border shadow-xs"
-              style={{
-                backgroundColor: `${corridor.color}25`,
-                color: corridor.color,
-                borderColor: `${corridor.color}60`
-              }}
+              className="inline-flex items-center gap-1 font-bold uppercase tracking-wider"
+              style={{ color: corridor.color }}
             >
               <Coins className="w-3 h-3" />
               <span>{corridor.commodity.toUpperCase()} CORRIDOR</span>
             </span>
-
-            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold border ${transportInfo.color}`}>
+            <span className="text-stone-400" aria-hidden="true">·</span>
+            <span className="inline-flex items-center gap-1 font-bold text-stone-700 dark:text-stone-300">
               <TransportIcon className="w-3 h-3" />
               <span>{transportInfo.label}</span>
             </span>
 
             {corridor.activeCenturies && (
-              <span className="text-[10px] font-mono text-stone-500 dark:text-stone-400">
-                {corridor.activeCenturies.map(c => `${c}th`).join(', ')} Century
+              <span className="text-stone-500 dark:text-stone-400">
+                · {corridor.activeCenturies.map(c => `${c}th`).join(', ')} Century
               </span>
             )}
           </div>

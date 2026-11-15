@@ -20,9 +20,9 @@ import {
 import { RESEARCH_REPORTS, ResearchReport, ReportCategory } from '../data/reportsData';
 import { getAllReports } from '../data/reportsDataLoader';
 import { NotebookIngestionModal } from '../components/NotebookIngestionModal';
-import { DoiVerificationModal } from '../components/DoiVerificationModal';
 import { IngestionResult } from '../data/notebookIngestionPipeline';
 import { DynamicIcon } from '../components/DynamicIcon';
+import { atlasModalStore } from '../stores/useAtlasModalStore';
 
 interface ResearchReportsDirectoryViewProps {
   onSelectReport: (reportId: string) => void;
@@ -42,7 +42,6 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isIngestionModalOpen, setIsIngestionModalOpen] = useState<boolean>(false);
-  const [isDoiModalOpen, setIsDoiModalOpen] = useState<boolean>(false);
   const [ingestionTargetMode, setIngestionTargetMode] = useState<'reports' | 'working-papers'>('reports');
   const [refreshTick, setRefreshTick] = useState<number>(0);
 
@@ -129,7 +128,7 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
           <div className="flex items-center gap-2.5 shrink-0 self-start md:self-auto flex-wrap">
             <button
               type="button"
-              onClick={() => setIsDoiModalOpen(true)}
+              onClick={() => atlasModalStore.openDoiVerification()}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-zinc-950 transition-all cursor-pointer shadow-md"
               title="Audit all DOIs with live Crossref API or upload custom JSON concordance"
             >
@@ -332,12 +331,6 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
         onClose={() => setIsIngestionModalOpen(false)}
         defaultTargetPipeline={ingestionTargetMode}
         onIngestComplete={handleReportIngested}
-      />
-
-      {/* Crossref DOI Live Verification & Concordance Modal */}
-      <DoiVerificationModal
-        isOpen={isDoiModalOpen}
-        onClose={() => setIsDoiModalOpen(false)}
       />
     </section>
   );

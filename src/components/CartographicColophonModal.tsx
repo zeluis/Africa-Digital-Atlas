@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePrefersReducedMotion } from '../utils/motion';
 import { AtlasDialog } from './common/AtlasDialog';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 import { 
   Compass, 
   Map as MapIcon, 
@@ -40,7 +41,7 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
   onOpenMethodologyAudit
 }) => {
   const [activeTab, setActiveTab] = useState<'cartouche' | 'narrative' | 'expedition'>('cartouche');
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const { copiedKey, liveAnnouncement, copyToClipboard } = useCopyToClipboard();
   const [isPrewarming, setIsPrewarming] = useState(false);
   const [prewarmResult, setPrewarmResult] = useState<{ cached: number; total: number } | null>(null);
   const [readinessScore, setReadinessScore] = useState(96);
@@ -69,9 +70,7 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
   }, [isOpen, activeTab]);
 
   const handleCopy = (text: string, key: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedKey(key);
-    setTimeout(() => setCopiedKey(null), 2000);
+    void copyToClipboard(text, key, 'Copied colophon reference to clipboard');
   };
 
   const handleTriggerPrewarm = async () => {

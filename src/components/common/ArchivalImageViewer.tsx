@@ -48,6 +48,7 @@ import {
   exportCSLJSONFile 
 } from '../../utils/academicExport';
 import { resolveAssetPath, getAssetCandidateUrls } from '../../utils/assetPath';
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 
 export type AcademiaVariant = 'slavery-images' | 'castas' | 'unesco';
 
@@ -104,8 +105,9 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
 
   // Citation Generator state
   const [activeCitationStyle, setActiveCitationStyle] = useState<CitationStyle>('chicago');
-  const [hasCopied, setHasCopied] = useState<boolean>(false);
-  const [hasCopiedAttribution, setHasCopiedAttribution] = useState<boolean>(false);
+  const { copiedKey, liveAnnouncement, copyToClipboard } = useCopyToClipboard({ resetMs: 2500 });
+  const hasCopied = copiedKey === 'citation';
+  const hasCopiedAttribution = copiedKey === 'attribution';
   const [isExportingPDF, setIsExportingPDF] = useState<boolean>(false);
   const [imageLoadError, setImageLoadError] = useState<boolean>(false);
   const [candidateIndex, setCandidateIndex] = useState<number>(0);
@@ -486,14 +488,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
   const copyCitation = async () => {
     const text = generateCitation(activeCitationStyle);
     if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-      setHasCopied(true);
-      setTimeout(() => setHasCopied(false), 2500);
-    } catch {
-      setHasCopied(true);
-      setTimeout(() => setHasCopied(false), 2500);
-    }
+    await copyToClipboard(text, 'citation', 'Copied archival plate citation to clipboard');
   };
 
   const handleExportPDF = async () => {
@@ -558,14 +553,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
 
   const copyAttribution = async () => {
     if (!resolvedAttributionText) return;
-    try {
-      await navigator.clipboard.writeText(resolvedAttributionText);
-      setHasCopiedAttribution(true);
-      setTimeout(() => setHasCopiedAttribution(false), 2500);
-    } catch {
-      setHasCopiedAttribution(true);
-      setTimeout(() => setHasCopiedAttribution(false), 2500);
-    }
+    await copyToClipboard(resolvedAttributionText, 'attribution', 'Copied attribution notice to clipboard');
   };
 
   const contentUI = (
@@ -870,7 +858,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                 </button>
               )}
 
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-200/80 dark:bg-stone-800 border border-stone-300/80 dark:border-stone-700/80 text-stone-700 dark:text-stone-300 shadow-2xs">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-stone-600 dark:text-stone-400">
                 <Compass className="w-3 h-3 text-amber-700 dark:text-amber-400" />
                 <span>Scroll wheel: Zoom · Drag: Pan · Alt + ← / →: Step plates</span>
               </span>

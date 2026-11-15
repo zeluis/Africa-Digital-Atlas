@@ -74,6 +74,8 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
               src={resolveAssetPath(placeholderSrc)}
               alt=""
               aria-hidden="true"
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover filter blur-lg scale-110 opacity-70"
             />
           ) : (

@@ -51,7 +51,7 @@ export const HistoricalTimeSlider: React.FC<HistoricalTimeSliderProps> = ({
             {currentEpoch.label}
           </span>
         </div>
-        <div className="text-xs font-mono font-bold text-amber-800 dark:text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full">
+        <div className="text-xs font-mono font-bold text-amber-800 dark:text-amber-400">
           {selectedYear} CE
         </div>
       </div>

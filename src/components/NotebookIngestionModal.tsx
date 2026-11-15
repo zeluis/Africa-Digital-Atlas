@@ -3,6 +3,7 @@ import { ingestNotebookMarkdown, IngestionResult } from '../data/notebookIngesti
 import { ResearchReport } from '../data/reportsData';
 import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
 import { AtlasDialog } from './common/AtlasDialog';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 import { 
   X, 
   Upload, 
@@ -199,8 +200,9 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
     defaultTargetPipeline === 'working-papers' ? SAMPLE_WORKING_PAPER_MARKDOWN : SAMPLE_REPORT_MARKDOWN
   );
   const [ingestionResult, setIngestionResult] = useState<IngestionResult | null>(null);
-  const [copiedJson, setCopiedJson] = useState(false);
-  const [copiedTemplate, setCopiedTemplate] = useState(false);
+  const { copiedKey: copiedItemKey, liveAnnouncement, copyToClipboard } = useCopyToClipboard();
+  const copiedJson = copiedItemKey === 'json';
+  const copiedTemplate = copiedItemKey === 'template';
   const [activeTab, setActiveTab] = useState<'editor' | 'preview' | 'json' | 'schema'>('editor');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -266,9 +268,7 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
 
   const handleCopyJson = () => {
     if (!ingestionResult) return;
-    navigator.clipboard.writeText(ingestionResult.summaryJson);
-    setCopiedJson(true);
-    setTimeout(() => setCopiedJson(false), 2000);
+    void copyToClipboard(ingestionResult.summaryJson, 'json', 'Copied ingested JSON metadata to clipboard');
   };
 
   const handleCommit = () => {
@@ -540,11 +540,11 @@ publication:
                 <button
                   type="button"
                   onClick={() => {
-                    navigator.clipboard.writeText(
-                      targetPipeline === 'working-papers' ? SAMPLE_WORKING_PAPER_MARKDOWN : SAMPLE_REPORT_MARKDOWN
+                    void copyToClipboard(
+                      targetPipeline === 'working-papers' ? SAMPLE_WORKING_PAPER_MARKDOWN : SAMPLE_REPORT_MARKDOWN,
+                      'template',
+                      'Copied notebook markdown template to clipboard'
                     );
-                    setCopiedTemplate(true);
-                    setTimeout(() => setCopiedTemplate(false), 2000);
                   }}
                   className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-mono text-[11px] cursor-pointer"
                 >

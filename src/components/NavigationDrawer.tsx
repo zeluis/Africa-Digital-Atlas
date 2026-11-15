@@ -32,7 +32,7 @@ import {
   Quote,
   Truck
 } from 'lucide-react';
-import { UN_REGIONAL_SILHOUETTES } from '../data/svgGeographySystem';
+import { UN_REGIONAL_SILHOUETTES, useRegionalSilhouettesLoaded } from '../data/svgGeographySystem';
 import { AfricanRegion } from '../data/types';
 import { getRegionTonalPalette } from '../data/unGeoschemeColors';
 import { getCategorizedReports, getAllReports, isReportOrPaperTab, NavReportGroup } from '../data/reportsDataLoader';
@@ -262,6 +262,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 }) => {
   const { t } = useTranslation();
   const prefersReducedMotion = usePrefersReducedMotion();
+  useRegionalSilhouettesLoaded();
 
   // Determine if current page triggers auto-collapse rail mode on desktop
   const isAutoCollapsePage = 

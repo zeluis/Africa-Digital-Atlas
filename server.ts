@@ -71,7 +71,8 @@ function getGenAI(): GoogleGenAI | null {
   return aiClient;
 }
 
-import { EXTERNAL_API_CONNECTORS } from "./src/data/externalApisIngestion.ts";
+import externalApisPayload from "./src/data/externalApisIngestion.json";
+const EXTERNAL_API_CONNECTORS = externalApisPayload.connectors;
 
 /**
  * Health check endpoint
@@ -392,7 +393,10 @@ async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        allowedHosts: true,
+      },
       appType: "spa",
     });
     app.use(vite.middlewares);

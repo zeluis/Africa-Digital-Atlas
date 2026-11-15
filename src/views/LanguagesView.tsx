@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { atlas } from '../data/atlas-store';
-import { COUNTRY_HEADER_DATA } from '../data/countryHeaderData';
+import { COUNTRY_HEADER_DATA, useCountryHeaderDataLoaded } from '../data/countryHeaderData';
 import { CountryFlag } from '../components/CountryFlag';
 import { getCountryRegionTonalPalette, getRegionTonalPalette } from '../data/unGeoschemeColors';
-import { getCountrySilhouette } from '../data/countrySilhouettes';
+import { getCountrySilhouette, useCountrySilhouettesLoaded } from '../data/countrySilhouettes';
 import { 
   Search, 
   Globe2, 
@@ -238,9 +238,11 @@ const handleLangTabKeyDown = (
 export const LanguagesView: React.FC<LanguagesViewProps> = ({
   onSelectCountry
 }) => {
+  useCountrySilhouettesLoaded();
   const prefersReducedMotion = useReducedMotion();
   const [activeTab, setActiveTab] = useState<LangSubTab>('families');
   const [lastLabTab, setLastLabTab] = useState<'waveforms' | 'comparator' | 'typology'>('waveforms');
+  const headerLoaded = useCountryHeaderDataLoaded();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFamilyId, setSelectedFamilyId] = useState<string>('niger-congo');
   const [activeWaveformLangId, setActiveWaveformLangId] = useState<string>('yoruba');
@@ -259,7 +261,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
       const spokenMatch = meta?.languages.mostSpoken.some(l => l.toLowerCase().includes(q));
       return nameMatch || officialMatch || spokenMatch;
     });
-  }, [allEntities, searchQuery]);
+  }, [allEntities, searchQuery, headerLoaded]);
 
   const activeGroup = LANG_TAB_TO_GROUP[activeTab];
 

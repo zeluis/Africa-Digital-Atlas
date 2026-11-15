@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { getCountrySilhouette } from '../data/countrySilhouettes';
+import { getCountrySilhouette, useCountrySilhouettesLoaded } from '../data/countrySilhouettes';
 import { getEntityGeographyMetadata, UN_M49_NUMERIC_CODES } from '../data/svgGeographySystem';
 import { atlas } from '../data/atlas-store';
 import { getCountryRegionTonalPalette, getRegionCalmColor } from '../data/unGeoschemeColors';
 import { useAfricaFinalMap } from '../utils/svgMapLoader';
 import { AtlasDialog } from './common/AtlasDialog';
+import { downloadFile } from '../utils/exportUtils';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 import { 
   MapPin, 
   Maximize2, 
@@ -36,9 +38,10 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
   const [showGrid, setShowGrid] = useState(true);
   const [showCapital, setShowCapital] = useState(true);
   const [showSubdivisions, setShowSubdivisions] = useState(true);
-  const [copiedPath, setCopiedPath] = useState(false);
+  const { copied: copiedPath, copyToClipboard } = useCopyToClipboard();
   const [downloadSuccess, setDownloadSuccess] = useState(false);
 
+  useCountrySilhouettesLoaded();
   const { mapData, isLoaded } = useAfricaFinalMap();
   const countryMapItem = mapData[entityId];
   const silhouette = getCountrySilhouette(entityId);
@@ -80,15 +83,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
     const serializer = new XMLSerializer();
     const source = serializer.serializeToString(svgElement);
     const commentedSource = `<!-- African Continental Atlas: ${entity?.name || silhouette.name} (ISO3: ${entityId}, M49: ${m49Code}) -->\n${source}`;
-    const blob = new Blob([commentedSource], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `UN_M49_${m49Code}_${entityId}_silhouette.svg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    downloadFile(`UN_M49_${m49Code}_${entityId}_silhouette.svg`, commentedSource, 'image/svg+xml;charset=utf-8');
 
     setDownloadSuccess(true);
     setTimeout(() => setDownloadSuccess(false), 2500);
@@ -100,9 +95,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
       : silhouette?.path;
 
     if (combinedPath) {
-      navigator.clipboard.writeText(combinedPath);
-      setCopiedPath(true);
-      setTimeout(() => setCopiedPath(false), 2000);
+      void copyToClipboard(combinedPath, 'svg-path', 'Copied country SVG path to clipboard');
     }
   };
 

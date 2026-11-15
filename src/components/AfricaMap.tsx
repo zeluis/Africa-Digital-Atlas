@@ -7,7 +7,8 @@ import {
   AFRICA_SVG_MAP, 
   CountrySvgPath, 
   BACKGROUND_SURROUNDING_PATHS, 
-  BACKGROUND_SURROUNDING_CIRCLES 
+  BACKGROUND_SURROUNDING_CIRCLES,
+  useAfricaSvgMapLoaded
 } from '../data/svgMaps';
 import { 
   AFRICA_FINAL_MAP, 
@@ -21,6 +22,7 @@ import { InteractiveMapLegend, SUBREGION_PILL_DEFS } from './InteractiveMapLegen
 import { CountryFlag } from './CountryFlag';
 import { formatValueByUnit, formatPopulation, formatGDP, formatHDI } from '../data/atlas-formatters';
 import { MicroSparkline } from './common/MicroSparkline';
+import { downloadFile } from '../utils/exportUtils';
 import { 
   ZoomIn, 
   ZoomOut, 
@@ -90,8 +92,8 @@ import {
   formatBivariateValue
 } from './BivariateMapTray';
 
-const CartographicColophonModal = lazyWithRetry(() => import('./CartographicColophonModal').then(m => ({ default: m.CartographicColophonModal })), 'CartographicColophonModal');
-const AcademicExportModal = lazyWithRetry(() => import('./AcademicExportModal').then(m => ({ default: m.AcademicExportModal })), 'AcademicExportModal');
+import { atlasModalStore } from '../stores/useAtlasModalStore';
+
 const AkpCatalogueModal = lazyWithRetry(() => import('./AkpCatalogueModal').then(m => ({ default: m.AkpCatalogueModal })), 'AkpCatalogueModal');
 import { ChoroplethTimelineScrubber } from './ChoroplethTimelineScrubber';
 import {
@@ -217,6 +219,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   const handleRegionTabSelect = onSelectRegionFilter || (() => {});
 
   const { mapData: finalMapData } = useAfricaFinalMap();
+  const svgMapLoaded = useAfricaSvgMapLoaded();
 
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -420,8 +423,6 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   // Overlays toggle state (Graticule lines & Compass Rose, AKP Infrastructure & Biospheres)
   const [showGraticuleAndCompass, setShowGraticuleAndCompass] = useState<boolean>(true);
   const [showCartouche, setShowCartouche] = useState<boolean>(true);
-  const [isColophonOpen, setIsColophonOpen] = useState<boolean>(false);
-  const [isCitationModalOpen, setIsCitationModalOpen] = useState<boolean>(false);
   const [showAdmin1Borders, setShowAdmin1Borders] = useState<boolean>(true);
   const [showPowerPlants, setShowPowerPlants] = useState<boolean>(false);
   const [showProtectedAreas, setShowProtectedAreas] = useState<boolean>(false);
@@ -944,7 +945,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     const continentalMean = count > 0 ? sum / count : 0;
 
     return { metricValues: values, minVal: min, maxVal: max, continentalMean };
-  }, [activeMetric, choroplethYear]);
+  }, [activeMetric, choroplethYear, svgMapLoaded]);
 
   // Visibility toggle handlers
   const handleToggleRegion = (region: AfricanRegion) => {
@@ -1756,15 +1757,11 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         svgString = provenanceHeader + svgString;
       }
 
-      const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-      const blobURL = URL.createObjectURL(svgBlob);
-      const link = document.createElement('a');
-      link.download = `africa_data_atlas_${mapMode}_${new Date().toISOString().split('T')[0]}.svg`;
-      link.href = blobURL;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(blobURL);
+      downloadFile(
+        `africa_data_atlas_${mapMode}_${new Date().toISOString().split('T')[0]}.svg`,
+        svgString,
+        'image/svg+xml;charset=utf-8'
+      );
 
       setExportSvgSuccess(true);
       setTimeout(() => setExportSvgSuccess(false), 3000);
@@ -2986,7 +2983,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
                         <button
                           type="button"
-                          onClick={() => setIsColophonOpen(true)}
+                          onClick={() => atlasModalStore.openColophon()}
                           className="flex items-center gap-2 p-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 dark:text-amber-200 border border-amber-500/30 text-left transition-all cursor-pointer"
                         >
                           <Compass className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
@@ -2998,7 +2995,12 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
                         <button
                           type="button"
-                          onClick={() => setIsCitationModalOpen(true)}
+                          onClick={() =>
+                            atlasModalStore.openAcademicExport({
+                              title: 'Africa Data Atlas & Cartographic Observatory',
+                              sourceContext: 'High-Precision Continental Vector Cartography (5,796 × 5,867 Grid)',
+                            })
+                          }
                           className="flex items-center gap-2 p-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 dark:text-amber-200 border border-amber-500/30 text-left transition-all cursor-pointer"
                         >
                           <Quote className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
@@ -3444,7 +3446,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 handleCountryClick={handleCountryClick}
                 handleAdmin1Click={handleAdmin1Click}
                 setHoveredAdmin1={setHoveredAdmin1}
-                onOpenColophonModal={() => setIsColophonOpen(true)}
+                onOpenColophonModal={() => atlasModalStore.openColophon()}
                 isolatedCountryId={isolatedCountryId}
               />
 
@@ -3903,25 +3905,6 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               handleSelectMode('choropleth');
             }}
             currentChoroplethMetricId={activeMetric}
-          />
-        )}
-
-        {/* Cartographic Colophon, Geodesy & Official Imprint Modal */}
-        {isColophonOpen && (
-          <CartographicColophonModal
-            isOpen={isColophonOpen}
-            onClose={() => setIsColophonOpen(false)}
-            onOpenCitationModal={() => setIsCitationModalOpen(true)}
-          />
-        )}
-
-        {/* Academic Citation & Platform Reference Modal */}
-        {isCitationModalOpen && (
-          <AcademicExportModal
-            isOpen={isCitationModalOpen}
-            onClose={() => setIsCitationModalOpen(false)}
-            title="Africa Data Atlas & Cartographic Observatory"
-            sourceContext="High-Precision Continental Vector Cartography (5,796 × 5,867 Grid)"
           />
         )}
 

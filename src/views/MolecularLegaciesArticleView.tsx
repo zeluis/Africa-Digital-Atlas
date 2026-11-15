@@ -47,6 +47,7 @@ import {
 import { ReportVoiceReader } from '../components/ReportVoiceReader';
 import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
 import { usePrefersReducedMotion } from '../utils/motion';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 import { 
   IBD_GENOMIC_CONCORDANCE, 
   SEX_BIASED_GENE_FLOW, 
@@ -149,7 +150,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
   const prefersReducedMotion = usePrefersReducedMotion();
   const [activeSection, setActiveSection] = useState<ArticleSectionId>('sec-epistemology');
   const [citationFilter, setCitationFilter] = useState<string>('all');
-  const [copiedCitation, setCopiedCitation] = useState<boolean>(false);
+  const { copied: copiedCitation, liveAnnouncement, copyToClipboard } = useCopyToClipboard({ resetMs: 2500 });
   const [fontSizeClass, setFontSizeClass] = useState<'normal' | 'large'>('normal');
 
   // Zero-reflow IntersectionObserver for active section indicator
@@ -186,9 +187,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
 
   const handleCopyCitation = () => {
     const citationText = `Micheletti, S. J., et al. (2020). Genetic Consequences of the Transatlantic Slave Trade in the Americas. The American Journal of Human Genetics, 107(2), 265-277. https://doi.org/10.1016/j.ajhg.2020.06.012`;
-    navigator.clipboard.writeText(citationText);
-    setCopiedCitation(true);
-    setTimeout(() => setCopiedCitation(false), 2500);
+    void copyToClipboard(citationText, 'citation', 'Copied monograph citation to clipboard');
   };
 
   const filteredCitations = citationFilter === 'all' 
@@ -197,6 +196,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
 
   return (
     <article aria-label="Molecular Legacies and Genomic Archaeology of the Middle Passage Monograph" className={`report-frame max-w-[1440px] mx-auto border-x border-[#D7D6CD] dark:border-[#2D2E2A] px-4 sm:px-6 lg:px-10 py-8 transition-colors duration-300 relative ${fontSizeClass === 'large' ? 'text-[1.125rem]' : 'text-[1.063rem]'}`} id="molecular-legacies-article-view">
+      <span className="sr-only" role="status" aria-live="polite">{liveAnnouncement}</span>
       {/* Top Reading Progress Bar */}
       <div className="fixed top-0 left-0 right-0 w-0 h-1 bg-emerald-600 dark:bg-emerald-400 z-50 transition-all duration-150 no-print scroll-reading-progress" />
       

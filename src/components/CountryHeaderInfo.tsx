@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CountryHeaderMetadata, getCountryHeaderData } from '../data/countryHeaderData';
+import { CountryHeaderMetadata, getCountryHeaderData, useCountryHeaderDataLoaded } from '../data/countryHeaderData';
 import {
   Landmark,
   Scale,
@@ -30,6 +30,7 @@ export const CountryHeaderInfo: React.FC<CountryHeaderInfoProps> = ({
   entityId,
   className = ''
 }) => {
+  useCountryHeaderDataLoaded();
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [tempUnit, setTempUnit] = useState<'C' | 'F'>('C');
   const metadata = getCountryHeaderData(entityId);
@@ -289,8 +290,8 @@ export const CountryHeaderInfo: React.FC<CountryHeaderInfoProps> = ({
                 <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 font-mono">
                   Live Capital Time
                 </span>
-                <span translate="no" className="notranslate font-mono text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-semibold">
-                  {metadata.timeZoneAbbr} ({metadata.utcOffset})
+                <span translate="no" className="notranslate font-mono text-[10px] text-emerald-800 font-semibold">
+                  · {metadata.timeZoneAbbr} ({metadata.utcOffset})
                 </span>
               </div>
               <div translate="no" className="notranslate flex items-baseline gap-2">

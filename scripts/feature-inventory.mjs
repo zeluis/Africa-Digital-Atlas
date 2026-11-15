@@ -14,7 +14,9 @@ const views = src.filter((f) => f.startsWith('src/views/')).map((f) => path.base
 const lazy = [...app.matchAll(/import\(\s*['"]([^'"]+)['"]\s*\)/g)].map((m) => path.basename(m[1])).sort();
 const exporters = ['academicExport.ts', 'exportUtils.ts'].filter((f) => fs.existsSync('src/utils/' + f))
   .flatMap((f) => [...read('src/utils/' + f).matchAll(/export (?:async )?(?:function|const) (\w+)/g)].map((m) => `${f}:${m[1]}`)).sort();
-const langs = fs.existsSync('src/i18n/translations.ts') ? [...read('src/i18n/translations.ts').matchAll(/^  ([a-z]{2}): \{/gm)].map((m) => m[1]) : [];
+const langs = fs.existsSync('src/i18n/locales')
+  ? fs.readdirSync('src/i18n/locales').filter((f) => f.endsWith('.ts')).map((f) => f.replace(/\.ts$/, ''))
+  : (fs.existsSync('src/i18n/translations.ts') ? [...read('src/i18n/translations.ts').matchAll(/^  ([a-z]{2}): \{/gm)].map((m) => m[1]) : []);
 
 // reachable = referenced by at least one OTHER source file
 const texts = src.map((f) => [f, read(f)]);

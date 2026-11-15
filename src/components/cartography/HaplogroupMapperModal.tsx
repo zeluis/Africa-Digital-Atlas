@@ -162,7 +162,7 @@ export const HaplogroupMapperModal: React.FC<HaplogroupMapperModalProps> = ({
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-serif font-bold text-sm">{item.lineage}</span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-300">
+                      <span className="text-[10px] font-mono text-stone-600 dark:text-stone-400">
                         {item.timeframe}
                       </span>
                     </div>

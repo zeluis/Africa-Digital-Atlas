@@ -123,8 +123,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   type="button"
                   onClick={() => onSelectTab('overview')}
-                  style={{ fontFamily: '"Noto Serif Display", Georgia, Cambria, "Times New Roman", serif' }}
-                  className="w-full font-extrabold text-[1.32rem] sm:text-[1.35rem] tracking-tight text-amber-900 dark:text-amber-400 hover:opacity-85 transition-opacity cursor-pointer text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded py-0.5 leading-tight"
+                  className="w-full font-serif-display font-extrabold text-[1.32rem] sm:text-[1.35rem] tracking-tight text-amber-900 dark:text-amber-400 hover:opacity-85 transition-opacity cursor-pointer text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded py-0.5 leading-tight"
                   aria-label="Afriata - Return to Primary Overview"
                   title="Return to Primary Overview"
                 >

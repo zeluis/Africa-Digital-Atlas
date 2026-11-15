@@ -7,17 +7,17 @@ export default defineConfig({
   base: process.env.DOCS_BASE || '/Africa-Digital-Atlas/docs/',
   
   head: [
-    ['link', { rel: 'icon', type: 'image/jpeg', href: '/Africa-Digital-Atlas/docs/hero-preview.jpg' }],
+    ['link', { rel: 'icon', type: 'image/webp', href: '/Africa-Digital-Atlas/docs/hero-preview.webp' }],
     ['meta', { name: 'theme-color', content: '#d97706' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:locale', content: 'en' }],
     ['meta', { property: 'og:title', content: 'Afriata: Africa Data Atlas Documentation' }],
     ['meta', { property: 'og:site_name', content: 'Afriata Docs' }],
-    ['meta', { property: 'og:image', content: 'https://zeluis.github.io/Africa-Digital-Atlas/hero-preview.jpg' }],
+    ['meta', { property: 'og:image', content: 'https://zeluis.github.io/Africa-Digital-Atlas/hero-preview.webp' }],
   ],
 
   themeConfig: {
-    logo: '/hero-preview.jpg',
+    logo: '/hero-preview.webp',
     siteTitle: 'Afriata',
 
     nav: [

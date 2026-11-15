@@ -14,11 +14,12 @@ import {
   Download
 } from 'lucide-react';
 import { WorkingPaperEntry } from '../data/methodologyDossierData';
-import { getUnifiedWorkingPaperEntries, getAllReports } from '../data/reportsDataLoader';
+import { getUnifiedWorkingPaperEntries, getAllReports, ensureReportLoaded } from '../data/reportsDataLoader';
 import { NotebookIngestionModal } from './NotebookIngestionModal';
 import { AfricaUnLogo } from './AfricaUnLogo';
 import { exportPublicationPDF } from '../utils/academicExport';
 import { usePrefersReducedMotion } from '../utils/motion';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 
 interface WorkingPapersModalProps {
   isOpen: boolean;
@@ -34,7 +35,7 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
 }) => {
   const [refreshTick, setRefreshTick] = useState(0);
   const [isIngestionOpen, setIsIngestionOpen] = useState(false);
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const { copiedKey, liveAnnouncement, copyToClipboard } = useCopyToClipboard();
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
 
@@ -62,9 +63,7 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
   );
 
   const handleCopy = (text: string, key: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedKey(key);
-    setTimeout(() => setCopiedKey(null), 2000);
+    void copyToClipboard(text, key, 'Copied working paper citation to clipboard');
   };
 
   const handleDownloadPdf = async () => {
@@ -72,7 +71,9 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
     try {
       setIsGeneratingPdf(true);
       const allReports = getAllReports();
-      const linkedReport = selectedPaper.reportId ? allReports[selectedPaper.reportId] : undefined;
+      const linkedReport = selectedPaper.reportId
+        ? (await ensureReportLoaded(selectedPaper.reportId)) || allReports[selectedPaper.reportId]
+        : undefined;
 
       if (linkedReport) {
         await exportPublicationPDF(linkedReport);

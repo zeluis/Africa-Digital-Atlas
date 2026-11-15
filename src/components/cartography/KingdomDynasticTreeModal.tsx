@@ -119,19 +119,16 @@ export const KingdomDynasticTreeModal: React.FC<KingdomDynasticTreeModalProps> =
           }}
         >
           <div className="space-y-1 min-w-0 text-left">
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap text-[11px] font-mono">
               <span
-                className="px-2.5 py-0.5 rounded-full text-[10px] font-sans font-bold border flex items-center gap-1.5"
-                style={{
-                  backgroundColor: `${kingdom.color}25`,
-                  borderColor: `${kingdom.color}60`,
-                  color: kingdom.color
-                }}
+                className="font-sans font-bold flex items-center gap-1.5"
+                style={{ color: kingdom.color }}
               >
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: kingdom.color }} />
                 <span>{kingdom.regionBadge}</span>
               </span>
-              <span className="px-2 py-0.5 rounded-full bg-stone-200/80 dark:bg-stone-800 text-[10px] font-mono font-bold text-stone-700 dark:text-stone-300">
+              <span className="text-stone-400" aria-hidden="true">·</span>
+              <span className="font-bold text-stone-700 dark:text-stone-300">
                 {kingdom.period}
               </span>
             </div>
@@ -357,3 +354,6 @@ export const KingdomDynasticTreeModal: React.FC<KingdomDynasticTreeModalProps> =
     </AtlasDialog>
   );
 };
+
+export default KingdomDynasticTreeModal;
+

@@ -60,6 +60,7 @@ import {
 import { ReportVoiceReader } from '../components/ReportVoiceReader';
 import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
 import { usePrefersReducedMotion } from '../utils/motion';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 
 interface AfricanDevelopmentMasterReportViewProps {
   onNavigateToAtlas?: () => void;
@@ -75,7 +76,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
   const [activeEpochIndex, setActiveEpochIndex] = useState<number>(0);
   const [activeCommodityIndex, setActiveCommodityIndex] = useState<number>(0);
   const [fontSizeClass, setFontSizeClass] = useState<'normal' | 'large'>('normal');
-  const [copiedCitation, setCopiedCitation] = useState<boolean>(false);
+  const { copied: copiedCitation, liveAnnouncement, copyToClipboard } = useCopyToClipboard({ resetMs: 2500 });
 
   const activeEpoch = COMPOUNDING_STRUCTURAL_EPOCHS[activeEpochIndex] || COMPOUNDING_STRUCTURAL_EPOCHS[0];
   const activeCommodity = TADEI_MONOPSONY_CASE_STUDIES[activeCommodityIndex];
@@ -128,13 +129,12 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
 
   const handleCopyCitation = () => {
     const citationText = `Acemoglu, D., Nunn, N., & Robinson, J. A. (2026). The Structural & Evolutionary Foundations of African Development: An Interdisciplinary Synthesis. Global Economic History Dossier, 16(1), 1-84.`;
-    navigator.clipboard.writeText(citationText);
-    setCopiedCitation(true);
-    setTimeout(() => setCopiedCitation(false), 2500);
+    void copyToClipboard(citationText, 'citation', 'Copied master report citation to clipboard');
   };
 
   return (
     <article aria-label="The Structural and Evolutionary Foundations of African Development Master Treatise" className={`report-frame max-w-[1440px] mx-auto border-x border-[#D7D6CD] dark:border-[#2D2E2A] px-4 sm:px-8 lg:px-12 py-10 sm:py-14 transition-colors duration-300 relative ${fontSizeClass === 'large' ? 'text-[1.125rem]' : 'text-[1.063rem]'}`} id="african-development-master-report-view">
+      <span className="sr-only" role="status" aria-live="polite">{liveAnnouncement}</span>
       {/* Top Reading Progress Bar */}
       <div className="fixed top-0 left-0 right-0 w-0 h-1 bg-amber-600 dark:bg-amber-400 z-50 transition-all duration-150 no-print scroll-reading-progress" />
       

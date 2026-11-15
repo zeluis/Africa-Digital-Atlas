@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { AfricanRegion } from '../data/types';
-import { REGIONAL_SILHOUETTES, RegionalSilhouetteData } from '../data/svgGeographySystem';
-import { AFRICA_SVG_MAP } from '../data/svgMaps';
+import { REGIONAL_SILHOUETTES, RegionalSilhouetteData, useRegionalSilhouettesLoaded } from '../data/svgGeographySystem';
+import { AFRICA_SVG_MAP, useAfricaSvgMapLoaded } from '../data/svgMaps';
 import { CountryFlag } from './CountryFlag';
 import { getRegionTonalPalette, getRegionCalmColor } from '../data/unGeoschemeColors';
 import { AtlasDialog } from './common/AtlasDialog';
+import { downloadFile } from '../utils/exportUtils';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 import { 
   Globe2, 
   Download, 
@@ -39,14 +41,16 @@ export const RegionalSilhouette: React.FC<RegionalSilhouetteProps> = ({
   showMemberList = true,
   interactive = true
 }) => {
+  useRegionalSilhouettesLoaded();
+  useAfricaSvgMapLoaded();
   const [hoveredMember, setHoveredMember] = useState<string | null>(null);
   const [showCapitals, setShowCapitals] = useState<boolean>(true);
   const [showGrid, setShowGrid] = useState<boolean>(true);
   const [downloadSuccess, setDownloadSuccess] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [copiedPath, setCopiedPath] = useState<boolean>(false);
+  const { copied: copiedPath, copyToClipboard } = useCopyToClipboard();
 
-  const data: RegionalSilhouetteData = REGIONAL_SILHOUETTES[region];
+  const data: RegionalSilhouetteData | undefined = REGIONAL_SILHOUETTES[region];
   const tonal = getRegionTonalPalette(region);
   const calmBg = getRegionCalmColor(region);
   if (!data) return null;
@@ -59,15 +63,11 @@ export const RegionalSilhouette: React.FC<RegionalSilhouetteProps> = ({
 
     const serializer = new XMLSerializer();
     const source = serializer.serializeToString(svgEl);
-    const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `UN_M49_${data.m49Code}_${data.name.replace(/\s+/g, '_')}_silhouette.svg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    downloadFile(
+      `UN_M49_${data.m49Code}_${data.name.replace(/\s+/g, '_')}_silhouette.svg`,
+      source,
+      'image/svg+xml;charset=utf-8'
+    );
 
     setDownloadSuccess(true);
     setTimeout(() => setDownloadSuccess(false), 2500);
@@ -76,9 +76,7 @@ export const RegionalSilhouette: React.FC<RegionalSilhouetteProps> = ({
   const handleCopyPath = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     if (!data.primaryPath) return;
-    navigator.clipboard.writeText(data.primaryPath);
-    setCopiedPath(true);
-    setTimeout(() => setCopiedPath(false), 2000);
+    void copyToClipboard(data.primaryPath, 'svg-path', 'Copied regional SVG path to clipboard');
   };
 
   // 1. PROMINENT HEADER CAPSULE (Matches CountrySilhouette size="header" treatment)

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { ALL_TRADE_CORRIDORS, TradeCorridorPath } from '../../data/preColonialKingdomsDetailed';
+import { ALL_TRADE_CORRIDORS, TradeCorridorPath, useDetailedKingdomsLoaded } from '../../data/preColonialKingdomsDetailed';
 
 export interface TradeCorridorVectorLayerProps {
   selectedCorridorId?: string | null;
@@ -57,6 +57,7 @@ export const TradeCorridorVectorLayer: React.FC<TradeCorridorVectorLayerProps> =
   activeCommodityFilter = 'all',
   showLabels = true
 }) => {
+  const kingdomsLoaded = useDetailedKingdomsLoaded();
   const visibleCorridors = useMemo(() => {
     return ALL_TRADE_CORRIDORS.filter(c => {
       if (activeCommodityFilter !== 'all' && c.commodity !== activeCommodityFilter) {
@@ -67,7 +68,7 @@ export const TradeCorridorVectorLayer: React.FC<TradeCorridorVectorLayerProps> =
       }
       return true;
     });
-  }, [activeCentury, activeCommodityFilter]);
+  }, [activeCentury, activeCommodityFilter, kingdomsLoaded]);
 
   // Sort corridors so selected or hovered corridors render on top
   const sortedCorridors = useMemo(() => {

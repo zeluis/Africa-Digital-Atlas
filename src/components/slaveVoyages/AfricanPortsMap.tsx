@@ -15,6 +15,7 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { m, AnimatePresence } from 'motion/react';
 import { AtlasSelect } from '../common/AtlasSelect';
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 import {
   Castle,
   Shield,
@@ -54,7 +55,12 @@ import {
   Play,
   Pause
 } from 'lucide-react';
-import { AFRICAN_EMBARKATION_PORTS, AfricanEmbarkationPort, projectPortToSvg } from '../../data/slaveVoyagesPorts';
+import {
+  AFRICAN_EMBARKATION_PORTS,
+  AfricanEmbarkationPort,
+  projectPortToSvg,
+  useSlaveVoyagesPortsLoaded
+} from '../../data/slaveVoyagesPorts';
 import { AfricaVectorContinent, COUNTRY_TO_EMBARKATION_ZONE } from '../common/AfricaVectorContinent';
 import { DynamicIcon } from '../DynamicIcon';
 
@@ -217,9 +223,16 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
   const [showOceanVectors, setShowOceanVectors] = useState<boolean>(true);
   const [isTimelinePlaying, setIsTimelinePlaying] = useState<boolean>(false);
   const [isTimelineOpen, setIsTimelineOpen] = useState<boolean>(false);
+  const portsLoaded = useSlaveVoyagesPortsLoaded();
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [activePort, setActivePort] = useState<AfricanEmbarkationPort | null>(AFRICAN_EMBARKATION_PORTS[0]);
+  const [activePort, setActivePort] = useState<AfricanEmbarkationPort | null>(() => AFRICAN_EMBARKATION_PORTS[0] || null);
   const [hoveredPortId, setHoveredPortId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (portsLoaded && !activePort && AFRICAN_EMBARKATION_PORTS.length > 0) {
+      setActivePort(AFRICAN_EMBARKATION_PORTS[0]);
+    }
+  }, [portsLoaded, activePort]);
 
   // Region & Country Hover Highlighting (collapsed by default on initial view)
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
@@ -239,7 +252,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
 
   // Citation generator state
   const [activeCitationStyle, setActiveCitationStyle] = useState<CitationStyle>('chicago');
-  const [hasCopiedCitation, setHasCopiedCitation] = useState<boolean>(false);
+  const { copied: hasCopiedCitation, copyToClipboard } = useCopyToClipboard();
 
   // Mouse drag panning state
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -355,7 +368,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
         port.primaryEthnicGroups.some(e => e.toLowerCase().includes(searchQuery.toLowerCase()));
       return matchRegion && matchPower && matchCentury && matchYear && matchSearch;
     });
-  }, [selectedRegion, selectedPower, selectedCentury, yearRange, searchQuery]);
+  }, [selectedRegion, selectedPower, selectedCentury, yearRange, searchQuery, portsLoaded]);
 
   // Active port index in filtered list
   const currentIndex = useMemo(() => {
@@ -578,7 +591,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
       }
     }
     return posMap;
-  }, []);
+  }, [portsLoaded]);
 
   // Auto-scroll active card in filmstrip tray into view
   useEffect(() => {
@@ -828,14 +841,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
   const copyCitation = async () => {
     const text = generateCitation(activeCitationStyle);
     if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-      setHasCopiedCitation(true);
-      setTimeout(() => setHasCopiedCitation(false), 2000);
-    } catch {
-      setHasCopiedCitation(true);
-      setTimeout(() => setHasCopiedCitation(false), 2000);
-    }
+    await copyToClipboard(text, 'citation', 'Copied port citation to clipboard');
   };
 
   // Zoom percentage relative to 200% base corridor framing

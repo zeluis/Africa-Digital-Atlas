@@ -328,7 +328,7 @@ export const BilateralTradeComplementaritySection: React.FC<BilateralTradeComple
                 <h5 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 font-display">
                   {corridor.name}
                 </h5>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold shrink-0">
+                <span className="text-[11px] font-mono text-zinc-600 dark:text-zinc-300 font-bold shrink-0">
                   {corridor.distanceKm.toLocaleString()} km
                 </span>
               </div>

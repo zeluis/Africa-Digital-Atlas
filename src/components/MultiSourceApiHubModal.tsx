@@ -1,10 +1,16 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { usePrefersReducedMotion } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
-import { ExternalApiConnector, LiveApiTestResult } from '../data/externalApisIngestion';
+import {
+  EXTERNAL_API_CONNECTORS,
+  ExternalApiConnector,
+  LiveApiTestResult,
+  useExternalApisLoaded
+} from '../data/externalApisIngestion';
 import { OrganizationLogo } from './OrganizationLogo';
 import { AtlasSelect } from './common/AtlasSelect';
 import { AtlasDialog } from './common/AtlasDialog';
+import { downloadFile } from '../utils/exportUtils';
 import { 
   Database, 
   X, 
@@ -62,7 +68,11 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  const connectors = useMemo(() => atlas.getApiConnectors(), []);
+  const apisLoaded = useExternalApisLoaded();
+  const connectors = useMemo(() => {
+    const storeConnectors = atlas.getApiConnectors();
+    return storeConnectors.length > 0 ? storeConnectors : EXTERNAL_API_CONNECTORS;
+  }, [apisLoaded]);
   const entities = useMemo(() => atlas.getAllEntities().filter(e => e.sovereign), []);
 
   const categories = [
@@ -135,13 +145,7 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
       diagnostics: testResults,
       exportedAt: new Date().toISOString()
     };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `africa_atlas_multilateral_apis_manifest.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadFile('africa_atlas_multilateral_apis_manifest.json', JSON.stringify(payload, null, 2), 'application/json');
   };
 
   if (!isOpen) return null;

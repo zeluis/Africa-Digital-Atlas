@@ -203,8 +203,8 @@ export const MultiCountryRadarMatrix: React.FC<MultiCountryRadarMatrixProps> = (
           <div>
             <h3 className="font-extrabold text-sm md:text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
               <span>8-Pillar Comparative Spider Matrix</span>
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                0–100 Scale
+              <span className="text-[11px] font-mono font-semibold text-emerald-700 dark:text-emerald-400">
+                · 0–100 Scale
               </span>
             </h3>
             <p className="text-xs text-zinc-500 dark:text-zinc-400">

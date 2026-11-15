@@ -11,7 +11,7 @@ import { CountryFlag } from '../components/CountryFlag';
 import { DataSourceBadge } from '../components/DataSourceBadge';
 import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
 import { IndicatorQuickSearch } from '../components/IndicatorQuickSearch';
-import { exportBivariateCorrelationToCsv } from '../utils/exportUtils';
+import { exportBivariateCorrelationToCsv, downloadFile } from '../utils/exportUtils';
 import { formatValueByUnit } from '../data/atlas-formatters';
 import { 
   ResponsiveContainer, 
@@ -119,13 +119,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
     if (!source.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
       source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
     }
-    const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${filename}.svg`;
-    link.click();
-    URL.revokeObjectURL(url);
+    downloadFile(`${filename}.svg`, source, 'image/svg+xml;charset=utf-8');
   };
 
   // Helper to check if an indicator matches a domain

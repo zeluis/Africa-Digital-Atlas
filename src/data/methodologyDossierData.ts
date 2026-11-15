@@ -85,8 +85,8 @@ export const DATASET_INTEGRITY_HASHES: DatasetIntegrityHash[] = [
     datasetName: 'Master Continental Vector Cartography SVG',
     fileScope: 'public/africa-final.svg',
     recordCount: 1071, // 54 sovereign states + 1,017 Admin-1 provincial paths
-    bytes: 2484848,
-    sha256: '72ca7fdd5e125eeac27b9db7b4900bcd5a54ae47bac371a446620493fdd0c85f',
+    bytes: 2115114,
+    sha256: '273f2eaa0adbf29defd768175ade8fbcbfcc5d426e0d6fcb40be8aefa8abbdea',
     lastAudited: '2026-10-04T00:00:00Z',
     verificationStatus: 'published'
   },
@@ -94,7 +94,7 @@ export const DATASET_INTEGRITY_HASHES: DatasetIntegrityHash[] = [
     datasetName: 'Continental Geodesy & Centroid Geometry Bounds',
     fileScope: 'src/data/africaFinalGeometry.ts',
     recordCount: 54,
-    bytes: 1965,
+    bytes: 1959,
     sha256: '1cb8e2603cc86863124c2048fd476e716d8c12171c569ea13f471a37ad0df86a',
     lastAudited: '2026-10-04T00:00:00Z',
     verificationStatus: 'published'
@@ -103,7 +103,7 @@ export const DATASET_INTEGRITY_HASHES: DatasetIntegrityHash[] = [
     datasetName: 'Ethnic Tree of Life Vector Conduits & Nodes SVG',
     fileScope: 'src/data/authenticEthnicTreeSvg.ts',
     recordCount: 2000,
-    bytes: 759745,
+    bytes: 759743,
     sha256: 'd19cf21bb510b1a085b6f8dfea8ab8f33e8eb27acbb1666c21eb6be0c8ed7f81',
     lastAudited: '2026-10-04T00:00:00Z',
     verificationStatus: 'published'
@@ -112,7 +112,7 @@ export const DATASET_INTEGRITY_HASHES: DatasetIntegrityHash[] = [
     datasetName: 'Linguistic & Ethnolinguistic Tree Hierarchy',
     fileScope: 'src/data/afriataMasterTreeData.ts',
     recordCount: 310,
-    bytes: 51739,
+    bytes: 51729,
     sha256: '32b3af97c6f0eecb14d4c280f5b095217f3979281bd945cfe7083597862be2b1',
     lastAudited: '2026-10-04T00:00:00Z',
     verificationStatus: 'published'
@@ -121,7 +121,7 @@ export const DATASET_INTEGRITY_HASHES: DatasetIntegrityHash[] = [
     datasetName: 'SlaveVoyages Summary & 18 Curated Dossiers',
     fileScope: 'src/data/slaveVoyagesData.ts',
     recordCount: 36108,
-    bytes: 65323,
+    bytes: 65317,
     sha256: '1796e3d21910ec261f09086cb7a72a361328c318ae303f34bbee763ac6ff7d02',
     lastAudited: '2026-10-04T00:00:00Z',
     verificationStatus: 'published'
@@ -130,8 +130,8 @@ export const DATASET_INTEGRITY_HASHES: DatasetIntegrityHash[] = [
     datasetName: 'Archival Visual Plates & Curatorial Descriptions',
     fileScope: 'src/data/records-with-descriptions.json',
     recordCount: 1220,
-    bytes: 2930535,
-    sha256: '985dce6cff9419389ac56ea1db3d249217d9aaca3e936e7d31cfae1cee0673a6',
+    bytes: 2443257,
+    sha256: 'f36b014643fb0297a8d49e2974a0015e6a5fcc941313c4a8e7e45f1fbf6ba63c',
     lastAudited: '2026-10-04T00:00:00Z',
     verificationStatus: 'published'
   },
@@ -139,8 +139,8 @@ export const DATASET_INTEGRITY_HASHES: DatasetIntegrityHash[] = [
     datasetName: 'Wikipedia Contemporary Ethnic Groups Table (310 Entries)',
     fileScope: 'src/data/wikipediaTableEntries.json',
     recordCount: 310,
-    bytes: 79806,
-    sha256: '73010b2e9f6d612ab9bd87c96cc4b13afb3fc1b9ce4ee95d278d9f5c057f3f1e',
+    bytes: 66785,
+    sha256: '22cf59f0827a8e9077a9866d8959697cab8d38a3048a30cdd7a1c4e95788d046',
     lastAudited: '2026-10-04T00:00:00Z',
     verificationStatus: 'published'
   },

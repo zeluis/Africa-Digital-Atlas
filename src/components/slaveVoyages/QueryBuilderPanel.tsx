@@ -12,6 +12,8 @@ import {
   exportVoyagesToCSV 
 } from '../../services/slaveVoyagesApi';
 import { CanonicalVoyage } from '../../data/slaveVoyagesTypes';
+import { downloadFile } from '../../utils/exportUtils';
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 import { 
   SlidersHorizontal, 
   Copy, 
@@ -38,7 +40,7 @@ export const QueryBuilderPanel: React.FC<QueryBuilderPanelProps> = ({
   aggregateStats
 }) => {
   const [citationFormat, setCitationFormat] = useState<'apa' | 'chicago' | 'mla' | 'bibtex'>('apa');
-  const [copiedField, setCopiedField] = useState<string | null>(null);
+  const { copiedKey: copiedField, liveAnnouncement, copyToClipboard } = useCopyToClipboard();
 
   const querySummary = `Voyages from ${filters.embarkationRegions.length > 0 ? filters.embarkationRegions.join(', ') : 'All African Regions'} to ${filters.disembarkationRegions.length > 0 ? filters.disembarkationRegions.join(', ') : 'All American Regions'}, ${filters.yearRange[0]}–${filters.yearRange[1]}${filters.carriers.length > 0 ? ` (${filters.carriers.join(', ')})` : ''}`;
 
@@ -63,21 +65,12 @@ export const QueryBuilderPanel: React.FC<QueryBuilderPanelProps> = ({
   const shareableUrl = `${window.location.origin}${window.location.pathname}?tab=slave-trade&${queryString}`;
 
   const handleCopy = (text: string, fieldId: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedField(fieldId);
-    setTimeout(() => setCopiedField(null), 2000);
+    void copyToClipboard(text, fieldId, `Copied ${fieldId} to clipboard`);
   };
 
   const handleDownloadCSV = () => {
     const csvContent = exportVoyagesToCSV(filteredVoyages);
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `slavevoyages_export_${filters.yearRange[0]}_${filters.yearRange[1]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    downloadFile(`slavevoyages_export_${filters.yearRange[0]}_${filters.yearRange[1]}.csv`, csvContent, 'text/csv;charset=utf-8;');
   };
 
   const handleDownloadJSON = () => {
@@ -91,18 +84,12 @@ export const QueryBuilderPanel: React.FC<QueryBuilderPanelProps> = ({
       },
       data: filteredVoyages
     }, null, 2);
-    const blob = new Blob([jsonContent], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `slavevoyages_export_${filters.yearRange[0]}_${filters.yearRange[1]}.json`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    downloadFile(`slavevoyages_export_${filters.yearRange[0]}_${filters.yearRange[1]}.json`, jsonContent, 'application/json');
   };
 
   return (
     <div className="space-y-6 text-left">
+      <span className="sr-only" role="status" aria-live="polite">{liveAnnouncement}</span>
       {/* 1. Natural Language Query Composer Card */}
       <div className="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4">
         <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">

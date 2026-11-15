@@ -11,14 +11,12 @@ import {
   exportSlaveVoyagesToCsv, 
   exportAcademicBibtex 
 } from '../utils/exportUtils';
-import { ExternalApiConnector, LiveApiTestResult } from '../data/externalApisIngestion';
+import { ExternalApiConnector, LiveApiTestResult, useExternalApisLoaded } from '../data/externalApisIngestion';
 import { OrganizationLogo } from '../components/OrganizationLogo';
 import { DATASET_INTEGRITY_HASHES } from '../data/methodologyDossierData';
+import { atlasModalStore } from '../stores/useAtlasModalStore';
 
 const AkpCatalogueModal = lazyWithRetry(() => import('../components/AkpCatalogueModal').then(m => ({ default: m.AkpCatalogueModal })), 'AkpCatalogueModal');
-const MethodologyAuditModal = lazyWithRetry(() => import('../components/MethodologyAuditModal').then(m => ({ default: m.MethodologyAuditModal })), 'MethodologyAuditModal');
-const CartographicColophonModal = lazyWithRetry(() => import('../components/CartographicColophonModal').then(m => ({ default: m.CartographicColophonModal })), 'CartographicColophonModal');
-const AcademicExportModal = lazyWithRetry(() => import('../components/AcademicExportModal').then(m => ({ default: m.AcademicExportModal })), 'AcademicExportModal');
 import { 
   Database, 
   ShieldCheck, 
@@ -53,13 +51,14 @@ export const ProvenanceQualityView: React.FC = () => {
   const [testingApiId, setTestingApiId] = useState<string | null>(null);
   const [apiTestResults, setApiTestResults] = useState<Record<string, LiveApiTestResult>>({});
   const [isAkpModalOpen, setIsAkpModalOpen] = useState(false);
-  const [isMethodologyModalOpen, setIsMethodologyModalOpen] = useState(false);
-  const [isColophonModalOpen, setIsColophonModalOpen] = useState(false);
-  const [isCitationModalOpen, setIsCitationModalOpen] = useState(false);
 
+  const apisLoaded = useExternalApisLoaded();
   const manifest = atlas.getManifest();
   const sources = atlas.getAllSources();
-  const apiConnectors = atlas.getApiConnectors();
+  const apiConnectors = React.useMemo(
+    () => (apisLoaded || atlas.getApiConnectors().length > 0 ? atlas.getApiConnectors() : []),
+    [apisLoaded]
+  );
   const qualityFlags = atlas.getQualityFlags();
   const geoStats = getSvgGeographySystemStats();
 
@@ -152,21 +151,26 @@ export const ProvenanceQualityView: React.FC = () => {
 
           <div className="flex flex-wrap items-center gap-2.5">
             <button
-              onClick={() => setIsMethodologyModalOpen(true)}
+              onClick={() => atlasModalStore.openMethodologyAudit()}
               className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 text-xs md:text-sm font-semibold transition-colors cursor-pointer"
             >
               <Scale className="w-4 h-4 text-amber-600" />
               <span>Harmonization &amp; Audit Dossier</span>
             </button>
             <button
-              onClick={() => setIsColophonModalOpen(true)}
+              onClick={() => atlasModalStore.openColophon()}
               className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs md:text-sm font-semibold border border-stone-200 dark:border-stone-700 transition-colors cursor-pointer"
             >
               <Award className="w-4 h-4 text-amber-600" />
               <span>Colophon</span>
             </button>
             <button
-              onClick={() => setIsCitationModalOpen(true)}
+              onClick={() =>
+                atlasModalStore.openAcademicExport({
+                  title: 'Africa Data Atlas & Cartographic Observatory',
+                  sourceContext: 'Methodological Audit & Provenance Verification Subsystem',
+                })
+              }
               className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs md:text-sm font-bold transition-all shadow-xs cursor-pointer"
             >
               <Quote className="w-4 h-4" />
@@ -614,35 +618,6 @@ export const ProvenanceQualityView: React.FC = () => {
       <Suspense fallback={null}>
         {isAkpModalOpen && (
           <AkpCatalogueModal isOpen={isAkpModalOpen} onClose={() => setIsAkpModalOpen(false)} />
-        )}
-
-        {/* Multilateral Harmonization & Quality Audit Dossier Modal */}
-        {isMethodologyModalOpen && (
-          <MethodologyAuditModal
-            isOpen={isMethodologyModalOpen}
-            onClose={() => setIsMethodologyModalOpen(false)}
-            onOpenCitationModal={() => setIsCitationModalOpen(true)}
-          />
-        )}
-
-        {/* Cartographic Colophon & Imprint Modal */}
-        {isColophonModalOpen && (
-          <CartographicColophonModal
-            isOpen={isColophonModalOpen}
-            onClose={() => setIsColophonModalOpen(false)}
-            onOpenCitationModal={() => setIsCitationModalOpen(true)}
-            onOpenMethodologyAudit={() => setIsMethodologyModalOpen(true)}
-          />
-        )}
-
-        {/* Academic Citation Modal */}
-        {isCitationModalOpen && (
-          <AcademicExportModal
-            isOpen={isCitationModalOpen}
-            onClose={() => setIsCitationModalOpen(false)}
-            title="Africa Data Atlas & Cartographic Observatory"
-            sourceContext="Methodological Audit & Provenance Verification Subsystem"
-          />
         )}
       </Suspense>
     </section>

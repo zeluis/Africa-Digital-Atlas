@@ -1,4 +1,4 @@
-import { WIKIPEDIA_TABLE_ENTRIES, WikipediaEthnicEntry, normalizeEthnicKey } from '../data/wikipediaEthnicAtlas';
+import { WIKIPEDIA_TABLE_ENTRIES, WikipediaEthnicEntry, normalizeEthnicKey, ensureWikipediaAtlasLoaded } from '../data/wikipediaEthnicAtlas';
 
 export interface WorkerSearchRequest {
   type: 'SEARCH_AND_INDEX';
@@ -18,13 +18,14 @@ export interface WorkerSearchResponse {
 let indexedEntries: WikipediaEthnicEntry[] | null = null;
 
 function getOrBuildIndex(): WikipediaEthnicEntry[] {
-  if (!indexedEntries) {
+  if (!indexedEntries || indexedEntries.length === 0) {
     indexedEntries = Object.values(WIKIPEDIA_TABLE_ENTRIES);
   }
   return indexedEntries;
 }
 
-self.onmessage = (e: MessageEvent<WorkerSearchRequest>) => {
+self.onmessage = async (e: MessageEvent<WorkerSearchRequest>) => {
+  await ensureWikipediaAtlasLoaded();
   const { query, region, country, linguisticFamily } = e.data;
   const entries = getOrBuildIndex();
 

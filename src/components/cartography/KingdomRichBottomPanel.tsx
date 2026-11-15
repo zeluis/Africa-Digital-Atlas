@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { m, AnimatePresence } from 'motion/react';
 import { PreColonialEntity } from '../../data/archivalCartographyData';
-import { DETAILED_KINGDOMS_DATA, KingdomDetailedRecord } from '../../data/preColonialKingdomsDetailed';
+import { DETAILED_KINGDOMS_DATA, KingdomDetailedRecord, useDetailedKingdomsLoaded } from '../../data/preColonialKingdomsDetailed';
 import { speakAcademicNarration, stopAfriataSpeech } from '../../utils/afriataVoiceEngine';
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 import { 
   Crown, 
   Landmark, 
@@ -59,9 +60,10 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
   currentIndex = 0,
   totalCount = 10
 }) => {
+  useDetailedKingdomsLoaded();
   const [activeTab, setActiveTab] = useState<KingdomTabKey>('overview');
   const [isMinimized, setIsMinimized] = useState<boolean>(false);
-  const [copiedCitation, setCopiedCitation] = useState<boolean>(false);
+  const { copied: copiedCitation, liveAnnouncement, copyToClipboard } = useCopyToClipboard({ resetMs: 2500 });
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   const detailedRecord: KingdomDetailedRecord | undefined = DETAILED_KINGDOMS_DATA[entity.id];
@@ -94,11 +96,7 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
     if (!detailedRecord) return;
     const pub = detailedRecord.scholarlyPublications[0];
     const text = `${pub.author} (${pub.year}). ${pub.title}. ${pub.publisher}. Archival monograph entry for ${detailedRecord.name}.`;
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedCitation(true);
-      setTimeout(() => setCopiedCitation(false), 2500);
-    } catch {}
+    await copyToClipboard(text, 'citation', 'Copied kingdom archival citation to clipboard');
   };
 
   // Filmstrip responsive offset: right at the edge of the thumbnail filmstrip (230px + 16px) or at left edge
@@ -149,8 +147,8 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
               </span>
 
               {detailedRecord?.royalTitle && (
-                <span className="px-1.5 py-0.2 rounded-full bg-amber-500/15 text-amber-900 dark:text-amber-300 font-mono text-[9px] font-bold border border-amber-500/30 truncate max-w-[140px]">
-                  {detailedRecord.royalTitle}
+                <span className="text-amber-900 dark:text-amber-300 font-mono text-[10px] font-bold truncate max-w-[180px]">
+                  · {detailedRecord.royalTitle}
                 </span>
               )}
             </div>

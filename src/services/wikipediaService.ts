@@ -2,7 +2,8 @@ import {
   findWikipediaEntry, 
   WikipediaEthnicEntry, 
   WIKIPEDIA_TABLE_ENTRIES,
-  normalizeEthnicKey 
+  normalizeEthnicKey,
+  ensureWikipediaAtlasLoaded
 } from '../data/wikipediaEthnicAtlas';
 
 export type ThematicPillarId = 
@@ -434,6 +435,7 @@ export async function fetchLiveWikipediaSummary(
  * Get enriched Wikipedia dossier for any ethnic group name in the tree
  */
 export async function getEthnicDossier(rawName: string, lang: string = 'en'): Promise<WikipediaEthnicEntry | null> {
+  await ensureWikipediaAtlasLoaded();
   const baseEntry = findWikipediaEntry(rawName);
   if (!baseEntry) {
     // Attempt dynamic fetch for unknown group directly

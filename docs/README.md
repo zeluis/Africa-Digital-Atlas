@@ -22,7 +22,7 @@ docs/
   data/                   — Data & Methodology (3 pages)
   developer/              — Developer Guide (5 pages)
   faq.md                  — FAQ
-  public/hero-preview.jpg — pulled from your repo's public/ folder
+  public/hero-preview.webp — pulled from your repo's public/ folder
 ```
 
 ## Deployment

@@ -578,11 +578,14 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                     <img
                       src={item.imageUrls[0]}
                       alt={item.title}
+                      width={640}
+                      height={360}
                       loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute top-3 left-3 px-2 py-0.5 rounded-md bg-black/75 text-amber-300 font-mono text-[10px] font-bold backdrop-blur-xs">
-                      WHC #{meta.idNumber} • {meta.region}
+                      WHC #{meta.idNumber} · {meta.region}
                     </div>
                     {meta.danger && (
                       <div className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-rose-600/90 text-white font-mono text-[10px] font-bold flex items-center gap-1">
@@ -590,14 +593,14 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                         <span>In Danger</span>
                       </div>
                     )}
-                    {/* Photographer & License Pill on Thumbnail */}
-                    <div className="absolute bottom-2.5 right-2.5 z-10 px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md text-amber-300 font-mono text-[9px] font-bold flex items-center gap-1.5 border border-white/20 shadow-md">
+                    {/* Photographer & License Attribution on Thumbnail */}
+                    <div className="absolute bottom-2.5 right-2.5 z-10 px-2.5 py-0.5 rounded-md bg-black/75 backdrop-blur-md text-amber-300 font-mono text-[9px] font-bold flex items-center gap-1.5 border border-white/15 shadow-md">
                       <Camera className="w-3 h-3 text-amber-400 shrink-0" />
                       <span className="truncate max-w-[120px] sm:max-w-[160px] text-stone-200">
                         {meta.photographer || 'UNESCO Photobank'}
                       </span>
-                      <span className="w-1 h-1 rounded-full bg-stone-400" />
-                      <span className="px-1 py-0.2 rounded bg-amber-400/20 text-amber-300 font-bold text-[8.5px]">
+                      <span aria-hidden="true">·</span>
+                      <span className="text-amber-300 font-bold text-[8.5px]">
                         {meta.license || 'CC BY-SA 3.0 IGO'}
                       </span>
                     </div>

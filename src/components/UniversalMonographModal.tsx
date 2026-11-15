@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePrefersReducedMotion } from '../utils/motion';
 import { AtlasDialog } from './common/AtlasDialog';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 import { 
   Palette, 
   Map as MapIcon, 
@@ -36,7 +37,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
   onNavigateTab
 }) => {
   const [activeSection, setActiveSection] = useState<GuideSection>('all');
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const { copiedKey, liveAnnouncement, copyToClipboard } = useCopyToClipboard();
   const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
@@ -52,9 +53,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
   }, [isOpen, onClose]);
 
   const handleCopy = (text: string, key: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedKey(key);
-    setTimeout(() => setCopiedKey(null), 2000);
+    void copyToClipboard(text, key, 'Copied monograph snippet to clipboard');
   };
 
   const navSections: { id: GuideSection; label: string; icon: React.ReactNode }[] = [

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePrefersReducedMotion } from '../utils/motion';
 import { AtlasDialog } from './common/AtlasDialog';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 import { 
   ShieldCheck, 
   Database, 
@@ -47,7 +48,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
   onOpenCitationModal
 }) => {
   const [activeTab, setActiveTab] = useState<MethodologyTab>('provenance');
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const { copiedKey, liveAnnouncement, copyToClipboard } = useCopyToClipboard();
   const [verificationStates, setVerificationStates] = useState<Record<string, HashVerificationState>>({});
   const [isVerifyingAll, setIsVerifyingAll] = useState(false);
   const reducedMotion = usePrefersReducedMotion();
@@ -65,9 +66,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
   }, [isOpen, onClose]);
 
   const handleCopy = (text: string, key: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedKey(key);
-    setTimeout(() => setCopiedKey(null), 2000);
+    void copyToClipboard(text, key, 'Copied SHA-256 digest to clipboard');
   };
 
   const handleVerifyHash = async (hashEntry: DatasetIntegrityHash) => {

@@ -16,7 +16,11 @@ import {
   ExternalLink,
   Bookmark
 } from 'lucide-react';
-import { SLAVEVOYAGES_ESSAYS, SlaveVoyagesEssay } from '../../data/slaveVoyagesEssays';
+import {
+  SLAVEVOYAGES_ESSAYS,
+  SlaveVoyagesEssay,
+  useSlaveVoyagesEssaysLoaded
+} from '../../data/slaveVoyagesEssays';
 
 interface SlaveVoyagesEssaysViewerProps {
   activeEssayId?: string;
@@ -27,7 +31,14 @@ export const SlaveVoyagesEssaysViewer: React.FC<SlaveVoyagesEssaysViewerProps> =
   activeEssayId,
   onSelectEssay
 }) => {
-  const [localSelectedEssayId, setLocalSelectedEssayId] = useState<string>(SLAVEVOYAGES_ESSAYS[0].id);
+  const essaysLoaded = useSlaveVoyagesEssaysLoaded();
+  const [localSelectedEssayId, setLocalSelectedEssayId] = useState<string>(() => SLAVEVOYAGES_ESSAYS[0]?.id || '');
+
+  React.useEffect(() => {
+    if (essaysLoaded && !localSelectedEssayId && SLAVEVOYAGES_ESSAYS[0]?.id) {
+      setLocalSelectedEssayId(SLAVEVOYAGES_ESSAYS[0].id);
+    }
+  }, [essaysLoaded, localSelectedEssayId]);
 
   const selectedEssayId = activeEssayId !== undefined ? activeEssayId : localSelectedEssayId;
   const setSelectedEssayId = (id: string) => {
@@ -39,6 +50,14 @@ export const SlaveVoyagesEssaysViewer: React.FC<SlaveVoyagesEssaysViewerProps> =
   };
 
   const activeEssay = SLAVEVOYAGES_ESSAYS.find(e => e.id === selectedEssayId) || SLAVEVOYAGES_ESSAYS[0];
+
+  if (!activeEssay) {
+    return (
+      <div className="bg-[#faf8f5] dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-2xl p-8 text-center text-sm font-serif text-stone-600 dark:text-stone-400">
+        Loading historiographical essays library...
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#faf8f5] dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-2xl shadow-xs overflow-hidden">
