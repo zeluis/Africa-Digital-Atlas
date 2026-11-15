@@ -136,7 +136,7 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
                   Afriata Working Paper &amp; Policy Brief Series
                 </h2>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono truncate">
-                  Academic Monographs &amp; Applied Econometric Research Notes ({allPapers.length} Papers)
+                  Working Papers &amp; Exploratory Synthesis Notes ({allPapers.length} Papers)
                 </p>
               </div>
             </div>

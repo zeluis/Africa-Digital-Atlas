@@ -6,8 +6,14 @@
 @source "./App.tsx";
 @source "../index.html";
 @source "./data/africaData.ts";
-@source "./data/atlas-formatters.ts";
 @source "./data/unGeoschemeColors.ts";
+@source not "./components/ethnicTree/EthnicTreeCanvas.tsx";
+@source not "./components/ethnicTree/ActualSvgOverlayViewer.tsx";
+@source not "./components/cartography/HaplogroupMapperModal.tsx";
+@source not "./components/cartography/HistoricalTimeSlider.tsx";
+@source not "./components/cartography/TerrainWatershedOverlay.tsx";
+@source not "./components/QuickStatCard.tsx";
+@source not "./components/slaveVoyages/atlanticNaturalEarthPaths.ts";
 
 @custom-variant dark (.dark &);
 
@@ -15,85 +21,28 @@
   :root {
     color-scheme: light;
 
-    /* 1. Surface & Canvas Architecture (Kyoto/Swiss Washi & Sandstone Palette) */
+    /* 1. Surface & Canvas Architecture */
     --bg-primary: #F6F4EE;
-    --surface-canvas: #F6F4EE;
     --surface-card: #FFFFFF;
-    --surface-card-elevated: #EFECE3;
-    --surface-subtle: #EFECE3;
-    --surface-sunken: #E7E3D8;
 
-    /* Canonical Typographic Stack Tokens (Pillar IV Standard) */
-    --font-sans: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
-    --font-serif: "Noto Serif Display Variable", "Noto Serif Display", Georgia, serif;
+    /* Canonical Typographic Stack & Fluid Type Scale */
     --font-mono: "JetBrains Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    --type-display: clamp(2.25rem, 1.8rem + 2.2vw, 3.5rem);
+    --type-headline-lg: clamp(1.75rem, 1.45rem + 1.4vw, 2.5rem);
+    --type-headline-md: clamp(1.35rem, 1.15rem + 1.0vw, 1.85rem);
+    --type-title-lg: clamp(1.05rem, 0.98rem + 0.4vw, 1.25rem);
+    --type-body-editorial: clamp(1.00rem, 0.94rem + 0.3vw, 1.1875rem);
+    --type-body-archival: clamp(0.9375rem, 0.88rem + 0.25vw, 1.0625rem);
 
-    /* =========================================================================
-       UTOPIA & MD3 FLUID TYPE SCALE TOKENS (Interpolating 375px -> 1280px Viewport)
-       ========================================================================= */
-    --type-display: clamp(2.25rem, 1.8rem + 2.2vw, 3.5rem);        /* 36px -> 56px */
-    --type-headline-lg: clamp(1.75rem, 1.45rem + 1.4vw, 2.5rem);   /* 28px -> 40px */
-    --type-headline-md: clamp(1.35rem, 1.15rem + 1.0vw, 1.85rem);  /* 21.6px -> 29.6px */
-    --type-headline-sm: clamp(1.15rem, 1.05rem + 0.6vw, 1.45rem);  /* 18.4px -> 23.2px */
-    --type-title-lg: clamp(1.05rem, 0.98rem + 0.4vw, 1.25rem);      /* 16.8px -> 20px */
-    --type-body-editorial: clamp(1.00rem, 0.94rem + 0.3vw, 1.1875rem); /* 16px -> 19px (Academic & Longform) */
-    --type-body-dashboard: clamp(0.875rem, 0.84rem + 0.15vw, 0.9375rem); /* 14px -> 15px (Economics & Data) */
-    --type-body-archival: clamp(0.9375rem, 0.88rem + 0.25vw, 1.0625rem);  /* 15px -> 17px (Historical & Narrative) */
-    --type-caption-caps: clamp(0.72rem, 0.70rem + 0.1vw, 0.8125rem);      /* 11.5px -> 13px (Metadata & Small Caps) */
-
-    /* 2. Typography & Content (Sumi Ink & Sandstone) */
-    --text-primary: #191816;       /* Sumi Ink - WCAG AAA */
-    --text-secondary: #4E5E51;     /* Kyoto Pine / Lichen */
-    --text-tertiary: #8C7C70;      /* Sandstone */
-    --text-inverse: #F6F4EE;
-
-    /* 3. Interface Borders & Structural Dividers */
-    --border-subtle: #E3DFD5;
+    /* 2. Typography & Borders */
+    --text-primary: #191816;
     --border-strong: #C8C2B3;
-    --border-focus: #4E5E51;
-
-    /* 4. Data-Agnostic Chart Utility Tokens */
-    --chart-gridline: rgba(25, 24, 22, 0.08);
-    --chart-axis-line: #8C7C70;
-    --chart-axis-label: #4E5E51;
-    --chart-crosshair: #191816;
-    --chart-brush-bg: rgba(25, 24, 22, 0.04);
-    --chart-brush-handle: #8C7C70;
 
     /* Universal Tooltip System */
     --tooltip-bg: #FFFFFF;
     --tooltip-text-title: #191816;
-    --tooltip-text-body: #4E5E51;
     --tooltip-border: #E3DFD5;
     --tooltip-shadow: 0 10px 25px -5px rgba(25, 24, 22, 0.08), 0 8px 10px -6px rgba(25, 24, 22, 0.04);
-
-    /* 5. Curated UN Geoscheme Regional Brand Hexes */
-    --region-eastern-raw: #FFA500;
-    --region-middle-raw: #FF00FE;
-    --region-northern-raw: #1802FF;
-    --region-southern-raw: #FF0A0A;
-    --region-western-raw: #00FF00;
-
-    /* Controlled Harmonized Fills (8% Bloom via OKLCH color space) */
-    --region-eastern-fill: color-mix(in oklch, var(--region-eastern-raw) 8%, transparent);
-    --region-middle-fill: color-mix(in oklch, var(--region-middle-raw) 8%, transparent);
-    --region-northern-fill: color-mix(in oklch, var(--region-northern-raw) 8%, transparent);
-    --region-southern-fill: color-mix(in oklch, var(--region-southern-raw) 8%, transparent);
-    --region-western-fill: color-mix(in oklch, var(--region-western-raw) 8%, transparent);
-
-    /* Precise Controlled Vector Stroke Accents */
-    --region-eastern-stroke: #EA580C;
-    --region-middle-stroke: #D900D8;
-    --region-northern-stroke: #1802FF;
-    --region-southern-stroke: #E00808;
-    --region-western-stroke: #00C800;
-
-    /* Text Contrast Tokens Over Solid Region Fills */
-    --region-eastern-on-solid: #111827;
-    --region-middle-on-solid: #FFFFFF;
-    --region-northern-on-solid: #FFFFFF;
-    --region-southern-on-solid: #FFFFFF;
-    --region-western-on-solid: #111827;
 
     --ease-japandi: cubic-bezier(0.2, 0, 0, 1);
     --ease-spring-snappy: linear(
@@ -103,212 +52,60 @@
       0.974 53.8%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1
     );
 
-    /* ==========================================
-       REPORT — SURFACES (Japandi Washi Architecture)
-       ========================================== */
-    --report-paper:       #FAFAF6;
-    --report-paper-warm:  #F5F3EC;
-    --report-paper-deep:  #ECEAE1;
-    --report-white:       #FFFFFF;
-
-    /* ==========================================
-       REPORT — INK (High-Contrast Sumi Hierarchy)
-       ========================================== */
-    --report-ink:         #181816;
-    --report-ink-soft:    #343430;
-    --report-graphite:    #5C5C55;
-    --report-muted:       #77776E;
-
-    /* ==========================================
-       REPORT — STRUCTURE & DIVIDERS
-       ========================================== */
-    --report-rule:        #D7D6CD;
-    --report-border:      #C8C5BA;
-    --report-sand:        #E7E2D6;
-
-    /* ==========================================
-       REGIONAL IDENTITY & CALM SURFACES
-       ========================================== */
-    --region-eastern-id:     #FFA500;
+    /* Regional Calm Surfaces */
     --region-eastern-calm:   #FFF8ED;
-    --region-eastern-accent: #FFB84A;
-    --region-eastern-strong: #C2410C;
-    --region-eastern-pale:   #FFF7E8;
-
-    --region-middle-id:      #FF00FE;
     --region-middle-calm:    #FEF7FE;
-    --region-middle-accent:  #FF55FE;
-    --region-middle-strong:  #86198F;
-    --region-middle-pale:    #FDF2F8;
-
-    --region-northern-id:     #1802FF;
-    --region-northern-calm:   #F5F7FF;
-    --region-northern-accent: #4B5EFC;
-    --region-northern-strong: #1E1B4B;
-    --region-northern-pale:   #EEF2FF;
-
-    --region-southern-id:     #FF0A0A;
-    --region-southern-calm:   #FFF5F5;
-    --region-southern-accent: #FF4D4D;
-    --region-southern-strong: #991B1B;
-    --region-southern-pale:   #FEF2F2;
-
-    --region-western-id:     #00FF00;
+    --region-northern-calm:  #F5F7FF;
+    --region-southern-calm:  #FFF5F5;
     --region-western-calm:   #F3FFF3;
-    --region-western-accent: #33FF33;
-    --region-western-strong: #065F46;
-    --region-western-pale:   #F0FDF4;
-
     --region-pan-african-calm: #F4FAF5;
-
-    /* ==========================================
-       TRANS-ATLANTIC SLAVE TRADE PALETTE
-       (Atmospheric Regional Light System: Warm & Crisp)
-       ========================================== */
-    --tast-canvas-warm:     #FAF6EE;
-    --tast-canvas-calm:     #FDFBF7;
-    --tast-canvas-sunken:   #F3ECE0;
-    --tast-surface-card:    #FFFFFF;
-    --tast-border-subtle:   #E8E0D2;
-    --tast-border-crisp:    #DCD3C1;
-    --tast-border-strong:   #C8BAA2;
-    --tast-ink-primary:     #1C1917;
-    --tast-ink-secondary:   #44403C;
-    --tast-ink-muted:       #78716C;
-    --tast-terracotta:      #C2410C;
-    --tast-terracotta-pale: #FFEDD5;
-    --tast-amber-accent:    #D97706;
-    --tast-amber-pale:      #FEF3C7;
-    --tast-maritime-navy:   #1E293B;
-
-    /* Hardware & Viewport Safe Area Variables (iOS Notch & Dynamic Island, Android Nav Bar) */
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-    --safe-left: env(safe-area-inset-left, 0px);
-    --safe-right: env(safe-area-inset-right, 0px);
   }
 
-  html.light,
-  [data-theme="light"] {
+  html.light {
     --bg-primary: #FBFBF9;
     --text-primary: #111827;
-    --surface-canvas: #FBFBF9;
     --surface-card: #FFFFFF;
-    --surface-card-elevated: #F6F6F2;
-    --surface-subtle: #ECECE7;
-    --surface-sunken: #F2F2ED;
     color-scheme: light;
   }
 
-  html.dark,
-  [data-theme="dark"] {
+  html.dark {
     color-scheme: dark;
 
-    /* 1. Surface & Canvas Architecture (Swiss Precision Obsidian & Elevated Slate) */
-    --bg-primary: #0F1218;         /* Calm, deep Swiss obsidian-graphite canvas */
-    --surface-canvas: #0F1218;     /* Base viewport canvas */
-    --surface-card: #181D26;       /* Primary card surface: distinct +5.5% lightness step */
-    --surface-card-elevated: #202634; /* Floating modals, dropdowns, hovered cards */
-    --surface-subtle: #141821;     /* Inset panels & wells */
-    --surface-sunken: #0B0E13;     /* Deep recessed inputs */
+    /* 1. Surface & Canvas Architecture */
+    --bg-primary: #0F1218;
+    --surface-card: #181D26;
 
-    /* 2. Typography & Content (Swiss Neo-Grotesk High Contrast Ratios) */
-    --text-primary: #F8FAFC;       /* Crisp Swiss display white (>14:1 contrast on cards, WCAG AAA) */
-    --text-secondary: #CBD5E1;     /* Slate-300: highly legible body text (>9.5:1 contrast, WCAG AAA) */
-    --text-tertiary: #94A3B8;      /* Slate-400: clear metadata & captions (>5.5:1 contrast, WCAG AA) */
-    --text-muted: #64748B;         /* Slate-500: uppercase tracking, subtle micro-accents */
-    --text-inverse: #0F1218;
+    /* 2. Typography & Borders */
+    --text-primary: #F8FAFC;
+    --border-strong: #3D475C;
 
-    /* 3. Interface Borders & Structural Dividers */
-    --border-subtle: #2A3241;      /* Crisp, optical 1px hairline border */
-    --border-strong: #3D475C;      /* High emphasis & active borders */
-    --border-focus: #38BDF8;       /* Precision focus ring */
-
-    /* 4. Scoped Tailwind Palette Mappings for Dark Theme Uniformity */
-    --color-zinc-950: #181D26;     /* Card background level 1: elevated from body #0F1218 */
-    --color-zinc-900: #202634;     /* Card background level 2: inner containers & chips */
-    --color-zinc-850: #262E3E;     /* Interactive elements */
-    --color-zinc-800: #2A3241;     /* Hairline borders & subtle outlines */
-    --color-zinc-700: #3D475C;     /* Hover borders & secondary dividers */
-    --color-zinc-600: #64748B;     /* Muted uppercase tracking */
-    --color-zinc-500: #94A3B8;     /* Secondary metadata & labels (clear WCAG AA contrast!) */
-    --color-zinc-400: #CBD5E1;     /* Primary body & reading typography (clear WCAG AAA contrast!) */
-    --color-zinc-300: #E2E8F0;     /* High emphasis text */
-    --color-zinc-200: #F1F5F9;     /* Display subheadings */
-    --color-zinc-100: #F8FAFC;     /* Pure crisp white headings */
+    /* 3. Scoped Tailwind Palette Mappings for Dark Theme Uniformity */
+    --color-zinc-950: #181D26;
+    --color-zinc-900: #202634;
+    --color-zinc-850: #262E3E;
+    --color-zinc-800: #2A3241;
+    --color-zinc-700: #3D475C;
+    --color-zinc-600: #64748B;
+    --color-zinc-500: #94A3B8;
+    --color-zinc-400: #CBD5E1;
+    --color-zinc-300: #E2E8F0;
+    --color-zinc-200: #F1F5F9;
+    --color-zinc-100: #F8FAFC;
     --color-zinc-50: #FFFFFF;
-
-    /* 5. Data-Agnostic Chart Utility Tokens */
-    --chart-gridline: rgba(248, 250, 252, 0.08);
-    --chart-axis-line: #475569;
-    --chart-axis-label: #94A3B8;
-    --chart-crosshair: #F8FAFC;
-    --chart-brush-bg: rgba(248, 250, 252, 0.04);
-    --chart-brush-handle: #94A3B8;
 
     /* Universal Tooltip System */
     --tooltip-bg: #202634;
     --tooltip-text-title: #F8FAFC;
-    --tooltip-text-body: #CBD5E1;
     --tooltip-border: #3D475C;
     --tooltip-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.7), 0 8px 16px -6px rgba(0, 0, 0, 0.5);
 
-    /* 6. Exact UN Geoscheme Regional Brand Hexes (Glow & Fill Adjustments) */
-    --region-eastern-raw: #FFA500;
-    --region-middle-raw: #FF00FE;
-    --region-northern-raw: #1802FF;
-    --region-southern-raw: #FF0A0A;
-    --region-western-raw: #00FF00;
-
-    /* Chart Fill Tints (Dark Mode 14% Luminous Bloom via OKLCH color space) */
-    --region-eastern-fill: color-mix(in oklch, var(--region-eastern-raw) 14%, transparent);
-    --region-middle-fill: color-mix(in oklch, var(--region-middle-raw) 14%, transparent);
-    --region-northern-fill: color-mix(in oklch, var(--region-northern-raw) 14%, transparent);
-    --region-southern-fill: color-mix(in oklch, var(--region-southern-raw) 14%, transparent);
-    --region-western-fill: color-mix(in oklch, var(--region-western-raw) 14%, transparent);
-
-    /* Vector Stroke Accents */
-    --region-eastern-stroke: #FB923C;
-    --region-middle-stroke: #818CF8;
-    --region-northern-stroke: #FBBF24;
-    --region-southern-stroke: #FB7185;
-    --region-western-stroke: #34D399;
-
-    /* Text Contrast Tokens Over Solid Region Fills */
-    --region-eastern-on-solid: #0F1218;
-    --region-middle-on-solid: #FFFFFF;
-    --region-northern-on-solid: #FFFFFF;
-    --region-southern-on-solid: #FFFFFF;
-    --region-western-on-solid: #0F1218;
-
-    /* Report tokens in dark mode */
-    --report-paper:       #0F1218;
-    --report-paper-warm:  #181D26;
-    --report-paper-deep:  #202634;
-    --report-white:       #181D26;
-
-    --report-ink:         #F8FAFC;
-    --report-ink-soft:    #CBD5E1;
-    --report-graphite:    #94A3B8;
-    --report-muted:       #64748B;
-
-    --report-rule:        #2A3241;
-    --report-border:      #3D475C;
-    --report-sand:        #1A202C;
-
-    --region-eastern-pale:   rgba(249, 115, 22, 0.12);
-    --region-middle-pale:    rgba(99, 102, 241, 0.12);
-    --region-northern-pale:  rgba(217, 119, 6, 0.12);
-    --region-southern-pale:  rgba(225, 29, 72, 0.12);
-    --region-western-pale:   rgba(16, 185, 129, 0.12);
-
-    /* MD3-Inspired Calm Tonal Regional Surfaces in Dark Mode (Warm, Elevated, Distinct) */
-    --region-eastern-calm:   #231C18; /* Warm Terracotta-Slate, lightness ~12.5% */
-    --region-middle-calm:    #1C1E2C; /* Royal Indigo-Slate, lightness ~13% */
-    --region-northern-calm:  #211E16; /* Warm Amber-Slate, lightness ~12.5% */
-    --region-southern-calm:  #24191E; /* Deep Berry-Rose-Slate, lightness ~12.5% */
-    --region-western-calm:   #15231C; /* Balanced Sage-Pine-Slate, lightness ~12.5% */
-    --region-pan-african-calm: #181D26; /* Universal Swiss Obsidian-Slate Card */
+    /* MD3-Inspired Calm Tonal Regional Surfaces in Dark Mode */
+    --region-eastern-calm:   #231C18;
+    --region-middle-calm:    #1C1E2C;
+    --region-northern-calm:  #211E16;
+    --region-southern-calm:  #24191E;
+    --region-western-calm:   #15231C;
+    --region-pan-african-calm: #181D26;
   }
 
   html, body {
@@ -332,8 +129,14 @@
     letter-spacing: 0.008em;
   }
 
-  [dir="rtl"] {
+  html[dir="rtl"] {
+    text-align: right;
     font-family: "Noto Sans Arabic", "Plus Jakarta Sans Variable", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  html[dir="rtl"] .font-mono {
+    direction: ltr;
+    display: inline-block;
   }
 
   [lang="am"] {
@@ -345,108 +148,9 @@
     text-wrap: balance;
   }
 
-  p, .prose, .report-editorial-body {
+  p, .prose {
     text-wrap: pretty;
   }
-}
-
-/* --------------------------------------------------------------------------
-   Density Mode Definitions
-   -------------------------------------------------------------------------- */
-.density-analytical {
-  --density-card-padding: 0.875rem;
-  --density-gap: 0.75rem;
-  --density-font-scale: 0.95;
-}
-
-.density-standard {
-  --density-card-padding: 1.25rem;
-  --density-gap: 1rem;
-  --density-font-scale: 1;
-}
-
-.density-editorial {
-  --density-card-padding: 1.75rem;
-  --density-gap: 1.5rem;
-  --density-font-scale: 1.05;
-}
-
-/* --------------------------------------------------------------------------
-   Theme-Aware Regional Badge & Pill Tokens (Alpine Serenity & Terracotta Bloom)
-   -------------------------------------------------------------------------- */
-.badge-eastern {
-  background: var(--region-eastern-fill);
-  border: 1px solid rgba(234, 88, 12, 0.25);
-  color: var(--text-primary);
-}
-.badge-eastern[data-active="true"] {
-  background: #EA580C;
-  color: #FFFFFF;
-  font-weight: 700;
-  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.25);
-}
-
-.badge-middle {
-  background: var(--region-middle-fill);
-  border: 1px solid rgba(99, 102, 241, 0.25);
-  color: var(--text-primary);
-}
-.badge-middle[data-active="true"] {
-  background: #6366F1;
-  color: #FFFFFF;
-  font-weight: 700;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
-}
-
-.badge-northern {
-  background: var(--region-northern-fill);
-  border: 1px solid rgba(217, 119, 6, 0.25);
-  color: var(--text-primary);
-}
-.badge-northern[data-active="true"] {
-  background: #D97706;
-  color: #FFFFFF;
-  font-weight: 700;
-  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.25);
-}
-
-.badge-southern {
-  background: var(--region-southern-fill);
-  border: 1px solid rgba(225, 29, 72, 0.25);
-  color: var(--text-primary);
-}
-.badge-southern[data-active="true"] {
-  background: #E11D48;
-  color: #FFFFFF;
-  font-weight: 700;
-  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.25);
-}
-
-.badge-western {
-  background: var(--region-western-fill);
-  border: 1px solid rgba(5, 150, 105, 0.25);
-  color: var(--text-primary);
-}
-.badge-western[data-active="true"] {
-  background: #059669;
-  color: #FFFFFF;
-  font-weight: 700;
-  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.25);
-}
-
-/* Universal Dashboard Card Container (Swiss Architectural Elevation) */
-.dashboard-card {
-  background: var(--surface-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  padding: var(--density-card-padding, 1.25rem);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-  transition: border-color 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
-}
-
-.dashboard-card:hover {
-  border-color: var(--border-strong);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
 }
 
 /* --------------------------------------------------------------------------
@@ -467,7 +171,7 @@
   }
 }
 
-/* Staggered Cascade Animations (~60ms increments up to ~600ms) */
+/* Staggered Cascade Animations (~60ms increments) */
 .cascade-item {
   animation: enterJapandi 0.45s var(--ease-japandi) both;
 }
@@ -475,13 +179,6 @@
 .cascade-1 { animation-delay: 60ms; }
 .cascade-2 { animation-delay: 120ms; }
 .cascade-3 { animation-delay: 180ms; }
-.cascade-4 { animation-delay: 240ms; }
-.cascade-5 { animation-delay: 300ms; }
-.cascade-6 { animation-delay: 360ms; }
-.cascade-7 { animation-delay: 420ms; }
-.cascade-8 { animation-delay: 480ms; }
-.cascade-9 { animation-delay: 540ms; }
-.cascade-10 { animation-delay: 600ms; }
 
 /* Hide scrollbar for tabs navigation */
 .no-scrollbar::-webkit-scrollbar {
@@ -490,11 +187,6 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-/* Subtle glow effects */
-.glow-emerald {
-  box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.2);
 }
 
 /* --------------------------------------------------------------------------
@@ -525,16 +217,6 @@
   font-optical-sizing: auto;
 }
 
-.font-reading {
-  font-family: "Noto Serif Variable", "Noto Serif", Georgia, Cambria, serif;
-  font-optical-sizing: auto;
-}
-
-.font-reading-sans {
-  font-family: "Noto Sans Variable", "Noto Sans", "Plus Jakarta Sans Variable", "Plus Jakarta Sans", system-ui, sans-serif;
-  font-optical-sizing: auto;
-}
-
 /* Fluid Typographic Scale Classes (Utopia.fyi & MD3 Hierarchy) */
 .type-display {
   font-size: var(--type-display);
@@ -557,13 +239,6 @@
   text-wrap: balance;
 }
 
-.type-headline-sm {
-  font-size: var(--type-headline-sm);
-  line-height: 1.30;
-  letter-spacing: -0.015em;
-  text-wrap: balance;
-}
-
 .type-title-lg {
   font-size: var(--type-title-lg);
   line-height: 1.35;
@@ -577,12 +252,6 @@
   text-wrap: pretty;
 }
 
-.type-body-dashboard {
-  font-size: var(--type-body-dashboard);
-  line-height: 1.46;
-  letter-spacing: normal;
-}
-
 .type-body-archival {
   font-size: var(--type-body-archival);
   line-height: 1.68;
@@ -590,78 +259,31 @@
   text-wrap: pretty;
 }
 
-.type-caption-caps {
-  font-size: var(--type-caption-caps);
-  line-height: 1.35;
-  letter-spacing: 0.055em;
-}
-
 /* ==========================================================================
    THE 3 DISTINCT CORES: ECONOMICS, ARCHIVAL, ACADEMIC
    ========================================================================== */
 
 /* 1. Core: Economics Dashboard (Swiss Modernist, Tabular Numerals, High Density) */
-[data-core="economics"],
-.core-economics {
-  --core-body-size: var(--type-body-dashboard);
-  --core-body-line-height: 1.46;
+[data-core="economics"] {
   font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-[data-core="economics"] .data-numeric,
-.core-economics .data-numeric,
-[data-core="economics"] table td,
-.core-economics table td {
+[data-core="economics"] table td {
   font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
 }
 
 /* 2. Core: Archival & Cartographic (Contemplative, Reverent Ancestral Serenity) */
-[data-core="archival"],
-.core-archival {
-  --core-body-size: var(--type-body-archival);
-  --core-body-line-height: 1.68;
-}
-
-[data-core="archival"] h1,
-.core-archival h1,
-[data-core="archival"] .archival-title,
-.core-archival .archival-title {
+[data-core="archival"] h1 {
   font-family: "Noto Serif Display Variable", "Noto Serif Display", Georgia, serif;
   font-weight: 600;
   letter-spacing: -0.015em;
   text-wrap: balance;
 }
 
-[data-core="archival"] .archival-narrative,
-.core-archival .archival-narrative {
-  font-family: "Noto Serif Variable", "Noto Serif", Georgia, serif;
-  font-size: var(--type-body-archival);
-  line-height: 1.68;
-  text-wrap: pretty;
-}
-
-[data-core="archival"] .archival-metadata,
-.core-archival .archival-metadata {
-  font-variant-caps: all-small-caps;
-  font-feature-settings: "c2sc" 1, "smcp" 1;
-  letter-spacing: 0.06em;
-  font-size: var(--type-caption-caps);
-}
-
 /* 3. Core: Academic Research Analysis (Gutenberg CSS Reading Lane, Editorial Polish) */
-[data-core="academic"],
-.core-academic {
-  --core-body-size: var(--type-body-editorial);
-  --core-body-line-height: 1.80;
-}
-
 [data-core="academic"] h1,
-.core-academic h1,
-[data-core="academic"] h2,
-.core-academic h2,
-[data-core="academic"] .academic-heading,
-.core-academic .academic-heading {
+[data-core="academic"] h2 {
   font-family: "Noto Serif Display Variable", "Noto Serif Display", Georgia, serif;
   letter-spacing: -0.02em;
   text-wrap: balance;
@@ -669,8 +291,7 @@
 
 /* Gutenberg-Inspired Editorial Reading Lane (Optimal 62-66ch measure) */
 .editorial-reading-lane,
-[data-core="academic"] .editorial-reading-lane,
-.core-academic .editorial-reading-lane {
+[data-core="academic"] .editorial-reading-lane {
   max-width: 65ch;
   margin-left: auto;
   margin-right: auto;
@@ -689,28 +310,6 @@
   margin-bottom: 1.4em;
 }
 
-.editorial-abstract-box,
-[data-core="academic"] .editorial-abstract-box,
-.core-academic .editorial-abstract-box {
-  background-color: var(--surface-card-elevated);
-  border-left: 4px solid var(--region-western-stroke);
-  padding: 1.25rem 1.5rem;
-  border-radius: 0 12px 12px 0;
-  font-family: "Noto Serif Variable", "Noto Serif", Georgia, serif;
-  font-size: calc(var(--type-body-editorial) * 0.96);
-  line-height: 1.75;
-  font-style: italic;
-  hanging-punctuation: first last;
-}
-
-.editorial-node-header {
-  font-family: "Noto Serif Display Variable", "Noto Serif Display", serif;
-  font-optical-sizing: auto;
-  letter-spacing: -0.015em;
-  line-height: 1.22;
-  text-wrap: balance;
-}
-
 /* High-Precision Tabular Numbers for Indicators & Matrices */
 .font-tabular,
 .tabular-nums,
@@ -719,18 +318,7 @@
   font-feature-settings: "tnum" 1, "lnum" 1;
 }
 
-.font-tabular-fractions {
-  font-variant-numeric: tabular-nums lining-nums diagonal-fractions;
-  font-feature-settings: "tnum" 1, "lnum" 1, "frac" 1;
-}
-
-.font-oldstyle-nums {
-  font-variant-numeric: oldstyle-nums proportional-nums;
-  font-feature-settings: "onum" 1, "pnum" 1;
-}
-
 /* Scholarly & Monograph Micro-Typography */
-.font-small-caps,
 .acronym,
 abbr {
   font-variant-caps: all-small-caps;
@@ -771,41 +359,6 @@ abbr {
   overflow: hidden;
 }
 
-/* Cozy Tonal Slim Scrollbar for Scholarly Drawer - Dynamic Link Active State Color Sync */
-.drawer-cozy-scrollbar {
-  scrollbar-gutter: stable;
-}
-
-@supports not selector(::-webkit-scrollbar) {
-  .drawer-cozy-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: var(--drawer-scrollbar-thumb, #F59E0B) transparent;
-  }
-}
-
-.drawer-cozy-scrollbar::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
-}
-.drawer-cozy-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-.drawer-cozy-scrollbar::-webkit-scrollbar-thumb {
-  background-color: var(--drawer-scrollbar-thumb, #F59E0B);
-  border-radius: 9999px;
-  border: 4px solid transparent;
-  background-clip: padding-box;
-  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
-}
-.drawer-cozy-scrollbar:hover::-webkit-scrollbar-thumb {
-  background-color: var(--drawer-scrollbar-thumb-hover, #D97706);
-  border-width: 2px;
-}
-.drawer-cozy-scrollbar::-webkit-scrollbar-thumb:active {
-  background-color: var(--drawer-scrollbar-thumb-hover, #B45309);
-  border-width: 2px;
-}
-
 /* =========================================================================
    Hover-Expanded Floating Scrollbar & Stable Gutter Utilities
    ========================================================================= */
@@ -821,8 +374,7 @@ abbr {
     scrollbar-width: thin;
     scrollbar-color: rgba(120, 113, 108, 0.45) transparent;
   }
-  .dark .sleek-scrollbar,
-  [data-theme="dark"] .sleek-scrollbar {
+  .dark .sleek-scrollbar {
     scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
   }
 
@@ -830,24 +382,20 @@ abbr {
     scrollbar-width: thin;
     scrollbar-color: rgba(217, 119, 6, 0.55) transparent;
   }
-  .dark .sleek-scrollbar-amber,
-  [data-theme="dark"] .sleek-scrollbar-amber {
+  .dark .sleek-scrollbar-amber {
     scrollbar-color: rgba(245, 158, 11, 0.55) transparent;
   }
 }
 
-/* WebKit / Chromium / Blink / Safari Floating Scrollbars:
-   - Hit area: 12px
-   - Idle state: 4px thin floating ribbon (border: 4px solid transparent)
-   - Hover state: Expands to 8px grab bar (border-width: 2px)
-   - Active state: High-contrast press feedback
-*/
-.sleek-scrollbar::-webkit-scrollbar {
+/* WebKit / Chromium / Blink / Safari Floating Scrollbars */
+.sleek-scrollbar::-webkit-scrollbar,
+.sleek-scrollbar-amber::-webkit-scrollbar {
   width: 12px !important;
   height: 12px !important;
 }
 
-.sleek-scrollbar::-webkit-scrollbar-track {
+.sleek-scrollbar::-webkit-scrollbar-track,
+.sleek-scrollbar-amber::-webkit-scrollbar-track {
   background: transparent !important;
 }
 
@@ -869,32 +417,18 @@ abbr {
   border-width: 2px !important;
 }
 
-/* Dark mode adjustment for neutral sleek scrollbar */
-.dark .sleek-scrollbar::-webkit-scrollbar-thumb,
-[data-theme="dark"] .sleek-scrollbar::-webkit-scrollbar-thumb {
+.dark .sleek-scrollbar::-webkit-scrollbar-thumb {
   background-color: rgba(148, 163, 184, 0.35) !important;
 }
 
-.dark .sleek-scrollbar:hover::-webkit-scrollbar-thumb,
-[data-theme="dark"] .sleek-scrollbar:hover::-webkit-scrollbar-thumb {
+.dark .sleek-scrollbar:hover::-webkit-scrollbar-thumb {
   background-color: rgba(148, 163, 184, 0.75) !important;
   border-width: 2px !important;
 }
 
-.dark .sleek-scrollbar::-webkit-scrollbar-thumb:active,
-[data-theme="dark"] .sleek-scrollbar::-webkit-scrollbar-thumb:active {
+.dark .sleek-scrollbar::-webkit-scrollbar-thumb:active {
   background-color: rgba(226, 232, 240, 0.95) !important;
   border-width: 2px !important;
-}
-
-/* Amber/Warm Sleek Floating Scrollbar for Cultural & Archival Surfaces */
-.sleek-scrollbar-amber::-webkit-scrollbar {
-  width: 12px !important;
-  height: 12px !important;
-}
-
-.sleek-scrollbar-amber::-webkit-scrollbar-track {
-  background: transparent !important;
 }
 
 .sleek-scrollbar-amber::-webkit-scrollbar-thumb {
@@ -915,19 +449,16 @@ abbr {
   border-width: 2px !important;
 }
 
-.dark .sleek-scrollbar-amber::-webkit-scrollbar-thumb,
-[data-theme="dark"] .sleek-scrollbar-amber::-webkit-scrollbar-thumb {
+.dark .sleek-scrollbar-amber::-webkit-scrollbar-thumb {
   background-color: rgba(245, 158, 11, 0.45) !important;
 }
 
-.dark .sleek-scrollbar-amber:hover::-webkit-scrollbar-thumb,
-[data-theme="dark"] .sleek-scrollbar-amber:hover::-webkit-scrollbar-thumb {
+.dark .sleek-scrollbar-amber:hover::-webkit-scrollbar-thumb {
   background-color: rgba(245, 158, 11, 0.85) !important;
   border-width: 2px !important;
 }
 
-.dark .sleek-scrollbar-amber::-webkit-scrollbar-thumb:active,
-[data-theme="dark"] .sleek-scrollbar-amber::-webkit-scrollbar-thumb:active {
+.dark .sleek-scrollbar-amber::-webkit-scrollbar-thumb:active {
   background-color: rgba(251, 191, 36, 1.0) !important;
   border-width: 2px !important;
 }
@@ -972,9 +503,6 @@ abbr {
   #wikipedia-summary-paragraph {
     font-size: 13.5px;
     line-height: 1.65;
-  }
-  .dossier-stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1024,17 +552,6 @@ body {
 .notranslate,
 [translate="no"] {
   -webkit-font-smoothing: antialiased;
-}
-
-/* RTL Typography & Direction overrides when Arabic is active */
-html[dir="rtl"] {
-  text-align: right;
-  font-family: 'Noto Sans Arabic', 'Plus Jakarta Sans', system-ui, sans-serif;
-}
-
-html[dir="rtl"] .font-mono {
-  direction: ltr;
-  display: inline-block;
 }
 
 /* Skip Navigation Link for Accessibility */
@@ -1184,75 +701,17 @@ body.hide-app-footer #app-footer-container {
 }
 
 /* =========================================================================
-   Baseline CSS Modern Platform Utilities (Subgrid, Container Queries, Scroll Animation)
-   ========================================================================= */
-
-/* CSS Subgrid: Align children along common parent row tracks */
-.subgrid-rows-3 {
-  display: grid;
-  grid-row: span 3;
-  grid-template-rows: subgrid;
-}
-
-/* Container Queries: Enable modular context-aware component scaling */
-.container-inline {
-  container-type: inline-size;
-}
-
-/* Hardware-accelerated compositor-driven reading progress */
-@keyframes reading-progress-grow {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-@supports (animation-timeline: scroll()) {
-  .scroll-reading-progress {
-    transform-origin: 0% 50%;
-    animation: reading-progress-grow linear;
-    animation-timeline: scroll();
-    width: 100% !important;
-  }
-}
-
-/* =========================================================================
    Mobile Touch Ergonomics & Dynamic Viewport Height Utilities (Baseline 2024)
    ========================================================================= */
-
-/* Dynamic Viewport Heights (resilient against mobile URL bar expansion) */
-.viewport-screen {
-  height: 100vh;
-  height: 100dvh;
-  max-height: 100dvh;
-}
 
 .h-dvh {
   height: 100vh;
   height: 100dvh;
 }
 
-.min-h-dvh {
-  min-height: 100vh;
-  min-height: 100dvh;
-}
-
 .max-h-dvh {
   max-height: 100vh;
   max-height: 100dvh;
-}
-
-/* Touch Action & Gesture Isolation */
-.touch-canvas {
-  touch-action: none;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.touch-pan-zoom {
-  touch-action: pan-y pinch-zoom;
 }
 
 .touch-sheet {
@@ -1285,18 +744,6 @@ body.hide-app-footer #app-footer-container {
 
 .safe-pb-dock {
   padding-bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px));
-}
-
-.pb-safe {
-  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
-}
-
-.pt-safe {
-  padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
-}
-
-.safe-bottom-dock {
-  bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
 }
 
 /* Editorial Anchor Offset below sticky navbar & chapter bars */
@@ -1340,27 +787,7 @@ body.hide-app-footer #app-footer-container {
   transform: rotate(180deg);
 }
 
-/* Scroll-Driven Entrance Animation for Long-Form Chapters & Cards */
-@keyframes atlas-scroll-reveal {
-  from {
-    opacity: 0.25;
-    transform: translate3d(0, 14px, 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .scroll-reveal-item {
-      animation: atlas-scroll-reveal linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 20%;
-    }
-  }
-}
 
 /* Horizontal Touch Scroll Ribbon */
 .scroll-shadow-x {
@@ -1402,33 +829,7 @@ body.hide-app-footer #app-footer-container {
   }
 }
 
-/* Responsive Container Query Enhancements */
-@container (min-width: 440px) {
-  .cq-col-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
 
-@container (min-width: 640px) {
-  .cq-adaptive-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@container (min-width: 920px) {
-  .cq-adaptive-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@container (max-width: 360px) {
-  .cq-hide-sm {
-    display: none;
-  }
-  .cq-text-sm {
-    font-size: 0.75rem;
-  }
-}
 
 /* =========================================================================
    Atlas Sliding Select System (Baseline 2024 Top-Layer Popover + @starting-style)
@@ -1690,43 +1091,7 @@ body.hide-app-footer #app-footer-container {
     opacity 130ms var(--ease-japandi);
 }
 
-/* Progressive Enhancement for Native <select> on Chromium 135+ */
-@supports (appearance: base-select) {
-  .atlas-select-native,
-  .atlas-select-native::picker(select) {
-    appearance: base-select;
-  }
 
-  .atlas-select-native::picker(select) {
-    background: var(--surface-card, #ffffff);
-    color: var(--text-primary, #191816);
-    border: 1px solid var(--border-strong, #c8c2b3);
-    border-radius: 0.875rem;
-    box-shadow: var(--tooltip-shadow);
-    padding: 0.3125rem;
-    margin-block-start: 0.375rem;
-    opacity: 0;
-    transform: translate3d(0, -8px, 0) scale(0.98);
-    transform-origin: top center;
-    transition:
-      opacity 150ms var(--ease-japandi),
-      transform 220ms var(--ease-spring-snappy),
-      display 160ms allow-discrete,
-      overlay 160ms allow-discrete;
-  }
-
-  .atlas-select-native:open::picker(select) {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-
-  @starting-style {
-    .atlas-select-native:open::picker(select) {
-      opacity: 0;
-      transform: translate3d(0, -8px, 0) scale(0.98);
-    }
-  }
-}
 
 @media (prefers-reduced-motion: reduce) {
   .atlas-select-value-animated,

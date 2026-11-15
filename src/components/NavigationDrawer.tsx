@@ -40,6 +40,7 @@ import { DynamicIcon } from './DynamicIcon';
 import { AfricaUnLogo } from './AfricaUnLogo';
 import { triggerHaptic } from '../utils/mobileHaptics';
 import { usePrefersReducedMotion } from '../utils/motion';
+import { PWAInstallButton } from './PWAInstallButton';
 
 export type MainNavId = 
   | 'overview'
@@ -1284,7 +1285,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
           '--drawer-scrollbar-thumb': selectedScrollbarColor.thumb,
           '--drawer-scrollbar-thumb-hover': selectedScrollbarColor.hover,
         } as React.CSSProperties}
-        className={`hidden lg:flex flex-col shrink-0 sticky top-14 sm:top-16 h-[calc(100dvh-3.5rem)] sm:h-[calc(100dvh-4rem)] border-r border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl z-30 transition-all duration-300 ease-out relative overflow-hidden ${
+        className={`hidden lg:flex flex-col shrink-0 sticky top-14 sm:top-16 h-[calc(100dvh-3.5rem)] sm:h-[calc(100dvh-4rem)] border-r border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md z-30 transition-all duration-300 ease-out relative overflow-hidden ${
           !isDesktopOpen
             ? 'w-0 p-0 border-r-0 overflow-hidden'
             : isAutoCollapsePage
@@ -1323,7 +1324,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               exit={{ opacity: 0 }}
               transition={{ duration: prefersReducedMotion ? 0.01 : 0.2 }}
               onClick={onCloseMobile}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 lg:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 lg:hidden"
             />
             <m.div
               initial={prefersReducedMotion ? { opacity: 0 } : { x: '-100%' }}
@@ -1354,6 +1355,9 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 </div>
 
                 <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain stable-gutter sleek-scrollbar pb-12 pr-1">
+                  <div className="mb-3 sm:hidden">
+                    <PWAInstallButton className="w-full justify-center py-2.5" />
+                  </div>
                   {navContent(true)}
                 </div>
 

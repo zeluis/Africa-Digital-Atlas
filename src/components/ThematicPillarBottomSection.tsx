@@ -376,7 +376,7 @@ export const ThematicPillarBottomSection: React.FC<ThematicPillarBottomSectionPr
               </div>
 
               <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                36,000+ trans-Atlantic voyages, coastal embarkation corridors, and peer-reviewed research monographs on international law, reparations, and institutions.
+                36,000+ trans-Atlantic voyages, coastal embarkation corridors, and curated literature syntheses on international law, reparations, and institutions.
               </p>
             </div>
 

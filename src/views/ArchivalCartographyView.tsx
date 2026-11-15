@@ -168,7 +168,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
               layout
               initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="pointer-events-auto flex items-center gap-1 sm:gap-1.5 p-1.5 rounded-2xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_8px_30px_rgba(75,55,35,0.14)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.6)] backdrop-blur-xl text-xs no-drag select-none"
+              className="pointer-events-auto flex items-center gap-1 sm:gap-1.5 p-1.5 rounded-2xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-xl backdrop-blur-md text-xs no-drag select-none"
             >
               <div className="flex items-center gap-0.5 p-0.5 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B]">
                 <button
@@ -234,10 +234,10 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className={`pointer-events-auto w-full rounded-2xl backdrop-blur-2xl p-3 sm:p-3.5 flex flex-col gap-2.5 no-drag select-none transition-colors duration-300 ${
+              className={`pointer-events-auto w-full rounded-2xl backdrop-blur-md p-3 sm:p-3.5 flex flex-col gap-2.5 no-drag select-none transition-colors duration-300 ${
                 streamlinesTheme === 'light'
-                  ? 'bg-white/98 border-2 border-stone-400 shadow-[0_16px_45px_rgba(0,0,0,0.18)] text-stone-950'
-                  : 'bg-[#060D1A]/98 border-2 border-cyan-500/60 shadow-[0_16px_45px_rgba(0,0,0,0.85)] text-slate-100'
+                  ? 'bg-white/98 border-2 border-stone-400 shadow-2xl text-stone-950'
+                  : 'bg-[#060D1A]/98 border-2 border-cyan-500/60 shadow-2xl text-slate-100'
               }`}
             >
               {/* ROW 1: Quarter Selectors + Drawer Toggles (Left) & Speed, Density & Vector Controls (Right) */}
@@ -895,7 +895,7 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                 layout
                 initial={{ opacity: 0, y: -12 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="pointer-events-auto flex items-center flex-wrap gap-1 sm:gap-1.5 p-1.5 rounded-2xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_8px_30px_rgba(75,55,35,0.14)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.6)] backdrop-blur-xl text-xs no-drag select-none"
+                className="pointer-events-auto flex items-center flex-wrap gap-1 sm:gap-1.5 p-1.5 rounded-2xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-xl backdrop-blur-md text-xs no-drag select-none"
               >
                 <div className="flex items-center gap-0.5 p-0.5 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B]">
                   <button

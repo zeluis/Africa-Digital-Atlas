@@ -509,7 +509,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.985 }}
                 transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
-                className="absolute left-0 right-0 sm:right-auto sm:w-[580px] lg:w-[680px] mt-2.5 z-50 p-4 sm:p-5 rounded-2xl bg-[#FAF8F5]/98 dark:bg-stone-950/98 backdrop-blur-xl border border-stone-300/90 dark:border-stone-700/90 shadow-2xl space-y-3.5"
+                className="absolute left-0 right-0 sm:right-auto sm:w-[580px] lg:w-[680px] mt-2.5 z-50 p-4 sm:p-5 rounded-2xl bg-[#FAF8F5]/98 dark:bg-stone-950/98 backdrop-blur-md border border-stone-300/90 dark:border-stone-700/90 shadow-2xl space-y-3.5"
               >
                 {/* Panel Top Header */}
                 <div className="flex items-center justify-between pb-2 border-b border-stone-200 dark:border-stone-800/80">

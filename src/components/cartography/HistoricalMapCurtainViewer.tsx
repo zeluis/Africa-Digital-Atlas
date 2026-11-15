@@ -606,9 +606,14 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
     }
   }, []);
 
-  // Escape key closes open dossiers and resets zoom
+  // Universal Keyboard Cartographic Navigation (Arrow pan, +/- zoom, 0 reset, F fullscreen, Alt+Arrows plate step, Escape)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) {
+        return;
+      }
+
       if (e.key === 'Escape') {
         if (selectedEntity || selectedTradeCorridor || activeToponymFocus) {
           setSelectedEntity(null);
@@ -617,11 +622,63 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
           if (onClearFocusedEntity) onClearFocusedEntity();
           resetPane('both');
         }
+        return;
+      }
+
+      if (e.altKey && e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const prevIdx = (HISTORICAL_MAP_PLATES.findIndex(p => p.id === selectedPlate.id) - 1 + HISTORICAL_MAP_PLATES.length) % HISTORICAL_MAP_PLATES.length;
+        const prevPlate = HISTORICAL_MAP_PLATES[prevIdx];
+        if (onSelectPlate) onSelectPlate(prevPlate);
+        resetPane('both');
+        return;
+      }
+
+      if (e.altKey && e.key === 'ArrowRight') {
+        e.preventDefault();
+        const nextIdx = (HISTORICAL_MAP_PLATES.findIndex(p => p.id === selectedPlate.id) + 1) % HISTORICAL_MAP_PLATES.length;
+        const nextPlate = HISTORICAL_MAP_PLATES[nextIdx];
+        if (onSelectPlate) onSelectPlate(nextPlate);
+        resetPane('both');
+        return;
+      }
+
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        nudgePan(48, 0, 'both');
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nudgePan(-48, 0, 'both');
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        nudgePan(0, 48, 'both');
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        nudgePan(0, -48, 'both');
+      } else if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        zoomPane('both', 0.2);
+      } else if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        zoomPane('both', -0.2);
+      } else if (e.key === '0') {
+        e.preventDefault();
+        resetPane('both');
+      } else if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        const el = containerRef.current;
+        if (el) {
+          if (document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+          } else {
+            el.requestFullscreen?.().catch(() => {});
+          }
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedEntity, selectedTradeCorridor, activeToponymFocus, onClearFocusedEntity, resetPane]);
+  }, [selectedEntity, selectedTradeCorridor, activeToponymFocus, onClearFocusedEntity, resetPane, nudgePan, zoomPane, selectedPlate.id, onSelectPlate]);
 
   // Selection of an antique plate: opens Provenance dossier, collapses kingdom panel, and resets zoom
   const handleSelectPlateItem = useCallback((plate: HistoricalMapPlate) => {
@@ -1342,8 +1399,10 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
         {/* Main Map Viewport */}
         <div 
           ref={containerRef}
+          tabIndex={0}
+          aria-label="Historical map comparison viewport. Use arrow keys to pan, plus or minus to zoom, 0 to reset, F for fullscreen, and Alt plus arrows to switch plates."
           onWheel={handleWheelZoom}
-          className="flex-1 relative w-full h-full overflow-hidden flex items-center justify-center select-none"
+          className="flex-1 relative w-full h-full overflow-hidden flex items-center justify-center select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
         >
           {comparisonMode === 'sideBySide' ? (
             /* Side-by-Side Dual Viewport Mode with Full Synchronized Zoom & Pan */
@@ -2123,7 +2182,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 w-[92vw] max-w-xl p-4 rounded-2xl bg-stone-900/95 dark:bg-zinc-950/95 text-stone-100 border border-rose-500/50 shadow-2xl backdrop-blur-xl"
+                    className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 w-[92vw] max-w-xl p-4 rounded-2xl bg-stone-900/95 dark:bg-zinc-950/95 text-stone-100 border border-rose-500/50 shadow-2xl backdrop-blur-md"
                   >
                     <div className="flex items-start justify-between gap-3 border-b border-stone-800 pb-3">
                       <div className="flex items-center gap-2.5">

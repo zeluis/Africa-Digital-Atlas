@@ -188,7 +188,7 @@ export const RegionalSilhouette: React.FC<RegionalSilhouetteProps> = ({
                   <text
                     x="7"
                     y="3"
-                    className="text-[9px] font-mono font-bold fill-zinc-900 dark:fill-zinc-100 select-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
+                    className="text-[9px] font-mono font-bold fill-zinc-900 dark:fill-zinc-100 select-none drop-shadow-xs"
                   >
                     ★ {cap.name}
                   </text>
@@ -455,7 +455,7 @@ export const RegionalSilhouette: React.FC<RegionalSilhouetteProps> = ({
               <text
                 x="8"
                 y="3"
-                className="text-[10px] font-mono font-bold fill-zinc-900 dark:fill-zinc-100 select-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
+                className="text-[10px] font-mono font-bold fill-zinc-900 dark:fill-zinc-100 select-none drop-shadow-xs"
               >
                 ★ {cap.name}
               </text>
@@ -463,8 +463,8 @@ export const RegionalSilhouette: React.FC<RegionalSilhouetteProps> = ({
           ))}
         </svg>
 
-        {/* Floating Geo Specs Pill */}
-        <div className="absolute bottom-3 left-3 bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 px-2.5 py-1 rounded-xl text-[11px] font-mono text-zinc-600 dark:text-zinc-300 shadow-md backdrop-blur-sm flex items-center gap-2">
+        {/* Floating Geo Specs */}
+        <div className="absolute bottom-3 left-3 bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 px-2.5 py-1 rounded-xl text-[11px] font-mono text-zinc-600 dark:text-zinc-300 shadow-md backdrop-blur-md flex items-center gap-2">
           <Layers className="w-3 h-3 text-emerald-500" />
           <span>ViewBox: {data.viewBox}</span>
           <span>•</span>

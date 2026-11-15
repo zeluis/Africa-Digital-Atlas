@@ -1092,7 +1092,7 @@ export const exportPublicationPDF = async (pub: PublicationPdfInput): Promise<vo
   doc.setTextColor(120, 53, 15);
   const seriesText = pub.isWorkingPaper
     ? `AFRIATA WORKING PAPER SERIES • ${pub.seriesNumber || 'WORKING PAPER NO. 08'}`
-    : 'AFRIATA SCHOLARLY RESEARCH MONOGRAPH SERIES';
+    : 'AFRIATA LITERATURE SYNTHESIS & RESEARCH SERIES';
   doc.text(seriesText, margin, margin + 6);
 
   doc.setFont('courier', 'normal');

@@ -33,7 +33,7 @@ export const DataProvenanceModal: React.FC<DataProvenanceModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       label={`${entity?.name || entityId} — ${indicator?.name || indicatorId}`}
-      overlayClassName="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
+      overlayClassName="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200"
       className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-zinc-700 bg-zinc-900 shadow-2xl text-zinc-100"
     >
         {/* Header */}

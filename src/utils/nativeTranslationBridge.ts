@@ -68,6 +68,11 @@ export function initNativeTranslationEngine(): void {
     return;
   }
 
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+    window.addEventListener('online', () => initNativeTranslationEngine(), { once: true });
+    return;
+  }
+
   window.__afriataTranslationInitialized = true;
 
   // Define global init callback

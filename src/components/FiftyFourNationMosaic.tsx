@@ -222,7 +222,7 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
   return (
     <div className="space-y-4">
       {/* Control Strip: Region Tabs + Metric Toggle + Sort + Search */}
-      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-white/90 dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs backdrop-blur-sm">
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-white/90 dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs backdrop-blur-md">
         {/* 1. Interactive UN Geoscheme Filters with Snappy Sliding Pill */}
         <div 
           className="flex items-center gap-1.5 overflow-x-auto pb-1 xl:pb-0 scrollbar-none" 

@@ -38,19 +38,39 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator && window.loca
   } else {
     // Production Service Worker registration
     window.addEventListener('load', () => {
+      let pendingRegistration: ServiceWorkerRegistration | null = null;
+      let shouldReloadOnControllerChange = false;
+
+      const notifyUpdateAvailable = (reg: ServiceWorkerRegistration) => {
+        pendingRegistration = reg;
+        window.dispatchEvent(
+          new CustomEvent('afriata-sw-update-available', { detail: { registration: reg } })
+        );
+      };
+
+      window.addEventListener('afriata-sw-apply-update', () => {
+        if (pendingRegistration?.waiting) {
+          shouldReloadOnControllerChange = true;
+          pendingRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+      });
+
       navigator.serviceWorker
         .register('./sw.js')
         .then((reg) => {
           console.log('[PWA] Service worker registered successfully with scope:', reg.scope);
-          
+
+          if (reg.waiting && navigator.serviceWorker.controller) {
+            notifyUpdateAvailable(reg);
+          }
+
           // Listen for new worker installed
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  console.log('[PWA] New version available, triggering skipWaiting...');
-                  newWorker.postMessage({ type: 'SKIP_WAITING' });
+                  notifyUpdateAvailable(reg);
                 }
               });
             }
@@ -60,12 +80,12 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator && window.loca
           console.warn('[PWA] Service worker registration ignored/failed:', err);
         });
 
-      // When the active worker changes, refresh to sync new assets
+      // When the active worker changes after user approval, refresh to sync new assets
       let refreshing = false;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refreshing) {
+        if (!refreshing && shouldReloadOnControllerChange) {
           refreshing = true;
-          console.log('[PWA] Controller changed, updating client assets...');
+          window.location.reload();
         }
       });
     });

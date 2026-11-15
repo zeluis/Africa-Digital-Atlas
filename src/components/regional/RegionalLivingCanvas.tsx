@@ -262,7 +262,7 @@ export const RegionalLivingCanvas: React.FC<RegionalLivingCanvasProps> = ({
 
         {/* Full Continental Authentic SVG Map Layer (Hardware-isolated, Centered & Dynamic) */}
         <AfricaUnLogo
-          className="w-full h-full max-h-[600px] drop-shadow-[0_12px_28px_rgba(0,0,0,0.08)] select-none transition-all duration-700 ease-in-out"
+          className="w-full h-full max-h-[600px] drop-shadow-lg select-none transition-all duration-700 ease-in-out"
           interactive={false}
           glow={false}
           viewBox={currentViewBox}

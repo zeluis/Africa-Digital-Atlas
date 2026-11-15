@@ -383,7 +383,7 @@ export const AFCFTA_CORRIDOR_PRESETS: TradeCorridorPreset[] = [
   {
     id: 'trans-sahara',
     name: 'Trans-Saharan Trade Highway (Algiers – Kano – Lagos)',
-    rec: 'AMU / ECOWAS',
+    rec: 'AMU / CEN-SAD / ECOWAS',
     region: 'Northern Africa',
     originCountry: 'Algeria',
     originPort: 'Port of Algiers',
@@ -447,6 +447,84 @@ export const AFCFTA_CORRIDOR_PRESETS: TradeCorridorPreset[] = [
       }
     ],
     strategicLogisticsNote: 'AfDB-funded Cross River bridge and OSBP directly connects West Africa’s largest economy with Central Africa (CEMAC).'
+  },
+  {
+    id: 'djibouti-addis',
+    name: 'Djibouti – Addis Ababa Ethio-Djibouti Rail-Road Corridor',
+    rec: 'IGAD / COMESA',
+    region: 'Eastern Africa',
+    originCountry: 'Djibouti',
+    originPort: 'Doraleh Multipurpose Port, Djibouti',
+    destinationCountry: 'Ethiopia',
+    destinationHub: 'Modjo Dry Port & Addis Ababa',
+    transitCountries: ['Djibouti', 'Ethiopia'],
+    distanceKm: 756,
+    baselineRoadDays: 2.0,
+    baselineBorderDays: 3.4,
+    afcftaOptimizedDays: 1.5,
+    annualTradeVolumeUSD: '$14.2 Billion',
+    borderPosts: [
+      {
+        id: 'galafi-osbp',
+        name: 'Galafi International Border Post',
+        countryA: 'Djibouti',
+        countryB: 'Ethiopia',
+        type: 'OSBP',
+        baselineHours: 28,
+        afcftaSingleWindowHours: 5,
+        commonBottlenecks: ['High import container convoy volume', 'Phytosanitary and customs manifest synchronization']
+      },
+      {
+        id: 'dewelle-rail-post',
+        name: 'Dewele – Ali Sabieh Rail-Road Customs Post',
+        countryA: 'Djibouti',
+        countryB: 'Ethiopia',
+        type: 'OSBP',
+        baselineHours: 22,
+        afcftaSingleWindowHours: 4,
+        commonBottlenecks: ['Electrified standard-gauge rail slot allocation', 'Bonded dry-port pre-clearance queues']
+      }
+    ],
+    strategicLogisticsNote: 'Handles over 90% of Ethiopia’s maritime commerce via standard-gauge electrified railway and the Galafi highway, anchoring IGAD and Red Sea integration.'
+  },
+  {
+    id: 'pointe-noire-bangui',
+    name: 'Pointe-Noire – Brazzaville – Bangui Corridor',
+    rec: 'ECCAS / CEMAC',
+    region: 'Central Africa',
+    originCountry: 'Republic of the Congo',
+    originPort: 'Deep-Water Port of Pointe-Noire',
+    destinationCountry: 'Central African Republic',
+    destinationHub: 'Port & Logistics Hub of Bangui',
+    transitCountries: ['Republic of the Congo', 'Central African Republic'],
+    distanceKm: 1680,
+    baselineRoadDays: 4.5,
+    baselineBorderDays: 4.5,
+    afcftaOptimizedDays: 3.8,
+    annualTradeVolumeUSD: '$2.9 Billion',
+    borderPosts: [
+      {
+        id: 'brazzaville-river-terminal',
+        name: 'Brazzaville Congo-Ubangi River Transshipment Terminal',
+        countryA: 'Republic of the Congo',
+        countryB: 'Central African Republic',
+        type: 'OSBP',
+        baselineHours: 34,
+        afcftaSingleWindowHours: 8,
+        commonBottlenecks: ['Rail-to-river barge seasonal draft fluctuation', 'Multi-agency CEMAC transit manifest verification']
+      },
+      {
+        id: 'mongoumba-ouesso',
+        name: 'Ouesso – Bangui River-Road Customs Gate',
+        countryA: 'Republic of the Congo',
+        countryB: 'Central African Republic',
+        type: 'Traditional Dual-Post',
+        baselineHours: 30,
+        afcftaSingleWindowHours: 7,
+        commonBottlenecks: ['Manual customs clearance stamps', 'Forestry & agro-commodity origin certification']
+      }
+    ],
+    strategicLogisticsNote: 'Multimodal ocean-rail-river spine linking Central Africa’s deep-water Atlantic gateway at Pointe-Noire to the Ubangi Basin.'
   }
 ];
 
@@ -481,19 +559,22 @@ export function runAfcftaSimulation(params: {
   usePapss: boolean;
   useSingleWindow: boolean;
   useGreenLane: boolean;
+  localContentPct?: number;
 }): SimulationResult {
-  const { corridor, commodity, consignmentValueUSD, containerCount, regime, usePapss, useSingleWindow, useGreenLane } = params;
+  const { corridor, commodity, consignmentValueUSD, containerCount, regime, usePapss, useSingleWindow, useGreenLane, localContentPct = 100 } = params;
 
-  // 1. Calculate Tariff Duty
+  const rooCompliant = localContentPct >= commodity.minLocalContentPct;
+
+  // 1. Calculate Tariff Duty (AfCFTA preferences require Rules of Origin compliance)
   const mfnDutyPct = commodity.defaultMfnTariffRate;
   let simulatedDutyPct = mfnDutyPct;
 
   if (regime === 'rec') {
-    simulatedDutyPct = commodity.recTariffRate;
+    simulatedDutyPct = rooCompliant ? commodity.recTariffRate : mfnDutyPct;
   } else if (regime === 'afcfta_cat_a') {
-    simulatedDutyPct = commodity.afcftaCatATariffRate;
+    simulatedDutyPct = rooCompliant ? commodity.afcftaCatATariffRate : mfnDutyPct;
   } else if (regime === 'afcfta_cat_b') {
-    simulatedDutyPct = commodity.afcftaCatBTariffRate;
+    simulatedDutyPct = rooCompliant ? commodity.afcftaCatBTariffRate : mfnDutyPct;
   }
 
   const mfnDutyUSD = (consignmentValueUSD * mfnDutyPct) / 100;
@@ -554,7 +635,7 @@ export function runAfcftaSimulation(params: {
     daysSaved,
     borderClearanceHoursTotal: Math.round(totalSimulatedBorderHours),
     borderClearanceHoursBaseline: Math.round(totalBaselineBorderHours),
-    rooCompliant: true,
+    rooCompliant,
     rooCriteria: commodity.rulesOfOriginCriteria,
     totalLandedSavingsUSD,
     carbonEmissionBaselineKg,

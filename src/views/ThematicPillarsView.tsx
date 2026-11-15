@@ -840,7 +840,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                 </span>
                 <span className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
                   <BookOpen className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                  <span>Peer-Reviewed Monograph Archive</span>
+                  <span>Curated Research &amp; Essay Archive</span>
                 </span>
               </div>
             </div>

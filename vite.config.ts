@@ -121,19 +121,27 @@ export default defineConfig(({ command }) => {
         },
       },
       VitePWA({
-        registerType: 'autoUpdate',
+        registerType: 'prompt',
         includeAssets: ['favicon.svg', 'favicon-32x32.png', 'apple-touch-icon.png', 'icon.svg'],
         manifest: {
           id: './',
           name: 'Afriata: Africa Data Atlas',
           short_name: 'Afriata',
-          description: 'Curated Pan-African data platform featuring 54 sovereign nations, Atlantic Slave Trade research database, ethnic tree cartography, 8 thematic pillars, and investigative monographs.',
+          description: 'Curated Pan-African data platform featuring 54 sovereign nations, Atlantic Slave Trade research database, ethnic tree cartography, 8 thematic pillars, and literature syntheses.',
           theme_color: '#4e5e51',
           background_color: '#18181b',
           display: 'standalone',
+          orientation: 'any',
           start_url: './',
           scope: './',
+          categories: ['education', 'reference', 'productivity', 'utilities'],
           icons: [
+            {
+              src: 'favicon-32x32.png',
+              sizes: '32x32',
+              type: 'image/png',
+              purpose: 'any',
+            },
             {
               src: 'icon-192.png',
               sizes: '192x192',
@@ -157,6 +165,35 @@ export default defineConfig(({ command }) => {
               sizes: '512x512',
               type: 'image/png',
               purpose: 'maskable',
+            },
+            {
+              src: 'icon.svg',
+              sizes: 'any',
+              type: 'image/svg+xml',
+              purpose: 'any',
+            },
+          ],
+          shortcuts: [
+            {
+              name: 'Interactive Cartography',
+              short_name: 'Map',
+              description: 'Pan-African Vector Map and Choropleth Visualizer',
+              url: './#map',
+              icons: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }],
+            },
+            {
+              name: 'Explore Countries',
+              short_name: 'Dossiers',
+              description: 'Comprehensive Country Profiles and Indicators',
+              url: './#explore',
+              icons: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }],
+            },
+            {
+              name: 'Comparative Analytics',
+              short_name: 'Analytics',
+              description: 'Multi-Dimensional Correlation Scatter and Trends',
+              url: './#analytics',
+              icons: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }],
             },
           ],
         },
@@ -229,34 +266,6 @@ export default defineConfig(({ command }) => {
                 expiration: {
                   maxEntries: 100,
                   maxAgeSeconds: 60 * 60 * 24 * 30,
-                },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-              },
-            },
-            {
-              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'google-fonts-cache',
-                expiration: {
-                  maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365,
-                },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-              },
-            },
-            {
-              urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'gstatic-fonts-cache',
-                expiration: {
-                  maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365,
                 },
                 cacheableResponse: {
                   statuses: [0, 200],

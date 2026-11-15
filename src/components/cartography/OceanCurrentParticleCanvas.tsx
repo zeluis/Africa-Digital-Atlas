@@ -1285,10 +1285,10 @@ const OceanCurrentParticleCanvasComponent: React.FC<OceanCurrentParticleCanvasPr
               right: !isLeftHalf ? `clamp(14px, calc(${100 - pctX}% + 22px), calc(100% - 370px))` : undefined,
               top: `clamp(84px, calc(${pctY}% - 70px), calc(100% - 320px))`
             }}
-            className={`absolute z-30 pointer-events-auto p-4 rounded-2xl backdrop-blur-2xl border-2 shadow-2xl text-left w-80 sm:w-92 font-sans text-xs transition-all duration-300 ease-out animate-in fade-in duration-200 ${
+            className={`absolute z-30 pointer-events-auto p-4 rounded-2xl backdrop-blur-md border-2 shadow-2xl text-left w-80 sm:w-92 font-sans text-xs transition-all duration-300 ease-out animate-in fade-in duration-200 ${
               isLight
-                ? 'bg-white/98 border-stone-400 text-stone-950 shadow-[0_16px_45px_rgba(0,0,0,0.22)]'
-                : 'bg-[#060D1A]/98 border-cyan-500/60 text-white shadow-[0_16px_45px_rgba(0,0,0,0.9)]'
+                ? 'bg-white/98 border-stone-400 text-stone-950 shadow-2xl'
+                : 'bg-[#060D1A]/98 border-cyan-500/60 text-white shadow-2xl'
             }`}
           >
             {/* Card Header with Port Name, Anchor Icon tinted in port color, and Unpin Controls */}

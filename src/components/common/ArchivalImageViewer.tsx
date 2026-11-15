@@ -879,7 +879,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
 
           {/* Bottom Complete Filmstrip Drawer — Positioned in flex flow so it never obscures image bottom/legend */}
           {isThumbnailsOpen && illustrationsList.length > 0 && (
-            <div className="w-full shrink-0 bg-[#FAF8F5]/95 dark:bg-stone-950/95 backdrop-blur-xl border-t border-stone-200/90 dark:border-stone-800 p-2.5 z-20 flex items-center gap-2 shadow-md">
+            <div className="w-full shrink-0 bg-[#FAF8F5]/95 dark:bg-stone-950/95 backdrop-blur-md border-t border-stone-200/90 dark:border-stone-800 p-2.5 z-20 flex items-center gap-2 shadow-md">
               <div className="flex items-center gap-1 shrink-0 px-2 text-[11px] font-mono text-stone-600 dark:text-stone-400">
                 <span className="font-bold text-amber-900 dark:text-amber-400 uppercase tracking-wider">All Plates ({illustrationsList.length}):</span>
               </div>

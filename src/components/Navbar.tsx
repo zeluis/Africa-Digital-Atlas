@@ -100,7 +100,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 title="Afriata Continental Atlas - Return to Primary Overview"
               >
                 <AfricaUnLogo 
-                  className="shrink-0 drop-shadow-[0_1px_4px_rgba(217,119,6,0.2)] dark:drop-shadow-[0_1px_6px_rgba(251,191,36,0.2)]" 
+                  className="shrink-0 drop-shadow-xs" 
                   size={54}
                   activeRegion={activeRegion}
                   onSelectRegion={(reg) => {

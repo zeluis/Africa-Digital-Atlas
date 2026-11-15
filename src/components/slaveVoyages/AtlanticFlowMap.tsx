@@ -1001,7 +1001,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
                 onClick={handleToggleSeasonality}
-                className="absolute inset-0 bg-stone-900/40 backdrop-blur-[2px] z-20 sm:hidden cursor-pointer"
+                className="absolute inset-0 bg-stone-900/40 backdrop-blur-xs z-20 sm:hidden cursor-pointer"
                 aria-hidden="true"
               />
 

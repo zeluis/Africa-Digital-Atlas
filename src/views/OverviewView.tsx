@@ -142,7 +142,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         </div>
 
         {/* Unified High-Density 6-Metric Benchmark Ribbon (Symmetrical gap-px hairline dividers across 2/3/6 cols) */}
-        <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-200/70 dark:bg-zinc-800/70 shadow-xs backdrop-blur-sm overflow-hidden">
+        <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-200/70 dark:bg-zinc-800/70 shadow-xs backdrop-blur-md overflow-hidden">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px tabular-nums">
             {/* 1. Population */}
             <div className="bg-white/95 dark:bg-zinc-900/95 p-3.5 sm:p-4 flex flex-col justify-between space-y-1.5 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/70 transition-colors">

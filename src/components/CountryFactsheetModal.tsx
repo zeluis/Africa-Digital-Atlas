@@ -305,7 +305,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       label={`${country.name} 1-Page Executive Factsheet`}
-      overlayClassName="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 atlas-modal-backdrop print:p-0 print:bg-white print:block"
+      overlayClassName="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 atlas-modal-backdrop print:p-0 print:bg-white print:block"
       className="relative w-full max-w-4xl max-h-[92dvh] flex flex-col overflow-hidden bg-white dark:bg-zinc-950 rounded-t-3xl sm:rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 atlas-modal-panel print:max-h-none print:overflow-visible print:border-none print:shadow-none print:rounded-none"
     >
         {/* Action Header Controls (Hidden during browser print) */}

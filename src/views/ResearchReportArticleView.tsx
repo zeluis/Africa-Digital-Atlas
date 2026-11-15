@@ -28,13 +28,13 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { RESEARCH_REPORTS, ResearchReport } from '../data/reportsData';
-import { getAllReports } from '../data/reportsDataLoader';
+import { getReportById } from '../data/reportsDataLoader';
 import { ReportVoiceReader } from '../components/ReportVoiceReader';
 import { resolveDoi, SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
 import { SemanticReportRenderer } from '../components/SemanticReportRenderer';
 import { CitePublicationModal } from '../components/CitePublicationModal';
 import { DoiVerificationModal } from '../components/DoiVerificationModal';
-import { getVerifiedPublicationUrl } from '../data/reportDoiConcordance';
+import { getConcordanceEntry, getVerifiedPublicationUrl } from '../data/reportDoiConcordance';
 import { verifyDoiWithCrossref, DoiVerificationResult } from '../services/crossrefService';
 import { exportPublicationPDF } from '../utils/academicExport';
 import { AfriataReport } from '../types/afriataReport';
@@ -54,8 +54,10 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
   onNavigateToSlaveTrade,
   onSelectOtherReport
 }) => {
-  const allReports = React.useMemo(() => getAllReports(), []);
-  const report: ResearchReport = allReports[reportId] || RESEARCH_REPORTS[reportId] || RESEARCH_REPORTS['report-genetic-linguistic-blueprints'];
+  const report: ResearchReport = React.useMemo(
+    () => getReportById(reportId) || RESEARCH_REPORTS[reportId] || RESEARCH_REPORTS['report-genetic-linguistic-blueprints'],
+    [reportId]
+  );
 
   const [activeSectionId, setActiveSectionId] = useState<string>(report.sections[0]?.id || 'sec-intro');
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
@@ -78,6 +80,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
 
   // Curated verified publication concordancer
   const verifiedPub = getVerifiedPublicationUrl(report.id, report.doi);
+  const concordance = getConcordanceEntry(report.id);
 
   useEffect(() => {
     let isMounted = true;
@@ -121,7 +124,14 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
       })),
       "datePublished": report.publicationDate,
       "inLanguage": "en",
-      "identifier": `https://doi.org/${report.doi}`,
+      "identifier": `https://doi.org/${report.doi || '10.6084/m9.figshare.34065711'}`,
+      ...(concordance?.canonicalUrl ? {
+        "isBasedOn": {
+          "@type": "ScholarlyArticle",
+          "name": concordance.verifiedTitle || concordance.title,
+          "url": concordance.canonicalUrl
+        }
+      } : {}),
       "publisher": {
         "@type": "Organization",
         "name": "Afriata: African Data Atlas & Research Repository",
@@ -135,7 +145,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
       const existing = document.getElementById(scriptId);
       if (existing) existing.remove();
     };
-  }, [report]);
+  }, [report, concordance]);
 
   // Compositor progress fallback (for browsers without CSS animation-timeline: scroll())
   useEffect(() => {
@@ -390,14 +400,14 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
           </div>
 
           <div translate="no" className="notranslate flex flex-wrap items-center gap-2">
-            <span className="font-mono text-zinc-400">DOI:</span>
+            <span className="font-mono text-zinc-400">Synthesis DOI:</span>
             <a 
-              href={verifiedPub.url || resolveDoi(report.doi)} 
+              href={resolveDoi(report.doi || '10.6084/m9.figshare.34065711')} 
               {...SAFE_EXTERNAL_LINK_PROPS}
               className="font-mono text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 font-bold"
-              title={verifiedPub.verifiedTitle ? `Verified Paper: "${verifiedPub.verifiedTitle}" (${verifiedPub.journal || 'Peer-Reviewed'})` : `DOI: ${verifiedPub.doi || report.doi}`}
+              title={`Afriata Repository DOI: ${report.doi || '10.6084/m9.figshare.34065711'}`}
             >
-              <span>{verifiedPub.doi || report.doi}</span>
+              <span>{report.doi || '10.6084/m9.figshare.34065711'}</span>
               <ExternalLink className="w-3 h-3" />
             </a>
 
@@ -417,7 +427,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
               {verifiedPub.isVerified || crossrefStatus?.status === 'verified' ? (
                 <>
                   <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                  <span>Crossref Verified</span>
+                  <span>Crossref Concordance Verified</span>
                 </>
               ) : crossrefStatus?.status === 'mismatch' ? (
                 <>
@@ -433,6 +443,31 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
             </button>
           </div>
         </div>
+
+        {/* Primary Source Work Synthesized (Crossref Concordance) */}
+        {concordance && !report.isWorkingPaper && (
+          <div className="relative p-3.5 sm:p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950/80 border border-zinc-200/80 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="space-y-1 min-w-0">
+              <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                Primary Source Literature (Crossref Concordance)
+              </div>
+              <div className="font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
+                {concordance.verifiedTitle || concordance.title}
+              </div>
+              <div className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                {concordance.authors?.join(', ')}{concordance.year ? ` (${concordance.year})` : ''}{concordance.journal ? ` · ${concordance.journal}` : ''}
+              </div>
+            </div>
+            <a
+              href={concordance.canonicalUrl || resolveDoi(concordance.doi || '')}
+              {...SAFE_EXTERNAL_LINK_PROPS}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-[11px] font-mono font-bold text-amber-700 dark:text-amber-400 hover:border-amber-500 transition-colors shrink-0 self-start sm:self-center"
+            >
+              <span>{concordance.doi ? `DOI: ${concordance.doi}` : 'Primary Publication'}</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        )}
       </header>
 
       {/* Main Two-Column Academic Article Layout */}
@@ -627,7 +662,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
                 <span>Scholarly Provenance &amp; Integrity Audit</span>
               </div>
               <span className="text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-300 tabular-nums">
-                Peer-Audited Schema v1.0
+                Documented Synthesis Schema v1.0
               </span>
             </div>
 

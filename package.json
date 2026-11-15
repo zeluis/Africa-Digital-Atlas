@@ -22,10 +22,13 @@
     "perf:images": "node scripts/optimize-images.mjs"
   },
   "dependencies": {
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource-variable/noto-sans": "^5.3.0",
+    "@fontsource-variable/noto-sans-arabic": "^5.3.0",
     "@fontsource-variable/noto-serif": "^5.3.0",
     "@fontsource-variable/noto-serif-display": "^5.3.0",
     "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "@fontsource/noto-sans-ethiopic": "^5.3.0",
     "@google/genai": "^2.4.0",
     "@iconify/react": "^6.0.2",
     "@tailwindcss/vite": "^4.1.14",

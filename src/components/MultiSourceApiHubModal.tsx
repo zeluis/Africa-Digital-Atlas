@@ -151,7 +151,7 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       labelledBy="api-hub-modal-title"
-      overlayClassName="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 lg:p-6 bg-[#EEDBB8]/90 dark:bg-[#231C11]/90 backdrop-blur-lg overflow-hidden"
+      overlayClassName="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 lg:p-6 bg-[#EEDBB8]/90 dark:bg-[#231C11]/90 backdrop-blur-md overflow-hidden"
       motionProps={{
         initial: reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.97, y: 12 },
         animate: reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 },
@@ -168,7 +168,7 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
         <div className="h-1.5 w-full bg-gradient-to-r from-amber-600 via-amber-700 to-emerald-700 shrink-0" />
 
         {/* Modal Header */}
-        <div className="px-4 py-3.5 sm:px-7 sm:py-5 border-b border-[#DFCBB0] dark:border-[#382F22] flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 bg-[#FAF3E7]/95 dark:bg-[#1C1813]/95 backdrop-blur-sm shrink-0">
+        <div className="px-4 py-3.5 sm:px-7 sm:py-5 border-b border-[#DFCBB0] dark:border-[#382F22] flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 bg-[#FAF3E7]/95 dark:bg-[#1C1813]/95 shrink-0">
           <div className="flex items-start sm:items-center gap-3 min-w-0">
             <div className="p-2.5 sm:p-3 rounded-2xl bg-[#EFE3CF] dark:bg-[#2C2419] border border-[#DFCBB0] dark:border-[#423624] text-amber-900 dark:text-amber-400 shadow-sm shrink-0">
               <Database className="w-5 h-5 sm:w-6 sm:h-6" />

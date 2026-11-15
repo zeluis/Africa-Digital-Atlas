@@ -96,7 +96,7 @@ export const MolecularMigrationDrawer: React.FC<MolecularOverlayProps> = ({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 30, scale: 0.95 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
-          className="absolute bottom-4 left-4 z-45 w-[360px] sm:w-[420px] max-w-[calc(100vw-32px)] max-h-[72vh] overflow-y-auto drawer-cozy-scrollbar bg-[#FAF6EE] dark:bg-[#1E1916] border border-[#E5DDD0] dark:border-[#38322B] rounded-3xl shadow-2xl p-4 flex flex-col gap-3.5 backdrop-blur-xl"
+          className="absolute bottom-4 left-4 z-45 w-[360px] sm:w-[420px] max-w-[calc(100vw-32px)] max-h-[72vh] overflow-y-auto drawer-cozy-scrollbar bg-[#FAF6EE] dark:bg-[#1E1916] border border-[#E5DDD0] dark:border-[#38322B] rounded-3xl shadow-2xl p-4 flex flex-col gap-3.5 backdrop-blur-md"
         >
           <div className="flex items-center justify-between pb-3 border-b border-[#E5DDD0] dark:border-[#38322B]">
             <div className="flex items-center gap-2">
@@ -501,7 +501,7 @@ export const MolecularMigrationCanvasLayer: React.FC<{
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, x: -24, scale: 0.95 }}
                   transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                  className="w-full h-full p-4.5 rounded-3xl bg-[#FAF7F2] dark:bg-[#1E1916] border-2 border-[#E67E48] shadow-[0_20px_60px_rgba(43,36,30,0.45)] flex flex-col justify-between select-none box-border backdrop-blur-2xl"
+                  className="w-full h-full p-4.5 rounded-3xl bg-[#FAF7F2] dark:bg-[#1E1916] border-2 border-[#E67E48] shadow-2xl flex flex-col justify-between select-none box-border backdrop-blur-md"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className="flex items-center justify-between pb-2.5 border-b border-[#E5DDD0] dark:border-[#38322B]">

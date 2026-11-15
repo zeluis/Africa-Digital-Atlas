@@ -60,7 +60,7 @@ export const Footer: React.FC<FooterProps> = ({
                   interactive={false} 
                   variant="warm-tonal" 
                   fillOpacity={0.6}
-                  className="shrink-0 drop-shadow-[0_2px_8px_rgba(217,119,6,0.2)]"
+                  className="shrink-0 drop-shadow-xs"
                 />
               </div>
               <div className="flex flex-col justify-center">

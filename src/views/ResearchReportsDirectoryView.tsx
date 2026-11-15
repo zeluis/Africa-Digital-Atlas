@@ -67,10 +67,10 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
       category: 'tast',
       categoryLabel: 'Historical Legacies (TAST)',
       categoryColor: '#F43F5E',
-      authors: ['African Bioarchaeological Consortium', 'Dr. Rachel E. Watkins'],
+      authors: ['Afriata Research Synthesis (ZéLuis F. Correia)'],
       date: 'March 2025',
       readingTime: 35,
-      type: 'Special Research Monograph',
+      type: 'Literature Synthesis Essay',
       onSelect: onNavigateToMolecular
     },
     {
@@ -80,10 +80,10 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
       category: 'tast',
       categoryLabel: 'Historical Legacies (TAST)',
       categoryColor: '#F43F5E',
-      authors: ['African Economic History Project', 'Prof. Nathan Nunn'],
+      authors: ['Afriata Research Synthesis (ZéLuis F. Correia)'],
       date: 'April 2025',
       readingTime: 40,
-      type: 'Master Economic Treatise',
+      type: 'Literature Synthesis Essay',
       onSelect: onNavigateToFoundations
     }
   ];
@@ -116,13 +116,13 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
           <div className="space-y-2 max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
               <BookOpen className="w-3.5 h-3.5" />
-              <span>Peer-Reviewed Academic & Policy Repository</span>
+              <span>Curated Research &amp; Literature Synthesis Archive</span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-zinc-900 dark:text-white font-serif tracking-tight">
-              African Research & Analytical Reports
+              African Research &amp; Analytical Reports
             </h1>
             <p className="text-sm md:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              Explore accredited treatises spanning evolutionary genomics, international reparatory jurisprudence, macroeconomic development, and the enduring material legacies of the Transatlantic Slave Trade.
+              Explore curated literature syntheses spanning evolutionary genomics, international reparatory jurisprudence, macroeconomic development, and the enduring material legacies of the Transatlantic Slave Trade, each linked to primary peer-reviewed DOIs via Crossref concordance.
             </p>
           </div>
 
@@ -265,7 +265,7 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
       {/* Main Filtered Research Reports Grid */}
       <div className="space-y-3">
         <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-mono">
-          <span>Peer-Reviewed Reports ({filteredReports.length})</span>
+          <span>Literature Synthesis Reports ({filteredReports.length})</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

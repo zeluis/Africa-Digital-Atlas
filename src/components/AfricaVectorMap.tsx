@@ -153,7 +153,7 @@ export const AfricaVectorMap: React.FC<AfricaVectorMapProps> = ({
     <div
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      className="relative w-full rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 p-6 shadow-xl backdrop-blur-sm select-none"
+      className="relative w-full rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 p-6 shadow-xl select-none"
     >
       {/* Visual Header */}
       <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3 mb-4 text-xs font-mono font-bold text-zinc-500 dark:text-zinc-400">

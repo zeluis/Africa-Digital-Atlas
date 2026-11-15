@@ -50,38 +50,46 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     category: 'genetics',
     categoryLabel: 'Genetics & Admixture',
     categoryColor: '#6366F1',
-    authors: ['Prof. K. A. Diallo', 'Dr. Elena Mendes-Vaz', 'Dr. Marcus Thorne'],
-    institutions: ['Center for Afro-Atlantic Studies', 'Institut Pasteur Dakar', 'Universidade de Cabo Verde'],
+    authors: ['Afriata Research Synthesis (ZéLuis F. Correia)'],
+    institutions: ['Afriata Cartographic & Econometric Observatory'],
     publicationDate: 'October 2025',
     readingTimeMinutes: 24,
-    doi: '10.1371/journal.pone.0051103',
-    classification: 'Genomic Anthropology & Historical Linguistics',
-    executiveSummary: 'This study presents high-coverage whole-genome sequencing (30x) combined with comparative philological deconstruction of Afro-Atlantic Creoles. We demonstrate that the genetic architecture of Cabo Verde and Gulf of Guinea creole populations preserves precise molecular snapshots of 15th-to-17th century Upper Guinea ethnolinguistic groups (Mandinka, Wolof, Papel, Balanta, and Temne) that predate subsequent continental demographic shifts.',
+    doi: '10.6084/m9.figshare.34065711',
+    classification: 'Literature Synthesis · Genomic Anthropology & Historical Linguistics',
+    executiveSummary: 'This literature synthesis integrates published whole-genome sequencing findings with comparative philological studies of Afro-Atlantic Creoles (Verdu et al., 2012; Beleza et al., 2013; Quint, 2000). Published evidence indicates that the genetic architecture of Cabo Verde and Gulf of Guinea creole populations preserves molecular signatures of 15th-to-17th century Upper Guinea ethnolinguistic groups (Mandinka, Wolof, Papel, Balanta, and Temne) alongside Romance-lexifier contact grammars.',
     sections: [
       {
         id: 'sec-intro',
         title: '1. The Atlantic Creole as a Molecular and Philological Archive',
-        content: 'Creole societies formed across the Atlantic littoral represent unique bio-historical repositories. Rather than functioning as uniform melting pots, early plantation archipelagos operated as linguistic and genomic bottlenecks where specific West African ethnolinguistic traits were reconstituted under coercive Portuguese and European plantation regimes.',
-        keyTakeaway: 'Afro-Atlantic Creoles preserve unmutated grammatical structures and genomic segments directly inherited from 15th-century Senegambian and Upper Guinea populations.'
+        content: 'Creole societies formed across the Atlantic littoral represent distinct bio-historical repositories. Rather than functioning as uniform melting pots, early plantation archipelagos operated as linguistic and genomic bottlenecks where specific West African ethnolinguistic traits were reconstituted under coercive European colonial regimes.',
+        keyTakeaway: 'Afro-Atlantic Creoles preserve grammatical structures and genomic segments traceable to 15th-century Senegambian and Upper Guinea populations.'
       },
       {
         id: 'sec-genomic-strata',
         title: '2. Identity-by-Descent (IBD) Deconvolution of West African Strata',
-        content: 'Analysis of shared Identity-by-Descent (IBD) segments confirms that over 74% of maternal lineages in Santiago and Fogo trace back to the Senegambian coast between the Senegal and Casamance rivers. Fine-grained admixture mapping indicates an initial founding period (1462–1520) characterized by male Iberian founders and predominantly West African female captives, establishing an enduring matrilineal continuity.',
-        pullQuote: 'The DNA of the Atlantic Creole is an unerasable historical ledger written in chromosomes rather than parchment.'
+        content: 'Published studies of shared Identity-by-Descent (IBD) segments and uniparental markers report that maternal lineages in Santiago and Fogo trace predominantly to the Senegambian coast between the Senegal and Casamance rivers (Verdu et al., 2012; Beleza et al., 2013). Admixture dating points to an initial founding period (1462–1520) marked by Iberian male founders and West African female captives, establishing enduring matrilineal continuity.',
+        pullQuote: 'Chromosomal admixture patterns preserve a demographic ledger complementing surviving written maritime records.'
       },
       {
         id: 'sec-linguistic-substrates',
         title: '3. Morphosyntactic Parallels with Mande and Atlantic Languages',
-        content: 'Grammatical analysis of Crioulo demonstrates that while the lexical inventory is overwhelmingly Romance-derived, phonological constraints, serial verb constructions, and aspectual marker topologies replicate Mandinka and Wolof syntax. This confirms that early African mothers systematically transferred West African cognitive grammar into the newborn contact language.'
+        content: 'Grammatical scholarship on Crioulo (Quint, 2000) shows that while the lexical inventory is predominantly Romance-derived, phonological constraints, serial verb constructions, and aspectual marker topologies parallel Mandinka and Wolof syntax, reflecting substrate transfer into the contact language.'
       },
       {
         id: 'sec-diaspora-implications',
         title: '4. Diasporic Trajectories to the Americas',
-        content: 'Cabo Verdean sailors and enslaved intermediaries subsequently transported this stabilized linguistic and demographic blueprint into New World embarkation points, including Cartagena de Indias, Curaçao (influencing Papiamento), and the Guianas (Sranan Tongo), establishing a trans-continental Creole continuum.'
+        content: 'Cabo Verdean sailors and enslaved intermediaries subsequently transported elements of this stabilized linguistic and demographic repertoire toward New World embarkation hubs, including Cartagena de Indias, Curaçao (contributing to Papiamento), and the Guianas.'
       }
     ],
     citations: [
+      {
+        id: 'cit-0',
+        authors: 'Verdu, P., Beleza, S., Evora, R., Godinho, N., & Duarte, C.',
+        year: 2012,
+        title: 'The Admixture Structure and Genetic Variation of the Archipelago of Cape Verde and Its Implications for Admixture Mapping Studies',
+        journalOrPublisher: 'PLOS ONE, 7(11), e51103',
+        doiOrUrl: 'https://doi.org/10.1371/journal.pone.0051103'
+      },
       {
         id: 'cit-1',
         authors: 'Beleza, S., et al.',
@@ -109,32 +117,40 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     category: 'genetics',
     categoryLabel: 'Genetics & Admixture',
     categoryColor: '#6366F1',
-    authors: ['Dr. Sandra Beleza', 'Prof. António Carracedo', 'Dr. Jorge Rocha'],
-    institutions: ['Institute of Molecular Pathology and Immunology (IPATIMUP)', 'Universidade do Porto'],
+    authors: ['Afriata Research Synthesis (ZéLuis F. Correia)'],
+    institutions: ['Afriata Cartographic & Econometric Observatory'],
     publicationDate: 'July 2024',
     readingTimeMinutes: 21,
-    doi: '10.1111/ahg.12038',
-    classification: 'Population Genomics & Social Demography',
-    executiveSummary: 'An exhaustive island-by-island genomic analysis of 1,200 Cape Verdean individuals across Santiago, Fogo, Santo Antão, São Vicente, and Brava. The findings illuminate how differential 17th-to-19th century plantation economies, drought-driven migrations, and strict seigneurial hierarchies shaped divergent genetic admixture profiles across the archipelago.',
+    doi: '10.6084/m9.figshare.34065711',
+    classification: 'Literature Synthesis · Population Genomics & Social Demography',
+    executiveSummary: 'A curated synthesis of published island-by-island genomic studies across Santiago, Fogo, Santo Antão, São Vicente, and Brava (Beleza et al., 2013; Carreira, 1983). Reviewed findings illustrate how differential 17th-to-19th century plantation economies, drought-driven migrations, and seigneurial land hierarchies shaped divergent genetic admixture profiles across the archipelago.',
     sections: [
       {
         id: 'sec-archipelago-divergence',
         title: '1. Island-by-Island Admixture Stratification',
-        content: 'Cape Verde exhibits pronounced inter-island heterogeneity. Santiago, the agricultural cradle colonized in the 1460s with large enslaved populations, displays an average of 76% African genomic ancestry. Conversely, northern Barlavento islands like Santo Antão and São Nicolau, settled later under pastoral regimes, exhibit up to 48% European genomic contribution.'
+        content: 'Published studies report pronounced inter-island heterogeneity across Cabo Verde. Santiago, colonized in the 1460s with large enslaved populations, exhibits high West African autosomal ancestry, whereas northern Barlavento islands such as Santo Antão and São Nicolau exhibit higher European autosomal proportions alongside later pastoral settlement patterns.'
       },
       {
         id: 'sec-sex-biased-transmission',
         title: '2. Extreme Sex-Biased Lineage Asymmetry',
-        content: 'Mitochondrial DNA (mtDNA) haplogroups are over 98.5% African (predominantly L1b, L2a, and L3b), whereas Y-chromosome lineages are over 62% Western European (R1b, I, E1b1b). This asymmetric ratio quantifies the pervasive institutionalized sexual exploitation of African women by European landholders throughout the transatlantic plantation era.',
-        keyTakeaway: 'The maternal genomic heritage of Cape Verde is virtually 100% West African, while paternal lineages reflect European colonial dominance.'
+        content: 'Beleza et al. (2013) report that mitochondrial DNA (mtDNA) haplogroups in Cabo Verde are overwhelmingly African (predominantly L1b, L2a, and L3b), whereas Y-chromosome lineages are predominantly European. This asymmetric ratio reflects coercive colonial social relations across the transatlantic plantation era.',
+        keyTakeaway: 'Published uniparental marker studies document predominantly African maternal mtDNA alongside predominantly European paternal Y-DNA lineages across Cabo Verde.'
       },
       {
         id: 'sec-social-strata',
-        title: '3. The "Morgado" System and Phenotypic Correlates',
-        content: 'The hereditary entailed estates (morgados) of Fogo and Santiago concentrated land and wealth among lighter-skinned Creole elites, creating a socio-genomic gradient that persisted until modern agrarian reforms dismantled feudal land tenancy in the 1970s.'
+        title: '3. The "Morgado" System and Historical Stratification',
+        content: 'Historical demography (Carreira, 1983) documents how hereditary entailed estates (morgados) on Fogo and Santiago concentrated land and wealth among Creole elites, shaping a socio-economic gradient that persisted until agrarian reforms in the 1970s.'
       }
     ],
     citations: [
+      {
+        id: 'cit-cv-0',
+        authors: 'Beleza, S., Campos, J., Andrade, J., & Alves, R.',
+        year: 2013,
+        title: 'The demographic history of Cape Verde Islands: genomic diversity and admixture dynamics',
+        journalOrPublisher: 'Annals of Human Genetics, 77(6), 468-479',
+        doiOrUrl: 'https://doi.org/10.1111/ahg.12038'
+      },
       {
         id: 'cit-cv-1',
         authors: 'Carreira, A.',
@@ -154,27 +170,35 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     category: 'genetics',
     categoryLabel: 'Genetics & Admixture',
     categoryColor: '#6366F1',
-    authors: ['Dr. Manuel Ramos', 'Prof. Chiamaka Nwosu', 'Dr. Tiago Faria'],
-    institutions: ['Lisbon Center for Global Health', 'University of Ibadan', 'Centro de Biologia Ambiental'],
+    authors: ['Afriata Research Synthesis (ZéLuis F. Correia)'],
+    institutions: ['Afriata Cartographic & Econometric Observatory'],
     publicationDate: 'January 2025',
     readingTimeMinutes: 28,
-    doi: '10.1126/science.aay5012',
-    classification: 'Comparative Archaeogenomics & Maritime History',
-    executiveSummary: 'This paper undertakes the first synchronized genomic and archival comparison between Cabo Verde (Upper Guinea nexus) and São Tomé and Príncipe (Gulf of Guinea / Lower Congo nexus). We demonstrate how distinct African catchment areas generated diametrically opposed Creole epidemiological resilience, disease selection, and cultural vectors.',
+    doi: '10.6084/m9.figshare.34065711',
+    classification: 'Literature Synthesis · Comparative Archaeogenomics & Maritime History',
+    executiveSummary: 'This comparative synthesis examines published genomic and archival literature on Cabo Verde (Upper Guinea nexus) and São Tomé and Príncipe (Gulf of Guinea / Lower Congo nexus), drawing on Micheletti et al. (2020) and Eltis & Richardson (2010). It contrasts how distinct African embarkation catchment areas shaped different epidemiological selection pressures and Creole cultural formations.',
     sections: [
       {
         id: 'sec-crucibles',
         title: '1. Two Archipelagic Laboratories in the Atlantic System',
-        content: 'Both Cabo Verde (uninhabited until 1462) and São Tomé (uninhabited until 1471) served as testing grounds for the plantation complex that was later exported to Brazil and the Caribbean. However, while Cabo Verde was tied exclusively to Senegambian and Upper Guinea populations, São Tomé drew from the Kingdom of Kongo, Ndongo, and the Bight of Benin.',
-        keyTakeaway: 'Cabo Verde and São Tomé represent two complementary, non-overlapping genomic gates to the Transatlantic Slave Trade.'
+        content: 'Both Cabo Verde (settled from 1462) and São Tomé (settled from 1471) served as early testing grounds for the Atlantic plantation and entrepôt complex later exported to Brazil and the Caribbean. Whereas Cabo Verde was closely tied to Senegambian and Upper Guinea trade networks, São Tomé drew captives predominantly from the Kingdom of Kongo, Ndongo, and the Bight of Benin (Eltis & Richardson, 2010).',
+        keyTakeaway: 'Cabo Verde and São Tomé functioned as distinct maritime corridors connected to Senegambian and West-Central African catchment zones.'
       },
       {
         id: 'sec-pathogen-selection',
         title: '2. Malaria Adaptations and Duffy Antigen Negativity',
-        content: 'Selective sweeps around the DARC (Duffy antigen receptor for chemokines) locus reveal near 100% fixation of the Fy*O allele in both archipelagos, conferring complete resistance to Plasmodium vivax malaria. This genetic adaptation proved decisive in permitting African populations to survive the lethal tropical disease environments that decimated European garrisons.'
+        content: 'Population-genetic literature documents high prevalence of the Fy*O allele at the DARC (Duffy antigen receptor for chemokines) locus across West and West-Central African-descended Atlantic populations, conferring resistance to Plasmodium vivax malaria and strongly influencing colonial epidemiological survival.'
       }
     ],
     citations: [
+      {
+        id: 'cit-cr-0',
+        authors: 'Micheletti, S. J., Bryc, K., Esselmann, S. G., & Freyman, W. A.',
+        year: 2020,
+        title: 'Genetic Consequences of the Transatlantic Slave Trade in the Americas',
+        journalOrPublisher: 'American Journal of Human Genetics, 107(2), 265-277',
+        doiOrUrl: 'https://doi.org/10.1016/j.ajhg.2020.06.012'
+      },
       {
         id: 'cit-cr-1',
         authors: 'Eltis, D., & Richardson, D.',
@@ -190,27 +214,27 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
   'report-latest-developments-genetic-legacy': {
     id: 'report-latest-developments-genetic-legacy',
     title: 'Latest Developments: Genetic Legacy of Transatlantic Slave Trade',
-    subtitle: 'Ancient DNA from Slave Ship Wrecks, Mitochondrial Clocks, and Diaspora Haplotypes',
+    subtitle: 'Ancient DNA from Burial Contexts, Mitochondrial Clocks, and Diaspora Haplotypes',
     category: 'genetics',
     categoryLabel: 'Genetics & Admixture',
     categoryColor: '#6366F1',
-    authors: ['Prof. H. Schroeder', 'Dr. Fatima Diallo', 'Dr. David Reich'],
-    institutions: ['Harvard Medical School', 'University of Copenhagen', 'UNESCO Slave Route Project'],
+    authors: ['Afriata Research Synthesis (ZéLuis F. Correia)'],
+    institutions: ['Afriata Cartographic & Econometric Observatory'],
     publicationDate: 'February 2026',
     readingTimeMinutes: 26,
-    doi: '10.1073/pnas.1421784112',
-    classification: 'Ancient Biomolecules & Diaspora Genomics',
-    executiveSummary: 'A state-of-the-art synthesis incorporating ancient DNA retrieved from maritime shipwrecks (including the São José-Paquete de Africa and the Clotilda) alongside high-density biobank samples from 50,000 African American and Afro-Caribbean individuals. The study resolves long-standing archival debates regarding the exact proportions of West Central African vs. Bight of Biafra embarkations.',
+    doi: '10.6084/m9.figshare.34065711',
+    classification: 'Literature Synthesis · Ancient Biomolecules & Diaspora Genomics',
+    executiveSummary: 'A synthesis of published ancient DNA studies (including Schroeder et al., 2015 on 17th-century enslaved individuals in Saint Martin) alongside biobank-scale diaspora analyses (Micheletti et al., 2020) and maritime wreck archaeology (such as the São José-Paquete de Africa and Clotilda). The literature compares genomic origin profiles against embarkation ledgers across West-Central Africa, Biafra, and Senegambia.',
     sections: [
       {
         id: 'sec-shipwreck-adna',
-        title: '1. Ancient DNA Recovered from Maritime Wrecks',
-        content: 'For centuries, historians debated whether ship manifest registers accurately captured captive ethnic origins. Shotgun sequencing of skeletal remains from maritime shipwrecks demonstrates that over 82% of tested individuals carry identical mitochondrial DNA haplogroups to contemporary rural populations in northern Angola and the Kwango river basin.'
+        title: '1. Ancient DNA & Bioarchaeological Contexts',
+        content: 'Whole-genome sequencing of 17th-century enslaved burials in the Caribbean (Schroeder et al., 2015) demonstrated close affinity to contemporary populations in Cameroon and Nigeria, illustrating how ancient biomolecules complement incomplete shipping registers alongside maritime wreck investigations.'
       },
       {
         id: 'sec-biobank-deconvolution',
-        title: '2. Continental Deconvolution Across 50,000 Diaspora Genomes',
-        content: 'Matching diaspora genomes with our 40-country continental reference panel confirms that enslaved individuals transported to North America disproportionately originated from the Bight of Biafra (Igbo, Ibibio) and Senegambia, whereas individuals transported to Brazil trace primarily to Angola (Mbundu, Bakongo) and Mozambique (Makua).'
+        title: '2. Continental Deconvolution Across Diaspora Studies',
+        content: 'Large-scale genotype comparisons (Micheletti et al., 2020) align broadly with documented embarkation corridors: higher Bight of Biafra and Senegambian ancestry in North America compared with prominent West-Central African (Angola/Congo) ancestry in Brazil and parts of the Caribbean.'
       }
     ],
     citations: [
@@ -221,6 +245,14 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
         title: 'Genome-wide ancestry of 17th-century enslaved Africans from the Caribbean',
         journalOrPublisher: 'Proceedings of the National Academy of Sciences, 112(12), 3669-3673',
         doiOrUrl: 'https://doi.org/10.1073/pnas.1421784112'
+      },
+      {
+        id: 'cit-ld-2',
+        authors: 'Micheletti, S. J., et al.',
+        year: 2020,
+        title: 'Genetic Consequences of the Transatlantic Slave Trade in the Americas',
+        journalOrPublisher: 'American Journal of Human Genetics, 107(2), 265-277',
+        doiOrUrl: 'https://doi.org/10.1016/j.ajhg.2020.06.012'
       }
     ],
     relatedEthnicNodes: ['bakongo', 'igbo', 'yoruba', 'makua']
@@ -233,28 +265,28 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     category: 'international-law',
     categoryLabel: 'International Law & Reparations',
     categoryColor: '#F59E0B',
-    authors: ['Prof. Sir Hilary Beckles', 'Dr. Aminata Touré', 'Judge Patrick Robinson'],
-    institutions: ['CARICOM Reparations Commission', 'International Court of Justice (Ad Hoc)', 'University of the West Indies'],
+    authors: ['Afriata Research Synthesis (ZéLuis F. Correia)'],
+    institutions: ['Afriata Cartographic & Econometric Observatory'],
     publicationDate: 'August 2025',
     readingTimeMinutes: 32,
-    doi: '10.1093/ejil/cha291',
-    classification: 'Public International Law & Reparatory Jurisprudence',
-    executiveSummary: 'This legal analysis deconstructs the defense of inter-temporal law routinely raised by former colonial metropoles. We establish that chattel slavery and the transatlantic slave trade constituted breaches of peremptory norms (jus cogens) even under the natural law jurisprudence of the 17th and 18th centuries, and that the enduring structural enrichment of European states qualifies as an actionable "continuing wrongful act" under customary international law.',
+    doi: '10.6084/m9.figshare.34065711',
+    classification: 'Literature Synthesis · Public International Law & Reparatory Jurisprudence',
+    executiveSummary: 'This legal literature synthesis examines arguments addressing the inter-temporal law defense in reparatory justice scholarship (Beckles, 2013; Robinson, 2023 Brattle Report). It outlines scholarly claims regarding natural law norms, the ILC Articles on State Responsibility (Article 14(2) on continuing wrongful acts), and the CARICOM 10-Point Plan for Reparatory Justice.',
     sections: [
       {
         id: 'sec-intertemporal-defense',
-        title: '1. Overcoming the Inter-Temporal Law Barrier',
-        content: 'Colonial powers have historically asserted that slavery cannot be judged retroactively because it was permitted under the municipal laws of the era. However, Grotius, Vattel, and contemporary international jurists recognized fundamental principles of humanity. Furthermore, the British Abolition Act of 1807 and subsequent bilateral treaties codified slavery as hostis humani generis (an enemy of all mankind).'
+        title: '1. Debates Around the Inter-Temporal Law Barrier',
+        content: 'European metropoles have traditionally invoked inter-temporal law, arguing that actions must be judged by the municipal law of their time. Legal historians and jurists (Beckles, 2013) counter by examining natural law traditions, pre-colonial West African legal prohibitions, and 19th-century bilateral abolition treaties framing the slave trade as hostis humani generis.'
       },
       {
         id: 'sec-continuing-injury',
         title: '2. The Doctrine of Continuing Injury in Modern Jurisprudence',
-        content: 'Under Article 14(2) of the ILC Articles on Responsibility of States for Internationally Wrongful Acts, an act having a continuing character breaches an obligation throughout the entire period the state of affairs persists. The catastrophic demographic, economic, and institutional underdevelopment inflicted on Africa and the Caribbean remains an active, unredressed harm.'
+        content: 'Under Article 14(2) of the ILC Articles on Responsibility of States for Internationally Wrongful Acts, an act of a continuing character extends across the period the condition persists. Contemporary legal scholarship debates how structural economic legacies and unredressed harms interact with modern state responsibility frameworks.'
       },
       {
         id: 'sec-caricom-ten-points',
-        title: '3. Legal Quantification of the CARICOM 10-Point Plan',
-        content: 'Reparations do not represent charitable aid; they represent restitution in integrum. We outline structured legal remedies, including formal sovereign apologies, institutional debt cancellation, technological transfer, and reparatory development funds backed by binding ICJ advisory opinions.'
+        title: '3. Structure of the CARICOM 10-Point Plan',
+        content: 'Proponents distinguish reparatory frameworks from discretionary aid, framing them around restitution, formal state apologies, debt relief, public health and educational investment, cultural heritage restitution, and targeted technology transfer.'
       }
     ],
     citations: [
@@ -277,23 +309,23 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     category: 'international-law',
     categoryLabel: 'International Law & Reparations',
     categoryColor: '#F59E0B',
-    authors: ['Dr. Jean-Baptiste Koffi', 'Prof. Sarah Cleveland', 'Dr. Kwadwo Appiagyei-Atua'],
-    institutions: ['African Union Commission on International Law', 'Columbia Law School', 'University of Ghana'],
+    authors: ['Afriata Research Synthesis (ZéLuis F. Correia)'],
+    institutions: ['Afriata Cartographic & Econometric Observatory'],
     publicationDate: 'November 2025',
     readingTimeMinutes: 29,
-    doi: '10.1017/CBO9780511676451',
-    classification: 'International Economic Law & Sovereign Liability',
-    executiveSummary: 'An empirical tracing of capital flows from transatlantic slave trade voyages into the balance sheets of sovereign central banks, municipal corporations, and chartered financial institutions. The report details the 1833 Slavery Abolition Act compensation fund, demonstrating that British taxpayers compensated slave owners £20 million (representing 40% of the national budget), while providing zero restitution to the liberated individuals.',
+    doi: '10.6084/m9.figshare.34065711',
+    classification: 'Literature Synthesis · International Economic Law & Sovereign Liability',
+    executiveSummary: 'A synthesis of historical economic research (Draper, 2010; Legacies of British Slavery archive) tracing capital flows from Atlantic slavery into European financial institutions and sovereign debt instruments. It examines the £20 million compensation fund authorized under the British Slavery Abolition Act of 1833 and its long-dated government bond repayment.',
     sections: [
       {
         id: 'sec-bank-balance-sheets',
-        title: '1. Archival Tracing into Central Banking Infrastructure',
-        content: 'The Bank of England, Barclays, Lloyds, and Royal Bank of Scotland trace foundational capital reserves to plantation mortgages and slave voyage insurance consortia. This institutional entanglement converts private tort liability into direct sovereign state responsibility.'
+        title: '1. Archival Tracing into Banking Infrastructure',
+        content: 'Archival audits—such as UCL’s Legacies of British Slavery database and published financial histories—document links between merchant banks, maritime insurance syndicates, and plantation mortgages, informing contemporary institutional disclosures and restitution debates.'
       },
       {
         id: 'sec-1833-indemnity',
-        title: '2. The Moral and Legal Perversity of the 1833 Indemnity',
-        content: 'When Britain abolished slavery in 1833, it raised £20 million through government bonds to indemnify 46,000 slave owners for the loss of their "human property." The loan was so colossal that British citizens continued paying down the national debt until 2015, establishing unassailable legal proof of state-sponsored unjust enrichment.'
+        title: '2. Structure of the 1833 Compensation Loan',
+        content: 'When Britain enacted emancipation in 1833, it borrowed £20 million (about 40% of annual public expenditure at the time) to compensate roughly 46,000 slave-owning claimants, while emancipated individuals received no monetary compensation and served multi-year "apprenticeship" terms (Draper, 2010). The associated gilt obligations were only retired in 2015.'
       }
     ],
     citations: [
@@ -316,23 +348,23 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     category: 'international-law',
     categoryLabel: 'International Law & Reparations',
     categoryColor: '#F59E0B',
-    authors: ['Dr. Olufemi O. Taiwo', 'Prof. Mia Mottley (Advisor)', 'Dr. Ndongo Samba Sylla'],
-    institutions: ['Georgetown University', 'Bridgetown Initiative Secretariat', 'Rosa Luxemburg Foundation'],
+    authors: ['Afriata Research Synthesis (ZéLuis F. Correia)'],
+    institutions: ['Afriata Cartographic & Econometric Observatory'],
     publicationDate: 'December 2025',
     readingTimeMinutes: 35,
-    doi: '10.1093/oso/9780197508893.001.0001',
-    classification: 'Ecological Economics & Global Climate Justice',
-    executiveSummary: 'This paper bridges historical transatlantic slavery reparations with contemporary climate loss and damage. We demonstrate that the deforested monoculture plantations established across Africa and the Caribbean during the slave trade initiated modern biosphere degradation, while transferring capital to the North that funded fossil-fueled industrialization.',
+    doi: '10.6084/m9.figshare.34065711',
+    classification: 'Literature Synthesis · Ecological Economics & Global Climate Justice',
+    executiveSummary: 'A literature synthesis linking historical reparations theory with climate vulnerability and sovereign debt reform debates (Táíwò, 2022). It summarizes scholarship connecting plantation-era land-use change and unequal capital accumulation to contemporary climate adaptation financing gaps across Africa and the Caribbean.',
     sections: [
       {
         id: 'sec-ecological-nexus',
-        title: '1. Slavery as the Engine of the Anthropocene',
-        content: 'The global climate crisis did not begin with the steam engine in 1850; it began with the 16th-century Atlantic ecological conquest. Clearing millions of hectares of tropical rainforest for sugarcane and tobacco monocultures altered carbon sinks and initiated structural global environmental apartheid.'
+        title: '1. Plantation Ecology and the Anthropocene Debate',
+        content: 'Environmental historians and philosophers (Táíwò, 2022) trace how early modern Atlantic sugar and tobacco monocultures restructured tropical ecosystems while channeling resource surpluses into industrializing Northern economies.'
       },
       {
         id: 'sec-climate-debt',
-        title: '2. The Interlocking Trap of Sovereign Debt and Climate Shocks',
-        content: 'Former colonies in the Caribbean and West Africa currently spend up to 40% of national revenue servicing external foreign-denominated debt, leaving zero fiscal headroom to construct seawalls, transition energy grids, or withstand intensifying Atlantic hurricanes fueled by Northern carbon emissions.'
+        title: '2. Sovereign Debt Service and Climate Adaptation Constraints',
+        content: 'Policy proposals associated with the Bridgetown Initiative highlight how high external debt service costs across climate-vulnerable African and Caribbean states constrain domestic fiscal space for resilient energy grids, coastal defense, and post-disaster recovery.'
       }
     ],
     citations: [
@@ -355,28 +387,28 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     category: 'development-sociology',
     categoryLabel: 'Development & Sociology',
     categoryColor: '#10B981',
-    authors: ['Prof. Nathan Nunn', 'Dr. Leonard Wantchekon', 'Prof. Daron Acemoglu'],
-    institutions: ['Harvard University', 'Princeton University / African School of Economics', 'MIT Department of Economics'],
+    authors: ['Afriata Research Synthesis (ZéLuis F. Correia)'],
+    institutions: ['Afriata Cartographic & Econometric Observatory'],
     publicationDate: 'September 2025',
     readingTimeMinutes: 38,
-    doi: '10.1257/aer.101.7.3221',
-    classification: 'Cliometrics & Historical Political Economy',
-    executiveSummary: 'A curated econometric treatise combining slave voyages shipping manifests, local ethnographic surveys, and modern satellite night-light GDP data. We confirm that African ethnic groups that suffered the highest per-capita slave trade extraction exhibit significantly lower levels of interpersonal trust, weaker local governance, and depressed income per capita today.',
+    doi: '10.6084/m9.figshare.34065711',
+    classification: 'Literature Synthesis · Cliometrics & Historical Political Economy',
+    executiveSummary: 'A curated synthesis of empirical cliometric literature—centrally Nunn (2008) and Nunn & Wantchekon (2011)—combining slave voyage records, ethnographic baselines, and Afrobarometer survey data. Reviewed econometric studies find that regions experiencing higher per-capita slave exports exhibit persistently lower measured interpersonal trust and weaker economic performance today.',
     sections: [
       {
         id: 'sec-econometric-proof',
         title: '1. The Nunn-Wantchekon Identification Strategy',
-        content: 'By utilizing historical shipping ledgers and distance to the coast as instrumental variables, econometric modeling isolates the specific causal effect of the slave trade on African economic growth. Regions subjected to intense slave raids experienced a total collapse in local judicial and communal trust.'
+        content: 'Using historical shipping records and distance from interior homelands to coastal ports as instruments, Nunn (2008) and Nunn & Wantchekon (2011) isolate long-run correlations between historical captive extraction intensity and contemporary institutional and economic outcomes.'
       },
       {
         id: 'sec-institutional-decay',
-        title: '2. From Village Defense to Political Disintegration',
-        content: 'To defend against slave raiders, African communities were forced to militarize or disintegrate. Judicial mechanisms were perverted: minor infractions, accusations of witchcraft, or civil debt were routinely penalized with enslavement and sale to European factories, destroying pre-colonial civic contracts.'
+        title: '2. Communal Insecurity and Judicial Distortion',
+        content: 'Historical evidence indicates that slave-raiding incentives distorted local judicial and dispute-resolution norms, as raids, kidnapping, and judicial penalties fed captive supply chains, fragmenting pre-colonial civic accountability.'
       },
       {
         id: 'sec-trust-erosion',
-        title: '3. The Persistence of Mistrust in Contemporary Africa',
-        content: 'Survey data from over 20,000 respondents across 29 African countries reveals that individuals whose ancestors experienced intense slave trade exposure are 34% less likely to trust neighbors, relatives, and local government officials today, directly impeding credit markets and collaborative enterprise.'
+        title: '3. Persistence of Mistrust in Survey Data',
+        content: 'Nunn & Wantchekon (2011) analyze Afrobarometer survey responses across Sub-Saharan Africa, finding statistically robust negative associations between ancestral slave-trade exposure and contemporary trust in neighbors, relatives, and local institutions.'
       }
     ],
     citations: [
@@ -387,6 +419,14 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
         title: 'The Slave Trade and the Origins of Mistrust in Africa',
         journalOrPublisher: 'American Economic Review, 101(7), 3221-3252',
         doiOrUrl: 'https://doi.org/10.1257/aer.101.7.3221'
+      },
+      {
+        id: 'cit-nn-2',
+        authors: 'Nunn, N.',
+        year: 2008,
+        title: 'The Long-Term Effects of Africa’s Slave Trades',
+        journalOrPublisher: 'Quarterly Journal of Economics, 123(1), 139-176',
+        doiOrUrl: 'https://doi.org/10.1162/qjec.2008.123.1.139'
       }
     ],
     relatedEthnicNodes: ['igbo', 'yoruba', 'edo-bini', 'akan-ashanti', 'bamileke']
@@ -399,23 +439,23 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     category: 'development-sociology',
     categoryLabel: 'Development & Sociology',
     categoryColor: '#10B981',
-    authors: ['Dr. Kenneth K. Rao', 'Prof. Celestin Monga', 'Dr. Vera Songwe'],
-    institutions: ['African Development Bank (AfDB)', 'Harvard Kennedy School', 'UN Economic Commission for Africa'],
+    authors: ['Afriata Research Synthesis (ZéLuis F. Correia)'],
+    institutions: ['Afriata Cartographic & Econometric Observatory'],
     publicationDate: 'May 2025',
     readingTimeMinutes: 30,
-    doi: '10.1093/oxfordhb/9780198793847.001.0001',
-    classification: 'Development Macroeconomics & Industrial Policy',
-    executiveSummary: 'The Resource Allocation Optimization (RAO) model mathematically demonstrates how post-colonial African economies remain trapped in raw commodity export enclaves established during 19th-century colonial extraction. The paper proposes dynamic capital redeployment strategies to capture mineral and agricultural value chains domestically.',
+    doi: '10.6084/m9.figshare.34065711',
+    classification: 'Literature Synthesis · Development Macroeconomics & Industrial Policy',
+    executiveSummary: 'A synthesis of structural transformation literature (Monga & Yifu Lin, 2019; UNECA/AfDB industrial reports) paired with conceptual resource allocation optimization (RAO) framing. It reviews why post-colonial African economies remain concentrated in primary commodity exports and outlines regional value-addition strategies under AfCFTA.',
     sections: [
       {
         id: 'sec-rao-framework',
-        title: '1. Mathematical Architecture of the RAO Model',
-        content: 'The RAO framework measures capital productivity across primary agricultural, mineral extraction, and secondary manufacturing sectors. It proves that sub-Saharan Africa loses over $190 billion annually by exporting unprocessed cocoa, crude oil, and cobalt while importing finished petroleum, chocolate, and batteries.'
+        title: '1. Conceptual Architecture of Resource Allocation Optimization',
+        content: 'Drawing on structural transformation economics (Monga & Yifu Lin, 2019), this framework compares factor returns across primary agriculture, extractive mining, and domestic manufacturing, highlighting the value-addition gap created when unprocessed cocoa, crude petroleum, and battery minerals are exported prior to refining.'
       },
       {
         id: 'sec-afcfta-acceleration',
-        title: '2. The AfCFTA as an Industrial Sovereign Antidote',
-        content: 'Accelerating the African Continental Free Trade Area (AfCFTA) creates regional economies of scale capable of absorbing manufactured goods, eliminating the historical colonial pattern of bilateral trade directed solely toward former European metropoles.'
+        title: '2. AfCFTA Scale and Continental Value Chains',
+        content: 'Integrating regional markets under the African Continental Free Trade Area (AfCFTA) expands contiguous demand scale for intermediate and manufactured goods, countering colonial-era bilateral infrastructure oriented exclusively toward coastal export ports.'
       }
     ],
     citations: [
@@ -438,23 +478,23 @@ export const RESEARCH_REPORTS: Record<string, ResearchReport> = {
     category: 'development-sociology',
     categoryLabel: 'Development & Sociology',
     categoryColor: '#10B981',
-    authors: ['Prof. Walter Rodney (Archival)', 'Dr. Paul Tiyambe Zeleza', 'Prof. Mahmood Mamdani'],
-    institutions: ['Institute of African Studies Legon', 'Case Western Reserve University', 'Makerere Institute of Social Research'],
+    authors: ['Afriata Research Synthesis (ZéLuis F. Correia)'],
+    institutions: ['Afriata Cartographic & Econometric Observatory'],
     publicationDate: 'January 2026',
     readingTimeMinutes: 34,
-    doi: '10.1177/0002039725139088',
-    classification: 'Historical Sociology & Critical Race Theory',
-    executiveSummary: 'This paper traces the ideological construction of race from early Portuguese papal bulls (Dum Diversas, Romanus Pontifex) through the Enlightenment and into modern global financial architecture. It exposes how racial hierarchy was systematically engineered to legitimize the economic expropriation of African labor and natural resources.',
+    doi: '10.6084/m9.figshare.34065711',
+    classification: 'Literature Synthesis · Historical Sociology & Political Economy',
+    executiveSummary: 'A historical-sociological synthesis engaging foundational works by Eric Williams (1944) and Walter Rodney (1972). It traces how early modern legal, theological, and pseudo-scientific racial hierarchies evolved alongside Atlantic plantation labor systems to justify unequal global division of labor.',
     sections: [
       {
         id: 'sec-ideological-invention',
-        title: '1. The Invention of "Race" as an Economic Technology',
-        content: 'Before the transatlantic slave trade, human difference was categorized by religion, language, and lineage rather than immutable biological race. When European powers resolved to exploit the Americas with African labor, they fabricated scientific and theological dogmas (the Curse of Ham, polygenism) to reconcile brutal human trafficking with Christian morality.'
+        title: '1. Racial Stratification as an Economic Ideology',
+        content: 'Following Eric Williams (1944) and subsequent historical sociology, modern biological racial categories consolidated alongside plantation slavery—shifting earlier religious and civic distinctions into rigid hereditary hierarchies engineered to normalize coerced African labor.'
       },
       {
         id: 'sec-how-europe-underdeveloped',
         title: '2. Revisiting Walter Rodney’s Foundational Thesis',
-        content: 'As Walter Rodney established in 1972, Africa did not underdevelop in isolation; Africa was actively underdeveloped by the extraction of over 12 million prime working-age human beings, the collapse of indigenous textile and smelting industries, and unequal trade treaties imposed by European gunboats.'
+        content: 'Walter Rodney (1972) argued that African underdevelopment must be analyzed relationally: external extraction of working-age demographics, disruption of domestic craft and metallurgy sectors, and asymmetric colonial trade terms reinforced global divergence.'
       }
     ],
     citations: [

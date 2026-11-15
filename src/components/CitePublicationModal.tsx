@@ -3,6 +3,7 @@ import { ResearchReport } from '../data/reportsData';
 import { AfriataReport } from '../types/afriataReport';
 import { Copy, Check, Download, BookOpen, X, Code2, Share2 } from 'lucide-react';
 import { AtlasDialog } from './common/AtlasDialog';
+import { getConcordanceEntry } from '../data/reportDoiConcordance';
 
 interface CitePublicationModalProps {
   report: ResearchReport | AfriataReport;
@@ -40,6 +41,8 @@ export const CitePublicationModal: React.FC<CitePublicationModalProps> = ({
   const doiUrl = doi.startsWith('http') ? doi : `https://doi.org/${doi}`;
   const title = report.title;
   const subtitle = report.subtitle ? `: ${report.subtitle}` : '';
+  const concordance = getConcordanceEntry(report.id);
+  const isWorkingPaper = Boolean((report as Partial<ResearchReport>).isWorkingPaper);
 
   const generateCitationText = (targetStyle = style) => {
     switch (targetStyle) {
@@ -144,11 +147,16 @@ ER  - `;
           <div className="space-y-1 min-w-0">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
               <BookOpen className="w-4 h-4 shrink-0" />
-              <span>Cite Publication</span>
+              <span>{isWorkingPaper ? 'Cite Working Paper Note' : 'Cite Literature Synthesis'}</span>
             </div>
             <h3 className="text-base sm:text-lg md:text-xl font-bold text-zinc-900 dark:text-zinc-100 font-serif line-clamp-2">
               {title}
             </h3>
+            {concordance && !isWorkingPaper && (
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-snug">
+                For primary empirical claims, cite {concordance.authors?.slice(0, 2).join(' & ')}{concordance.year ? ` (${concordance.year})` : ''} · {concordance.doi ? `DOI: ${concordance.doi}` : concordance.journal}.
+              </p>
+            )}
           </div>
           <button
             type="button"

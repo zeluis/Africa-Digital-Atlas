@@ -77,7 +77,7 @@ export const UnifiedInspectorDrawer: React.FC<UnifiedInspectorDrawerProps> = ({
         animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
         exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.98 }}
         transition={reducedMotion ? { duration: 0.1 } : { duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute top-3 right-3 left-3 md:left-auto md:w-[460px] max-h-[calc(88dvh-1.5rem)] flex flex-col z-50 rounded-2xl bg-[#faf8f5]/98 dark:bg-stone-900/98 text-stone-900 dark:text-stone-100 border border-[#dcd3c1] dark:border-stone-800 shadow-2xl backdrop-blur-xl overflow-hidden font-sans select-none pointer-events-auto"
+        className="absolute top-3 right-3 left-3 md:left-auto md:w-[460px] max-h-[calc(88dvh-1.5rem)] flex flex-col z-50 rounded-2xl bg-[#faf8f5]/98 dark:bg-stone-900/98 text-stone-900 dark:text-stone-100 border border-[#dcd3c1] dark:border-stone-800 shadow-2xl backdrop-blur-md overflow-hidden font-sans select-none pointer-events-auto"
         role="region"
         aria-label={`Tactical Inspector for ${entity.name}`}
       >

@@ -268,7 +268,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
               </div>
               <div className="flex items-center gap-2">
                 <Award className="w-3.5 h-3.5 text-[#3F6955] dark:text-[#76A890]" />
-                <span>Peer-Reviewed Synthesis (AJHG, Nature, Antiquity)</span>
+                <span>Curated Literature Synthesis (AJHG, Nature, Antiquity)</span>
               </div>
             </div>
             <div className="text-[11px]">

@@ -99,10 +99,16 @@ export const getAssetCandidateUrls = (path: string | undefined | null): string[]
       if (!candidates.includes(relByRegId)) candidates.push(relByRegId);
       if (!candidates.includes(rootByRegId)) candidates.push(rootByRegId);
     }
-    // Also extract raw filename (e.g., 1-4.jpg)
+    // Extract raw filename (e.g., 1-4.jpg) and resolve to canonical SI-OB-{id}.jpg if numeric
     const urlParts = primary.split('?')[0].split('/');
     const filename = urlParts[urlParts.length - 1];
     if (filename && filename.endsWith('.jpg')) {
+      const numMatch = filename.match(/^(\d+)-\d+\.jpg$/i);
+      if (numMatch && !regMatch) {
+        const canonicalName = `SI-OB-${numMatch[1]}.jpg`;
+        const localCanonical = resolveAssetPath(`/assets/archives/${canonicalName}`);
+        if (!candidates.includes(localCanonical)) candidates.push(localCanonical);
+      }
       const localByName = resolveAssetPath(`/assets/archives/${filename}`);
       const relByName = `./assets/archives/${filename}`;
       const rootByName = `/assets/archives/${filename}`;

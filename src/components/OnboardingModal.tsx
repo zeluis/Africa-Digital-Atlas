@@ -218,10 +218,10 @@ const TOPIC_CTAS: TopicCtaDef[] = [
   {
     id: 'research-directory',
     title: 'Reports',
-    subtitle: 'Peer-Reviewed Treatises & Reparatory Jurisprudence',
+    subtitle: 'Curated Syntheses & Reparatory Jurisprudence',
     icon: BookOpen,
     tag: 'Academic',
-    microMetrics: '42 Treatises • AU Agenda 2063',
+    microMetrics: 'Research Syntheses • AU Agenda 2063',
     cardBg: 'bg-white hover:bg-indigo-50/40 shadow-xs',
     cardBorder: 'border-indigo-200',
     cardHoverBorder: 'hover:border-indigo-400',
@@ -486,7 +486,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               strokeColor={activeScreen.secondaryTone}
               strokeWidth={1}
               singleColor={activeScreen.primaryTone}
-              className="filter drop-shadow-[0_0_35px_rgba(0,0,0,0.6)] pointer-events-none opacity-80"
+              className="filter drop-shadow-xl pointer-events-none opacity-80"
             />
           </m.div>
         </AnimatePresence>
@@ -614,7 +614,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                 transition={{ duration: 0.32, ease: [0.2, 0, 0, 1] }}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
-                className={`rounded-3xl border ${activeScreen.cardBorder} ${activeScreen.cardBg} shadow-[0_12px_40px_rgba(40,25,10,0.06)] p-4 sm:p-6 md:p-8 relative overflow-hidden flex flex-col justify-between gap-4 sm:gap-5 touch-pan-y backdrop-blur-md`}
+                className={`rounded-3xl border ${activeScreen.cardBorder} ${activeScreen.cardBg} shadow-lg p-4 sm:p-6 md:p-8 relative overflow-hidden flex flex-col justify-between gap-4 sm:gap-5 touch-pan-y backdrop-blur-md`}
               >
                 {/* Stage Header, Badge & Narrative */}
                 <div className="relative z-10">

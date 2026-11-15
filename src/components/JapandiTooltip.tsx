@@ -77,7 +77,7 @@ export const JapandiTooltip: React.FC<JapandiTooltipProps> = ({
           }}
         >
           <div
-            className="rounded-2xl p-3 text-xs bg-white/90 dark:bg-zinc-950/90 backdrop-blur-[14px] border border-zinc-200/80 dark:border-zinc-800/80 shadow-2xl ring-1 ring-black/5 dark:ring-white/10 text-zinc-800 dark:text-zinc-200"
+            className="rounded-2xl p-3 text-xs bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/80 shadow-2xl ring-1 ring-black/5 dark:ring-white/10 text-zinc-800 dark:text-zinc-200"
             style={{
               borderTopColor: regionalAccent,
               borderTopWidth: '2.5px'

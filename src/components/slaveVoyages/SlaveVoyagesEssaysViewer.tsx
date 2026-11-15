@@ -50,7 +50,7 @@ export const SlaveVoyagesEssaysViewer: React.FC<SlaveVoyagesEssaysViewerProps> =
               <BookOpen className="w-3.5 h-3.5 text-amber-700" />
               <span>Consortium Monograph Library · Canonical Essays</span>
               <span className="text-stone-300 dark:text-stone-700">·</span>
-              <span className="text-amber-800 dark:text-amber-400 font-mono">Peer-Reviewed Historiography</span>
+              <span className="text-amber-800 dark:text-amber-400 font-mono">Curated Consortium Historiography</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 dark:text-stone-100 tracking-tight mt-1.5">
               Introduction Essays & Historical Context

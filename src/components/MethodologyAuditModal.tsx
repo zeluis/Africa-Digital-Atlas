@@ -36,7 +36,7 @@ interface MethodologyAuditModalProps {
 type MethodologyTab = 'provenance' | 'flags' | 'voyages_ethnic' | 'hashes' | 'limitations';
 
 interface HashVerificationState {
-  status: 'idle' | 'verifying' | 'matched' | 'mismatch' | 'error';
+  status: 'idle' | 'verifying' | 'matched' | 'mismatch' | 'unavailable' | 'error';
   computedHash?: string;
   errorMessage?: string;
 }
@@ -78,13 +78,24 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
     }));
 
     try {
-      const computed = await computeDatasetSha256InBrowser(hashEntry.fileScope);
-      const isMatch = computed.toLowerCase() === hashEntry.sha256.toLowerCase();
+      const result = await computeDatasetSha256InBrowser(hashEntry.fileScope);
+      if (result.status === 'static-unavailable') {
+        setVerificationStates(prev => ({
+          ...prev,
+          [key]: {
+            status: 'unavailable',
+            errorMessage: result.reason
+          }
+        }));
+        return;
+      }
+
+      const isMatch = result.sha256.toLowerCase() === hashEntry.sha256.toLowerCase();
       setVerificationStates(prev => ({
         ...prev,
         [key]: {
           status: isMatch ? 'matched' : 'mismatch',
-          computedHash: computed
+          computedHash: result.sha256
         }
       }));
     } catch (err) {
@@ -421,7 +432,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                       5. Dataset Integrity
                     </h3>
                     <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed max-w-2xl">
-                      Each foundational dataset has a published checksum so you can confirm your copy matches the release. Each SHA-256 checksum is computed from the file at build time. &ldquo;Verify&rdquo; re-computes the hash in your browser using the Web Crypto API and compares it with the published value. A mismatch means the file differs from the release.
+                      Each foundational dataset has a published checksum so you can confirm your copy matches the release. Static files served over HTTP (such as <code className="font-mono text-[11px]">public/africa-final.svg</code>) are re-hashed directly in your browser via Web Crypto; compiled <code className="font-mono text-[11px]">.ts</code>/<code className="font-mono text-[11px]">.json</code> source modules verify over <code className="font-mono text-[11px]">/api/research/dataset-raw</code> on the Node server or locally via <code className="font-mono text-[11px]">npm run research:integrity</code>.
                     </p>
                   </div>
 
@@ -431,7 +442,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-mono font-bold transition-colors shrink-0 cursor-pointer"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${isVerifyingAll ? 'animate-spin' : ''}`} />
-                    <span>{isVerifyingAll ? 'Re-computing All...' : 'Verify All 8 Files'}</span>
+                    <span>{isVerifyingAll ? 'Re-computing All...' : 'Verify Available Files'}</span>
                   </button>
                 </div>
 
@@ -440,6 +451,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                     const state = verificationStates[hash.fileScope] || { status: 'idle' };
                     const isVerifying = state.status === 'verifying';
                     const isMatched = state.status === 'matched';
+                    const isUnavailable = state.status === 'unavailable';
                     const isMismatch = state.status === 'mismatch' || state.status === 'error';
 
                     return (
@@ -464,6 +476,8 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                               className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-mono font-semibold transition-colors cursor-pointer ${
                                 isMatched
                                   ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                                  : isUnavailable
+                                  ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300'
                                   : isMismatch
                                   ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300'
                                   : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20'
@@ -473,8 +487,8 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                                 <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                               ) : isMatched ? (
                                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                              ) : isMismatch ? (
-                                <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
+                              ) : isUnavailable || isMismatch ? (
+                                <AlertTriangle className={`w-3.5 h-3.5 ${isUnavailable ? 'text-amber-500' : 'text-rose-500'}`} />
                               ) : (
                                 <Fingerprint className="w-3.5 h-3.5" />
                               )}
@@ -483,6 +497,8 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                                   ? 'Computing SHA-256...'
                                   : isMatched
                                   ? 'Checksum Matched'
+                                  : isUnavailable
+                                  ? 'Static Host · Verify via CLI'
                                   : isMismatch
                                   ? 'Mismatch / Error'
                                   : 'Verify'}
@@ -509,8 +525,8 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                             </div>
                           )}
                           {state.errorMessage && (
-                            <div className="text-rose-600 dark:text-rose-400">
-                              Error: {state.errorMessage}
+                            <div className={isUnavailable ? 'text-amber-700 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'}>
+                              {isUnavailable ? `Notice: ${state.errorMessage}` : `Error: ${state.errorMessage}`}
                             </div>
                           )}
                         </div>

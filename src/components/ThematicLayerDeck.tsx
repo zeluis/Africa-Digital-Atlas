@@ -179,7 +179,7 @@ export const ThematicLayerDeck: React.FC<ThematicLayerDeckProps> = ({
 
       {/* Expanded Interactive Layer Selector Panel (Editorial Paper Aesthetic) */}
       {isExpanded && (
-        <div className="absolute right-0 top-12 z-50 w-80 sm:w-96 p-4 rounded-2xl bg-white/98 dark:bg-zinc-950/98 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200 text-zinc-900 dark:text-zinc-100">
+        <div className="absolute right-0 top-12 z-50 w-80 sm:w-96 p-4 rounded-2xl bg-white/98 dark:bg-zinc-950/98 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-200 text-zinc-900 dark:text-zinc-100">
           <div className="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-800">
             <div className="flex items-center gap-2">
               <Layers className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />

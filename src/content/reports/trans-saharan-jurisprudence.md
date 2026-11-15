@@ -5,30 +5,28 @@ title: "Trans-Saharan Jurisprudence & Treaties of Timbuktu"
 
 subtitle: "Historical analysis of pre-colonial commercial covenants, asylum charters, and Islamic contract law"
 
-doi: "10.1093/ejil/chab044"
+doi: "10.6084/m9.figshare.34065711"
 
 date: "2026-02-18"
 version: "1.0"
 
 author:
-  name: "Prof. Ousmane Diagne and Dr. Fatima Al-Mansoor"
-  type: "Research Faculty"
-  role: "Lead Scholars"
+  name: "Afriata Research Synthesis (ZéLuis F. Correia)"
+  type: "Literature Synthesis"
+  role: "Observatory Synthesis"
   platform: "Afriata Research Platform"
 
 authors:
-  - "Prof. Ousmane Diagne"
-  - "Dr. Fatima Al-Mansoor"
+  - "Afriata Research Synthesis (ZéLuis F. Correia)"
 
 institutions:
-  - "Ahmed Baba Institute of Higher Islamic Studies, Timbuktu"
-  - "Sankoré Academic Center"
+  - "Afriata Cartographic & Econometric Observatory"
 
 publication:
-  series: "Afriata Monograph & Thematic Research Series"
-  seriesNumber: "Monograph No. 05"
+  series: "Afriata Literature Synthesis Series"
+  seriesNumber: "Synthesis No. 05"
   type: "research_monograph"
-  status: "Peer-Reviewed Synthesis"
+  status: "Curated Literature Synthesis"
   language: "en"
   citationStyle: "Chicago Author-Date"
   category: "Historical Jurisprudence & Commercial Treaties"
@@ -39,7 +37,7 @@ research:
     - "Postcolonial Jurisprudence"
     - "Legal History"
     - "Sahelian Studies"
-  methodology: "Manuscript philology, juridical concordance, and institutional contract analysis"
+  methodology: "Synthesis of published manuscript philology, juridical concordance, and institutional contract scholarship"
 
 section: "reports"
 pillar: "law"
@@ -66,24 +64,24 @@ featured: true
 ---
 
 # Executive Summary
-Centuries prior to the Westphalian formulation of sovereign borders and treaty mechanisms, the trans-Saharan commercial corridors operated under highly sophisticated juridical architectures. Drawing on manuscripts preserved in the Ahmed Baba Institute in Timbuktu and family libraries across Chinguetti and Gao, this monograph analyzes the codified legal conventions that governed trade caravans, safe-passage guarantees (*aman*), commercial arbitration, and the legal status of captive laborers.
+Centuries prior to the Westphalian formulation of sovereign borders and treaty mechanisms, trans-Saharan commercial corridors operated under structured juridical architectures. Synthesizing historical scholarship on manuscripts preserved in the Ahmed Baba Institute in Timbuktu and family libraries across Chinguetti and Gao (Hunwick & Boye, 2008; Hall, 2011), this overview examines the legal conventions governing trade caravans, safe-passage guarantees (*aman*), commercial arbitration, and the legal status of captives.
 
 ## 1. The Legal Architecture of Caravan Covenants (*Aman*)
-Trans-Saharan commerce required binding guarantees of mutual protection between urban commercial nodes and nomadic confederacies controlling caravan routes. The issuance of *aman* (safe-passage charters) represented a binding contractual guarantee recognized across municipal, judicial (*qadi*), and sovereign jurisdictions from Fez and Cairo to Timbuktu and Kano.
+Trans-Saharan commerce required mutual protection agreements between urban commercial nodes and nomadic confederacies controlling caravan routes. The issuance of *aman* (safe-passage charters) functioned as a recognized contractual guarantee across municipal, judicial (*qadi*), and sovereign jurisdictions from Fez and Cairo to Timbuktu and Kano.
 
-**Key Takeaway:** Pre-colonial Sahelian jurisprudence established early frameworks for extraterritoriality, contract enforcement, and commercial arbitration across sovereign borders.
+**Key Takeaway:** Pre-colonial Sahelian jurisprudence established documented frameworks for extraterritoriality, contract enforcement, and commercial arbitration across sovereign jurisdictions.
 
-> "The legal manuscripts of Timbuktu illustrate a vibrant multilateral order governed by structured contractual obligations and institutionalized commercial arbitration."
+> "The legal manuscripts of Timbuktu document a multilateral commercial order governed by contractual obligations and institutional arbitration."
 
 ## 2. Invalidation of Unlawful Captivity in Timbuktu Responsa
-A critical pillar of Sahelian Islamic jurisprudence was the legal treatise literature prohibiting the enslavement of free Muslim populations and established tributaries. Renowned jurist Ahmad Baba al-Timbukti's seminal 1615 treatise *Mi'raj al-Su'ud* served as a foundational legal authority restricting sovereign overreach and demanding the immediate legal emancipation of persons enslaved in violation of established international and religious law.
+A notable pillar of Sahelian Islamic jurisprudence was the legal treatise literature prohibiting the enslavement of free Muslim populations and protected tributaries. Jurist Ahmad Baba al-Timbukti's 1615 treatise *Mi'raj al-Su'ud* served as a cited legal benchmark restricting sovereign overreach and supporting petitions for the emancipation of persons enslaved in violation of recognized religious and customary law (Hall, 2011).
 
-**Key Takeaway:** Sahelian legal scholars constructed rigorous evidentiary standards to challenge sovereign captures, creating codified legal mechanisms for petitioning and securing emancipation.
+**Key Takeaway:** Sahelian legal scholars articulated evidentiary standards to challenge unlawful captures, establishing written legal mechanisms for petitioning emancipation.
 
 ## 3. Commercial Arbitration and Cross-Saharan Credit Instruments
-The integration of credit instruments (*suftaja*) and debt-clearing mechanisms enabled high-volume trans-Saharan transactions without the physical transfer of bullion. These instruments were backstopped by judicial tribunals located in major trading hubs, creating an interconnected legal network spanning North and West Africa.
+Credit instruments (*suftaja*) and debt-clearing mechanisms enabled long-distance trans-Saharan transactions without continuous physical transport of bullion. These instruments were supported by judicial tribunals located in major trading hubs, forming an interconnected legal network linking North and West Africa (Hunwick, 2003).
 
 ## References
-- Diagne, O. (2024). Medieval Sahelian Treaties and Commercial Law. Journal of African Legal History. https://doi.org/10.1093/jalh/2024.01
+- Hunwick, J. O., & Boye, A. (2008). The Timbuktu Manuscripts: Heritage, Culture, and Trade Across the Sahara. Brill Academic Publishers / UNESCO. https://doi.org/10.1163/9789004165427
 - Hall, B. S. (2011). A History of Race in Muslim West Africa, 1600-1960. Cambridge University Press. https://doi.org/10.1017/CBO9780511977503
 - Hunwick, J. O. (2003). Timbuktu and the Songhay Empire: Al-Sa'di's Ta'rikh al-sudan. Brill Academic Publishers. https://doi.org/10.1163/9789004492134

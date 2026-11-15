@@ -45,7 +45,7 @@ export const PERSONA_TRACKS: PersonaTrack[] = [
     accentBg: 'bg-white hover:bg-amber-50/40',
     pillBg: 'bg-amber-50 border border-amber-200',
     pillText: 'text-amber-800',
-    recommendedFeatures: ['Ethnic Atlas Map (Wikipedia Linked)', 'Voyage Transits & Ports', '42 Peer-Reviewed Treatises']
+    recommendedFeatures: ['Ethnic Atlas Map (Wikipedia Linked)', 'Voyage Transits & Ports', 'Curated Research Syntheses']
   },
   {
     id: 'economist',

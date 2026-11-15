@@ -155,12 +155,19 @@ export const DATASET_INTEGRITY_HASHES: DatasetIntegrityHash[] = [
   }
 ];
 
+export interface BrowserHashVerificationResult {
+  status: 'computed' | 'static-unavailable';
+  sha256: string;
+  computedDigest?: string;
+  reason?: string;
+}
+
 /**
  * Computes the real SHA-256 digest of a foundational dataset file in the browser
  * using the Web Crypto API (`crypto.subtle.digest`) and compares it with the
- * build-time published SHA-256 checksum.
+ * build-time published SHA-256 checksum. Never synthesizes a false match on static builds.
  */
-export async function computeDatasetSha256InBrowser(fileScope: string): Promise<string> {
+export async function computeDatasetSha256InBrowser(fileScope: string): Promise<BrowserHashVerificationResult> {
   const baseUrl = typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL ? import.meta.env.BASE_URL : './';
   const normalizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
 
@@ -181,7 +188,12 @@ export async function computeDatasetSha256InBrowser(fileScope: string): Promise<
           const buffer = await response.arrayBuffer();
           const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
           const hashArray = Array.from(new Uint8Array(hashBuffer));
-          return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+          const computedDigest = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+          return {
+            status: 'computed',
+            sha256: computedDigest,
+            computedDigest
+          };
         }
       }
     } catch {
@@ -189,10 +201,14 @@ export async function computeDatasetSha256InBrowser(fileScope: string): Promise<
     }
   }
 
-  // 2. Fallback for static deployments without /api/research/dataset-raw
+  // 2. Honest static-deploy indicator when bundled .ts/.json source modules aren't served over HTTP
   const entry = DATASET_INTEGRITY_HASHES.find(d => d.fileScope === fileScope);
   if (entry) {
-    return entry.sha256;
+    return {
+      status: 'static-unavailable',
+      sha256: entry.sha256,
+      reason: 'Source module is compiled into the production bundle and not served as a raw file on static hosts; verify locally with npm run research:integrity.'
+    };
   }
   throw new Error(`Unknown dataset fileScope: ${fileScope}`);
 }
@@ -203,18 +219,18 @@ export const WORKING_PAPERS_SERIES: WorkingPaperEntry[] = [
     seriesNumber: 'Afriata Policy Brief No. 01',
     type: 'Policy Brief',
     title: 'Structural Legacies of Monopsonistic Trade Concessions in Atlantic Africa',
-    subtitle: 'Institutional Path-Dependency, Extraction Corridors, and Contemporary Mineral Supply Chains',
-    author: 'Zéluis F. Correia',
+    subtitle: 'Exploratory Working Note · Institutional Path-Dependency & Contemporary Mineral Supply Chains',
+    author: 'ZéLuis F. Correia (Exploratory Working Note)',
     affiliation: 'Afriata Cartographic & Econometric Observatory',
     date: 'February 2026',
     jelCodes: ['N17', 'O10', 'O43', 'F14'],
-    abstract: 'This policy brief examines the enduring spatial and institutional imprint of colonial trade concessions across Atlantic Africa (1885–1960). Using geospatial vector overlays of historic concession boundaries juxtaposed against modern AfCFTA infrastructure corridors and UN Comtrade mineral export matrices, we demonstrate that transport infrastructure remains disproportionately oriented toward raw export extraction rather than regional trade complementarity. Policy remedies highlight intra-African tariff reduction and continental industrial value-addition under the AfCFTA framework.',
+    abstract: 'This exploratory working policy brief synthesizes regional transport and trade literature on colonial concessions in Atlantic Africa (1885–1960) alongside contemporary AfCFTA corridor indicators and UN Comtrade mineral matrices. Key points summarize external econometric and policy literature prior to formal peer review.',
     keyFindings: [
-      'Over 68% of rail and heavy freight corridors in Central and Western Africa still trace colonial concession extraction paths established prior to 1914.',
-      'Intra-African trade in processed goods carries a 2.4x higher transport freight premium than raw mineral evacuation to Atlantic deepwater ports.',
-      'Targeted tariff harmonization under AfCFTA Rules of Origin could unlock an estimated $44B in regional intermediate processing value by 2035.'
+      'Literature synthesis highlights persistent alignment between colonial-era rail corridors and modern raw-mineral export routes.',
+      'Intra-African trade in processed intermediate goods faces elevated cross-border freight and customs friction relative to coastal export terminals.',
+      'Interactive scenario modeling of AfCFTA tariff harmonization is available in the Atlas AfCFTA Trade Corridor Simulator.'
     ],
-    citationApa: 'Correia, Z. F. (2026). Structural Legacies of Monopsonistic Trade Concessions in Atlantic Africa (Afriata Policy Brief No. 01). Afriata Open Science Repository. https://doi.org/10.6084/m9.figshare.34065711',
+    citationApa: 'Correia, Z. F. (2026). Structural Legacies of Monopsonistic Trade Concessions in Atlantic Africa (Afriata Policy Brief No. 01 — Working Note). Afriata Open Science Repository. https://doi.org/10.6084/m9.figshare.34065711',
     downloadFilename: 'Afriata_Policy_Brief_01_Monopsonistic_Trade_Concessions.pdf'
   },
   {
@@ -222,16 +238,16 @@ export const WORKING_PAPERS_SERIES: WorkingPaperEntry[] = [
     seriesNumber: 'Afriata Research Note No. 04',
     type: 'Research Note',
     title: 'Genomic Admixture and Tri-Continental Founder Effects in Cabo Verde',
-    subtitle: 'A Biogeographical Synthesis of Trans-Atlantic Demographic Bottlenecks and Lineage Persistence',
-    author: 'Zéluis F. Correia',
+    subtitle: 'Exploratory Literature Synthesis · Demographic Bottlenecks & Lineage Persistence',
+    author: 'ZéLuis F. Correia (Literature Synthesis Note)',
     affiliation: 'Afriata Cartographic & Econometric Observatory',
     date: 'January 2026',
     jelCodes: ['N37', 'J15', 'Z13'],
-    abstract: 'Cabo Verde represents one of the earliest Creole neo-societies founded through forced Atlantic maritime labor convergence (1462–1878). This research note synthesizes autosomal, mtDNA, and Y-chromosome population genetics datasets with historical customs registers and SlaveVoyages embarkation logs. The findings elucidate asymmetrical sex-biased admixture patterns, strong matrilineal Senegambian founder lineages, and the subsequent evolutionary bottleneck effects that shaped the archipelagic gene pool.',
+    abstract: 'This research note synthesizes published autosomal, mtDNA, and Y-chromosome population genetics studies on Cabo Verde (Verdu et al., 2012; Beleza et al., 2013) alongside historical customs scholarship (Carreira, 1983) and SlaveVoyages embarkation summaries.',
     keyFindings: [
-      'Matrilineal mtDNA demonstrates over 82% Upper Guinea Coast (Mandinka, Wolof, Balanta, Fula) founder lineage continuity across the Sotavento island cluster.',
-      'Patrilineal Y-chromosome distributions reflect intense European male reproductive skew characteristic of 16th-century Atlantic feitoria economies.',
-      'Archival customs manifests corroborate that trade isolation post-1600 reinforced micro-demographic differentiation between Santiago and Barlavento islands.'
+      'Published matrilineal mtDNA studies document predominant Upper Guinea Coast (Mandinka, Wolof, Balanta, Fula) founder lineage continuity across Sotavento islands.',
+      'Published Y-chromosome distributions reflect asymmetric European paternal gene flow characteristic of early Atlantic feitoria settlements.',
+      'Historical customs and demographic studies indicate post-1600 micro-demographic differentiation between Santiago and Barlavento islands.'
     ],
     citationApa: 'Correia, Z. F. (2026). Genomic Admixture and Tri-Continental Founder Effects in Cabo Verde (Afriata Research Note No. 04). Afriata Open Science Repository. https://doi.org/10.6084/m9.figshare.34065711',
     downloadFilename: 'Afriata_Research_Note_04_Cabo_Verde_Genomic_Admixture.pdf'
@@ -241,16 +257,16 @@ export const WORKING_PAPERS_SERIES: WorkingPaperEntry[] = [
     seriesNumber: 'Afriata Working Paper No. 07',
     type: 'Working Paper',
     title: 'Cartographic Geodesy and Admin-1 Spatial Disaggregation in Sub-Saharan Africa',
-    subtitle: 'Precision Boundary Alignment, High-Resolution Vector Topologies, and Multilateral Statistical Reconciliation',
-    author: 'Zéluis F. Correia',
+    subtitle: 'Technical Documentation · Vector Boundary Alignment & Indicator Harmonization',
+    author: 'ZéLuis F. Correia (Technical Working Note)',
     affiliation: 'Afriata Cartographic & Econometric Observatory',
     date: 'March 2026',
     jelCodes: ['C88', 'R12', 'O55', 'C81'],
-    abstract: 'Accurate spatial representation of sub-national economic performance in Africa is frequently compromised by coarse national aggregates and distorted cartographic projections. This paper presents the technical specification of the Afriata 5,796 × 5,867 planar Cartesian vector engine, reconciling 1,017 Admin-1 provincial boundaries across 54 sovereign nations. By coupling hairline geodesic graticules with micro-demographic weighting, we demonstrate a deterministic framework for sub-national indicator disaggregation.',
+    abstract: 'This technical note documents the architecture of the Afriata 5,796 × 5,867 planar vector cartographic layer, encompassing 54 sovereign states and 1,017 Admin-1 administrative boundaries linked to World Bank, IMF, and UNESCO metadata.',
     keyFindings: [
-      'Documenting and cataloging 1,017 first-order administrative sub-divisions eliminates aggregate spatial bias in trans-boundary economic analysis.',
-      'Calculated centroid-anchored dynamic text placement preserves label legibility without obscuring provincial border topology.',
-      'Full compatibility with open web standards (SVG 1.1) eliminates proprietary GIS licensing constraints for African planning ministries.'
+      'Cataloging 1,017 first-order administrative sub-divisions supports sub-national visual inspection across continental boundaries.',
+      'Computed centroid-anchored label placement scales typography cleanly across sovereign land areas.',
+      'Standards-compliant SVG 1.1 delivery permits offline browser rendering without proprietary GIS runtime dependencies.'
     ],
     citationApa: 'Correia, Z. F. (2026). Cartographic Geodesy and Admin-1 Spatial Disaggregation in Sub-Saharan Africa (Afriata Working Paper No. 07). Afriata Open Science Repository. https://doi.org/10.6084/m9.figshare.34065711',
     downloadFilename: 'Afriata_Working_Paper_07_Cartographic_Geodesy_Admin1.pdf'

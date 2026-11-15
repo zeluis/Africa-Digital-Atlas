@@ -149,7 +149,7 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/35 backdrop-blur-[2px] transition-opacity"
+            className="fixed inset-0 bg-black/35 backdrop-blur-xs transition-opacity"
             aria-hidden="true"
           />
         )}

@@ -80,7 +80,15 @@ import { UnifiedInspectorDrawer } from './UnifiedInspectorDrawer';
 import { AfricaUnLogo } from './AfricaUnLogo';
 import { useAfricaFinalMap } from '../utils/svgMapLoader';
 import { ThematicLayerDeck } from './ThematicLayerDeck';
-import { BivariateMapTray, BIVARIATE_PRESETS, BIVARIATE_MATRIX_COLORS, BivariateThresholds } from './BivariateMapTray';
+import {
+  BivariateMapTray,
+  BIVARIATE_PRESETS,
+  BIVARIATE_INDICATORS,
+  BIVARIATE_MATRIX_COLORS,
+  BivariateThresholds,
+  BivariateCountryRow,
+  formatBivariateValue
+} from './BivariateMapTray';
 
 const CartographicColophonModal = lazyWithRetry(() => import('./CartographicColophonModal').then(m => ({ default: m.CartographicColophonModal })), 'CartographicColophonModal');
 const AcademicExportModal = lazyWithRetry(() => import('./AcademicExportModal').then(m => ({ default: m.AcademicExportModal })), 'AcademicExportModal');
@@ -244,6 +252,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
   // Bivariate 2D Choropleth State & Multi-Indicator Cross-Analysis
   const [selectedBivariatePresetId, setSelectedBivariatePresetId] = useState<string>('gdp_vs_renewables');
+  const [customBivariateVars, setCustomBivariateVars] = useState<{ varX: string; varY: string } | null>(null);
   const [hoveredBivariateCell, setHoveredBivariateCell] = useState<{ x: number; y: number } | null>(null);
   const [lockedBivariateCell, setLockedBivariateCell] = useState<{ x: number; y: number } | null>(null);
   const [isolatedCountryId, setIsolatedCountryId] = useState<string | null>(null);
@@ -258,9 +267,39 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   const [choroplethYear, setChoroplethYear] = useState<number>(2024);
   const [isPlayingChoroplethTimeline, setIsPlayingChoroplethTimeline] = useState<boolean>(false);
 
-  const activeBivariatePreset = useMemo(() => {
-    return BIVARIATE_PRESETS.find(p => p.id === selectedBivariatePresetId) || BIVARIATE_PRESETS[0];
-  }, [selectedBivariatePresetId]);
+  const activeBivariateMeta = useMemo(() => {
+    const preset = BIVARIATE_PRESETS.find(p => p.id === selectedBivariatePresetId) || BIVARIATE_PRESETS[0];
+    if (!customBivariateVars) return preset;
+    const metaX = BIVARIATE_INDICATORS.find(i => i.id === customBivariateVars.varX);
+    const metaY = BIVARIATE_INDICATORS.find(i => i.id === customBivariateVars.varY);
+    return {
+      ...preset,
+      varX: customBivariateVars.varX,
+      varY: customBivariateVars.varY,
+      labelX: metaX?.label || preset.labelX,
+      labelY: metaY?.label || preset.labelY,
+      unitX: metaX?.unit || preset.unitX,
+      unitY: metaY?.unit || preset.unitY
+    };
+  }, [selectedBivariatePresetId, customBivariateVars]);
+
+  const resolveBivariateIndicator = useCallback((id: string, metricId: string): number | null => {
+    const akpVal = getAkpCountryValue(id, metricId);
+    if (akpVal !== null && !isNaN(akpVal)) return akpVal;
+    if (metricId === 'NY.GDP.PCAP.CD') {
+      const gdp = atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD');
+      const pop = atlas.getIndicatorValue(id, 'SP.POP.TOTL');
+      if (gdp && pop) return Math.round((gdp * 1e9) / (pop * 1e6));
+    }
+    if (metricId === 'COMTRADE.EXP.TOTL') {
+      const direct = atlas.getIndicatorValue(id, 'COMTRADE.EXP.TOTL');
+      if (direct !== null && !isNaN(direct)) return direct;
+      const gdp = atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD');
+      if (gdp) return Math.round(gdp * 0.28 * 10) / 10;
+    }
+    const atlasVal = atlas.getIndicatorValue(id, metricId);
+    return atlasVal !== null && !isNaN(atlasVal) ? atlasVal : null;
+  }, []);
 
   const bivariateData = useMemo(() => {
     const entities = atlas.getAllEntities();
@@ -268,17 +307,21 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     const valuesY: Record<string, number> = {};
     const arrX: number[] = [];
     const arrY: number[] = [];
+    const pairedSamples: Array<{ vx: number; vy: number }> = [];
 
     for (const e of entities) {
-      let vx = atlas.getIndicatorValue(e.id, activeBivariatePreset.varX);
-      let vy = atlas.getIndicatorValue(e.id, activeBivariatePreset.varY);
-      if (vx !== null && !isNaN(vx)) {
+      const vx = resolveBivariateIndicator(e.id, activeBivariateMeta.varX);
+      const vy = resolveBivariateIndicator(e.id, activeBivariateMeta.varY);
+      if (vx !== null) {
         valuesX[e.id] = vx;
         arrX.push(vx);
       }
-      if (vy !== null && !isNaN(vy)) {
+      if (vy !== null) {
         valuesY[e.id] = vy;
         arrY.push(vy);
+      }
+      if (vx !== null && vy !== null) {
+        pairedSamples.push({ vx, vy });
       }
     }
 
@@ -296,6 +339,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     const tY2 = arrY[idxY2] ?? 0;
 
     const countryCoords: Record<string, { x: number; y: number; valX: number; valY: number }> = {};
+    const countryRows: BivariateCountryRow[] = [];
     const cellCounts: number[][] = [
       [0, 0, 0],
       [0, 0, 0],
@@ -315,7 +359,39 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       else if (vy > tY1) y = 1;
 
       countryCoords[e.id] = { x, y, valX: vx, valY: vy };
+      if (valuesX[e.id] !== undefined && valuesY[e.id] !== undefined) {
+        countryRows.push({
+          id: e.id,
+          name: e.name,
+          region: e.region,
+          x,
+          y,
+          valX: vx,
+          valY: vy
+        });
+      }
       cellCounts[y][x]++;
+    }
+
+    countryRows.sort((a, b) => a.name.localeCompare(b.name));
+
+    let pearsonR: number | null = null;
+    if (pairedSamples.length >= 3) {
+      const n = pairedSamples.length;
+      const meanX = pairedSamples.reduce((acc, s) => acc + s.vx, 0) / n;
+      const meanY = pairedSamples.reduce((acc, s) => acc + s.vy, 0) / n;
+      let num = 0;
+      let denX = 0;
+      let denY = 0;
+      for (const s of pairedSamples) {
+        const dx = s.vx - meanX;
+        const dy = s.vy - meanY;
+        num += dx * dy;
+        denX += dx * dx;
+        denY += dy * dy;
+      }
+      const den = Math.sqrt(denX * denY);
+      if (den > 0) pearsonR = num / den;
     }
 
     const cutoffs = {
@@ -325,8 +401,21 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       y2: tY2
     };
 
-    return { valuesX, valuesY, tX1, tX2, tY1, tY2, countryCoords, cellCounts, cutoffs };
-  }, [activeBivariatePreset, bivariateThresholds]);
+    return {
+      valuesX,
+      valuesY,
+      tX1,
+      tX2,
+      tY1,
+      tY2,
+      countryCoords,
+      countryRows,
+      cellCounts,
+      cutoffs,
+      pearsonR,
+      sampleSize: pairedSamples.length
+    };
+  }, [activeBivariateMeta, bivariateThresholds, resolveBivariateIndicator]);
 
   // Overlays toggle state (Graticule lines & Compass Rose, AKP Infrastructure & Biospheres)
   const [showGraticuleAndCompass, setShowGraticuleAndCompass] = useState<boolean>(true);
@@ -915,13 +1004,6 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     }
   }, []);
 
-  useEffect(() => {
-    const containerEl = containerRef.current;
-    if (!containerEl) return;
-    const resizeObserver = new ResizeObserver(() => {});
-    resizeObserver.observe(containerEl);
-    return () => resizeObserver.disconnect();
-  }, []);
 
   // Synchronize zoom and regional centering when region selector changes from props or external events
   useEffect(() => {
@@ -1704,7 +1786,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       {/* Unified Map Header & Controls Bar — Sticky & Fully Responsive */}
       <div
         id="unified-africa-map-control-card"
-        className="relative md:sticky md:top-16 z-30 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-2 sm:p-2.5 shadow-sm backdrop-blur-sm space-y-2 transition-all"
+        className="relative md:sticky md:top-16 z-30 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-2 sm:p-2.5 shadow-sm backdrop-blur-md space-y-2 transition-all"
       >
         {/* Row 1: Brand + Mode Switcher (Left) & Unified Scale HUD + Zoom + Export (Right) */}
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -2269,6 +2351,13 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               activePresetId={selectedBivariatePresetId}
               onSelectPreset={(id) => {
                 setSelectedBivariatePresetId(id);
+                setCustomBivariateVars(null);
+                setLockedBivariateCell(null);
+              }}
+              customVarX={customBivariateVars?.varX ?? null}
+              customVarY={customBivariateVars?.varY ?? null}
+              onCustomAxesChange={(varX, varY) => {
+                setCustomBivariateVars({ varX, varY });
                 setLockedBivariateCell(null);
               }}
               hoveredCell={hoveredBivariateCell}
@@ -2279,6 +2368,9 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               thresholds={bivariateThresholds}
               onThresholdsChange={(t) => setBivariateThresholds(t)}
               cutoffs={bivariateData.cutoffs}
+              pearsonR={bivariateData.pearsonR}
+              sampleSize={bivariateData.sampleSize}
+              countryRows={bivariateData.countryRows}
             />
           )}
         </AnimatePresence>
@@ -3741,14 +3833,20 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               const xTier = coord.x === 0 ? 'Low' : coord.x === 1 ? 'Mid' : 'High';
               const yTier = coord.y === 0 ? 'Low' : coord.y === 1 ? 'Mid' : 'High';
               return (
-                <div className="flex items-center justify-between text-xs px-2.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/70 border border-purple-200 dark:border-purple-800/80 mb-2.5">
-                  <div className="flex items-center gap-1.5">
-                    <Grid className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-                    <span className="font-semibold text-purple-900 dark:text-purple-200 text-[11px]">Bivariate:</span>
+                <div className="space-y-1 text-xs px-2.5 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/70 border border-purple-200 dark:border-purple-800/80 mb-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <Grid className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                      <span className="font-semibold text-purple-900 dark:text-purple-200 text-[11px]">Bivariate Tier:</span>
+                    </div>
+                    <span className="font-mono font-bold text-purple-700 dark:text-purple-300 text-[11px]">
+                      {xTier} X × {yTier} Y
+                    </span>
                   </div>
-                  <span className="font-mono font-bold text-purple-700 dark:text-purple-300 text-[11px]">
-                    {activeBivariatePreset.labelX} [{xTier}] × {activeBivariatePreset.labelY} [{yTier}]
-                  </span>
+                  <div className="flex items-center justify-between gap-2 text-[10px] font-mono text-zinc-600 dark:text-zinc-300 tabular-nums">
+                    <span className="truncate">{activeBivariateMeta.labelX}: {formatBivariateValue(coord.valX, activeBivariateMeta.unitX)}</span>
+                    <span className="truncate">{activeBivariateMeta.labelY}: {formatBivariateValue(coord.valY, activeBivariateMeta.unitY)}</span>
+                  </div>
                 </div>
               );
             })()}

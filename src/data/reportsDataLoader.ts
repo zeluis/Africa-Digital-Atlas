@@ -72,11 +72,6 @@ export function loadDropInReports(): Record<string, ResearchReport> {
       if (typeof rawContent === 'string' && rawContent.trim()) {
         const { report } = ingestNotebookMarkdown(rawContent, path.replace('../content/reports/', 'reports/'));
         dropInCatalog[report.id] = report;
-        // Register legacy alias if id starts with rep-
-        if (report.id.startsWith('rep-')) {
-          const legacyId = report.id.replace(/^rep-/, 'report-');
-          dropInCatalog[legacyId] = report;
-        }
       }
     } catch (err) {
       console.warn(`[DropInReportsLoader] Failed to ingest report at "${path}":`, err);
@@ -98,13 +93,6 @@ export function loadDropInWorkingPapers(): Record<string, ResearchReport> {
         const { report } = ingestNotebookMarkdown(rawContent, path.replace('../content/working-papers/', 'working-papers/'));
         report.isWorkingPaper = true;
         wpCatalog[report.id] = report;
-        // Register legacy aliases if id starts with wkp-
-        if (report.id.startsWith('wkp-')) {
-          const legacyRepId = report.id.replace(/^wkp-/, 'rep-');
-          const legacyWpId = report.id.replace(/^wkp-/, 'wp-');
-          wpCatalog[legacyRepId] = report;
-          wpCatalog[legacyWpId] = report;
-        }
       }
     } catch (err) {
       console.warn(`[DropInWorkingPapersLoader] Failed to ingest working paper at "${path}":`, err);
@@ -252,6 +240,24 @@ export function getAllReports(): Record<string, ResearchReport> {
   return unified;
 }
 
+export function getReportById(id: string): ResearchReport | undefined {
+  if (!id) return undefined;
+  const unified = getAllReports();
+  if (unified[id]) return unified[id];
+
+  // Resolve legacy prefix aliases cleanly without polluting Object.values(getAllReports())
+  const candidates = [
+    id.replace(/^report-/, 'rep-'),
+    id.replace(/^rep-/, 'report-'),
+    id.replace(/^rep-/, 'wkp-'),
+    id.replace(/^wp-/, 'wkp-')
+  ];
+  for (const candidate of candidates) {
+    if (unified[candidate]) return unified[candidate];
+  }
+  return undefined;
+}
+
 /**
  * Checks whether a given navigation tab ID corresponds to a Research Report or Working Paper
  */
@@ -260,8 +266,7 @@ export function isReportOrPaperTab(tabId: string): boolean {
   if (tabId.startsWith('report-') || tabId.startsWith('rep-') || tabId.startsWith('wp-') || tabId.startsWith('wkp-')) {
     return true;
   }
-  const all = getAllReports();
-  return Boolean(all[tabId]);
+  return Boolean(getReportById(tabId));
 }
 
 export interface NavReportItem {

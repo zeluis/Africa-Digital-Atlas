@@ -121,7 +121,7 @@ export const KingdomRichBottomPanel: React.FC<KingdomRichBottomPanelProps> = ({
         isMinimized
           ? 'w-auto max-w-[340px] sm:max-w-[400px] rounded-2xl'
           : 'w-[360px] sm:w-[420px] md:w-[450px] max-w-[calc(100vw-32px)] max-h-[min(72vh,560px)] rounded-3xl'
-      } flex flex-col bg-[#FAF7F2]/96 dark:bg-[#181614]/96 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_40px_rgba(75,55,35,0.22)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.7)] backdrop-blur-2xl overflow-hidden transition-[left,width,max-width,border-radius] duration-300 ease-out select-none`}
+      } flex flex-col bg-[#FAF7F2]/96 dark:bg-[#181614]/96 border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl backdrop-blur-md overflow-hidden transition-[left,width,max-width,border-radius] duration-300 ease-out select-none`}
       id="rich-kingdom-bottom-panel"
     >
       {/* 1. Header Bar with Kingdom Pagination */}

@@ -25,8 +25,9 @@ export const PWAInstallButton: React.FC<{ className?: string }> = ({ className =
   if (isInstallable) {
     return (
       <button
+        type="button"
         onClick={handleInstallClick}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white text-xs font-semibold shadow-sm transition-all transform active:scale-95 cursor-pointer ${className}`}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white text-xs font-semibold shadow-sm transition-all transform active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${className}`}
         title="Install Afriata for offline research & instant access"
       >
         {installSuccess ? (
@@ -36,7 +37,7 @@ export const PWAInstallButton: React.FC<{ className?: string }> = ({ className =
           </>
         ) : (
           <>
-            <Download className="w-3.5 h-3.5 text-emerald-200 animate-bounce" />
+            <Download className="w-3.5 h-3.5 text-emerald-200" />
             <span>Install App</span>
           </>
         )}
@@ -49,8 +50,9 @@ export const PWAInstallButton: React.FC<{ className?: string }> = ({ className =
     return (
       <>
         <button
+          type="button"
           onClick={() => setShowIOSGuide(true)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-medium border border-zinc-200 dark:border-zinc-700 transition cursor-pointer ${className}`}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-medium border border-zinc-200 dark:border-zinc-700 transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${className}`}
           title="Install Afriata on iOS"
         >
           <Smartphone className="w-3.5 h-3.5 text-amber-500" />

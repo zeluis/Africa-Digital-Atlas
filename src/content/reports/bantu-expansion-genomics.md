@@ -5,32 +5,28 @@ title: "Molecular Genetics of the Bantu Expansion & Sub-Saharan Admixture"
 
 subtitle: "High-density autosomal SNP analysis reconstructing demographic expansion from the Benue-Cross River Basin"
 
-doi: "10.1016/j.ajhg.2026.03.011"
+doi: "10.6084/m9.figshare.34065711"
 
 date: "2026-03-15"
 version: "1.0"
 
 author:
-  name: "Dr. Amara Okafor, Prof. K. A. Diallo, and Dr. Marcus Thorne"
-  type: "Consortium Collaboration"
-  role: "Lead Investigators"
+  name: "Afriata Research Synthesis (ZéLuis F. Correia)"
+  type: "Literature Synthesis"
+  role: "Observatory Synthesis"
   platform: "Afriata Research Platform"
 
 authors:
-  - "Dr. Amara Okafor"
-  - "Prof. K. A. Diallo"
-  - "Dr. Marcus Thorne"
+  - "Afriata Research Synthesis (ZéLuis F. Correia)"
 
 institutions:
-  - "African Institute for Molecular Genetics, Ibadan"
-  - "Institut Pasteur Dakar"
-  - "Center for Afro-Atlantic Studies"
+  - "Afriata Cartographic & Econometric Observatory"
 
 publication:
-  series: "Afriata Monograph & Thematic Research Series"
-  seriesNumber: "Monograph No. 04"
+  series: "Afriata Literature Synthesis Series"
+  seriesNumber: "Synthesis No. 04"
   type: "research_monograph"
-  status: "Peer-Reviewed Synthesis"
+  status: "Curated Literature Synthesis"
   language: "en"
   citationStyle: "Chicago Author-Date"
   category: "Population Genetics & Archaeogenomics"
@@ -41,7 +37,7 @@ research:
     - "Paleogenomics"
     - "Bioarchaeology"
     - "Human Evolutionary Biology"
-  methodology: "High-density autosomal SNP genotyping, ancient DNA coalescence modeling, and Bayesian glottochronology"
+  methodology: "Synthesis of published autosomal SNP genotyping, ancient DNA coalescence modeling, and Bayesian glottochronology"
 
 section: "reports"
 pillar: "genetics"
@@ -69,23 +65,24 @@ featured: true
 ---
 
 # Executive Summary
-The expansion of Bantu-speaking agriculturalists across Sub-Saharan Africa constitutes one of the most profound demographic events in human evolutionary history. Integrating ancient DNA specimens with modern high-coverage genomes from 14 contemporary populations, this monograph details the continuous genetic continuity spanning 4,000 years, tracing back to ancestral agriculturalist groups in the Grassfields region of Cameroon and the Benue-Cross River Basin of modern Nigeria.
+The expansion of Bantu-speaking agriculturalists across Sub-Saharan Africa constitutes one of the most significant demographic events in human evolutionary history. Synthesizing published ancient DNA findings alongside modern genomic datasets across contemporary populations, this brief summarizes genetic continuity spanning 4,000 years, tracing ancestral agriculturalist groups to the Grassfields region of Cameroon and the Benue-Cross River Basin of modern Nigeria (Patin et al., 2017).
 
 ## 1. Demographic Radiations Along the Congo River Basin
-Archaeogenomic modeling indicates that ancestral Bantu-speaking groups traversed the equatorial rainforest along fluvial networks rather than arid savannas. Dense rainforest canopy adaptation required significant metabolic adaptations that remain detectable in contemporary Central and Southern African populations.
+Published archaeogenomic modeling indicates that ancestral Bantu-speaking groups traversed the equatorial rainforest along fluvial corridors rather than exclusively across arid savannas. Dense rainforest canopy environments required distinct metabolic and immune adaptations that remain detectable in contemporary Central and Southern African populations.
 
-**Key Takeaway:** Ancient DNA confirms two distinct westward and southward migratory pulses occurring around 2500 BCE and 1000 BCE respectively.
+**Key Takeaway:** Ancient DNA studies document distinct westward and southward migratory pulses occurring across roughly 2500 BCE and 1000 BCE.
 
-> "Genomic data acts as an indelible historical parchment, revealing the exact demographic velocity of ancient African farming communities."
+> "Genomic data preserves a multi-millennial record of demographic trajectories across ancient African farming communities."
 
 ## 2. Admixture Dynamics with Indigenous Forager Populations
-Prior to agricultural expansion, diverse hunter-gatherer populations occupied the central and southern African biomes. Genetic analysis demonstrates asymmetrical sex-biased admixture, characterized predominantly by Bantu-speaking male lineages and indigenous maternal lineages (Micheletti, 2020). Similar institutional and material extraction dynamics mirror post-expansion demographic reorganizations (Nunn, 2011).
+Prior to agricultural expansion, diverse hunter-gatherer populations occupied the central and southern African biomes. Published genetic analyses document asymmetrical sex-biased admixture, characterized predominantly by Bantu-speaking male lineages and indigenous maternal lineages (Micheletti, 2020). Later institutional and material extraction dynamics reshaped post-expansion demographic structures (Nunn, 2011).
 
-**Key Takeaway:** Admixture with indigenous forager groups contributed critical immune-system alleles (HLA variations) vital for survival in novel ecological micro-niches.
+**Key Takeaway:** Admixture with indigenous forager groups contributed adaptive immune-system alleles (HLA variations) beneficial across diverse ecological micro-niches.
 
 ## 3. Methodological Convergence: Molecular Clocks and Glottochronology
-Combining Bayesian phylolinguistic trees of Niger-Congo languages with coalescence-time estimates from whole-genome sequences yields a close temporal alignment. The timing of linguistic divergence between Western and Eastern Bantu sub-branches (circa 1500 BCE) aligns precisely with the major surge in effective population size (Ne) inferred from genomic identity-by-descent (IBD) sharing.
+Combining Bayesian phylolinguistic trees of Niger-Congo languages with coalescence-time estimates from whole-genome sequences yields close temporal alignment. The timing of linguistic divergence between Western and Eastern Bantu sub-branches (circa 1500 BCE) aligns with increases in effective population size (Ne) inferred from genomic identity-by-descent (IBD) sharing.
 
 ## References
-- Micheletti, S. J. (2020). Genetic Consequences of the Transatlantic Slave Trade in the Americas. The American Journal of Human Genetics. https://doi.org/10.1016/j.ajhg.2020.06.012
-- Nunn, N. (2011). The Slave Trade and the Origins of Mistrust in Africa. American Economic Review. https://doi.org/10.1257/aer.101.7.3221
+- Patin, E., Lopez, M., Grollemund, R., Verdu, P., & Harmant, C. (2017). Dispersals and genetic adaptation of Bantu-speaking populations in Africa and North America. Science, 356(6337), 543-546. https://doi.org/10.1126/science.aal1988
+- Micheletti, S. J. (2020). Genetic Consequences of the Transatlantic Slave Trade in the Americas. The American Journal of Human Genetics, 107(2), 265-277. https://doi.org/10.1016/j.ajhg.2020.06.012
+- Nunn, N., & Wantchekon, L. (2011). The Slave Trade and the Origins of Mistrust in Africa. American Economic Review, 101(7), 3221-3252. https://doi.org/10.1257/aer.101.7.3221

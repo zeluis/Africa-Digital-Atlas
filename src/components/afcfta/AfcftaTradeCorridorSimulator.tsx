@@ -11,6 +11,7 @@ import {
   TACTILE_BUTTON_INTERACTIONS 
 } from '../../utils/motion';
 import { AtlasSelect } from '../common/AtlasSelect';
+import { ChartAccessibleTable } from '../common/ChartAccessibleTable';
 import { 
   TrendingUp, 
   Truck, 
@@ -92,14 +93,17 @@ export const AfcftaTradeCorridorSimulator: React.FC<AfcftaTradeCorridorSimulator
   const [usePapss, setUsePapss] = useState<boolean>(true);
   const [useSingleWindow, setUseSingleWindow] = useState<boolean>(true);
   const [useGreenLane, setUseGreenLane] = useState<boolean>(true);
+  const [localContentPct, setLocalContentPct] = useState<number>(45);
 
   // 5. Export state
   const [copiedDossier, setCopiedDossier] = useState<boolean>(false);
+  const [statusMessage, setStatusMessage] = useState<string>('');
 
   // Synchronize typical consignment value when commodity changes
   const handleSelectCommodity = (hs: HsCommodity) => {
     setSelectedCommodity(hs);
     setConsignmentValue(hs.typicalContainerValueUSD);
+    setLocalContentPct(Math.max(hs.minLocalContentPct + 5, 45));
   };
 
   // Run calculation
@@ -112,9 +116,41 @@ export const AfcftaTradeCorridorSimulator: React.FC<AfcftaTradeCorridorSimulator
       regime,
       usePapss,
       useSingleWindow,
-      useGreenLane
+      useGreenLane,
+      localContentPct
     });
-  }, [selectedCorridor, selectedCommodity, consignmentValue, containerCount, regime, usePapss, useSingleWindow, useGreenLane]);
+  }, [selectedCorridor, selectedCommodity, consignmentValue, containerCount, regime, usePapss, useSingleWindow, useGreenLane, localContentPct]);
+
+  const regimeComparisonRows = useMemo(() => {
+    const regimes: Array<{ id: 'mfn' | 'rec' | 'afcfta_cat_a' | 'afcfta_cat_b'; label: string }> = [
+      { id: 'mfn', label: 'Pre-AfCFTA MFN' },
+      { id: 'rec', label: 'REC Protocol' },
+      { id: 'afcfta_cat_a', label: 'AfCFTA Category A' },
+      { id: 'afcfta_cat_b', label: 'AfCFTA Sensitive Cat B' },
+    ];
+    return regimes.map((r) => {
+      const sim = runAfcftaSimulation({
+        corridor: selectedCorridor,
+        commodity: selectedCommodity,
+        consignmentValueUSD: consignmentValue * containerCount,
+        containerCount,
+        regime: r.id,
+        usePapss,
+        useSingleWindow,
+        useGreenLane,
+        localContentPct,
+      });
+      return [
+        r.label,
+        `${sim.simulatedDutyPct.toFixed(1)}%`,
+        `$${sim.simulatedDutyUSD.toLocaleString()}`,
+        `$${sim.totalLandedSavingsUSD.toLocaleString()}`,
+        `${sim.simulatedTransitDays} d`,
+        `${sim.borderClearanceHoursTotal} h`,
+        sim.rooCompliant ? 'Compliant' : 'Below RoO Threshold (MFN Fallback)',
+      ];
+    });
+  }, [selectedCorridor, selectedCommodity, consignmentValue, containerCount, usePapss, useSingleWindow, useGreenLane, localContentPct]);
 
   // Handle Export / Copy Simulation Summary
   const handleCopySummary = () => {
@@ -140,19 +176,40 @@ RESULTS:
 - Transit Time: ${simulation.simulatedTransitDays} Days (vs ${simulation.baselineTransitDays} Days baseline; Saved: ${simulation.daysSaved} Days)
 - Total Border Clearance: ${simulation.borderClearanceHoursTotal} Hours (vs ${simulation.borderClearanceHoursBaseline} Hours)
 
-Rules of Origin Compliance: VALIDATED (Originating criteria: ${selectedCommodity.rulesOfOriginCriteria})
-Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
+Rules of Origin Compliance: ${simulation.rooCompliant ? 'VALIDATED' : 'NON-COMPLIANT (MFN Fallback)'} (${localContentPct}% local content vs ${selectedCommodity.minLocalContentPct}% min; ${selectedCommodity.rulesOfOriginCriteria})
+Audit Reference: AfCFTA Secretariat Modalities Annex 2
 ======================================================`;
 
     navigator.clipboard.writeText(text);
     setCopiedDossier(true);
+    setStatusMessage(`Copied AfCFTA simulation dossier for ${selectedCorridor.name} to clipboard.`);
     setTimeout(() => setCopiedDossier(false), 2500);
+  };
+
+  const handleDownloadCsv = () => {
+    const headers = ['Regime', 'Applied Duty Rate', 'Customs Duty (USD)', 'Total Landed Savings (USD)', 'Transit Days', 'Border Clearance Hours', 'Rules of Origin Status'];
+    const csvLines = [
+      `# Afriata AfCFTA Trade Corridor Simulation · ${selectedCorridor.name} (${selectedCorridor.rec}) · ${selectedCommodity.hsCode} ${selectedCommodity.name}`,
+      headers.join(','),
+      ...regimeComparisonRows.map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')),
+    ];
+    const blob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `afriata-afcfta-${selectedCorridor.id}-${selectedCommodity.hsCode.replace(/\s+/g, '')}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setStatusMessage(`Downloaded CSV regime comparison for ${selectedCorridor.name}.`);
   };
 
   return (
     <div className={`w-full bg-[#FAF8F5] dark:bg-stone-950 text-stone-900 dark:text-stone-100 rounded-t-3xl sm:rounded-3xl border border-stone-200/90 dark:border-stone-800 shadow-xl overflow-hidden transition-all ${
       isModal ? 'max-h-[94dvh] sm:max-h-[92dvh] flex flex-col' : 'p-4 sm:p-8 space-y-8'
     }`}>
+      <div className="sr-only" role="status" aria-live="polite">
+        {statusMessage}
+      </div>
       {/* Simulator Masthead */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 p-4 sm:p-6 border-b border-stone-200/90 dark:border-stone-800 bg-white/60 dark:bg-stone-900/40 shrink-0">
         <div className="min-w-0">
@@ -174,12 +231,22 @@ Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
           </p>
         </div>
 
-        {/* Top Actions: Copy Dossier & Close if modal */}
+        {/* Top Actions: Download CSV, Copy Dossier & Close if modal */}
         <div className="flex items-center gap-2 shrink-0">
           <button
             type="button"
+            onClick={handleDownloadCsv}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 text-xs font-semibold transition-all shadow-xs cursor-pointer whitespace-nowrap"
+            title="Download regime comparison as CSV"
+          >
+            <FileText className="w-3.5 h-3.5 text-emerald-600" />
+            <span>CSV</span>
+          </button>
+
+          <button
+            type="button"
             onClick={handleCopySummary}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-emerald-600/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-500/20 text-xs font-semibold transition-all shadow-xs cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-emerald-600/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-500/20 text-xs font-semibold transition-all shadow-xs cursor-pointer whitespace-nowrap"
             title="Copy structured simulation results to clipboard"
           >
             {copiedDossier ? (
@@ -440,6 +507,27 @@ Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
                       className="w-full accent-emerald-600 cursor-pointer"
                     />
                   </div>
+
+                  <div className="space-y-2 sm:col-span-2 pt-1 border-t border-stone-200/70 dark:border-stone-800/70">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-stone-600 dark:text-stone-400 font-medium">
+                        Regional Value Addition (Rules of Origin threshold: {selectedCommodity.minLocalContentPct}%):
+                      </span>
+                      <span className={`font-mono font-bold tabular-nums ${simulation.rooCompliant ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+                        {localContentPct}% · {simulation.rooCompliant ? 'Originating (Preferential)' : 'Below Threshold (MFN Fallback)'}
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="15"
+                      max="85"
+                      step="5"
+                      aria-label="Regional value addition percentage"
+                      value={localContentPct}
+                      onChange={(e) => setLocalContentPct(Number(e.target.value))}
+                      className="w-full accent-emerald-600 cursor-pointer"
+                    />
+                  </div>
                 </div>
 
                 {/* Policy Regime Selection with SlidingPill */}
@@ -563,7 +651,7 @@ Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
                   <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
                   4. Simulated Economic &amp; Logistics Outcomes:
                 </h3>
-                <span className="text-xs font-mono text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                <span className="text-xs font-mono text-emerald-700 dark:text-emerald-400 font-bold tabular-nums">
                   Total Landed Savings: ${simulation.totalLandedSavingsUSD.toLocaleString()} USD
                 </span>
               </div>
@@ -641,6 +729,13 @@ Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
                   </div>
                 </StaggerGridItem>
               </StaggerGrid>
+
+              <ChartAccessibleTable
+                caption={`AfCFTA Regime Comparison for ${selectedCorridor.name} carrying ${selectedCommodity.name}`}
+                summaryLabel="Inspect full tariff regime & landed cost comparison"
+                headers={['Regime', 'Duty Rate', 'Customs Duty', 'Total Landed Savings', 'Transit', 'Border Hours', 'RoO Status']}
+                rows={regimeComparisonRows}
+              />
             </div>
           </div>
         )}
@@ -661,7 +756,7 @@ Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 font-bold">
+                  <span className="text-xs font-mono text-emerald-700 dark:text-emerald-300 font-bold">
                     Max Incline: {selectedCorridor.region === 'Eastern Africa' ? '2,200m (Rift Escarpment)' : '480m (Sahelian Plateau)'}
                   </span>
                 </div>
@@ -763,7 +858,7 @@ Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
                     {selectedCorridor.originPort} ➔ {selectedCorridor.destinationHub} ({selectedCorridor.distanceKm} km)
                   </p>
                 </div>
-                <span className="text-xs font-mono px-3 py-1 rounded-full bg-stone-200/80 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-bold">
+                <span className="text-xs font-mono text-stone-600 dark:text-stone-300 font-bold tabular-nums">
                   {selectedCorridor.borderPosts.length} Cross-Border Inspections
                 </span>
               </div>
@@ -774,14 +869,14 @@ Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
                     key={post.id}
                     className="p-5 rounded-2xl border border-stone-200/90 dark:border-stone-800 bg-white/90 dark:bg-stone-900/70 space-y-3"
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-2">
                       <span className="font-bold text-sm text-stone-900 dark:text-stone-100 font-serif">
                         {post.name}
                       </span>
-                      <span className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full ${
+                      <span className={`text-[10px] font-mono font-bold shrink-0 ${
                         post.type === 'OSBP' 
-                          ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 font-bold' 
-                          : 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 font-bold'
+                          ? 'text-emerald-700 dark:text-emerald-300' 
+                          : 'text-amber-700 dark:text-amber-300'
                       }`}>
                         {post.type}
                       </span>
@@ -843,9 +938,9 @@ Audit Checksum: SHA-256 Verified (AfCFTA Secretariat Modalities Annex 2)
                   </div>
                 </div>
 
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 text-white font-mono text-xs font-bold shadow-xs shrink-0">
-                  <CheckCircle2 className="w-4 h-4" />
-                  Origin Verified
+                <span className={`inline-flex items-center gap-1.5 font-mono text-xs font-bold shrink-0 ${simulation.rooCompliant ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300'}`}>
+                  {simulation.rooCompliant ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                  {simulation.rooCompliant ? `Origin Verified (${localContentPct}% RVA)` : `Below ${selectedCommodity.minLocalContentPct}% RVA Threshold`}
                 </span>
               </div>
 

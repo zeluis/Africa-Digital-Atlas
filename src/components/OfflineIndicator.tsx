@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
-import { WifiOff, Database, CheckCircle2, X } from 'lucide-react';
+import { WifiOff, Database, CheckCircle2, RefreshCw, X } from 'lucide-react';
 
 interface OfflineIndicatorProps {
   onOpenColophon?: () => void;
@@ -11,6 +11,17 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ onOpenColoph
   const [dismissed, setDismissed] = useState(false);
   const [wasOffline, setWasOffline] = useState(false);
   const [showRestored, setShowRestored] = useState(false);
+  const [swUpdateAvailable, setSwUpdateAvailable] = useState(false);
+  const [updateDismissed, setUpdateDismissed] = useState(false);
+
+  useEffect(() => {
+    const handleUpdateAvailable = () => {
+      setSwUpdateAvailable(true);
+      setUpdateDismissed(false);
+    };
+    window.addEventListener('afriata-sw-update-available', handleUpdateAvailable);
+    return () => window.removeEventListener('afriata-sw-update-available', handleUpdateAvailable);
+  }, []);
 
   useEffect(() => {
     if (!isOnline) {
@@ -26,13 +37,43 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ onOpenColoph
     }
   }, [isOnline, wasOffline]);
 
+  if (swUpdateAvailable && !updateDismissed) {
+    return (
+      <div
+        id="sw-update-available-toast"
+        role="status"
+        aria-live="polite"
+        className="fixed bottom-20 lg:bottom-5 right-4 lg:right-5 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-zinc-900 dark:bg-zinc-800 text-zinc-100 border border-zinc-700 shadow-2xl text-xs font-medium"
+      >
+        <RefreshCw className="w-4 h-4 text-emerald-400 shrink-0" />
+        <span>New Atlas version ready</span>
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new CustomEvent('afriata-sw-apply-update'))}
+          className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-colors cursor-pointer"
+        >
+          Reload
+        </button>
+        <button
+          type="button"
+          onClick={() => setUpdateDismissed(true)}
+          aria-label="Dismiss update notification"
+          className="p-1 text-zinc-400 hover:text-white rounded-lg transition-colors cursor-pointer"
+          title="Dismiss notice"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    );
+  }
+
   if (showRestored) {
     return (
       <div 
         id="network-status-restored-toast"
         role="status"
         aria-live="polite"
-        className="fixed bottom-5 right-5 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-emerald-600 text-white shadow-xl text-xs font-medium animate-in slide-in-from-bottom-5 duration-300"
+        className="fixed bottom-20 lg:bottom-5 right-4 lg:right-5 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-emerald-600 text-white shadow-xl text-xs font-medium animate-in slide-in-from-bottom-5 duration-300"
       >
         <CheckCircle2 className="w-4 h-4 text-emerald-200" />
         <span>Connection Restored — Live Sync Active</span>
@@ -47,7 +88,7 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ onOpenColoph
       id="network-offline-banner"
       role="status"
       aria-live="polite"
-      className="fixed bottom-5 right-5 z-50 flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-zinc-900/95 dark:bg-zinc-800/95 text-zinc-100 border border-zinc-700/80 shadow-2xl backdrop-blur-md text-xs font-medium animate-in slide-in-from-bottom-5 duration-300"
+      className="fixed bottom-20 lg:bottom-5 right-4 lg:right-5 z-50 flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-zinc-900/95 dark:bg-zinc-800/95 text-zinc-100 border border-zinc-700/80 shadow-2xl backdrop-blur-md text-xs font-medium animate-in slide-in-from-bottom-5 duration-300"
     >
       <div className="flex items-center gap-2">
         <span className="relative flex h-2.5 w-2.5">
@@ -72,7 +113,9 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ onOpenColoph
       </div>
 
       <button
+        type="button"
         onClick={() => setDismissed(true)}
+        aria-label="Dismiss offline notice"
         className="p-1 text-zinc-400 hover:text-white rounded-lg transition-colors ml-1 cursor-pointer"
         title="Dismiss notice"
       >

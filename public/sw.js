@@ -14,7 +14,7 @@ const CURRENT_CACHES = [CACHE_STATIC, CACHE_IMMUTABLE, CACHE_FONTS, CACHE_DATA, 
 const PRECACHE_ASSETS = [
   './',
   './index.html',
-  './manifest.json',
+  './manifest.webmanifest',
   './africa-final.svg',
   './favicon.svg',
   './favicon-32x32.png',
