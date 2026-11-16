@@ -197,8 +197,12 @@ function AppContent() {
   const initialRoute = useMemo(() => parseUrlHash(), []);
 
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    const saved = localStorage.getItem('atlas_theme');
-    return saved === 'dark' ? 'dark' : 'light';
+    try {
+      const saved = localStorage.getItem('atlas_theme');
+      return saved === 'dark' ? 'dark' : 'light';
+    } catch {
+      return 'light';
+    }
   });
 
   // Canonical Navigation Tab State (starts at URL route or 'overview')
@@ -272,7 +276,11 @@ function AppContent() {
       root.classList.remove('dark');
       root.setAttribute('data-theme', 'light');
     }
-    localStorage.setItem('atlas_theme', theme);
+    try {
+      localStorage.setItem('atlas_theme', theme);
+    } catch {
+      // Ignore storage restrictions in sandboxed/private iframes
+    }
   }, [theme]);
 
   // Synchronize active app state with URL hash for seamless bookmarking & deep linking
@@ -311,7 +319,11 @@ function AppContent() {
     const needsPathReset = pathname !== basePath && pathname !== `${basePath}index.html`;
     if (currentHash !== targetHash || needsPathReset) {
       const nextUrl = needsPathReset ? `${basePath}#${targetHash}` : `#${targetHash}`;
-      window.history.replaceState(null, '', nextUrl);
+      try {
+        window.history.replaceState(null, '', nextUrl);
+      } catch {
+        // Ignore history restrictions in sandboxed/opaque-origin iframes
+      }
     }
   }, [currentTab, selectedEntityId, activeRegion, selectedIndicatorForAnalytics, selectedHeritageSiteId, compareInitialCountries]);
 
@@ -877,12 +889,14 @@ function AppContent() {
 
 export default function App() {
   return (
-    <LazyMotion features={domAnimation} strict>
-      <DensityProvider>
-        <SavedEntitiesProvider>
-          <AppContent />
-        </SavedEntitiesProvider>
-      </DensityProvider>
-    </LazyMotion>
+    <ViewErrorBoundary fallbackTitle="Unable to Initialize Atlas">
+      <LazyMotion features={domAnimation} strict>
+        <DensityProvider>
+          <SavedEntitiesProvider>
+            <AppContent />
+          </SavedEntitiesProvider>
+        </DensityProvider>
+      </LazyMotion>
+    </ViewErrorBoundary>
   );
 }

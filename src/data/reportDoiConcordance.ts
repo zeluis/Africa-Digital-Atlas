@@ -262,8 +262,8 @@ export function normalizeTitleKey(title: string): string {
  * Retrieves the active user concordance overrides from localStorage
  */
 export function getUserConcordanceOverrides(): Record<string, Partial<DoiConcordanceEntry>> {
-  if (typeof window === 'undefined' || !window.localStorage) return {};
   try {
+    if (typeof window === 'undefined' || !window.localStorage) return {};
     const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (!raw) return {};
     const parsed = JSON.parse(raw);
@@ -453,10 +453,14 @@ export function importUserConcordanceJson(jsonContent: string): {
     }
 
     // Save to localStorage
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const existing = getUserConcordanceOverrides();
-      const merged = { ...existing, ...normalizedMap };
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const existing = getUserConcordanceOverrides();
+        const merged = { ...existing, ...normalizedMap };
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
+      }
+    } catch {
+      // Ignore blocked iframe storage or quota errors
     }
 
     return { success: true, count };
@@ -492,7 +496,11 @@ export function exportCurrentConcordanceJson(): string {
  * Clears user concordance overrides from localStorage
  */
 export function clearUserConcordanceOverrides(): void {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+    }
+  } catch {
+    // Ignore blocked iframe storage
   }
 }

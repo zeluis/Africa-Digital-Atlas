@@ -1,6 +1,8 @@
 node_modules/
 build/
 dist/
+dist-ftp/
+afriata-ftp-*.zip
 coverage/
 docs/.vitepress/dist/
 docs/.vitepress/cache/

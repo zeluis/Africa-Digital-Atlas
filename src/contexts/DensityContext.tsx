@@ -12,16 +12,24 @@ const DensityContext = createContext<DensityContextType | undefined>(undefined);
 
 export const DensityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [density, setDensityState] = useState<DensityMode>(() => {
-    const saved = localStorage.getItem('atlas_density');
-    if (saved === 'analytical' || saved === 'editorial' || saved === 'standard') {
-      return saved;
+    try {
+      const saved = localStorage.getItem('atlas_density');
+      if (saved === 'analytical' || saved === 'editorial' || saved === 'standard') {
+        return saved;
+      }
+    } catch {
+      // Ignore storage restrictions in sandboxed/private iframes
     }
     return 'standard';
   });
 
   const setDensity = (mode: DensityMode) => {
     setDensityState(mode);
-    localStorage.setItem('atlas_density', mode);
+    try {
+      localStorage.setItem('atlas_density', mode);
+    } catch {
+      // Ignore storage restrictions
+    }
   };
 
   const cycleDensity = () => {

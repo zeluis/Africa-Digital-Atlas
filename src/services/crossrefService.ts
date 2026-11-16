@@ -177,8 +177,8 @@ export async function verifyDoiWithCrossref(
     }
 
     // Check localStorage cache
-    if (typeof window !== 'undefined' && window.localStorage) {
-      try {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
         const stored = localStorage.getItem(CACHE_PREFIX + cleanDoi) || localStorage.getItem('africalia_crossref_v1_' + cleanDoi);
         if (stored) {
           const parsed = JSON.parse(stored) as DoiVerificationResult;
@@ -189,9 +189,9 @@ export async function verifyDoiWithCrossref(
           }
           localStorage.removeItem(CACHE_PREFIX + cleanDoi);
         }
-      } catch {
-        // Continue to network request
       }
+    } catch {
+      // Continue to network request
     }
   }
 
@@ -385,8 +385,8 @@ export async function searchCrossrefByTitle(title: string, author?: string): Pro
 function saveToCache(doi: string, result: DoiVerificationResult) {
   const now = Date.now();
   setMemoryCacheEntry(`${doi}_${result.expectedTitle || ''}`, result, now);
-  if (typeof window !== 'undefined' && window.localStorage) {
-    try {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
       localStorage.setItem(CACHE_PREFIX + doi, JSON.stringify(result));
       const rawIndex = localStorage.getItem(CACHE_INDEX_KEY);
       const indexList: string[] = rawIndex ? JSON.parse(rawIndex) : [];
@@ -402,8 +402,8 @@ function saveToCache(doi: string, result: DoiVerificationResult) {
         }
       }
       localStorage.setItem(CACHE_INDEX_KEY, JSON.stringify(indexList));
-    } catch {
-      // Storage quota reached or unavailable
     }
+  } catch {
+    // Storage quota reached or unavailable
   }
 }

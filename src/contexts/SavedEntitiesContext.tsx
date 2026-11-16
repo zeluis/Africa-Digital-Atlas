@@ -55,19 +55,35 @@ export const SavedEntitiesProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   useEffect(() => {
-    localStorage.setItem('atlas_saved_countries', JSON.stringify(savedCountries));
+    try {
+      localStorage.setItem('atlas_saved_countries', JSON.stringify(savedCountries));
+    } catch {
+      // Ignore storage restrictions
+    }
   }, [savedCountries]);
 
   useEffect(() => {
-    localStorage.setItem('atlas_saved_regions', JSON.stringify(savedRegions));
+    try {
+      localStorage.setItem('atlas_saved_regions', JSON.stringify(savedRegions));
+    } catch {
+      // Ignore storage restrictions
+    }
   }, [savedRegions]);
 
   useEffect(() => {
-    localStorage.setItem('atlas_saved_plates', JSON.stringify(savedPlates));
+    try {
+      localStorage.setItem('atlas_saved_plates', JSON.stringify(savedPlates));
+    } catch {
+      // Ignore storage restrictions
+    }
   }, [savedPlates]);
 
   useEffect(() => {
-    localStorage.setItem('atlas_recent_searches', JSON.stringify(recentSearches));
+    try {
+      localStorage.setItem('atlas_recent_searches', JSON.stringify(recentSearches));
+    } catch {
+      // Ignore storage restrictions
+    }
   }, [recentSearches]);
 
   const toggleSaveCountry = (countryId: string) => {

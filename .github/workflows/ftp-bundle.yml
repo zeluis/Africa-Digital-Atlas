@@ -1,0 +1,65 @@
+name: Build FTP-Ready Zip
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      base_path:
+        description: 'Target upload folder ("/africa-atlas/" for subfolder or "/" for domain root)'
+        required: true
+        default: '/africa-atlas/'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  package-ftp-zip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci || npm install
+          else
+            npm install
+          fi
+
+      - name: Verify views, research lexicon, and dataset integrity
+        run: |
+          node scripts/verify-views-and-chunks.mjs
+          npm run research:check
+          npm run research:integrity
+
+      - name: Build FTP-ready static bundle
+        env:
+          FTP_BASE_PATH: ${{ github.event.inputs.base_path || '/africa-atlas/' }}
+        run: |
+          node scripts/build-ftp-bundle.mjs --base="${FTP_BASE_PATH}"
+
+      - name: Verify offline readiness & performance budgets
+        run: |
+          node scripts/offline-audit.mjs --check
+          node scripts/perf-budget.mjs
+          npm run perf:features
+
+      - name: Upload FTP-ready zip artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: afriata-ftp-ready
+          path: dist-ftp
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30

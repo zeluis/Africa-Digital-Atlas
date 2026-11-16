@@ -196,8 +196,8 @@ export function getAllWorkingPapers(): Record<string, ResearchReport> {
   }
 
   // Merge client-side dynamically uploaded working papers from localStorage
-  if (typeof window !== 'undefined' && window.localStorage) {
-    try {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
       const savedWp = localStorage.getItem('afriata_custom_working_papers') || localStorage.getItem('africalia_custom_working_papers');
       if (savedWp) {
         const parsed = JSON.parse(savedWp);
@@ -212,9 +212,9 @@ export function getAllWorkingPapers(): Record<string, ResearchReport> {
           }
         }
       }
-    } catch {
-      // Ignore parse errors
     }
+  } catch {
+    // Ignore parse errors or blocked iframe storage
   }
 
   return unifiedWp;
@@ -300,8 +300,8 @@ export function getAllReports(): Record<string, ResearchReport> {
     ...dropInWorkingPapers
   };
 
-  if (typeof window !== 'undefined' && window.localStorage) {
-    try {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
       const savedReports = localStorage.getItem('afriata_custom_reports') || localStorage.getItem('africalia_custom_reports');
       if (savedReports) {
         const parsed = JSON.parse(savedReports);
@@ -312,9 +312,9 @@ export function getAllReports(): Record<string, ResearchReport> {
         const parsedWp = JSON.parse(savedWp);
         Object.assign(unified, parsedWp);
       }
-    } catch {
-      // Ignore parse errors on stored items
     }
+  } catch {
+    // Ignore parse errors or blocked iframe storage
   }
 
   return unified;
