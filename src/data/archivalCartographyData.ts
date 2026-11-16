@@ -78,10 +78,10 @@ export const HISTORICAL_MAP_PLATES: HistoricalMapPlate[] = [
     year: "1749",
     century: "18th Century (Enlightenment)",
     region: "Pan-African Continental",
-    imageUrl: "/cartography/plate-03-tilte-Afrique,\" created by Jean Baptiste Bourguignon d'Anville in 1749-default.webp",
+    imageUrl: "/cartography/plate-03-tilte-Afrique, created by Jean Baptiste Bourguignon d'Anville in 1749-default.webp",
     fallbackUrls: [
       "/cartography/thumbs/danville-1749-opt-thumb.webp",
-      "/cartography/thumbs/Plate-01-tilte-Afrique,\" created by Jean Baptiste Bourguignon d'Anville in 1749-default-thumb.webp"
+      "/cartography/thumbs/Plate-01-tilte-Afrique, created by Jean Baptiste Bourguignon d'Anville in 1749-default-thumb.webp"
     ],
     thumbnailUrl: "/cartography/thumbs/danville-1749-opt-thumb.webp",
     source: "Jean-Baptiste Bourguignon d'Anville, Paris (1749). Hand-colored copperplate engraving published under the auspices of the Duke of Orléans.",
@@ -125,7 +125,7 @@ export const HISTORICAL_MAP_PLATES: HistoricalMapPlate[] = [
     year: "1802",
     century: "19th Century (British Hydrography)",
     region: "Pan-African Continental",
-    imageUrl: "/cartography/Plate-001-tilte-titled \"Africa,\" was created by Aaron Arrowsmith and published on November 1, 1802.webp",
+    imageUrl: "/cartography/Plate-001-tilte-titled Africa, was created by Aaron Arrowsmith and published on November 1, 1802.webp",
     fallbackUrls: ["/cartography/thumbs/arrowsmith-1802-thumb.webp"],
     thumbnailUrl: "/cartography/thumbs/arrowsmith-1802-thumb.webp",
     source: "Aaron Arrowsmith, Hydrographer to the Prince of Wales, London (Published November 1, 1802).",
@@ -163,11 +163,12 @@ export const HISTORICAL_MAP_PLATES: HistoricalMapPlate[] = [
     year: "1824",
     century: "19th Century (German Scientific Geography)",
     region: "Pan-African Continental",
-    imageUrl: "/cartography/plate-02-tilte-title- *karte von afrika nach den neuesten entdeckungen... bearbeitet im jahre 1824* author- heinrich berghaus (1797–1884) engraver- heinrich brose publisher- j. g. cotta, stuttgart date- 1824 (issued 1826)-16777000.webp",
+    imageUrl: "/cartography/plate-02-tilte-title- karte von afrika nach den neuesten entdeckungen... bearbeitet im jahre 1824 author- heinrich berghaus (1797–1884) engraver- heinrich brose publisher- j. g. cotta, stuttgart date- 1824 (issued 1826)-16777000.webp",
     fallbackUrls: [
-      "/cartography/thumbs/Plate-03-tilte-Title- *Karte von Afrika nach den neuesten Entdeckungen... bearbeitet im Jahre 1824* Author- Heinrich Berghaus (1797–1884) Engraver- Heinrich Brose Publisher- J. G. Cotta, Stuttgart Date- 1824 (issued 1826)-16777000-thumb.webp"
+      "/cartography/thumbs/berghaus-1824-opt-thumb.webp",
+      "/cartography/thumbs/Plate-03-tilte-Title- Karte von Afrika nach den neuesten Entdeckungen... bearbeitet im Jahre 1824 Author- Heinrich Berghaus (1797–1884) Engraver- Heinrich Brose Publisher- J. G. Cotta, Stuttgart Date- 1824 (issued 1826)-16777000-thumb.webp"
     ],
-    thumbnailUrl: "/cartography/thumbs/Plate-03-tilte-Title- *Karte von Afrika nach den neuesten Entdeckungen... bearbeitet im Jahre 1824* Author- Heinrich Berghaus (1797–1884) Engraver- Heinrich Brose Publisher- J. G. Cotta, Stuttgart Date- 1824 (issued 1826)-16777000-thumb.webp",
+    thumbnailUrl: "/cartography/thumbs/berghaus-1824-opt-thumb.webp",
     source: "Author: Heinrich Berghaus (1797–1884), Engraver: Heinrich Brose, Publisher: J. G. Cotta, Stuttgart (1824, issued 1826).",
     institution: "J. G. Cotta Publishing Archive / Berlin Geographical Society",
     description: "Titled \"Karte von Afrika nach den neuesten Entdeckungen... bearbeitet im Jahre 1824\", authored by Heinrich Berghaus (1797–1884), engraved by Heinrich Brose, and published by J. G. Cotta in Stuttgart (date 1824, issued 1826). A triumph of German thematic and physical cartography.",
