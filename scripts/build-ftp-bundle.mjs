@@ -167,4 +167,21 @@ if (!indexHtml.includes(`<meta name="afriata-base" content="${baseUrl}"`)) {
   throw new Error(`dist-ftp/index.html afriata-base meta tag does not match ${baseUrl}.`);
 }
 
+// Cross-platform filesystem & GitHub Actions upload-artifact validation
+// Ensures zero invalid characters (", *, :, <, >, |, ?, \r, \n) across the bundle
+const ILLEGAL_CHARS = ['"', '*', ':', '<', '>', '|', '?', '\r', '\n'];
+function auditDirFilenames(dir) {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    if (ILLEGAL_CHARS.some(c => entry.name.includes(c))) {
+      throw new Error(`Invalid filesystem character in dist-ftp file path: ${path.join(dir, entry.name)}`);
+    }
+    if (entry.isDirectory()) {
+      auditDirFilenames(path.join(dir, entry.name));
+    }
+  }
+}
+auditDirFilenames(FTP_DIR);
+
 console.log(`✓ FTP bundle verified cleanly at dist-ftp/ (base=${baseUrl}, docs=${docsBase})`);
+
