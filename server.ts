@@ -1,17 +1,34 @@
 import express from "express";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import { GoogleGenAI, Modality } from "@google/genai";
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
+
+function resolveDistDir(): string {
+  const candidates = [
+    path.resolve(process.cwd(), "dist"),
+    ...(typeof __dirname !== "undefined" ? [path.resolve(__dirname)] : []),
+  ];
+  for (const dir of candidates) {
+    if (fs.existsSync(path.join(dir, "index.html"))) {
+      return dir;
+    }
+  }
+  return candidates[0];
+}
+
+function resolveMountPrefix(): string {
+  const raw = process.env.BASE_PATH || process.env.BASE_URL || process.env.VITE_BASE_PATH || "";
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === "/" || trimmed === "." || trimmed === "./") return "";
+  const withLeading = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  return withLeading.replace(/\/+$/, "");
+}
 
 app.use(express.json());
 
@@ -390,6 +407,33 @@ app.post("/api/tts", async (req, res) => {
 
 // Production static file serving or development Vite handling
 async function startServer() {
+  const mountPrefix = resolveMountPrefix();
+  const distPath = resolveDistDir();
+  const docsPath = path.join(distPath, "docs");
+
+  // Return structured JSON 404 for unknown API endpoints instead of falling through to SPA HTML
+  app.all("/api/*", (_req, res) => {
+    res.status(404).json({ error: "API endpoint not found" });
+  });
+
+  if (mountPrefix) {
+    // Allow mounted reverse-proxy subpath calls like /atlas/api/* to reuse registered /api/* handlers
+    app.use(`${mountPrefix}/api`, (req, res, next) => {
+      req.url = `/api${req.url}`;
+      app(req, res, next);
+    });
+  }
+
+  const docsMount = `${mountPrefix}/docs`;
+  if (fs.existsSync(path.join(docsPath, "index.html"))) {
+    app.use(docsMount, (req, res, next) => {
+      if (req.originalUrl.split("?")[0] === docsMount) {
+        return res.redirect(301, `${docsMount}/`);
+      }
+      next();
+    }, express.static(docsPath));
+  }
+
   if (process.env.NODE_ENV !== "production") {
     const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
@@ -401,15 +445,23 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (req, res) => {
+    const mountStaticAt = mountPrefix || "/";
+    app.use(mountStaticAt, express.static(distPath));
+    if (mountPrefix) {
+      app.get(mountPrefix, (req, res, next) => {
+        if (req.originalUrl.split("?")[0] === mountPrefix) {
+          return res.redirect(301, `${mountPrefix}/`);
+        }
+        next();
+      });
+    }
+    app.get("*", (_req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Afriata server running on http://0.0.0.0:${PORT}`);
+    console.log(`Afriata server running on http://0.0.0.0:${PORT}${mountPrefix || "/"}`);
   });
 }
 

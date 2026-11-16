@@ -8,6 +8,8 @@
  * - Acoustic Resonator: Web Audio API physical modeling pentatonic kalimba/marimba chord progression
  */
 
+import { isBackendApiAvailable, resolveApiUrl } from './apiClient';
+
 export interface SpeechGreetingConfig {
   text: string;
   langTag?: string;
@@ -389,26 +391,28 @@ export async function speakAfriataGreeting(config: SpeechGreetingConfig) {
     return;
   }
 
-  // 2. Query optional Server-Side Neural TTS API if available
+  // 2. Query optional Server-Side Neural TTS API if backend is available
   try {
-    const res = await fetch('/api/tts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        text: formattedText,
-        langTag: config.langTag,
-        languageName: config.languageName,
-      }),
-    });
+    if (await isBackendApiAvailable()) {
+      const res = await fetch(resolveApiUrl('/api/tts'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: formattedText,
+          langTag: config.langTag,
+          languageName: config.languageName,
+        }),
+      });
 
-    if (res.ok) {
-      const data = await res.json();
-      if (data.audioBase64) {
-        const mime = data.mimeType || 'audio/mp3';
-        const dataUrl = `data:${mime};base64,${data.audioBase64}`;
-        clientAudioCache.set(cacheKey, dataUrl);
-        playNeuralAudio(dataUrl, { ...config, text: formattedText });
-        return;
+      if (res.ok) {
+        const data = await res.json();
+        if (data.audioBase64) {
+          const mime = data.mimeType || 'audio/mp3';
+          const dataUrl = `data:${mime};base64,${data.audioBase64}`;
+          clientAudioCache.set(cacheKey, dataUrl);
+          playNeuralAudio(dataUrl, { ...config, text: formattedText });
+          return;
+        }
       }
     }
   } catch {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
 import { m, AnimatePresence } from 'motion/react';
+import { resolveDocsPath } from '../utils/assetPath';
 import { 
   Compass, 
   Map as MapIcon, 
@@ -1241,7 +1242,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
           {/* Documentation & Guides External Link */}
           <a
-            href="./docs/"
+            href={resolveDocsPath('')}
             target="_blank"
             rel="noopener noreferrer"
             title={t('nav.docs', 'Documentation & Guides')}

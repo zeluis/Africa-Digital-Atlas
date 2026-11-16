@@ -1,5 +1,6 @@
 import { DataSource, IndicatorDefinition, Observation } from './types';
 import { createLazyAssetStore } from '../utils/lazyDataLoader';
+import { isBackendApiAvailable, resolveApiUrl } from '../utils/apiClient';
 
 export interface ExternalApiConnector {
   id: string;
@@ -336,18 +337,20 @@ export async function testLiveApiConnection(connectorId: string, countryIso3 = '
   const connector = EXTERNAL_API_CONNECTORS.find(c => c.id === connectorId);
   const startTime = performance.now();
 
-  // 1. Try server-side proxy endpoint first to bypass browser CORS constraints
+  // 1. Try server-side proxy endpoint first when backend API is present
   try {
-    const serverRes = await fetch('/api/ingest/test-connector', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ connectorId, countryIso3 }),
-      signal: AbortSignal.timeout(4500)
-    });
-    if (serverRes.ok) {
-      const serverResult: LiveApiTestResult = await serverRes.json();
-      if (serverResult && serverResult.connectorId) {
-        return serverResult;
+    if (await isBackendApiAvailable()) {
+      const serverRes = await fetch(resolveApiUrl('/api/ingest/test-connector'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ connectorId, countryIso3 }),
+        signal: AbortSignal.timeout(4500)
+      });
+      if (serverRes.ok) {
+        const serverResult: LiveApiTestResult = await serverRes.json();
+        if (serverResult && serverResult.connectorId) {
+          return serverResult;
+        }
       }
     }
   } catch {

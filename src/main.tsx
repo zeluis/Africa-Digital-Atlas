@@ -3,6 +3,7 @@ import {createRoot} from 'react-dom/client';
 import './fonts.css';
 import App from './App.tsx';
 import { LanguageProvider } from './i18n/LanguageContext';
+import { resolveAssetPath } from './utils/assetPath';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -15,13 +16,10 @@ createRoot(document.getElementById('root')!).render(
 
 // PWA Service Worker Management
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
-  const isDevEnvironment = import.meta.env.DEV || 
-    window.location.hostname === 'localhost' || 
-    window.location.hostname === '127.0.0.1' || 
-    window.location.hostname.includes('run.app');
+  const isDevEnvironment = Boolean(import.meta.env.DEV);
 
   if (isDevEnvironment) {
-    // In development mode and Cloud Run preview, actively unregister any existing service worker
+    // In development mode, actively unregister any existing service worker
     // to prevent it from intercepting dynamically imported Vite modules (.tsx/.ts)
     navigator.serviceWorker.getRegistrations().then((registrations) => {
       for (const reg of registrations) {
@@ -31,7 +29,9 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator && window.loca
     if ('caches' in window) {
       caches.keys().then((keys) => {
         for (const k of keys) {
-          if (k.startsWith('africa-atlas-')) caches.delete(k).catch(() => {});
+          if (k.startsWith('africa-') || k.startsWith('afriata-') || k.startsWith('workbox-')) {
+            caches.delete(k).catch(() => {});
+          }
         }
       }).catch(() => {});
     }
@@ -56,7 +56,7 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator && window.loca
       });
 
       navigator.serviceWorker
-        .register('./sw.js')
+        .register(resolveAssetPath('sw.js'))
         .then((reg) => {
           console.log('[PWA] Service worker registered successfully with scope:', reg.scope);
 

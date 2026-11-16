@@ -83,13 +83,45 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
 
+      - name: Configure Build Paths
+        id: build-paths
+        run: |
+          RAW_BASE="${{ steps.pages.outputs.base_path }}"
+          if [ -z "$RAW_BASE" ] || [ "$RAW_BASE" = "/" ]; then
+            echo "base_url=/" >> "$GITHUB_OUTPUT"
+            echo "docs_base=/docs/" >> "$GITHUB_OUTPUT"
+          else
+            CLEAN_BASE="/${RAW_BASE#/}"
+            CLEAN_BASE="${CLEAN_BASE%/}/"
+            echo "base_url=${CLEAN_BASE}" >> "$GITHUB_OUTPUT"
+            echo "docs_base=${CLEAN_BASE}docs/" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build project
         env:
-          BASE_URL: ${{ steps.pages.outputs.base_path || './' }}
+          BASE_URL: ${{ steps.build-paths.outputs.base_url }}
+          DOCS_BASE: ${{ steps.build-paths.outputs.docs_base }}
+          VITE_STATIC_ONLY: 'true'
         run: |
           npm run build
           test -f ./dist/.nojekyll || touch ./dist/.nojekyll
           test -f ./dist/404.html || cp ./public/404.html ./dist/404.html
+
+      - name: Verify Static Artifacts & Production Server Bundle
+        env:
+          DOCS_BASE: ${{ steps.build-paths.outputs.docs_base }}
+        run: |
+          test -f ./dist/index.html
+          test -f ./dist/sw.js
+          test -f ./dist/docs/index.html
+          test -f ./dist/404.html
+          grep -q "${DOCS_BASE}" ./dist/docs/index.html
+          NODE_ENV=production PORT=4321 node dist/server.cjs &
+          SRV_PID=$!
+          sleep 2
+          curl -fsS http://127.0.0.1:4321/api/health | grep -q '"status":"ok"'
+          curl -fsS -o /dev/null http://127.0.0.1:4321/docs/
+          kill "$SRV_PID" || true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5

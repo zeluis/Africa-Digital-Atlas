@@ -23,6 +23,7 @@ import { OrganizationLogo } from '../components/OrganizationLogo';
 import { UN_GEOSCHEME_TONAL_PALETTES as UN_M49_REGIONAL_PALETTES } from '../data/unGeoschemeColors';
 import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
 import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
+import { resolveDocsPath } from '../utils/assetPath';
 
 interface UniversalStyleGuideViewProps {
   onNavigateTab: (tab: CanonicalNavTab) => void;
@@ -125,7 +126,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
               </button>
             )}
             <a
-              href="./docs/UNIVERSAL_STYLE_GUIDE.md"
+              href={resolveDocsPath('UNIVERSAL_STYLE_GUIDE.html')}
               {...SAFE_EXTERNAL_LINK_PROPS}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 dark:hover:bg-white text-white dark:text-stone-900 text-xs font-bold transition-all shadow-sm cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
             >

@@ -6,8 +6,9 @@
 
 import { CanonicalVoyage } from '../data/slaveVoyagesTypes';
 import { CANONICAL_VOYAGES } from '../data/slaveVoyagesData';
+import { getDeploymentCacheScope } from './assetPath';
 
-const DB_NAME = 'africa_atlas_slavevoyages';
+const DB_NAME = `africa_atlas_slavevoyages_${getDeploymentCacheScope()}`;
 const DB_VERSION = 1;
 const STORE_NAME = 'voyages_cache';
 const META_STORE = 'metadata_cache';

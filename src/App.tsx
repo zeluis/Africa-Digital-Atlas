@@ -12,6 +12,7 @@ import { runViewTransition } from './utils/motion';
 import { PanelLeftOpen } from 'lucide-react';
 import { getPageInfo, isReportOrPaperTab } from './utils/navigationTitles';
 import { MobileBottomNav } from './components/MobileBottomNav';
+import { resolveAppBasePath } from './utils/assetPath';
 
 const NavigationDrawer = lazyWithRetry(() => import('./components/NavigationDrawer').then(m => ({ default: m.NavigationDrawer })), 'NavigationDrawer');
 const Footer = lazyWithRetry(() => import('./components/Footer').then(m => ({ default: m.Footer })), 'Footer');
@@ -81,56 +82,89 @@ const parseUrlHash = (): {
   compareCountries?: string[];
 } => {
   if (typeof window === 'undefined') return { tab: 'overview' };
-  const hash = window.location.hash.replace(/^#\/?/, '').trim();
-  if (!hash) return { tab: 'overview' };
+  const rawHash = window.location.hash.replace(/^#\/?/, '').trim();
+  const windowParams = new URLSearchParams(window.location.search);
 
-  if (hash.startsWith('heritage')) {
-    const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+  let hash = rawHash;
+  if (!hash || hash.startsWith('?')) {
+    const hashParams = hash.startsWith('?') ? new URLSearchParams(hash.slice(1)) : null;
+    const tabFromQuery = (hashParams?.get('tab') || windowParams.get('tab') || '').replace(/^#\/?/, '').trim();
+    const queryStr = hash.startsWith('?') ? hash.slice(1) : window.location.search.replace(/^\?/, '');
+    if (tabFromQuery) {
+      hash = queryStr ? `${tabFromQuery}?${queryStr}` : tabFromQuery;
+    } else if (!hash) {
+      const basePath = resolveAppBasePath();
+      const pathname = window.location.pathname || '/';
+      const baseNoTrailing = basePath === '/' ? '' : basePath.slice(0, -1);
+      let pathRoute = '';
+      if (pathname.startsWith(basePath)) {
+        pathRoute = pathname.slice(basePath.length);
+      } else if (baseNoTrailing && pathname === baseNoTrailing) {
+        pathRoute = '';
+      }
+      pathRoute = pathRoute.replace(/^\/+|\/+$/g, '');
+      if (pathRoute === 'index.html') {
+        pathRoute = '';
+      }
+      if (pathRoute) {
+        hash = queryStr ? `${pathRoute}?${queryStr}` : pathRoute;
+      } else {
+        return { tab: 'overview' };
+      }
+    }
+  }
+
+  const [hashRouteRaw, hashQuery = ''] = hash.split('?');
+  const hashRoute = hashRouteRaw.replace(/\/+$/, '');
+  const getCombinedParams = () => new URLSearchParams(hashQuery || window.location.search.replace(/^\?/, ''));
+
+  if (hashRoute.startsWith('heritage')) {
+    const params = getCombinedParams();
     const idParam = params.get('id');
     const siteId = idParam ? parseInt(idParam, 10) : undefined;
     return { tab: 'heritage' as CanonicalNavTab, siteId: siteId && !isNaN(siteId) ? siteId : undefined };
   }
 
-  if (hash.startsWith('countries/') || hash.startsWith('country/')) {
-    const parts = hash.split('/');
+  if (hashRoute.startsWith('countries/') || hashRoute.startsWith('country/')) {
+    const parts = hashRoute.split('/');
     const code = (parts[1] || 'NGA').toUpperCase();
     return { tab: 'countries', entityId: code };
   }
 
-  if (hash.startsWith('regions/') || hash.startsWith('region/')) {
-    const rawRegion = decodeURIComponent(hash.replace(/^(regions|region)\//, ''));
+  if (hashRoute.startsWith('regions/') || hashRoute.startsWith('region/')) {
+    const rawRegion = decodeURIComponent(hashRoute.replace(/^(regions|region)\//, ''));
     if (['Northern Africa', 'Western Africa', 'Central Africa', 'Eastern Africa', 'Southern Africa'].includes(rawRegion)) {
       return { tab: 'regions', region: rawRegion as AfricanRegion };
     }
     return { tab: 'regions' };
   }
 
-  if (hash.startsWith('region-')) {
-    const mapped = REGION_ID_TO_NAME[hash];
-    return { tab: hash as CanonicalNavTab, region: mapped };
+  if (hashRoute.startsWith('region-')) {
+    const mapped = REGION_ID_TO_NAME[hashRoute];
+    return { tab: hashRoute as CanonicalNavTab, region: mapped };
   }
 
-  if (hash.startsWith('analytics')) {
-    const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+  if (hashRoute.startsWith('analytics')) {
+    const params = getCombinedParams();
     const ind = params.get('ind') || 'NY.GDP.MKTP.CD';
     return { tab: 'analytics', indicator: ind };
   }
 
-  if (hash.startsWith('iconography')) {
-    const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+  if (hashRoute.startsWith('iconography')) {
+    const params = getCombinedParams();
     const plate = params.get('plate') || params.get('castas') || undefined;
     const q = params.get('q') || undefined;
     return { tab: 'iconography', plateId: plate, searchQuery: q };
   }
 
-  if (hash.startsWith('cartography') || hash.startsWith('archival-cartography')) {
-    const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+  if (hashRoute.startsWith('cartography') || hashRoute.startsWith('archival-cartography')) {
+    const params = getCombinedParams();
     const plate = params.get('plate') || undefined;
     return { tab: 'archival-cartography', plateId: plate };
   }
 
-  if (hash.startsWith('compare')) {
-    const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+  if (hashRoute.startsWith('compare')) {
+    const params = getCombinedParams();
     const countriesParam = params.get('countries') || params.get('c');
     const left = params.get('left');
     const right = params.get('right');
@@ -145,8 +179,8 @@ const parseUrlHash = (): {
     return { tab: 'compare', compareCountries };
   }
 
-  if (hash.startsWith('map')) {
-    const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+  if (hashRoute.startsWith('map')) {
+    const params = getCombinedParams();
     const country = params.get('country') || params.get('c');
     const metric = params.get('metric') || params.get('ind');
     return { 
@@ -156,7 +190,7 @@ const parseUrlHash = (): {
     };
   }
 
-  return { tab: hash as CanonicalNavTab };
+  return { tab: (hashRoute || 'overview') as CanonicalNavTab };
 };
 
 function AppContent() {
@@ -262,13 +296,22 @@ function AppContent() {
       if (currentHash.startsWith('cartography') || currentHash.startsWith('archival-cartography')) {
         return;
       }
+    } else if (currentTab === 'slave-trade') {
+      const currentHash = window.location.hash.replace(/^#\/?/, '').trim();
+      if (currentHash.startsWith('slave-trade?')) {
+        return;
+      }
     } else if (currentTab === 'heritage') {
       targetHash = selectedHeritageSiteId ? `heritage?id=${selectedHeritageSiteId}` : 'heritage';
     }
 
     const currentHash = window.location.hash.replace(/^#\/?/, '').trim();
-    if (currentHash !== targetHash) {
-      window.history.replaceState(null, '', `#${targetHash}`);
+    const basePath = resolveAppBasePath();
+    const pathname = window.location.pathname || '/';
+    const needsPathReset = pathname !== basePath && pathname !== `${basePath}index.html`;
+    if (currentHash !== targetHash || needsPathReset) {
+      const nextUrl = needsPathReset ? `${basePath}#${targetHash}` : `#${targetHash}`;
+      window.history.replaceState(null, '', nextUrl);
     }
   }, [currentTab, selectedEntityId, activeRegion, selectedIndicatorForAnalytics, selectedHeritageSiteId, compareInitialCountries]);
 
@@ -563,24 +606,26 @@ function AppContent() {
         />
 
         {/* Desktop Navigation Drawer (Starts open, 272px width, doesn't close on tab clicks) + Mobile Bottom Sheet */}
-        <Suspense fallback={<div className="hidden lg:block w-[272px] shrink-0" />}>
-          <NavigationDrawer
-            currentTab={currentTab}
-            activeRegion={activeRegion}
-            onSelectTab={handleSelectTab}
-            isDesktopOpen={isDesktopDrawerOpen}
-            onToggleDesktop={handleToggleMenu}
-            isMobileOpen={isMobileNavOpen}
-            onCloseMobile={() => setIsMobileNavOpen(false)}
-            onOpenOnboarding={() => atlasModalStore.openOnboarding()}
-            onOpenColophon={() => atlasModalStore.openColophon()}
-            onOpenCitationModal={() => atlasModalStore.openAcademicExport()}
-            onOpenWorkingPapers={() => atlasModalStore.openWorkingPapers()}
-            onOpenMethodologyAudit={() => atlasModalStore.openMethodologyAudit()}
-            onOpenAfcftaSimulator={() => atlasModalStore.openAfcftaSimulator()}
-            isIconographyIngestion={isIconographyIngestion}
-          />
-        </Suspense>
+        <ViewErrorBoundary compact fallbackTitle="Navigation Drawer Unavailable">
+          <Suspense fallback={<div className="hidden lg:block w-[272px] shrink-0" />}>
+            <NavigationDrawer
+              currentTab={currentTab}
+              activeRegion={activeRegion}
+              onSelectTab={handleSelectTab}
+              isDesktopOpen={isDesktopDrawerOpen}
+              onToggleDesktop={handleToggleMenu}
+              isMobileOpen={isMobileNavOpen}
+              onCloseMobile={() => setIsMobileNavOpen(false)}
+              onOpenOnboarding={() => atlasModalStore.openOnboarding()}
+              onOpenColophon={() => atlasModalStore.openColophon()}
+              onOpenCitationModal={() => atlasModalStore.openAcademicExport()}
+              onOpenWorkingPapers={() => atlasModalStore.openWorkingPapers()}
+              onOpenMethodologyAudit={() => atlasModalStore.openMethodologyAudit()}
+              onOpenAfcftaSimulator={() => atlasModalStore.openAfcftaSimulator()}
+              isIconographyIngestion={isIconographyIngestion}
+            />
+          </Suspense>
+        </ViewErrorBoundary>
 
         {/* Main Content Area */}
         <main
@@ -809,17 +854,19 @@ function AppContent() {
        currentTab !== 'heritage' && 
        !(currentTab === 'iconography' && isIconographyIngestion) && 
        !(currentTab === 'slave-trade' && (slaveTradeSubTab === 'flow-map' || slaveTradeSubTab === 'ports')) && (
-        <Suspense fallback={null}>
-          <div id="app-footer-container">
-            <Footer 
-              onNavigateTab={handleSelectTab}
-              onOpenColophon={() => atlasModalStore.openColophon()}
-              onOpenCitationModal={() => atlasModalStore.openAcademicExport()}
-              onOpenWorkingPapers={() => atlasModalStore.openWorkingPapers()}
-              onOpenMethodologyAudit={() => atlasModalStore.openMethodologyAudit()}
-            />
-          </div>
-        </Suspense>
+        <ViewErrorBoundary compact fallbackTitle="Footer Unavailable">
+          <Suspense fallback={null}>
+            <div id="app-footer-container">
+              <Footer 
+                onNavigateTab={handleSelectTab}
+                onOpenColophon={() => atlasModalStore.openColophon()}
+                onOpenCitationModal={() => atlasModalStore.openAcademicExport()}
+                onOpenWorkingPapers={() => atlasModalStore.openWorkingPapers()}
+                onOpenMethodologyAudit={() => atlasModalStore.openMethodologyAudit()}
+              />
+            </div>
+          </Suspense>
+        </ViewErrorBoundary>
       )}
 
       {/* Offline Status Toast / Banner */}

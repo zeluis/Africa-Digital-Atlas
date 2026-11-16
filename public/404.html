@@ -5,30 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Afriata: Africa Data Atlas</title>
     <script>
-      // Single Page Application deep link redirector for GitHub Pages
-      (function() {
+      // Universal Single Page Application deep-link redirector
+      // Supports GitHub Pages project/user sites, custom domains, and arbitrary subdirectories on any host.
+      (function () {
         var l = window.location;
         var pathSegments = l.pathname.split('/').filter(Boolean);
-        var repoSegment = '';
-        var isGitHubPagesSubpath = l.hostname.endsWith('github.io') && pathSegments.length > 0;
-        
-        if (isGitHubPagesSubpath) {
-          repoSegment = '/' + pathSegments[0];
-          pathSegments.shift();
+        var configuredBase = '__AFRIATA_BASE__';
+
+        var KNOWN_ROUTES = {
+          overview: 1,
+          explore: 1,
+          countries: 1,
+          country: 1,
+          regions: 1,
+          region: 1,
+          analytics: 1,
+          map: 1,
+          compare: 1,
+          languages: 1,
+          heritage: 1,
+          provenance: 1,
+          privacy: 1,
+          pillars: 1,
+          blocs: 1,
+          'slave-trade': 1,
+          iconography: 1,
+          'archival-cartography': 1,
+          'molecular-legacies': 1,
+          'african-development-foundations': 1,
+          'ethnic-tree': 1,
+          'research-directory': 1,
+          'style-guide': 1,
+          docs: 1
+        };
+
+        function isAppRoute(seg) {
+          var s = (seg || '').toLowerCase();
+          return Boolean(KNOWN_ROUTES[s]) || /^(region-|report-|rep-|wp-|wkp-|afriata-working-paper-)/.test(s);
         }
-        
-        var cleanPath = pathSegments.join('/');
-        var search = l.search ? (cleanPath ? '&' : '?') + l.search.slice(1) : '';
-        var targetHash = cleanPath ? '#' + cleanPath + search : '';
-        
+
+        var basePrefix = '';
+        var routeSegments = pathSegments.slice();
+
+        if (configuredBase && configuredBase !== '__AFRIATA_' + 'BASE__' && configuredBase !== './' && configuredBase !== '.') {
+          var normBase = configuredBase === '/' ? '' : '/' + configuredBase.replace(/^\/+|\/+$/g, '');
+          var baseSegs = normBase ? normBase.split('/').filter(Boolean) : [];
+          basePrefix = normBase;
+          if (baseSegs.length > 0 && pathSegments.slice(0, baseSegs.length).join('/') === baseSegs.join('/')) {
+            routeSegments = pathSegments.slice(baseSegs.length);
+          }
+        } else {
+          var firstRouteIdx = -1;
+          for (var i = 0; i < pathSegments.length; i++) {
+            if (isAppRoute(pathSegments[i])) {
+              firstRouteIdx = i;
+              break;
+            }
+          }
+          if (firstRouteIdx !== -1) {
+            basePrefix = firstRouteIdx > 0 ? '/' + pathSegments.slice(0, firstRouteIdx).join('/') : '';
+            routeSegments = pathSegments.slice(firstRouteIdx);
+          } else if (l.hostname.endsWith('github.io') && pathSegments.length > 0 && !pathSegments[0].includes('.')) {
+            basePrefix = '/' + pathSegments[0];
+            routeSegments = pathSegments.slice(1);
+          } else if (pathSegments.length > 1) {
+            basePrefix = '/' + pathSegments.slice(0, -1).join('/');
+            routeSegments = pathSegments.slice(-1);
+          }
+        }
+
+        var cleanPath = routeSegments.join('/');
+        if (cleanPath === 'docs') {
+          l.replace(l.origin + basePrefix + '/docs/');
+          return;
+        }
+
+        var search = l.search ? (cleanPath ? '?' : '') + l.search.slice(1) : '';
+        var targetHash = cleanPath ? '#' + cleanPath + search : (l.search ? '#overview' + l.search : '');
+
         if (l.hash && !targetHash) {
           targetHash = l.hash;
         } else if (l.hash && targetHash) {
           targetHash = targetHash + (l.hash.startsWith('#') ? '/' + l.hash.slice(1) : l.hash);
         }
-        
-        var destination = l.origin + repoSegment + '/' + (targetHash ? targetHash : '');
-        l.replace(destination);
+
+        var destination = l.origin + basePrefix + '/' + (targetHash || '');
+        if (destination !== l.href) {
+          l.replace(destination);
+        }
       })();
     </script>
   </head>

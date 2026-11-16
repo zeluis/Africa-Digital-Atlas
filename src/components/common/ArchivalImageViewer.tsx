@@ -520,7 +520,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
 
   if (!illustration) return null;
 
-  const rawImageUrl = illustration.imageUrls?.[0] || 'https://zeluis.github.io/Africa-Digital-Atlas/castas/castaS1o-a.webp';
+  const rawImageUrl = illustration.imageUrls?.[0] || 'castas/castaS1o-a.webp';
   const candidates = getAssetCandidateUrls(rawImageUrl);
   const imageUrl = candidates[candidateIndex] || resolveAssetPath(rawImageUrl);
 

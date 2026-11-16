@@ -1,13 +1,35 @@
 import { defineConfig } from 'vitepress';
 
+function normalizeSlashPath(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === '/') return '/';
+  const withLeading = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+  return withLeading.endsWith('/') ? withLeading : `${withLeading}/`;
+}
+
+function resolveDocsBase(): string {
+  if (process.env.DOCS_BASE && process.env.DOCS_BASE.trim() !== '') {
+    return normalizeSlashPath(process.env.DOCS_BASE);
+  }
+  const appBase = process.env.BASE_URL || process.env.VITE_BASE_PATH;
+  if (appBase && appBase.trim() !== './' && appBase.trim() !== '.') {
+    const normalizedApp = normalizeSlashPath(appBase);
+    return normalizedApp === '/' ? '/docs/' : `${normalizedApp}docs/`;
+  }
+  return '/docs/';
+}
+
+const docsBase = resolveDocsBase();
+const liveAppUrl = process.env.ATLAS_APP_URL || '../';
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: 'Afriata: Africa Data Atlas',
   description: 'A pan-African data and cartography platform — 54 countries, 90+ indicators, 16 institutional data sources.',
-  base: process.env.DOCS_BASE || '/Africa-Digital-Atlas/docs/',
+  base: docsBase,
   
   head: [
-    ['link', { rel: 'icon', type: 'image/webp', href: '/Africa-Digital-Atlas/docs/hero-preview.webp' }],
+    ['link', { rel: 'icon', type: 'image/webp', href: `${docsBase}hero-preview.webp` }],
     ['meta', { name: 'theme-color', content: '#d97706' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:locale', content: 'en' }],
@@ -28,7 +50,8 @@ export default defineConfig({
       { text: 'FAQ', link: '/faq' },
       { 
         text: 'Live Atlas App ↗', 
-        link: 'https://zeluis.github.io/Africa-Digital-Atlas/' 
+        link: liveAppUrl,
+        target: '_blank'
       }
     ],
 

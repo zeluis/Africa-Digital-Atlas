@@ -11,7 +11,13 @@ const kb = (n) => Math.round(n / 1024);
 const gz = (f) => zlib.gzipSync(fs.readFileSync(f)).length;
 const size = (f) => fs.statSync(f).size;
 const html = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8');
-const rel = (u) => path.join(DIST, u.replace(/^\.\//, ''));
+const rel = (u) => {
+  const cleaned = u.replace(/^\.\//, '').replace(/^\//, '');
+  const direct = path.join(DIST, cleaned);
+  if (fs.existsSync(direct)) return direct;
+  const assetsIdx = cleaned.indexOf('assets/');
+  return path.join(DIST, assetsIdx !== -1 ? cleaned.slice(assetsIdx) : cleaned);
+};
 
 const entry = html.match(/<script[^>]+type="module"[^>]+src="([^"]+)"/)?.[1];
 const preloads = [...html.matchAll(/rel="modulepreload"[^>]*href="([^"]+)"/g)].map((m) => m[1]);

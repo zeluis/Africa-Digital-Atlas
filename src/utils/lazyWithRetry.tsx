@@ -69,6 +69,7 @@ export function lazyWithRetry<T extends React.ComponentType<any>>(
 interface ErrorBoundaryProps {
   children: ReactNode;
   fallbackTitle?: string;
+  compact?: boolean;
 }
 
 interface ErrorBoundaryState {
@@ -96,11 +97,20 @@ export class ViewErrorBoundary extends React.Component<ErrorBoundaryProps, Error
   }
 
   handleReload = async () => {
-    // Purge service worker caches to ensure fresh assets
+    // Purge Afriata & Workbox service worker caches to ensure fresh assets without affecting sibling apps on the origin
     if ('caches' in window) {
       try {
         const cacheKeys = await caches.keys();
-        await Promise.all(cacheKeys.map(key => caches.delete(key)));
+        const appCacheKeys = cacheKeys.filter(
+          (k) =>
+            k.startsWith('workbox-') ||
+            k.startsWith('africa-') ||
+            k.startsWith('afriata-') ||
+            k === 'local-media' ||
+            k === 'wikimedia-thumbs' ||
+            k.endsWith('-cache')
+        );
+        await Promise.all(appCacheKeys.map((key) => caches.delete(key)));
       } catch (e) {}
     }
     // Hard reload
@@ -119,6 +129,21 @@ export class ViewErrorBoundary extends React.Component<ErrorBoundaryProps, Error
         this.state.error?.message?.includes('Failed to fetch') ||
         this.state.error?.message?.includes('Invalid hook call') ||
         this.state.error?.message?.includes('useState');
+
+      if (this.props.compact) {
+        return (
+          <div className="p-3 rounded-xl border border-amber-200/80 dark:border-amber-900/40 bg-[#FCFAF7] dark:bg-[#181A16] text-xs text-stone-700 dark:text-stone-300 flex items-center justify-between gap-3">
+            <span className="font-medium truncate">{this.props.fallbackTitle || 'Navigation module interrupted'}</span>
+            <button
+              type="button"
+              onClick={this.handleReload}
+              className="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-semibold shrink-0 cursor-pointer"
+            >
+              Reload
+            </button>
+          </div>
+        );
+      }
 
       return (
         <div className="w-full min-h-[500px] flex items-center justify-center p-6 sm:p-12">

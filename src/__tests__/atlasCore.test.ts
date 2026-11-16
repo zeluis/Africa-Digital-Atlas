@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { atlas } from '../data/atlas-store';
 import { generateFullObservations } from '../data/atlas-observations-seed';
 import {
@@ -19,6 +19,19 @@ import {
 import type { Observation, ObservationStatus } from '../data/types';
 import type { ResearchReport } from '../data/reportsData';
 
+import {
+  resolveAppBasePath,
+  resolveAssetPath,
+  resolveDocsPath,
+  getDeploymentCacheScope,
+  inferMountBaseFromLocation
+} from '../utils/assetPath';
+import {
+  resolveApiUrl,
+  isStaticHost,
+  resetApiAvailabilityCache
+} from '../utils/apiClient';
+
 // Shim browser globals for Node test environment if absent
 if (typeof globalThis.localStorage === 'undefined') {
   const store = new Map<string, string>();
@@ -35,7 +48,7 @@ if (typeof globalThis.localStorage === 'undefined') {
 if (typeof globalThis.window === 'undefined') {
   (globalThis as unknown as { window: unknown }).window = {
     localStorage: globalThis.localStorage,
-    location: { href: 'https://afriata.org' }
+    location: { href: 'https://afriata.org', hostname: 'afriata.org', pathname: '/' }
   };
 }
 
@@ -451,4 +464,61 @@ describe('Afriata Core Test Suite', () => {
       );
     });
   });
+
+  // =========================================================================
+  // 5. Hosting, Subdirectory & API Capability Resilience
+  // =========================================================================
+  describe('Hosting, Subdirectory & API Capability Resilience', () => {
+    const originalLocation = window.location;
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+      resetApiAvailabilityCache();
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        writable: true,
+        value: originalLocation
+      });
+    });
+
+    it('preserves absolute URLs and avoids duplicate prefixes in resolveAssetPath', () => {
+      expect(resolveAssetPath('https://cdn.example.org/img.webp')).toBe('https://cdn.example.org/img.webp');
+      expect(resolveAssetPath('data:image/png;base64,abc')).toBe('data:image/png;base64,abc');
+      const once = resolveAssetPath('/africa-final.svg');
+      const twice = resolveAssetPath(once);
+      expect(twice).toBe(once);
+    });
+
+    it('resolves root vs subdirectory mounts accurately with and without trailing slash', () => {
+      expect(inferMountBaseFromLocation('example.org', '/team/atlas')).toBe('/team/atlas/');
+      expect(inferMountBaseFromLocation('example.org', '/team/atlas/')).toBe('/team/atlas/');
+      expect(inferMountBaseFromLocation('example.org', '/team/atlas/countries/NGA')).toBe('/team/atlas/');
+
+      vi.stubEnv('BASE_URL', '/team/atlas');
+      expect(resolveAppBasePath()).toBe('/team/atlas/');
+      expect(resolveAssetPath('./africa-final.svg')).toBe('/team/atlas/africa-final.svg');
+      expect(resolveDocsPath('')).toBe('/team/atlas/docs/');
+      expect(resolveDocsPath('UNIVERSAL_STYLE_GUIDE.md')).toBe('/team/atlas/docs/UNIVERSAL_STYLE_GUIDE.html');
+      expect(resolveApiUrl('/api/tts')).toBe('/team/atlas/api/tts');
+      expect(getDeploymentCacheScope()).toBe('team-atlas');
+    });
+
+    it('handles GitHub Pages user sites cleanly when pathname is an app route', () => {
+      expect(inferMountBaseFromLocation('zeluis.github.io', '/countries/NGA')).toBe('/');
+      expect(isStaticHost('zeluis.github.io')).toBe(true);
+      expect(isStaticHost('atlas.example.org')).toBe(false);
+    });
+
+    it('detects GitHub Pages project subpath and enables static-only API guard', () => {
+      expect(inferMountBaseFromLocation('zeluis.github.io', '/Africa-Digital-Atlas/')).toBe('/Africa-Digital-Atlas/');
+      expect(inferMountBaseFromLocation('zeluis.github.io', '/Africa-Digital-Atlas')).toBe('/Africa-Digital-Atlas/');
+
+      vi.stubEnv('BASE_URL', '/Africa-Digital-Atlas/');
+      expect(resolveAppBasePath()).toBe('/Africa-Digital-Atlas/');
+      expect(resolveAssetPath('sw.js')).toBe('/Africa-Digital-Atlas/sw.js');
+      expect(resolveDocsPath('')).toBe('/Africa-Digital-Atlas/docs/');
+      expect(getDeploymentCacheScope()).toBe('africa-digital-atlas');
+    });
+  });
 });
+

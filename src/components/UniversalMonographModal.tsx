@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { usePrefersReducedMotion } from '../utils/motion';
 import { AtlasDialog } from './common/AtlasDialog';
 import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
+import { resolveDocsPath } from '../utils/assetPath';
 import { 
   Palette, 
   Map as MapIcon, 
@@ -99,7 +100,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
 
             <div className="flex items-center gap-2 shrink-0">
               <a
-                href="./docs/UNIVERSAL_STYLE_GUIDE.md"
+                href={resolveDocsPath('UNIVERSAL_STYLE_GUIDE.html')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-semibold transition-colors"

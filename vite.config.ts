@@ -1,16 +1,38 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import fs from 'fs';
 import path from 'path';
 import {defineConfig} from 'vite';
+
+function normalizeViteBase(raw?: string): string {
+  if (!raw || raw.trim() === '.' || raw.trim() === './') return './';
+  const trimmed = raw.trim();
+  if (trimmed === '/') return '/';
+  const withLeading = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+  return withLeading.endsWith('/') ? withLeading : `${withLeading}/`;
+}
 
 export default defineConfig(({ command }) => {
   if (command === 'build') {
     process.env.NODE_ENV = 'production';
   }
+  const resolvedBase = normalizeViteBase(process.env.BASE_URL || process.env.VITE_BASE_PATH);
   return {
-    base: process.env.BASE_URL || process.env.VITE_BASE_PATH || './',
+    base: resolvedBase,
     plugins: [
+      {
+        name: 'finalize-404-base',
+        closeBundle() {
+          const notFoundPath = path.resolve(__dirname, 'dist/404.html');
+          if (fs.existsSync(notFoundPath)) {
+            const raw = fs.readFileSync(notFoundPath, 'utf8');
+            if (raw.includes('__AFRIATA_BASE__')) {
+              fs.writeFileSync(notFoundPath, raw.replace(/__AFRIATA_BASE__/g, resolvedBase));
+            }
+          }
+        },
+      },
       react(),
       tailwindcss(),
       {
@@ -215,6 +237,11 @@ export default defineConfig(({ command }) => {
             '**/docs/**',
           ],
           maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+          navigateFallback: 'index.html',
+          navigateFallbackDenylist: [
+            /^\/(?:[^/]+\/)*docs(?:\/|$)/,
+            /^\/(?:[^/]+\/)*api(?:\/|$)/,
+          ],
           runtimeCaching: [
             {
               urlPattern: ({ url }) => url.origin === self.location.origin && /\.(?:png|jpe?g|webp|avif|gif|svg)$/i.test(url.pathname),
@@ -405,6 +432,34 @@ export default defineConfig(({ command }) => {
                 cacheName: 'au-portal-cache',
                 expiration: {
                   maxEntries: 50,
+                  maxAgeSeconds: 60 * 60 * 24 * 30,
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            {
+              urlPattern: /^https:\/\/data\.un\.org\/.*/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'un-data-cache',
+                expiration: {
+                  maxEntries: 60,
+                  maxAgeSeconds: 60 * 60 * 24 * 30,
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            {
+              urlPattern: /^https:\/\/commons\.wikimedia\.org\/.*/i,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'wikimedia-commons-cache',
+                expiration: {
+                  maxEntries: 60,
                   maxAgeSeconds: 60 * 60 * 24 * 30,
                 },
                 cacheableResponse: {

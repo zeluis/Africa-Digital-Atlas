@@ -62,7 +62,7 @@ export const QueryBuilderPanel: React.FC<QueryBuilderPanelProps> = ({
   });
 
   const queryString = encodeFiltersToQueryString(filters);
-  const shareableUrl = `${window.location.origin}${window.location.pathname}?tab=slave-trade&${queryString}`;
+  const shareableUrl = `${window.location.origin}${window.location.pathname}#slave-trade?${queryString}`;
 
   const handleCopy = (text: string, fieldId: string) => {
     void copyToClipboard(text, fieldId, `Copied ${fieldId} to clipboard`);

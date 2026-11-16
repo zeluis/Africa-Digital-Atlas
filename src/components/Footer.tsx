@@ -19,6 +19,7 @@ import { CanonicalNavTab } from './NavigationDrawer';
 import { atlas } from '../data/atlas-store';
 import { OrganizationLogo } from './OrganizationLogo';
 import { AfricaUnLogo } from './AfricaUnLogo';
+import { resolveDocsPath } from '../utils/assetPath';
 
 interface FooterProps {
   onNavigateTab: (tab: CanonicalNavTab) => void;
@@ -180,7 +181,7 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
               <li>
                 <a
-                  href="./docs/"
+                  href={resolveDocsPath('')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded text-zinc-600 dark:text-zinc-400"
@@ -287,7 +288,7 @@ export const Footer: React.FC<FooterProps> = ({
 
               <div className="flex items-center gap-3">
                 <a
-                  href="./docs/"
+                  href={resolveDocsPath('')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors inline-flex items-center gap-1"

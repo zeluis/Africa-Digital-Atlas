@@ -5,6 +5,9 @@
  * Dual Licensed: Source Code under MIT (LICENSE-CODE) • Creative Assets under CC BY 4.0 (LICENSE-ASSETS)
  */
 
+import { resolveAssetPath } from '../utils/assetPath';
+import { isBackendApiAvailable, resolveApiUrl } from '../utils/apiClient';
+
 export interface MultilateralHarmonizationRule {
   id: string;
   sourceA: string;
@@ -168,15 +171,13 @@ export interface BrowserHashVerificationResult {
  * build-time published SHA-256 checksum. Never synthesizes a false match on static builds.
  */
 export async function computeDatasetSha256InBrowser(fileScope: string): Promise<BrowserHashVerificationResult> {
-  const baseUrl = typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL ? import.meta.env.BASE_URL : './';
-  const normalizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
-
-  // 1. Try fetching exact raw bytes via the server endpoint or static asset path
-  const candidateUrls: string[] = [
-    `/api/research/dataset-raw?file=${encodeURIComponent(fileScope)}`
-  ];
+  // 1. Try fetching exact raw bytes via static asset path or optional backend endpoint
+  const candidateUrls: string[] = [];
   if (fileScope === 'public/africa-final.svg') {
-    candidateUrls.unshift(`${normalizedBase}africa-final.svg`);
+    candidateUrls.push(resolveAssetPath('africa-final.svg'));
+  }
+  if (await isBackendApiAvailable()) {
+    candidateUrls.push(resolveApiUrl(`/api/research/dataset-raw?file=${encodeURIComponent(fileScope)}`));
   }
 
   for (const url of candidateUrls) {

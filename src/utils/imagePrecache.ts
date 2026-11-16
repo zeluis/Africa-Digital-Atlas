@@ -4,10 +4,11 @@
  * using requestIdleCallback to ensure zero main-thread jank.
  */
 
-import { resolveAssetPath } from './assetPath';
+import { resolveAssetPath, getDeploymentCacheScope } from './assetPath';
 
-const CACHE_NAME = 'africa-archival-plates-v1';
-export const UNESCO_CACHE_NAME = 'africa-atlas-heritage-v1.4';
+const CACHE_SCOPE = getDeploymentCacheScope();
+const CACHE_NAME = `africa-archival-plates-${CACHE_SCOPE}-v1`;
+export const UNESCO_CACHE_NAME = `africa-atlas-heritage-${CACHE_SCOPE}-v1.4`;
 
 function canPrewarmOnNetwork(): boolean {
   if (typeof navigator === 'undefined') return false;
