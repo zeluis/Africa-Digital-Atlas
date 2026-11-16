@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { ETHNIC_NODES, CORE_CLUSTERS, EthnicNode } from '../../data/ethnicTreeData';
 import { AtlasDialog } from '../common/AtlasDialog';
+import { sanitizeSvgMarkup } from '../../utils/sanitizeSvg';
 
 interface ActualSvgOverlayViewerProps {
   onSelectReport?: (reportId: string) => void;
@@ -157,6 +158,7 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
   const [pastedSvgText, setPastedSvgText] = useState<string>('');
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const svgWrapperRef = useRef<HTMLDivElement>(null);
@@ -269,21 +271,28 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
 
   // Custom SVG File Upload handler
   const handleFileUpload = (file: File) => {
+    setUploadError(null);
     if (!file.name.endsWith('.svg') && file.type !== 'image/svg+xml') {
-      alert('Please upload a valid .svg vector file.');
+      setUploadError('Please upload a valid .svg vector file.');
       return;
     }
     const reader = new FileReader();
     reader.onload = (event) => {
       const content = event.target?.result as string;
       if (content && content.includes('<svg')) {
-        setSvgMarkup(content);
+        const cleanSvg = sanitizeSvgMarkup(content);
+        if (!cleanSvg.includes('<svg')) {
+          setUploadError('The uploaded SVG did not contain valid vector markup.');
+          return;
+        }
+        setSvgMarkup(cleanSvg);
         setIsCustomSvgLoaded(true);
         setSvgFileName(file.name);
         setIsUploadModalOpen(false);
+        setUploadError(null);
         handleResetCamera();
       } else {
-        alert('The uploaded file does not contain valid SVG markup.');
+        setUploadError('The uploaded file does not contain valid SVG markup.');
       }
     };
     reader.readAsText(file);
@@ -787,6 +796,13 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
               />
             </div>
 
+            {/* Inline Upload Error Banner */}
+            {uploadError && (
+              <div role="alert" className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
+                {uploadError}
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="flex items-center justify-between pt-2 border-t border-zinc-800">
               <button
@@ -795,6 +811,7 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
                   setSvgMarkup(DEFAULT_AUTHENTIC_SVG);
                   setIsCustomSvgLoaded(false);
                   setSvgFileName('ethnic_tree_authentic_master.svg');
+                  setUploadError(null);
                   setIsUploadModalOpen(false);
                   handleResetCamera();
                 }}
@@ -806,7 +823,10 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setIsUploadModalOpen(false)}
+                  onClick={() => {
+                    setUploadError(null);
+                    setIsUploadModalOpen(false);
+                  }}
                   className="px-4 py-2 text-xs rounded-xl bg-zinc-800 text-zinc-300 hover:bg-zinc-700 cursor-pointer"
                 >
                   Cancel
@@ -815,12 +835,16 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
                   type="button"
                   disabled={!pastedSvgText.trim().includes('<svg')}
                   onClick={() => {
-                    if (pastedSvgText.trim().includes('<svg')) {
-                      setSvgMarkup(pastedSvgText.trim());
+                    const cleanSvg = sanitizeSvgMarkup(pastedSvgText.trim());
+                    if (cleanSvg.includes('<svg')) {
+                      setSvgMarkup(cleanSvg);
                       setIsCustomSvgLoaded(true);
                       setSvgFileName('pasted_custom_tree.svg');
+                      setUploadError(null);
                       setIsUploadModalOpen(false);
                       handleResetCamera();
+                    } else {
+                      setUploadError('Pasted code does not contain valid SVG markup.');
                     }
                   }}
                   className="px-4 py-2 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-black disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"

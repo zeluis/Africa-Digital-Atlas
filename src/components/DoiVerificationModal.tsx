@@ -56,6 +56,7 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
   const [searchCandidates, setSearchCandidates] = useState<Record<string, CrossrefWork[]>>({});
   const [searchingId, setSearchingId] = useState<string | null>(null);
   const [userOverrides, setUserOverrides] = useState<Record<string, Partial<DoiConcordanceEntry>>>({});
+  const [confirmReset, setConfirmReset] = useState(false);
 
   const allReports = React.useMemo(() => Object.values(getAllReports()), []);
 
@@ -212,12 +213,15 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
    * Reset local overrides back to baseline
    */
   const handleResetOverrides = () => {
-    if (window.confirm('Reset all user DOI concordance overrides back to system baseline?')) {
-      clearUserConcordanceOverrides();
-      setUserOverrides({});
-      setUploadFeedback({ success: true, message: 'Reset concordance to system baseline.' });
-      handleVerifyAll();
+    if (!confirmReset) {
+      setConfirmReset(true);
+      return;
     }
+    clearUserConcordanceOverrides();
+    setUserOverrides({});
+    setConfirmReset(false);
+    setUploadFeedback({ success: true, message: 'Reset concordance to system baseline.' });
+    handleVerifyAll();
   };
 
   return (
@@ -635,14 +639,36 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
                   </button>
 
                   {Object.keys(userOverrides).length > 0 && (
-                    <button
-                      type="button"
-                      onClick={handleResetOverrides}
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-medium cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Clear Overrides ({Object.keys(userOverrides).length} Active)</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {confirmReset ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={handleResetOverrides}
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Confirm Reset ({Object.keys(userOverrides).length})</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setConfirmReset(false)}
+                            className="px-2.5 py-2 rounded-xl text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={handleResetOverrides}
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-medium cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Clear Overrides ({Object.keys(userOverrides).length} Active)</span>
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>

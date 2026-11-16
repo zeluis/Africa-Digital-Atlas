@@ -256,6 +256,8 @@ export const AFRICAN_MOTHER_TONGUES: Record<string, MotherTongueEntry> = {
 
 import { getBestSystemVoice, stopAfriataSpeech } from '../utils/afriataVoiceEngine';
 
+let sharedMotherTongueAudioCtx: AudioContext | null = null;
+
 /**
  * Play an indigenous musical greeting soundscape using high-fidelity native voice & harmonic Web Audio
  */
@@ -292,7 +294,13 @@ export function playMotherTongueAudio(entry: MotherTongueEntry) {
     const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioContextClass) return;
 
-    const ctx = new AudioContextClass();
+    if (!sharedMotherTongueAudioCtx || sharedMotherTongueAudioCtx.state === 'closed') {
+      sharedMotherTongueAudioCtx = new AudioContextClass();
+    }
+    const ctx = sharedMotherTongueAudioCtx;
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
     const now = ctx.currentTime;
 
     entry.tonalHarmonics.forEach((freq, idx) => {

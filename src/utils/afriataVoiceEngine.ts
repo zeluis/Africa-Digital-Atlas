@@ -26,7 +26,20 @@ export interface SpeechGreetingConfig {
 let currentAudioElement: HTMLAudioElement | null = null;
 let currentUtterance: SpeechSynthesisUtterance | null = null;
 let activeAudioCtx: AudioContext | null = null;
-const clientAudioCache = new Map<string, string>(); // key -> base64 or blob URL
+const MAX_CLIENT_AUDIO_CACHE = 40;
+const clientAudioCache = new Map<string, string>(); // key -> base64 data URL
+
+function setClientAudioCache(key: string, value: string) {
+  if (clientAudioCache.has(key)) {
+    clientAudioCache.delete(key);
+  }
+  while (clientAudioCache.size >= MAX_CLIENT_AUDIO_CACHE) {
+    const oldestKey = clientAudioCache.keys().next().value;
+    if (!oldestKey) break;
+    clientAudioCache.delete(oldestKey);
+  }
+  clientAudioCache.set(key, value);
+}
 
 // Male voice keywords to avoid for the default persona
 const MALE_VOICE_NAMES = [
@@ -271,6 +284,7 @@ export function stopAfriataSpeech() {
 
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     try {
+      window.speechSynthesis.onvoiceschanged = null;
       window.speechSynthesis.cancel();
       currentUtterance = null;
     } catch {
@@ -351,6 +365,8 @@ export function speakAcademicNarration(config: {
 
     if (window.speechSynthesis.getVoices().length === 0) {
       window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.onvoiceschanged = null;
+        if (currentUtterance !== utterance) return;
         const lateVoice = getBestSystemVoice(config.langTag || 'en');
         if (lateVoice.voice) {
           utterance.voice = lateVoice.voice;
@@ -360,6 +376,7 @@ export function speakAcademicNarration(config: {
       };
     } else {
       setTimeout(() => {
+        if (currentUtterance !== utterance) return;
         window.speechSynthesis.speak(utterance);
       }, config.playChime ? 220 : 60);
     }
@@ -394,25 +411,32 @@ export async function speakAfriataGreeting(config: SpeechGreetingConfig) {
   // 2. Query optional Server-Side Neural TTS API if backend is available
   try {
     if (await isBackendApiAvailable()) {
-      const res = await fetch(resolveApiUrl('/api/tts'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: formattedText,
-          langTag: config.langTag,
-          languageName: config.languageName,
-        }),
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      try {
+        const res = await fetch(resolveApiUrl('/api/tts'), {
+          method: 'POST',
+          signal: controller.signal,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: formattedText,
+            langTag: config.langTag,
+            languageName: config.languageName,
+          }),
+        });
 
-      if (res.ok) {
-        const data = await res.json();
-        if (data.audioBase64) {
-          const mime = data.mimeType || 'audio/mp3';
-          const dataUrl = `data:${mime};base64,${data.audioBase64}`;
-          clientAudioCache.set(cacheKey, dataUrl);
-          playNeuralAudio(dataUrl, { ...config, text: formattedText });
-          return;
+        if (res.ok) {
+          const data = await res.json();
+          if (data.audioBase64) {
+            const mime = data.mimeType || 'audio/mp3';
+            const dataUrl = `data:${mime};base64,${data.audioBase64}`;
+            setClientAudioCache(cacheKey, dataUrl);
+            playNeuralAudio(dataUrl, { ...config, text: formattedText });
+            return;
+          }
         }
+      } finally {
+        clearTimeout(timeoutId);
       }
     }
   } catch {
@@ -436,18 +460,21 @@ function playNeuralAudio(audioUrl: string, config: SpeechGreetingConfig) {
     };
 
     audio.onended = () => {
-      currentAudioElement = null;
+      if (currentAudioElement === audio) currentAudioElement = null;
       config.onEnd?.();
     };
 
     audio.onerror = () => {
-      currentAudioElement = null;
+      if (currentAudioElement === audio) currentAudioElement = null;
       speakWithClientSynthesis(config);
     };
 
     setTimeout(() => {
+      if (currentAudioElement !== audio) return;
       audio.play().catch(() => {
-        speakWithClientSynthesis(config);
+        if (currentAudioElement === audio) {
+          speakWithClientSynthesis(config);
+        }
       });
     }, 180);
   } catch {
@@ -504,6 +531,8 @@ function speakWithClientSynthesis(config: SpeechGreetingConfig) {
     // Ensure voices are loaded if browser initialized asynchronously
     if (window.speechSynthesis.getVoices().length === 0) {
       window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.onvoiceschanged = null;
+        if (currentUtterance !== utterance) return;
         const lateVoice = getBestSystemVoice(config.langTag);
         if (lateVoice.voice) {
           utterance.voice = lateVoice.voice;
@@ -514,6 +543,7 @@ function speakWithClientSynthesis(config: SpeechGreetingConfig) {
     } else {
       // Delay slightly for chime lead-in
       setTimeout(() => {
+        if (currentUtterance !== utterance) return;
         window.speechSynthesis.speak(utterance);
       }, 180);
     }

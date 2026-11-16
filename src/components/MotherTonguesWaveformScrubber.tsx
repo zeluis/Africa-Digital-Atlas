@@ -226,6 +226,10 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       stopAudio();
+      if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
+        audioCtxRef.current.close().catch(() => {});
+        audioCtxRef.current = null;
+      }
     };
   }, [stopAudio]);
 

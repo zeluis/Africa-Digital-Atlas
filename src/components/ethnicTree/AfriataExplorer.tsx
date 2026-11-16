@@ -37,6 +37,7 @@ import {
 } from 'lucide-react';
 import { atlasModalStore } from '../../stores/useAtlasModalStore';
 import { MolecularMigrationDrawer, MolecularMigrationCanvasLayer, MolecularDivergenceNode } from './MolecularMigrationOverlay';
+import { sanitizeSvgMarkup } from '../../utils/sanitizeSvg';
 import { 
   VBW, 
   VBH, 
@@ -1562,13 +1563,12 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
     reader.onload = (event) => {
       let content = event.target?.result as string;
       if (!content) return;
-      // If it's an HTML file, extract the <svg>...</svg>
+      // If it's an HTML file, extract the <svg>...</svg> and sanitize active content
       if (content.includes('<svg')) {
         const match = content.match(/<svg[\s\S]*?<\/svg>/i);
-        if (match) {
-          setCustomSvgMarkup(match[0]);
-        } else {
-          setCustomSvgMarkup(content);
+        const cleanSvg = sanitizeSvgMarkup(match ? match[0] : content);
+        if (cleanSvg.includes('<svg')) {
+          setCustomSvgMarkup(cleanSvg);
         }
       }
     };

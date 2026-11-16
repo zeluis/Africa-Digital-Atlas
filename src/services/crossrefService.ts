@@ -332,12 +332,20 @@ export async function searchCrossrefByTitle(title: string, author?: string): Pro
   try {
     const query = author ? `${title} ${author}` : title;
     const url = `https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(query)}&rows=5`;
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'AfricaDataAtlas/1.0 (mailto:atlas-curator@afriata.org)',
-        Accept: 'application/json'
-      }
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'AfricaDataAtlas/1.0 (mailto:atlas-curator@afriata.org)',
+          Accept: 'application/json'
+        }
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!response.ok) return [];
 

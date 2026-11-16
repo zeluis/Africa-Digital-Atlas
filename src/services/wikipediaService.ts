@@ -124,10 +124,20 @@ export interface WikiSummaryData {
   };
 }
 
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 6000): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 export async function fetchWikipediaSummary(articleTitle: string): Promise<WikiSummaryData | null> {
   try {
     const cleanTitle = articleTitle.replace(/\s+/g, '_');
-    const res = await fetch(
+    const res = await fetchWithTimeout(
       `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleanTitle)}`,
       { headers: { 'Accept': 'application/json' } }
     );
@@ -335,7 +345,7 @@ export async function fetchLiveWikipediaSummary(
   // Helper to fetch summary from a specific subdomain and title
   const tryFetchSummary = async (targetLang: string, titleToFetch: string) => {
     try {
-      const res = await fetch(
+      const res = await fetchWithTimeout(
         `https://${targetLang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(titleToFetch)}`,
         { headers: { Accept: 'application/json' } }
       );
@@ -360,7 +370,7 @@ export async function fetchLiveWikipediaSummary(
   // If language is not English, first attempt direct translation lookup via Wikipedia interwiki langlinks
   if (lang && lang !== 'en') {
     try {
-      const langlinkRes = await fetch(
+      const langlinkRes = await fetchWithTimeout(
         `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(cleanTitle)}&prop=langlinks&lllang=${encodeURIComponent(lang)}&format=json&origin=*`
       );
       if (langlinkRes.ok) {
