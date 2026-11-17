@@ -1,4 +1,4 @@
-import { DataSource, IndicatorDefinition, Observation } from './types';
+import { DataSource, IndicatorDefinition, Observation, ObservationStatus } from './types';
 import { createLazyAssetStore } from '../utils/lazyDataLoader';
 import { isBackendApiAvailable, resolveApiUrl } from '../utils/apiClient';
 
@@ -190,7 +190,16 @@ export function generateExternalApisObservations(entities: { id: string; name: s
     const ndGainVuln = Math.min(88, Math.max(24, Math.round((isFragile ? 68 : isHighGov ? 38 : 52) + pseudo(61) * 12)));
     const renewCap = Math.min(96, Math.max(4, Math.round((['ETH', 'COD', 'KEN', 'UGA', 'ZMB'].includes(id) ? 86 : isOilRich ? 12 : 45) + pseudo(62) * 16)));
 
-    const addObs = (indId: string, val: number, unit: string, srcId: string, dsId: string, yr = 2024, status: any = 'observed') => {
+    const addObs = (
+      indId: string,
+      val: number,
+      unit: string,
+      srcId: string,
+      dsId: string,
+      yr = 2024,
+      status: ObservationStatus = 'estimated',
+      notes?: string
+    ) => {
       const k = `${id}_${indId}_${yr}`;
       if (!existingKeys.has(k)) {
         observations.push({
@@ -201,7 +210,8 @@ export function generateExternalApisObservations(entities: { id: string; name: s
           unit,
           sourceId: srcId,
           datasetId: dsId,
-          status
+          status,
+          notes: notes || 'Deterministic model estimate calibrated from country governance, macro, and structural baseline.'
         });
         existingKeys.add(k);
       }
@@ -286,7 +296,7 @@ export function generateExternalApisObservations(entities: { id: string; name: s
     addObs('UNCT.DIV.INDEX', divIndex, 'Index (0-1)', 'un_comtrade', 'UN_COMTRADE_2024');
 
     // IMF WEO
-    addObs('IMF.WEO.NGDP_RPCH_F25', imfGrowthF, '%', 'imf_weo', 'IMF_WEO_OCT_2024', 2025, 'forecast');
+    addObs('IMF.WEO.NGDP_RPCH_F25', imfGrowthF, '%', 'imf_weo', 'IMF_WEO_OCT_2024', 2025, 'forecast', '2025 real GDP growth projection derived from IMF WEO baseline tier and country profile.');
     addObs('IMF.WEO.GGXWDG_NGDP', imfDebtGdp, '% of GDP', 'imf_weo', 'IMF_WEO_OCT_2024');
     addObs('IMF.WEO.BCA_NGDPD', imfCurrentAcc, '% of GDP', 'imf_weo', 'IMF_WEO_OCT_2024');
     addObs('IMF.WEO.PCPIPCH', imfCpiAvg, '%', 'imf_weo', 'IMF_WEO_OCT_2024');
@@ -304,17 +314,18 @@ export function generateExternalApisObservations(entities: { id: string; name: s
     addObs('WB.CLIM.VULN.NDGAIN', ndGainVuln, 'Score (0-100)', 'wb_climate', 'ND_GAIN_2024');
     addObs('WB.CLIM.RENEW.CAP', renewCap, '% of capacity', 'wb_climate', 'IRENA_RENEW_2024');
 
-    // Add historical trajectories (2018, 2020, 2022) for key indicators
-    addObs('FH.FIW.TOTAL', Math.min(98, Math.max(5, Math.round(fiwTotal + (pseudo(63) - 0.5) * 6))), 'Score (0-100)', 'fh_fiw', 'FH_FIW_2024', 2020);
-    addObs('FH.FIW.TOTAL', Math.min(98, Math.max(5, Math.round(fiwTotal + (pseudo(64) - 0.5) * 4))), 'Score (0-100)', 'fh_fiw', 'FH_FIW_2024', 2022);
-    addObs('WGI.GE.PER', Math.min(98, Math.max(3, Math.round((wgiGE - 2.5 + pseudo(65) * 4) * 10) / 10)), '%', 'wgi', 'WGI_2024', 2020);
-    addObs('WGI.GE.PER', Math.min(98, Math.max(3, Math.round((wgiGE - 1.2 + pseudo(66) * 3) * 10) / 10)), '%', 'wgi', 'WGI_2024', 2022);
-    addObs('WHO.GHO.UHC.SCI', Math.min(90, Math.max(20, Math.round(uhcIndex - 3.8))), 'Score (0-100)', 'who_gho', 'WHO_GHO_2024', 2020);
-    addObs('WHO.GHO.UHC.SCI', Math.min(90, Math.max(20, Math.round(uhcIndex - 1.5))), 'Score (0-100)', 'who_gho', 'WHO_GHO_2024', 2022);
-    addObs('WB.PIP.POV215', Math.min(90, Math.max(0.1, Math.round((pip215 + 2.8) * 10) / 10)), '% of population', 'wb_pip', 'WB_PIP_2024', 2020);
-    addObs('WB.PIP.POV215', Math.min(90, Math.max(0.1, Math.round((pip215 + 1.2) * 10) / 10)), '% of population', 'wb_pip', 'WB_PIP_2024', 2022);
-    addObs('UNCT.TRADE.INTRA', Math.round(Math.max(0.05, tradeIntra * 0.82) * 10) / 10, 'USD Billion', 'un_comtrade', 'UN_COMTRADE_2024', 2020);
-    addObs('UNCT.TRADE.INTRA', Math.round(Math.max(0.08, tradeIntra * 0.94) * 10) / 10, 'USD Billion', 'un_comtrade', 'UN_COMTRADE_2024', 2022);
+    // Add historical trajectories (2020, 2022) derived from 2024 baseline estimates
+    const histNote = 'Derived historical trajectory anchored to 2024 estimated country baseline.';
+    addObs('FH.FIW.TOTAL', Math.min(98, Math.max(5, Math.round(fiwTotal + (pseudo(63) - 0.5) * 6))), 'Score (0-100)', 'fh_fiw', 'FH_FIW_2024', 2020, 'derived', histNote);
+    addObs('FH.FIW.TOTAL', Math.min(98, Math.max(5, Math.round(fiwTotal + (pseudo(64) - 0.5) * 4))), 'Score (0-100)', 'fh_fiw', 'FH_FIW_2024', 2022, 'derived', histNote);
+    addObs('WGI.GE.PER', Math.min(98, Math.max(3, Math.round((wgiGE - 2.5 + pseudo(65) * 4) * 10) / 10)), '%', 'wgi', 'WGI_2024', 2020, 'derived', histNote);
+    addObs('WGI.GE.PER', Math.min(98, Math.max(3, Math.round((wgiGE - 1.2 + pseudo(66) * 3) * 10) / 10)), '%', 'wgi', 'WGI_2024', 2022, 'derived', histNote);
+    addObs('WHO.GHO.UHC.SCI', Math.min(90, Math.max(20, Math.round(uhcIndex - 3.8))), 'Score (0-100)', 'who_gho', 'WHO_GHO_2024', 2020, 'derived', histNote);
+    addObs('WHO.GHO.UHC.SCI', Math.min(90, Math.max(20, Math.round(uhcIndex - 1.5))), 'Score (0-100)', 'who_gho', 'WHO_GHO_2024', 2022, 'derived', histNote);
+    addObs('WB.PIP.POV215', Math.min(90, Math.max(0.1, Math.round((pip215 + 2.8) * 10) / 10)), '% of population', 'wb_pip', 'WB_PIP_2024', 2020, 'derived', histNote);
+    addObs('WB.PIP.POV215', Math.min(90, Math.max(0.1, Math.round((pip215 + 1.2) * 10) / 10)), '% of population', 'wb_pip', 'WB_PIP_2024', 2022, 'derived', histNote);
+    addObs('UNCT.TRADE.INTRA', Math.round(Math.max(0.05, tradeIntra * 0.82) * 10) / 10, 'USD Billion', 'un_comtrade', 'UN_COMTRADE_2024', 2020, 'derived', histNote);
+    addObs('UNCT.TRADE.INTRA', Math.round(Math.max(0.08, tradeIntra * 0.94) * 10) / 10, 'USD Billion', 'un_comtrade', 'UN_COMTRADE_2024', 2022, 'derived', histNote);
   }
 
   return observations;
@@ -324,18 +335,34 @@ export function generateExternalApisObservations(entities: { id: string; name: s
 export interface LiveApiTestResult {
   connectorId: string;
   url: string;
-  status: 'SUCCESS' | 'NETWORK_FALLBACK' | 'UNAVAILABLE';
+  status: 'SUCCESS' | 'UPSTREAM_ERROR' | 'UNAVAILABLE';
   latencyMs: number;
   statusCode: number;
   payloadSize: number;
+  errorMessage?: string;
   sampleRecord: Record<string, any>;
   retrievedAt: string;
 }
 
 export async function testLiveApiConnection(connectorId: string, countryIso3 = 'GHA'): Promise<LiveApiTestResult> {
   await ensureExternalApisLoaded();
+  const safeIso3 = String(countryIso3 || 'GHA').replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 3) || 'GHA';
   const connector = EXTERNAL_API_CONNECTORS.find(c => c.id === connectorId);
   const startTime = performance.now();
+
+  if (!connector) {
+    return {
+      connectorId,
+      url: '',
+      status: 'UNAVAILABLE',
+      latencyMs: 0,
+      statusCode: 404,
+      payloadSize: 0,
+      errorMessage: `Unknown connector ID: ${connectorId}`,
+      sampleRecord: { error: 'Connector not found in catalog' },
+      retrievedAt: new Date().toISOString()
+    };
+  }
 
   // 1. Try server-side proxy endpoint first when backend API is present
   try {
@@ -343,8 +370,8 @@ export async function testLiveApiConnection(connectorId: string, countryIso3 = '
       const serverRes = await fetch(resolveApiUrl('/api/ingest/test-connector'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ connectorId, countryIso3 }),
-        signal: AbortSignal.timeout(4500)
+        body: JSON.stringify({ connectorId, countryIso3: safeIso3 }),
+        signal: AbortSignal.timeout(5500)
       });
       if (serverRes.ok) {
         const serverResult: LiveApiTestResult = await serverRes.json();
@@ -354,59 +381,71 @@ export async function testLiveApiConnection(connectorId: string, countryIso3 = '
       }
     }
   } catch {
-    // Fall through to client direct check or resilient fallback
+    // Fall through to client direct CORS check
   }
 
-  let targetUrl = '';
-  if (connectorId === 'wgi' || connectorId === 'wb_gender' || connectorId === 'wb_ids' || connectorId === 'wb_cpia') {
-    targetUrl = `https://api.worldbank.org/v2/country/${countryIso3}/indicator/NY.GDP.MKTP.KD.ZG?format=json&per_page=5`;
-  } else if (connectorId === 'wb_pip') {
-    targetUrl = `https://api.worldbank.org/pip/v1/pip?country=${countryIso3}&year=2022&format=json`;
-  } else if (connectorId === 'who_gho') {
-    targetUrl = `https://ghoapi.azureedge.net/api/UHC_INDEX_REPORTED?$filter=SpatialDim%20eq%20'${countryIso3}'&$top=5`;
-  } else {
-    targetUrl = connector?.sampleEndpoint.replace('{iso3}', countryIso3) || 'https://api.worldbank.org/v2/country/all?format=json';
-  }
+  const targetUrl = connector.sampleEndpoint.replace(/\{iso3\}/g, encodeURIComponent(safeIso3));
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
     const res = await fetch(targetUrl, { signal: controller.signal, mode: 'cors' });
     clearTimeout(timeoutId);
     const latency = Math.round(performance.now() - startTime);
 
     if (res.ok) {
-      const data = await res.json();
-      const jsonStr = JSON.stringify(data);
+      const rawText = await res.text();
+      let data: any = rawText;
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        // Non-JSON upstream response
+      }
       return {
         connectorId,
         url: targetUrl,
         status: 'SUCCESS',
         latencyMs: latency,
         statusCode: res.status,
-        payloadSize: jsonStr.length,
+        payloadSize: new TextEncoder().encode(rawText).length,
         sampleRecord: Array.isArray(data) ? (data[1] || data[0] || data) : data,
         retrievedAt: new Date().toISOString()
       };
-    } else {
-      throw new Error(`HTTP ${res.status}`);
     }
-  } catch (err: any) {
-    const latency = Math.round(performance.now() - startTime);
+
+    const errText = await res.text().catch(() => '');
     return {
       connectorId,
       url: targetUrl,
-      status: 'NETWORK_FALLBACK',
-      latencyMs: Math.max(12, latency),
-      statusCode: 200,
-      payloadSize: 2048,
+      status: 'UPSTREAM_ERROR',
+      latencyMs: latency,
+      statusCode: res.status,
+      payloadSize: new TextEncoder().encode(errText).length,
+      errorMessage: `Upstream HTTP ${res.status}`,
       sampleRecord: {
-        harmonizedSource: connector?.name,
-        country: countryIso3,
-        status: 'Offline Resilient Cache Active',
-        cachedIndicatorCount: connector?.indicatorsProvided.length,
-        indicators: connector?.indicatorsProvided
+        error: `Upstream responded with HTTP ${res.status}`,
+        source: connector.name,
+        country: safeIso3
+      },
+      retrievedAt: new Date().toISOString()
+    };
+  } catch (err: any) {
+    const latency = Math.round(performance.now() - startTime);
+    const isTimeout = err?.name === 'AbortError' || err?.name === 'TimeoutError';
+    const errMsg = isTimeout ? 'Request timed out' : (err?.message || 'Network / CORS error querying upstream');
+    return {
+      connectorId,
+      url: targetUrl,
+      status: 'UNAVAILABLE',
+      latencyMs: Math.max(1, latency),
+      statusCode: isTimeout ? 504 : 0,
+      payloadSize: 0,
+      errorMessage: errMsg,
+      sampleRecord: {
+        error: errMsg,
+        source: connector.name,
+        country: safeIso3
       },
       retrievedAt: new Date().toISOString()
     };

@@ -11,6 +11,7 @@ import {
   AfricaFinalAdmin1Path,
   updateAfricaFinalMapWithAdmin1 
 } from '../data/africaFinalGeometry';
+import { resolveAppBasePath } from './assetPath';
 
 /**
  * Asynchronous In-Memory Cached SVG Map Loader
@@ -31,13 +32,15 @@ export async function fetchAfricaFinalSvg(): Promise<string> {
   }
 
   cachedSvgPromise = (async () => {
-    // Resolve asset path respecting Vite base path (crucial for GitHub Pages /sub-path/ deployment)
-    const base = (import.meta.env?.BASE_URL || '/').replace(/\/$/, '');
-    const assetCandidates = [
-      `${base}/africa-final.svg`,
-      './africa-final.svg',
-      '/africa-final.svg'
-    ];
+    // Resolve asset path respecting mounted base path (crucial for GitHub Pages /sub-path/ deployment)
+    const base = resolveAppBasePath();
+    const assetCandidates = Array.from(
+      new Set([
+        `${base}africa-final.svg`,
+        './africa-final.svg',
+        '/africa-final.svg'
+      ])
+    );
 
     let lastError: Error | null = null;
     for (const url of assetCandidates) {

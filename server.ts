@@ -175,19 +175,25 @@ app.get("/api/research/dataset-raw", async (req, res) => {
  */
 app.post("/api/ingest/test-connector", async (req, res) => {
   const { connectorId, countryIso3 = "GHA" } = req.body || {};
+  const safeIso3 = String(countryIso3 || "GHA").replace(/[^A-Za-z0-9]/g, "").toUpperCase().slice(0, 3) || "GHA";
   const connector = EXTERNAL_API_CONNECTORS.find(c => c.id === connectorId);
   const startTime = performance.now();
 
-  let targetUrl = "";
-  if (connectorId === "wgi" || connectorId === "wb_gender" || connectorId === "wb_ids" || connectorId === "wb_cpia") {
-    targetUrl = `https://api.worldbank.org/v2/country/${countryIso3}/indicator/NY.GDP.MKTP.KD.ZG?format=json&per_page=5`;
-  } else if (connectorId === "wb_pip") {
-    targetUrl = `https://api.worldbank.org/pip/v1/pip?country=${countryIso3}&year=2022&format=json`;
-  } else if (connectorId === "who_gho") {
-    targetUrl = `https://ghoapi.azureedge.net/api/UHC_INDEX_REPORTED?$filter=SpatialDim%20eq%20'${countryIso3}'&$top=5`;
-  } else {
-    targetUrl = connector?.sampleEndpoint.replace("{iso3}", countryIso3) || "https://api.worldbank.org/v2/country/all?format=json";
+  if (!connector) {
+    return res.status(404).json({
+      connectorId: String(connectorId || ""),
+      url: "",
+      status: "UNAVAILABLE",
+      latencyMs: 0,
+      statusCode: 404,
+      payloadSize: 0,
+      errorMessage: `Unknown connector ID: ${String(connectorId || "")}`,
+      sampleRecord: { error: "Connector not registered in externalApisIngestion.json" },
+      retrievedAt: new Date().toISOString()
+    });
   }
+
+  const targetUrl = connector.sampleEndpoint.replace(/\{iso3\}/g, encodeURIComponent(safeIso3));
 
   try {
     const upstreamRes = await fetch(targetUrl, {
@@ -197,36 +203,57 @@ app.post("/api/ingest/test-connector", async (req, res) => {
     const latency = Math.round(performance.now() - startTime);
 
     if (upstreamRes.ok) {
-      const data = await upstreamRes.json();
-      const jsonStr = JSON.stringify(data);
+      const rawText = await upstreamRes.text();
+      let data: any = rawText;
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        // Non-JSON upstream response (e.g. HTML portal page)
+      }
       return res.json({
         connectorId,
         url: targetUrl,
         status: "SUCCESS",
         latencyMs: latency,
         statusCode: upstreamRes.status,
-        payloadSize: jsonStr.length,
+        payloadSize: Buffer.byteLength(rawText, "utf8"),
         sampleRecord: Array.isArray(data) ? (data[1] || data[0] || data) : data,
         retrievedAt: new Date().toISOString()
       });
-    } else {
-      throw new Error(`Upstream HTTP ${upstreamRes.status}`);
     }
-  } catch (err: any) {
-    const latency = Math.round(performance.now() - startTime);
+
+    const errText = await upstreamRes.text().catch(() => "");
     return res.json({
       connectorId,
       url: targetUrl,
-      status: "NETWORK_FALLBACK",
-      latencyMs: Math.max(12, latency),
-      statusCode: 200,
-      payloadSize: 2048,
+      status: "UPSTREAM_ERROR",
+      latencyMs: latency,
+      statusCode: upstreamRes.status,
+      payloadSize: Buffer.byteLength(errText, "utf8"),
+      errorMessage: `Upstream HTTP ${upstreamRes.status}`,
       sampleRecord: {
-        harmonizedSource: connector?.name || "Curated Multilateral Source",
-        country: countryIso3,
-        status: "Offline Resilient Cache Active",
-        cachedIndicatorCount: connector?.indicatorsProvided.length || 6,
-        indicators: connector?.indicatorsProvided || []
+        error: `Upstream responded with HTTP ${upstreamRes.status}`,
+        source: connector.name,
+        country: safeIso3
+      },
+      retrievedAt: new Date().toISOString()
+    });
+  } catch (err: any) {
+    const latency = Math.round(performance.now() - startTime);
+    const isTimeout = err?.name === "TimeoutError" || err?.name === "AbortError";
+    const errMsg = isTimeout ? "Upstream probe timed out (5000ms)" : (err?.message || "Upstream network error");
+    return res.json({
+      connectorId,
+      url: targetUrl,
+      status: "UNAVAILABLE",
+      latencyMs: Math.max(1, latency),
+      statusCode: isTimeout ? 504 : 502,
+      payloadSize: 0,
+      errorMessage: errMsg,
+      sampleRecord: {
+        error: errMsg,
+        source: connector.name,
+        country: safeIso3
       },
       retrievedAt: new Date().toISOString()
     });
@@ -334,7 +361,7 @@ app.post("/api/tts", async (req, res) => {
       }
     }
 
-    // 2. Second priority: Gemini Generative TTS (gemini-3.1-flash-tts-preview)
+    // 2. Second priority: Gemini Generative TTS (gemini-3.8-flash-lite-tts)
     const now = Date.now();
     const isRateLimited = now < geminiTtsRateLimitedUntil;
     const ai = isRateLimited ? null : getGenAI();
@@ -346,7 +373,7 @@ app.post("/api/tts", async (req, res) => {
         let timeoutTimer: ReturnType<typeof setTimeout> | undefined;
         const response = await Promise.race([
           ai.models.generateContent({
-            model: "gemini-3.1-flash-tts-preview",
+            model: "gemini-3.8-flash-lite-tts",
             contents: [{ parts: [{ text: speechPrompt }] }],
             config: {
               responseModalities: [Modality.AUDIO],

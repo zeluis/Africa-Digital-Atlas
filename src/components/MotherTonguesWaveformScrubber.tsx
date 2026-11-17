@@ -20,7 +20,11 @@ import {
   MotherTongueSyllable, 
   playMotherTongueAudio 
 } from '../data/motherTonguesAudioData';
-import { getBestSystemVoice, stopAfriataSpeech } from '../utils/afriataVoiceEngine';
+import {
+  AFRIATA_SPEECH_STOP_EVENT,
+  speakAcademicNarration,
+  stopAfriataSpeech
+} from '../utils/afriataVoiceEngine';
 
 interface MotherTonguesWaveformScrubberProps {
   initialLanguageId?: string;
@@ -49,6 +53,7 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
   const startProgressRef = useRef<number>(0);
   const waveformContainerRef = useRef<HTMLDivElement | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const isStartingRef = useRef<boolean>(false);
 
   // Play a quick resonant micro-chime on scrub
   const playScrubMicroChime = useCallback((fraction: number) => {
@@ -83,55 +88,56 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
   }, [activeEntry]);
 
   // Clean speech synthesis & animation loop
-  const stopAudio = useCallback(() => {
-    stopAfriataSpeech();
+  const cancelAnimation = useCallback(() => {
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current);
       animFrameRef.current = null;
     }
-    setIsPlaying(false);
   }, []);
 
+  const stopAudio = useCallback(() => {
+    cancelAnimation();
+    stopAfriataSpeech();
+    setIsPlaying(false);
+  }, [cancelAnimation]);
+
   const handleStartPlay = useCallback((fromFraction = progress >= 0.98 ? 0 : progress) => {
-    stopAudio();
+    cancelAnimation();
     setIsPlaying(true);
     setProgress(fromFraction);
     startProgressRef.current = fromFraction;
     startTimeRef.current = performance.now();
 
-    // Trigger Speech Synthesis
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(activeEntry.greetingText);
-      const { voice, langCode } = getBestSystemVoice(activeEntry.bcp47Tag);
-      if (voice) {
-        utterance.voice = voice;
-        utterance.lang = voice.lang;
-      } else {
-        utterance.lang = langCode;
-      }
-      utterance.rate = playbackSpeed;
-      utterance.pitch = 1.05;
-      utterance.volume = 1.0;
-
-      utterance.onend = () => {
-        setIsPlaying(false);
-        setProgress(1.0);
-      };
-      utterance.onerror = () => {
-        setIsPlaying(false);
-      };
-
-      window.speechSynthesis.speak(utterance);
+    // Route speech synthesis synchronously through singleton afriataVoiceEngine with bcp47Tag & speed
+    isStartingRef.current = true;
+    try {
+      speakAcademicNarration({
+        text: activeEntry.greetingText,
+        langTag: activeEntry.bcp47Tag,
+        playChime: false,
+        rate: playbackSpeed,
+        pitch: 1.05,
+        onEnd: () => {
+          cancelAnimation();
+          setIsPlaying(false);
+          setProgress(1.0);
+        },
+        onError: () => {
+          cancelAnimation();
+          setIsPlaying(false);
+        },
+      });
+    } finally {
+      isStartingRef.current = false;
     }
 
-    // Also trigger complementary acoustic chord
+    // Play complementary acoustic chord without cancelling the active utterance
     if (fromFraction < 0.1) {
-      playMotherTongueAudio(activeEntry);
+      playMotherTongueAudio(activeEntry, { skipSpeech: true });
     }
 
     // Animation progress loop
     const totalDurationMs = (duration * 1000) / playbackSpeed;
-    const remainingDurationMs = totalDurationMs * (1 - fromFraction);
 
     const step = (timestamp: number) => {
       const elapsed = timestamp - startTimeRef.current;
@@ -147,7 +153,7 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
     };
 
     animFrameRef.current = requestAnimationFrame(step);
-  }, [activeEntry, duration, playbackSpeed, progress, stopAudio]);
+  }, [activeEntry, cancelAnimation, duration, playbackSpeed, progress]);
 
   const handleTogglePlay = () => {
     if (isPlaying) {
@@ -162,12 +168,17 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
     setProgress(0);
   };
 
+  const clientXFraction = (clientX: number, rect: DOMRect) => {
+    if (rect.width <= 0) return 0;
+    return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  };
+
   // Scrubber mouse/touch drag handlers
   const handleScrubMove = useCallback((clientX: number) => {
     if (!waveformContainerRef.current) return;
     const rect = waveformContainerRef.current.getBoundingClientRect();
-    const x = Math.max(0, Math.min(rect.width, clientX - rect.left));
-    const frac = Math.max(0, Math.min(1, x / rect.width));
+    if (rect.width <= 0) return;
+    const frac = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
     setProgress(frac);
     playScrubMicroChime(frac);
   }, [playScrubMicroChime]);
@@ -184,13 +195,9 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
       handleScrubMove(e.clientX);
     } else if (waveformContainerRef.current) {
       const rect = waveformContainerRef.current.getBoundingClientRect();
-      const x = Math.max(0, Math.min(rect.width, clientXFraction(e.clientX, rect)));
-      setHoveredFraction(x);
+      if (rect.width <= 0) return;
+      setHoveredFraction(clientXFraction(e.clientX, rect));
     }
-  };
-
-  const clientXFraction = (clientX: number, rect: DOMRect) => {
-    return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -217,13 +224,20 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
   };
 
   useEffect(() => {
+    const handleGlobalStop = () => {
+      if (isStartingRef.current) return;
+      cancelAnimation();
+      setIsPlaying(false);
+    };
     const handleVisibilityChange = () => {
       if (document.hidden) {
         stopAudio();
       }
     };
+    window.addEventListener(AFRIATA_SPEECH_STOP_EVENT, handleGlobalStop);
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => {
+      window.removeEventListener(AFRIATA_SPEECH_STOP_EVENT, handleGlobalStop);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       stopAudio();
       if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
@@ -231,7 +245,7 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
         audioCtxRef.current = null;
       }
     };
-  }, [stopAudio]);
+  }, [cancelAnimation, stopAudio]);
 
   // Current active syllable
   const currentSyllable = activeEntry.syllables?.find(

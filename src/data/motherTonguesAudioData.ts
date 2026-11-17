@@ -254,39 +254,28 @@ export const AFRICAN_MOTHER_TONGUES: Record<string, MotherTongueEntry> = {
   }
 };
 
-import { getBestSystemVoice, stopAfriataSpeech } from '../utils/afriataVoiceEngine';
+import { speakAcademicNarration } from '../utils/afriataVoiceEngine';
 
 let sharedMotherTongueAudioCtx: AudioContext | null = null;
 
 /**
  * Play an indigenous musical greeting soundscape using high-fidelity native voice & harmonic Web Audio
  */
-export function playMotherTongueAudio(entry: MotherTongueEntry) {
+export function playMotherTongueAudio(
+  entry: MotherTongueEntry,
+  options?: { skipSpeech?: boolean; rate?: number }
+) {
   if (typeof window === 'undefined') return;
 
-  // 1. Play Browser Native Speech Synthesis with natural voice selection
-  if ('speechSynthesis' in window) {
-    try {
-      stopAfriataSpeech();
-      const utterance = new SpeechSynthesisUtterance(entry.greetingText);
-      const { voice, langCode, rate, pitch } = getBestSystemVoice(entry.bcp47Tag);
-      if (voice) {
-        utterance.voice = voice;
-        utterance.lang = voice.lang;
-      } else {
-        utterance.lang = langCode;
-      }
-      utterance.rate = rate;
-      utterance.pitch = pitch;
-      utterance.volume = 1.0;
-
-      // Slight delay so the opening kalimba chime resonates cleanly
-      setTimeout(() => {
-        window.speechSynthesis.speak(utterance);
-      }, 150);
-    } catch {
-      // Graceful fallback
-    }
+  // 1. Play Browser Native Speech Synthesis synchronously through singleton voice engine
+  if (!options?.skipSpeech) {
+    speakAcademicNarration({
+      text: entry.greetingText,
+      langTag: entry.bcp47Tag,
+      playChime: false,
+      rate: options?.rate ?? 0.95,
+      pitch: 1.05,
+    });
   }
 
   // 2. Play complementary tonal harmonic resonance chord (Marimba / Kalimba style chime)

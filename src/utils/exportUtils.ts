@@ -24,6 +24,37 @@ export function downloadFile(filename: string, content: string, mimeType: string
   downloadBlob(filename, blob);
 }
 
+const CSV_FORMULA_PREFIX_RE = /^[=+\-@\t\r]|^\s+[=+\-@]/;
+
+/**
+ * Escapes a single CSV cell value against formula injection (=, +, -, @, tab, CR)
+ * and RFC-4180 quote/comma/newline delimiters.
+ */
+export function escapeCsvCell(
+  value: string | number | boolean | null | undefined,
+  options?: { quoteAllStrings?: boolean }
+): string {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? String(value) : '';
+  }
+  if (typeof value === 'boolean') {
+    return value ? 'true' : 'false';
+  }
+
+  let str = String(value);
+  const isFormulaRisk = CSV_FORMULA_PREFIX_RE.test(str);
+  if (isFormulaRisk) {
+    str = `'${str}`;
+  }
+
+  const escaped = str.replace(/"/g, '""');
+  if (options?.quoteAllStrings || isFormulaRisk || /[",\r\n]/.test(str)) {
+    return `"${escaped}"`;
+  }
+  return escaped;
+}
+
 /**
  * Exports all 54 African countries with selected or all indicators to CSV
  */
@@ -46,7 +77,7 @@ export function exportCountriesToCsv(selectedIndicatorIds?: string[]): void {
     'Land_Area_Km2',
     'Languages',
     'Currency_Code',
-    ...indicatorsToExport.map(i => `"${i.name.replace(/"/g, '""')} [${i.id}] (${i.unit})"`)
+    ...indicatorsToExport.map(i => escapeCsvCell(`${i.name} [${i.id}] (${i.unit})`, { quoteAllStrings: true }))
   ];
 
   const rows = entities.map(entity => {
@@ -54,28 +85,31 @@ export function exportCountriesToCsv(selectedIndicatorIds?: string[]): void {
     const indicatorValues = indicatorsToExport.map(ind => {
       const obs = atlas.getLatestObservation(entity.id, ind.id);
       if (!obs || obs.value === null) return '';
-      return obs.status && obs.status !== 'observed' ? `${obs.value} [${obs.status}]` : obs.value;
+      if (obs.status && obs.status !== 'observed') {
+        return escapeCsvCell(`${obs.value} [${obs.status}]`);
+      }
+      return escapeCsvCell(obs.value);
     });
 
     const langStr = entity.languages?.official?.join('; ') || '';
 
     return [
-      entity.id,
-      entity.iso2,
-      `"${entity.name.replace(/"/g, '""')}"`,
-      `"${(entity.officialName || entity.name).replace(/"/g, '""')}"`,
-      `"${(entity.capital || '').replace(/"/g, '""')}"`,
-      `"${entity.region}"`,
-      `"${entity.subregion || ''}"`,
-      pop || '',
-      entity.landAreaKm2 || '',
-      `"${langStr.replace(/"/g, '""')}"`,
-      entity.currency?.code || '',
+      escapeCsvCell(entity.id),
+      escapeCsvCell(entity.iso2),
+      escapeCsvCell(entity.name, { quoteAllStrings: true }),
+      escapeCsvCell(entity.officialName || entity.name, { quoteAllStrings: true }),
+      escapeCsvCell(entity.capital || '', { quoteAllStrings: true }),
+      escapeCsvCell(entity.region, { quoteAllStrings: true }),
+      escapeCsvCell(entity.subregion || '', { quoteAllStrings: true }),
+      escapeCsvCell(pop ?? ''),
+      escapeCsvCell(entity.landAreaKm2 ?? ''),
+      escapeCsvCell(langStr, { quoteAllStrings: true }),
+      escapeCsvCell(entity.currency?.code || ''),
       ...indicatorValues
     ].join(',');
   });
 
-  const csvContent = [headers.join(','), ...rows].join('\r\n');
+  const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
   downloadFile(`africa_atlas_master_dataset_${new Date().toISOString().slice(0, 10)}.csv`, csvContent, 'text/csv;charset=utf-8');
 }
 
@@ -168,22 +202,30 @@ export function exportBivariateCorrelationToCsv(
     `#`
   ];
 
-  const headers = ['Country_ID', 'Country_Name', 'UN_Region', `X_${indicatorX.id}`, `Y_${indicatorY.id}`, 'Fitted_Y', 'Residual'];
+  const headers = [
+    'Country_ID',
+    'Country_Name',
+    'UN_Region',
+    escapeCsvCell(`X_${indicatorX.id}`),
+    escapeCsvCell(`Y_${indicatorY.id}`),
+    'Fitted_Y',
+    'Residual'
+  ];
   const rows = data.map(d => {
     const fittedY = stats.slope * d.x + stats.intercept;
     const residual = d.y - fittedY;
     return [
-      d.entityId,
-      `"${d.entityName.replace(/"/g, '""')}"`,
-      `"${d.region}"`,
-      d.x,
-      d.y,
-      fittedY.toFixed(4),
-      residual.toFixed(4)
+      escapeCsvCell(d.entityId),
+      escapeCsvCell(d.entityName, { quoteAllStrings: true }),
+      escapeCsvCell(d.region, { quoteAllStrings: true }),
+      escapeCsvCell(d.x),
+      escapeCsvCell(d.y),
+      escapeCsvCell(fittedY.toFixed(4)),
+      escapeCsvCell(residual.toFixed(4))
     ].join(',');
   });
 
-  const content = [...metaLines, headers.join(','), ...rows].join('\r\n');
+  const content = '\uFEFF' + [...metaLines, headers.join(','), ...rows].join('\r\n');
   downloadFile(`correlation_${indicatorX.id}_vs_${indicatorY.id}.csv`, content, 'text/csv;charset=utf-8');
 }
 
@@ -205,19 +247,19 @@ export function exportSlaveVoyagesToCsv(): void {
   ];
 
   const rows = REGIONAL_ROUTE_FLOWS.map(route => [
-    route.id,
-    `"${route.sourceRegion}"`,
-    `"${route.targetRegion}"`,
-    route.voyagesCount,
-    route.embarkedCount,
-    route.disembarkedCount,
-    route.embarkedCount - route.disembarkedCount,
-    route.avgMortalityRate,
-    `"${route.peakCentury}"`,
-    `"${route.primaryCarriers.map(c => `${c.carrier} (${c.percentage}%)`).join('; ')}"`
+    escapeCsvCell(route.id),
+    escapeCsvCell(route.sourceRegion, { quoteAllStrings: true }),
+    escapeCsvCell(route.targetRegion, { quoteAllStrings: true }),
+    escapeCsvCell(route.voyagesCount),
+    escapeCsvCell(route.embarkedCount),
+    escapeCsvCell(route.disembarkedCount),
+    escapeCsvCell(route.embarkedCount - route.disembarkedCount),
+    escapeCsvCell(route.avgMortalityRate),
+    escapeCsvCell(route.peakCentury, { quoteAllStrings: true }),
+    escapeCsvCell(route.primaryCarriers.map(c => `${c.carrier} (${c.percentage}%)`).join('; '), { quoteAllStrings: true })
   ].join(','));
 
-  const content = [headers.join(','), ...rows].join('\r\n');
+  const content = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
   downloadFile(`transatlantic_slave_voyages_regional_flows.csv`, content, 'text/csv;charset=utf-8');
 }
 

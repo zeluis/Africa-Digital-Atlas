@@ -139,8 +139,8 @@ if (updateChecksums) {
   console.log(`  ✓ Synchronized research/hashes.json, research/checksums.json, and src/data/methodologyDossierData.ts.`);
 }
 
-// 4. Verify observation status flags & derivation notes in src/data/atlas-observations-seed.ts
-console.log(`\n3. Auditing socioeconomic observation status flags in src/data/atlas-observations-seed.ts...`);
+// 4. Verify observation status flags & derivation notes across core seed and expanded modules
+console.log(`\n3. Auditing socioeconomic observation status flags across core & extended generators...`);
 const seedContent = fs.readFileSync(path.join(rootDir, 'src/data/atlas-observations-seed.ts'), 'utf8');
 const statusMatches = [
   ...seedContent.matchAll(/status:\s*['"](observed|estimated|forecast|derived)['"]/g),
@@ -167,6 +167,35 @@ if (statusMatches.length === 0) {
   fail(`${derivedMissingNotes} derived observation generator call(s) in src/data/atlas-observations-seed.ts are missing explanatory notes`);
 } else {
   pass(`${statusMatches.length.toLocaleString()} explicit observation status declarations and ${derivedCount} historical 'derived' back-fill rules audited (all carry explicit derivation notes).`);
+}
+
+// Audit secondary observation generators
+const extApisContent = fs.readFileSync(path.join(rootDir, 'src/data/externalApisIngestion.ts'), 'utf8');
+if (/addObs\([^\)]*=\s*['"]observed['"]/.test(extApisContent)) {
+  fail(`src/data/externalApisIngestion.ts must not default synthesized observations to status 'observed'.`);
+} else if (!extApisContent.includes("status: ObservationStatus = 'estimated'") || !extApisContent.includes("'derived'")) {
+  fail(`src/data/externalApisIngestion.ts must explicitly separate 'estimated', 'forecast', and 'derived' observations with notes.`);
+} else {
+  pass(`src/data/externalApisIngestion.ts tags modeled baseline as 'estimated'/'forecast' and trajectories as 'derived' with notes.`);
+}
+
+const wbCompContent = fs.readFileSync(path.join(rootDir, 'src/data/worldBankComprehensiveData.ts'), 'utf8');
+if (/status:\s*(?:any|ObservationStatus)\s*=\s*['"]observed['"]/.test(wbCompContent) && !wbCompContent.includes('isCuratedProfile')) {
+  fail(`src/data/worldBankComprehensiveData.ts must distinguish curated country profiles from HDI-derived fallbacks.`);
+} else if (!wbCompContent.includes("'derived'") || !wbCompContent.includes('notes')) {
+  fail(`src/data/worldBankComprehensiveData.ts must tag derived GDPpc/back-fill observations with 'derived' and explanatory notes.`);
+} else {
+  pass(`src/data/worldBankComprehensiveData.ts distinguishes curated profiles from HDI-derived fallbacks and historical trajectories.`);
+}
+
+const expandedContent = fs.readFileSync(path.join(rootDir, 'src/data/expandedIndicators.ts'), 'utf8');
+const atlasStoreContent = fs.readFileSync(path.join(rootDir, 'src/data/atlas-store.ts'), 'utf8');
+if (!expandedContent.includes('EXPANDED_PRESET_COUNTRIES')) {
+  fail(`src/data/expandedIndicators.ts must export EXPANDED_PRESET_COUNTRIES to separate preset snapshots from modeled nations.`);
+} else if (!atlasStoreContent.includes('EXPANDED_PRESET_COUNTRIES') || /generateExpandedObservations[\s\S]{0,600}status:\s*['"]observed['"]\s*\n\s*\}/.test(atlasStoreContent)) {
+  fail(`src/data/atlas-store.ts must not blindly hardcode status: 'observed' across all generateExpandedObservations outputs.`);
+} else {
+  pass(`src/data/expandedIndicators.ts and src/data/atlas-store.ts separate 8 preset snapshots from 46 derived country baselines.`);
 }
 
 console.log(`\n=== Integrity Result: ${errors === 0 ? 'PASSED (0 errors)' : `FAILED (${errors} error(s))`} ===`);

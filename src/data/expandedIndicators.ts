@@ -462,8 +462,19 @@ export const EXPANDED_INDICATORS: IndicatorDefinition[] = [
   }
 ];
 
+export const EXPANDED_PRESET_COUNTRIES = new Set([
+  'NGA',
+  'ZAF',
+  'EGY',
+  'KEN',
+  'GHA',
+  'CIV',
+  'ETH',
+  'MAR'
+]);
+
 /**
- * Generate synthetic & harmonized observation metrics for all 54 African countries
+ * Generate curated snapshot or deterministic baseline observation metrics for all 54 African countries
  * for each of the expanded indicators based on economic tier, regional profile, and land area.
  */
 export function generateExpandedObservations(countryId: string): Record<string, number> {

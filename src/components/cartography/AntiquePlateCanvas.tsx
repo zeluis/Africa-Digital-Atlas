@@ -17,9 +17,9 @@ export const AntiquePlateCanvas: React.FC<AntiquePlateCanvasProps> = ({
   const [imageIdx, setImageIdx] = useState<number>(0);
   const [hasFailedAll, setHasFailedAll] = useState<boolean>(false);
 
-  // For thumbnails, ALWAYS prioritize plate.imageUrl first since it is 100% verified to exist and load correctly
-  const primaryTarget = isThumbnail ? plate.imageUrl : plate.imageUrl;
-  const secondaryTarget = isThumbnail ? plate.thumbnailUrl : plate.thumbnailUrl;
+  // For thumbnails, prioritize lightweight thumbnailUrl first and fall back to full imageUrl
+  const primaryTarget = (isThumbnail && plate.thumbnailUrl) ? plate.thumbnailUrl : plate.imageUrl;
+  const secondaryTarget = isThumbnail ? plate.imageUrl : plate.thumbnailUrl;
 
   // Build comprehensive candidate URL list: resolved path, relative, raw, and fallbacks
   const candidateUrls: string[] = Array.from(new Set([

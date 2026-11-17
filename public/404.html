@@ -80,8 +80,8 @@
           return;
         }
 
-        var search = l.search ? (cleanPath ? '?' : '') + l.search.slice(1) : '';
-        var targetHash = cleanPath ? '#' + cleanPath + search : (l.search ? '#overview' + l.search : '');
+        var search = l.search || '';
+        var targetHash = cleanPath ? '#' + cleanPath + search : (search ? '#overview' + search : '');
 
         if (l.hash && !targetHash) {
           targetHash = l.hash;

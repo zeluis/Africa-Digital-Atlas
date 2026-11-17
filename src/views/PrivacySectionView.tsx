@@ -79,33 +79,37 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
   const refreshStorageInspector = () => {
     if (typeof window === 'undefined') return;
     const items: LocalStorageEntry[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (!key) continue;
-      const val = localStorage.getItem(key) || '';
-      let cat: LocalStorageEntry['category'] = 'other';
-      let desc = 'Client-side preference state';
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key) continue;
+        const val = localStorage.getItem(key) || '';
+        let cat: LocalStorageEntry['category'] = 'other';
+        let desc = 'Client-side preference state';
 
-      if (key.includes('theme')) {
-        cat = 'theme';
-        desc = 'User interface dark/light theme preference';
-      } else if (key.includes('language') || key.includes('lang')) {
-        cat = 'preferences';
-        desc = 'Active UI multilingual locale code';
-      } else if (key.includes('onboarding')) {
-        cat = 'onboarding';
-        desc = 'Curated orientation completion flag';
-      } else if (key.includes('density')) {
-        cat = 'preferences';
-        desc = 'Analytical information layout density setting';
+        if (key.includes('theme')) {
+          cat = 'theme';
+          desc = 'User interface dark/light theme preference';
+        } else if (key.includes('language') || key.includes('lang')) {
+          cat = 'preferences';
+          desc = 'Active UI multilingual locale code';
+        } else if (key.includes('onboarding')) {
+          cat = 'onboarding';
+          desc = 'Curated orientation completion flag';
+        } else if (key.includes('density')) {
+          cat = 'preferences';
+          desc = 'Analytical information layout density setting';
+        }
+
+        items.push({
+          key,
+          value: val,
+          category: cat,
+          description: desc
+        });
       }
-
-      items.push({
-        key,
-        value: val,
-        category: cat,
-        description: desc
-      });
+    } catch {
+      // Safe fallback when storage access is restricted by sandbox policy
     }
     setStorageItems(items);
   };

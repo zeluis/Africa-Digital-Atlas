@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Volume2, VolumeX, Play, Pause, RotateCcw, Sparkles } from 'lucide-react';
-import { speakAfriataGreeting, stopAfriataSpeech } from '../utils/afriataVoiceEngine';
+import React, { useState, useEffect, useRef } from 'react';
+import { Volume2, VolumeX } from 'lucide-react';
+import {
+  AFRIATA_SPEECH_STOP_EVENT,
+  speakAcademicNarration,
+  stopAfriataSpeech
+} from '../utils/afriataVoiceEngine';
 import { useTranslation } from '../i18n/LanguageContext';
 
 export interface ReportVoiceReaderProps {
@@ -9,6 +13,57 @@ export interface ReportVoiceReaderProps {
   sections?: Array<{ id: string; title: string; content: string }>;
   langTag?: string;
   className?: string;
+}
+
+const MAX_CHUNK_CHARS = 800;
+
+function splitNarrationChunks(rawText: string, maxChars = MAX_CHUNK_CHARS): string[] {
+  const cleaned = rawText
+    .replace(/[*_#`~]/g, '')
+    .replace(/\[\s*\d+\s*\]/g, '')
+    .replace(/https?:\/\/\S+/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  if (!cleaned) return [];
+
+  const sentences = cleaned.split(/(?<=[.!?])\s+/);
+  const chunks: string[] = [];
+  let current = '';
+
+  const pushWrapped = (segment: string) => {
+    const words = segment.split(/\s+/);
+    let buf = '';
+    for (const word of words) {
+      if (!buf) {
+        buf = word;
+      } else if (buf.length + 1 + word.length <= maxChars) {
+        buf = `${buf} ${word}`;
+      } else {
+        chunks.push(buf);
+        buf = word;
+      }
+    }
+    if (buf) chunks.push(buf);
+  };
+
+  for (const sentence of sentences) {
+    if (sentence.length > maxChars) {
+      if (current) {
+        chunks.push(current);
+        current = '';
+      }
+      pushWrapped(sentence);
+    } else if (!current) {
+      current = sentence;
+    } else if (current.length + 1 + sentence.length <= maxChars) {
+      current = `${current} ${sentence}`;
+    } else {
+      chunks.push(current);
+      current = sentence;
+    }
+  }
+  if (current) chunks.push(current);
+  return chunks;
 }
 
 export const ReportVoiceReader: React.FC<ReportVoiceReaderProps> = ({
@@ -22,13 +77,29 @@ export const ReportVoiceReader: React.FC<ReportVoiceReaderProps> = ({
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [mode, setMode] = useState<'summary' | 'full'>('summary');
-  const [activeVoicePrompt, setActiveVoicePrompt] = useState<string>('');
 
   const targetLang = langTag || language;
+  const isPlayingRef = useRef(false);
+  const isStartingRef = useRef(false);
+  const queueTokenRef = useRef(0);
 
   useEffect(() => {
+    const handleGlobalStop = () => {
+      if (isStartingRef.current) return;
+      queueTokenRef.current += 1;
+      isPlayingRef.current = false;
+      setIsPlaying(false);
+      setIsPaused(false);
+    };
+
+    window.addEventListener(AFRIATA_SPEECH_STOP_EVENT, handleGlobalStop);
     return () => {
-      stopAfriataSpeech();
+      window.removeEventListener(AFRIATA_SPEECH_STOP_EVENT, handleGlobalStop);
+      queueTokenRef.current += 1;
+      if (isPlayingRef.current) {
+        isPlayingRef.current = false;
+        stopAfriataSpeech();
+      }
     };
   }, []);
 
@@ -36,7 +107,7 @@ export const ReportVoiceReader: React.FC<ReportVoiceReaderProps> = ({
     if (mode === 'summary') {
       return `${title}. Executive Overview: ${abstractOrSummary}`;
     }
-    
+
     let text = `${title}. Executive Overview: ${abstractOrSummary}. `;
     sections.slice(0, 4).forEach((sec) => {
       text += ` ${sec.title}. ${sec.content} `;
@@ -44,41 +115,72 @@ export const ReportVoiceReader: React.FC<ReportVoiceReaderProps> = ({
     return text;
   };
 
-  const handleTogglePlay = () => {
-    if (isPlaying) {
-      stopAfriataSpeech();
-      setIsPlaying(false);
-      setIsPaused(false);
-      return;
-    }
-
-    const fullText = buildFullSpeechText();
-    setActiveVoicePrompt(title);
-    setIsPlaying(true);
-    setIsPaused(false);
-
-    speakAfriataGreeting({
-      text: fullText,
-      langTag: targetLang,
-      onStart: () => {
-        setIsPlaying(true);
-        setIsPaused(false);
-      },
-      onEnd: () => {
-        setIsPlaying(false);
-        setIsPaused(false);
-      },
-      onError: () => {
+  const playChunkAt = (chunks: string[], index: number, token: number) => {
+    if (queueTokenRef.current !== token || index >= chunks.length) {
+      if (queueTokenRef.current === token) {
+        isPlayingRef.current = false;
         setIsPlaying(false);
         setIsPaused(false);
       }
-    });
+      return;
+    }
+
+    isStartingRef.current = true;
+    try {
+      speakAcademicNarration({
+        text: chunks[index],
+        langTag: targetLang,
+        playChime: index === 0,
+        onStart: () => {
+          if (queueTokenRef.current !== token) return;
+          isPlayingRef.current = true;
+          setIsPlaying(true);
+          setIsPaused(false);
+        },
+        onEnd: () => {
+          if (queueTokenRef.current !== token) return;
+          if (index + 1 < chunks.length) {
+            playChunkAt(chunks, index + 1, token);
+          } else {
+            isPlayingRef.current = false;
+            setIsPlaying(false);
+            setIsPaused(false);
+          }
+        },
+        onError: () => {
+          if (queueTokenRef.current !== token) return;
+          isPlayingRef.current = false;
+          setIsPlaying(false);
+          setIsPaused(false);
+        }
+      });
+    } finally {
+      isStartingRef.current = false;
+    }
   };
 
   const handleStop = () => {
+    queueTokenRef.current += 1;
+    isPlayingRef.current = false;
     stopAfriataSpeech();
     setIsPlaying(false);
     setIsPaused(false);
+  };
+
+  const handleTogglePlay = () => {
+    if (isPlaying) {
+      handleStop();
+      return;
+    }
+
+    const chunks = splitNarrationChunks(buildFullSpeechText(), MAX_CHUNK_CHARS);
+    if (chunks.length === 0) return;
+
+    const token = ++queueTokenRef.current;
+    isPlayingRef.current = true;
+    setIsPlaying(true);
+    setIsPaused(false);
+    playChunkAt(chunks, 0, token);
   };
 
   return (

@@ -401,26 +401,38 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
                   <div className="pt-2.5 border-t border-[#F2E8D8] dark:border-[#2C251C] flex flex-col gap-2">
                     {result && (
                       <div className={`p-2 rounded-xl text-[11px] font-mono border transition-all ${
-                        result.status === 'SUCCESS' 
-                          ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700/60 text-emerald-950 dark:text-emerald-200' 
-                          : 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700/60 text-amber-950 dark:text-amber-200'
+                        result.status === 'SUCCESS'
+                          ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700/60 text-emerald-950 dark:text-emerald-200'
+                          : result.status === 'UPSTREAM_ERROR'
+                          ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700/60 text-amber-950 dark:text-amber-200'
+                          : 'bg-rose-50 dark:bg-rose-950/60 border-rose-300 dark:border-rose-700/60 text-rose-950 dark:text-rose-200'
                       }`}>
                         <div className="flex items-center justify-between mb-0.5">
-                          <span className="flex items-center gap-1 font-bold">
+                          <span className="flex items-center gap-1 font-bold min-w-0">
                             {result.status === 'SUCCESS' ? (
                               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
                             ) : (
-                              <ShieldCheck className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 shrink-0" />
+                              <AlertCircle className={`w-3.5 h-3.5 shrink-0 ${result.status === 'UPSTREAM_ERROR' ? 'text-amber-700 dark:text-amber-400' : 'text-rose-700 dark:text-rose-400'}`} />
                             )}
-                            <span className="truncate">{result.status === 'SUCCESS' ? 'Handshake Verified' : 'Validated Cache'}</span>
+                            <span className="truncate">
+                              {result.status === 'SUCCESS'
+                                ? 'Handshake Verified'
+                                : result.status === 'UPSTREAM_ERROR'
+                                ? `Upstream HTTP ${result.statusCode}`
+                                : 'Probe Unavailable'}
+                            </span>
                           </span>
                           <span className="text-[10px] font-bold px-1 py-0.2 rounded bg-white/80 dark:bg-stone-900 border border-stone-300 dark:border-stone-700">
                             {result.latencyMs}ms
                           </span>
                         </div>
-                        <div className="text-[10px] text-stone-700 dark:text-stone-400 flex items-center justify-between">
+                        <div className="text-[10px] text-stone-700 dark:text-stone-400 flex items-center justify-between gap-2">
                           <span>{result.payloadSize} B</span>
-                          <span>HTTP {result.statusCode} OK</span>
+                          <span className="truncate">
+                            {result.status === 'SUCCESS'
+                              ? `HTTP ${result.statusCode} OK`
+                              : result.errorMessage || (result.statusCode > 0 ? `HTTP ${result.statusCode}` : 'Network / CORS blocked')}
+                          </span>
                         </div>
                       </div>
                     )}

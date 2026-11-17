@@ -200,12 +200,10 @@ export async function verifyDoiWithCrossref(
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-    const endpoint = `https://api.crossref.org/works/${encodeURIComponent(cleanDoi)}`;
+    const endpoint = `https://api.crossref.org/works/${encodeURIComponent(cleanDoi)}?mailto=atlas-curator@afriata.org`;
     const response = await fetch(endpoint, {
       signal: controller.signal,
       headers: {
-        // Crossref polite pool etiquette
-        'User-Agent': 'AfricaDataAtlas/1.0 (https://afriata.org; mailto:atlas-curator@afriata.org)',
         Accept: 'application/json'
       }
     });
@@ -331,7 +329,7 @@ export async function searchCrossrefByTitle(title: string, author?: string): Pro
 
   try {
     const query = author ? `${title} ${author}` : title;
-    const url = `https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(query)}&rows=5`;
+    const url = `https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(query)}&rows=5&mailto=atlas-curator@afriata.org`;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000);
     let response: Response;
@@ -339,7 +337,6 @@ export async function searchCrossrefByTitle(title: string, author?: string): Pro
       response = await fetch(url, {
         signal: controller.signal,
         headers: {
-          'User-Agent': 'AfricaDataAtlas/1.0 (mailto:atlas-curator@afriata.org)',
           Accept: 'application/json'
         }
       });

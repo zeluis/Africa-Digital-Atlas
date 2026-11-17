@@ -181,6 +181,21 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
   const showTradeWindsRef = useRef<boolean>(showTradeWinds);
   const wakeFlowLoopRef = useRef<(() => void) | null>(null);
 
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(() =>
+    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      : false
+  );
+  const [isDocumentHidden, setIsDocumentHidden] = useState<boolean>(() =>
+    typeof document !== 'undefined' ? document.hidden : false
+  );
+  const prefersReducedMotionRef = useRef<boolean>(prefersReducedMotion);
+
+  useEffect(() => {
+    prefersReducedMotionRef.current = prefersReducedMotion;
+    wakeFlowLoopRef.current?.();
+  }, [prefersReducedMotion]);
+
   useEffect(() => {
     const target = mapCalendarSeasonToHydro(selectedSeason);
     if (hydroSeasonRef.current !== target) {
@@ -244,12 +259,58 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
 
     handleResize();
     window.addEventListener('resize', handleResize);
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && canvas.parentElement) {
+      resizeObserver = new ResizeObserver(handleResize);
+      resizeObserver.observe(canvas.parentElement);
+    }
+
+    // Precompute quantized alpha color tables outside 60fps loop to eliminate per-particle DOM reads & string allocations
+    const ALPHA_STEPS = 20;
+    const makePaletteTable = (rgb: string, scale: number) =>
+      Array.from({ length: ALPHA_STEPS + 1 }, (_, step) => {
+        const a = Math.round(((step / ALPHA_STEPS) * scale) * 100) / 100;
+        return `rgba(${rgb}, ${a})`;
+      });
+    const paletteCache = {
+      dark: {
+        warm: makePaletteTable('251, 191, 36', 0.92),
+        cool: makePaletteTable('56, 189, 248', 0.92),
+        wind: makePaletteTable('224, 242, 254', 0.8),
+        ambient: makePaletteTable('148, 163, 184', 0.22)
+      },
+      light: {
+        warm: makePaletteTable('194, 65, 12', 0.85),
+        cool: makePaletteTable('2, 132, 199', 0.85),
+        wind: makePaletteTable('71, 85, 105', 0.65),
+        ambient: makePaletteTable('168, 162, 158', 0.3)
+      }
+    };
+
+    let cachedIsDark = document.documentElement.classList.contains('dark');
+    const themeObserver = new MutationObserver(() => {
+      cachedIsDark = document.documentElement.classList.contains('dark');
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+    const motionMql = typeof window.matchMedia === 'function'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)')
+      : null;
+    const handleMotionChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotionRef.current = e.matches;
+      setPrefersReducedMotion(e.matches);
+      syncLoop();
+    };
+    motionMql?.addEventListener('change', handleMotionChange);
 
     let lastTime = performance.now();
     let isCanvasIntersecting = true;
 
     const shouldAnimate = () =>
-      showOceanCurrentsRef.current && isCanvasIntersecting && !document.hidden;
+      showOceanCurrentsRef.current &&
+      isCanvasIntersecting &&
+      !document.hidden &&
+      !prefersReducedMotionRef.current;
 
     const syncLoop = () => {
       if (shouldAnimate()) {
@@ -262,7 +323,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
           cancelAnimationFrame(animFrameIdRef.current);
           animFrameIdRef.current = null;
         }
-        if (!showOceanCurrentsRef.current) {
+        if (!showOceanCurrentsRef.current || prefersReducedMotionRef.current) {
           ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
         }
       }
@@ -279,6 +340,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
     observer.observe(canvas);
 
     const handleVisibilityChange = () => {
+      setIsDocumentHidden(document.hidden);
       syncLoop();
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -286,7 +348,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
     const render = (now: number) => {
       animFrameIdRef.current = null;
       if (!shouldAnimate()) {
-        if (!showOceanCurrentsRef.current) {
+        if (!showOceanCurrentsRef.current || prefersReducedMotionRef.current) {
           ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
         }
         return;
@@ -311,7 +373,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
 
       ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
 
-      const isDark = document.documentElement.classList.contains('dark');
+      const activePalette = cachedIsDark ? paletteCache.dark : paletteCache.light;
 
       for (let i = 0; i < num; i++) {
         const idx = i * 6;
@@ -338,30 +400,16 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
         if (i < activeLimit) {
           const lifeAlpha = Math.sin((age / maxAge) * Math.PI);
           const alpha = Math.max(0, Math.min(1, lifeAlpha * 0.90));
+          const alphaBin = Math.min(ALPHA_STEPS, Math.max(0, Math.round(alpha * ALPHA_STEPS)));
 
           if (type === 1) {
-            // Ocean current
-            if (isDark) {
-              ctx.strokeStyle = isWarm
-                ? `rgba(251, 191, 36, ${alpha * 0.92})`
-                : `rgba(56, 189, 248, ${alpha * 0.92})`;
-            } else {
-              ctx.strokeStyle = isWarm
-                ? `rgba(194, 65, 12, ${alpha * 0.85})`
-                : `rgba(2, 132, 199, ${alpha * 0.85})`;
-            }
+            ctx.strokeStyle = isWarm ? activePalette.warm[alphaBin] : activePalette.cool[alphaBin];
             ctx.lineWidth = Math.max(0.9, curWidth * 0.72 * (0.8 + force * 0.3));
           } else if (type === 2) {
-            // Wind vector
-            ctx.strokeStyle = isDark
-              ? `rgba(224, 242, 254, ${alpha * 0.8})`
-              : `rgba(71, 85, 105, ${alpha * 0.65})`;
+            ctx.strokeStyle = activePalette.wind[alphaBin];
             ctx.lineWidth = Math.max(0.7, curWidth * 0.45 * (0.8 + force * 0.25));
           } else {
-            // Ambient
-            ctx.strokeStyle = isDark
-              ? `rgba(148, 163, 184, ${alpha * 0.22})`
-              : `rgba(168, 162, 158, ${alpha * 0.3})`;
+            ctx.strokeStyle = activePalette.ambient[alphaBin];
             ctx.lineWidth = 0.7;
           }
 
@@ -392,6 +440,9 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
     return () => {
       wakeFlowLoopRef.current = null;
       window.removeEventListener('resize', handleResize);
+      resizeObserver?.disconnect();
+      themeObserver.disconnect();
+      motionMql?.removeEventListener('change', handleMotionChange);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       observer.disconnect();
       if (animFrameIdRef.current) {
@@ -401,23 +452,27 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
     };
   }, []);
 
-  // Playback timer loop
+  const playbackYearRef = useRef<number>(playbackYear);
   useEffect(() => {
-    let timer: any;
-    if (isPlaying) {
-      timer = setInterval(() => {
-        setPlaybackYear(prev => {
-          if (prev >= 1860) {
-            setIsPlaying(false);
-            return 1520;
-          }
-          const next = prev + 5;
-          if (onYearChange) onYearChange(next);
-          return next;
-        });
-      }, 350);
-    }
-    return () => clearInterval(timer);
+    playbackYearRef.current = playbackYear;
+  }, [playbackYear]);
+
+  // Playback timer loop (side effects kept strictly outside React state updater)
+  useEffect(() => {
+    if (!isPlaying) return;
+    const timer = window.setInterval(() => {
+      const cur = playbackYearRef.current;
+      if (cur >= 1860) {
+        setIsPlaying(false);
+        setPlaybackYear(1520);
+        return;
+      }
+      const next = cur + 5;
+      playbackYearRef.current = next;
+      setPlaybackYear(next);
+      if (onYearChange) onYearChange(next);
+    }, 350);
+    return () => window.clearInterval(timer);
   }, [isPlaying, onYearChange]);
 
   const getMortalityStroke = (mortality: number) => {
@@ -769,7 +824,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                         strokeWidth="2.5"
                         strokeDasharray="6 4"
                         strokeOpacity="0.75"
-                        className="transition-all group-hover:stroke-width-4"
+                        className="transition-all group-hover:[stroke-width:4]"
                       />
                     </g>
                   );
@@ -837,30 +892,32 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
                       strokeLinecap="round"
                     />
 
-                    {/* Photon Particles */}
-                    <g className="pointer-events-none">
-                      <g>
-                        <circle cx="0" cy="0" r={isHovered ? "6.8" : "5.0"} fill="url(#photonGlowGradient)" />
-                        <circle cx="0" cy="0" r={isHovered ? "2.4" : "1.8"} fill="#FFFFFF" />
-                        <animateMotion
-                          path={`M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`}
-                          dur={`${animatedDur}s`}
-                          repeatCount="indefinite"
-                        />
-                      </g>
-                      {(route.embarkedCount > 400000 || isHovered) && (
+                    {/* Photon Particles (gated by reduced-motion & active tab visibility) */}
+                    {!prefersReducedMotion && !isDocumentHidden && (
+                      <g className="pointer-events-none">
                         <g>
-                          <circle cx="0" cy="0" r={isHovered ? "5.4" : "4.0"} fill="url(#photonGlowGradient)" />
-                          <circle cx="0" cy="0" r={isHovered ? "2.0" : "1.5"} fill="#FFFFFF" />
+                          <circle cx="0" cy="0" r={isHovered ? "6.8" : "5.0"} fill="url(#photonGlowGradient)" />
+                          <circle cx="0" cy="0" r={isHovered ? "2.4" : "1.8"} fill="#FFFFFF" />
                           <animateMotion
                             path={`M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`}
                             dur={`${animatedDur}s`}
-                            begin={`${animatedDur / 2}s`}
                             repeatCount="indefinite"
                           />
                         </g>
-                      )}
-                    </g>
+                        {(route.embarkedCount > 400000 || isHovered) && (
+                          <g>
+                            <circle cx="0" cy="0" r={isHovered ? "5.4" : "4.0"} fill="url(#photonGlowGradient)" />
+                            <circle cx="0" cy="0" r={isHovered ? "2.0" : "1.5"} fill="#FFFFFF" />
+                            <animateMotion
+                              path={`M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`}
+                              dur={`${animatedDur}s`}
+                              begin={`${animatedDur / 2}s`}
+                              repeatCount="indefinite"
+                            />
+                          </g>
+                        )}
+                      </g>
+                    )}
 
                     {(isHovered || isSelected || (route.embarkedCount > 1500000 && epochMultiplier > 0.5)) && (
                       <g transform={`translate(${midX}, ${midY})`} className="pointer-events-none">

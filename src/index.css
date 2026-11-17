@@ -7,12 +7,6 @@
 @source "../index.html";
 @source "./data/africaData.ts";
 @source "./data/unGeoschemeColors.ts";
-@source not "./components/ethnicTree/EthnicTreeCanvas.tsx";
-@source not "./components/ethnicTree/ActualSvgOverlayViewer.tsx";
-@source not "./components/cartography/HaplogroupMapperModal.tsx";
-@source not "./components/cartography/HistoricalTimeSlider.tsx";
-@source not "./components/cartography/TerrainWatershedOverlay.tsx";
-@source not "./components/QuickStatCard.tsx";
 @source not "./components/slaveVoyages/atlanticNaturalEarthPaths.ts";
 
 @custom-variant dark (.dark &);
@@ -179,6 +173,40 @@
 .cascade-1 { animation-delay: 60ms; }
 .cascade-2 { animation-delay: 120ms; }
 .cascade-3 { animation-delay: 180ms; }
+
+@keyframes twEnterAnimation {
+  from {
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0) scale(var(--tw-enter-scale, 1));
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-in {
+  animation: twEnterAnimation var(--tw-duration, 150ms) cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.fade-in { --tw-enter-opacity: 0; }
+.fade-in-50 { --tw-enter-opacity: 0.5; }
+.zoom-in { --tw-enter-scale: 0; }
+.zoom-in-95 { --tw-enter-scale: 0.95; }
+.slide-in-from-bottom-3 { --tw-enter-translate-y: 0.75rem; }
+.slide-in-from-bottom-4 { --tw-enter-translate-y: 1rem; }
+.slide-in-from-bottom-5 { --tw-enter-translate-y: 1.25rem; }
+.slide-in-from-right-4 { --tw-enter-translate-x: 1rem; }
+.slide-in-from-top-2 { --tw-enter-translate-y: -0.5rem; }
+
+@keyframes atlasSpinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: atlasSpinSlow 14s linear infinite;
+}
 
 /* Hide scrollbar for tabs navigation */
 .no-scrollbar::-webkit-scrollbar {

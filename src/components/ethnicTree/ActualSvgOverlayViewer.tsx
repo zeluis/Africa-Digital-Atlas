@@ -162,6 +162,23 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const svgWrapperRef = useRef<HTMLDivElement>(null);
+  const scaleRef = useRef<number>(scale);
+  const positionRef = useRef<{ x: number; y: number }>(position);
+  const isDraggingRef = useRef<boolean>(isDragging);
+  const moveRafRef = useRef<number | null>(null);
+  const pendingPointerRef = useRef<{ clientX: number; clientY: number } | null>(null);
+
+  useEffect(() => {
+    scaleRef.current = scale;
+  }, [scale]);
+
+  useEffect(() => {
+    positionRef.current = position;
+  }, [position]);
+
+  useEffect(() => {
+    isDraggingRef.current = isDragging;
+  }, [isDragging]);
 
   // Reset Camera
   const handleResetCamera = useCallback(() => {
@@ -176,61 +193,96 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
     setScale(prev => Math.min(Math.max(prev + delta, 0.4), 5.0));
   };
 
-  // Wheel Zoom
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
-    const newScale = Math.min(Math.max(scale * zoomFactor, 0.4), 5.0);
+  // Native non-passive Wheel Zoom
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
 
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
+    const handleNativeWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const curScale = scaleRef.current;
+      const curPos = positionRef.current;
+      const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
+      const newScale = Math.min(Math.max(curScale * zoomFactor, 0.4), 5.0);
+
+      const rect = el.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
 
-      const dx = (mouseX - rect.width / 2 - position.x);
-      const dy = (mouseY - rect.height / 2 - position.y);
+      const dx = mouseX - rect.width / 2 - curPos.x;
+      const dy = mouseY - rect.height / 2 - curPos.y;
 
-      setPosition({
-        x: position.x - dx * (zoomFactor - 1),
-        y: position.y - dy * (zoomFactor - 1)
-      });
-    }
+      const nextPos = {
+        x: curPos.x - dx * (zoomFactor - 1),
+        y: curPos.y - dy * (zoomFactor - 1)
+      };
+      positionRef.current = nextPos;
+      scaleRef.current = newScale;
+      setPosition(nextPos);
+      setScale(newScale);
+    };
 
-    setScale(newScale);
-  };
+    el.addEventListener('wheel', handleNativeWheel, { passive: false });
+    return () => {
+      el.removeEventListener('wheel', handleNativeWheel);
+      if (moveRafRef.current !== null) {
+        cancelAnimationFrame(moveRafRef.current);
+        moveRafRef.current = null;
+      }
+    };
+  }, []);
 
-  // Drag Panning
+  // Drag Panning with rAF throttling & uniform viewBox projection
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
     setIsDragging(true);
-    dragStartRef.current = { x: e.clientX - position.x, y: e.clientY - position.y };
+    isDraggingRef.current = true;
+    dragStartRef.current = { x: e.clientX - positionRef.current.x, y: e.clientY - positionRef.current.y };
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (isDragging) {
-      setPosition({
-        x: e.clientX - dragStartRef.current.x,
-        y: e.clientY - dragStartRef.current.y
-      });
-    }
+    pendingPointerRef.current = { clientX: e.clientX, clientY: e.clientY };
+    if (moveRafRef.current !== null) return;
 
-    // Update cursor coordinates relative to SVG
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      const screenX = e.clientX - rect.left;
-      const screenY = e.clientY - rect.top;
-      // Convert screen coords to SVG viewBox 0..2000 coords
-      const centerX = rect.width / 2 + position.x;
-      const centerY = rect.height / 2 + position.y;
-      const svgX = Math.round(1000 + (screenX - centerX) / (scale * (rect.width / 2000)));
-      const svgY = Math.round(1000 + (screenY - centerY) / (scale * (rect.height / 2000)));
-      setHoverCoordinates({ screenX, screenY, svgX, svgY });
-    }
+    moveRafRef.current = requestAnimationFrame(() => {
+      moveRafRef.current = null;
+      const pt = pendingPointerRef.current;
+      if (!pt) return;
+
+      let activePos = positionRef.current;
+      if (isDraggingRef.current) {
+        activePos = {
+          x: pt.clientX - dragStartRef.current.x,
+          y: pt.clientY - dragStartRef.current.y
+        };
+        positionRef.current = activePos;
+        setPosition(activePos);
+      }
+
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const screenX = pt.clientX - rect.left;
+        const screenY = pt.clientY - rect.top;
+        const centerX = rect.width / 2 + activePos.x;
+        const centerY = rect.height / 2 + activePos.y;
+        const unitScale = Math.min(rect.width, rect.height) / 2000;
+        if (unitScale > 0) {
+          const svgX = Math.round(1000 + (screenX - centerX) / (scaleRef.current * unitScale));
+          const svgY = Math.round(1000 + (screenY - centerY) / (scaleRef.current * unitScale));
+          setHoverCoordinates({ screenX, screenY, svgX, svgY });
+        }
+      }
+    });
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     setIsDragging(false);
+    isDraggingRef.current = false;
+    if (moveRafRef.current !== null) {
+      cancelAnimationFrame(moveRafRef.current);
+      moveRafRef.current = null;
+    }
     try {
       e.currentTarget.releasePointerCapture(e.pointerId);
     } catch {}
@@ -437,7 +489,6 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
       {/* Main Interactive Stage Container */}
       <div 
         ref={containerRef}
-        onWheel={handleWheel}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}

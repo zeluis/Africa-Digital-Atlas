@@ -263,6 +263,8 @@ export function generateAcademicCitations(meta: QueryCitationMeta): {
   return { apa, chicago, mla, bibtex };
 }
 
+import { escapeCsvCell } from '../utils/exportUtils';
+
 /**
  * Export filtered dataset as CSV
  */
@@ -290,26 +292,26 @@ export function exportVoyagesToCSV(voyages: CanonicalVoyage[]): string {
   ];
 
   const rows = voyages.map(v => [
-    v.id,
-    v.provenance.slaveVoyagesId,
-    v.database,
-    v.dates.departureYear,
-    `"${v.vessel.name.replace(/"/g, '""')}"`,
-    v.vessel.rig || '',
-    v.vessel.tonnage || '',
-    v.carrier.nationality,
-    `"${(v.vessel.captain || '').replace(/"/g, '""')}"`,
-    `"${(v.vessel.owner || '').replace(/"/g, '""')}"`,
-    `"${v.itinerary.principalPlaceOfSlavePurchase.name}"`,
-    `"${v.itinerary.principalPlaceOfSlavePurchase.region}"`,
-    `"${v.itinerary.principalPlaceOfSlaveLanding.name}"`,
-    `"${v.itinerary.principalPlaceOfSlaveLanding.region}"`,
-    v.enslaved.embarkedImputed,
-    v.enslaved.disembarkedImputed,
-    v.enslaved.mortalityRateImputed,
-    v.resistance.hasRebellion ? 'Yes' : 'No',
-    `"${(v.provenance.sourceCitations[0] || '').replace(/"/g, '""')}"`
+    escapeCsvCell(v.id),
+    escapeCsvCell(v.provenance.slaveVoyagesId),
+    escapeCsvCell(v.database),
+    escapeCsvCell(v.dates.departureYear),
+    escapeCsvCell(v.vessel.name, { quoteAllStrings: true }),
+    escapeCsvCell(v.vessel.rig || ''),
+    escapeCsvCell(v.vessel.tonnage || ''),
+    escapeCsvCell(v.carrier.nationality),
+    escapeCsvCell(v.vessel.captain || '', { quoteAllStrings: true }),
+    escapeCsvCell(v.vessel.owner || '', { quoteAllStrings: true }),
+    escapeCsvCell(v.itinerary.principalPlaceOfSlavePurchase.name, { quoteAllStrings: true }),
+    escapeCsvCell(v.itinerary.principalPlaceOfSlavePurchase.region, { quoteAllStrings: true }),
+    escapeCsvCell(v.itinerary.principalPlaceOfSlaveLanding.name, { quoteAllStrings: true }),
+    escapeCsvCell(v.itinerary.principalPlaceOfSlaveLanding.region, { quoteAllStrings: true }),
+    escapeCsvCell(v.enslaved.embarkedImputed),
+    escapeCsvCell(v.enslaved.disembarkedImputed),
+    escapeCsvCell(v.enslaved.mortalityRateImputed),
+    escapeCsvCell(v.resistance.hasRebellion ? 'Yes' : 'No'),
+    escapeCsvCell(v.provenance.sourceCitations[0] || '', { quoteAllStrings: true })
   ]);
 
-  return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  return '\uFEFF' + [headers.map(h => escapeCsvCell(h)).join(','), ...rows.map(r => r.join(','))].join('\r\n');
 }

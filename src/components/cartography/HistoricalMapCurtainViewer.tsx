@@ -79,6 +79,7 @@ import {
   exportHistoricalMapPlateBibTeX,
   exportHistoricalMapPlateRIS
 } from '../../utils/academicExport';
+import { resolveAssetPath } from '../../utils/assetPath';
 
 interface ToponymLocation {
   x: number;
@@ -2454,7 +2455,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                     </button>
 
                     <a
-                      href={selectedPlate.imageUrl}
+                      href={resolveAssetPath(selectedPlate.imageUrl)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 px-2.5 py-2 rounded-xl border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs font-mono font-semibold transition-colors shrink-0"

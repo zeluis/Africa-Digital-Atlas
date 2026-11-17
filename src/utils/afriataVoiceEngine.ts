@@ -22,10 +22,16 @@ export interface SpeechGreetingConfig {
   onError?: () => void;
 }
 
+export const AFRIATA_SPEECH_STOP_EVENT = 'afriata-speech-stop';
+
 // Global state to track currently speaking audio
 let currentAudioElement: HTMLAudioElement | null = null;
 let currentUtterance: SpeechSynthesisUtterance | null = null;
 let activeAudioCtx: AudioContext | null = null;
+const activeChimeOscillators = new Set<OscillatorNode>();
+let voicesFallbackTimer: ReturnType<typeof setTimeout> | null = null;
+let speechSessionCounter = 0;
+let activeSpeechSessionId = 0;
 const MAX_CLIENT_AUDIO_CACHE = 40;
 const clientAudioCache = new Map<string, string>(); // key -> base64 data URL
 
@@ -136,6 +142,17 @@ export function playWarmAfricanChime() {
 
       osc.connect(gain);
       gain.connect(ctx.destination);
+
+      activeChimeOscillators.add(osc);
+      osc.onended = () => {
+        activeChimeOscillators.delete(osc);
+        try {
+          osc.disconnect();
+          gain.disconnect();
+        } catch {
+          // Ignore cleanup errors
+        }
+      };
 
       osc.start(now + idx * 0.05);
       osc.stop(now + idx * 0.05 + 1.0);
@@ -272,6 +289,26 @@ export function getAfricanFemaleVoice(preferredLang?: string): SpeechSynthesisVo
  * Stop any current speech or audio playback
  */
 export function stopAfriataSpeech() {
+  activeSpeechSessionId = ++speechSessionCounter;
+
+  if (voicesFallbackTimer !== null) {
+    clearTimeout(voicesFallbackTimer);
+    voicesFallbackTimer = null;
+  }
+
+  if (activeChimeOscillators.size > 0) {
+    activeChimeOscillators.forEach((osc) => {
+      try {
+        osc.onended = null;
+        osc.stop();
+        osc.disconnect();
+      } catch {
+        // Ignore already-stopped oscillator
+      }
+    });
+    activeChimeOscillators.clear();
+  }
+
   if (currentAudioElement) {
     try {
       currentAudioElement.pause();
@@ -285,11 +322,15 @@ export function stopAfriataSpeech() {
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     try {
       window.speechSynthesis.onvoiceschanged = null;
-      window.speechSynthesis.cancel();
       currentUtterance = null;
+      window.speechSynthesis.cancel();
     } catch {
       // Ignore cancel errors
     }
+  }
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(AFRIATA_SPEECH_STOP_EVENT, { detail: { sessionId: activeSpeechSessionId } }));
   }
 }
 
@@ -301,6 +342,8 @@ export function speakAcademicNarration(config: {
   text: string;
   langTag?: string;
   playChime?: boolean;
+  rate?: number;
+  pitch?: number;
   onStart?: () => void;
   onEnd?: () => void;
   onError?: () => void;
@@ -313,6 +356,7 @@ export function speakAcademicNarration(config: {
 
   // 1. Terminate any active speech or audio singleton
   stopAfriataSpeech();
+  const sessionId = activeSpeechSessionId;
 
   // 2. Play subtle introductory chime if requested
   if (config.playChime) {
@@ -343,30 +387,42 @@ export function speakAcademicNarration(config: {
       utterance.lang = langCode;
     }
 
-    // Curated, dignified academic pacing (0.92x prevents slurred fast synthesis)
-    utterance.rate = 0.92;
-    utterance.pitch = 1.0;
+    // Curated, dignified academic pacing (0.92x prevents slurred fast synthesis unless caller sets rate)
+    utterance.rate = config.rate ?? 0.92;
+    utterance.pitch = config.pitch ?? 1.0;
     utterance.volume = 1.0;
 
     utterance.onstart = () => {
-      config.onStart?.();
+      if (currentUtterance === utterance && sessionId === activeSpeechSessionId) {
+        config.onStart?.();
+      }
     };
 
     utterance.onend = () => {
-      currentUtterance = null;
-      config.onEnd?.();
+      if (currentUtterance === utterance) {
+        currentUtterance = null;
+        config.onEnd?.();
+      }
     };
 
     utterance.onerror = () => {
-      currentUtterance = null;
-      config.onError?.();
-      config.onEnd?.();
+      if (currentUtterance === utterance) {
+        currentUtterance = null;
+        config.onError?.();
+        config.onEnd?.();
+      }
     };
 
     if (window.speechSynthesis.getVoices().length === 0) {
-      window.speechSynthesis.onvoiceschanged = () => {
+      let spoken = false;
+      const speakOnce = () => {
+        if (spoken || currentUtterance !== utterance || sessionId !== activeSpeechSessionId) return;
+        spoken = true;
+        if (voicesFallbackTimer !== null) {
+          clearTimeout(voicesFallbackTimer);
+          voicesFallbackTimer = null;
+        }
         window.speechSynthesis.onvoiceschanged = null;
-        if (currentUtterance !== utterance) return;
         const lateVoice = getBestSystemVoice(config.langTag || 'en');
         if (lateVoice.voice) {
           utterance.voice = lateVoice.voice;
@@ -374,13 +430,14 @@ export function speakAcademicNarration(config: {
         }
         window.speechSynthesis.speak(utterance);
       };
+
+      window.speechSynthesis.onvoiceschanged = speakOnce;
+      voicesFallbackTimer = setTimeout(speakOnce, 400);
     } else {
-      setTimeout(() => {
-        if (currentUtterance !== utterance) return;
-        window.speechSynthesis.speak(utterance);
-      }, config.playChime ? 220 : 60);
+      window.speechSynthesis.speak(utterance);
     }
   } catch {
+    currentUtterance = null;
     config.onError?.();
     config.onEnd?.();
   }
@@ -394,6 +451,7 @@ export async function speakAfriataGreeting(config: SpeechGreetingConfig) {
 
   // Always stop existing audio first
   stopAfriataSpeech();
+  const sessionId = activeSpeechSessionId;
 
   // Play the welcoming African pentatonic kalimba chime
   playWarmAfricanChime();
@@ -404,13 +462,14 @@ export async function speakAfriataGreeting(config: SpeechGreetingConfig) {
   // 1. Try local memory cache of neural audio if available
   if (clientAudioCache.has(cacheKey)) {
     const audioDataUrl = clientAudioCache.get(cacheKey)!;
-    playNeuralAudio(audioDataUrl, { ...config, text: formattedText });
+    playNeuralAudio(audioDataUrl, { ...config, text: formattedText }, sessionId);
     return;
   }
 
   // 2. Query optional Server-Side Neural TTS API if backend is available
   try {
     if (await isBackendApiAvailable()) {
+      if (sessionId !== activeSpeechSessionId) return;
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 6000);
       try {
@@ -425,13 +484,16 @@ export async function speakAfriataGreeting(config: SpeechGreetingConfig) {
           }),
         });
 
+        if (sessionId !== activeSpeechSessionId) return;
+
         if (res.ok) {
           const data = await res.json();
+          if (sessionId !== activeSpeechSessionId) return;
           if (data.audioBase64) {
             const mime = data.mimeType || 'audio/mp3';
             const dataUrl = `data:${mime};base64,${data.audioBase64}`;
             setClientAudioCache(cacheKey, dataUrl);
-            playNeuralAudio(dataUrl, { ...config, text: formattedText });
+            playNeuralAudio(dataUrl, { ...config, text: formattedText }, sessionId);
             return;
           }
         }
@@ -443,49 +505,57 @@ export async function speakAfriataGreeting(config: SpeechGreetingConfig) {
     // Graceful silent fallback to native OS speech synthesis
   }
 
+  if (sessionId !== activeSpeechSessionId) return;
+
   // 3. High-Quality Native OS Speech Synthesis
-  speakWithClientSynthesis({ ...config, text: formattedText });
+  speakWithClientSynthesis({ ...config, text: formattedText }, sessionId);
 }
 
 /**
  * Play base64 neural audio buffer through HTML5 Audio
  */
-function playNeuralAudio(audioUrl: string, config: SpeechGreetingConfig) {
+function playNeuralAudio(audioUrl: string, config: SpeechGreetingConfig, sessionId: number) {
+  if (sessionId !== activeSpeechSessionId) return;
   try {
     const audio = new Audio(audioUrl);
     currentAudioElement = audio;
 
     audio.onplay = () => {
-      config.onStart?.();
+      if (currentAudioElement === audio && sessionId === activeSpeechSessionId) {
+        config.onStart?.();
+      }
     };
 
     audio.onended = () => {
-      if (currentAudioElement === audio) currentAudioElement = null;
-      config.onEnd?.();
+      if (currentAudioElement === audio) {
+        currentAudioElement = null;
+        config.onEnd?.();
+      }
     };
 
     audio.onerror = () => {
-      if (currentAudioElement === audio) currentAudioElement = null;
-      speakWithClientSynthesis(config);
+      if (currentAudioElement === audio) {
+        currentAudioElement = null;
+        speakWithClientSynthesis(config, sessionId);
+      }
     };
 
-    setTimeout(() => {
-      if (currentAudioElement !== audio) return;
-      audio.play().catch(() => {
-        if (currentAudioElement === audio) {
-          speakWithClientSynthesis(config);
-        }
-      });
-    }, 180);
+    audio.play().catch(() => {
+      if (currentAudioElement === audio && sessionId === activeSpeechSessionId) {
+        currentAudioElement = null;
+        speakWithClientSynthesis(config, sessionId);
+      }
+    });
   } catch {
-    speakWithClientSynthesis(config);
+    speakWithClientSynthesis(config, sessionId);
   }
 }
 
 /**
  * Client-Side SpeechSynthesis using native un-distorted operating system prosody
  */
-function speakWithClientSynthesis(config: SpeechGreetingConfig) {
+function speakWithClientSynthesis(config: SpeechGreetingConfig, sessionId = activeSpeechSessionId) {
+  if (sessionId !== activeSpeechSessionId) return;
   if (!('speechSynthesis' in window)) {
     config.onStart?.();
     setTimeout(() => {
@@ -514,25 +584,37 @@ function speakWithClientSynthesis(config: SpeechGreetingConfig) {
     utterance.volume = 1.0;
 
     utterance.onstart = () => {
-      config.onStart?.();
+      if (currentUtterance === utterance && sessionId === activeSpeechSessionId) {
+        config.onStart?.();
+      }
     };
 
     utterance.onend = () => {
-      currentUtterance = null;
-      config.onEnd?.();
+      if (currentUtterance === utterance) {
+        currentUtterance = null;
+        config.onEnd?.();
+      }
     };
 
-    utterance.onerror = (e) => {
-      currentUtterance = null;
-      config.onError?.();
-      config.onEnd?.();
+    utterance.onerror = () => {
+      if (currentUtterance === utterance) {
+        currentUtterance = null;
+        config.onError?.();
+        config.onEnd?.();
+      }
     };
 
     // Ensure voices are loaded if browser initialized asynchronously
     if (window.speechSynthesis.getVoices().length === 0) {
-      window.speechSynthesis.onvoiceschanged = () => {
+      let spoken = false;
+      const speakOnce = () => {
+        if (spoken || currentUtterance !== utterance || sessionId !== activeSpeechSessionId) return;
+        spoken = true;
+        if (voicesFallbackTimer !== null) {
+          clearTimeout(voicesFallbackTimer);
+          voicesFallbackTimer = null;
+        }
         window.speechSynthesis.onvoiceschanged = null;
-        if (currentUtterance !== utterance) return;
         const lateVoice = getBestSystemVoice(config.langTag);
         if (lateVoice.voice) {
           utterance.voice = lateVoice.voice;
@@ -540,14 +622,14 @@ function speakWithClientSynthesis(config: SpeechGreetingConfig) {
         }
         window.speechSynthesis.speak(utterance);
       };
+
+      window.speechSynthesis.onvoiceschanged = speakOnce;
+      voicesFallbackTimer = setTimeout(speakOnce, 400);
     } else {
-      // Delay slightly for chime lead-in
-      setTimeout(() => {
-        if (currentUtterance !== utterance) return;
-        window.speechSynthesis.speak(utterance);
-      }, 180);
+      window.speechSynthesis.speak(utterance);
     }
   } catch {
+    currentUtterance = null;
     config.onStart?.();
     setTimeout(() => {
       config.onEnd?.();

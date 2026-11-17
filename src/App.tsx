@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
-import { LazyMotion, domAnimation, m, AnimatePresence } from 'motion/react';
+import { LazyMotion, MotionConfig, domAnimation, m, AnimatePresence } from 'motion/react';
 import { Navbar } from './components/Navbar';
 import type { CanonicalNavTab } from './components/NavigationDrawer';
 import { MainContentSkeleton } from './components/MainContentSkeleton';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { DensityProvider } from './contexts/DensityContext';
 import { SavedEntitiesProvider } from './contexts/SavedEntitiesContext';
+import { LanguageProvider } from './i18n/LanguageContext';
 import { AfricanRegion } from './data/types';
 import { lazyWithRetry, ViewErrorBoundary } from './utils/lazyWithRetry';
 import { runViewTransition } from './utils/motion';
@@ -890,13 +891,17 @@ function AppContent() {
 export default function App() {
   return (
     <ViewErrorBoundary fallbackTitle="Unable to Initialize Atlas">
-      <LazyMotion features={domAnimation} strict>
-        <DensityProvider>
-          <SavedEntitiesProvider>
-            <AppContent />
-          </SavedEntitiesProvider>
-        </DensityProvider>
-      </LazyMotion>
+      <LanguageProvider>
+        <MotionConfig reducedMotion="user">
+          <LazyMotion features={domAnimation} strict>
+            <DensityProvider>
+              <SavedEntitiesProvider>
+                <AppContent />
+              </SavedEntitiesProvider>
+            </DensityProvider>
+          </LazyMotion>
+        </MotionConfig>
+      </LanguageProvider>
     </ViewErrorBoundary>
   );
 }

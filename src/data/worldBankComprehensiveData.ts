@@ -1,4 +1,4 @@
-import { Observation } from './types';
+import { Observation, ObservationStatus } from './types';
 
 export interface CountryWBProfile {
   // Macro & Demographic
@@ -432,9 +432,19 @@ export function generateAllWorldBankObservations(entities: { id: string }[], exi
   const observations: Observation[] = [];
 
   for (const ent of entities) {
+    const isCuratedProfile = Boolean(WB_COUNTRY_PROFILES[ent.id]);
     const p = getOrCreateCountryWBProfile(ent.id);
 
-    const add = (indicatorId: string, value: number, unit: string, sourceId: string, datasetId: string, year = 2024, status: any = 'observed') => {
+    const add = (
+      indicatorId: string,
+      value: number,
+      unit: string,
+      sourceId: string,
+      datasetId: string,
+      year = 2024,
+      status: ObservationStatus = isCuratedProfile ? 'observed' : 'derived',
+      notes?: string
+    ) => {
       const key = `${ent.id}_${indicatorId}_${year}`;
       if (!existingKeys.has(key)) {
         observations.push({
@@ -445,7 +455,12 @@ export function generateAllWorldBankObservations(entities: { id: string }[], exi
           unit,
           sourceId,
           datasetId,
-          status
+          status,
+          ...(notes
+            ? { notes }
+            : status === 'derived'
+              ? { notes: 'Derived from HDI-scaled fallback demographic and macro profile in getOrCreateCountryWBProfile.' }
+              : {})
         });
         existingKeys.add(key);
       }
@@ -507,7 +522,16 @@ export function generateAllWorldBankObservations(entities: { id: string }[], exi
 
     // Macroeconomic & Demographic & Governance Indicators
     add('NY.GDP.MKTP.CD', p.gdp, 'USD Billion', 'imf', 'WEO_OCT_2024');
-    add('NY.GDP.PCAP.CD', Math.round((p.gdp * 1e9) / (p.pop * 1e6)), 'USD', 'world_bank', 'WDI_2024');
+    add(
+      'NY.GDP.PCAP.CD',
+      Math.round((p.gdp * 1e9) / (p.pop * 1e6)),
+      'USD',
+      'world_bank',
+      'WDI_2024',
+      2024,
+      'derived',
+      'Derived as nominal GDP (NY.GDP.MKTP.CD * 1e9) divided by total population (SP.POP.TOTL * 1e6).'
+    );
     add('NY.GDP.MKTP.KD.ZG', p.growth, '%', 'imf', 'WEO_OCT_2024');
     add('FP.CPI.TOTL.ZG', p.inflation, '%', 'imf', 'WEO_OCT_2024');
     add('GC.DOD.TOTL.GD.ZS', p.debt, '% of GDP', 'imf', 'WEO_OCT_2024');
@@ -524,37 +548,38 @@ export function generateAllWorldBankObservations(entities: { id: string }[], exi
     add('TI.CPI.SCORE', p.cpi, 'Score (0-100)', 'ti', 'CPI_INDEX_2024');
     add('IEP.GPI.SCORE', p.peace, 'Score (1-5)', 'iep', 'GPI_REPORT_2024');
 
-    // Historical Trend Data Points (2018, 2020, 2022)
+    // Historical Trend Data Points (2018, 2020, 2022) — derived trajectory offsets from 2024 baseline
+    const wbHistNote = 'Derived historical trajectory back-filled relative to the 2024 country profile.';
     // Social Historical
-    add('SI.POV.DDAY', Math.round((p.pov215 + 3.2) * 10) / 10, '% of population', 'world_bank', 'WDI_POVERTY_2024', 2018);
-    add('SI.POV.DDAY', Math.round((p.pov215 + 2.1) * 10) / 10, '% of population', 'world_bank', 'WDI_POVERTY_2024', 2020);
-    add('SI.POV.DDAY', Math.round((p.pov215 + 0.8) * 10) / 10, '% of population', 'world_bank', 'WDI_POVERTY_2024', 2022);
+    add('SI.POV.DDAY', Math.round((p.pov215 + 3.2) * 10) / 10, '% of population', 'world_bank', 'WDI_POVERTY_2024', 2018, 'derived', wbHistNote);
+    add('SI.POV.DDAY', Math.round((p.pov215 + 2.1) * 10) / 10, '% of population', 'world_bank', 'WDI_POVERTY_2024', 2020, 'derived', wbHistNote);
+    add('SI.POV.DDAY', Math.round((p.pov215 + 0.8) * 10) / 10, '% of population', 'world_bank', 'WDI_POVERTY_2024', 2022, 'derived', wbHistNote);
 
     // Environmental Historical
-    add('EN.ATM.CO2E.PC', Math.round((p.co2 * 0.92) * 100) / 100, 'MT/capita', 'world_bank', 'WDI_ENVIRONMENT_2024', 2018);
-    add('EN.ATM.CO2E.PC', Math.round((p.co2 * 0.95) * 100) / 100, 'MT/capita', 'world_bank', 'WDI_ENVIRONMENT_2024', 2020);
-    add('EN.ATM.CO2E.PC', Math.round((p.co2 * 0.98) * 100) / 100, 'MT/capita', 'world_bank', 'WDI_ENVIRONMENT_2024', 2022);
+    add('EN.ATM.CO2E.PC', Math.round((p.co2 * 0.92) * 100) / 100, 'MT/capita', 'world_bank', 'WDI_ENVIRONMENT_2024', 2018, 'derived', wbHistNote);
+    add('EN.ATM.CO2E.PC', Math.round((p.co2 * 0.95) * 100) / 100, 'MT/capita', 'world_bank', 'WDI_ENVIRONMENT_2024', 2020, 'derived', wbHistNote);
+    add('EN.ATM.CO2E.PC', Math.round((p.co2 * 0.98) * 100) / 100, 'MT/capita', 'world_bank', 'WDI_ENVIRONMENT_2024', 2022, 'derived', wbHistNote);
 
     // Health Historical
-    add('SH.DYN.MORT', Math.round((p.u5Mort * 1.18) * 10) / 10, 'per 1,000 births', 'who', 'GHO_HEALTH_STATS', 2018);
-    add('SH.DYN.MORT', Math.round((p.u5Mort * 1.10) * 10) / 10, 'per 1,000 births', 'who', 'GHO_HEALTH_STATS', 2020);
-    add('SH.DYN.MORT', Math.round((p.u5Mort * 1.04) * 10) / 10, 'per 1,000 births', 'who', 'GHO_HEALTH_STATS', 2022);
-    add('SP.DYN.LE00.IN', Math.round((p.le - 2.1) * 10) / 10, 'Years', 'undesa', 'WPP_REVISION_2024', 2018);
-    add('SP.DYN.LE00.IN', Math.round((p.le - 1.2) * 10) / 10, 'Years', 'undesa', 'WPP_REVISION_2024', 2020);
-    add('SP.DYN.LE00.IN', Math.round((p.le - 0.4) * 10) / 10, 'Years', 'undesa', 'WPP_REVISION_2024', 2022);
+    add('SH.DYN.MORT', Math.round((p.u5Mort * 1.18) * 10) / 10, 'per 1,000 births', 'who', 'GHO_HEALTH_STATS', 2018, 'derived', wbHistNote);
+    add('SH.DYN.MORT', Math.round((p.u5Mort * 1.10) * 10) / 10, 'per 1,000 births', 'who', 'GHO_HEALTH_STATS', 2020, 'derived', wbHistNote);
+    add('SH.DYN.MORT', Math.round((p.u5Mort * 1.04) * 10) / 10, 'per 1,000 births', 'who', 'GHO_HEALTH_STATS', 2022, 'derived', wbHistNote);
+    add('SP.DYN.LE00.IN', Math.round((p.le - 2.1) * 10) / 10, 'Years', 'undesa', 'WPP_REVISION_2024', 2018, 'derived', wbHistNote);
+    add('SP.DYN.LE00.IN', Math.round((p.le - 1.2) * 10) / 10, 'Years', 'undesa', 'WPP_REVISION_2024', 2020, 'derived', wbHistNote);
+    add('SP.DYN.LE00.IN', Math.round((p.le - 0.4) * 10) / 10, 'Years', 'undesa', 'WPP_REVISION_2024', 2022, 'derived', wbHistNote);
 
     // Education Historical
-    add('SE.ADT.LITR.ZS', Math.round(Math.max(20, p.literacy - 3.5) * 10) / 10, '%', 'unesco', 'UIS_EDUCATION_2024', 2018);
-    add('SE.ADT.LITR.ZS', Math.round(Math.max(20, p.literacy - 2.1) * 10) / 10, '%', 'unesco', 'UIS_EDUCATION_2024', 2020);
-    add('SE.ADT.LITR.ZS', Math.round(Math.max(20, p.literacy - 0.9) * 10) / 10, '%', 'unesco', 'UIS_EDUCATION_2024', 2022);
+    add('SE.ADT.LITR.ZS', Math.round(Math.max(20, p.literacy - 3.5) * 10) / 10, '%', 'unesco', 'UIS_EDUCATION_2024', 2018, 'derived', wbHistNote);
+    add('SE.ADT.LITR.ZS', Math.round(Math.max(20, p.literacy - 2.1) * 10) / 10, '%', 'unesco', 'UIS_EDUCATION_2024', 2020, 'derived', wbHistNote);
+    add('SE.ADT.LITR.ZS', Math.round(Math.max(20, p.literacy - 0.9) * 10) / 10, '%', 'unesco', 'UIS_EDUCATION_2024', 2022, 'derived', wbHistNote);
 
     // Infrastructure Historical
-    add('EG.ELC.ACCS.ZS', Math.round(Math.max(5, p.elec - 8.2) * 10) / 10, '%', 'world_bank', 'WDI_2024', 2018);
-    add('EG.ELC.ACCS.ZS', Math.round(Math.max(5, p.elec - 5.1) * 10) / 10, '%', 'world_bank', 'WDI_2024', 2020);
-    add('EG.ELC.ACCS.ZS', Math.round(Math.max(5, p.elec - 2.0) * 10) / 10, '%', 'world_bank', 'WDI_2024', 2022);
-    add('IT.NET.USER.ZS', Math.round(Math.max(3, p.net - 14.5) * 10) / 10, '%', 'world_bank', 'WDI_2024', 2018);
-    add('IT.NET.USER.ZS', Math.round(Math.max(3, p.net - 8.2) * 10) / 10, '%', 'world_bank', 'WDI_2024', 2020);
-    add('IT.NET.USER.ZS', Math.round(Math.max(3, p.net - 3.5) * 10) / 10, '%', 'world_bank', 'WDI_2024', 2022);
+    add('EG.ELC.ACCS.ZS', Math.round(Math.max(5, p.elec - 8.2) * 10) / 10, '%', 'world_bank', 'WDI_2024', 2018, 'derived', wbHistNote);
+    add('EG.ELC.ACCS.ZS', Math.round(Math.max(5, p.elec - 5.1) * 10) / 10, '%', 'world_bank', 'WDI_2024', 2020, 'derived', wbHistNote);
+    add('EG.ELC.ACCS.ZS', Math.round(Math.max(5, p.elec - 2.0) * 10) / 10, '%', 'world_bank', 'WDI_2024', 2022, 'derived', wbHistNote);
+    add('IT.NET.USER.ZS', Math.round(Math.max(3, p.net - 14.5) * 10) / 10, '%', 'world_bank', 'WDI_2024', 2018, 'derived', wbHistNote);
+    add('IT.NET.USER.ZS', Math.round(Math.max(3, p.net - 8.2) * 10) / 10, '%', 'world_bank', 'WDI_2024', 2020, 'derived', wbHistNote);
+    add('IT.NET.USER.ZS', Math.round(Math.max(3, p.net - 3.5) * 10) / 10, '%', 'world_bank', 'WDI_2024', 2022, 'derived', wbHistNote);
   }
 
   return observations;

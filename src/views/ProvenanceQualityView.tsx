@@ -466,8 +466,16 @@ export const ProvenanceQualityView: React.FC = () => {
                 </div>
 
                 {testResult && (
-                  <div className="text-[10px] font-mono p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800/40 truncate">
-                    ✓ Handshake ok ({testResult.latencyMs}ms) • {testResult.payloadSize}B
+                  <div className={`text-[10px] font-mono p-2 rounded-lg border truncate ${
+                    testResult.status === 'SUCCESS'
+                      ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800/40'
+                      : testResult.status === 'UPSTREAM_ERROR'
+                      ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800/40'
+                      : 'bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-800/40'
+                  }`}>
+                    {testResult.status === 'SUCCESS'
+                      ? `✓ Handshake ok (${testResult.latencyMs}ms) • ${testResult.payloadSize}B`
+                      : `✕ ${testResult.errorMessage || `HTTP ${testResult.statusCode || '—'}`} (${testResult.latencyMs}ms) • ${testResult.payloadSize}B`}
                   </div>
                 )}
               </div>

@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Volume2, VolumeX, Sparkles } from 'lucide-react';
-import { speakAfriataGreeting, stopAfriataSpeech } from '../utils/afriataVoiceEngine';
+import {
+  AFRIATA_SPEECH_STOP_EVENT,
+  speakAfriataGreeting,
+  stopAfriataSpeech
+} from '../utils/afriataVoiceEngine';
 
 interface VoiceWelcomeFabProps {
   text: string;
@@ -24,34 +28,65 @@ export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
   className = ''
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const isPlayingRef = useRef(false);
+  const isStartingRef = useRef(false);
 
   useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
+
+  useEffect(() => {
+    const handleGlobalStop = () => {
+      if (isStartingRef.current) return;
+      isPlayingRef.current = false;
+      setIsPlaying(false);
+    };
+
+    window.addEventListener(AFRIATA_SPEECH_STOP_EVENT, handleGlobalStop);
     return () => {
-      // Clean up on unmount if playing
-      if (isPlaying) {
+      window.removeEventListener(AFRIATA_SPEECH_STOP_EVENT, handleGlobalStop);
+      if (isPlayingRef.current) {
+        isPlayingRef.current = false;
         stopAfriataSpeech();
       }
     };
-  }, [isPlaying]);
+  }, []);
 
   const handleTogglePlay = (e: React.MouseEvent) => {
     e.stopPropagation(); // Avoid triggering parent card clicks
 
-    if (isPlaying) {
+    if (isPlayingRef.current) {
+      isPlayingRef.current = false;
       stopAfriataSpeech();
       setIsPlaying(false);
       return;
     }
 
+    isStartingRef.current = true;
+    isPlayingRef.current = true;
     setIsPlaying(true);
-    speakAfriataGreeting({
-      text,
-      langTag,
-      languageName,
-      onStart: () => setIsPlaying(true),
-      onEnd: () => setIsPlaying(false),
-      onError: () => setIsPlaying(false)
-    });
+
+    try {
+      speakAfriataGreeting({
+        text,
+        langTag,
+        languageName,
+        onStart: () => {
+          isPlayingRef.current = true;
+          setIsPlaying(true);
+        },
+        onEnd: () => {
+          isPlayingRef.current = false;
+          setIsPlaying(false);
+        },
+        onError: () => {
+          isPlayingRef.current = false;
+          setIsPlaying(false);
+        }
+      });
+    } finally {
+      isStartingRef.current = false;
+    }
   };
 
   if (variant === 'navbar') {

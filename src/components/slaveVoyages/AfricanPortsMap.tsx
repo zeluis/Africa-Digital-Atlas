@@ -716,8 +716,28 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
       }
     };
 
+    let touchRafId: number | null = null;
+    let pendingTouchBox: { x: number; y: number; w: number; h: number } | null = null;
+
+    const flushTouchBox = () => {
+      touchRafId = null;
+      if (pendingTouchBox) {
+        setCurrentViewBox(pendingTouchBox);
+        pendingTouchBox = null;
+      }
+    };
+
+    const queueTouchBox = (box: { x: number; y: number; w: number; h: number }) => {
+      pendingTouchBox = box;
+      if (touchRafId === null) {
+        touchRafId = requestAnimationFrame(flushTouchBox);
+      }
+    };
+
     const handleTouchMove = (e: TouchEvent) => {
       const containerRect = container.getBoundingClientRect();
+      if (containerRect.width === 0 || containerRect.height === 0) return;
+
       if (e.touches.length === 2 && touchStartDistRef.current !== null) {
         e.preventDefault();
         e.stopPropagation();
@@ -725,6 +745,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
         );
+        if (curDist === 0) return;
         const scale = touchStartDistRef.current / curDist;
         const startBox = touchStartBoxRef.current;
         const newW = Math.max(500, Math.min(5200, Math.round(startBox.w * scale)));
@@ -732,7 +753,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
         const centerX = startBox.x + startBox.w / 2;
         const centerY = startBox.y + startBox.h / 2;
 
-        setCurrentViewBox({
+        queueTouchBox({
           x: Math.round(centerX - newW / 2),
           y: Math.round(centerY - newH / 2),
           w: newW,
@@ -747,7 +768,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
         const svgDx = -dx * (startBox.w / containerRect.width);
         const svgDy = -dy * (startBox.h / containerRect.height);
 
-        setCurrentViewBox({
+        queueTouchBox({
           ...startBox,
           x: Math.round(startBox.x + svgDx),
           y: Math.round(startBox.y + svgDy)
@@ -756,6 +777,14 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
     };
 
     const handleTouchEnd = () => {
+      if (touchRafId !== null) {
+        cancelAnimationFrame(touchRafId);
+        touchRafId = null;
+      }
+      if (pendingTouchBox) {
+        setCurrentViewBox(pendingTouchBox);
+        pendingTouchBox = null;
+      }
       touchStartDistRef.current = null;
       touchStartPointRef.current = null;
     };
@@ -767,11 +796,27 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
     container.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
     return () => {
+      if (touchRafId !== null) {
+        cancelAnimationFrame(touchRafId);
+        touchRafId = null;
+      }
       container.removeEventListener('wheel', handleWheel);
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
       container.removeEventListener('touchcancel', handleTouchEnd);
+    };
+  }, []);
+
+  const mousePanRafRef = useRef<number | null>(null);
+  const pendingMouseBoxRef = useRef<{ x: number; y: number; w: number; h: number } | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (mousePanRafRef.current !== null) {
+        cancelAnimationFrame(mousePanRafRef.current);
+        mousePanRafRef.current = null;
+      }
     };
   }, []);
 
@@ -789,6 +834,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !svgContainerRef.current) return;
     const containerRect = svgContainerRef.current.getBoundingClientRect();
+    if (containerRect.width === 0 || containerRect.height === 0) return;
     const dx = e.clientX - dragStartRef.current.clientX;
     const dy = e.clientY - dragStartRef.current.clientY;
 
@@ -796,14 +842,31 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
     const svgDx = -dx * (startViewBox.w / containerRect.width);
     const svgDy = -dy * (startViewBox.h / containerRect.height);
 
-    setCurrentViewBox({
+    pendingMouseBoxRef.current = {
       ...startViewBox,
       x: Math.round(startViewBox.x + svgDx),
       y: Math.round(startViewBox.y + svgDy)
-    });
+    };
+    if (mousePanRafRef.current === null) {
+      mousePanRafRef.current = requestAnimationFrame(() => {
+        mousePanRafRef.current = null;
+        if (pendingMouseBoxRef.current) {
+          setCurrentViewBox(pendingMouseBoxRef.current);
+          pendingMouseBoxRef.current = null;
+        }
+      });
+    }
   };
 
   const handleMouseUp = () => {
+    if (mousePanRafRef.current !== null) {
+      cancelAnimationFrame(mousePanRafRef.current);
+      mousePanRafRef.current = null;
+    }
+    if (pendingMouseBoxRef.current) {
+      setCurrentViewBox(pendingMouseBoxRef.current);
+      pendingMouseBoxRef.current = null;
+    }
     setIsDragging(false);
   };
 

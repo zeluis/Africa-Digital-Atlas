@@ -50,6 +50,18 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
+  const scaleRef = useRef<number>(scale);
+  const positionRef = useRef<{ x: number; y: number }>(position);
+  const dragRafRef = useRef<number | null>(null);
+  const pendingPositionRef = useRef<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    scaleRef.current = scale;
+  }, [scale]);
+
+  useEffect(() => {
+    positionRef.current = position;
+  }, [position]);
 
   // Selection and Hover states
   const [selectedNode, setSelectedNode] = useState<EthnicNode | null>(null);
@@ -132,51 +144,85 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
     setScale(prev => Math.min(Math.max(prev + delta, 0.45), 4.5));
   };
 
-  // Mouse wheel zoom to cursor position
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLElement;
-    if (target?.closest?.('.overflow-y-auto, .overflow-x-auto, .no-drag, [data-panel-scroll="true"], .stable-gutter, .sleek-scrollbar, .sleek-scrollbar-amber, aside, dialog, .modal-scroll-pane')) {
-      return;
-    }
-    e.preventDefault();
-    const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
-    const newScale = Math.min(Math.max(scale * zoomFactor, 0.45), 4.5);
+  // Native non-passive mouse wheel zoom to cursor position
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
 
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
+    const handleNativeWheel = (e: WheelEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target?.closest?.('.overflow-y-auto, .overflow-x-auto, .no-drag, [data-panel-scroll="true"], .stable-gutter, .sleek-scrollbar, .sleek-scrollbar-amber, aside, dialog, .modal-scroll-pane')) {
+        return;
+      }
+      e.preventDefault();
+      const curScale = scaleRef.current;
+      const curPos = positionRef.current;
+      const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
+      const newScale = Math.min(Math.max(curScale * zoomFactor, 0.45), 4.5);
+
+      const rect = el.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
 
-      const dx = (mouseX - rect.width / 2 - position.x);
-      const dy = (mouseY - rect.height / 2 - position.y);
+      const dx = mouseX - rect.width / 2 - curPos.x;
+      const dy = mouseY - rect.height / 2 - curPos.y;
 
-      setPosition({
-        x: position.x - dx * (zoomFactor - 1),
-        y: position.y - dy * (zoomFactor - 1)
-      });
-    }
+      const nextPos = {
+        x: curPos.x - dx * (zoomFactor - 1),
+        y: curPos.y - dy * (zoomFactor - 1)
+      };
+      positionRef.current = nextPos;
+      scaleRef.current = newScale;
+      setPosition(nextPos);
+      setScale(newScale);
+    };
 
-    setScale(newScale);
-  };
+    el.addEventListener('wheel', handleNativeWheel, { passive: false });
+    return () => {
+      el.removeEventListener('wheel', handleNativeWheel);
+      if (dragRafRef.current !== null) {
+        cancelAnimationFrame(dragRafRef.current);
+        dragRafRef.current = null;
+      }
+    };
+  }, []);
 
-  // Pointer drag handling
+  // Pointer drag handling with rAF throttling
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) return; // Only primary button
     setIsDragging(true);
-    dragStartRef.current = { x: e.clientX - position.x, y: e.clientY - position.y };
+    dragStartRef.current = { x: e.clientX - positionRef.current.x, y: e.clientY - positionRef.current.y };
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isDragging) return;
-    setPosition({
+    pendingPositionRef.current = {
       x: e.clientX - dragStartRef.current.x,
       y: e.clientY - dragStartRef.current.y
-    });
+    };
+    if (dragRafRef.current === null) {
+      dragRafRef.current = requestAnimationFrame(() => {
+        dragRafRef.current = null;
+        if (pendingPositionRef.current) {
+          positionRef.current = pendingPositionRef.current;
+          setPosition(pendingPositionRef.current);
+        }
+      });
+    }
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     setIsDragging(false);
+    if (dragRafRef.current !== null) {
+      cancelAnimationFrame(dragRafRef.current);
+      dragRafRef.current = null;
+    }
+    if (pendingPositionRef.current) {
+      positionRef.current = pendingPositionRef.current;
+      setPosition(pendingPositionRef.current);
+      pendingPositionRef.current = null;
+    }
     try {
       e.currentTarget.releasePointerCapture(e.pointerId);
     } catch {
@@ -243,7 +289,6 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
     <div 
       className="relative w-full h-full min-h-[750px] lg:min-h-[850px] bg-[#0c0d0e] dark:bg-[#070809] select-none overflow-hidden rounded-3xl border border-zinc-800/80 shadow-2xl"
       ref={containerRef}
-      onWheel={handleWheel}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}

@@ -21,7 +21,7 @@ import {
   getInitialEntities
 } from './atlas-raw-data';
 import { generateFullObservations, MEDIA_REGISTRY } from './atlas-observations-seed';
-import { EXPANDED_INDICATORS, generateExpandedObservations } from './expandedIndicators';
+import { EXPANDED_INDICATORS, EXPANDED_PRESET_COUNTRIES, generateExpandedObservations } from './expandedIndicators';
 import { ENTITY_BLOCS, ENTITY_BLOC_MEMBERSHIP, EntityBlocId } from './entityBlocs';
 import type { 
   ExternalApiConnector,
@@ -123,10 +123,12 @@ class AtlasDataStore {
     // Also inject observations for all expanded indicators across all entities
     for (const ent of rawEntities) {
       const expandedVals = generateExpandedObservations(ent.id);
+      const isCuratedPreset = EXPANDED_PRESET_COUNTRIES.has(ent.id.toUpperCase());
       for (const [indId, val] of Object.entries(expandedVals)) {
         const indDef = this.indicators.get(indId);
         const key = `${ent.id}_${indId}_2024`;
         if (!existingObsKeys.has(key)) {
+          const isDerived = !isCuratedPreset || Boolean(indDef?.isDerived);
           allObservations.push({
             entityId: ent.id,
             indicatorId: indId,
@@ -135,7 +137,14 @@ class AtlasDataStore {
             unit: indDef?.unit || '',
             sourceId: indDef?.preferredSource || 'Harmonized',
             datasetId: indDef?.sourceDataset || 'HARMONIZED_2024',
-            status: 'observed'
+            status: isDerived ? 'derived' : 'observed',
+            ...(isDerived
+              ? {
+                  notes: !isCuratedPreset
+                    ? 'Derived from regional baseline scaling in generateExpandedObservations for non-preset sovereign profiles.'
+                    : indDef?.derivedFormula || 'Derived per indicator catalog formula from component series.'
+                }
+              : {})
           });
           existingObsKeys.add(key);
         }
