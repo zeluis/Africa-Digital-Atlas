@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { TOPONYM_CONCORDANCE_INDEX, ToponymConcordanceItem, useDetailedKingdomsLoaded } from '../../data/preColonialKingdomsDetailed';
 import { AtlasDialog } from '../common/AtlasDialog';
-import { speakToponymConcordance, stopAfriataSpeech } from '../../utils/afriataVoiceEngine';
+import { stopAfriataSpeech } from '../../utils/afriataVoiceEngine';
+import { speakToponymConcordance } from '../../utils/historicalVoiceNarrations';
 import { 
   Search, 
   MapPin, 

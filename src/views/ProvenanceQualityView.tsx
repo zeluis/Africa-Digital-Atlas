@@ -397,11 +397,11 @@ export const ProvenanceQualityView: React.FC = () => {
               International Statistical API Connectors
             </h2>
             <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-              Live ingest feeds from EC JRC AKP (241 Datasets), FH_FIW, WGI, UNESCO, GHO, PIP, IDS, UN Comtrade, IMF WEO, WB CPIA, and WB Climate.
+              Curated snapshot datasets with on-demand API handshake checks from EC JRC AKP (241 Datasets), FH_FIW, WGI, UNESCO, GHO, PIP, IDS, UN Comtrade, IMF WEO, WB CPIA, and WB Climate.
             </p>
           </div>
           <span className="px-3 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800/60 text-xs font-mono font-bold">
-            100% Harmonized
+            Snapshot Harmonized
           </span>
         </div>
 

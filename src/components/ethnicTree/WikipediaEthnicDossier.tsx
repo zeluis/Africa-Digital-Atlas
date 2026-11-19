@@ -25,6 +25,43 @@ import { RichEditorialCountryDevelopmentPanel } from './RichEditorialCountryDeve
 import { AFRICAN_MOTHER_TONGUES, playMotherTongueAudio } from '../../data/motherTonguesAudioData';
 import { useTranslation } from '../../i18n';
 
+const EXPLICIT_MOTHER_TONGUE_ALIASES: Array<[RegExp, string]> = [
+  [/\b(yoruba|egba|ijebu|oyo|ife|ekiti)\b/i, 'yoruba'],
+  [/\b(igbo|ibo|onitsha|arochukwu|anambra)\b/i, 'igbo'],
+  [/\b(hausa)\b/i, 'hausa'],
+  [/\b(swahili|waswahili|zanzibari|shirazi)\b/i, 'swahili'],
+  [/\b(akan|asante|ashanti|fante|fanti|twi|akuapem|baoule|baule|bono|anyin)\b/i, 'akan'],
+  [/\b(fon|fongbe|ewe|aja|gun|mina|adja)\b/i, 'fon'],
+  [/\b(zulu|isizulu|swazi|ndebele)\b/i, 'zulu'],
+  [/\b(xhosa|isixhosa|thembu|mpondo|pondo)\b/i, 'xhosa'],
+  [/\b(amhara|amharic)\b/i, 'amharic'],
+  [/\b(oromo|afaanoromoo)\b/i, 'oromo'],
+  [/\b(somali|isaq|darod|hawiye|dir|rahanweyn)\b/i, 'somali'],
+  [/\b(amazigh|berber|kabyle|tuareg|touareg|riffian|shilha|tashelhit|chaoui|tamazight|zenata)\b/i, 'tamazight'],
+  [/\b(arab|maghrebi|hassaniya|moor|moroccan|algerian|tunisian)\b/i, 'arabic_maghrebi'],
+  [/\b(wolof|serer|lebou)\b/i, 'wolof'],
+  [/\b(fula|fulani|fulbe|peul|pulaar|fulfulde|toucouleur|tukulor|halpulaar)\b/i, 'fula'],
+  [/\b(lingala|kongo|bakongo|mongo|bamongo|luba|ngala|bangala)\b/i, 'lingala'],
+  [/\b(nama|damara|khoekhoe|khoikhoi|san|khoisan)\b/i, 'khoekhoegowab'],
+  [/\b(capeverdean|caboverdean|kriolu|crioulo|kabuverdianu|badiu)\b/i, 'kabuverdianu'],
+];
+
+function resolveMotherTongueForEthnicity(ethnicName: string, dossierLanguages?: string) {
+  const normalizedName = ethnicName.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const haystack = `${normalizedName} ${dossierLanguages || ''}`;
+  for (const [pattern, tongueId] of EXPLICIT_MOTHER_TONGUE_ALIASES) {
+    if (pattern.test(haystack) && AFRICAN_MOTHER_TONGUES[tongueId]) {
+      return AFRICAN_MOTHER_TONGUES[tongueId];
+    }
+  }
+  const lookupKey = normalizedName.toLowerCase().replace(/[^a-z]/g, '');
+  return Object.values(AFRICAN_MOTHER_TONGUES).find(t =>
+    lookupKey.includes(t.id) ||
+    t.language.toLowerCase().includes(ethnicName.toLowerCase()) ||
+    (dossierLanguages && dossierLanguages.toLowerCase().includes(t.language.toLowerCase()))
+  );
+}
+
 interface WikipediaEthnicDossierProps {
   ethnicName: string;
   countryName?: string;
@@ -511,14 +548,7 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
 
         {/* Mother Tongue Soundscape & Authentic Pronunciation */}
         {(() => {
-          // Attempt to match ethnic name or primary language to available Mother Tongues
-          const lookupKey = ethnicName.toLowerCase().replace(/[^a-z]/g, '');
-          const matchedEntry = Object.values(AFRICAN_MOTHER_TONGUES).find(t => 
-            lookupKey.includes(t.id) ||
-            t.language.toLowerCase().includes(ethnicName.toLowerCase()) ||
-            (dossier?.languages && dossier.languages.toLowerCase().includes(t.language.toLowerCase()))
-          );
-
+          const matchedEntry = resolveMotherTongueForEthnicity(ethnicName, dossier?.languages);
           if (!matchedEntry) return null;
 
           return (
@@ -551,6 +581,11 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
                 <p className="text-[11px] text-[#52463B] dark:text-[#C4B7A6] italic">
                   "{matchedEntry.greetingMeaning}"
                 </p>
+                {matchedEntry.isProxy && (
+                  <p className="text-[10px] font-mono text-amber-800/90 dark:text-amber-300/90">
+                    {matchedEntry.provenanceBadge}
+                  </p>
+                )}
                 <p className="text-[10px] text-[#7D6B5A] dark:text-[#A79888] pt-1 border-t border-amber-500/20">
                   <strong>Proverb:</strong> {matchedEntry.proverbText} — <em>{matchedEntry.proverbTranslation}</em>
                 </p>

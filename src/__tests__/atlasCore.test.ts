@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { atlas } from '../data/atlas-store';
 import { generateFullObservations } from '../data/atlas-observations-seed';
@@ -284,7 +286,9 @@ describe('Afriata Core Test Suite', () => {
       // Check specific bibliographic indicators
       expect(citations.apa).toContain('Correia, Z. F.');
       expect(citations.apa).toContain(AFRIATA_DOI);
-      expect(citations.chicago).toContain('Correia, Zéluis F.');
+      expect(citations.chicago).toContain('Correia, ZéLuis F.');
+      expect(citations.cff).toContain('given-names: "ZéLuis F."');
+      expect(citations.cff).toContain('date-released: "2026-11-18"');
       expect(citations.bibtex).toContain('@dataset{correia_africa_data_atlas_2026');
       expect(citations.bibtex).toContain('@software{correia_afriata_vector_engine_2026');
       expect(citations.ris).toContain('TY  - DATA');
@@ -518,6 +522,140 @@ describe('Afriata Core Test Suite', () => {
       expect(resolveAssetPath('sw.js')).toBe('/Africa-Digital-Atlas/sw.js');
       expect(resolveDocsPath('')).toBe('/Africa-Digital-Atlas/docs/');
       expect(getDeploymentCacheScope()).toBe('africa-digital-atlas');
+    });
+  });
+
+  // =========================================================================
+  // 8. ZERO-KEY AFRICAN VOICE PACK & OS WEB SPEECH UPGRADE
+  // =========================================================================
+  describe('Zero-Key African Voice Engine & Static Audio Pack', () => {
+    it('resolves all 18 African Mother Tongues & 6 Language Families from static audio pack with 48-bucket waveforms', async () => {
+      const {
+        resolveStaticAudioClip,
+        STATIC_AFRICAN_AUDIO_CLIPS,
+      } = await import('../utils/afriataVoiceEngine');
+      const { LANGUAGE_FAMILY_GREETINGS } = await import('../utils/africanLanguageGreetings');
+      const { AFRICAN_MOTHER_TONGUES } = await import('../data/motherTonguesAudioData');
+
+      const expectedMotherKeys = [
+        'akan', 'amharic', 'swahili', 'kabuverdianu', 'zulu',
+        'yoruba', 'igbo', 'hausa', 'fon', 'arabic_maghrebi',
+        'tamazight', 'wolof', 'oromo', 'somali', 'xhosa',
+        'lingala', 'fula', 'khoekhoegowab',
+      ];
+      expect(Object.keys(AFRICAN_MOTHER_TONGUES).length).toBe(18);
+
+      for (const key of expectedMotherKeys) {
+        const entry = AFRICAN_MOTHER_TONGUES[key];
+        expect(entry).toBeDefined();
+        expect(entry.waveformProfile).toHaveLength(48);
+        expect(entry.durationSeconds).toBeGreaterThan(0.5);
+
+        const clipById = resolveStaticAudioClip({ audioClipId: entry.audioClipId });
+        const clipByPhrase = resolveStaticAudioClip({ text: entry.greetingText, langTag: entry.bcp47Tag });
+        expect(clipById).not.toBeNull();
+        expect(clipByPhrase?.id).toBe(entry.audioClipId);
+        expect(STATIC_AFRICAN_AUDIO_CLIPS[entry.audioClipId].file).toMatch(/^audio\/tongues\/mother-.*\.mp3$/);
+
+        if (entry.proverbAudioClipId) {
+          const proverbClip = resolveStaticAudioClip({ audioClipId: entry.proverbAudioClipId });
+          expect(proverbClip).not.toBeNull();
+          expect(proverbClip?.tier).toBe('extended');
+          expect(proverbClip?.file).toMatch(/^audio\/tongues\/extended\/proverb-.*\.mp3$/);
+        }
+      }
+
+      for (const fam of Object.values(LANGUAGE_FAMILY_GREETINGS)) {
+        const clip = resolveStaticAudioClip({ audioClipId: fam.audioClipId, text: fam.nativePhrase });
+        expect(clip).not.toBeNull();
+        expect(clip?.file).toMatch(/^audio\/tongues\/family-.*\.mp3$/);
+      }
+
+      // Extended typology clips
+      for (const typId of ['typology-nguni-clicks', 'typology-yoruba-tones']) {
+        const clip = resolveStaticAudioClip({ audioClipId: typId });
+        expect(clip).not.toBeNull();
+        expect(clip?.tier).toBe('extended');
+      }
+
+      // Verify every referenced file exists in public/ and aligns with manifest.json
+      const manifestPath = path.resolve(process.cwd(), 'public/audio/tongues/manifest.json');
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const manifestMap = new Map<string, any>(manifest.clips.map((c: any) => [c.id, c]));
+
+      for (const clip of Object.values(STATIC_AFRICAN_AUDIO_CLIPS)) {
+        const absFile = path.resolve(process.cwd(), 'public', clip.file);
+        expect(fs.existsSync(absFile)).toBe(true);
+        const manifestClip = manifestMap.get(clip.id);
+        expect(manifestClip).toBeDefined();
+        expect(manifestClip.file).toBe(clip.file);
+      }
+    });
+
+    it('ranks native African & Lusophone OS voices accurately without male bias', async () => {
+      const { getBestSystemVoice } = await import('../utils/afriataVoiceEngine');
+      const mockVoices = [
+        { name: 'Microsoft David Desktop', lang: 'en-US' },
+        { name: 'Google US English', lang: 'en-US' },
+        { name: 'Microsoft Zuri Online (Natural) - Swahili (Kenya)', lang: 'sw-KE' },
+        { name: 'Microsoft Thando Online (Natural) - Zulu (South Africa)', lang: 'zu-ZA' },
+        { name: 'Microsoft Mekdes Online (Natural) - Amharic (Ethiopia)', lang: 'am-ET' },
+        { name: 'Microsoft Ubax Online (Natural) - Somali (Somalia)', lang: 'so-SO' },
+        { name: 'Microsoft Denise Online (Natural) - French (France)', lang: 'fr-FR' },
+        { name: 'Microsoft Mouna Online (Natural) - Arabic (Morocco)', lang: 'ar-MA' },
+        { name: 'Microsoft Raquel Online (Natural) - Portuguese (Portugal)', lang: 'pt-PT' },
+        { name: 'Microsoft Francisca Online (Natural) - Portuguese (Brazil)', lang: 'pt-BR' },
+        { name: 'Microsoft Ezinne Online (Natural) - English (Nigeria)', lang: 'en-NG' },
+        { name: 'Microsoft Leah Online (Natural) - English (South Africa)', lang: 'en-ZA' },
+      ] as SpeechSynthesisVoice[];
+
+      const origSpeech = window.speechSynthesis;
+      Object.defineProperty(window, 'speechSynthesis', {
+        configurable: true,
+        value: { getVoices: () => mockVoices, cancel: vi.fn() },
+      });
+
+      try {
+        expect(getBestSystemVoice('sw-KE').voice?.lang).toBe('sw-KE');
+        expect(getBestSystemVoice('zu-ZA').voice?.lang).toBe('zu-ZA');
+        expect(getBestSystemVoice('am-ET').voice?.lang).toBe('am-ET');
+        expect(getBestSystemVoice('so-SO').voice?.lang).toBe('so-SO');
+        // Oromo falls back to Cushitic sister Somali or Ethiopian Amharic when om-ET OS voice is absent
+        expect(['so-SO', 'am-ET']).toContain(getBestSystemVoice('om-ET').voice?.lang);
+        // Kabyle/Tamazight falls back to Maghrebi/Francophone regional bridge instead of US English
+        expect(['ar-MA', 'fr-FR']).toContain(getBestSystemVoice('kab-DZ').voice?.lang);
+        // Wolof falls back to Francophone regional voice instead of US English
+        expect(getBestSystemVoice('wo-SN').voice?.lang).toBe('fr-FR');
+        // Cape Verdean Creole falls back to non-palatalizing pt-PT natural female voice instead of pt-BR
+        expect(getBestSystemVoice('pt-CV').voice?.lang).toBe('pt-PT');
+        // Akan falls back to West African English when ak-GH OS pack is absent
+        expect(getBestSystemVoice('ak-GH').voice?.lang).toBe('en-NG');
+        // English prioritizes African English natural voice
+        expect(getBestSystemVoice('en').voice?.lang).toBe('en-NG');
+      } finally {
+        Object.defineProperty(window, 'speechSynthesis', {
+          configurable: true,
+          value: origSpeech,
+        });
+      }
+    });
+
+    it('skips server /api/tts when /api/health reports zero cloud TTS keys', async () => {
+      const { isBackendTtsAvailable, resetApiAvailabilityCache } = await import('../utils/apiClient');
+      resetApiAvailabilityCache();
+      const origFetch = globalThis.fetch;
+      globalThis.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => ({ status: 'ok', geminiEnabled: false, elevenLabsEnabled: false }),
+      }) as any;
+
+      try {
+        expect(await isBackendTtsAvailable()).toBe(false);
+      } finally {
+        resetApiAvailabilityCache();
+        globalThis.fetch = origFetch;
+      }
     });
   });
 });

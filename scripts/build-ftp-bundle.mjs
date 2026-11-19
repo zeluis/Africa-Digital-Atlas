@@ -107,6 +107,7 @@ ErrorDocument 404 ${baseUrl}404.html
   AddType application/manifest+json .webmanifest
   AddType image/webp .webp
   AddType image/svg+xml .svg
+  AddType audio/mpeg .mp3
 </IfModule>
 
 <IfModule mod_headers.c>
@@ -142,6 +143,7 @@ const requiredFiles = [
   '.nojekyll',
   'docs/index.html',
   'africa-final.svg',
+  'audio/tongues/manifest.json',
 ];
 
 for (const rel of requiredFiles) {

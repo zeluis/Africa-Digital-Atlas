@@ -183,7 +183,7 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
                   Multilateral Data APIs &amp; Ingestion Hub
                 </h2>
                 <span className="text-xs font-mono font-bold text-emerald-800 dark:text-emerald-300">
-                  · 16 Connectors
+                  · 17 Connectors
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 mt-0.5 max-w-3xl leading-relaxed">
@@ -213,7 +213,7 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
               }`}
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isBatchSyncing ? 'animate-spin' : ''}`} />
-              <span>{isBatchSyncing ? `Testing (${batchProgress}%)` : 'Live Test All 16 APIs'}</span>
+              <span>{isBatchSyncing ? `Testing (${batchProgress}%)` : 'Live Test All 17 APIs'}</span>
             </button>
             <button
               type="button"
@@ -473,7 +473,7 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
           <div className="flex items-center gap-2">
             <span className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300 font-bold">
               <ShieldCheck className="w-4 h-4" />
-              16 Multilateral Connectors Synchronized
+              17 Multilateral &amp; Specialized Connectors Synchronized
             </span>
           </div>
 

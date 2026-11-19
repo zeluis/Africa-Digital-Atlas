@@ -15,7 +15,9 @@ import {
   ArrowRightLeft
 } from 'lucide-react';
 import { VoiceWelcomeFab } from '../components/VoiceWelcomeFab';
-import { LANGUAGE_FAMILY_GREETINGS } from '../utils/afriataVoiceEngine';
+import { STATIC_AFRICAN_AUDIO_CLIPS } from '../utils/afriataVoiceEngine';
+import { LANGUAGE_FAMILY_GREETINGS } from '../utils/africanLanguageGreetings';
+import { AFRICAN_MOTHER_TONGUES } from '../data/motherTonguesAudioData';
 import { MotherTonguesWaveformScrubber } from '../components/MotherTonguesWaveformScrubber';
 import { AFRICAN_TYPOLOGICAL_FEATURES } from '../data/africanLinguisticTypology';
 import { LinguisticTypologyComparator } from '../components/languages/LinguisticTypologyComparator';
@@ -105,6 +107,7 @@ const LANGUAGE_FAMILIES: LanguageFamily[] = [
 ];
 
 interface IndigenousLinguaFranca {
+  motherTongueId: string;
   name: string;
   nativeName: string;
   family: string;
@@ -117,6 +120,7 @@ interface IndigenousLinguaFranca {
 
 const INDIGENOUS_LINGUA_FRANCAS: IndigenousLinguaFranca[] = [
   {
+    motherTongueId: 'swahili',
     name: 'Swahili',
     nativeName: 'Kiswahili',
     family: 'Niger-Congo (Bantu)',
@@ -127,6 +131,7 @@ const INDIGENOUS_LINGUA_FRANCAS: IndigenousLinguaFranca[] = [
     description: 'The premier African lingua franca of the Great Lakes and Swahili Coast, widely used in cross-border trade, media, and diplomacy.'
   },
   {
+    motherTongueId: 'hausa',
     name: 'Hausa',
     nativeName: 'Harshen Hausa (هَرْشَن هَوْسَ)',
     family: 'Afroasiatic (Chadic)',
@@ -137,6 +142,7 @@ const INDIGENOUS_LINGUA_FRANCAS: IndigenousLinguaFranca[] = [
     description: 'The most widely spoken indigenous language in West Africa, historically dominant across Trans-Saharan trade routes.'
   },
   {
+    motherTongueId: 'yoruba',
     name: 'Yoruba',
     nativeName: 'Èdè Yorùbá',
     family: 'Niger-Congo (Volta-Niger)',
@@ -147,6 +153,7 @@ const INDIGENOUS_LINGUA_FRANCAS: IndigenousLinguaFranca[] = [
     description: 'A major tonal language with rich classical literature, orature (Oriki, Ifá corpus), and prominent cultural diaspora in the Americas.'
   },
   {
+    motherTongueId: 'amharic',
     name: 'Amharic',
     nativeName: 'አማርኛ (Amarəñña)',
     family: 'Afroasiatic (Semitic)',
@@ -157,6 +164,7 @@ const INDIGENOUS_LINGUA_FRANCAS: IndigenousLinguaFranca[] = [
     description: 'Spoken natively and as a working language across Ethiopia, utilizing the historic 3,000-year-old Ge\'ez abugida writing system.'
   },
   {
+    motherTongueId: 'oromo',
     name: 'Oromo',
     nativeName: 'Afaan Oromoo',
     family: 'Afroasiatic (Cushitic)',
@@ -167,6 +175,7 @@ const INDIGENOUS_LINGUA_FRANCAS: IndigenousLinguaFranca[] = [
     description: 'The most populous mother tongue in the Horn of Africa, spoken extensively across the Ethiopian highlands and northern Kenya.'
   },
   {
+    motherTongueId: 'zulu',
     name: 'Zulu',
     nativeName: 'isiZulu',
     family: 'Niger-Congo (Bantu/Nguni)',
@@ -177,6 +186,7 @@ const INDIGENOUS_LINGUA_FRANCAS: IndigenousLinguaFranca[] = [
     description: 'The largest home language in South Africa, featuring distinct click consonants adopted from Khoisan languages.'
   },
   {
+    motherTongueId: 'lingala',
     name: 'Lingala',
     nativeName: 'Lingála',
     family: 'Niger-Congo (Bantu)',
@@ -187,6 +197,7 @@ const INDIGENOUS_LINGUA_FRANCAS: IndigenousLinguaFranca[] = [
     description: 'The commercial and musical lingua franca of the Congo River basin, celebrated globally through Congolese musical culture.'
   },
   {
+    motherTongueId: 'fula',
     name: 'Fula / Fulfulde',
     nativeName: 'Fulfulde / Pulaar (𞤊𞤵𞤤𞤬𞤵𞤤𞤣𞤫)',
     family: 'Niger-Congo (Senegambian)',
@@ -288,7 +299,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
   ];
 
   const labSubTabs: { id: 'waveforms' | 'comparator' | 'typology'; label: string; icon: React.ReactNode }[] = [
-    { id: 'waveforms', label: 'Waveform Lab (10)', icon: <Radio className="w-3.5 h-3.5" /> },
+    { id: 'waveforms', label: `Waveform Lab (${Object.keys(AFRICAN_MOTHER_TONGUES).length})`, icon: <Radio className="w-3.5 h-3.5" /> },
     { id: 'comparator', label: 'Typology Comparator', icon: <ArrowRightLeft className="w-3.5 h-3.5" /> },
     { id: 'typology', label: 'Phonemic & Typology Lab (5)', icon: <Sparkles className="w-3.5 h-3.5" /> },
   ];
@@ -460,6 +471,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                       {greeting && (
                         <VoiceWelcomeFab
                           text={greeting.nativePhrase}
+                          audioClipId={greeting.audioClipId}
                           langTag={greeting.langTag}
                           languageName={greeting.languageName}
                           subtitle={greeting.meaningEn}
@@ -495,10 +507,10 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                         onClick={() => {
                           const targetMap: Record<string, string> = {
                             'niger-congo': 'yoruba',
-                            'afroasiatic': 'hausa',
+                            'afroasiatic': 'amharic',
                             'nilo-saharan': 'swahili',
                             'austronesian': 'swahili',
-                            'khoisan': 'zulu',
+                            'khoisan': 'khoekhoegowab',
                             'indo-european': 'kabuverdianu'
                           };
                           setActiveWaveformLangId(targetMap[family.id] || 'yoruba');
@@ -570,6 +582,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                         </div>
                         <VoiceWelcomeFab
                           text={deepGreeting.nativePhrase}
+                          audioClipId={deepGreeting.audioClipId}
                           langTag={deepGreeting.langTag}
                           languageName={deepGreeting.languageName}
                           subtitle={deepGreeting.meaningEn}
@@ -631,46 +644,62 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
       {/* TAB 2: INDIGENOUS LINGUA FRANCAS */}
       {activeTab === 'lingua-francas' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {INDIGENOUS_LINGUA_FRANCAS.map(lf => (
-            <div
-              key={lf.name}
-              className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xl space-y-4 hover:border-emerald-500/50 transition-all"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <span className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase">
-                    {lf.family}
-                  </span>
-                  <h3 className="text-xl font-extrabold text-zinc-900 dark:text-zinc-100">
-                    {lf.name} <span className="text-sm font-normal text-zinc-500 font-sans">({lf.nativeName})</span>
-                  </h3>
+          {INDIGENOUS_LINGUA_FRANCAS.map(lf => {
+            const voiceEntry = AFRICAN_MOTHER_TONGUES[lf.motherTongueId];
+            return (
+              <div
+                key={lf.name}
+                className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xl space-y-4 hover:border-emerald-500/50 transition-all"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <span className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase">
+                      {lf.family}
+                    </span>
+                    <h3 className="text-xl font-extrabold text-zinc-900 dark:text-zinc-100">
+                      {lf.name} <span className="text-sm font-normal text-zinc-500 font-sans">({lf.nativeName})</span>
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-xs font-mono font-bold text-zinc-800 dark:text-zinc-200 tabular-nums">
+                      {lf.speakers}
+                    </span>
+                    {voiceEntry && (
+                      <VoiceWelcomeFab
+                        text={voiceEntry.greetingText}
+                        audioClipId={voiceEntry.audioClipId}
+                        langTag={voiceEntry.bcp47Tag}
+                        languageName={voiceEntry.language}
+                        subtitle={voiceEntry.greetingMeaning}
+                        tooltip={`Listen to greeting in ${voiceEntry.language}`}
+                        ariaLabel={`Listen to greeting in ${lf.name}`}
+                      />
+                    )}
+                  </div>
                 </div>
-                <span className="text-xs font-mono font-bold text-zinc-800 dark:text-zinc-200 tabular-nums shrink-0">
-                  {lf.speakers}
-                </span>
-              </div>
 
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                {lf.description}
-              </p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  {lf.description}
+                </p>
 
-              <div className="space-y-2 pt-2 border-t border-zinc-200 dark:border-zinc-800 text-xs">
-                <div className="flex justify-between gap-2">
-                  <span className="text-zinc-500 shrink-0">Writing Systems:</span>
-                  <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-right">{lf.writingSystems.join(', ')}</span>
-                </div>
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-zinc-500">Primary Countries:</span>
-                  <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                    {lf.countriesSpoken.join(' · ')}
-                  </span>
-                </div>
-                <div className="pt-2 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
-                  {lf.status}
+                <div className="space-y-2 pt-2 border-t border-zinc-200 dark:border-zinc-800 text-xs">
+                  <div className="flex justify-between gap-2">
+                    <span className="text-zinc-500 shrink-0">Writing Systems:</span>
+                    <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-right">{lf.writingSystems.join(', ')}</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-zinc-500">Primary Countries:</span>
+                    <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                      {lf.countriesSpoken.join(' · ')}
+                    </span>
+                  </div>
+                  <div className="pt-2 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                    {lf.status}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -912,11 +941,32 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
 
               {/* Phoneme & Class Breakdown Cards */}
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-3">
                   <h3 className="font-bold text-xs uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-mono flex items-center gap-2">
                     <span>Phonemic Influx Inventory &amp; Attested Lexical Corpus</span>
                     <span className="text-zinc-400">({activeFeature.keyPhonemesOrClasses.length} documented classes)</span>
                   </h3>
+                  {(activeFeature.id === 'clicks' || activeFeature.id === 'tone') && (() => {
+                    const clipId = activeFeature.id === 'clicks' ? 'typology-nguni-clicks' : 'typology-yoruba-tones';
+                    const clip = STATIC_AFRICAN_AUDIO_CLIPS[clipId];
+                    if (!clip) return null;
+                    return (
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
+                          Audio sample: <strong className="text-zinc-800 dark:text-zinc-200">{clip.phrase}</strong>
+                        </span>
+                        <VoiceWelcomeFab
+                          text={clip.phrase}
+                          audioClipId={clip.id}
+                          langTag={clip.langTag}
+                          languageName={clip.provenanceBadge || clip.engineLabel}
+                          subtitle={activeFeature.id === 'clicks' ? 'Dental, lateral & Nguni click articulation' : 'Mid-High vs Mid-Low vs Mid-Mid lexical pitch'}
+                          tooltip={`Listen to ${activeFeature.shortName} phonetic sample`}
+                          ariaLabel={`Listen to ${activeFeature.shortName} phonetic audio sample`}
+                        />
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">

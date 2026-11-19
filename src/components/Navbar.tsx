@@ -218,21 +218,21 @@ export const Navbar: React.FC<NavbarProps> = ({
               </JapandiTooltip>
             )}
 
-            {/* Live Data Hub Indicator Pill (16 APIs) */}
+            {/* Live Data Hub Indicator Pill (17 APIs) */}
             {onOpenApiHub && (
               <JapandiTooltip
-                title="Multilateral Data APIs (16 Active)"
-                content="Explore 16 institutional API connectors: World Bank, IMF, WHO, UNESCO, UN Comtrade, and historical archives."
+                title="Multilateral Data APIs (17 Active)"
+                content="Explore 17 institutional API connectors: World Bank, IMF, WHO, UNESCO, UN Comtrade, EC JRC AKP, and historical archives."
                 regionalAccent="#10b981"
               >
                 <button 
                   onClick={onOpenApiHub}
                   className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-emerald-300/80 dark:border-emerald-800/80 bg-emerald-50/90 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-[11px] font-mono font-bold text-emerald-800 dark:text-emerald-300 shadow-xs cursor-pointer select-none transition-colors"
                   title="Open Multilateral Data APIs & Ingestion Hub"
-                  aria-label="Open 16 Multilateral Data APIs hub"
+                  aria-label="Open 17 Multilateral Data APIs hub"
                 >
                   <Database className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                  <span className="tracking-tight hidden md:inline">16 APIs</span>
+                  <span className="tracking-tight hidden md:inline">17 APIs</span>
                 </button>
               </JapandiTooltip>
             )}
@@ -267,6 +267,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <VoiceWelcomeFab
                 variant="navbar"
                 text={currentGreeting.phrase}
+                audioClipId={currentGreeting.audioClipId}
                 langTag={currentGreeting.langTag}
                 languageName={currentLanguageOption.name}
                 tooltip={`Listen to Afriata Welcome in ${currentLanguageOption.name}`}

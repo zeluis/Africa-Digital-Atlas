@@ -31,6 +31,7 @@ export interface PlatformCitationOptions {
   doi?: string;
   pageUrl?: string;
   accessDate?: string;
+  releaseDate?: string;
   version?: string;
 }
 
@@ -38,19 +39,20 @@ export function buildPlatformCitations(
   options: PlatformCitationOptions = {}
 ): Record<PlatformCitationFormat, string> {
   const accessDate = options.accessDate || new Date().toISOString().split('T')[0];
+  const releaseDate = options.releaseDate || '2026-11-18';
   const pageUrl =
     options.pageUrl ||
-    (typeof window !== 'undefined' ? window.location.href : 'https://afriata.org');
+    (typeof window !== 'undefined' ? window.location.href : AFRIATA_SITE_URL);
   const doi = options.doi || AFRIATA_DOI;
   const version = options.version || '2026.1';
 
   const apa = `Correia, Z. F. (2026). Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Afriata. ${AFRIATA_REPO_URL} · https://doi.org/${doi}`;
-  const chicago = `Correia, Zéluis F. 2026. Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Lisbon/Praia: Afriata. https://doi.org/${doi}.`;
-  const mla = `Correia, Zéluis F. "Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows." Afriata, 2026, https://doi.org/${doi}. Accessed ${accessDate}.`;
+  const chicago = `Correia, ZéLuis F. 2026. Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Lisbon/Praia: Afriata. https://doi.org/${doi}.`;
+  const mla = `Correia, ZéLuis F. "Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows." Afriata, 2026, https://doi.org/${doi}. Accessed ${accessDate}.`;
   const harvard = `Correia, Z.F. (2026) Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows. Afriata. Available at: ${pageUrl} (Accessed: ${accessDate}). https://doi.org/${doi}.`;
 
   const bibtex = `@dataset{correia_africa_data_atlas_2026,
-  author    = {Correia, Z{\\'e}luis F.},
+  author    = {Correia, Z{\\'e}Luis F.},
   orcid     = {${AFRIATA_ORCID}},
   title     = {{Africa Data Atlas \\& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows}},
   year      = {2026},
@@ -62,7 +64,7 @@ export function buildPlatformCitations(
 }
 
 @software{correia_afriata_vector_engine_2026,
-  author    = {Correia, Z{\\'e}luis F.},
+  author    = {Correia, Z{\\'e}Luis F.},
   orcid     = {${AFRIATA_ORCID}},
   title     = {{Afriata Continental Vector Topology \\& High-Precision Geodetic Engine (5,796 x 5,867)}},
   year      = {2026},
@@ -73,7 +75,7 @@ export function buildPlatformCitations(
 
   const ris = `TY  - DATA
 TI  - Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows
-AU  - Correia, Zéluis F.
+AU  - Correia, ZéLuis F.
 PY  - 2026
 PB  - Afriata
 DO  - ${doi}
@@ -86,11 +88,11 @@ message: "If you use this atlas or software in your research, please cite it as 
 title: "Africa Data Atlas & Cartographic Observatory"
 authors:
   - family-names: "Correia"
-    given-names: "Zéluis F."
+    given-names: "ZéLuis F."
     orcid: "${AFRIATA_ORCID_URL}"
 version: "${version}"
 doi: "${doi}"
-date-released: "2026-01-15"
+date-released: "${releaseDate}"
 url: "${pageUrl}"
 repository-code: "${AFRIATA_REPO_URL}"
 keywords:
@@ -102,7 +104,7 @@ keywords:
 
   const enw = `%0 Dataset
 %T Africa Data Atlas & Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows
-%A Correia, Zéluis F.
+%A Correia, ZéLuis F.
 %D 2026
 %I Afriata
 %R ${doi}
@@ -129,18 +131,33 @@ export function buildReportCitation(
   const { doi, doiUrl } = resolveReportDoi(report.doi);
   const title = report.title;
   const subtitle = report.subtitle ? `: ${report.subtitle}` : '';
+  const isWorkingPaper = Boolean((report as Partial<ResearchReport>).isWorkingPaper);
+  const seriesLabel = isWorkingPaper ? 'Afriata Working Paper & Policy Brief Series' : AFRIATA_PLATFORM_NAME;
 
   switch (targetStyle) {
     case 'chicago':
-      return `${authorsStr}. ${year}. "${title}${subtitle}." ${AFRIATA_PLATFORM_NAME}. ${doiUrl} (ORCID: ${AFRIATA_ORCID_URL}).`;
+      return `${authorsStr}. ${year}. "${title}${subtitle}." ${seriesLabel}. ${doiUrl} (ORCID: ${AFRIATA_ORCID_URL}).`;
     case 'apa':
-      return `${authorsStr} (${year}). ${title}${subtitle}. ${AFRIATA_PLATFORM_NAME}. ${doiUrl} (ORCID: ${AFRIATA_ORCID_URL})`;
+      return `${authorsStr} (${year}). ${title}${subtitle}. ${seriesLabel}. ${doiUrl} (ORCID: ${AFRIATA_ORCID_URL})`;
     case 'mla':
-      return `${authorsStr}. "${title}${subtitle}." ${AFRIATA_PLATFORM_NAME}, ${year}, ${doiUrl}. ORCID: ${AFRIATA_ORCID_URL}.`;
+      return `${authorsStr}. "${title}${subtitle}." ${seriesLabel}, ${year}, ${doiUrl}. ORCID: ${AFRIATA_ORCID_URL}.`;
     case 'harvard':
-      return `${authorsStr}, ${year}. ${title}${subtitle}. ${AFRIATA_PLATFORM_NAME}. Available at: <${doiUrl}> (ORCID: ${AFRIATA_ORCID_URL}).`;
+      return `${authorsStr}, ${year}. ${title}${subtitle}. ${seriesLabel}. Available at: <${doiUrl}> (ORCID: ${AFRIATA_ORCID_URL}).`;
     case 'bibtex': {
       const citeKey = report.id.replace(/[^a-zA-Z0-9]/g, '_') + '_' + year;
+      if (isWorkingPaper) {
+        return `@techreport{${citeKey},
+  title={${title}},
+  subtitle={${report.subtitle || ''}},
+  author={${authorsList.join(' and ')}},
+  institution={${seriesLabel}},
+  type={Working Paper},
+  year={${year}},
+  doi={${doi}},
+  url={${doiUrl}},
+  note={Repository: ${AFRIATA_REPO_URL}; ORCID: ${AFRIATA_ORCID}}
+}`;
+      }
       return `@article{${citeKey},
   title={${title}},
   subtitle={${report.subtitle || ''}},
@@ -153,10 +170,10 @@ export function buildReportCitation(
 }`;
     }
     case 'ris':
-      return `TY  - JOUR
+      return `TY  - ${isWorkingPaper ? 'RPRT' : 'JOUR'}
 TI  - ${title}${subtitle}
 ${authorsList.map((a) => `AU  - ${a}`).join('\n')}
-JO  - ${AFRIATA_PLATFORM_NAME}
+${isWorkingPaper ? 'PB' : 'JO'}  - ${seriesLabel}
 PY  - ${year}
 DO  - ${doi}
 UR  - ${doiUrl}
@@ -165,7 +182,7 @@ ER  - `;
     case 'jsonld': {
       const schema = {
         '@context': 'https://schema.org',
-        '@type': 'ScholarlyArticle',
+        '@type': isWorkingPaper ? 'Report' : 'ScholarlyArticle',
         headline: title,
         name: `${title}${subtitle}`,
         description: report.executiveSummary,

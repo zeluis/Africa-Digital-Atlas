@@ -227,10 +227,13 @@ export default defineConfig(({ command }) => {
             'favicon.svg',
             'icon.svg',
             'africa-final.svg',
+            'audio/tongues/*.mp3',
+            'audio/tongues/manifest.json',
             'assets/**/*.{js,css,woff2,json}',
           ],
           globIgnores: [
             '**/afriata-ethnic-tree.svg',
+            '**/audio/tongues/extended/**',
             '**/castas/**',
             '**/cartography/**',
             '**/archives/**',
@@ -245,12 +248,12 @@ export default defineConfig(({ command }) => {
           ],
           runtimeCaching: [
             {
-              urlPattern: ({ url }) => url.origin === self.location.origin && /\.(?:png|jpe?g|webp|avif|gif|svg)$/i.test(url.pathname),
+              urlPattern: ({ url }) => url.origin === self.location.origin && /\.(?:png|jpe?g|webp|avif|gif|svg|mp3|opus|wav)$/i.test(url.pathname),
               handler: 'CacheFirst',
               options: {
                 cacheName: 'local-media',
                 expiration: {
-                  maxEntries: 120,
+                  maxEntries: 250,
                   maxAgeSeconds: 60 * 60 * 24 * 60,
                 },
                 cacheableResponse: {

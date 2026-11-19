@@ -1,6 +1,6 @@
 # Data Sources Catalog
 
-The Atlas integrates 90+ indicators from 16 institutional API connectors, spanning macroeconomics, poverty, governance, health, education, trade, and climate.
+The Atlas integrates 90+ indicators across 17 institutional & specialized API connectors, spanning macroeconomics, poverty, governance, health, education, trade, and climate.
 
 | Connector | Provider | Indicator families |
 |---|---|---|

@@ -3,6 +3,7 @@ import { resolveAppBasePath } from './assetPath';
 const STATIC_HOST_SUFFIXES = ['.github.io', '.pages.dev', '.netlify.app'];
 
 let apiAvailabilityPromise: Promise<boolean> | null = null;
+let backendTtsEnabled = false;
 
 /**
  * Resolves a backend `/api/*` endpoint relative to the mounted application base path,
@@ -67,8 +68,10 @@ export async function isBackendApiAvailable(): Promise<boolean> {
       const contentType = res.headers.get('content-type') || '';
       if (!contentType.includes('application/json')) return false;
       const payload = await res.json();
+      backendTtsEnabled = Boolean(payload?.geminiEnabled || payload?.elevenLabsEnabled);
       return payload?.status === 'ok';
     } catch {
+      backendTtsEnabled = false;
       return false;
     }
   })();
@@ -77,8 +80,18 @@ export async function isBackendApiAvailable(): Promise<boolean> {
 }
 
 /**
+ * Returns true only when the Express backend is reachable AND has server-side TTS keys configured.
+ * Zero-key deployments skip `/api/tts` calls and rely on the static African audio pack + OS Web Speech API.
+ */
+export async function isBackendTtsAvailable(): Promise<boolean> {
+  const apiUp = await isBackendApiAvailable();
+  return apiUp && backendTtsEnabled;
+}
+
+/**
  * Resets cached backend capability probe (primarily for automated tests).
  */
 export function resetApiAvailabilityCache(): void {
   apiAvailabilityPromise = null;
+  backendTtsEnabled = false;
 }

@@ -22,6 +22,7 @@ import {
 } from '../data/motherTonguesAudioData';
 import {
   AFRIATA_SPEECH_STOP_EVENT,
+  STATIC_AFRICAN_AUDIO_CLIPS,
   speakAcademicNarration,
   stopAfriataSpeech
 } from '../utils/afriataVoiceEngine';
@@ -39,12 +40,14 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
 }) => {
   const [selectedLangId, setSelectedLangId] = useState<string>(initialLanguageId);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isPlayingProverb, setIsPlayingProverb] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0); // 0.0 to 1.0
   const [isScrubbing, setIsScrubbing] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0); // 0.5, 0.75, 1.0
   const [hoveredFraction, setHoveredFraction] = useState<number | null>(null);
 
   const activeEntry: MotherTongueEntry = AFRICAN_MOTHER_TONGUES[selectedLangId] || AFRICAN_MOTHER_TONGUES.yoruba;
+  const activeClipSpec = STATIC_AFRICAN_AUDIO_CLIPS[activeEntry.audioClipId];
   const duration = activeEntry.durationSeconds || 3.0;
   const waveform = activeEntry.waveformProfile || Array.from({ length: 48 }, (_, i) => 0.2 + 0.6 * Math.sin(i * 0.25));
 
@@ -99,24 +102,34 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
     cancelAnimation();
     stopAfriataSpeech();
     setIsPlaying(false);
+    setIsPlayingProverb(false);
   }, [cancelAnimation]);
 
   const handleStartPlay = useCallback((fromFraction = progress >= 0.98 ? 0 : progress) => {
     cancelAnimation();
+    setIsPlayingProverb(false);
     setIsPlaying(true);
     setProgress(fromFraction);
     startProgressRef.current = fromFraction;
     startTimeRef.current = performance.now();
+    let realAudioDriving = false;
 
-    // Route speech synthesis synchronously through singleton afriataVoiceEngine with bcp47Tag & speed
+    // Route speech synchronously through static African audio pack or OS native voice engine
     isStartingRef.current = true;
     try {
       speakAcademicNarration({
         text: activeEntry.greetingText,
+        audioClipId: activeEntry.audioClipId,
         langTag: activeEntry.bcp47Tag,
         playChime: false,
         rate: playbackSpeed,
         pitch: 1.05,
+        startFraction: fromFraction,
+        onProgress: (frac) => {
+          realAudioDriving = true;
+          cancelAnimation();
+          setProgress(frac);
+        },
         onEnd: () => {
           cancelAnimation();
           setIsPlaying(false);
@@ -136,10 +149,14 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
       playMotherTongueAudio(activeEntry, { skipSpeech: true });
     }
 
-    // Animation progress loop
+    // Fallback animation progress loop when OS speechSynthesis (which lacks currentTime) is running
     const totalDurationMs = (duration * 1000) / playbackSpeed;
 
     const step = (timestamp: number) => {
+      if (realAudioDriving) {
+        animFrameRef.current = null;
+        return;
+      }
       const elapsed = timestamp - startTimeRef.current;
       const currentFrac = Math.min(1.0, fromFraction + elapsed / totalDurationMs);
       setProgress(currentFrac);
@@ -223,11 +240,50 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
     onSelectLanguage?.(langId);
   };
 
+  // Toggle extended-tier indigenous proverb audio
+  const handleToggleProverbAudio = () => {
+    if (!activeEntry.proverbAudioClipId) return;
+    if (isPlayingProverb) {
+      stopAudio();
+      return;
+    }
+    cancelAnimation();
+    setIsPlaying(false);
+    isStartingRef.current = true;
+    setIsPlayingProverb(true);
+    try {
+      speakAcademicNarration({
+        text: activeEntry.proverbText,
+        audioClipId: activeEntry.proverbAudioClipId,
+        langTag: activeEntry.bcp47Tag,
+        playChime: false,
+        rate: playbackSpeed,
+        pitch: 1.02,
+        onEnd: () => {
+          setIsPlayingProverb(false);
+        },
+        onError: () => {
+          setIsPlayingProverb(false);
+        },
+      });
+    } finally {
+      isStartingRef.current = false;
+    }
+  };
+
+  useEffect(() => {
+    if (initialLanguageId && AFRICAN_MOTHER_TONGUES[initialLanguageId]) {
+      setSelectedLangId(initialLanguageId);
+      setProgress(0);
+    }
+  }, [initialLanguageId]);
+
   useEffect(() => {
     const handleGlobalStop = () => {
       if (isStartingRef.current) return;
       cancelAnimation();
       setIsPlaying(false);
+      setIsPlayingProverb(false);
     };
     const handleVisibilityChange = () => {
       if (document.hidden) {
@@ -260,13 +316,13 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
       {/* Header with Title and Language Family Tag */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-emerald-200/60 dark:border-emerald-900/40 pb-4">
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-mono text-[11px] font-bold tracking-wide">
               <Radio className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
               MOTHER TONGUES PHONETIC WAVEFORM
             </span>
             <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
-              Web Audio &amp; Native Synthesis
+              {activeEntry.provenanceBadge || activeClipSpec?.provenanceBadge || activeClipSpec?.engineLabel || 'OS Native Voice'} · Web Audio
             </span>
           </div>
           <h3 className="text-xl sm:text-2xl font-black font-display text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
@@ -357,15 +413,41 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
           <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 italic font-medium">
             Meaning: "{activeEntry.greetingMeaning}"
           </p>
+
+          {(activeEntry.isProxy || activeClipSpec?.isProxy) && (activeEntry.proxyNote || activeClipSpec?.proxyNote) && (
+            <p className="text-[11px] text-amber-800 dark:text-amber-300 font-medium flex items-start gap-1.5 pt-1">
+              <Info className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <span>
+                <strong>Acoustic Proxy Disclosure:</strong> {activeEntry.proxyNote || activeClipSpec?.proxyNote}
+              </span>
+            </p>
+          )}
         </div>
 
         {/* Ancestral Proverb Capsule */}
-        <div className="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 flex flex-col justify-between text-xs">
-          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1">
-            <BookOpen className="w-3 h-3 text-amber-600" />
-            Indigenous Proverb
-          </span>
-          <p className="font-serif font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm my-1">
+        <div className="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 flex flex-col justify-between text-xs gap-1.5">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1">
+              <BookOpen className="w-3 h-3 text-amber-600" />
+              Indigenous Proverb
+            </span>
+            {activeEntry.proverbAudioClipId && (
+              <button
+                type="button"
+                onClick={handleToggleProverbAudio}
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold transition-colors cursor-pointer ${
+                  isPlayingProverb
+                    ? 'bg-amber-600 text-white shadow-xs'
+                    : 'bg-amber-200/70 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 hover:bg-amber-300/80 dark:hover:bg-amber-800/80'
+                }`}
+                aria-label={isPlayingProverb ? `Stop ${activeEntry.language} proverb audio` : `Listen to ${activeEntry.language} proverb`}
+              >
+                {isPlayingProverb ? <Pause className="w-2.5 h-2.5" /> : <Volume2 className="w-2.5 h-2.5" />}
+                <span>{isPlayingProverb ? 'Stop' : 'Listen'}</span>
+              </button>
+            )}
+          </div>
+          <p className="font-serif font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm my-0.5">
             "{activeEntry.proverbText}"
           </p>
           <p className="text-[11px] text-zinc-600 dark:text-zinc-400">

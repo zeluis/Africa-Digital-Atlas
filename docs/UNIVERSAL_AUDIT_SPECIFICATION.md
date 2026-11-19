@@ -1,8 +1,8 @@
 # AFRIATA UNIVERSAL AUDIT & ENGINEERING SPECIFICATION
 **A Rigorous Standard for Semantic HTML, Responsive CSS, Web Vitals, Typography & WCAG 2.2 Accessibility**
 
-*Author & Scientific Curator: **Zéluis F. Correia***  
-*Standard Version: 2026.1 • Permanent Engineering Constitution*
+*Author & Scientific Curator: **ZéLuis F. Correia***  
+*Standard Version: 2026.2 • Updated 2026-11-18*
 
 ---
 
@@ -225,4 +225,4 @@ Before any module, view, or report PR is finalized, verify every item:
 
 ---
 
-*Curated by Zéluis F. Correia • Afriata Observatory • Standard Reference 2026*
+*Curated by ZéLuis F. Correia • Afriata Observatory • Updated 2026-11-18*

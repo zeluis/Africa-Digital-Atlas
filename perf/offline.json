@@ -8,6 +8,7 @@
     "^assets/data-ethnic-tree-.*\\.js$",
     "^assets/data-atlas-raw-.*\\.js$",
     "^assets/i18n-translations-.*\\.js$",
-    "^africa-final\\.svg$"
+    "^africa-final\\.svg$",
+    "^audio/tongues/manifest\\.json$"
   ]
 }

@@ -1263,7 +1263,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 <span className="font-bold text-zinc-800 dark:text-zinc-200 block mb-0.5 font-serif">
                   Afriata Cartographic Observatory
                 </span>
-                <span>Under the direction of Zéluis F. Correia • CC-BY 4.0</span>
+                <span>Under the direction of ZéLuis F. Correia • CC-BY 4.0</span>
               </div>
             </div>
           )}

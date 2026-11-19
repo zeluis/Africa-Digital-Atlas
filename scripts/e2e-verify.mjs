@@ -42,6 +42,7 @@ const MIME_TYPES = {
   '.woff2': 'font/woff2',
   '.woff': 'font/woff',
   '.ico': 'image/x-icon',
+  '.mp3': 'audio/mpeg',
 };
 
 function assert(condition, message) {

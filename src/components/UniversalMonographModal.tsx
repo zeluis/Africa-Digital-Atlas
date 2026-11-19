@@ -63,7 +63,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
     { id: 'design-system', label: '2. Japandi-Sahel UI', icon: <Palette className="w-4 h-4" /> },
     { id: 'cartography', label: '3. Cartography & Geodesy', icon: <MapIcon className="w-4 h-4" /> },
     { id: 'assets', label: '4. Assets & Seals', icon: <Layers className="w-4 h-4" /> },
-    { id: 'multilateral-apis', label: '5. 16 Multilateral APIs', icon: <Database className="w-4 h-4" /> },
+    { id: 'multilateral-apis', label: '5. 17 Multilateral APIs', icon: <Database className="w-4 h-4" /> },
     { id: 'ethics-governance', label: '6. Privacy & Citations', icon: <ShieldCheck className="w-4 h-4" /> }
   ];
 
@@ -93,7 +93,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
                   Afriata Universal Monograph &amp; Architectural Constitution
                 </h2>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono truncate">
-                  Complete Reference Text · Zéluis F. Correia · CC-BY 4.0 Observatory Edition
+                  Complete Reference Text · ZéLuis F. Correia · CC-BY 4.0 Observatory Edition
                 </p>
               </div>
             </div>
@@ -163,7 +163,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
                 AFRIATA UNIVERSAL STYLE GUIDE & LIVING ARCHITECTURAL MONOGRAPH
               </h1>
               <p className="text-stone-600 dark:text-stone-300 text-sm sm:text-base font-sans leading-relaxed">
-                The Sovereign Design System, Cartographic Geodesy, and Technical Architecture of the Africa Data Atlas. Under the scientific direction and cartographic curation of <strong className="text-stone-900 dark:text-stone-100 font-semibold">Zéluis F. Correia</strong>.
+                The Sovereign Design System, Cartographic Geodesy, and Technical Architecture of the Africa Data Atlas. Under the scientific direction and cartographic curation of <strong className="text-stone-900 dark:text-stone-100 font-semibold">ZéLuis F. Correia</strong>.
               </p>
             </div>
 
@@ -180,7 +180,7 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
                 <div className="space-y-4 font-sans text-stone-700 dark:text-stone-300 text-sm sm:text-base leading-relaxed">
                   <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 font-serif pt-2">1.1 Institutional Identity & Purpose</h3>
                   <p>
-                    <strong>Afriata</strong> is an independent, non-partisan cartographic and econometric research observatory founded by <strong>Zéluis F. Correia</strong>. The <strong>Africa Data Atlas</strong> serves as a digital public good and scientific synthesis platform bridging the gap between fragmented multilateral statistics, deep ancestral phylogenetic lineages, historical trade extractions, and contemporary geopolitical transformations across all 54 sovereign African nations.
+                    <strong>Afriata</strong> is an independent, non-partisan cartographic and econometric research observatory founded by <strong>ZéLuis F. Correia</strong>. The <strong>Africa Data Atlas</strong> serves as a digital public good and scientific synthesis platform bridging the gap between fragmented multilateral statistics, deep ancestral phylogenetic lineages, historical trade extractions, and contemporary geopolitical transformations across all 54 sovereign African nations.
                   </p>
 
                   <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 font-serif pt-2">1.2 Dual Licensing &amp; Creative Assets Authorship</h3>
@@ -330,8 +330,8 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
                 </div>
 
                 <div className="space-y-4 font-sans text-stone-700 dark:text-stone-300 text-sm sm:text-base leading-relaxed">
-                  <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 font-serif pt-2">5.1 The 16 Multilateral Connectors</h3>
-                  <p>The platform continuously harmonizes statistical indicators across 16 international institutions:</p>
+                  <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 font-serif pt-2">5.1 The 17 Multilateral &amp; Specialized Connectors</h3>
+                  <p>The platform harmonizes curated snapshot datasets with on-demand API handshake checks across 17 international institutions and knowledge platforms:</p>
                   <ol className="list-decimal pl-5 space-y-1.5 text-xs sm:text-sm">
                     <li><strong>World Bank WDI</strong>: Macroeconomic accounts, GDP, external debt stocks.</li>
                     <li><strong>IMF WEO</strong>: Fiscal balances, inflation forecasts, balance of payments.</li>

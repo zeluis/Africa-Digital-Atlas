@@ -92,7 +92,7 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
           sections: [
             {
               id: 'sec-findings',
-              title: 'Key Econometric Findings & Empirical Evidence',
+              title: 'Synthesis Scope & Methodological Architecture',
               content: selectedPaper.keyFindings.join('\n\n')
             }
           ],
@@ -286,7 +286,7 @@ export const WorkingPapersModal: React.FC<WorkingPapersModalProps> = ({
             <div className="space-y-4 font-sans">
               <h3 className="text-base font-bold font-serif text-stone-900 dark:text-stone-100 flex items-center gap-2">
                 <Award className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                <span>Key Empirical Sections & Methodological Architecture</span>
+                <span>Synthesis Scope &amp; Methodological Architecture</span>
               </h3>
               <ul className="space-y-2.5 text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed list-disc pl-5">
                 {selectedPaper.keyFindings.map((finding, idx) => (

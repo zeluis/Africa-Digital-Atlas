@@ -1,23 +1,460 @@
 /**
- * Afriata Sovereign Voice & Audio Synthesis Engine
- * 
- * Provides crisp, intelligible, natural-cadence speech synthesis and acoustic modeling:
- * - Natural Unified Voice Engine: Automatically pairs with verified OS native voice engines
- * - Major International & Lusophone/Francophone routing: High-clarity native voices (en, fr, pt-PT, es, de, it, nl, ar)
- * - Indigenous African Phylum introductions: Articulate, respectful framing in warm natural voice alongside authentic scripts
- * - Acoustic Resonator: Web Audio API physical modeling pentatonic kalimba/marimba chord progression
+ * Afriata Voice & Audio Synthesis Engine (Zero-Key Hybrid)
+ *
+ * Dual-layer voice architecture requiring zero runtime API keys:
+ * 1. Two-Tier Static African Neural Audio Pack (`public/audio/tongues/`):
+ *    - Core Precached Tier (`audio/tongues/*.mp3`): 18 African mother-tongue
+ *      greetings + 6 linguistic phylum welcomes using Meta MMS-TTS ONNX (VITS
+ *      for Yorùbá, Akan/Twi, Fon, Wolof, Afaan Oromoo, Tamazight, Malagasy)
+ *      and keyless neural voices (Kiswahili, isiZulu, Amharic, Somali, Hausa,
+ *      Maghrebi Arabic, plus transparently labeled phonetic proxies).
+ *    - Extended Runtime Cache (`audio/tongues/extended/*.mp3`): Ancestral
+ *      proverbs and typological minimal-pair / click samples cached on demand.
+ * 2. OS Native Voice Engine (`window.speechSynthesis`):
+ *    Ranked selector prioritizing installed regional African voices (`am-ET`,
+ *    `sw-KE`/`sw-TZ`, `so-SO`, `om-ET`, `zu-ZA`, `xh-ZA`, `af-ZA`,
+ *    `en-NG`/`en-KE`/`en-GH`/`en-ZA`, Lusophone `pt-PT`, Francophone `fr-*`,
+ *    Maghrebi Arabic `ar-MA`/`ar-DZ`/`ar-TN`) and natural/Siri OS voices.
+ * 3. Acoustic Resonator: Web Audio API pentatonic kalimba/marimba chord progression.
  */
 
-import { isBackendApiAvailable, resolveApiUrl } from './apiClient';
+import { isBackendTtsAvailable, resolveApiUrl } from './apiClient';
+import { resolveAssetPath } from './assetPath';
+
+export interface StaticAudioClipSpec {
+  id: string;
+  tier?: 'core' | 'extended';
+  file: string;
+  langTag: string;
+  phrase: string;
+  durationSeconds: number;
+  engineLabel: string;
+  provenanceBadge?: string;
+  isProxy?: boolean;
+  proxyNote?: string;
+}
+
+export const STATIC_AFRICAN_AUDIO_CLIPS: Record<string, StaticAudioClipSpec> = {
+  'mother-yoruba': {
+    id: 'mother-yoruba',
+    tier: 'core',
+    file: 'audio/tongues/mother-yoruba.mp3',
+    langTag: 'yo-NG',
+    phrase: 'Báwo ni?',
+    durationSeconds: 0.89,
+    engineLabel: 'Meta MMS-TTS (Yorùbá VITS)',
+    isProxy: false,
+  },
+  'mother-igbo': {
+    id: 'mother-igbo',
+    tier: 'core',
+    file: 'audio/tongues/mother-igbo.mp3',
+    langTag: 'ig-NG',
+    phrase: 'Ndewo / Kèdú?',
+    durationSeconds: 3.19,
+    engineLabel: 'Nigerian English Phonetic Proxy',
+    isProxy: true,
+  },
+  'mother-hausa': {
+    id: 'mother-hausa',
+    tier: 'core',
+    file: 'audio/tongues/mother-hausa.mp3',
+    langTag: 'ha-NG',
+    phrase: 'Sannu / Ina kwana?',
+    durationSeconds: 2.35,
+    engineLabel: 'Hausa Native Neural Audio',
+    isProxy: false,
+  },
+  'mother-swahili': {
+    id: 'mother-swahili',
+    tier: 'core',
+    file: 'audio/tongues/mother-swahili.mp3',
+    langTag: 'sw-KE',
+    phrase: 'Hujambo / Habari yako?',
+    durationSeconds: 3.43,
+    engineLabel: 'Kiswahili East Africa Neural',
+    isProxy: false,
+  },
+  'mother-kabuverdianu': {
+    id: 'mother-kabuverdianu',
+    tier: 'core',
+    file: 'audio/tongues/mother-kabuverdianu.mp3',
+    langTag: 'pt-CV',
+    phrase: 'Munti sabi! / Modi ki bu sta?',
+    durationSeconds: 4.27,
+    engineLabel: 'Kabuverdianu Lusophone Proxy',
+    isProxy: true,
+  },
+  'mother-akan': {
+    id: 'mother-akan',
+    tier: 'core',
+    file: 'audio/tongues/mother-akan.mp3',
+    langTag: 'ak-GH',
+    phrase: 'Akwaaba! / Wo ho te sɛn?',
+    durationSeconds: 1.87,
+    engineLabel: 'Meta MMS-TTS (Akan/Twi VITS)',
+    isProxy: false,
+  },
+  'mother-fon': {
+    id: 'mother-fon',
+    tier: 'core',
+    file: 'audio/tongues/mother-fon.mp3',
+    langTag: 'fr-BJ',
+    phrase: 'Kú dɔ / Mi kwabo!',
+    durationSeconds: 1.61,
+    engineLabel: 'Meta MMS-TTS (Fongbe VITS)',
+    isProxy: false,
+  },
+  'mother-zulu': {
+    id: 'mother-zulu',
+    tier: 'core',
+    file: 'audio/tongues/mother-zulu.mp3',
+    langTag: 'zu-ZA',
+    phrase: 'Sawubona!',
+    durationSeconds: 1.92,
+    engineLabel: 'isiZulu South Africa Neural',
+    isProxy: false,
+  },
+  'mother-amharic': {
+    id: 'mother-amharic',
+    tier: 'core',
+    file: 'audio/tongues/mother-amharic.mp3',
+    langTag: 'am-ET',
+    phrase: 'Selam! (ሰላም) / Tena Yistillign',
+    durationSeconds: 3.24,
+    engineLabel: 'Amharic Ethiopia Neural',
+    isProxy: false,
+  },
+  'mother-arabic_maghrebi': {
+    id: 'mother-arabic_maghrebi',
+    tier: 'core',
+    file: 'audio/tongues/mother-arabic_maghrebi.mp3',
+    langTag: 'ar-MA',
+    phrase: 'Salam Aleikoum / Labas?',
+    durationSeconds: 3.82,
+    engineLabel: 'Maghrebi Arabic Neural',
+    isProxy: false,
+  },
+  'mother-tamazight': {
+    id: 'mother-tamazight',
+    tier: 'core',
+    file: 'audio/tongues/mother-tamazight.mp3',
+    langTag: 'kab-DZ',
+    phrase: 'Azul! Amek tettiliḍ?',
+    durationSeconds: 1.92,
+    engineLabel: 'Meta MMS-TTS (Tamazight / Kabyle VITS)',
+    isProxy: false,
+  },
+  'mother-wolof': {
+    id: 'mother-wolof',
+    tier: 'core',
+    file: 'audio/tongues/mother-wolof.mp3',
+    langTag: 'wo-SN',
+    phrase: 'Nanga def? / Mangi fi rekk',
+    durationSeconds: 2.26,
+    engineLabel: 'Meta MMS-TTS (Wolof VITS)',
+    isProxy: false,
+  },
+  'mother-oromo': {
+    id: 'mother-oromo',
+    tier: 'core',
+    file: 'audio/tongues/mother-oromo.mp3',
+    langTag: 'om-ET',
+    phrase: 'Akkam jirta? / Nagaa!',
+    durationSeconds: 1.68,
+    engineLabel: 'Meta MMS-TTS (Afaan Oromoo VITS)',
+    isProxy: false,
+  },
+  'mother-somali': {
+    id: 'mother-somali',
+    tier: 'core',
+    file: 'audio/tongues/mother-somali.mp3',
+    langTag: 'so-SO',
+    phrase: 'Iska warran? / Nabad!',
+    durationSeconds: 3.26,
+    engineLabel: 'Somali Horn of Africa Neural',
+    isProxy: false,
+  },
+  'mother-xhosa': {
+    id: 'mother-xhosa',
+    tier: 'core',
+    file: 'audio/tongues/mother-xhosa.mp3',
+    langTag: 'xh-ZA',
+    phrase: 'Molo! Kunjani?',
+    durationSeconds: 3.05,
+    engineLabel: 'Nguni Sister-Voice Proxy (isiZulu)',
+    isProxy: true,
+  },
+  'mother-lingala': {
+    id: 'mother-lingala',
+    tier: 'core',
+    file: 'audio/tongues/mother-lingala.mp3',
+    langTag: 'ln-CD',
+    phrase: 'Mbote na yo! Sango nini?',
+    durationSeconds: 3.98,
+    engineLabel: 'Francophone Phonetic Proxy',
+    isProxy: true,
+  },
+  'mother-fula': {
+    id: 'mother-fula',
+    tier: 'core',
+    file: 'audio/tongues/mother-fula.mp3',
+    langTag: 'ff-SN',
+    phrase: 'A jaaraama! No mbadda?',
+    durationSeconds: 3.55,
+    engineLabel: 'Sahelian Phonetic Proxy',
+    isProxy: true,
+  },
+  'mother-khoekhoegowab': {
+    id: 'mother-khoekhoegowab',
+    tier: 'core',
+    file: 'audio/tongues/mother-khoekhoegowab.mp3',
+    langTag: 'naq-NA',
+    phrase: 'ǃGâi tsēs! Matisa?',
+    durationSeconds: 3.48,
+    engineLabel: 'Southern African Phonetic Proxy',
+    isProxy: true,
+  },
+  'family-niger-congo': {
+    id: 'family-niger-congo',
+    tier: 'core',
+    file: 'audio/tongues/family-niger-congo.mp3',
+    langTag: 'sw-KE',
+    phrase: 'Karibu Afriata—Mvumbuzi wa Kikabila wa Atlantiki.',
+    durationSeconds: 4.25,
+    engineLabel: 'Kiswahili East Africa Neural',
+    isProxy: false,
+  },
+  'family-afroasiatic': {
+    id: 'family-afroasiatic',
+    tier: 'core',
+    file: 'audio/tongues/family-afroasiatic.mp3',
+    langTag: 'ha-NG',
+    phrase: 'Barka da zuwa Afriata—Mai Binciken Kabilun Atlantika.',
+    durationSeconds: 5.47,
+    engineLabel: 'Hausa Native Neural Audio',
+    isProxy: false,
+  },
+  'family-nilo-saharan': {
+    id: 'family-nilo-saharan',
+    tier: 'core',
+    file: 'audio/tongues/family-nilo-saharan.mp3',
+    langTag: 'luo-KE',
+    phrase: 'Yawa, karibu Afriata—Jagol kido mar Atlantic.',
+    durationSeconds: 4.42,
+    engineLabel: 'East African Neural Proxy (Kiswahili)',
+    isProxy: true,
+  },
+  'family-austronesian': {
+    id: 'family-austronesian',
+    tier: 'core',
+    file: 'audio/tongues/family-austronesian.mp3',
+    langTag: 'mg-MG',
+    phrase: "Tonga soa eto amin'ny Afriata—Mpikaroka ny foko Atlantika.",
+    durationSeconds: 3.98,
+    engineLabel: 'Meta MMS-TTS (Malagasy VITS)',
+    isProxy: false,
+  },
+  'family-khoisan': {
+    id: 'family-khoisan',
+    tier: 'core',
+    file: 'audio/tongues/family-khoisan.mp3',
+    langTag: 'naq-NA',
+    phrase: 'ǁKhawa ǃgû re Afriata—Atlantic ǃAosab ǃKhôa-aos.',
+    durationSeconds: 4.42,
+    engineLabel: 'Southern African Phonetic Proxy',
+    isProxy: true,
+  },
+  'family-indo-european': {
+    id: 'family-indo-european',
+    tier: 'core',
+    file: 'audio/tongues/family-indo-european.mp3',
+    langTag: 'pt-CV',
+    phrase: 'Bem-bindu na Afriata—Splorador Étniku di Atlântiku.',
+    durationSeconds: 4.82,
+    engineLabel: 'Kabuverdianu Lusophone Proxy',
+    isProxy: true,
+  },
+  'proverb-yoruba': {
+    id: 'proverb-yoruba',
+    tier: 'extended',
+    file: 'audio/tongues/extended/proverb-yoruba.mp3',
+    langTag: 'yo-NG',
+    phrase: 'Ilé la ti ń kọ́ èṣọ́ ròde.',
+    durationSeconds: 2.28,
+    engineLabel: 'Meta MMS-TTS (Yorùbá VITS)',
+    isProxy: false,
+  },
+  'proverb-swahili': {
+    id: 'proverb-swahili',
+    tier: 'extended',
+    file: 'audio/tongues/extended/proverb-swahili.mp3',
+    langTag: 'sw-KE',
+    phrase: 'Kidogo kidogo hujaza kibaba.',
+    durationSeconds: 3.02,
+    engineLabel: 'Kiswahili East Africa Neural',
+    isProxy: false,
+  },
+  'proverb-zulu': {
+    id: 'proverb-zulu',
+    tier: 'extended',
+    file: 'audio/tongues/extended/proverb-zulu.mp3',
+    langTag: 'zu-ZA',
+    phrase: 'Umuntu ngumuntu ngabantu.',
+    durationSeconds: 2.54,
+    engineLabel: 'isiZulu South Africa Neural',
+    isProxy: false,
+  },
+  'proverb-amharic': {
+    id: 'proverb-amharic',
+    tier: 'extended',
+    file: 'audio/tongues/extended/proverb-amharic.mp3',
+    langTag: 'am-ET',
+    phrase: 'ድር ቢያብር አንበሳ ያስር።',
+    durationSeconds: 2.4,
+    engineLabel: 'Amharic Ethiopia Neural',
+    isProxy: false,
+  },
+  'proverb-hausa': {
+    id: 'proverb-hausa',
+    tier: 'extended',
+    file: 'audio/tongues/extended/proverb-hausa.mp3',
+    langTag: 'ha-NG',
+    phrase: 'Gani ya kori ji.',
+    durationSeconds: 1.78,
+    engineLabel: 'Hausa Native Neural Audio',
+    isProxy: false,
+  },
+  'proverb-akan': {
+    id: 'proverb-akan',
+    tier: 'extended',
+    file: 'audio/tongues/extended/proverb-akan.mp3',
+    langTag: 'ak-GH',
+    phrase: 'Sankofa: Wɔnkyi sɛ w’akɔfa nea w’akyi akyi.',
+    durationSeconds: 3.41,
+    engineLabel: 'Meta MMS-TTS (Akan/Twi VITS)',
+    isProxy: false,
+  },
+  'proverb-fon': {
+    id: 'proverb-fon',
+    tier: 'extended',
+    file: 'audio/tongues/extended/proverb-fon.mp3',
+    langTag: 'fr-BJ',
+    phrase: 'Nǔ ɖé sín nu wɛ nyí gbɛ̀.',
+    durationSeconds: 1.75,
+    engineLabel: 'Meta MMS-TTS (Fongbe VITS)',
+    isProxy: false,
+  },
+  'proverb-wolof': {
+    id: 'proverb-wolof',
+    tier: 'extended',
+    file: 'audio/tongues/extended/proverb-wolof.mp3',
+    langTag: 'wo-SN',
+    phrase: 'Nit, nit ay garabam.',
+    durationSeconds: 1.73,
+    engineLabel: 'Meta MMS-TTS (Wolof VITS)',
+    isProxy: false,
+  },
+  'proverb-oromo': {
+    id: 'proverb-oromo',
+    tier: 'extended',
+    file: 'audio/tongues/extended/proverb-oromo.mp3',
+    langTag: 'om-ET',
+    phrase: 'Walii galan alaa galan.',
+    durationSeconds: 1.51,
+    engineLabel: 'Meta MMS-TTS (Afaan Oromoo VITS)',
+    isProxy: false,
+  },
+  'proverb-somali': {
+    id: 'proverb-somali',
+    tier: 'extended',
+    file: 'audio/tongues/extended/proverb-somali.mp3',
+    langTag: 'so-SO',
+    phrase: 'Gacmo wadajir bay wax ku gooyaan.',
+    durationSeconds: 2.98,
+    engineLabel: 'Somali Horn of Africa Neural',
+    isProxy: false,
+  },
+  'proverb-arabic_maghrebi': {
+    id: 'proverb-arabic_maghrebi',
+    tier: 'extended',
+    file: 'audio/tongues/extended/proverb-arabic_maghrebi.mp3',
+    langTag: 'ar-MA',
+    phrase: 'اليد الواحدة ما كتصفقش.',
+    durationSeconds: 3.0,
+    engineLabel: 'Maghrebi Arabic Neural',
+    isProxy: false,
+  },
+  'proverb-tamazight': {
+    id: 'proverb-tamazight',
+    tier: 'extended',
+    file: 'audio/tongues/extended/proverb-tamazight.mp3',
+    langTag: 'kab-DZ',
+    phrase: 'Afus deg ufus, ad yifsus wugur.',
+    durationSeconds: 2.45,
+    engineLabel: 'Meta MMS-TTS (Tamazight / Kabyle VITS)',
+    isProxy: false,
+  },
+  'typology-nguni-clicks': {
+    id: 'typology-nguni-clicks',
+    tier: 'extended',
+    file: 'audio/tongues/extended/typology-nguni-clicks.mp3',
+    langTag: 'zu-ZA',
+    phrase: 'i-cici · i-xoxo · Sawubona',
+    durationSeconds: 4.68,
+    engineLabel: 'isiZulu South Africa Neural',
+    isProxy: false,
+  },
+  'typology-yoruba-tones': {
+    id: 'typology-yoruba-tones',
+    tier: 'extended',
+    file: 'audio/tongues/extended/typology-yoruba-tones.mp3',
+    langTag: 'yo-NG',
+    phrase: 'ọwọ́ · ọwọ̀ · ọwọ',
+    durationSeconds: 0.79,
+    engineLabel: 'Meta MMS-TTS (Yorùbá VITS)',
+    isProxy: false,
+  },
+};
+
+function normalizePhraseKey(raw: string): string {
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ');
+}
+
+const PHRASE_TO_STATIC_CLIP = new Map<string, StaticAudioClipSpec>(
+  Object.values(STATIC_AFRICAN_AUDIO_CLIPS).map((clip) => [normalizePhraseKey(clip.phrase), clip])
+);
+
+export function resolveStaticAudioClip(opts: {
+  audioClipId?: string;
+  text?: string;
+  langTag?: string;
+}): StaticAudioClipSpec | null {
+  if (opts.audioClipId && STATIC_AFRICAN_AUDIO_CLIPS[opts.audioClipId]) {
+    return STATIC_AFRICAN_AUDIO_CLIPS[opts.audioClipId];
+  }
+  if (opts.text) {
+    const byExactPhrase = PHRASE_TO_STATIC_CLIP.get(normalizePhraseKey(opts.text));
+    if (byExactPhrase) return byExactPhrase;
+  }
+  return null;
+}
 
 export interface SpeechGreetingConfig {
   text: string;
+  audioClipId?: string;
   langTag?: string;
   languageName?: string;
   title?: string;
   phonetic?: string;
   meaning?: string;
+  rate?: number;
+  startFraction?: number;
   onStart?: () => void;
+  onProgress?: (fraction: number, currentTime: number, duration: number) => void;
   onEnd?: () => void;
   onError?: () => void;
 }
@@ -26,6 +463,7 @@ export const AFRIATA_SPEECH_STOP_EVENT = 'afriata-speech-stop';
 
 // Global state to track currently speaking audio
 let currentAudioElement: HTMLAudioElement | null = null;
+let activeAudioProgressRaf: number | null = null;
 let currentUtterance: SpeechSynthesisUtterance | null = null;
 let activeAudioCtx: AudioContext | null = null;
 const activeChimeOscillators = new Set<OscillatorNode>();
@@ -57,20 +495,22 @@ const MALE_VOICE_NAMES = [
   'max', 'hans', 'klaus', 'stephan', 'michael', 'brian', 'arthur',
   'carlo', 'marco', 'luca', 'giuseppe', 'roberto', 'jan', 'willem',
   'dries', 'ruben', 'yannick', 'tariq', 'youssef', 'hassan',
+  'ameha', 'rafiki', 'daudi', 'themba', 'abeo', 'maged',
   'man', 'boy', 'sir', 'mr'
 ];
 
-// Preferred high-clarity female and natural voice indicators across modern OS (macOS, iOS, Windows, Android, ChromeOS)
+// Preferred high-clarity female and natural/neural voice indicators across macOS, iOS, Windows, Edge, Android, ChromeOS
 const PREMIUM_NATURAL_VOICES = [
-  'natural', 'neural', 'premium', 'enhanced', 'siri', 'karen', 'samantha',
-  'victoria', 'moira', 'fiona', 'tessa', 'zira', 'ayanda', 'monica',
-  'lucia', 'elsa', 'alice', 'joana', 'raquel', 'paola', 'helena',
+  'online (natural)', 'natural', 'neural', 'premium', 'enhanced', 'siri',
+  'zuri', 'rehema', 'thando', 'mekdes', 'ezinne', 'asilia', 'leah', 'mouna',
+  'karen', 'samantha', 'victoria', 'moira', 'fiona', 'tessa', 'zira', 'ayanda',
+  'monica', 'lucia', 'elsa', 'alice', 'joana', 'raquel', 'paola', 'helena',
   'catarina', 'francisca', 'leonor', 'ines', 'matilde', 'beatriz',
   'maria', 'ana', 'clara', 'camila', 'laura', 'sara', 'eva',
   'marta', 'sofia', 'carmen', 'elena', 'isabel', 'julie', 'marie',
   'charlotte', 'amelie', 'lea', 'manon', 'chloe', 'camille', 'celine',
-  'audrey', 'amira', 'fatima', 'yasmin', 'amina', 'leila', 'nour',
-  'mariam', 'aicha', 'khadija', 'jenny', 'sonia', 'serena', 'kore', 'zephyr'
+  'audrey', 'denise', 'amira', 'fatima', 'yasmin', 'amina', 'leila', 'nour',
+  'salma', 'mariam', 'aicha', 'khadija', 'jenny', 'sonia', 'serena', 'kore', 'zephyr'
 ];
 
 /**
@@ -162,120 +602,328 @@ export function playWarmAfricanChime() {
   }
 }
 
+const AFRICAN_ENGLISH_LOCALES = ['en-ng', 'en-ke', 'en-gh', 'en-za', 'en-tz', 'en-ug'];
+
+function normalizeVoiceLang(lang: string): string {
+  return (lang || '').trim().toLowerCase().replace(/_/g, '-');
+}
+
+function getPreferredTargetLocales(langLower: string): {
+  exactTargets: string[];
+  secondaryTargets: string[];
+  fallbackLangCode: string;
+  rate: number;
+} {
+  const baseLang = langLower.split('-')[0];
+
+  // Cape Verdean Creole (Kabuverdianu) -> native kea / pt-CV first, then non-palatalizing pt-PT
+  if (langLower === 'kea' || langLower === 'pt-cv' || langLower === 'kea-cv') {
+    return {
+      exactTargets: ['kea-cv', 'kea', 'pt-cv'],
+      secondaryTargets: ['pt-pt', 'pt-gw', 'pt-st', 'pt-ao', 'pt-mz', 'pt'],
+      fallbackLangCode: 'pt-PT',
+      rate: 0.95,
+    };
+  }
+
+  // European & Lusophone Portuguese
+  if (baseLang === 'pt') {
+    return {
+      exactTargets: ['pt-pt', 'pt-ao', 'pt-mz', 'pt-cv'],
+      secondaryTargets: ['pt'],
+      fallbackLangCode: 'pt-PT',
+      rate: 0.98,
+    };
+  }
+
+  // Akan (Twi / Fante)
+  if (baseLang === 'ak' || baseLang === 'tw') {
+    return {
+      exactTargets: ['ak-gh', 'ak', 'tw-gh', 'tw'],
+      secondaryTargets: ['en-gh', 'en-ng'],
+      fallbackLangCode: 'en-GH',
+      rate: 0.94,
+    };
+  }
+
+  // Amharic
+  if (baseLang === 'am') {
+    return {
+      exactTargets: ['am-et', 'am'],
+      secondaryTargets: ['en-ke', 'en-ng'],
+      fallbackLangCode: 'am-ET',
+      rate: 0.94,
+    };
+  }
+
+  // Kiswahili
+  if (baseLang === 'sw') {
+    return {
+      exactTargets: ['sw-ke', 'sw-tz', 'sw-ug', 'sw'],
+      secondaryTargets: ['en-ke', 'en-tz', 'en-ng'],
+      fallbackLangCode: 'sw-KE',
+      rate: 0.95,
+    };
+  }
+
+  // isiZulu & Nguni
+  if (baseLang === 'zu' || baseLang === 'xh') {
+    return {
+      exactTargets: [`${baseLang}-za`, baseLang],
+      secondaryTargets: ['en-za'],
+      fallbackLangCode: `${baseLang}-ZA`,
+      rate: 0.95,
+    };
+  }
+
+  // West African indigenous -> regional voice pack first, then Nigerian/Ghanaian English
+  if (baseLang === 'yo' || baseLang === 'ig' || baseLang === 'ha') {
+    return {
+      exactTargets: [`${baseLang}-ng`, `${baseLang}-ne`, baseLang],
+      secondaryTargets: ['en-ng', 'en-gh'],
+      fallbackLangCode: `${baseLang}-NG`,
+      rate: 0.94,
+    };
+  }
+
+  // Wolof / Fon -> regional voice pack first, then Francophone West Africa
+  if (baseLang === 'wo' || baseLang === 'fon') {
+    return {
+      exactTargets: [langLower, baseLang],
+      secondaryTargets: ['fr-sn', 'fr-bj', 'fr-ci', 'fr-fr', 'fr'],
+      fallbackLangCode: 'fr-FR',
+      rate: 0.96,
+    };
+  }
+
+  // Afaan Oromoo & Somali -> Horn of Africa voices first
+  if (baseLang === 'om' || baseLang === 'so') {
+    return {
+      exactTargets: [langLower, baseLang, 'so-so', 'so-ke', 'om-et'],
+      secondaryTargets: ['am-et', 'en-ke', 'en-ng'],
+      fallbackLangCode: baseLang === 'so' ? 'so-SO' : 'om-ET',
+      rate: 0.95,
+    };
+  }
+
+  // Lingála / Fula -> Central & West African Francophone voice packs
+  if (baseLang === 'ln' || baseLang === 'ff') {
+    return {
+      exactTargets: [langLower, baseLang],
+      secondaryTargets: ['fr-cd', 'fr-cg', 'fr-sn', 'fr-gn', 'fr-fr', 'fr'],
+      fallbackLangCode: 'fr-FR',
+      rate: 0.95,
+    };
+  }
+
+  // Khoekhoegowab & Afrikaans -> Southern African voices
+  if (baseLang === 'naq' || baseLang === 'af') {
+    return {
+      exactTargets: [langLower, baseLang, 'af-za'],
+      secondaryTargets: ['en-za', 'zu-za', 'xh-za'],
+      fallbackLangCode: baseLang === 'af' ? 'af-ZA' : 'en-ZA',
+      rate: 0.95,
+    };
+  }
+
+  // Tamazight / Kabyle / Berber -> Maghrebi voices
+  if (baseLang === 'kab' || baseLang === 'zgh' || baseLang === 'ber') {
+    return {
+      exactTargets: [langLower, baseLang, 'kab-dz', 'zgh-ma'],
+      secondaryTargets: ['fr-dz', 'fr-ma', 'ar-dz', 'ar-ma', 'fr-fr'],
+      fallbackLangCode: 'kab-DZ',
+      rate: 0.95,
+    };
+  }
+
+  // Dholuo -> East African voices
+  if (baseLang === 'luo') {
+    return {
+      exactTargets: [langLower, 'luo-ke', 'luo'],
+      secondaryTargets: ['sw-ke', 'sw-tz', 'en-ke'],
+      fallbackLangCode: 'sw-KE',
+      rate: 0.95,
+    };
+  }
+
+  // Malagasy -> Indian Ocean / Francophone fallback
+  if (baseLang === 'mg') {
+    return {
+      exactTargets: [langLower, 'mg-mg', 'mg'],
+      secondaryTargets: ['fr-mg', 'fr-fr', 'fr'],
+      fallbackLangCode: 'mg-MG',
+      rate: 0.96,
+    };
+  }
+
+  // Maghrebi & North African Arabic -> Moroccan/Algerian/Tunisian/Egyptian before Gulf Arabic
+  if (baseLang === 'ar') {
+    return {
+      exactTargets: [langLower, 'ar-ma', 'ar-dz', 'ar-tn', 'ar-eg', 'ar-sa'],
+      secondaryTargets: ['ar'],
+      fallbackLangCode: 'ar-MA',
+      rate: 0.95,
+    };
+  }
+
+  if (baseLang === 'fr') {
+    return {
+      exactTargets: [langLower, 'fr-sn', 'fr-ci', 'fr-cm', 'fr-fr'],
+      secondaryTargets: ['fr'],
+      fallbackLangCode: 'fr-FR',
+      rate: 0.98,
+    };
+  }
+
+  if (['es', 'de', 'it', 'nl'].includes(baseLang)) {
+    const defaultRegion = baseLang === 'es' ? 'es-ES' : baseLang === 'de' ? 'de-DE' : baseLang === 'it' ? 'it-IT' : 'nl-NL';
+    return {
+      exactTargets: [langLower, defaultRegion.toLowerCase()],
+      secondaryTargets: [baseLang],
+      fallbackLangCode: defaultRegion,
+      rate: baseLang === 'de' ? 0.98 : 1.0,
+    };
+  }
+
+  // English -> prioritize African English (en-NG, en-KE, en-GH, en-ZA)
+  return {
+    exactTargets: [langLower, ...AFRICAN_ENGLISH_LOCALES].filter(Boolean),
+    secondaryTargets: ['en-gb', 'en-us', 'en'],
+    fallbackLangCode: preferredLocaleFromEnglish(langLower),
+    rate: 0.96,
+  };
+}
+
+function preferredLocaleFromEnglish(langLower: string): string {
+  if (langLower.startsWith('en-')) return langLower.replace(/-([a-z]{2})$/, (_, r) => `-${r.toUpperCase()}`);
+  return 'en-NG';
+}
+
+function scoreSystemVoice(
+  voice: SpeechSynthesisVoice,
+  exactTargets: string[],
+  secondaryTargets: string[]
+): number {
+  const vLang = normalizeVoiceLang(voice.lang);
+  const vName = (voice.name || '').toLowerCase();
+  let score = 0;
+
+  // 1. Language & regional priority
+  const exactIdx = exactTargets.findIndex((t) => vLang === t);
+  if (exactIdx !== -1) {
+    score += 1000 - exactIdx * 25;
+  } else {
+    const prefixIdx = exactTargets.findIndex((t) => vLang.startsWith(`${t.split('-')[0]}-`) || vLang === t.split('-')[0]);
+    if (prefixIdx !== -1) {
+      score += 750 - prefixIdx * 20;
+    } else {
+      const secExact = secondaryTargets.findIndex((t) => vLang === t);
+      if (secExact !== -1) {
+        score += 550 - secExact * 20;
+      } else {
+        const secPrefix = secondaryTargets.findIndex((t) => vLang.startsWith(`${t.split('-')[0]}-`) || vLang === t.split('-')[0]);
+        if (secPrefix !== -1) {
+          score += 420 - secPrefix * 20;
+        } else if (AFRICAN_ENGLISH_LOCALES.includes(vLang)) {
+          score += 240;
+        } else if (vLang.startsWith('en')) {
+          score += 120;
+        }
+      }
+    }
+  }
+
+  // 2. Engine tier quality (Edge Online Natural, Apple Siri/Enhanced, Google Neural)
+  if (vName.includes('online (natural)') || vName.includes('neural')) score += 160;
+  else if (vName.includes('natural') || vName.includes('siri') || vName.includes('enhanced') || vName.includes('premium')) score += 130;
+  else if (vName.includes('google')) score += 70;
+
+  // 3. Natural female persona weighting
+  if (isNaturalFemaleVoice(voice)) {
+    score += 90;
+    if (PREMIUM_NATURAL_VOICES.some((p) => vName.includes(p))) {
+      score += 40;
+    }
+  } else {
+    score -= 80;
+  }
+
+  // 4. Avoid robotic espeak/legacy robotic tags when better options exist
+  if (vName.includes('espeak') || vName.includes('compact')) {
+    score -= 100;
+  }
+
+  return score;
+}
+
 /**
- * Finds the most natural, native OS voice for a target locale, avoiding robotic distortions
+ * Finds the most natural, native OS voice for a target locale using ranked regional + neural scoring.
  */
 export function getBestSystemVoice(preferredLang?: string): { voice: SpeechSynthesisVoice | null; langCode: string; rate: number; pitch: number } {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-    return { voice: null, langCode: 'en-US', rate: 1.0, pitch: 1.0 };
-  }
-
-  const rawVoices = window.speechSynthesis.getVoices();
-  if (!rawVoices || rawVoices.length === 0) {
     return { voice: null, langCode: preferredLang || 'en-US', rate: 1.0, pitch: 1.0 };
   }
 
-  const langLower = (preferredLang || '').toLowerCase();
-  const baseLang = langLower.split('-')[0];
+  const rawVoices = window.speechSynthesis.getVoices();
+  const langLower = normalizeVoiceLang(preferredLang || 'en');
+  const targets = getPreferredTargetLocales(langLower);
 
-  // List of standard languages with verified native OS voice support
-  const verifiedLangs = ['en', 'fr', 'pt', 'es', 'it', 'de', 'nl', 'ar'];
+  if (!rawVoices || rawVoices.length === 0) {
+    return { voice: null, langCode: preferredLang || targets.fallbackLangCode, rate: targets.rate, pitch: 1.0 };
+  }
 
-  if (verifiedLangs.includes(baseLang)) {
-    // 1. Specifically match European Portuguese (pt-PT)
-    if (baseLang === 'pt') {
-      const ptPtVoices = rawVoices.filter(v => 
-        (v.lang.toLowerCase().includes('pt-pt') || v.lang.toLowerCase() === 'pt_pt') &&
-        isNaturalFemaleVoice(v)
-      );
-      if (ptPtVoices.length > 0) {
-        return { voice: ptPtVoices[0], langCode: 'pt-PT', rate: 1.0, pitch: 1.0 };
-      }
-      const generalPt = rawVoices.filter(v => v.lang.toLowerCase().startsWith('pt') && isNaturalFemaleVoice(v));
-      if (generalPt.length > 0) {
-        return { voice: generalPt[0], langCode: 'pt-PT', rate: 1.0, pitch: 1.0 };
-      }
-    }
+  let bestVoice: SpeechSynthesisVoice | null = null;
+  let bestScore = -Infinity;
 
-    // 2. French (fr-FR / fr-SN)
-    if (baseLang === 'fr') {
-      const frVoices = rawVoices.filter(v => v.lang.toLowerCase().startsWith('fr') && isNaturalFemaleVoice(v));
-      const naturalFr = frVoices.find(v => PREMIUM_NATURAL_VOICES.some(p => v.name.toLowerCase().includes(p)));
-      if (naturalFr) return { voice: naturalFr, langCode: 'fr-FR', rate: 0.98, pitch: 1.0 };
-      if (frVoices.length > 0) return { voice: frVoices[0], langCode: 'fr-FR', rate: 0.98, pitch: 1.0 };
-    }
-
-    // 3. Spanish (es-ES)
-    if (baseLang === 'es') {
-      const esVoices = rawVoices.filter(v => v.lang.toLowerCase().startsWith('es') && isNaturalFemaleVoice(v));
-      const naturalEs = esVoices.find(v => PREMIUM_NATURAL_VOICES.some(p => v.name.toLowerCase().includes(p)));
-      if (naturalEs) return { voice: naturalEs, langCode: 'es-ES', rate: 1.0, pitch: 1.0 };
-      if (esVoices.length > 0) return { voice: esVoices[0], langCode: 'es-ES', rate: 1.0, pitch: 1.0 };
-    }
-
-    // 4. German (de-DE)
-    if (baseLang === 'de') {
-      const deVoices = rawVoices.filter(v => v.lang.toLowerCase().startsWith('de') && isNaturalFemaleVoice(v));
-      if (deVoices.length > 0) return { voice: deVoices[0], langCode: 'de-DE', rate: 0.98, pitch: 1.0 };
-    }
-
-    // 5. Italian (it-IT)
-    if (baseLang === 'it') {
-      const itVoices = rawVoices.filter(v => v.lang.toLowerCase().startsWith('it') && isNaturalFemaleVoice(v));
-      if (itVoices.length > 0) return { voice: itVoices[0], langCode: 'it-IT', rate: 1.0, pitch: 1.0 };
-    }
-
-    // 6. Dutch (nl-NL)
-    if (baseLang === 'nl') {
-      const nlVoices = rawVoices.filter(v => v.lang.toLowerCase().startsWith('nl') && isNaturalFemaleVoice(v));
-      if (nlVoices.length > 0) return { voice: nlVoices[0], langCode: 'nl-NL', rate: 1.0, pitch: 1.0 };
-    }
-
-    // 7. Arabic (ar)
-    if (baseLang === 'ar') {
-      const arVoices = rawVoices.filter(v => v.lang.toLowerCase().startsWith('ar') && isNaturalFemaleVoice(v));
-      if (arVoices.length > 0) return { voice: arVoices[0], langCode: 'ar-SA', rate: 0.95, pitch: 1.0 };
+  for (const voice of rawVoices) {
+    const score = scoreSystemVoice(voice, targets.exactTargets, targets.secondaryTargets);
+    if (score > bestScore) {
+      bestScore = score;
+      bestVoice = voice;
     }
   }
 
-  // Check if system has a verified indigenous African voice pack (e.g., Swahili, Zulu)
-  if (preferredLang) {
-    const directMatch = rawVoices.find(v => v.lang.toLowerCase() === langLower || v.lang.toLowerCase().startsWith(baseLang));
-    if (directMatch && directMatch.lang.toLowerCase().startsWith(baseLang) && !baseLang.startsWith('en')) {
-      return { voice: directMatch, langCode: directMatch.lang, rate: 0.95, pitch: 1.0 };
-    }
+  if (bestVoice) {
+    return {
+      voice: bestVoice,
+      langCode: bestVoice.lang || targets.fallbackLangCode,
+      rate: targets.rate,
+      pitch: 1.0,
+    };
   }
 
-  // High-Grade English Sovereign Voice (Neutral, warm, high-intelligibility)
-  // 1st priority: Native African English (en-NG, en-ZA, en-GH, en-KE)
-  const africanEnglish = rawVoices.filter(v => 
-    (v.lang.toLowerCase().includes('en-ng') || 
-     v.lang.toLowerCase().includes('en-za') || 
-     v.lang.toLowerCase().includes('en-gh') || 
-     v.lang.toLowerCase().includes('en-ke')) &&
-    isNaturalFemaleVoice(v)
-  );
-  if (africanEnglish.length > 0) {
-    return { voice: africanEnglish[0], langCode: africanEnglish[0].lang, rate: 0.95, pitch: 1.0 };
-  }
+  return { voice: rawVoices[0] || null, langCode: targets.fallbackLangCode, rate: 1.0, pitch: 1.0 };
+}
 
-  // 2nd priority: Premium natural / neural female voice (Apple Siri/Samantha/Karen, Microsoft Jenny/Natural)
-  const premiumEn = rawVoices.filter(v => 
-    v.lang.toLowerCase().startsWith('en') &&
-    PREMIUM_NATURAL_VOICES.some(p => v.name.toLowerCase().includes(p)) &&
-    isNaturalFemaleVoice(v)
-  );
-  if (premiumEn.length > 0) {
-    return { voice: premiumEn[0], langCode: premiumEn[0].lang, rate: 0.98, pitch: 1.0 };
-  }
-
-  // 3rd priority: Any standard English female voice
-  const standardEn = rawVoices.filter(v => v.lang.toLowerCase().startsWith('en') && isNaturalFemaleVoice(v));
-  if (standardEn.length > 0) {
-    return { voice: standardEn[0], langCode: standardEn[0].lang, rate: 1.0, pitch: 1.0 };
-  }
-
-  return { voice: rawVoices[0] || null, langCode: 'en-US', rate: 1.0, pitch: 1.0 };
+/**
+ * Returns diagnostic summary of installed OS native voices vs static African audio clips.
+ */
+export function getOsVoiceInventorySummary(preferredLang?: string): {
+  totalOsVoices: number;
+  africanLocaleOsVoices: number;
+  selectedVoiceName: string | null;
+  selectedVoiceLang: string;
+  staticClipsCount: number;
+} {
+  const rawVoices =
+    typeof window !== 'undefined' && 'speechSynthesis' in window ? window.speechSynthesis.getVoices() : [];
+  const africanTags = [
+    'sw', 'zu', 'xh', 'am', 'yo', 'ig', 'ha', 'ak', 'tw', 'wo', 'fon', 'om', 'so', 'ln', 'ff',
+    'naq', 'kab', 'zgh', 'mg', 'luo', 'af', 'ar-ma', 'ar-dz', 'ar-tn', 'ar-eg',
+    'en-ng', 'en-ke', 'en-gh', 'en-za', 'en-tz', 'fr-sn', 'fr-bj', 'fr-cd', 'kea', 'pt-cv',
+  ];
+  const africanLocaleOsVoices = rawVoices.filter((v) => {
+    const l = normalizeVoiceLang(v.lang);
+    return africanTags.some((tag) => l === tag || l.startsWith(`${tag}-`));
+  }).length;
+  const best = getBestSystemVoice(preferredLang);
+  return {
+    totalOsVoices: rawVoices.length,
+    africanLocaleOsVoices,
+    selectedVoiceName: best.voice?.name || null,
+    selectedVoiceLang: best.langCode,
+    staticClipsCount: Object.keys(STATIC_AFRICAN_AUDIO_CLIPS).length,
+  };
 }
 
 /**
@@ -296,6 +944,11 @@ export function stopAfriataSpeech() {
     voicesFallbackTimer = null;
   }
 
+  if (activeAudioProgressRaf !== null && typeof cancelAnimationFrame !== 'undefined') {
+    cancelAnimationFrame(activeAudioProgressRaf);
+    activeAudioProgressRaf = null;
+  }
+
   if (activeChimeOscillators.size > 0) {
     activeChimeOscillators.forEach((osc) => {
       try {
@@ -313,6 +966,9 @@ export function stopAfriataSpeech() {
     try {
       currentAudioElement.pause();
       currentAudioElement.currentTime = 0;
+      currentAudioElement.onplay = null;
+      currentAudioElement.onended = null;
+      currentAudioElement.onerror = null;
       currentAudioElement = null;
     } catch {
       // Ignore
@@ -335,24 +991,23 @@ export function stopAfriataSpeech() {
 }
 
 /**
- * Speaks an academic narrative (primary source quote, historical chronicle, or kingdom profile)
- * with rhythmic cadence, clean pronunciation, curated un-distorted tone, and singleton safety.
+ * Speaks an academic narrative (primary source quote, historical chronicle, mother tongue phrase, or kingdom profile)
+ * via pre-rendered Static African Audio Pack when matched, or the upgraded OS native voice engine otherwise.
  */
 export function speakAcademicNarration(config: {
   text: string;
+  audioClipId?: string;
   langTag?: string;
   playChime?: boolean;
   rate?: number;
   pitch?: number;
+  startFraction?: number;
   onStart?: () => void;
+  onProgress?: (fraction: number, currentTime: number, duration: number) => void;
   onEnd?: () => void;
   onError?: () => void;
 }) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-    config.onStart?.();
-    setTimeout(() => config.onEnd?.(), 2000);
-    return;
-  }
+  if (typeof window === 'undefined') return;
 
   // 1. Terminate any active speech or audio singleton
   stopAfriataSpeech();
@@ -363,8 +1018,38 @@ export function speakAcademicNarration(config: {
     playWarmAfricanChime();
   }
 
+  // 3. Synchronously prefer Static African Neural Audio Pack if clip exists (works 100% offline & on iOS Safari)
+  const staticClip = resolveStaticAudioClip({
+    audioClipId: config.audioClipId,
+    text: config.text,
+    langTag: config.langTag,
+  });
+  if (staticClip) {
+    playAudioClipElement(
+      resolveAssetPath(staticClip.file),
+      {
+        text: config.text,
+        langTag: config.langTag || staticClip.langTag,
+        rate: config.rate,
+        startFraction: config.startFraction,
+        onStart: config.onStart,
+        onProgress: config.onProgress,
+        onEnd: config.onEnd,
+        onError: config.onError,
+      },
+      sessionId
+    );
+    return;
+  }
+
+  if (!('speechSynthesis' in window)) {
+    config.onStart?.();
+    setTimeout(() => config.onEnd?.(), 2000);
+    return;
+  }
+
   try {
-    // 3. Clean textual artifacts (Markdown bold/italics, citation years, brackets, excessive punctuation)
+    // 4. Clean textual artifacts (Markdown bold/italics, citation years, brackets, excessive punctuation)
     const cleanedText = config.text
       .replace(/[*_#`~]/g, '')
       .replace(/\(\s*\d{3,4}\s*[-–—]\s*\d{3,4}\s*(?:BCE|CE|AD)?\s*\)/gi, '')
@@ -444,7 +1129,8 @@ export function speakAcademicNarration(config: {
 }
 
 /**
- * Speak welcoming phrase using the high-fidelity native OS voice system
+ * Speak welcoming phrase using Static African Audio Pack first, optional server TTS if keys are configured,
+ * or the upgraded native OS voice engine.
  */
 export async function speakAfriataGreeting(config: SpeechGreetingConfig) {
   if (typeof window === 'undefined') return;
@@ -457,18 +1143,34 @@ export async function speakAfriataGreeting(config: SpeechGreetingConfig) {
   playWarmAfricanChime();
 
   const formattedText = formatSpeechTextWithNaturalBreaths(config.text);
-  const cacheKey = `${config.langTag || 'default'}:${formattedText}`;
 
-  // 1. Try local memory cache of neural audio if available
-  if (clientAudioCache.has(cacheKey)) {
-    const audioDataUrl = clientAudioCache.get(cacheKey)!;
-    playNeuralAudio(audioDataUrl, { ...config, text: formattedText }, sessionId);
+  // 1. Synchronous Static African Audio Pack match (0ms latency, zero API key, offline-ready, iOS gesture safe)
+  const staticClip = resolveStaticAudioClip({
+    audioClipId: config.audioClipId,
+    text: config.text,
+    langTag: config.langTag,
+  });
+  if (staticClip) {
+    playAudioClipElement(
+      resolveAssetPath(staticClip.file),
+      { ...config, text: formattedText, langTag: config.langTag || staticClip.langTag },
+      sessionId
+    );
     return;
   }
 
-  // 2. Query optional Server-Side Neural TTS API if backend is available
+  const cacheKey = `${config.langTag || 'default'}:${formattedText}`;
+
+  // 2. Try local memory cache of dynamic neural audio if available
+  if (clientAudioCache.has(cacheKey)) {
+    const audioDataUrl = clientAudioCache.get(cacheKey)!;
+    playAudioClipElement(audioDataUrl, { ...config, text: formattedText }, sessionId);
+    return;
+  }
+
+  // 3. Query optional Server-Side TTS API ONLY when backend explicitly reports keys configured
   try {
-    if (await isBackendApiAvailable()) {
+    if (await isBackendTtsAvailable()) {
       if (sessionId !== activeSpeechSessionId) return;
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 6000);
@@ -493,7 +1195,7 @@ export async function speakAfriataGreeting(config: SpeechGreetingConfig) {
             const mime = data.mimeType || 'audio/mp3';
             const dataUrl = `data:${mime};base64,${data.audioBase64}`;
             setClientAudioCache(cacheKey, dataUrl);
-            playNeuralAudio(dataUrl, { ...config, text: formattedText }, sessionId);
+            playAudioClipElement(dataUrl, { ...config, text: formattedText }, sessionId);
             return;
           }
         }
@@ -507,33 +1209,74 @@ export async function speakAfriataGreeting(config: SpeechGreetingConfig) {
 
   if (sessionId !== activeSpeechSessionId) return;
 
-  // 3. High-Quality Native OS Speech Synthesis
+  // 4. Upgraded Native OS Speech Synthesis
   speakWithClientSynthesis({ ...config, text: formattedText }, sessionId);
 }
 
 /**
- * Play base64 neural audio buffer through HTML5 Audio
+ * Play static MP3 or data-URL neural audio buffer through HTML5 Audio with seek & playbackRate support
  */
-function playNeuralAudio(audioUrl: string, config: SpeechGreetingConfig, sessionId: number) {
+function playAudioClipElement(audioUrl: string, config: SpeechGreetingConfig, sessionId: number) {
   if (sessionId !== activeSpeechSessionId) return;
   try {
     const audio = new Audio(audioUrl);
     currentAudioElement = audio;
+    audio.playbackRate = config.rate ?? 1.0;
+
+    let seekApplied = false;
+    const applyInitialSeek = () => {
+      if (seekApplied) return;
+      if (config.startFraction && config.startFraction > 0 && Number.isFinite(audio.duration) && audio.duration > 0) {
+        seekApplied = true;
+        audio.currentTime = Math.max(0, Math.min(audio.duration - 0.05, config.startFraction * audio.duration));
+      }
+    };
+
+    if (audio.readyState >= 1) {
+      applyInitialSeek();
+    } else {
+      audio.addEventListener('loadedmetadata', applyInitialSeek, { once: true });
+    }
+
+    const pumpProgress = () => {
+      if (currentAudioElement !== audio || sessionId !== activeSpeechSessionId || audio.paused || audio.ended) {
+        activeAudioProgressRaf = null;
+        return;
+      }
+      if (Number.isFinite(audio.duration) && audio.duration > 0) {
+        const frac = Math.max(0, Math.min(1, audio.currentTime / audio.duration));
+        config.onProgress?.(frac, audio.currentTime, audio.duration);
+      }
+      activeAudioProgressRaf = requestAnimationFrame(pumpProgress);
+    };
 
     audio.onplay = () => {
       if (currentAudioElement === audio && sessionId === activeSpeechSessionId) {
+        applyInitialSeek();
         config.onStart?.();
+        if (config.onProgress && typeof requestAnimationFrame !== 'undefined') {
+          activeAudioProgressRaf = requestAnimationFrame(pumpProgress);
+        }
       }
     };
 
     audio.onended = () => {
+      if (activeAudioProgressRaf !== null && typeof cancelAnimationFrame !== 'undefined') {
+        cancelAnimationFrame(activeAudioProgressRaf);
+        activeAudioProgressRaf = null;
+      }
       if (currentAudioElement === audio) {
         currentAudioElement = null;
+        config.onProgress?.(1, audio.duration || 0, audio.duration || 0);
         config.onEnd?.();
       }
     };
 
     audio.onerror = () => {
+      if (activeAudioProgressRaf !== null && typeof cancelAnimationFrame !== 'undefined') {
+        cancelAnimationFrame(activeAudioProgressRaf);
+        activeAudioProgressRaf = null;
+      }
       if (currentAudioElement === audio) {
         currentAudioElement = null;
         speakWithClientSynthesis(config, sessionId);
@@ -580,7 +1323,7 @@ function speakWithClientSynthesis(config: SpeechGreetingConfig, sessionId = acti
 
     // Use pure natural acoustic cadence without synthetic pitch/rate distortion
     utterance.pitch = pitch;
-    utterance.rate = rate;
+    utterance.rate = config.rate ?? rate;
     utterance.volume = 1.0;
 
     utterance.onstart = () => {
@@ -638,80 +1381,9 @@ function speakWithClientSynthesis(config: SpeechGreetingConfig, sessionId = acti
 }
 
 /**
- * Welcome greeting texts by Language Family for Language Page Cards
- * Provides both the indigenous native script and an articulate, natural greeting
- */
-export interface FamilyWelcomeGreeting {
-  familyId: string;
-  nativePhrase: string;
-  spokenPhrase: string;
-  phoneticGuide: string;
-  languageName: string;
-  langTag: string;
-  meaningEn: string;
-}
-
-export const LANGUAGE_FAMILY_GREETINGS: Record<string, FamilyWelcomeGreeting> = {
-  'niger-congo': {
-    familyId: 'niger-congo',
-    nativePhrase: 'Karibu Afriata—Mvumbuzi wa Kikabila wa Atlantiki.',
-    spokenPhrase: 'Welcome to the Niger-Congo linguistic phylum, home to over 1,500 living languages across Africa.',
-    phoneticGuide: '[kaˈri.bu af.riˈka.li.a]',
-    languageName: 'Kiswahili & Niger-Congo',
-    langTag: 'sw-KE',
-    meaningEn: 'Welcome to Afriata—The Atlantic Ethnic Explorer.'
-  },
-  'afroasiatic': {
-    familyId: 'afroasiatic',
-    nativePhrase: 'Barka da zuwa Afriata—Mai Binciken Kabilun Atlantika.',
-    spokenPhrase: 'Welcome to the Afroasiatic phylum, spanning the Sahara, Horn of Africa, and North African civilizations.',
-    phoneticGuide: '[bar.ka da zu.wa af.riˈka.li.a]',
-    languageName: 'Hausa & Afroasiatic',
-    langTag: 'ha-NG',
-    meaningEn: 'Welcome to Afriata—The Atlantic Ethnic Explorer.'
-  },
-  'nilo-saharan': {
-    familyId: 'nilo-saharan',
-    nativePhrase: 'Yawa, karibu Afriata—Jagol kido mar Atlantic.',
-    spokenPhrase: 'Welcome to the Nilo-Saharan language family, tracing ancient corridors from the Nile Basin to Central Africa.',
-    phoneticGuide: '[ya.wa ka.ri.bu jag.ol ki.do]',
-    languageName: 'Luo & Nilo-Saharan',
-    langTag: 'sw-KE',
-    meaningEn: 'Welcome to Afriata—The Atlantic Ethnic Explorer.'
-  },
-  'austronesian': {
-    familyId: 'austronesian',
-    nativePhrase: 'Tonga soa eto amin\'ny Afriata—Mpikaroka ny foko Atlantika.',
-    spokenPhrase: 'Welcome to the Austronesian phylum in Africa, connecting Madagascar and the Indian Ocean rim.',
-    phoneticGuide: '[tʊŋ.ɡa su.a e.tu a.min.ni]',
-    languageName: 'Malagasy & Austronesian',
-    langTag: 'fr-FR',
-    meaningEn: 'Welcome to Afriata—The Atlantic Ethnic Explorer.'
-  },
-  'khoisan': {
-    familyId: 'khoisan',
-    nativePhrase: 'ǁKhawa ǃgû re Afriata—Atlantic ǃAosab ǃKhôa-aos.',
-    spokenPhrase: 'Welcome to the Khoe-San linguistic families, representing humanity\'s deepest surviving phonetic heritages.',
-    phoneticGuide: '[ǁkʰa.wa ǃɡuː re af.riˈka.li.a]',
-    languageName: 'Nama & Khoe-San',
-    langTag: 'en-ZA',
-    meaningEn: 'Welcome to Afriata—The Atlantic Ethnic Explorer.'
-  },
-  'indo-european': {
-    familyId: 'indo-european',
-    nativePhrase: 'Bem-bindu na Afriata—Splorador Étniku di Atlântiku.',
-    spokenPhrase: 'Welcome to Atlantic Creoles and Indo-European linguistic heritages across continental and island states.',
-    phoneticGuide: '[bẽj̃ˈbĩdu na af.riˈka.li.a]',
-    languageName: 'Kriolu & Atlantic Creoles',
-    langTag: 'pt-PT',
-    meaningEn: 'Welcome to Afriata—The Atlantic Ethnic Explorer.'
-  }
-};
-
-/**
  * High-Intelligibility UI Language Greetings for the App Top Bar
  */
-export const TOP_BAR_UI_GREETINGS: Record<string, { phrase: string; langTag: string; languageName: string }> = {
+export const TOP_BAR_UI_GREETINGS: Record<string, { phrase: string; langTag: string; languageName: string; audioClipId?: string }> = {
   'en': {
     phrase: 'Welcome to the Afriata experience, the Atlantic Ethnic Explorer. Please enjoy.',
     langTag: 'en-NG',
@@ -748,237 +1420,57 @@ export const TOP_BAR_UI_GREETINGS: Record<string, { phrase: string; langTag: str
     languageName: 'Deutsch'
   },
   'ar': {
-    phrase: 'مرحباً بكم في تجربة أفريكاليا، مستكشف عرقيات المحيط الأطلسي. نتمنى لكم وقتاً ممتعاً.',
-    langTag: 'ar-SA',
+    phrase: 'مرحباً بكم في تجربة أفرياتا، مستكشف التنوع الإفريقي والأطلسي.',
+    langTag: 'ar-MA',
     languageName: 'العربية (Arabic)'
   },
-  // Indigenous languages: clean, intelligible introductions without phonetic garbling
   'yo': {
-    phrase: 'Welcome to the Afriata experience in Yoruba. The Atlantic Ethnic Explorer. Please enjoy.',
-    langTag: 'en-NG',
+    phrase: 'Báwo ni?',
+    audioClipId: 'mother-yoruba',
+    langTag: 'yo-NG',
     languageName: 'Yorùbá'
   },
   'ha': {
-    phrase: 'Welcome to the Afriata experience in Hausa. The Atlantic Ethnic Explorer. Please enjoy.',
-    langTag: 'en-NG',
+    phrase: 'Sannu / Ina kwana?',
+    audioClipId: 'mother-hausa',
+    langTag: 'ha-NG',
     languageName: 'Hausa'
   },
   'ig': {
-    phrase: 'Welcome to the Afriata experience in Igbo. The Atlantic Ethnic Explorer. Please enjoy.',
-    langTag: 'en-NG',
+    phrase: 'Ndewo / Kèdú?',
+    audioClipId: 'mother-igbo',
+    langTag: 'ig-NG',
     languageName: 'Igbo'
   },
   'sw': {
-    phrase: 'Welcome to the Afriata experience in Kiswahili. The Atlantic Ethnic Explorer. Please enjoy.',
-    langTag: 'en-KE',
+    phrase: 'Hujambo / Habari yako?',
+    audioClipId: 'mother-swahili',
+    langTag: 'sw-KE',
     languageName: 'Kiswahili'
   },
   'am': {
-    phrase: 'Welcome to the Afriata experience in Amharic. The Atlantic Ethnic Explorer. Please enjoy.',
-    langTag: 'en-NG',
+    phrase: 'Selam! (ሰላም) / Tena Yistillign',
+    audioClipId: 'mother-amharic',
+    langTag: 'am-ET',
     languageName: 'Amharic (አማርኛ)'
   },
   'wo': {
-    phrase: 'Welcome to the Afriata experience in Wolof. The Atlantic Ethnic Explorer. Please enjoy.',
-    langTag: 'en-NG',
+    phrase: 'Nanga def? / Mangi fi rekk',
+    audioClipId: 'mother-wolof',
+    langTag: 'wo-SN',
     languageName: 'Wolof'
   },
   'zu': {
-    phrase: 'Welcome to the Afriata experience in isiZulu. The Atlantic Ethnic Explorer. Please enjoy.',
-    langTag: 'en-ZA',
+    phrase: 'Sawubona!',
+    audioClipId: 'mother-zulu',
+    langTag: 'zu-ZA',
     languageName: 'isiZulu'
   },
   'xh': {
-    phrase: 'Welcome to the Afriata experience in isiXhosa. The Atlantic Ethnic Explorer. Please enjoy.',
-    langTag: 'en-ZA',
+    phrase: 'Molo! Kunjani?',
+    audioClipId: 'mother-xhosa',
+    langTag: 'xh-ZA',
     languageName: 'isiXhosa'
   }
 };
 
-/**
- * Historical Sovereign & Dynastic Pronunciation Dictionary
- * Provides phonetic guides, royal titles, polities, and scholarly context
- */
-export interface HistoricalEntityPronunciation {
-  id: string;
-  name: string;
-  polity: string;
-  era: string;
-  phonetic: string;
-  title: string;
-  contextSummary: string;
-}
-
-export const HISTORICAL_ENTITY_PRONUNCIATIONS: Record<string, HistoricalEntityPronunciation> = {
-  'mansa-musa': {
-    id: 'mansa-musa',
-    name: 'Mansa Musa',
-    polity: 'Mali Empire',
-    era: 'c. 1280–1337 CE',
-    phonetic: '[ˈmæn.sə ˈmuː.sə]',
-    title: 'Tenth Mansa of the Mali Empire',
-    contextSummary: 'Renowned sovereign of the Mali Empire whose pilgrimage to Mecca in 1324 demonstrated the immense wealth and intellectual prestige of West African scholarship.'
-  },
-  'sundiata-keita': {
-    id: 'sundiata-keita',
-    name: 'Sundiata Keita',
-    polity: 'Mali Empire',
-    era: 'c. 1217–1255 CE',
-    phonetic: '[sʊnˈdʒɑː.tə ˈkeɪ.tə]',
-    title: 'Mari Djata, Founder of the Mali Empire',
-    contextSummary: 'The legendary Lion King of Manden who defeated Sumanguru Kante at the Battle of Kirina and proclaimed the Kurukan Fuga charter.'
-  },
-  'askia-muhammad': {
-    id: 'askia-muhammad',
-    name: 'Askia Muhammad I',
-    polity: 'Songhai Empire',
-    era: 'c. 1443–1538 CE',
-    phonetic: '[æsˈkiː.ə məˈhæm.əd]',
-    title: 'Askia the Great, Emperor of Songhai',
-    contextSummary: 'Visionary ruler who centralized administration, standardized weights and measures, and patronized the Sankoré University at Timbuktu.'
-  },
-  'sonni-ali': {
-    id: 'sonni-ali',
-    name: 'Sonni Ali Ber',
-    polity: 'Songhai Empire',
-    era: 'r. 1464–1492 CE',
-    phonetic: '[ˈsɒn.i ˈæ.li bɛər]',
-    title: 'First Great Emperor of Songhai',
-    contextSummary: 'Fierce military strategist who captured Timbuktu and Djenné with his riverine naval fleet along the Niger River.'
-  },
-  'queen-nzinga': {
-    id: 'queen-nzinga',
-    name: 'Queen Nzinga Mbande',
-    polity: 'Kingdoms of Ndongo & Matamba',
-    era: 'c. 1583–1663 CE',
-    phonetic: '[ˈŋzɪŋ.ɡə mˈbæn.deɪ]',
-    title: 'Ngola of Ndongo and Queen of Matamba',
-    contextSummary: 'Unyielding political and military strategist who allied with the Dutch and waged four decades of diplomatic and armed resistance against Portuguese colonial expansion.'
-  },
-  'shaka-zulu': {
-    id: 'shaka-zulu',
-    name: 'Shaka kaSenzangakhona',
-    polity: 'Zulu Kingdom',
-    era: 'c. 1787–1828 CE',
-    phonetic: '[ˈʃɑː.kə kə.sɛn.zæŋ.ɡəˈkoʊ.nə]',
-    title: 'King of the Zulu Kingdom',
-    contextSummary: 'Transformational monarch who modernized military warfare with the iklwa short spear and the bull horn tactical encirclement formation.'
-  },
-  'osei-tutu': {
-    id: 'osei-tutu',
-    name: 'Otumfuo Osei Tutu I',
-    polity: 'Ashanti Empire',
-    era: 'c. 1660–1717 CE',
-    phonetic: '[oʊˈseɪ ˈtuː.tuː]',
-    title: 'First Asantehene of the Ashanti Empire',
-    contextSummary: 'United the Akan clans into the Ashanti Empire alongside priest Okomfo Anokye under the spiritual unity of the Golden Stool.'
-  },
-  'yaa-asantewaa': {
-    id: 'yaa-asantewaa',
-    name: 'Yaa Asantewaa',
-    polity: 'Ashanti Empire',
-    era: 'c. 1840–1921 CE',
-    phonetic: '[ˈjɑː ə.sænˈteɪ.wɑː]',
-    title: 'Queen Mother of Ejisu',
-    contextSummary: 'Valiant commander who led the 1900 War of the Golden Stool against British colonial aggression in defense of Asante sovereignty.'
-  },
-  'ezana-axum': {
-    id: 'ezana-axum',
-    name: 'Ezana of Axum',
-    polity: 'Kingdom of Axum',
-    era: 'r. c. 320s–360 CE',
-    phonetic: '[ˈɛ.zə.nə ɒv ˈæk.sʊm]',
-    title: 'Negus of Axum, Sovereign of Saba and Salhen',
-    contextSummary: 'Monumental ruler of the Horn of Africa who erected the monumental Axumite stelae and forged maritime trade conduits across the Red Sea.'
-  },
-  'idris-alooma': {
-    id: 'idris-alooma',
-    name: 'Mai Idris Alooma',
-    polity: 'Kanem-Bornu Empire',
-    era: 'r. 1571–1603 CE',
-    phonetic: '[maɪ ˈɪd.rɪs əˈluː.mə]',
-    title: 'Mai of Kanem-Bornu',
-    contextSummary: 'Celebrated statesman and military commander who equipped the cavalry with Turkish firearms and established fortified caravanserais around Lake Chad.'
-  },
-  'nyatsimba-mutota': {
-    id: 'nyatsimba-mutota',
-    name: 'Nyatsimba Mutota',
-    polity: 'Kingdom of Mutapa',
-    era: 'c. 1430–1450 CE',
-    phonetic: '[ɲaˈtsim.ba muˈtoː.ta]',
-    title: 'Mwene Mutapa',
-    contextSummary: 'Founder of the Mutapa Empire who expanded northern dominance from Great Zimbabwe to the gold and copper routes of the Zambezi Valley.'
-  },
-  'dihya-kahina': {
-    id: 'dihya-kahina',
-    name: 'Dihya (Al-Kahina)',
-    polity: 'Amazigh Resistance of the Aurès',
-    era: 'r. c. 680s–703 CE',
-    phonetic: '[diːˈhjæ æl kəˈhiː.nə]',
-    title: 'Queen of the Aurès Mountains',
-    contextSummary: 'Formidable Amazigh warrior queen who united Berber tribes against Byzantine and Umayyad expansion in Northwest Africa.'
-  }
-};
-
-/**
- * Speaks an articulate, dignified historical sovereign profile
- */
-export function speakHistoricalEntity(
-  entityKeyOrName: string, 
-  callbacks?: { onStart?: () => void; onEnd?: () => void; onError?: () => void }
-) {
-  const normKey = entityKeyOrName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-  const entity = HISTORICAL_ENTITY_PRONUNCIATIONS[normKey] || 
-    Object.values(HISTORICAL_ENTITY_PRONUNCIATIONS).find(e => 
-      e.name.toLowerCase().includes(entityKeyOrName.toLowerCase()) || 
-      entityKeyOrName.toLowerCase().includes(e.name.toLowerCase())
-    );
-
-  const textToSpeak = entity
-    ? `${entity.name}, ${entity.phonetic}. ${entity.title} of the ${entity.polity}, ${entity.era}. ${entity.contextSummary}`
-    : `${entityKeyOrName}. Sovereign historical entity documented in the Afriata Cartographic Observatory.`;
-
-  speakAcademicNarration({
-    text: textToSpeak,
-    langTag: 'en-NG',
-    playChime: true,
-    onStart: callbacks?.onStart,
-    onEnd: callbacks?.onEnd,
-    onError: callbacks?.onError
-  });
-}
-
-/**
- * Speaks a historical toponym concordance record with antique and indigenous names
- */
-export function speakToponymConcordance(
-  item: {
-    antiqueName: string;
-    plateSource: string;
-    indigenousName?: string;
-    modernName: string;
-    modernCountry: string;
-    note?: string;
-  },
-  callbacks?: { onStart?: () => void; onEnd?: () => void; onError?: () => void }
-) {
-  const parts: string[] = [];
-  parts.push(`${item.antiqueName}.`);
-  if (item.indigenousName && item.indigenousName !== item.antiqueName) {
-    parts.push(`Indigenous name: ${item.indigenousName}.`);
-  }
-  parts.push(`Corresponds to modern ${item.modernName} in ${item.modernCountry}.`);
-  parts.push(`Observed on ${item.plateSource}.`);
-  if (item.note) {
-    parts.push(item.note);
-  }
-
-  speakAcademicNarration({
-    text: parts.join(' '),
-    langTag: 'en-NG',
-    playChime: true,
-    onStart: callbacks?.onStart,
-    onEnd: callbacks?.onEnd,
-    onError: callbacks?.onError
-  });
-}

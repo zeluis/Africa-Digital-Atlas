@@ -4,9 +4,9 @@ import { KingdomDetailedRecord, DynasticNode } from '../../data/preColonialKingd
 import { AtlasDialog } from '../common/AtlasDialog';
 import { 
   speakAcademicNarration, 
-  stopAfriataSpeech,
-  HISTORICAL_ENTITY_PRONUNCIATIONS 
+  stopAfriataSpeech 
 } from '../../utils/afriataVoiceEngine';
+import { HISTORICAL_ENTITY_PRONUNCIATIONS } from '../../utils/historicalVoiceNarrations';
 import { 
   Crown, 
   Sparkles, 

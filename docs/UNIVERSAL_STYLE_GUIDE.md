@@ -1,15 +1,15 @@
 # AFRIATA UNIVERSAL STYLE GUIDE & LIVING ARCHITECTURAL MONOGRAPH
 **The Sovereign Design System, Cartographic Geodesy, and Technical Architecture of the Africa Data Atlas**
 
-*Under the scientific direction and cartographic curation of **Zéluis F. Correia***  
-*Observatory Edition: 2026.1 • Permanent Scholarly Reference*
+*Under the scientific direction and cartographic curation of **ZéLuis F. Correia***  
+*Observatory Edition: 2026.2 • Updated 2026-11-18*
 
 ---
 
 ## 🏛️ SECTION I: INSTITUTIONAL MISSION & INTELLECTUAL PROPERTY CHARTER
 
 ### 1.1 Institutional Identity & Purpose
-**Afriata** is an independent, non-partisan cartographic and econometric research observatory founded by **Zéluis F. Correia**. The **Africa Data Atlas** serves as a digital public good and scientific synthesis platform bridging the gap between fragmented multilateral statistics, deep ancestral phylogenetic lineages, historical trade extractions, and contemporary geopolitical transformations across all 54 sovereign African nations.
+**Afriata** is an independent, non-partisan cartographic and econometric research observatory founded by **ZéLuis F. Correia**. The **Africa Data Atlas** serves as a digital public good and scientific synthesis platform bridging the gap between fragmented multilateral statistics, deep ancestral phylogenetic lineages, historical trade extractions, and contemporary geopolitical transformations across all 54 sovereign African nations.
 
 ### 1.2 Dual Licensing & Creative Assets Authorship
 The Africa Data Atlas applies explicit dual licensing at its repository root (`LICENSE-CODE` and `LICENSE-ASSETS`):
@@ -122,8 +122,8 @@ All multilateral emblems are embedded as mathematical inline vector components. 
 
 ## 📊 SECTION V: MULTILATERAL DATA ARCHITECTURE & API REPOSITORY
 
-### 5.1 The 16 Multilateral Connectors
-The platform continuously harmonizes statistical indicators across 16 international institutions:
+### 5.1 The 17 Multilateral & Specialized Connectors
+The platform harmonizes curated snapshot datasets with on-demand API handshake checks across 17 international institutions and knowledge platforms:
 1. **World Bank WDI**: Macroeconomic accounts, GDP, GNI, external debt stocks.
 2. **IMF WEO**: Fiscal balances, inflation forecasts, balance of payments.
 3. **UN Comtrade**: Bilateral trade matrices, mineral extractions, agricultural flows.
@@ -190,4 +190,4 @@ The platform enforces a binding, five-pillar engineering and design constitution
 
 ---
 
-*Authored by Zéluis F. Correia • Afriata Cartographic & Econometric Observatory • 2026*
+*Authored by ZéLuis F. Correia • Afriata Cartographic & Econometric Observatory • Updated 2026-11-18*

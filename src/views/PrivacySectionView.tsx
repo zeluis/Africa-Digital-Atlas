@@ -180,7 +180,7 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
     {
       id: 'licensing',
       label: '3. Open Access & Provenance',
-      subtitle: 'CC BY 4.0 • MIT • 16 APIs',
+      subtitle: 'CC BY 4.0 • MIT • 17 APIs',
       icon: BookOpen
     },
     {

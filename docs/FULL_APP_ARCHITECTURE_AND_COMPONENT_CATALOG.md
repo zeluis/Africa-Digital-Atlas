@@ -1,8 +1,8 @@
 # AFRIATA (AFRICA DATA ATLAS) — MASTER ARCHITECTURE & COMPONENT CATALOG
 **Comprehensive Technical Specification, View Registry, Component Directory, Services, Data Pipelines & API Reference**
 
-*Scientific Direction & Cartographic Curation: **Zéluis F. Correia***  
-*Observatory Edition: 2026.1 • Permanent Scholarly & Technical Reference*  
+*Scientific Direction & Cartographic Curation: **ZéLuis F. Correia***  
+*Observatory Edition: 2026.2 • Updated 2026-11-18*  
 *DOI: [10.6084/m9.figshare.34065711](https://doi.org/10.6084/m9.figshare.34065711) • Dual-Licensed: MIT (Code) & CC BY 4.0 (Cartography & SVG Assets)*
 
 ---

@@ -1998,10 +1998,10 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                 title: 'Afriata Sovereign Ethnic Tree of Life',
                 sourceContext: 'Afriata Sovereign Lineage Vector Atlas & Harvard / Wikipedia Anthropological Corpus',
                 citationMetadata: {
-                  authors: ['Zéluis F. Correia', 'Afriata Cartographic Observatory'],
+                  authors: ['ZéLuis F. Correia', 'Afriata Cartographic Observatory'],
                   year: 2026,
                   datasetName: 'Pan-African Ethno-Linguistic Continuum and Conduit Lineages',
-                  url: typeof window !== 'undefined' ? window.location.href : 'https://afriata.org/#ethnic-tree',
+                  url: typeof window !== 'undefined' ? window.location.href : 'https://zeluis.github.io/Africa-Digital-Atlas/#ethnic-tree',
                   doi: '10.6084/m9.figshare.34065711',
                   version: '2026.2',
                 },

@@ -6,7 +6,7 @@
     "entryRawKB": 194.3,
     "cssRawKB": 258.3,
     "totalJsRawMB": 5.6,
-    "precacheTransferMB": 4,
+    "precacheTransferMB": 4.3,
     "precacheStorageMB": 12.8,
     "largestImageKB": 2169.3
   },
@@ -34,5 +34,5 @@
     "precacheTransferMB": 4.6,
     "precacheStorageMB": 13.9
   },
-  "_note": "precacheTransferMB is what a first-time visitor downloads (gzip where the server compresses). precacheStorageMB is what it occupies on disk. Do not lower either by dropping code or data from the precache; see SKILL.md section A."
+  "_note": "precacheTransferMB is what a first-time visitor downloads (gzip where the server compresses). precacheStorageMB is what it occupies on disk. Do not lower either by dropping code or data from the precache; see SKILL.md section A. Ceiling for precacheTransferMB raised 4 -> 4.3 (+5% over 4.1 MB) to precache the 326 KB offline African language audio pack (public/audio/tongues/*.mp3)."
 }

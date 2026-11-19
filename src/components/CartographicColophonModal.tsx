@@ -290,7 +290,7 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                         AFRICA CONTINENTAL DATA ATLAS
                       </h1>
                       <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 font-sans leading-relaxed">
-                        Under the scientific direction and cartographic curation of <strong className="text-stone-900 dark:text-stone-100 font-semibold">Zéluis F. Correia</strong>. Dedicated to African data sovereignty, open scientific inquiry, and the rigorous preservation of continental heritage.
+                        Under the scientific direction and cartographic curation of <strong className="text-stone-900 dark:text-stone-100 font-semibold">ZéLuis F. Correia</strong>. Dedicated to African data sovereignty, open scientific inquiry, and the rigorous preservation of continental heritage.
                       </p>
                     </div>
                     <div className="shrink-0 flex items-center justify-center p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50">
@@ -310,9 +310,9 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
                     <div>
                       <span className="text-stone-500 dark:text-stone-400 block font-mono text-[11px]">Author &amp; Principal Cartographer:</span>
-                      <span className="font-bold text-stone-900 dark:text-stone-100 text-sm">Zéluis F. Correia</span>
+                      <span className="font-bold text-stone-900 dark:text-stone-100 text-sm">ZéLuis F. Correia</span>
                       <p className="text-stone-600 dark:text-stone-400 text-[11px] mt-0.5 leading-relaxed">
-                        Architect of the 5,796 × 5,867 High-Precision Continental Engine, the Sovereign Ethnic Tree of Life Vector Topology, and the 16 Multilateral Data Connectors.
+                        Architect of the 5,796 × 5,867 High-Precision Continental Engine, the Sovereign Ethnic Tree of Life Vector Topology, and the 17 Multilateral &amp; Specialized Data Connectors.
                       </p>
                     </div>
                     <div>
@@ -624,7 +624,7 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
           {/* Footer Actions */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-3.5 sm:py-4 safe-pb bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 shrink-0">
             <span className="text-xs text-stone-500 dark:text-stone-400 font-mono text-center sm:text-left">
-              Colophon Spec v2.4 · Authored by Zéluis F. Correia
+              Colophon Spec v2.4 · Authored by ZéLuis F. Correia
             </span>
             <div className="flex flex-wrap items-center justify-center gap-2">
               {onOpenMethodologyAudit && (

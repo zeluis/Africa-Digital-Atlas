@@ -92,7 +92,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
     { id: 'identity', label: '1. Identity & Charter', icon: <Award className="w-4 h-4" /> },
     { id: 'design-system', label: '2. Design System', icon: <Palette className="w-4 h-4" /> },
     { id: 'cartography-assets', label: '3. Cartography & Seals', icon: <MapIcon className="w-4 h-4" /> },
-    { id: 'multilateral-apis', label: '4. 16 Multilateral APIs', icon: <Database className="w-4 h-4" /> },
+    { id: 'multilateral-apis', label: '4. 17 Multilateral APIs', icon: <Database className="w-4 h-4" /> },
     { id: 'ethics-governance', label: '5. Governance & Citations', icon: <ShieldCheck className="w-4 h-4" /> }
   ];
 
@@ -109,7 +109,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
               Universal Style Guide & Living Systems Matrix
             </h1>
             <p className="text-stone-600 dark:text-stone-300 text-sm sm:text-base leading-relaxed">
-              A curated architectural manual unifying cartographic coordinate standards, the Japandi-Sahel visual design system, the 16 multilateral API ingestion pipeline, and scholarly attribution frameworks curated by <strong className="text-stone-900 dark:text-stone-100 font-semibold">Zéluis F. Correia</strong>.
+              A curated architectural manual unifying cartographic coordinate standards, the Japandi-Sahel visual design system, the 17 multilateral &amp; specialized API ingestion pipeline, and scholarly attribution frameworks curated by <strong className="text-stone-900 dark:text-stone-100 font-semibold">ZéLuis F. Correia</strong>.
             </p>
           </div>
 

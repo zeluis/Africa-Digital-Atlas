@@ -244,7 +244,7 @@ export const Footer: React.FC<FooterProps> = ({
                   Afriata Cartographic &amp; Econometric Observatory
                 </span>
                 <p className="text-xs text-stone-600 dark:text-stone-400 font-sans leading-relaxed">
-                  Under the scientific direction and cartographic curation of <strong className="text-stone-900 dark:text-stone-100 font-semibold">Zéluis F. Correia</strong>. Dedicated to African data sovereignty, open scientific inquiry, and the rigorous preservation of continental heritage.
+                  Under the scientific direction and cartographic curation of <strong className="text-stone-900 dark:text-stone-100 font-semibold">ZéLuis F. Correia</strong>. Dedicated to African data sovereignty, open scientific inquiry, and the rigorous preservation of continental heritage.
                 </p>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono mt-1">
                   ZéLuis F. Correia is the author of all SVG maps and the Ethnic Tree Visualization and SVG. Unless stated otherwise, all graphics and visualizations have the same author. Dual-licensed: CC BY 4.0 (creative assets, LICENSE-ASSETS) • MIT License (source code, LICENSE-CODE).

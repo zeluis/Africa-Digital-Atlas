@@ -20,6 +20,7 @@ import { useSavedEntities } from '../contexts/SavedEntitiesContext';
 import { AtlasDialog } from './common/AtlasDialog';
 import {
   AFRIATA_DOI,
+  AFRIATA_SITE_URL,
   PlatformCitationFormat,
   buildPlatformCitations,
   copyTextToClipboard,
@@ -47,10 +48,10 @@ export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
   title = 'Africa Data Atlas & Cartographic Observatory',
   sourceContext = 'Multilateral Macroeconomic, Ethnographic & Cartographic Corpus',
   citationMetadata = {
-    authors: ['Zéluis F. Correia', 'Afriata Cartographic & Econometric Observatory'],
+    authors: ['ZéLuis F. Correia', 'Afriata Cartographic & Econometric Observatory'],
     year: 2026,
     datasetName: 'Africa Data Atlas & Cartographic Observatory',
-    url: typeof window !== 'undefined' ? window.location.origin : 'https://afriata.org',
+    url: typeof window !== 'undefined' ? window.location.origin : AFRIATA_SITE_URL,
     doi: '10.6084/m9.figshare.34065711',
     version: '2026.1 (Observatory Canonical Edition)'
   },
@@ -75,7 +76,7 @@ export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
 
   if (!isOpen) return null;
 
-  const pageUrl = typeof window !== 'undefined' ? window.location.href : 'https://afriata.org';
+  const pageUrl = typeof window !== 'undefined' ? window.location.href : AFRIATA_SITE_URL;
   const doi = citationMetadata.doi || AFRIATA_DOI;
 
   const {

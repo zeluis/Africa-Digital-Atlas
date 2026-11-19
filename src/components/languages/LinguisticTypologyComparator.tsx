@@ -34,6 +34,8 @@ export interface LanguageTypologyProfile {
   greetingWord: string;
   greetingIpa: string;
   greetingMeaning: string;
+  bcp47Tag: string;
+  audioClipId: string;
 }
 
 export const COMPARATIVE_LANGUAGES: LanguageTypologyProfile[] = [
@@ -55,7 +57,9 @@ export const COMPARATIVE_LANGUAGES: LanguageTypologyProfile[] = [
     writingTraditions: ['Latin script', 'Historical Arabic Ajami'],
     greetingWord: 'Habari za asubuhi',
     greetingIpa: '[haˈɓa.ri za a.suˈɓu.hi]',
-    greetingMeaning: 'Good morning / How is the morning?'
+    greetingMeaning: 'Good morning / How is the morning?',
+    bcp47Tag: 'sw-KE',
+    audioClipId: 'mother-swahili'
   },
   {
     id: 'zulu',
@@ -75,7 +79,9 @@ export const COMPARATIVE_LANGUAGES: LanguageTypologyProfile[] = [
     writingTraditions: ['Latin script'],
     greetingWord: 'Sawubona',
     greetingIpa: '[sa.wou̯ˈɓɔ́ːna]',
-    greetingMeaning: 'I see you / We see you'
+    greetingMeaning: 'I see you / We see you',
+    bcp47Tag: 'zu-ZA',
+    audioClipId: 'mother-zulu'
   },
   {
     id: 'yoruba',
@@ -95,7 +101,9 @@ export const COMPARATIVE_LANGUAGES: LanguageTypologyProfile[] = [
     writingTraditions: ['Latin script with subdots (ẹ, ọ, ṣ)'],
     greetingWord: 'Ẹ n lẹ́ o',
     greetingIpa: '[ɛ̄ ń lɛ́ ō]',
-    greetingMeaning: 'Greetings to you (honorific)'
+    greetingMeaning: 'Greetings to you (honorific)',
+    bcp47Tag: 'yo-NG',
+    audioClipId: 'mother-yoruba'
   },
   {
     id: 'hausa',
@@ -115,7 +123,9 @@ export const COMPARATIVE_LANGUAGES: LanguageTypologyProfile[] = [
     writingTraditions: ['Latin Boko', 'Arabic Ajami'],
     greetingWord: 'Sannu da safe',
     greetingIpa: '[sàn.núː dà sàː.féː]',
-    greetingMeaning: 'Greetings in the morning'
+    greetingMeaning: 'Greetings in the morning',
+    bcp47Tag: 'ha-NG',
+    audioClipId: 'mother-hausa'
   },
   {
     id: 'amharic',
@@ -135,7 +145,9 @@ export const COMPARATIVE_LANGUAGES: LanguageTypologyProfile[] = [
     writingTraditions: ['Ge\'ez script (Fidel / አቡጊዳ)'],
     greetingWord: 'እንደምን አደሩ (Indemin aderru)',
     greetingIpa: '[ɨndəmin adərru]',
-    greetingMeaning: 'Good morning (How did you spend the night?)'
+    greetingMeaning: 'Good morning (How did you spend the night?)',
+    bcp47Tag: 'am-ET',
+    audioClipId: 'mother-amharic'
   },
   {
     id: 'oromo',
@@ -155,7 +167,9 @@ export const COMPARATIVE_LANGUAGES: LanguageTypologyProfile[] = [
     writingTraditions: ['Qubee (Latin-based)', 'Historic Sapalo script'],
     greetingWord: 'Akkam bultan',
     greetingIpa: '[ak.kam bul.tan]',
-    greetingMeaning: 'Good morning (honorific)'
+    greetingMeaning: 'Good morning (honorific)',
+    bcp47Tag: 'om-ET',
+    audioClipId: 'mother-oromo'
   },
   {
     id: 'lingala',
@@ -175,7 +189,9 @@ export const COMPARATIVE_LANGUAGES: LanguageTypologyProfile[] = [
     writingTraditions: ['Latin script', 'Mandombe script'],
     greetingWord: 'Mbote na yo',
     greetingIpa: '[ᵐbó.te na jɔ]',
-    greetingMeaning: 'Greetings to you'
+    greetingMeaning: 'Greetings to you',
+    bcp47Tag: 'ln-CD',
+    audioClipId: 'mother-lingala'
   },
   {
     id: 'khoekhoegowab',
@@ -195,7 +211,9 @@ export const COMPARATIVE_LANGUAGES: LanguageTypologyProfile[] = [
     writingTraditions: ['Latin script with standard click orthography'],
     greetingWord: '!Gâi tsēs',
     greetingIpa: '[!kã́ĩ̀ t͡sèːs]',
-    greetingMeaning: 'Good day'
+    greetingMeaning: 'Good day',
+    bcp47Tag: 'naq-NA',
+    audioClipId: 'mother-khoekhoegowab'
   }
 ];
 
@@ -242,8 +260,13 @@ export const LinguisticTypologyComparator: React.FC = () => {
     return Math.round((score / totalWeights) * 100);
   }, [langA, langB]);
 
-  const handleSpeak = (text: string) => {
-    speakAcademicNarration({ text, playChime: true });
+  const handleSpeak = (lang: LanguageTypologyProfile) => {
+    speakAcademicNarration({
+      text: lang.greetingWord,
+      audioClipId: lang.audioClipId,
+      langTag: lang.bcp47Tag,
+      playChime: true,
+    });
   };
 
   return (
@@ -327,7 +350,7 @@ export const LinguisticTypologyComparator: React.FC = () => {
             <div className="flex items-center gap-2 mt-2">
               <button
                 type="button"
-                onClick={() => handleSpeak(langA.greetingWord)}
+                onClick={() => handleSpeak(langA)}
                 className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition-colors cursor-pointer"
                 title={`Listen to ${langA.name} greeting`}
               >
@@ -336,7 +359,7 @@ export const LinguisticTypologyComparator: React.FC = () => {
               </button>
               <button
                 type="button"
-                onClick={() => handleSpeak(langB.greetingWord)}
+                onClick={() => handleSpeak(langB)}
                 className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/30 text-xs font-semibold transition-colors cursor-pointer"
                 title={`Listen to ${langB.name} greeting`}
               >

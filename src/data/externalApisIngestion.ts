@@ -70,7 +70,7 @@ export const subscribeExternalApis = externalApisStore.subscribe;
 export const useExternalApisLoaded = externalApisStore.useLoaded;
 // External connector & indicator definitions are lazily hydrated from externalApisIngestion.json
 
-// Seed detailed observations across all 54 African countries for all 16 External APIs
+// Seed detailed observations across all 54 African countries for all 17 External APIs
 export function generateExternalApisObservations(entities: { id: string; name: string }[], existingKeys: Set<string>): Observation[] {
   const observations: Observation[] = [];
 

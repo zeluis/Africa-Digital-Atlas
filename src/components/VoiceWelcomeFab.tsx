@@ -8,6 +8,7 @@ import {
 
 interface VoiceWelcomeFabProps {
   text: string;
+  audioClipId?: string;
   langTag?: string;
   tooltip?: string;
   subtitle?: string;
@@ -19,6 +20,7 @@ interface VoiceWelcomeFabProps {
 
 export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
   text,
+  audioClipId,
   langTag,
   tooltip,
   subtitle,
@@ -69,6 +71,7 @@ export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
     try {
       speakAfriataGreeting({
         text,
+        audioClipId,
         langTag,
         languageName,
         onStart: () => {
