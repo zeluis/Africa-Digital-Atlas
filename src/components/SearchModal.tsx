@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import MiniSearch from 'minisearch';
 import { atlas } from '../data/atlas-store';
 import { AtlasEntity, IndicatorDefinition, HeritageSite } from '../data/types';
 import {
@@ -13,6 +14,7 @@ import { getAllReports } from '../data/reportsDataLoader';
 import { CountryFlag } from './CountryFlag';
 import { useSavedEntities } from '../contexts/SavedEntitiesContext';
 import { AtlasDialog } from './common/AtlasDialog';
+import { normalizeSearchText, tokenizeSearchText } from '../utils/textNormalize';
 import { 
   Search, 
   Globe, 
@@ -84,6 +86,16 @@ type SearchItemType =
   | { type: 'castas'; data: CastasArchivalItem }
   | { type: 'report'; data: ResearchReport };
 
+interface UnifiedSearchDoc {
+  id: string;
+  kind: SearchItemType['type'];
+  primary: string;
+  code: string;
+  secondary: string;
+  meta: string;
+  payload: SearchItemType;
+}
+
 export const SearchModal: React.FC<SearchModalProps> = ({
   isOpen,
   onClose,
@@ -96,6 +108,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [illustrationsVersion, setIllustrationsVersion] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listboxRef = useRef<HTMLDivElement>(null);
   const { recentSearches, addRecentSearch, clearRecentSearches, isCountrySaved, toggleSaveCountry } = useSavedEntities();
 
   useEffect(() => {
@@ -122,173 +135,173 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     }
   }, [isOpen, selectedCategory, query]);
 
-  const q = query.trim().toLowerCase();
+  const rawTrimmed = query.trim();
+  const isCommandPrefix = rawTrimmed.startsWith('>');
+  const normalizedQuery = normalizeSearchText(isCommandPrefix ? rawTrimmed.slice(1) : rawTrimmed);
+  const q = normalizedQuery;
 
-  // Simple fuzzy scoring function
-  const scoreMatch = (text: string, search: string): number => {
-    if (!text) return 0;
-    const t = text.toLowerCase();
-    if (t === search) return 100;
-    if (t.startsWith(search)) return 80;
-    if (t.includes(search)) return 50;
-    return 0;
-  };
+  const searchBundle = useMemo(() => {
+    const docs: UnifiedSearchDoc[] = [];
 
-  // Matched View/Tool Commands
-  const matchedCommands = useMemo<AppCommandItem[]>(() => {
-    if (selectedCategory !== 'all' && selectedCategory !== 'commands') return [];
-    const searchClean = q.startsWith('>') ? q.slice(1).trim() : q;
-    if (searchClean === '') return APP_COMMAND_REGISTRY.slice(0, 4);
+    for (const cmd of APP_COMMAND_REGISTRY) {
+      docs.push({
+        id: `cmd:${cmd.id}`,
+        kind: 'command',
+        primary: cmd.title,
+        code: cmd.tab,
+        secondary: cmd.subtitle,
+        meta: `${cmd.category} ${cmd.keywords.join(' ')}`,
+        payload: { type: 'command', data: cmd },
+      });
+    }
+    for (const e of atlas.getAllEntities()) {
+      docs.push({
+        id: `ent:${e.id}`,
+        kind: 'entity',
+        primary: e.name,
+        code: `${e.id} ${e.iso2 || ''}`,
+        secondary: `${e.officialName} ${e.capital}`,
+        meta: `${e.region} ${e.subregion || ''}`,
+        payload: { type: 'entity', data: e },
+      });
+    }
+    for (const ind of atlas.getAllIndicators()) {
+      docs.push({
+        id: `ind:${ind.id}`,
+        kind: 'indicator',
+        primary: ind.name,
+        code: ind.id,
+        secondary: ind.domain,
+        meta: ind.definition || '',
+        payload: { type: 'indicator', data: ind },
+      });
+    }
+    for (const rep of Object.values(getAllReports())) {
+      docs.push({
+        id: `rep:${rep.id}`,
+        kind: 'report',
+        primary: rep.title,
+        code: rep.seriesNumber || rep.id,
+        secondary: rep.subtitle || rep.categoryLabel,
+        meta: `${rep.authors.join(' ')} ${rep.categoryLabel}`,
+        payload: { type: 'report', data: rep },
+      });
+    }
+    for (const ill of SLAVE_TRADE_ILLUSTRATIONS) {
+      docs.push({
+        id: `ill:${ill.objectId || ill.regId}`,
+        kind: 'iconography',
+        primary: ill.title,
+        code: ill.regId,
+        secondary: ill.source,
+        meta: `${ill.researchers.join(' ')} ${ill.collectionNames.join(' ')}`,
+        payload: { type: 'iconography', data: ill },
+      });
+    }
+    for (const c of CASTAS_ARCHIVE_ITEMS) {
+      docs.push({
+        id: `cas:${c.id}`,
+        kind: 'castas',
+        primary: c.title,
+        code: c.id,
+        secondary: `${c.creator} ${c.category}`,
+        meta: c.description,
+        payload: { type: 'castas', data: c },
+      });
+    }
+    for (const site of atlas.getHeritageSites()) {
+      docs.push({
+        id: `her:${site.id}`,
+        kind: 'heritage',
+        primary: site.name,
+        code: site.entityId,
+        secondary: `${site.location} ${site.category}`,
+        meta: site.description || '',
+        payload: { type: 'heritage', data: site },
+      });
+    }
 
-    return APP_COMMAND_REGISTRY
-      .map(cmd => {
-        let score = 0;
-        const kwMatch = cmd.keywords.some(k => k.toLowerCase().includes(searchClean)) ? 45 : 0;
-        score = Math.max(
-          scoreMatch(cmd.title, searchClean) * 1.8,
-          scoreMatch(cmd.tab, searchClean) * 1.5,
-          scoreMatch(cmd.subtitle, searchClean),
-          kwMatch
-        );
-        if (q.startsWith('>')) score += 50;
-        return { cmd, score };
-      })
-      .filter(item => item.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 4)
-      .map(item => item.cmd);
-  }, [q, selectedCategory]);
+    const docsById = new Map<string, UnifiedSearchDoc>(docs.map((d) => [d.id, d]));
+    const mini = new MiniSearch<UnifiedSearchDoc>({
+      fields: ['primary', 'code', 'secondary', 'meta'],
+      storeFields: ['id', 'kind'],
+      tokenize: (text) => tokenizeSearchText(text),
+      processTerm: (term) => (term.length >= 1 ? term : null),
+    });
+    mini.addAll(docs);
+    return { mini, docsById };
+  }, [illustrationsVersion]);
 
-  // Matched Entities with scoring
-  const matchedEntities = useMemo<AtlasEntity[]>(() => {
-    if (selectedCategory !== 'all' && selectedCategory !== 'countries') return [];
-    if (q === '') return atlas.getAllEntities().slice(0, 6);
-    return atlas.getAllEntities()
-      .map(e => {
-        let score = 0;
-        score = Math.max(
-          scoreMatch(e.name, q) * 1.5,
-          scoreMatch(e.id, q) * 2,
-          scoreMatch(e.officialName, q),
-          scoreMatch(e.capital, q) * 1.2,
-          scoreMatch(e.region, q)
-        );
-        return { entity: e, score };
-      })
-      .filter(item => item.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 6)
-      .map(item => item.entity);
-  }, [q, selectedCategory]);
+  const groupedResults = useMemo(() => {
+    if (!q) {
+      return {
+        commands: (selectedCategory === 'all' || selectedCategory === 'commands') ? APP_COMMAND_REGISTRY.slice(0, 4) : [],
+        entities: (selectedCategory === 'all' || selectedCategory === 'countries') ? atlas.getAllEntities().slice(0, 6) : [],
+        indicators: (selectedCategory === 'all' || selectedCategory === 'indicators') ? atlas.getAllIndicators().slice(0, 4) : [],
+        reports: (selectedCategory === 'all' || selectedCategory === 'reports') ? Object.values(getAllReports()).slice(0, 3) : [],
+        iconography: (selectedCategory === 'all' || selectedCategory === 'iconography') ? SLAVE_TRADE_ILLUSTRATIONS.slice(0, 3) : [],
+        castas: (selectedCategory === 'all' || selectedCategory === 'iconography') ? CASTAS_ARCHIVE_ITEMS.slice(0, 2) : [],
+        heritage: (selectedCategory === 'all' || selectedCategory === 'heritage') ? atlas.getHeritageSites().slice(0, 2) : [],
+      };
+    }
 
-  // Matched Indicators with scoring
-  const matchedIndicators = useMemo<IndicatorDefinition[]>(() => {
-    if (selectedCategory !== 'all' && selectedCategory !== 'indicators') return [];
-    if (q === '') return atlas.getAllIndicators().slice(0, 4);
-    return atlas.getAllIndicators()
-      .map(ind => {
-        let score = 0;
-        score = Math.max(
-          scoreMatch(ind.name, q) * 1.5,
-          scoreMatch(ind.id, q) * 2,
-          scoreMatch(ind.domain, q),
-          scoreMatch(ind.definition, q) * 0.8
-        );
-        return { indicator: ind, score };
-      })
-      .filter(item => item.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5)
-      .map(item => item.indicator);
-  }, [q, selectedCategory]);
+    const allowedKinds = new Set<SearchItemType['type']>(
+      selectedCategory === 'all'
+        ? ['command', 'entity', 'indicator', 'report', 'iconography', 'castas', 'heritage']
+        : selectedCategory === 'commands'
+        ? ['command']
+        : selectedCategory === 'countries'
+        ? ['entity']
+        : selectedCategory === 'indicators'
+        ? ['indicator']
+        : selectedCategory === 'reports'
+        ? ['report']
+        : selectedCategory === 'iconography'
+        ? ['iconography', 'castas']
+        : ['heritage']
+    );
 
-  // Matched Research Monographs & Working Papers
-  const matchedReports = useMemo<ResearchReport[]>(() => {
-    if (selectedCategory !== 'all' && selectedCategory !== 'reports') return [];
-    const reportList = Object.values(getAllReports());
-    if (q === '') return reportList.slice(0, 3);
-    return reportList
-      .map(rep => {
-        let score = 0;
-        const authorMatch = rep.authors.some(a => a.toLowerCase().includes(q)) ? 40 : 0;
-        score = Math.max(
-          scoreMatch(rep.title, q) * 1.6,
-          scoreMatch(rep.subtitle || '', q) * 1.2,
-          scoreMatch(rep.categoryLabel, q),
-          authorMatch
-        );
-        return { report: rep, score };
-      })
-      .filter(item => item.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 4)
-      .map(item => item.report);
-  }, [q, selectedCategory]);
+    const hits = searchBundle.mini.search(q, {
+      prefix: true,
+      fuzzy: q.length >= 3 ? 0.2 : false,
+      boost: { primary: 3, code: 3.5, secondary: 1.5, meta: 1 },
+      combineWith: 'OR',
+      filter: (res) => allowedKinds.has(res.kind as SearchItemType['type']),
+    });
 
-  // Matched Archival Iconography Plates
-  const matchedIconography = useMemo<SlaveTradeIllustration[]>(() => {
-    if (selectedCategory !== 'all' && selectedCategory !== 'iconography') return [];
-    if (q === '') return SLAVE_TRADE_ILLUSTRATIONS.slice(0, 3);
-    return SLAVE_TRADE_ILLUSTRATIONS
-      .map(ill => {
-        let score = 0;
-        const researchersMatch = ill.researchers.some(r => r.toLowerCase().includes(q)) ? 40 : 0;
-        const collectionMatch = ill.collectionNames.some(c => c.toLowerCase().includes(q)) ? 50 : 0;
-        score = Math.max(
-          scoreMatch(ill.title, q) * 1.4,
-          scoreMatch(ill.regId, q) * 2,
-          scoreMatch(ill.source, q) * 0.9,
-          researchersMatch,
-          collectionMatch
-        );
-        return { ill, score };
-      })
-      .filter(item => item.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 4)
-      .map(item => item.ill);
-  }, [q, selectedCategory, illustrationsVersion]);
+    const commands: AppCommandItem[] = [];
+    const entities: AtlasEntity[] = [];
+    const indicators: IndicatorDefinition[] = [];
+    const reports: ResearchReport[] = [];
+    const iconography: SlaveTradeIllustration[] = [];
+    const castas: CastasArchivalItem[] = [];
+    const heritage: HeritageSite[] = [];
 
-  // Matched Castas Archive
-  const matchedCastas = useMemo<CastasArchivalItem[]>(() => {
-    if (selectedCategory !== 'all' && selectedCategory !== 'iconography') return [];
-    if (q === '') return CASTAS_ARCHIVE_ITEMS.slice(0, 2);
-    return CASTAS_ARCHIVE_ITEMS
-      .map(item => {
-        let score = 0;
-        score = Math.max(
-          scoreMatch(item.title, q) * 1.5,
-          scoreMatch(item.creator, q) * 1.2,
-          scoreMatch(item.category, q),
-          scoreMatch(item.description, q) * 0.7
-        );
-        return { item, score };
-      })
-      .filter(item => item.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 3)
-      .map(item => item.item);
-  }, [q, selectedCategory]);
+    for (const hit of hits) {
+      const doc = searchBundle.docsById.get(String(hit.id));
+      if (!doc) continue;
+      const { payload } = doc;
+      if (payload.type === 'command' && commands.length < 4) commands.push(payload.data);
+      else if (payload.type === 'entity' && entities.length < 6) entities.push(payload.data);
+      else if (payload.type === 'indicator' && indicators.length < 5) indicators.push(payload.data);
+      else if (payload.type === 'report' && reports.length < 4) reports.push(payload.data);
+      else if (payload.type === 'iconography' && iconography.length < 4) iconography.push(payload.data);
+      else if (payload.type === 'castas' && castas.length < 3) castas.push(payload.data);
+      else if (payload.type === 'heritage' && heritage.length < 3) heritage.push(payload.data);
+    }
 
-  // Matched Heritage Sites
-  const matchedHeritage = useMemo<HeritageSite[]>(() => {
-    if (selectedCategory !== 'all' && selectedCategory !== 'heritage') return [];
-    if (q === '') return atlas.getHeritageSites().slice(0, 2);
-    return atlas.getHeritageSites()
-      .map(site => {
-        let score = 0;
-        score = Math.max(
-          scoreMatch(site.name, q) * 1.5,
-          scoreMatch(site.location, q),
-          scoreMatch(site.category, q)
-        );
-        return { site, score };
-      })
-      .filter(item => item.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 3)
-      .map(item => item.site);
-  }, [q, selectedCategory]);
+    return { commands, entities, indicators, reports, iconography, castas, heritage };
+  }, [q, selectedCategory, searchBundle]);
+
+  const {
+    commands: matchedCommands,
+    entities: matchedEntities,
+    indicators: matchedIndicators,
+    reports: matchedReports,
+    iconography: matchedIconography,
+    castas: matchedCastas,
+    heritage: matchedHeritage,
+  } = groupedResults;
 
   // Flatten items for keyboard navigation (Commands first if searching or if > typed)
   const flattenedItems = useMemo<SearchItemType[]>(() => {
@@ -308,6 +321,15 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     setSelectedIndex(0);
   }, [q, selectedCategory]);
 
+  // Scroll active result into view during keyboard navigation
+  useEffect(() => {
+    if (!isOpen || !listboxRef.current) return;
+    const activeEl = listboxRef.current.querySelector<HTMLElement>(`#search-result-option-${selectedIndex}`);
+    if (activeEl && typeof activeEl.scrollIntoView === 'function') {
+      activeEl.scrollIntoView({ block: 'nearest' });
+    }
+  }, [isOpen, selectedIndex]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -322,6 +344,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         e.preventDefault();
         setSelectedIndex(prev => (prev - 1 + (flattenedItems.length || 1)) % (flattenedItems.length || 1));
       } else if (e.key === 'Enter') {
+        const target = e.target as HTMLElement | null;
+        if (target && (target.tagName === 'BUTTON' || target.tagName === 'A')) {
+          return;
+        }
         e.preventDefault();
         const selected = flattenedItems[selectedIndex];
         if (selected) {
@@ -341,7 +367,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, selectedIndex, flattenedItems]);
+  }, [isOpen, selectedIndex, flattenedItems, q, query, selectedCategory, onClose, onSelectTab, addRecentSearch]);
 
   const handleExecuteSelection = (item: SearchItemType) => {
     if (item.type === 'command') {
@@ -405,6 +431,11 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           <input
             ref={inputRef}
             type="text"
+            role="combobox"
+            aria-expanded={true}
+            aria-autocomplete="list"
+            aria-controls="search-results-listbox"
+            aria-activedescendant={flattenedItems.length > 0 ? `search-result-option-${selectedIndex}` : undefined}
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Search African countries, plates, monographs, indicators..."
@@ -434,9 +465,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         </div>
 
         {/* Category Filter Pills Bar */}
-        <div className="flex items-center gap-1.5 px-4 sm:px-5 py-2.5 bg-zinc-50/50 dark:bg-zinc-900/30 border-b border-zinc-200 dark:border-zinc-800/80 overflow-x-auto no-scrollbar scroll-shadow-x shrink-0">
+        <div role="group" aria-label="Search category filters" className="flex items-center gap-1.5 px-4 sm:px-5 py-2.5 bg-zinc-50/50 dark:bg-zinc-900/30 border-b border-zinc-200 dark:border-zinc-800/80 overflow-x-auto no-scrollbar scroll-shadow-x shrink-0">
           <button
             type="button"
+            aria-pressed={selectedCategory === 'all'}
             onClick={() => setSelectedCategory('all')}
             className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer shrink-0 whitespace-nowrap ${
               selectedCategory === 'all'
@@ -448,6 +480,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           </button>
           <button
             type="button"
+            aria-pressed={selectedCategory === 'commands'}
             onClick={() => setSelectedCategory('commands')}
             className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
               selectedCategory === 'commands'
@@ -460,6 +493,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           </button>
           <button
             type="button"
+            aria-pressed={selectedCategory === 'countries'}
             onClick={() => setSelectedCategory('countries')}
             className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
               selectedCategory === 'countries'
@@ -472,6 +506,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           </button>
           <button
             type="button"
+            aria-pressed={selectedCategory === 'reports'}
             onClick={() => setSelectedCategory('reports')}
             className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
               selectedCategory === 'reports'
@@ -484,6 +519,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           </button>
           <button
             type="button"
+            aria-pressed={selectedCategory === 'iconography'}
             onClick={() => setSelectedCategory('iconography')}
             className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
               selectedCategory === 'iconography'
@@ -496,6 +532,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           </button>
           <button
             type="button"
+            aria-pressed={selectedCategory === 'indicators'}
             onClick={() => setSelectedCategory('indicators')}
             className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
               selectedCategory === 'indicators'
@@ -510,7 +547,13 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
         {/* Results Container with Sleek Scrollbar & Click-Through Bottom Fade */}
         <div className="relative flex-1 min-h-0 overflow-hidden">
-          <div className="max-h-[58dvh] overflow-y-auto overscroll-contain stable-gutter sleek-scrollbar p-3 sm:p-4 space-y-2 pb-8">
+          <div
+            ref={listboxRef}
+            id="search-results-listbox"
+            role="listbox"
+            aria-label="Search results"
+            className="max-h-[58dvh] overflow-y-auto overscroll-contain stable-gutter sleek-scrollbar p-3 sm:p-4 space-y-2 pb-8"
+          >
           {flattenedItems.length === 0 ? (
             <div className="p-8 text-center space-y-2">
               <Search className="w-8 h-8 text-zinc-400 mx-auto opacity-50" />
@@ -527,6 +570,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({
               return (
                 <button
                   key={idx}
+                  id={`search-result-option-${idx}`}
+                  type="button"
+                  role="option"
+                  aria-selected={isSelected}
                   onClick={() => handleExecuteSelection(item)}
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`w-full p-3 rounded-2xl flex items-center justify-between text-left transition-all cursor-pointer border ${

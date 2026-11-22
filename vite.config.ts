@@ -534,6 +534,10 @@ export default defineConfig(({ command }) => {
         'topojson-client',
         'jspdf',
         'html-to-image',
+        '@floating-ui/dom',
+        'minisearch',
+        'fflate',
+        'valibot',
       ],
     },
     build: {
@@ -583,11 +587,8 @@ export default defineConfig(({ command }) => {
             if (id.includes('src/data/ethnicTree') || id.includes('src/data/authenticEthnicTreeSvg') || id.includes('src/data/afriataMasterTreeData')) {
               return 'data-ethnic-tree';
             }
-            if (id.includes('src/i18n/locales/')) {
+            if (id.includes('src/i18n/locales/') && !id.endsWith('/en.ts') && !id.endsWith('\\en.ts')) {
               return 'i18n-' + path.basename(id, '.ts');
-            }
-            if (id.includes('src/i18n/translations')) {
-              return 'i18n-translations';
             }
           },
         },

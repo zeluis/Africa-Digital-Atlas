@@ -107,14 +107,8 @@ export const AtlasDialog: React.FC<AtlasDialogProps> = ({
       }
 
       const prev = previousFocusRef.current;
-      if (prev && prev.isConnected && activeDialogStack.length === 0) {
-        // Restore focus cleanly on next frame after inert is removed
-        requestAnimationFrame(() => {
-          if (prev.isConnected) {
-            prev.focus({ preventScroll: true });
-          }
-        });
-      } else if (prev && prev.isConnected && activeDialogStack.length > 0) {
+      if (prev && prev.isConnected) {
+        // Restore focus cleanly on next frame after inert is removed (if top-level)
         requestAnimationFrame(() => {
           if (prev.isConnected) {
             prev.focus({ preventScroll: true });
@@ -144,6 +138,7 @@ export const AtlasDialog: React.FC<AtlasDialogProps> = ({
     });
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.isComposing || e.keyCode === 229) return;
       // Only handle key events for the topmost dialog in stack
       if (activeDialogStack[activeDialogStack.length - 1] !== dialogTokenRef.current) {
         return;

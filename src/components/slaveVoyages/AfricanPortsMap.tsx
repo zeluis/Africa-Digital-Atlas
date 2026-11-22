@@ -624,8 +624,10 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
   // Keyboard Navigation: Esc, +, -, 0, f, Alt+Left, Alt+Right
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
+      if (e.isComposing || e.keyCode === 229) return;
+      if (document.querySelector('[data-dialog-open="true"]')) return;
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) return;
 
       if (e.key === 'Escape') {
         if (isMetadataOpen) {

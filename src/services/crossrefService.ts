@@ -9,6 +9,7 @@
  * 5. Generates high-confidence academic fallbacks (Google Scholar, Crossref Search, Semantic Scholar).
  * 6. Implements client-side in-memory and localStorage caching to minimize network overhead.
  */
+import { parseCrossrefSearchResponse, parseCrossrefWorkResponse } from '../utils/apiSchemas';
 
 export interface CrossrefAuthor {
   given?: string;
@@ -241,8 +242,22 @@ export async function verifyDoiWithCrossref(
       return result;
     }
 
-    const data = await response.json();
-    const msg = data.message || {};
+    const rawData = await response.json();
+    const parsed = parseCrossrefWorkResponse(rawData);
+    if (!parsed.success) {
+      return {
+        doi: cleanDoi,
+        status: 'error',
+        statusCode: 200,
+        expectedTitle,
+        resolvedUrl: canonicalUrl,
+        fallbackUrls: fallbacks,
+        verifiedAt: new Date().toISOString(),
+        source: 'crossref_api',
+        errorMessage: 'Unexpected Crossref API payload shape'
+      };
+    }
+    const msg = parsed.output.message;
 
     const rawTitle = Array.isArray(msg.title) ? msg.title[0] : (msg.title || '');
     const cleanActualTitle = (rawTitle || '').replace(/<[^>]*>/g, '').trim();
@@ -346,10 +361,11 @@ export async function searchCrossrefByTitle(title: string, author?: string): Pro
 
     if (!response.ok) return [];
 
-    const data = await response.json();
-    const items = data.message?.items || [];
+    const rawData = await response.json();
+    const parsedSearch = parseCrossrefSearchResponse(rawData);
+    const items = parsedSearch.success ? parsedSearch.output.message.items : [];
 
-    return items.map((msg: any) => {
+    return items.map((msg) => {
       const rawTitle = Array.isArray(msg.title) ? msg.title[0] : (msg.title || '');
       const authors: string[] = [];
       if (Array.isArray(msg.author)) {

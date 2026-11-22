@@ -10,7 +10,15 @@ import { COUNTRY_SILHOUETTES, ensureCountrySilhouettesLoaded } from '../data/cou
 import { getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
 import { UN_M49_NUMERIC_CODES } from '../data/svgGeographySystem';
 
-import { downloadFile } from './exportUtils';
+import { downloadBlob, downloadFile, escapeCsvCell } from './exportUtils';
+import {
+  AFRIATA_DOI,
+  AFRIATA_ORCID_URL,
+  AFRIATA_SITE_URL,
+  buildPlatformCitations,
+  escapeBibtexValue,
+  sanitizeRisValue,
+} from './citationFormatter';
 
 /**
  * Downloads a string as a formatted academic reference file
@@ -25,18 +33,18 @@ export const downloadAcademicFile = (content: string, filename: string, mimeType
 export const exportBibTeXFile = (illustration: SlaveTradeIllustration) => {
   const year = illustration.date ? illustration.date.replace(/[^0-9]/g, '').slice(0, 4) || 'n.d.' : 'n.d.';
   const authors = illustration.researchers && illustration.researchers.length > 0
-    ? illustration.researchers.join(' and ')
+    ? illustration.researchers.map(escapeBibtexValue).join(' and ')
     : 'Handler, Jerome and Tuite, Michael';
   const cleanId = `plate_${illustration.objectId || illustration.regId.replace(/[^a-zA-Z0-9]/g, '_')}`;
   const url = illustration.slaveryImagesPage || `http://www.slaveryimages.org/s/slaveryimages/item/${illustration.objectId}`;
 
   const bibtex = `@misc{${cleanId},
   author = {${authors}},
-  title = {{${illustration.title}}},
-  year = {${year}},
+  title = {{${escapeBibtexValue(illustration.title)}}},
+  year = {${escapeBibtexValue(year)}},
   howpublished = {Slavery Images: A Visual Record of the African Slave Trade},
-  note = {Plate ID: ${illustration.regId}, Source: ${illustration.source}},
-  url = {${url}}
+  note = {Plate ID: ${escapeBibtexValue(illustration.regId)}, Source: ${escapeBibtexValue(illustration.source)}},
+  url = {${escapeBibtexValue(url)}}
 }`;
 
   downloadAcademicFile(bibtex, `${cleanId}.bib`, 'application/x-bibtex');
@@ -48,18 +56,18 @@ export const exportBibTeXFile = (illustration: SlaveTradeIllustration) => {
 export const exportRISFile = (illustration: SlaveTradeIllustration) => {
   const year = illustration.date ? illustration.date.replace(/[^0-9]/g, '').slice(0, 4) || '' : '';
   const authors = illustration.researchers && illustration.researchers.length > 0
-    ? illustration.researchers.map(a => `AU  - ${a}`).join('\n')
+    ? illustration.researchers.map(a => `AU  - ${sanitizeRisValue(a)}`).join('\n')
     : 'AU  - Handler, Jerome\nAU  - Tuite, Michael';
   const url = illustration.slaveryImagesPage || `http://www.slaveryimages.org/s/slaveryimages/item/${illustration.objectId}`;
 
   const ris = `TY  - ART
-TI  - ${illustration.title}
+TI  - ${sanitizeRisValue(illustration.title)}
 ${authors}
-PY  - ${year}
-PB  - ${illustration.source}
-M3  - Plate ${illustration.regId}
-UR  - ${url}
-N2  - ${(illustration.description || '').replace(/\n+/g, ' ')}
+PY  - ${sanitizeRisValue(year)}
+PB  - ${sanitizeRisValue(illustration.source)}
+M3  - Plate ${sanitizeRisValue(illustration.regId)}
+UR  - ${sanitizeRisValue(url)}
+N2  - ${sanitizeRisValue(illustration.description || '')}
 ER  - `;
 
   downloadAcademicFile(ris, `plate_${illustration.regId.replace(/[^a-zA-Z0-9]/g, '_')}.ris`, 'application/x-research-info-systems');
@@ -106,13 +114,13 @@ export const exportHistoricalMapPlateBibTeX = (plate: HistoricalMapPlate) => {
     : 'African littoral and continental interior';
 
   const bibtex = `@misc{${cleanId},
-  author = {${author}},
-  title = {{${plate.title}}},
-  year = {${year}},
+  author = {${escapeBibtexValue(author)}},
+  title = {{${escapeBibtexValue(plate.title)}}},
+  year = {${escapeBibtexValue(year)}},
   howpublished = {Afriata: Africa Data Atlas \\& Cartographic Observatory},
-  organization = {${plate.institution}},
-  note = {Source: ${plate.source}. Historical Region: ${plate.region}. Documented toponyms: ${toponyms}},
-  url = {${url}}
+  organization = {${escapeBibtexValue(plate.institution)}},
+  note = {Source: ${escapeBibtexValue(plate.source)}. Historical Region: ${escapeBibtexValue(plate.region)}. Documented toponyms: ${escapeBibtexValue(toponyms)}},
+  url = {${escapeBibtexValue(url)}}
 }`;
 
   downloadAcademicFile(bibtex, `${cleanId}.bib`, 'application/x-bibtex');
@@ -130,18 +138,18 @@ export const exportHistoricalMapPlateRIS = (plate: HistoricalMapPlate) => {
     : `https://zeluis.github.io/Africa-Digital-Atlas/#archival-cartography?plate=${plate.id}`;
 
   const ris = `TY  - MAP
-TI  - ${plate.title}
-AU  - ${author}
-PY  - ${year}
-PB  - ${plate.institution}
-M3  - Archival Cartographic Plate ${plate.id}
-UR  - ${url}
-N1  - Source: ${plate.source}
-N2  - ${plate.description.replace(/\n+/g, ' ')} Historical significance: ${plate.historicalSignificance.replace(/\n+/g, ' ')}
+TI  - ${sanitizeRisValue(plate.title)}
+AU  - ${sanitizeRisValue(author)}
+PY  - ${sanitizeRisValue(year)}
+PB  - ${sanitizeRisValue(plate.institution)}
+M3  - Archival Cartographic Plate ${sanitizeRisValue(plate.id)}
+UR  - ${sanitizeRisValue(url)}
+N1  - Source: ${sanitizeRisValue(plate.source)}
+N2  - ${sanitizeRisValue(plate.description)} Historical significance: ${sanitizeRisValue(plate.historicalSignificance)}
 KW  - Cartography
 KW  - Africa
 KW  - Historical Geography
-KW  - ${plate.region}
+KW  - ${sanitizeRisValue(plate.region)}
 ER  - `;
 
   downloadAcademicFile(ris, `${cleanId}.ris`, 'application/x-research-info-systems');
@@ -159,11 +167,11 @@ export const exportCountryDossierBibTeX = (country: { id: string; name: string; 
 
   const bibtex = `@dataset{${cleanId},
   author = {{Afriata Sovereign Data Consortium}},
-  title = {{${country.name} (${country.id}): Comprehensive Sovereign Macroeconomic and Development Dossier}},
+  title = {{${escapeBibtexValue(country.name)} (${escapeBibtexValue(country.id)}): Sovereign Macroeconomic and Development Dossier}},
   year = {${currentYear}},
   publisher = {Afriata: Africa Data Atlas \\& Cartographic Observatory},
   note = {Multilateral Harmonization: World Bank, IMF, African Development Bank, and UNESCO archives. DOI: 10.6084/m9.figshare.34065711},
-  url = {${url}}
+  url = {${escapeBibtexValue(url)}}
 }`;
 
   downloadAcademicFile(bibtex, `${cleanId}.bib`, 'application/x-bibtex');
@@ -180,17 +188,17 @@ export const exportCountryDossierRIS = (country: { id: string; name: string; unR
     : `https://zeluis.github.io/Africa-Digital-Atlas/#countries/${country.id}`;
 
   const ris = `TY  - DATA
-TI  - ${country.name} (${country.id}): Comprehensive Sovereign Macroeconomic and Development Dossier
+TI  - ${sanitizeRisValue(country.name)} (${sanitizeRisValue(country.id)}): Sovereign Macroeconomic and Development Dossier
 AU  - Afriata Sovereign Data Consortium
 PY  - ${currentYear}
 PB  - Afriata: Africa Data Atlas & Cartographic Observatory
 DO  - 10.6084/m9.figshare.34065711
-UR  - ${url}
+UR  - ${sanitizeRisValue(url)}
 N1  - Harmonized with World Bank WDI, IMF WEO, and UNESCO World Heritage Centre
 KW  - Africa
 KW  - Macroeconomics
-KW  - ${country.name}
-KW  - ${country.unRegion || 'African Union'}
+KW  - ${sanitizeRisValue(country.name)}
+KW  - ${sanitizeRisValue(country.unRegion || 'African Union')}
 ER  - `;
 
   downloadAcademicFile(ris, `${cleanId}.ris`, 'application/x-research-info-systems');
@@ -1876,4 +1884,101 @@ export const exportCustomBriefingDossierPDF = async (
   doc.save('Afriata_Briefing_Dossier_Compilation.pdf');
 };
 
+/**
+ * Compiles a portable, offline Research Archive (.zip) via lazy-loaded fflate
+ * bundling bibliographic citations (.bib, .ris, CITATION.cff, .enw),
+ * provenance manifest JSON, and formula-escaped macro country summary CSV.
+ */
+export async function exportReproducibilityBundleZip(options?: {
+  savedCountryIds?: string[];
+  savedPlateIds?: string[];
+  doi?: string;
+  pageUrl?: string;
+  version?: string;
+}): Promise<void> {
+  const [{ zipSync, strToU8 }, { atlas }] = await Promise.all([
+    import('fflate'),
+    import('../data/atlas-store'),
+  ]);
+
+  const citations = buildPlatformCitations({
+    doi: options?.doi || AFRIATA_DOI,
+    pageUrl: options?.pageUrl || (typeof window !== 'undefined' ? window.location.href : AFRIATA_SITE_URL),
+    version: options?.version || '2026.1',
+  });
+
+  const savedCountries = options?.savedCountryIds || [];
+  const savedPlates = options?.savedPlateIds || [];
+  const entities = savedCountries.length > 0
+    ? savedCountries
+        .map((id) => atlas.getEntity(id))
+        .filter((e): e is NonNullable<typeof e> => Boolean(e))
+    : atlas.getAllEntities();
+
+  const csvHeader = [
+    'ISO3',
+    'ISO2',
+    'Country',
+    'Region',
+    'Capital',
+    'Population',
+    'Nominal_GDP_USD_Bn',
+    'HDI',
+  ].join(',');
+
+  const csvRows = entities.map((entity) => {
+    const pop = atlas.getIndicatorValue(entity.id, 'SP.POP.TOTL');
+    const gdp = atlas.getIndicatorValue(entity.id, 'NY.GDP.MKTP.CD');
+    const hdi = atlas.getIndicatorValue(entity.id, 'UNDP.HDI.INDEX');
+    return [
+      escapeCsvCell(entity.id),
+      escapeCsvCell(entity.iso2),
+      escapeCsvCell(entity.name, { quoteAllStrings: true }),
+      escapeCsvCell(entity.region, { quoteAllStrings: true }),
+      escapeCsvCell(entity.capital, { quoteAllStrings: true }),
+      escapeCsvCell(pop ?? ''),
+      escapeCsvCell(gdp ?? ''),
+      escapeCsvCell(hdi ?? ''),
+    ].join(',');
+  });
+
+  const manifest = {
+    platform: 'Afriata: Africa Data Atlas & Cartographic Observatory',
+    doi: options?.doi || AFRIATA_DOI,
+    orcid: AFRIATA_ORCID_URL,
+    version: options?.version || '2026.1',
+    exportedAt: new Date().toISOString(),
+    licenses: {
+      code: 'MIT',
+      data: 'ODC-By-1.0',
+      assets: 'CC-BY-4.0',
+    },
+    scope: savedCountries.length > 0 ? 'bookmarked_selection' : 'full_continent_54_states',
+    countryCount: entities.length,
+    bookmarkedPlatesCount: savedPlates.length,
+    files: [
+      'afriata_citation.bib',
+      'afriata_citation.ris',
+      'CITATION.cff',
+      'afriata_citation.enw',
+      'countries_macro_summary.csv',
+      'provenance_manifest.json',
+    ],
+  };
+
+  const zipped = zipSync({
+    'afriata_citation.bib': strToU8(citations.bibtex),
+    'afriata_citation.ris': strToU8(citations.ris),
+    'CITATION.cff': strToU8(citations.cff),
+    'afriata_citation.enw': strToU8(citations.enw),
+    'countries_macro_summary.csv': strToU8('\uFEFF' + [csvHeader, ...csvRows].join('\r\n')),
+    'provenance_manifest.json': strToU8(JSON.stringify(manifest, null, 2)),
+  });
+
+  const dateTag = new Date().toISOString().slice(0, 10);
+  downloadBlob(
+    `afriata_research_bundle_${dateTag}.zip`,
+    new Blob([Uint8Array.from(zipped)], { type: 'application/zip' })
+  );
+}
 

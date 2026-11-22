@@ -157,6 +157,8 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
   // Keyboard accessibility: dismiss panel or return to overview with Escape
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.isComposing || e.keyCode === 229) return;
+      if (document.querySelector('[data-dialog-open="true"]')) return;
       if (e.key === 'Escape') {
         if (isSeasonalityActive) {
           handleToggleSeasonality();

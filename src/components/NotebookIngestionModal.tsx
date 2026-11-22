@@ -213,6 +213,7 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.isComposing || e.keyCode === 229) return;
       if (e.key === 'Escape') {
         e.preventDefault();
         onClose();

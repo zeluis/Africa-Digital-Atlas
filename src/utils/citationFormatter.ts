@@ -35,6 +35,19 @@ export interface PlatformCitationOptions {
   version?: string;
 }
 
+export function escapeBibtexValue(value: string | null | undefined): string {
+  if (!value) return '';
+  return String(value)
+    .replace(/\r?\n+/g, ' ')
+    .replace(/(^|[^\\])([&%$#_])/g, '$1\\$2')
+    .trim();
+}
+
+export function sanitizeRisValue(value: string | null | undefined): string {
+  if (!value) return '';
+  return String(value).replace(/\r?\n+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 export function buildPlatformCitations(
   options: PlatformCitationOptions = {}
 ): Record<PlatformCitationFormat, string> {
@@ -57,10 +70,10 @@ export function buildPlatformCitations(
   title     = {{Africa Data Atlas \\& Cartographic Observatory: An interactive atlas of geography, indicators and historical trade flows}},
   year      = {2026},
   publisher = {Afriata},
-  doi       = {${doi}},
-  url       = {${pageUrl}},
-  version   = {${version}},
-  note      = {Accessed: ${accessDate}}
+  doi       = {${escapeBibtexValue(doi)}},
+  url       = {${escapeBibtexValue(pageUrl)}},
+  version   = {${escapeBibtexValue(version)}},
+  note      = {Accessed: ${escapeBibtexValue(accessDate)}}
 }
 
 @software{correia_afriata_vector_engine_2026,
@@ -69,8 +82,8 @@ export function buildPlatformCitations(
   title     = {{Afriata Continental Vector Topology \\& High-Precision Geodetic Engine (5,796 x 5,867)}},
   year      = {2026},
   publisher = {Afriata Cartographic Observatory},
-  doi       = {${doi}},
-  url       = {${pageUrl}}
+  doi       = {${escapeBibtexValue(doi)}},
+  url       = {${escapeBibtexValue(pageUrl)}}
 }`;
 
   const ris = `TY  - DATA
@@ -78,9 +91,9 @@ TI  - Africa Data Atlas & Cartographic Observatory: An interactive atlas of geog
 AU  - Correia, ZéLuis F.
 PY  - 2026
 PB  - Afriata
-DO  - ${doi}
-UR  - ${pageUrl}
-Y2  - ${accessDate}
+DO  - ${sanitizeRisValue(doi)}
+UR  - ${sanitizeRisValue(pageUrl)}
+Y2  - ${sanitizeRisValue(accessDate)}
 ER  -`;
 
   const cff = `cff-version: 1.2.0
@@ -145,38 +158,44 @@ export function buildReportCitation(
       return `${authorsStr}, ${year}. ${title}${subtitle}. ${seriesLabel}. Available at: <${doiUrl}> (ORCID: ${AFRIATA_ORCID_URL}).`;
     case 'bibtex': {
       const citeKey = report.id.replace(/[^a-zA-Z0-9]/g, '_') + '_' + year;
+      const escapedTitle = escapeBibtexValue(title);
+      const escapedSubtitle = escapeBibtexValue(report.subtitle || '');
+      const escapedAuthors = authorsList.map(escapeBibtexValue).join(' and ');
+      const escapedSeries = escapeBibtexValue(seriesLabel);
+      const escapedDoi = escapeBibtexValue(doi);
+      const escapedUrl = escapeBibtexValue(doiUrl);
       if (isWorkingPaper) {
         return `@techreport{${citeKey},
-  title={${title}},
-  subtitle={${report.subtitle || ''}},
-  author={${authorsList.join(' and ')}},
-  institution={${seriesLabel}},
+  title={${escapedTitle}},
+  subtitle={${escapedSubtitle}},
+  author={${escapedAuthors}},
+  institution={${escapedSeries}},
   type={Working Paper},
-  year={${year}},
-  doi={${doi}},
-  url={${doiUrl}},
+  year={${escapeBibtexValue(year)}},
+  doi={${escapedDoi}},
+  url={${escapedUrl}},
   note={Repository: ${AFRIATA_REPO_URL}; ORCID: ${AFRIATA_ORCID}}
 }`;
       }
       return `@article{${citeKey},
-  title={${title}},
-  subtitle={${report.subtitle || ''}},
-  author={${authorsList.join(' and ')}},
+  title={${escapedTitle}},
+  subtitle={${escapedSubtitle}},
+  author={${escapedAuthors}},
   journal={Afriata: Africa Data Atlas \\& Cartographic Observatory},
-  year={${year}},
-  doi={${doi}},
-  url={${doiUrl}},
+  year={${escapeBibtexValue(year)}},
+  doi={${escapedDoi}},
+  url={${escapedUrl}},
   note={Repository: ${AFRIATA_REPO_URL}; ORCID: ${AFRIATA_ORCID}}
 }`;
     }
     case 'ris':
       return `TY  - ${isWorkingPaper ? 'RPRT' : 'JOUR'}
-TI  - ${title}${subtitle}
-${authorsList.map((a) => `AU  - ${a}`).join('\n')}
-${isWorkingPaper ? 'PB' : 'JO'}  - ${seriesLabel}
-PY  - ${year}
-DO  - ${doi}
-UR  - ${doiUrl}
+TI  - ${sanitizeRisValue(title + subtitle)}
+${authorsList.map((a) => `AU  - ${sanitizeRisValue(a)}`).join('\n')}
+${isWorkingPaper ? 'PB' : 'JO'}  - ${sanitizeRisValue(seriesLabel)}
+PY  - ${sanitizeRisValue(year)}
+DO  - ${sanitizeRisValue(doi)}
+UR  - ${sanitizeRisValue(doiUrl)}
 N1  - ORCID: ${AFRIATA_ORCID_URL}
 ER  - `;
     case 'jsonld': {

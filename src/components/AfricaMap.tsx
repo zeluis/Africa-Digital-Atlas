@@ -1071,6 +1071,8 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   // Universal Keyboard Cartographic Navigation (Pillar I Section 1.3)
   useEffect(() => {
     const handleMapKeyDown = (e: KeyboardEvent) => {
+      if (e.isComposing || e.keyCode === 229) return;
+      if (document.querySelector('[data-dialog-open="true"]')) return;
       const target = e.target as HTMLElement | null;
       if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) {
         return;

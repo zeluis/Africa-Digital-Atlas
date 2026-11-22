@@ -98,6 +98,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
       }
     };
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.isComposing || e.keyCode === 229) return;
       if (e.key === 'Escape') setIsThemePanelOpen(false);
     };
     if (isThemePanelOpen) {

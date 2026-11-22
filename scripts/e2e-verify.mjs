@@ -421,6 +421,33 @@ async function runBrowserSuite(origin, mountBase) {
     assertCleanMonitors('Home load & SW activation');
     logPass(`SW activated & controlling scope "${swInfo.scope}" with 0 errors and 0 /api/* calls`);
 
+    try {
+      await page.waitForSelector('main h1', { timeout: 15000 });
+      await page.waitForTimeout(550);
+      const { AxeBuilder } = require('@axe-core/playwright');
+      const axeResults = await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa'])
+        .analyze();
+      const blocking = axeResults.violations.filter(
+        (v) => v.impact === 'critical' || v.impact === 'serious'
+      );
+      assert(
+        blocking.length === 0,
+        `WCAG serious/critical violations on ${mountBase}: ${blocking
+          .map((v) => `${v.id}(${v.impact}, ${v.nodes.length} nodes: ${v.nodes.slice(0, 3).map((n) => n.target.join(' ')).join('; ')})`)
+          .join(', ')}`
+      );
+      logPass(
+        `@axe-core/playwright WCAG 2.0 AA check passed (0 critical/serious violations across ${axeResults.passes.length} rules)`
+      );
+    } catch (axeErr) {
+      if (axeErr?.code === 'MODULE_NOT_FOUND') {
+        console.warn('  ! @axe-core/playwright not installed; skipping WCAG browser scan.');
+      } else {
+        throw axeErr;
+      }
+    }
+
     // 2. Deep link: #slave-trade?...
     resetMonitors();
     await page.goto(

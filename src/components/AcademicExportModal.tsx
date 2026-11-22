@@ -15,7 +15,10 @@ import {
   Award
 } from 'lucide-react';
 import { downloadFile } from '../utils/exportUtils';
-import { exportCustomBriefingDossierPDF } from '../utils/academicExport';
+import {
+  exportCustomBriefingDossierPDF,
+  exportReproducibilityBundleZip,
+} from '../utils/academicExport';
 import { useSavedEntities } from '../contexts/SavedEntitiesContext';
 import { AtlasDialog } from './common/AtlasDialog';
 import {
@@ -63,6 +66,7 @@ export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
   const [isExportingImage, setIsExportingImage] = useState<boolean>(false);
   const [isGeneratingDossier, setIsGeneratingDossier] = useState<boolean>(false);
+  const [isPackagingZip, setIsPackagingZip] = useState<boolean>(false);
   const { savedCountries, savedPlates, toggleSaveCountry, toggleSavePlate } = useSavedEntities();
 
   useEffect(() => {
@@ -122,6 +126,21 @@ export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
 
   const handleDownloadEnw = () => {
     downloadFile('afriata_atlas_citation.enw', enwCitation, 'text/plain;charset=utf-8');
+  };
+
+  const handleDownloadZipBundle = async () => {
+    setIsPackagingZip(true);
+    try {
+      await exportReproducibilityBundleZip({
+        savedCountryIds: savedCountries,
+        savedPlateIds: savedPlates,
+        doi,
+        pageUrl,
+        version: citationMetadata.version,
+      });
+    } finally {
+      setIsPackagingZip(false);
+    }
   };
 
   return (
@@ -421,6 +440,16 @@ export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
             >
               <Download className="w-3.5 h-3.5 text-stone-500" />
               <span>.enw</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleDownloadZipBundle}
+              disabled={isPackagingZip}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600/10 hover:bg-emerald-600/20 border border-emerald-600/30 text-emerald-800 dark:text-emerald-300 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50"
+              title="Download citations, provenance manifest, and macro CSV as a portable .zip archive"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>{isPackagingZip ? 'Bundling...' : 'Bundle (.zip)'}</span>
             </button>
           </div>
 

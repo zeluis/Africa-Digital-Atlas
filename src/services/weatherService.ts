@@ -3,6 +3,7 @@
  * Provides real-time meteorological observations for African capital cities
  * with offline resilience, WMO code decoding, wind vectors, and localStorage caching.
  */
+import { parseOpenMeteoResponse } from '../utils/apiSchemas';
 
 export interface LiveWeatherData {
   temperatureC: number;
@@ -140,17 +141,17 @@ export async function fetchLiveWeather(
     clearTimeout(timeoutId);
 
     if (res.ok) {
-      const data = await res.json();
-      const current = data.current;
-
-      if (current) {
+      const rawPayload = await res.json();
+      const validated = parseOpenMeteoResponse(rawPayload);
+      if (validated.success) {
+        const current = validated.output.current;
         const tempC = Math.round(current.temperature_2m * 10) / 10;
         const tempF = Math.round((tempC * 9) / 5 + 32);
-        const apparentC = current.apparent_temperature ? Math.round(current.apparent_temperature * 10) / 10 : tempC;
+        const apparentC = current.apparent_temperature != null ? Math.round(current.apparent_temperature * 10) / 10 : tempC;
         const apparentF = Math.round((apparentC * 9) / 5 + 32);
-        const humidity = Math.round(current.relative_humidity_2m || fallbackBaseline.humidity);
-        const windSpeed = Math.round(current.wind_speed_10m || fallbackBaseline.windSpeedKmh);
-        const windDir = Math.round(current.wind_direction_10m || fallbackBaseline.windDirectionDeg);
+        const humidity = Math.round(current.relative_humidity_2m ?? fallbackBaseline.humidity);
+        const windSpeed = Math.round(current.wind_speed_10m ?? fallbackBaseline.windSpeedKmh);
+        const windDir = Math.round(current.wind_direction_10m ?? fallbackBaseline.windDirectionDeg);
         const weatherCode = current.weather_code ?? fallbackBaseline.weatherCode;
         const condition = decodeWmoCode(weatherCode).description;
         const isDay = current.is_day === 1;
@@ -164,7 +165,7 @@ export async function fetchLiveWeather(
           windSpeedKmh: windSpeed,
           windDirectionDeg: windDir,
           windCardinal: degreesToCardinal(windDir),
-          precipitationMm: current.precipitation || 0,
+          precipitationMm: current.precipitation ?? 0,
           weatherCode,
           condition,
           isDay,

@@ -204,7 +204,16 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!illustration) return;
+      if (!illustration || e.isComposing || e.keyCode === 229) return;
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) {
+        return;
+      }
+      const openDialogs = document.querySelectorAll('[data-dialog-open="true"]');
+      if (openDialogs.length > 0) {
+        const topDialog = openDialogs[openDialogs.length - 1];
+        if (!containerRef.current || !topDialog.contains(containerRef.current)) return;
+      }
       if (e.key === 'Escape' && mode === 'embedded' && onClose) {
         onClose();
       } else if (e.key === '+' || e.key === '=') {

@@ -303,8 +303,15 @@ export function useCanvasViewport(
   // Keyboard navigation & accessibility controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if user is currently typing in an input/textarea/select
-      if ((e.target as HTMLElement)?.closest('input, textarea, select')) return;
+      if (e.isComposing || e.keyCode === 229) return;
+      // Ignore if user is currently typing in an input/textarea/select/contentEditable
+      const target = e.target as HTMLElement | null;
+      if (target?.closest('input, textarea, select') || target?.isContentEditable) return;
+      const openDialogs = document.querySelectorAll('[data-dialog-open="true"]');
+      if (openDialogs.length > 0) {
+        const topDialog = openDialogs[openDialogs.length - 1];
+        if (!containerRef.current || !topDialog.contains(containerRef.current)) return;
+      }
 
       const step = 48;
       switch (e.key) {

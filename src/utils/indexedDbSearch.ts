@@ -1,6 +1,10 @@
+import MiniSearch from 'minisearch';
+import { tokenizeSearchText } from './textNormalize';
+
 /**
- * Client-side IndexedDB Full-Text Search Engine for Africa Data Atlas
- * Indexes records, Wikipedia dossiers, working papers, toponyms, and country metadata for instant offline full-text search.
+ * Client-side IndexedDB + MiniSearch Full-Text Search Engine for Africa Data Atlas
+ * Indexes records, Wikipedia dossiers, working papers, toponyms, and country metadata
+ * with Unicode diacritic folding, prefix matching, and fuzzy tolerance for offline search.
  */
 
 export interface SearchableDocument {
@@ -21,6 +25,8 @@ export class AtlasSearchEngine {
   private static isInitialized = false;
   private static cachedDocs: SearchableDocument[] | null = null;
   private static hydrationPromise: Promise<SearchableDocument[]> | null = null;
+  private static searchIndex: MiniSearch<SearchableDocument> | null = null;
+  private static docsById: Map<string, SearchableDocument> = new Map();
 
   static async init(): Promise<void> {
     if (this.isInitialized && this.db) return;
@@ -49,6 +55,21 @@ export class AtlasSearchEngine {
     });
   }
 
+  private static buildMiniSearch(docs: SearchableDocument[]): MiniSearch<SearchableDocument> {
+    this.docsById = new Map(docs.map((doc) => [doc.id, doc]));
+    const index = new MiniSearch<SearchableDocument>({
+      fields: ['title', 'category', 'snippet'],
+      storeFields: ['id'],
+      tokenize: (text) => tokenizeSearchText(text),
+      processTerm: (term) => (term.length >= 1 ? term : null),
+    });
+    if (docs.length > 0) {
+      index.addAll(docs);
+    }
+    this.searchIndex = index;
+    return index;
+  }
+
   private static async loadAllDocuments(): Promise<SearchableDocument[]> {
     if (this.cachedDocs !== null) {
       return this.cachedDocs;
@@ -70,6 +91,7 @@ export class AtlasSearchEngine {
           const allDocs = (request.result || []) as SearchableDocument[];
           if (this.hydrationPromise === promise) {
             this.cachedDocs = allDocs;
+            this.buildMiniSearch(allDocs);
             this.hydrationPromise = null;
           }
           resolve(allDocs);
@@ -96,6 +118,7 @@ export class AtlasSearchEngine {
   static async indexDocuments(docs: SearchableDocument[]): Promise<void> {
     this.cachedDocs = null;
     this.hydrationPromise = null;
+    this.searchIndex = null;
     await this.init();
     if (!this.db) return;
 
@@ -107,6 +130,7 @@ export class AtlasSearchEngine {
         transaction.oncomplete = () => {
           this.cachedDocs = null;
           this.hydrationPromise = null;
+          this.searchIndex = null;
           resolve();
         };
         transaction.onerror = () => resolve();
@@ -122,26 +146,17 @@ export class AtlasSearchEngine {
     if (!this.db) return [];
 
     const allDocs = await this.loadAllDocuments();
-    const queryLower = query.toLowerCase().trim();
-    const terms = queryLower.split(/\s+/);
+    const index = this.searchIndex ?? this.buildMiniSearch(allDocs);
+    const results = index.search(query, {
+      prefix: true,
+      fuzzy: 0.2,
+      boost: { title: 4, category: 1.5, snippet: 1 },
+      combineWith: 'OR',
+    });
 
-    const scored: { doc: SearchableDocument; score: number }[] = [];
-    for (const doc of allDocs) {
-      let score = 0;
-      const titleLower = doc.title.toLowerCase();
-      const snippetLower = doc.snippet.toLowerCase();
-
-      for (const term of terms) {
-        if (titleLower.includes(term)) score += 10;
-        if (snippetLower.includes(term)) score += 3;
-      }
-
-      if (score > 0) {
-        scored.push({ doc, score });
-      }
-    }
-
-    scored.sort((a, b) => b.score - a.score);
-    return scored.slice(0, limit).map(item => item.doc);
+    return results
+      .slice(0, limit)
+      .map((hit) => this.docsById.get(String(hit.id)))
+      .filter((doc): doc is SearchableDocument => Boolean(doc));
   }
 }

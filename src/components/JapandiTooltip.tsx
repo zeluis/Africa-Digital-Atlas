@@ -1,4 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useId } from 'react';
+import {
+  computePosition,
+  autoUpdate,
+  offset,
+  flip,
+  shift,
+  type Placement,
+} from '@floating-ui/dom';
 
 interface JapandiTooltipProps {
   content: React.ReactNode;
@@ -18,45 +26,55 @@ export const JapandiTooltip: React.FC<JapandiTooltipProps> = ({
   className = ''
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [coords, setCoords] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [coords, setCoords] = useState<{ x: number; y: number }>({ x: -9999, y: -9999 });
+  const [positioned, setPositioned] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const tooltipId = useRef(`tooltip-${Math.random().toString(36).substring(2, 9)}`).current;
+  const tooltipId = `tooltip-${useId().replace(/:/g, '')}`;
 
-  const handleMouseEnter = () => {
-    updatePosition();
-    setIsVisible(true);
-  };
+  useEffect(() => {
+    if (!isVisible) {
+      setPositioned(false);
+      return;
+    }
 
-  const handleMouseLeave = () => {
-    setIsVisible(false);
-  };
+    const referenceEl = triggerRef.current;
+    const floatingEl = tooltipRef.current;
+    if (!referenceEl || !floatingEl) return;
 
-  const handleFocus = () => {
-    updatePosition();
-    setIsVisible(true);
-  };
+    let active = true;
+    const update = () => {
+      computePosition(referenceEl, floatingEl, {
+        strategy: 'fixed',
+        placement: position as Placement,
+        middleware: [
+          offset(10),
+          flip({ padding: 8 }),
+          shift({ padding: 8 }),
+        ],
+      })
+        .then(({ x, y }) => {
+          if (!active) return;
+          setCoords({ x: Math.round(x), y: Math.round(y) });
+          setPositioned(true);
+        })
+        .catch(() => {});
+    };
 
-  const handleBlur = () => {
-    setIsVisible(false);
-  };
-
-  const updatePosition = () => {
-    if (!triggerRef.current) return;
-    const rect = triggerRef.current.getBoundingClientRect();
-    setCoords({
-      x: rect.left + rect.width / 2,
-      y: position === 'top' ? rect.top : rect.bottom
-    });
-  };
+    const cleanup = autoUpdate(referenceEl, floatingEl, update);
+    return () => {
+      active = false;
+      cleanup();
+    };
+  }, [isVisible, position]);
 
   return (
     <div
       ref={triggerRef}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
+      onMouseEnter={() => setIsVisible(true)}
+      onMouseLeave={() => setIsVisible(false)}
+      onFocus={() => setIsVisible(true)}
+      onBlur={() => setIsVisible(false)}
       aria-describedby={isVisible ? tooltipId : undefined}
       className={`inline-flex relative ${className}`}
     >
@@ -69,15 +87,13 @@ export const JapandiTooltip: React.FC<JapandiTooltipProps> = ({
           ref={tooltipRef}
           id={tooltipId}
           role="tooltip"
-          className="fixed z-50 pointer-events-none max-w-xs transition-all duration-200 ease-[var(--ease-japandi)] animate-enter-japandi"
+          className={`fixed top-0 left-0 z-50 pointer-events-none max-w-xs transition-opacity duration-150 ease-[var(--ease-japandi)] ${positioned ? 'opacity-100 animate-enter-japandi' : 'opacity-0'}`}
           style={{
-            left: `${coords.x}px`,
-            top: position === 'top' ? `${coords.y - 10}px` : `${coords.y + 10}px`,
-            transform: position === 'top' ? 'translate(-50%, -100%)' : 'translate(-50%, 0)'
+            transform: `translate3d(${coords.x}px, ${coords.y}px, 0)`,
           }}
         >
           <div
-            className="rounded-2xl p-3 text-xs bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/80 shadow-2xl ring-1 ring-black/5 dark:ring-white/10 text-zinc-800 dark:text-zinc-200"
+            className="rounded-2xl p-3 text-xs bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/80 shadow-2xl ring-1 ring-black/5 dark:ring-white/10 text-zinc-800 dark:text-zinc-200"
             style={{
               borderTopColor: regionalAccent,
               borderTopWidth: '2.5px'

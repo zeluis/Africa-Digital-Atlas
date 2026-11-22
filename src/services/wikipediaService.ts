@@ -5,6 +5,7 @@ import {
   normalizeEthnicKey,
   ensureWikipediaAtlasLoaded
 } from '../data/wikipediaEthnicAtlas';
+import { parseWikipediaSummaryResponse } from '../utils/apiSchemas';
 
 export type ThematicPillarId = 
   | 'geography' 
@@ -120,7 +121,7 @@ export interface WikiSummaryData {
   thumbnail?: { source: string; width: number; height: number };
   originalimage?: { source: string; width: number; height: number };
   content_urls?: {
-    desktop: { page: string };
+    desktop?: { page: string };
   };
 }
 
@@ -142,7 +143,10 @@ export async function fetchWikipediaSummary(articleTitle: string): Promise<WikiS
       { headers: { 'Accept': 'application/json' } }
     );
     if (!res.ok) return null;
-    const j = await res.json();
+    const raw = await res.json();
+    const validated = parseWikipediaSummaryResponse(raw);
+    if (!validated.success) return null;
+    const j = validated.output;
     
     // Check if thumbnail is a flag, coat of arms, seal, or locator map
     let rawThumb = j.thumbnail?.source || null;
