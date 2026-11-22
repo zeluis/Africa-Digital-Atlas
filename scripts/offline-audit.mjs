@@ -53,6 +53,19 @@ section(`4. Local images not precached: ${media.length} files, ${mb(mediaBytes)}
 console.log(sameOriginRule ? '   A same-origin runtime cache rule exists: images work offline after they have been viewed.'
   : '   No same-origin runtime cache rule: these images are NOT available offline (unless a custom cache such as the archival prewarm holds them).');
 
+const hasDeferredJsonRule = /deferred-atlas-data-cache/.test(cfgTs) && /\.json/i.test(cfgTs);
+const deferredJsons = files.filter((f) => /^assets\/[^/]+\.json$/i.test(f) && !precached.has(f));
+if (deferredJsons.length > 0) {
+  const jsonBytes = deferredJsons.reduce((s, f) => s + size(f), 0);
+  console.log(`   Deferred archival JSONs not precached: ${deferredJsons.length} files, ${mb(jsonBytes)} MB`);
+  if (!hasDeferredJsonRule) {
+    deferredJsons.forEach((f) => console.log(`   NOT CACHED    ${f} -> missing deferred-atlas-data-cache runtimeCaching rule`));
+    problems += deferredJsons.length;
+  } else {
+    console.log('   Covered by deferred-atlas-data-cache (CacheFirst): archival JSONs remain available offline once visited.');
+  }
+}
+
 // 5. Remote hosts the UI depends on
 const srcText = [...walk('src')].filter((f) => /\.(ts|tsx)$/.test(f)).map((f) => fs.readFileSync(f, 'utf8')).join('\n');
 const hosts = {};

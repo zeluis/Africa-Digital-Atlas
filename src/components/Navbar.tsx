@@ -72,19 +72,19 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/90 backdrop-blur-md transition-colors duration-200">
-      <div className="w-full px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14 sm:h-16 gap-2 sm:gap-4">
+      <div className="w-full px-2.5 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16 gap-1 sm:gap-4">
           
           {/* ========================================================= */}
           {/* ZONE 1: BACK BUTTON, BRAND & ACTIVE PAGE TITLE (LEFT)     */}
           {/* ========================================================= */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink">
+          <div className="flex items-center gap-1 sm:gap-2.5 min-w-0 shrink">
             {/* Back Navigation Button */}
             <button
               type="button"
               onClick={onGoBack}
               disabled={!canGoBack}
-              className={`flex items-center justify-center min-w-[40px] min-h-[40px] sm:min-w-0 sm:min-h-0 p-2 rounded-xl border transition-all shrink-0 cursor-pointer ${
+              className={`flex items-center justify-center w-9 h-9 sm:w-auto sm:h-auto p-1.5 sm:p-2 rounded-xl border transition-all shrink-0 cursor-pointer ${
                 canGoBack
                   ? 'border-zinc-200/90 dark:border-zinc-800/90 bg-zinc-100/90 dark:bg-zinc-900/90 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-100 hover:border-amber-400/70 dark:hover:border-amber-600/70 active:scale-95 shadow-2xs'
                   : 'border-zinc-200/30 dark:border-zinc-800/30 bg-zinc-50/40 dark:bg-zinc-900/20 text-zinc-300 dark:text-zinc-700 cursor-not-allowed opacity-40'
@@ -97,7 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Logo & Brand Identity (Standalone Masthead) */}
             <div className="flex items-center gap-2 sm:gap-2.5 select-none shrink-0">
-              <div className="relative flex items-center justify-center transition-transform duration-200 hover:scale-105 active:scale-95 shrink-0 scale-[0.82] sm:scale-100 origin-center">
+              <div className="relative flex items-center justify-center transition-transform duration-200 hover:scale-105 active:scale-95 shrink-0">
                 <button
                   type="button"
                   onClick={() => onSelectTab('overview')}
@@ -108,21 +108,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   className="absolute inset-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
                 />
                 <AfricaUnLogo 
-                  className="shrink-0 drop-shadow-xs pointer-events-none" 
-                  size={54}
+                  className="w-10 h-10 sm:w-[54px] sm:h-[54px] shrink-0 drop-shadow-xs pointer-events-none" 
+                  interactive={false}
                   activeRegion={activeRegion}
-                  onSelectRegion={(reg) => {
-                    const regTabMap: Record<string, CanonicalNavTab> = {
-                      'Northern Africa': 'region-northern',
-                      'Western Africa': 'region-western',
-                      'Central Africa': 'region-central',
-                      'Eastern Africa': 'region-eastern',
-                      'Southern Africa': 'region-southern'
-                    };
-                    if (regTabMap[reg]) {
-                      onSelectTab(regTabMap[reg]);
-                    }
-                  }}
                 />
               </div>
               
@@ -184,7 +172,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* ========================================================= */}
           {/* ZONE 2: EXPLORATION & DISCOVERY COMMAND TRIGGER (CENTER)  */}
           {/* ========================================================= */}
-          <div className="flex-1 min-w-0 flex justify-end sm:block max-w-sm md:max-w-md lg:max-w-lg mx-1 sm:mx-4">
+          <div className="flex-1 min-w-0 flex justify-end sm:block max-w-sm md:max-w-md lg:max-w-lg mx-0.5 sm:mx-4">
             <button
               onClick={onOpenSearch}
               className="w-9 h-9 sm:w-full sm:h-auto flex items-center justify-center sm:justify-between px-0 sm:px-3 py-2 rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-zinc-100/80 dark:bg-zinc-900/80 hover:bg-white dark:hover:bg-zinc-800/90 hover:border-amber-400/60 dark:hover:border-amber-600/60 text-zinc-600 dark:text-zinc-300 text-xs transition-all shadow-2xs group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 shrink-0"
@@ -207,7 +195,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* ========================================================= */}
           {/* ZONE 3: CONTROL DECK & UTILITIES CLUSTER (RIGHT)          */}
           {/* ========================================================= */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             
             {/* Offline PWA indicator (shown only when disconnected) */}
             {!isOnline && (

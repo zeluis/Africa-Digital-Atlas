@@ -15,12 +15,30 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ onOpenColoph
   const [updateDismissed, setUpdateDismissed] = useState(false);
 
   useEffect(() => {
+    let active = true;
     const handleUpdateAvailable = () => {
       setSwUpdateAvailable(true);
       setUpdateDismissed(false);
     };
+
+    if ((window as Window & { __afriataSwUpdatePending?: boolean }).__afriataSwUpdatePending) {
+      handleUpdateAvailable();
+    } else if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+      navigator.serviceWorker
+        .getRegistration()
+        .then((reg) => {
+          if (active && reg?.waiting && navigator.serviceWorker.controller) {
+            handleUpdateAvailable();
+          }
+        })
+        .catch(() => {});
+    }
+
     window.addEventListener('afriata-sw-update-available', handleUpdateAvailable);
-    return () => window.removeEventListener('afriata-sw-update-available', handleUpdateAvailable);
+    return () => {
+      active = false;
+      window.removeEventListener('afriata-sw-update-available', handleUpdateAvailable);
+    };
   }, []);
 
   useEffect(() => {

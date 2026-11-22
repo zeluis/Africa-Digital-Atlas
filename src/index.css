@@ -19,14 +19,8 @@
     --bg-primary: #F6F4EE;
     --surface-card: #FFFFFF;
 
-    /* Canonical Typographic Stack & Fluid Type Scale */
+    /* Canonical Typographic Stack */
     --font-mono: "JetBrains Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-    --type-display: clamp(2.25rem, 1.8rem + 2.2vw, 3.5rem);
-    --type-headline-lg: clamp(1.75rem, 1.45rem + 1.4vw, 2.5rem);
-    --type-headline-md: clamp(1.35rem, 1.15rem + 1.0vw, 1.85rem);
-    --type-title-lg: clamp(1.05rem, 0.98rem + 0.4vw, 1.25rem);
-    --type-body-editorial: clamp(1.00rem, 0.94rem + 0.3vw, 1.1875rem);
-    --type-body-archival: clamp(0.9375rem, 0.88rem + 0.25vw, 1.0625rem);
 
     /* 2. Typography & Borders */
     --text-primary: #191816;
@@ -131,7 +125,7 @@
   }
 
   /* Baseline CSS Modern Typography Wrapping */
-  h1, h2, h3, h4, .font-display, .font-serif-title {
+  h1, h2, h3, h4, .font-display {
     text-wrap: balance;
   }
 
@@ -213,18 +207,14 @@
 /* --------------------------------------------------------------------------
    Kyoto & Swiss Editorial Typography & 3-Core Spatial System
    -------------------------------------------------------------------------- */
-.font-serif-display {
+.font-serif-display,
+.font-serif {
   font-family: "Noto Serif Display Variable", "Noto Serif Display", Georgia, Cambria, "Times New Roman", serif;
   font-optical-sizing: auto;
 }
 
 .font-serif-book {
   font-family: "Noto Serif Variable", "Noto Serif", Georgia, Cambria, "Times New Roman", serif;
-  font-optical-sizing: auto;
-}
-
-.font-serif {
-  font-family: "Noto Serif Display Variable", "Noto Serif Display", Georgia, Cambria, "Times New Roman", serif;
   font-optical-sizing: auto;
 }
 
@@ -240,41 +230,41 @@
 
 /* Fluid Typographic Scale Classes (Utopia.fyi & MD3 Hierarchy) */
 .type-display {
-  font-size: var(--type-display);
+  font-size: clamp(2.25rem, 1.8rem + 2.2vw, 3.5rem);
   line-height: 1.12;
   letter-spacing: -0.03em;
   text-wrap: balance;
 }
 
 .type-headline-lg {
-  font-size: var(--type-headline-lg);
+  font-size: clamp(1.75rem, 1.45rem + 1.4vw, 2.5rem);
   line-height: 1.20;
   letter-spacing: -0.025em;
   text-wrap: balance;
 }
 
 .type-headline-md {
-  font-size: var(--type-headline-md);
+  font-size: clamp(1.35rem, 1.15rem + 1.0vw, 1.85rem);
   line-height: 1.25;
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
 .type-title-lg {
-  font-size: var(--type-title-lg);
+  font-size: clamp(1.05rem, 0.98rem + 0.4vw, 1.25rem);
   line-height: 1.35;
   letter-spacing: -0.01em;
 }
 
 .type-body-editorial {
-  font-size: var(--type-body-editorial);
+  font-size: clamp(1.00rem, 0.94rem + 0.3vw, 1.1875rem);
   line-height: 1.80;
   letter-spacing: -0.005em;
   text-wrap: pretty;
 }
 
 .type-body-archival {
-  font-size: var(--type-body-archival);
+  font-size: clamp(0.9375rem, 0.88rem + 0.25vw, 1.0625rem);
   line-height: 1.68;
   letter-spacing: -0.005em;
   text-wrap: pretty;
@@ -299,7 +289,6 @@
   font-family: "Noto Serif Display Variable", "Noto Serif Display", Georgia, serif;
   font-weight: 600;
   letter-spacing: -0.015em;
-  text-wrap: balance;
 }
 
 /* 3. Core: Academic Research Analysis (Gutenberg CSS Reading Lane, Editorial Polish) */
@@ -307,53 +296,30 @@
 [data-core="academic"] h2 {
   font-family: "Noto Serif Display Variable", "Noto Serif Display", Georgia, serif;
   letter-spacing: -0.02em;
-  text-wrap: balance;
 }
 
 /* Gutenberg-Inspired Editorial Reading Lane (Optimal 62-66ch measure) */
-.editorial-reading-lane,
-[data-core="academic"] .editorial-reading-lane {
+.editorial-reading-lane {
   max-width: 65ch;
   margin-left: auto;
   margin-right: auto;
   font-family: "Noto Serif Variable", "Noto Serif", Georgia, serif;
-  font-size: var(--type-body-editorial);
+  font-size: clamp(1.00rem, 0.94rem + 0.3vw, 1.1875rem);
   line-height: 1.80;
-  text-wrap: pretty;
   hyphens: auto;
   word-break: break-word;
   hanging-punctuation: first last;
 }
 
-.editorial-reading-lane p,
-[data-core="academic"] .editorial-reading-lane p {
+.editorial-reading-lane p {
   margin-top: 1.4em;
   margin-bottom: 1.4em;
 }
 
 /* High-Precision Tabular Numbers for Indicators & Matrices */
-.font-tabular,
-.tabular-nums,
-[data-tabular="true"] {
+.font-tabular {
   font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
-}
-
-/* Scholarly & Monograph Micro-Typography */
-.acronym,
-abbr {
-  font-variant-caps: all-small-caps;
-  font-feature-settings: "c2sc" 1, "smcp" 1;
-  letter-spacing: 0.055em;
-  font-size: 0.94em;
-}
-
-.text-pretty {
-  text-wrap: pretty;
-}
-
-.text-balance {
-  text-wrap: balance;
 }
 
 /* Cartographic Vector Label Halo */
@@ -363,16 +329,6 @@ abbr {
   stroke-linejoin: round;
   stroke-linecap: round;
   text-rendering: geometricPrecision;
-}
-
-/* Shimmer animation for skeleton loading */
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
 }
 
 .animate-shimmer {
@@ -412,22 +368,31 @@ abbr {
   background: transparent;
 }
 
-.sleek-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(120, 113, 108, 0.38);
+.sleek-scrollbar::-webkit-scrollbar-thumb,
+.sleek-scrollbar-amber::-webkit-scrollbar-thumb {
   border-radius: 9999px;
   border: 4px solid transparent;
   background-clip: padding-box;
   transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
+.sleek-scrollbar:hover::-webkit-scrollbar-thumb,
+.sleek-scrollbar::-webkit-scrollbar-thumb:active,
+.sleek-scrollbar-amber:hover::-webkit-scrollbar-thumb,
+.sleek-scrollbar-amber::-webkit-scrollbar-thumb:active {
+  border-width: 2px;
+}
+
+.sleek-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(120, 113, 108, 0.38);
+}
+
 .sleek-scrollbar:hover::-webkit-scrollbar-thumb {
   background-color: rgba(120, 113, 108, 0.75);
-  border-width: 2px;
 }
 
 .sleek-scrollbar::-webkit-scrollbar-thumb:active {
   background-color: rgba(120, 113, 108, 0.95);
-  border-width: 2px;
 }
 
 .dark .sleek-scrollbar::-webkit-scrollbar-thumb {
@@ -436,30 +401,22 @@ abbr {
 
 .dark .sleek-scrollbar:hover::-webkit-scrollbar-thumb {
   background-color: rgba(148, 163, 184, 0.75);
-  border-width: 2px;
 }
 
 .dark .sleek-scrollbar::-webkit-scrollbar-thumb:active {
   background-color: rgba(226, 232, 240, 0.95);
-  border-width: 2px;
 }
 
 .sleek-scrollbar-amber::-webkit-scrollbar-thumb {
   background-color: rgba(217, 119, 6, 0.45);
-  border-radius: 9999px;
-  border: 4px solid transparent;
-  background-clip: padding-box;
-  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .sleek-scrollbar-amber:hover::-webkit-scrollbar-thumb {
   background-color: rgba(217, 119, 6, 0.85);
-  border-width: 2px;
 }
 
 .sleek-scrollbar-amber::-webkit-scrollbar-thumb:active {
   background-color: rgba(180, 83, 9, 1.0);
-  border-width: 2px;
 }
 
 .dark .sleek-scrollbar-amber::-webkit-scrollbar-thumb {
@@ -468,12 +425,10 @@ abbr {
 
 .dark .sleek-scrollbar-amber:hover::-webkit-scrollbar-thumb {
   background-color: rgba(245, 158, 11, 0.85);
-  border-width: 2px;
 }
 
 .dark .sleek-scrollbar-amber::-webkit-scrollbar-thumb:active {
   background-color: rgba(251, 191, 36, 1.0);
-  border-width: 2px;
 }
 
 /* =========================================================================
@@ -482,33 +437,11 @@ abbr {
 
 /* 1. View Transitions API Declarations (Gated by reduced motion) */
 @media (prefers-reduced-motion: no-preference) {
-  @view-transition {
-    navigation: auto;
-  }
-
   ::view-transition-old(root),
   ::view-transition-new(root) {
     animation-duration: 0.24s;
     animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
-
-  ::view-transition-old(dossier-panel) {
-    animation: 0.18s ease-out both fade-out;
-  }
-
-  ::view-transition-new(dossier-panel) {
-    animation: 0.24s cubic-bezier(0.16, 1, 0.3, 1) both fade-in;
-  }
-}
-
-@keyframes fade-out {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(0.98); }
-}
-
-@keyframes fade-in {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
 }
 
 /* 2. Container Query Rules for Adaptive Dossier Layout (@container) */
@@ -531,9 +464,11 @@ abbr {
    ========================================================================= */
 
 /* Suppress Google Translate default banner frames so Afriata navigation remains pristine */
-.goog-te-banner-frame.skiptranslate,
 .goog-te-banner-frame,
-iframe.goog-te-banner-frame {
+.goog-tooltip,
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-te-spinner-pos {
   display: none !important;
   visibility: hidden !important;
   height: 0 !important;
@@ -544,27 +479,10 @@ body {
   position: static !important;
 }
 
-.goog-tooltip,
-.goog-tooltip:hover {
-  display: none !important;
-}
-
 .goog-text-highlight {
   background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
-}
-
-#goog-gt-tt,
-.goog-te-balloon-frame,
-.goog-te-spinner-pos {
-  display: none !important;
-}
-
-/* Provenance and Proper Noun Protection Rules */
-.notranslate,
-[translate="no"] {
-  -webkit-font-smoothing: antialiased;
 }
 
 /* Skip Navigation Link for Accessibility */
@@ -603,20 +521,16 @@ body {
   }
 
   /* Hide interactive web chrome, floating drawers, toolbars, and buttons */
-  #main-app-header,
-  .app-header,
-  nav:not(.printable-content *),
-  footer:not(.printable-content *),
+  nav,
+  footer,
   .no-print,
   button,
-  .filmstrip-tray,
-  aside:not(.printable-content *) {
+  aside {
     display: none !important;
   }
 
   /* Ensure clean multi-page printing of dossiers, working papers, and reports */
   #printable-country-factsheet,
-  .printable-dossier,
   .printable-article,
   main {
     display: block !important;
@@ -634,29 +548,10 @@ body {
   .printable-article .grid {
     display: block !important;
   }
-  .printable-article aside {
-    display: none !important;
-  }
-  .printable-article main {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
 
-  /* Ensure article headers print cleanly */
+  /* Ensure article headers and sections print cleanly */
   .printable-article header,
-  header.printable-header,
-  header.article-header {
-    display: block !important;
-    background: #ffffff !important;
-    color: #111827 !important;
-    border: 1px solid #e5e7eb !important;
-    box-shadow: none !important;
-    margin-bottom: 2rem !important;
-    page-break-after: avoid !important;
-    break-after: avoid !important;
-  }
-
-  /* Ensure sections and articles flow with clean borders and no clipping */
+  header.article-header,
   .printable-article article,
   .printable-article section {
     display: block !important;
@@ -664,6 +559,17 @@ body {
     color: #111827 !important;
     border: 1px solid #e5e7eb !important;
     box-shadow: none !important;
+  }
+
+  .printable-article header,
+  header.article-header {
+    margin-bottom: 2rem !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  .printable-article article,
+  .printable-article section {
     margin-bottom: 1.5rem !important;
     page-break-inside: auto !important;
     break-inside: auto !important;
@@ -713,19 +619,7 @@ body.hide-app-footer #app-footer-container {
   }
 }
 
-/* =========================================================================
-   Mobile Touch Ergonomics & Dynamic Viewport Height Utilities (Baseline 2024)
-   ========================================================================= */
-
-.h-dvh {
-  height: 100vh;
-  height: 100dvh;
-}
-
-.max-h-dvh {
-  max-height: 100vh;
-  max-height: 100dvh;
-}
+/* Mobile Touch Ergonomics */
 
 .touch-sheet {
   overscroll-behavior-y: contain;
@@ -885,37 +779,37 @@ h3[id],
     transform 180ms var(--ease-spring-snappy);
 }
 
-.atlas-select-trigger[data-accent="emerald"] {
+:is(.atlas-select-trigger, .atlas-select-popover)[data-accent="emerald"] {
   --atlas-select-accent: #059669;
   --atlas-select-accent-soft: color-mix(in oklch, #059669 12%, transparent);
 }
 
-.atlas-select-trigger[data-accent="indigo"] {
+:is(.atlas-select-trigger, .atlas-select-popover)[data-accent="indigo"] {
   --atlas-select-accent: #4f46e5;
   --atlas-select-accent-soft: color-mix(in oklch, #4f46e5 12%, transparent);
 }
 
-.atlas-select-trigger[data-accent="stone"] {
+:is(.atlas-select-trigger, .atlas-select-popover)[data-accent="stone"] {
   --atlas-select-accent: #57534e;
   --atlas-select-accent-soft: color-mix(in oklch, #57534e 12%, transparent);
 }
 
-.dark .atlas-select-trigger[data-accent="amber"] {
+.dark :is(.atlas-select-trigger, .atlas-select-popover)[data-accent="amber"] {
   --atlas-select-accent: #fbbf24;
   --atlas-select-accent-soft: color-mix(in oklch, #fbbf24 16%, transparent);
 }
 
-.dark .atlas-select-trigger[data-accent="emerald"] {
+.dark :is(.atlas-select-trigger, .atlas-select-popover)[data-accent="emerald"] {
   --atlas-select-accent: #34d399;
   --atlas-select-accent-soft: color-mix(in oklch, #34d399 16%, transparent);
 }
 
-.dark .atlas-select-trigger[data-accent="indigo"] {
+.dark :is(.atlas-select-trigger, .atlas-select-popover)[data-accent="indigo"] {
   --atlas-select-accent: #818cf8;
   --atlas-select-accent-soft: color-mix(in oklch, #818cf8 16%, transparent);
 }
 
-.dark .atlas-select-trigger[data-accent="stone"] {
+.dark :is(.atlas-select-trigger, .atlas-select-popover)[data-accent="stone"] {
   --atlas-select-accent: #a8a29e;
   --atlas-select-accent-soft: color-mix(in oklch, #a8a29e 16%, transparent);
 }
@@ -994,40 +888,7 @@ h3[id],
   transform-origin: bottom center;
 }
 
-.atlas-select-popover[data-accent="emerald"] {
-  --atlas-select-accent: #059669;
-  --atlas-select-accent-soft: color-mix(in oklch, #059669 12%, transparent);
-}
-
-.atlas-select-popover[data-accent="indigo"] {
-  --atlas-select-accent: #4f46e5;
-  --atlas-select-accent-soft: color-mix(in oklch, #4f46e5 12%, transparent);
-}
-
-.atlas-select-popover[data-accent="stone"] {
-  --atlas-select-accent: #57534e;
-  --atlas-select-accent-soft: color-mix(in oklch, #57534e 12%, transparent);
-}
-
-.dark .atlas-select-popover[data-accent="amber"] {
-  --atlas-select-accent: #fbbf24;
-  --atlas-select-accent-soft: color-mix(in oklch, #fbbf24 16%, transparent);
-}
-
-.dark .atlas-select-popover[data-accent="emerald"] {
-  --atlas-select-accent: #34d399;
-  --atlas-select-accent-soft: color-mix(in oklch, #34d399 16%, transparent);
-}
-
-.dark .atlas-select-popover[data-accent="indigo"] {
-  --atlas-select-accent: #818cf8;
-  --atlas-select-accent-soft: color-mix(in oklch, #818cf8 16%, transparent);
-}
-
-.dark .atlas-select-popover[data-accent="stone"] {
-  --atlas-select-accent: #a8a29e;
-  --atlas-select-accent-soft: color-mix(in oklch, #a8a29e 16%, transparent);
-}
+/* Accent variables shared above via :is(.atlas-select-trigger, .atlas-select-popover) */
 
 .atlas-select-popover:popover-open,
 .atlas-select-popover[data-fallback-open="true"] {
@@ -1108,20 +969,5 @@ h3[id],
   transition:
     transform 180ms var(--ease-spring-snappy),
     opacity 130ms var(--ease-japandi);
-}
-
-
-
-@media (prefers-reduced-motion: reduce) {
-  .atlas-select-value-animated,
-  .atlas-select-trigger,
-  .atlas-select-trigger::after,
-  .atlas-select-chevron,
-  .atlas-select-popover,
-  .atlas-select-highlight-track,
-  .atlas-select-check {
-    animation: none !important;
-    transition-duration: 0.01ms !important;
-  }
 }
 

@@ -40,6 +40,7 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator && window.loca
 
       const notifyUpdateAvailable = (reg: ServiceWorkerRegistration) => {
         pendingRegistration = reg;
+        (window as Window & { __afriataSwUpdatePending?: boolean }).__afriataSwUpdatePending = true;
         window.dispatchEvent(
           new CustomEvent('afriata-sw-update-available', { detail: { registration: reg } })
         );
@@ -49,7 +50,17 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator && window.loca
         if (pendingRegistration?.waiting) {
           shouldReloadOnControllerChange = true;
           pendingRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+          return;
         }
+        navigator.serviceWorker
+          .getRegistration()
+          .then((reg) => {
+            if (reg?.waiting) {
+              shouldReloadOnControllerChange = true;
+              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+            }
+          })
+          .catch(() => {});
       });
 
       navigator.serviceWorker

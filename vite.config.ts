@@ -241,6 +241,8 @@ export default defineConfig(({ command }) => {
             '**/docs/**',
             '**/noto-sans-arabic-*.woff2',
             '**/noto-sans-ethiopic-*.woff2',
+            '**/records-with-descriptions-*.json',
+            '**/unescoPhotoRegistry-*.json',
           ],
           maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
           navigateFallback: 'index.html',
@@ -257,6 +259,20 @@ export default defineConfig(({ command }) => {
                 expiration: {
                   maxEntries: 30,
                   maxAgeSeconds: 60 * 60 * 24 * 90,
+                },
+                cacheableResponse: {
+                  statuses: [200],
+                },
+              },
+            },
+            {
+              urlPattern: ({ url }) => url.origin === self.location.origin && /\/assets\/[^/]+\.json$/i.test(url.pathname),
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'deferred-atlas-data-cache',
+                expiration: {
+                  maxEntries: 40,
+                  maxAgeSeconds: 60 * 60 * 24 * 60,
                 },
                 cacheableResponse: {
                   statuses: [200],

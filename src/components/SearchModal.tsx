@@ -104,14 +104,23 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       setSelectedCategory('all');
       return;
     }
-    setTimeout(() => inputRef.current?.focus(), 50);
+    const timer = window.setTimeout(() => inputRef.current?.focus(), 50);
     setSelectedIndex(0);
     const unsub = subscribeSlaveTradeIllustrations(() => {
       setIllustrationsVersion(v => v + 1);
     });
-    ensureSlaveTradeIllustrationsHydrated();
-    return unsub;
+    return () => {
+      window.clearTimeout(timer);
+      unsub();
+    };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (selectedCategory === 'iconography' || query.trim().length >= 2) {
+      ensureSlaveTradeIllustrationsHydrated();
+    }
+  }, [isOpen, selectedCategory, query]);
 
   const q = query.trim().toLowerCase();
 
@@ -302,7 +311,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return;
+      if (!isOpen || e.isComposing || e.keyCode === 229) return;
 
       if (e.key === 'Escape') {
         onClose();

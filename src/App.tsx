@@ -230,6 +230,11 @@ const parseUrlHash = (): {
   return { tab: (hashRoute || 'overview') as CanonicalNavTab };
 };
 
+if (typeof window !== 'undefined') {
+  preloadTabView(parseUrlHash().tab);
+  NavigationDrawer.preload();
+}
+
 function AppContent() {
   const initialRoute = useMemo(() => parseUrlHash(), []);
 
@@ -416,6 +421,7 @@ function AppContent() {
   // Keyboard shortcuts: Cmd+K / Ctrl+K search, Cmd+B / Ctrl+B drawer, Alt+Left back, '?' shortcuts modal, 1-5 regions, 0 overview
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.isComposing || e.keyCode === 229) return;
       const target = e.target as HTMLElement;
       const isInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable || target.tagName === 'SELECT');
 
@@ -597,18 +603,19 @@ function AppContent() {
 
   const handleGoBack = () => {
     if (navHistory.length > 0) {
-      shouldPushHistoryRef.current = true;
+      shouldPushHistoryRef.current = false;
       const lastItem = navHistory[navHistory.length - 1];
       setNavHistory(prev => prev.slice(0, -1));
       React.startTransition(() => {
         setCurrentTab(lastItem.tab);
         if (lastItem.entityId) setSelectedEntityId(lastItem.entityId);
         if (lastItem.region) setActiveRegion(lastItem.region);
+        else if (lastItem.tab === 'regions') setActiveRegion(undefined);
         if (lastItem.indicator) setSelectedIndicatorForAnalytics(lastItem.indicator);
       });
       window.scrollTo({ top: 0, behavior: 'instant' });
     } else if (currentTab !== 'overview') {
-      shouldPushHistoryRef.current = true;
+      shouldPushHistoryRef.current = false;
       React.startTransition(() => {
         setCurrentTab('overview');
       });
@@ -722,7 +729,7 @@ function AppContent() {
         <main
           tabIndex={-1}
           data-core={activeCore}
-          className={`core-${activeCore} flex-1 min-w-0 w-full focus:outline-none ${
+          className={`core-${activeCore} flex-1 min-w-0 w-full min-h-[70vh] focus:outline-none ${
             currentTab === 'map' || 
             currentTab === 'ethnic-tree' || 
             currentTab === 'archival-cartography' || 
