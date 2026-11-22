@@ -5,6 +5,8 @@ import {
   getRegionalSummaries, 
   getIndicatorRankings 
 } from '../data/atlas-selectors';
+import { atlas } from '../data/atlas-store';
+import { handleTabListKeyDown } from '../utils/a11y';
 import { AfricanRegion } from '../data/types';
 import { FiftyFourNationMosaic } from '../components/FiftyFourNationMosaic';
 import { CountryFlag } from '../components/CountryFlag';
@@ -110,7 +112,7 @@ const PERSPECTIVES: OverviewPerspective[] = ['mosaic', 'pulse', 'observatories',
 
 interface OverviewViewProps {
   onSelectCountry: (entityId: string) => void;
-  onNavigateTab: (tab: any) => void;
+  onNavigateTab: (tab: string) => void;
 }
 
 export const OverviewView: React.FC<OverviewViewProps> = ({
@@ -123,9 +125,19 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   const regionalSummaries = getRegionalSummaries();
   const topEconomies = getIndicatorRankings('NY.GDP.MKTP.CD', 6);
   const topHdi = getIndicatorRankings('UNDP.HDI.INDEX', 6);
+  const heritageNationsCount = new Set(atlas.getHeritageSites().map(site => site.entityId)).size || 42;
 
   return (
     <section aria-label="Pan-African Continental Overview and Sovereign Matrix" className="space-y-6 sm:space-y-8 animate-enter-japandi">
+      <header className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-1">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-display text-zinc-900 dark:text-zinc-100">
+          Afriata: Africa Data Atlas
+        </h1>
+        <p className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
+          54 Sovereign States · Curated Statistical &amp; Cartographic Observatory
+        </p>
+      </header>
+
       {/* 1. First Viewport Orientation: Purpose & Scope */}
       <div className="cascade-item cascade-1">
         <FirstViewportClarity onExploreClick={onNavigateTab} />
@@ -138,7 +150,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             <TrendingUp className="w-4 h-4 text-emerald-500" />
             Pan-African Macroeconomic & Demographic Benchmarks (2024)
           </h2>
-          <span className="text-[11px] font-mono text-zinc-400">UN DESA · IMF · UNDP</span>
+          <span className="text-[11px] font-mono text-zinc-600 dark:text-zinc-400">UN DESA · IMF · UNDP</span>
         </div>
 
         {/* Unified High-Density 6-Metric Benchmark Ribbon (Symmetrical gap-px hairline dividers across 2/3/6 cols) */}
@@ -153,9 +165,9 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 </span>
               </div>
               <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-zinc-900 dark:text-zinc-100">
-                1.48 Billion
+                {formatPopulation(continental.totalPopulationMillion)}
               </div>
-              <div className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+              <div className="text-[11px] font-mono text-emerald-700 dark:text-emerald-400 font-semibold">
                 +2.4% YoY
               </div>
             </div>
@@ -169,10 +181,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 </span>
               </div>
               <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-cyan-700 dark:text-cyan-300">
-                $3.12 Trillion
+                {formatGDP(continental.totalGdpBillionUsd)}
               </div>
-              <div className="text-[11px] font-mono text-cyan-600 dark:text-cyan-400 font-semibold">
-                +3.8% Real
+              <div className="text-[11px] font-mono text-cyan-700 dark:text-cyan-400 font-semibold">
+                {continental.fastestGrowingNations[0]
+                  ? `Top: +${continental.fastestGrowingNations[0].growth.toFixed(1)}%`
+                  : '+3.8% Real'}
               </div>
             </div>
 
@@ -185,10 +199,10 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 </span>
               </div>
               <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-zinc-900 dark:text-zinc-100">
-                $2,094
+                ${continental.weightedGdpPerCapitaUsd.toLocaleString()}
               </div>
               <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
-                Weighted
+                Pop-Weighted
               </div>
             </div>
 
@@ -201,10 +215,10 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 </span>
               </div>
               <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-amber-700 dark:text-amber-400">
-                0.536
+                {formatHDI(continental.weightedHdi)}
               </div>
               <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
-                Top: 0.802
+                {topHdi[0] ? `Top: ${formatHDI(topHdi[0].value)}` : 'UNDP 2024'}
               </div>
             </div>
 
@@ -217,7 +231,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 </span>
               </div>
               <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-zinc-900 dark:text-zinc-100">
-                56.4%
+                {formatPercentage(continental.averageElectricityAccessPct)}
               </div>
               <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
                 Access Trajectory
@@ -233,10 +247,10 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 </span>
               </div>
               <div className="text-xl sm:text-2xl font-extrabold font-mono tracking-tight text-pink-700 dark:text-pink-400">
-                104 Sites
+                {continental.totalHeritageSites} Sites
               </div>
               <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
-                across 42 Nations
+                across {heritageNationsCount} Nations
               </div>
             </div>
           </div>
@@ -252,7 +266,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             role="tablist" 
             aria-label="Overview Analytical Perspectives"
           >
-            {PERSPECTIVES.map(pId => {
+            {PERSPECTIVES.map((pId, idx) => {
               const cfg = PERSPECTIVE_CONFIG[pId];
               const Icon = cfg.icon;
               const isActive = activePerspective === pId;
@@ -260,9 +274,14 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               return (
                 <button
                   key={pId}
+                  type="button"
+                  id={`overview-perspective-tab-${pId}`}
                   role="tab"
                   aria-selected={isActive}
+                  aria-controls={`overview-perspective-panel-${pId}`}
+                  tabIndex={isActive ? 0 : -1}
                   onClick={() => setActivePerspective(pId)}
+                  onKeyDown={(e) => handleTabListKeyDown(e, PERSPECTIVES, idx, setActivePerspective, 'horizontal')}
                   className={`relative w-full min-h-[44px] px-3 py-2.5 sm:px-3.5 sm:py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                     isActive 
                       ? `${cfg.activeText} shadow-xs font-bold` 
@@ -286,7 +305,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                       <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-md transition-colors shrink-0 ${
                         isActive 
                           ? cfg.badgeActiveBg
-                          : 'bg-zinc-200/70 dark:bg-zinc-700/60 text-zinc-500 dark:text-zinc-400'
+                          : 'bg-zinc-200/70 dark:bg-zinc-700/60 text-zinc-700 dark:text-zinc-300'
                       }`}>
                         {cfg.badge}
                       </span>
@@ -316,7 +335,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           >
             {/* Tab 1: 54 Nations Mosaic (Alternative A) */}
             {activePerspective === 'mosaic' && (
-              <div role="tabpanel" aria-label="54 Sovereign Nations Mosaic" className="space-y-6">
+              <div
+                id="overview-perspective-panel-mosaic"
+                role="tabpanel"
+                aria-labelledby="overview-perspective-tab-mosaic"
+                className="space-y-6"
+              >
             <FiftyFourNationMosaic
               onSelectCountry={onSelectCountry}
               onNavigateTab={onNavigateTab}
@@ -339,7 +363,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
         {/* Tab 2: Regional Pulse & Leaders */}
         {activePerspective === 'pulse' && (
-          <div role="tabpanel" aria-label="Regional Pulse and Leaders" className="space-y-6">
+          <div
+            id="overview-perspective-panel-pulse"
+            role="tabpanel"
+            aria-labelledby="overview-perspective-tab-pulse"
+            className="space-y-6"
+          >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* Left Column: 5 UN Geoscheme Regional Summaries */}
               <div className="lg:col-span-7 space-y-4">
@@ -354,7 +383,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                   </div>
                   <button
                     onClick={() => onNavigateTab('regions')}
-                    className="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 font-semibold flex items-center gap-1 cursor-pointer"
+                    className="text-xs text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 font-semibold flex items-center gap-1 cursor-pointer"
                   >
                     <span>View Regional Blocs</span>
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -377,26 +406,26 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
                       <div className="grid grid-cols-2 gap-2 text-xs tabular-nums">
                         <div>
-                          <span className="text-zinc-500">Population</span>
+                          <span className="text-zinc-600 dark:text-zinc-400">Population</span>
                           <div className="font-mono font-bold text-zinc-800 dark:text-zinc-200">
                             {formatPopulation(reg.totalPopulation)}
                           </div>
                         </div>
                         <div>
-                          <span className="text-zinc-500">Regional GDP</span>
-                          <div className="font-mono font-bold text-cyan-600 dark:text-cyan-400">
+                          <span className="text-zinc-600 dark:text-zinc-400">Regional GDP</span>
+                          <div className="font-mono font-bold text-cyan-700 dark:text-cyan-400">
                             {formatGDP(reg.totalGdp)}
                           </div>
                         </div>
                         <div>
-                          <span className="text-zinc-500">Avg Growth</span>
-                          <div className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                          <span className="text-zinc-600 dark:text-zinc-400">Avg Growth</span>
+                          <div className="font-mono font-bold text-emerald-700 dark:text-emerald-400">
                             +{reg.averageGrowth}%
                           </div>
                         </div>
                         <div>
-                          <span className="text-zinc-500">Weighted HDI</span>
-                          <div className="font-mono font-bold text-amber-600 dark:text-amber-400">
+                          <span className="text-zinc-600 dark:text-zinc-400">Weighted HDI</span>
+                          <div className="font-mono font-bold text-amber-700 dark:text-amber-400">
                             {formatHDI(reg.averageHdi)}
                           </div>
                         </div>
@@ -435,13 +464,14 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
                   <div className="space-y-1.5">
                     {topEconomies.map((item, idx) => (
-                      <div
+                      <button
+                        type="button"
                         key={item.entity.id}
                         onClick={() => onSelectCountry(item.entity.id)}
-                        className="flex items-center justify-between p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition-colors cursor-pointer group"
+                        className="w-full text-left flex items-center justify-between p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition-colors cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="w-5 text-center font-mono text-xs font-bold text-zinc-400 group-hover:text-cyan-500">
+                          <span className="w-5 text-center font-mono text-xs font-bold text-zinc-600 dark:text-zinc-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400">
                             #{idx + 1}
                           </span>
                           <CountryFlag entityId={item.entity.id} size="sm" />
@@ -449,15 +479,15 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                             <div className="font-semibold text-xs text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-950 dark:group-hover:text-zinc-100">
                               {item.entity.name}
                             </div>
-                            <span className="text-[10px] text-zinc-500">{item.entity.region}</span>
+                            <span className="text-[10px] text-zinc-600 dark:text-zinc-400">{item.entity.region}</span>
                           </div>
                         </div>
                         <div className="text-right">
-                          <span className="font-mono font-bold text-xs text-cyan-600 dark:text-cyan-300">
+                          <span className="font-mono font-bold text-xs text-cyan-700 dark:text-cyan-300">
                             ${item.value.toFixed(1)}B
                           </span>
                         </div>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -471,18 +501,19 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                     <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-emerald-500" /> Highest Human Development (HDI)
                     </h4>
-                    <span className="text-[11px] font-mono text-zinc-500">UNDP 2024</span>
+                    <span className="text-[11px] font-mono text-zinc-600 dark:text-zinc-400">UNDP 2024</span>
                   </div>
 
                   <div className="space-y-1.5">
                     {topHdi.map((item, idx) => (
-                      <div
+                      <button
+                        type="button"
                         key={item.entity.id}
                         onClick={() => onSelectCountry(item.entity.id)}
-                        className="flex items-center justify-between p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition-colors cursor-pointer group"
+                        className="w-full text-left flex items-center justify-between p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition-colors cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                       >
                         <div className="flex items-center gap-3">
-                          <span className="w-5 text-center font-mono text-xs font-bold text-zinc-400 group-hover:text-emerald-500">
+                          <span className="w-5 text-center font-mono text-xs font-bold text-zinc-600 dark:text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
                             #{idx + 1}
                           </span>
                           <CountryFlag entityId={item.entity.id} size="sm" />
@@ -490,15 +521,15 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                             <div className="font-semibold text-xs text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-950 dark:group-hover:text-zinc-100">
                               {item.entity.name}
                             </div>
-                            <span className="text-[10px] text-zinc-500">{item.entity.region}</span>
+                            <span className="text-[10px] text-zinc-600 dark:text-zinc-400">{item.entity.region}</span>
                           </div>
                         </div>
                         <div className="text-right">
-                          <span className="font-mono font-bold text-xs text-emerald-600 dark:text-emerald-300">
+                          <span className="font-mono font-bold text-xs text-emerald-700 dark:text-emerald-300">
                             {formatHDI(item.value)}
                           </span>
                         </div>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -509,7 +540,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
         {/* Tab 3: Research Observatories & Gateways */}
         {activePerspective === 'observatories' && (
-          <div role="tabpanel" aria-label="Research Observatories and Gateways" className="cv-auto space-y-6">
+          <div
+            id="overview-perspective-panel-observatories"
+            role="tabpanel"
+            aria-labelledby="overview-perspective-tab-observatories"
+            className="cv-auto space-y-6"
+          >
             <div>
               <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-100 flex items-center gap-2 font-display">
                 <Compass className="w-5 h-5 text-emerald-500" /> Curated Research Observatories & Monographs
@@ -559,7 +595,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               <ExplorationCard
                 title="Linguistic Diversity Matrix"
                 badge="2,000+ LANGUAGES"
-                description="Explore the 4 major African language phyla (Niger-Congo, Afroasiatic, Nilo-Saharan, Khoisan) with national distribution matrices and official language status."
+                description="Explore the 6 major African language phyla (Niger-Congo, Afroasiatic, Nilo-Saharan, Austronesian, Khoisan, Indo-European) with national distribution matrices and audio specimens."
                 actionPrompt="Launch Linguistics Workspace"
                 onClick={() => onNavigateTab('languages')}
                 regionalAccent="#06b6d4"
@@ -579,7 +615,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
         {/* Tab 4: Harmonization & Provenance Standards */}
         {activePerspective === 'provenance' && (
-          <div role="tabpanel" aria-label="Harmonization Standards and Provenance" className="cv-auto space-y-6">
+          <div
+            id="overview-perspective-panel-provenance"
+            role="tabpanel"
+            aria-labelledby="overview-perspective-tab-provenance"
+            className="cv-auto space-y-6"
+          >
             <div>
               <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-100 flex items-center gap-2 font-display">
                 <ShieldCheck className="w-5 h-5 text-emerald-500" /> Methodological Standards & Provenance Registry

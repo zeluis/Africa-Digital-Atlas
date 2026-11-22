@@ -224,6 +224,33 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
     }
   };
 
+  const handleWaveformKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    let nextFraction: number | null = null;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      nextFraction = Math.min(1, progress + 0.05);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      nextFraction = Math.max(0, progress - 0.05);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      nextFraction = 0;
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      nextFraction = 1;
+    } else if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      handleTogglePlay();
+      return;
+    }
+
+    if (nextFraction !== null) {
+      if (isPlaying) stopAudio();
+      setProgress(nextFraction);
+      playScrubMicroChime(nextFraction);
+    }
+  };
+
   // Syllable jump
   const handleJumpToSyllable = (syllable: MotherTongueSyllable) => {
     stopAudio();
@@ -317,17 +344,17 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-emerald-200/60 dark:border-emerald-900/40 pb-4">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-mono text-[11px] font-bold tracking-wide">
-              <Radio className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-mono text-[11px] font-bold tracking-wide">
+              <Radio className="w-3.5 h-3.5 text-emerald-600" />
               MOTHER TONGUES PHONETIC WAVEFORM
             </span>
             <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
               {activeEntry.provenanceBadge || activeClipSpec?.provenanceBadge || activeClipSpec?.engineLabel || 'OS Native Voice'} · Web Audio
             </span>
           </div>
-          <h3 className="text-xl sm:text-2xl font-black font-display text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+          <h2 className="text-xl sm:text-2xl font-black font-display text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
             Acoustic Waveform &amp; Syllable Scrubber
-          </h3>
+          </h2>
           <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-2xl">
             Explore authentic vocal intonation, tonal cadences, and phonetic morphemes across continental African mother tongues. Scrub across the waveform to preview individual syllables and tone heights.
           </p>
@@ -348,7 +375,7 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
               }}
               className={`px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
                 playbackSpeed === speed
-                  ? 'bg-emerald-600 text-white shadow-xs'
+                  ? 'bg-emerald-700 text-white shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-emerald-700 dark:hover:text-emerald-300'
               }`}
             >
@@ -359,23 +386,29 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
       </div>
 
       {/* Mother Tongue Selector Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+      <div
+        role="tablist"
+        aria-label="Select African mother tongue"
+        className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none"
+      >
         {Object.values(AFRICAN_MOTHER_TONGUES).map(lang => {
           const isSelected = lang.id === selectedLangId;
           return (
             <button
               key={lang.id}
               type="button"
+              role="tab"
+              aria-selected={isSelected}
               onClick={() => handleSelectLanguage(lang.id)}
-              className={`px-3 py-2 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-2 border ${
+              className={`px-3 py-2 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-2 border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                 isSelected
-                  ? 'bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-600/20 scale-[1.02]'
+                  ? 'bg-emerald-700 text-white border-emerald-600 shadow-md shadow-emerald-700/20 scale-[1.02]'
                   : 'bg-white/80 dark:bg-zinc-900/80 text-zinc-700 dark:text-zinc-300 border-zinc-200/80 dark:border-zinc-800 hover:border-emerald-300 dark:hover:border-emerald-700'
               }`}
             >
               <span className="font-bold">{lang.language}</span>
               <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-md ${
-                isSelected ? 'bg-emerald-700 text-emerald-100' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'
+                isSelected ? 'bg-emerald-800 text-emerald-100' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300'
               }`}>
                 {lang.autonym}
               </span>
@@ -391,20 +424,20 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
             <span className="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold">
               {activeEntry.family}
             </span>
-            <span className="text-zinc-400">•</span>
-            <span className="text-zinc-600 dark:text-zinc-400 font-medium">
+            <span aria-hidden="true" className="text-zinc-500 dark:text-zinc-400">•</span>
+            <span className="text-zinc-700 dark:text-zinc-400 font-medium">
               {activeEntry.country}
             </span>
-            <span className="text-zinc-400">•</span>
-            <span className="text-zinc-500">
+            <span aria-hidden="true" className="text-zinc-500 dark:text-zinc-400">•</span>
+            <span className="text-zinc-600 dark:text-zinc-400">
               BCP-47: {activeEntry.bcp47Tag}
             </span>
           </div>
 
           <div className="flex items-baseline gap-3 pt-1">
-            <h4 className="text-2xl sm:text-3xl font-serif font-black text-zinc-950 dark:text-white tracking-tight">
+            <h3 className="text-2xl sm:text-3xl font-serif font-black text-zinc-950 dark:text-white tracking-tight">
               "{activeEntry.greetingText}"
-            </h4>
+            </h3>
             <span className="font-mono text-sm text-emerald-700 dark:text-emerald-400 font-medium">
               {activeEntry.greetingPhonetic}
             </span>
@@ -460,31 +493,39 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
       <div className="space-y-3 bg-white/95 dark:bg-zinc-900/95 p-4 sm:p-6 rounded-2xl border border-emerald-500/30 shadow-md">
         <div className="flex items-center justify-between text-xs font-mono">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
             <span className="font-bold text-emerald-900 dark:text-emerald-200">
               Interactive Waveform Canvas
             </span>
-            <span className="text-[10px] text-zinc-400 hidden sm:inline">
-              (Click or drag to scrub playhead)
+            <span className="text-[10px] text-zinc-600 dark:text-zinc-400 hidden sm:inline">
+              (Click, drag, or use arrow keys to scrub playhead)
             </span>
           </div>
 
           {/* Time indicator */}
           <div className="flex items-center gap-1.5 font-bold font-tabular tabular-nums">
-            <span className="text-emerald-600 dark:text-emerald-400">{currentTime}s</span>
-            <span className="text-zinc-400">/</span>
-            <span className="text-zinc-500">{totalTime}s</span>
+            <span className="text-emerald-700 dark:text-emerald-400">{currentTime}s</span>
+            <span aria-hidden="true" className="text-zinc-600 dark:text-zinc-400">/</span>
+            <span className="text-zinc-600 dark:text-zinc-400">{totalTime}s</span>
           </div>
         </div>
 
         {/* Waveform Bars Container */}
         <div
           ref={waveformContainerRef}
+          role="slider"
+          tabIndex={0}
+          aria-label={`${activeEntry.language} acoustic waveform scrubber`}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(progress * 100)}
+          aria-valuetext={`${currentTime} of ${totalTime} seconds${currentSyllable ? `, morpheme ${currentSyllable.text}` : ''}`}
+          onKeyDown={handleWaveformKeyDown}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onMouseLeave={() => setHoveredFraction(null)}
-          className="relative h-28 sm:h-32 w-full bg-gradient-to-b from-zinc-50 to-zinc-100/80 dark:from-zinc-950 dark:to-zinc-900 rounded-xl p-3 flex items-center justify-between gap-1 cursor-pointer select-none overflow-hidden border border-zinc-200/90 dark:border-zinc-800"
+          className="relative h-28 sm:h-32 w-full bg-gradient-to-b from-zinc-50 to-zinc-100/80 dark:from-zinc-950 dark:to-zinc-900 rounded-xl p-3 flex items-center justify-between gap-1 cursor-pointer select-none overflow-hidden border border-zinc-200/90 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
         >
           {/* Subtle Graticule Background Grid */}
           <div className="absolute inset-0 pointer-events-none opacity-20 flex flex-col justify-between p-2">
@@ -563,7 +604,7 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
                     onClick={() => handleJumpToSyllable(syl)}
                     className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                       isActive
-                        ? 'bg-emerald-500 text-white border-emerald-400 shadow-md scale-[1.02]'
+                        ? 'bg-emerald-700 text-white border-emerald-600 shadow-md scale-[1.02]'
                         : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-emerald-300'
                     }`}
                   >
@@ -574,14 +615,14 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
                       {syl.tone && (
                         <span className={`text-[9px] font-mono uppercase px-1.5 py-0.2 rounded-md ${
                           isActive
-                            ? 'bg-emerald-600 text-emerald-100 font-bold'
-                            : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                            ? 'bg-emerald-800 text-emerald-100 font-bold'
+                            : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300'
                         }`}>
                           {syl.tone} Tone
                         </span>
                       )}
                     </div>
-                    <span className={`text-xs font-mono mt-0.5 ${isActive ? 'text-emerald-100' : 'text-zinc-500'}`}>
+                    <span className={`text-xs font-mono mt-0.5 ${isActive ? 'text-emerald-100' : 'text-zinc-600 dark:text-zinc-400'}`}>
                       {syl.phonetic}
                     </span>
                   </button>
@@ -600,8 +641,8 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
               onClick={handleTogglePlay}
               className={`px-4 py-2 rounded-xl flex items-center gap-2 text-xs font-bold transition-all cursor-pointer shadow-xs ${
                 isPlaying
-                  ? 'bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/30'
-                  : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/30'
+                  ? 'bg-amber-700 hover:bg-amber-800 text-white shadow-amber-700/30'
+                  : 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-emerald-700/30'
               }`}
             >
               {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
@@ -614,6 +655,7 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
               onClick={handleReset}
               className="p-2 rounded-xl text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 transition-colors cursor-pointer"
               title="Reset playhead to beginning"
+              aria-label="Reset playhead to beginning"
             >
               <RotateCcw className="w-4 h-4" />
             </button>

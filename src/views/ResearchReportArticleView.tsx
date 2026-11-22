@@ -38,6 +38,7 @@ import { verifyDoiWithCrossref, DoiVerificationResult } from '../services/crossr
 import { exportPublicationPDF } from '../utils/academicExport';
 import { AfriataReport } from '../types/afriataReport';
 import { downloadFile } from '../utils/exportUtils';
+import { AFRIATA_SITE_URL } from '../utils/citationFormatter';
 
 interface ResearchReportArticleViewProps {
   reportId: string;
@@ -140,7 +141,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
       "publisher": {
         "@type": "Organization",
         "name": "Afriata: African Data Atlas & Research Repository",
-        "url": "https://afriata.atlas"
+        "url": AFRIATA_SITE_URL
       }
     };
 
@@ -549,7 +550,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
         </aside>
 
         {/* Right Academic Column: Article Body (8 Cols, first on mobile) */}
-        <main className="lg:col-span-8 space-y-6 sm:space-y-8 order-1 lg:order-2">
+        <article aria-label="Scholarly Monograph Body" className="lg:col-span-8 space-y-6 sm:space-y-8 order-1 lg:order-2">
           {/* Mobile Collapsible Table of Contents (Baseline interpolate-size details) */}
           <details className="atlas-details lg:hidden rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xs no-print">
             <summary className="list-none cursor-pointer px-4 py-3.5 min-h-[44px] flex items-center justify-between text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-200 select-none">
@@ -732,7 +733,7 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
               ))}
             </div>
           </section>
-        </main>
+        </article>
       </div>
     </article>
   );

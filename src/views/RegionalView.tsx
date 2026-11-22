@@ -409,6 +409,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
               className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-900/90 dark:via-zinc-950 dark:to-zinc-950 p-6 md:p-8 shadow-sm relative overflow-hidden"
             >
               <div 
+                aria-hidden="true"
                 className="absolute -top-24 -left-24 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-20 dark:opacity-25"
                 style={{ background: selectedRegionTonal.warmAccent }}
               />
@@ -430,7 +431,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                     <h1 className="text-3xl md:text-5xl font-black text-zinc-900 dark:text-zinc-100 font-display tracking-tight">
                       {selectedRegion}
                     </h1>
-                    <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 mt-1 font-medium">
+                    <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400 mt-1 font-medium">
                       Geographic, Economic, and Demographic Division of the African Continent
                     </p>
                   </div>
@@ -439,16 +440,16 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                     className="p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs space-y-2.5 transition-colors"
                     style={{ backgroundColor: selectedRegionCalmBg }}
                   >
-                    <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
+                    <div className="flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400">
                       <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]">
-                        <BookOpen className="w-3.5 h-3.5 text-emerald-500" />
+                        <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                         Wikipedia Encyclopedic Overview
                       </span>
                       <a
                         href={wikiDossier.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                        className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer"
                       >
                         <span>Article: {wikiDossier.canonicalTitle}</span>
                         <ExternalLink className="w-3 h-3" />
@@ -463,37 +464,37 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                   {/* Quick Indicators Capsule */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-1 font-mono text-xs tabular-nums">
                     <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
-                      <span className="text-zinc-400 block text-[9px] uppercase font-bold">Total GDP</span>
-                      <span className="font-bold text-cyan-600 dark:text-cyan-400 text-sm">
+                      <span className="text-zinc-600 dark:text-zinc-400 block text-[9px] uppercase font-bold">Total GDP</span>
+                      <span className="font-bold text-cyan-700 dark:text-cyan-400 text-sm">
                         {formatGDP(currentRegionSummary.totalGdp)}
                       </span>
                     </div>
                     <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
-                      <span className="text-zinc-400 block text-[9px] uppercase font-bold">Population</span>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+                      <span className="text-zinc-600 dark:text-zinc-400 block text-[9px] uppercase font-bold">Population</span>
+                      <span className="font-bold text-emerald-700 dark:text-emerald-400 text-sm">
                         {formatPopulation(currentRegionSummary.totalPopulation)}
                       </span>
                     </div>
                     <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
-                      <span className="text-zinc-400 block text-[9px] uppercase font-bold">GDP Per Capita</span>
+                      <span className="text-zinc-600 dark:text-zinc-400 block text-[9px] uppercase font-bold">GDP Per Capita</span>
                       <span className="font-bold text-zinc-800 dark:text-zinc-200 text-sm">
                         ${wikiDossier.economy.gdpPerCapitaAvg.toLocaleString()}
                       </span>
                     </div>
                     <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
-                      <span className="text-zinc-400 block text-[9px] uppercase font-bold">Avg HDI</span>
-                      <span className="font-bold text-amber-600 dark:text-amber-400 text-sm">
+                      <span className="text-zinc-600 dark:text-zinc-400 block text-[9px] uppercase font-bold">Avg HDI</span>
+                      <span className="font-bold text-amber-700 dark:text-amber-400 text-sm">
                         {formatHDI(currentRegionSummary.averageHdi)}
                       </span>
                     </div>
                     <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
-                      <span className="text-zinc-400 block text-[9px] uppercase font-bold">Land Area</span>
+                      <span className="text-zinc-600 dark:text-zinc-400 block text-[9px] uppercase font-bold">Land Area</span>
                       <span className="font-bold text-zinc-800 dark:text-zinc-200 text-xs">
                         {wikiDossier.geography.landAreaFormatted}
                       </span>
                     </div>
                     <div className="bg-white/90 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 p-2.5 rounded-xl shadow-xs">
-                      <span className="text-zinc-400 block text-[9px] uppercase font-bold">Urbanization</span>
+                      <span className="text-zinc-600 dark:text-zinc-400 block text-[9px] uppercase font-bold">Urbanization</span>
                       <span className="font-bold text-indigo-600 dark:text-indigo-400 text-xs">
                         {wikiDossier.demographics.urbanizationRate}
                       </span>
@@ -636,7 +637,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                     className="p-5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs space-y-2 transition-colors"
                     style={{ backgroundColor: selectedRegionCalmBg }}
                   >
-                    <div className="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase">
+                    <div className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase">
                       Pillar 0{idx + 1}
                     </div>
                     <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed">
@@ -659,9 +660,9 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4">
                   <div>
-                    <h3 className="font-extrabold text-lg text-zinc-900 dark:text-zinc-100 font-display">
+                    <h2 className="font-extrabold text-lg text-zinc-900 dark:text-zinc-100 font-display">
                       Member Nations & Jurisdictions ({sortedMemberCountries.length})
-                    </h3>
+                    </h2>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                       Click any sovereign state to inspect its full national profile and economic indicators
                     </p>
@@ -721,10 +722,10 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4">
                   <div>
-                    <h3 className="font-extrabold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                    <h2 className="font-extrabold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                       <DollarSign className="w-4 h-4 text-emerald-500" />
                       Top Regional Economies by Nominal GDP ($ Billions)
-                    </h3>
+                    </h2>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                       Comparative economic scale across leading member states in {selectedRegion}
                     </p>
@@ -848,10 +849,10 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4">
                   <div>
-                    <h3 className="font-extrabold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                    <h2 className="font-extrabold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                       <Users className="w-4 h-4 text-emerald-500" />
                       Population Distribution Across Leading Member States (Millions)
-                    </h3>
+                    </h2>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                       Demographic weighting across {selectedRegion}
                     </p>
@@ -945,9 +946,9 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                 style={{ backgroundColor: selectedRegionCalmBg }}
               >
                 <div className="border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4">
-                  <h3 className="font-extrabold text-lg text-zinc-900 dark:text-zinc-100 font-display">
+                  <h2 className="font-extrabold text-lg text-zinc-900 dark:text-zinc-100 font-display">
                     Regional Economic Communities (RECs) & Treaty Frameworks
-                  </h3>
+                  </h2>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                     Official integration bodies and regional security architectures recognized by the African Union
                   </p>
@@ -1006,10 +1007,10 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                 style={{ backgroundColor: selectedRegionCalmBg }}
               >
                 <div className="border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4">
-                  <h3 className="font-extrabold text-lg text-zinc-900 dark:text-zinc-100 font-display flex items-center gap-2">
+                  <h2 className="font-extrabold text-lg text-zinc-900 dark:text-zinc-100 font-display flex items-center gap-2">
                     <Languages className="w-5 h-5 text-emerald-500" />
                     Linguistic Geography, Major Phyla & Indigenous Scripts
-                  </h3>
+                  </h2>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                     Polyglot traditions, continental language families, and ancestral orthographies
                   </p>
@@ -1077,10 +1078,10 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                   <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
                     Historical Legacies &amp; Voyages Archive
                   </span>
-                  <h3 className="font-extrabold text-xl text-zinc-900 dark:text-zinc-100 font-display mt-1 flex items-center gap-2">
+                  <h2 className="font-extrabold text-xl text-zinc-900 dark:text-zinc-100 font-display mt-1 flex items-center gap-2">
                     <Anchor className="w-5 h-5 text-rose-500" />
                     Transatlantic Slave Trade (TAST) Regional Association
-                  </h3>
+                  </h2>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                     Historical embarkation zones, documented voyages records, departure ports, and diasporic connections
                   </p>
@@ -1140,10 +1141,10 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
                 style={{ backgroundColor: selectedRegionCalmBg }}
               >
                 <div className="border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4">
-                  <h3 className="font-extrabold text-lg text-zinc-900 dark:text-zinc-100 font-display flex items-center gap-2">
+                  <h2 className="font-extrabold text-lg text-zinc-900 dark:text-zinc-100 font-display flex items-center gap-2">
                     <Trees className="w-5 h-5 text-emerald-500" />
                     Ecological Biomes, River Basins & Climate Systems
-                  </h3>
+                  </h2>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                     Physical geography, major water courses, and biodiversity corridors
                   </p>
@@ -1270,9 +1271,9 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
               style={{ backgroundColor: panAfricanCalmBg }}
             >
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                <h2 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                   <DollarSign className="w-4 h-4 text-emerald-500" /> Continental GDP Distribution ($B)
-                </h3>
+                </h2>
                 <span className="text-[11px] font-mono text-zinc-500">2024 IMF WEO</span>
               </div>
               <div className="h-56 w-full">
@@ -1321,9 +1322,9 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
               style={{ backgroundColor: panAfricanCalmBg }}
             >
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                <h2 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                   <Users className="w-4 h-4 text-emerald-500" /> Continental Population Share (Millions)
-                </h3>
+                </h2>
                 <span className="text-[11px] font-mono text-zinc-500">2024 UN DESA</span>
               </div>
               <div className="h-56 w-full">
@@ -1374,9 +1375,9 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
               style={{ backgroundColor: panAfricanCalmBg }}
             >
               <div className="border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4">
-                <h3 className="font-extrabold text-lg text-zinc-900 dark:text-zinc-100 font-display">
+                <h2 className="font-extrabold text-lg text-zinc-900 dark:text-zinc-100 font-display">
                   Comparative Regional Data Matrix
-                </h3>
+                </h2>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                   Macro metrics comparison across all 5 United Nations Geoscheme African regions
                 </p>

@@ -23,6 +23,7 @@ import {
 import { generateFullObservations, MEDIA_REGISTRY } from './atlas-observations-seed';
 import { EXPANDED_INDICATORS, EXPANDED_PRESET_COUNTRIES, generateExpandedObservations } from './expandedIndicators';
 import { ENTITY_BLOCS, ENTITY_BLOC_MEMBERSHIP, EntityBlocId } from './entityBlocs';
+import { COUNTRY_HEADER_DATA } from './countryHeaderData';
 import type { 
   ExternalApiConnector,
   LiveApiTestResult
@@ -451,8 +452,10 @@ class AtlasDataStore {
         return this.getIndicatorValue(normId, 'EG.FEC.RNEW.ZS');
       case 'CO2_EMISSIONS':
         return this.getIndicatorValue(normId, 'EN.ATM.CO2E.PC');
-      case 'CLIMATE_VULNERABILITY':
-        return 27;
+      case 'CLIMATE_VULNERABILITY': {
+        const tempC = COUNTRY_HEADER_DATA[normId]?.climate?.baseTempC;
+        return typeof tempC === 'number' && !isNaN(tempC) ? tempC : null;
+      }
       case 'GDP_NOMINAL':
         return this.getIndicatorValue(normId, 'NY.GDP.MKTP.CD');
       case 'GDP_GROWTH':

@@ -337,10 +337,10 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
             </div>
 
             {/* Metric 4: Skeletal Bioarchaeological Archive */}
-            <div className="p-5 rounded-2xl bg-[#F6F4ED] dark:bg-[#1B1D19] border border-[#DCD9CE] dark:border-[#2C2E2A] flex flex-col justify-between shadow-2xs hover:border-[#96672E]/40 transition-all relative overflow-hidden">
-              <div className="absolute top-0 start-0 w-1 h-full bg-[#96672E] dark:bg-[#D1A268]" />
+            <div className="p-5 rounded-2xl bg-[#F6F4ED] dark:bg-[#1B1D19] border border-[#DCD9CE] dark:border-[#2C2E2A] flex flex-col justify-between shadow-2xs hover:border-[#784E1E]/40 transition-all relative overflow-hidden">
+              <div className="absolute top-0 start-0 w-1 h-full bg-[#784E1E] dark:bg-[#D1A268]" />
               <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-[#DCD9CE]/60 dark:border-[#2C2E2A] ps-1">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#96672E] dark:text-[#D1A268]">Burials</span>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#784E1E] dark:text-[#D1A268]">Burials</span>
                 <span className="font-serif font-semibold text-sm sm:text-base text-[#181816] dark:text-[#E6E3DB]">419</span>
               </div>
               <p className="text-xs text-[#55554E] dark:text-[#BBB7AB] leading-relaxed mt-2.5 font-light ps-1">
@@ -396,7 +396,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
       </div>
 
       {/* 4. FULL CONTINUOUS EDITORIAL READING ENGINE (ALL 8 SECTIONS DISPLAYED IN FULL) */}
-      <main className="max-w-4xl mx-auto space-y-28 sm:space-y-36 text-left">
+      <div role="region" aria-label="Molecular Legacies Continuous Essay" className="max-w-4xl mx-auto space-y-28 sm:space-y-36 text-left">
           
           {/* SECTION 1: EPISTEMOLOGY */}
           <section id="sec-epistemology" className="scroll-reveal-item space-y-8 pt-8 pb-8">
@@ -421,10 +421,10 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
             {/* Tripartite Framework Model Callout (Japandi Quiet Paper Surface #F6F4ED) */}
             <div className="p-6 sm:p-8 rounded-2xl bg-[#F6F4ED] text-[#1E1E1C] dark:bg-[#1B1D19] dark:text-[#E2DFD6] border border-[#DCD9CE] dark:border-[#2C2E2A] space-y-4 shadow-2xs relative overflow-hidden">
               <div className="absolute top-0 left-0 w-1.5 h-full bg-[#3F6955] dark:bg-[#527E6A]" />
-              <h4 className="text-xs font-mono font-semibold text-[#3F6955] dark:text-[#6EA88F] uppercase tracking-wider flex items-center gap-2 pl-1.5">
+              <h3 className="text-xs font-mono font-semibold text-[#3F6955] dark:text-[#6EA88F] uppercase tracking-wider flex items-center gap-2 pl-1.5">
                 <Compass className="w-4 h-4" />
                 <span>The Tripartite Epistemological Model</span>
-              </h4>
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pl-1.5">
                 <div className="p-5 rounded-xl bg-[#FFFFFF] dark:bg-[#20231F] border border-[#DCD9CE] dark:border-[#2C2E2A] space-y-2 shadow-2xs">
                   <span className="font-serif font-semibold text-sm sm:text-base text-[#1A1A18] dark:text-[#E6E3DB] block">1. Archival & Historical</span>
@@ -462,24 +462,24 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
             {/* In-line Highlight Stats Bar */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 p-5 sm:p-6 rounded-2xl bg-[#F6F4ED] text-[#1E1E1C] dark:bg-[#1B1D19] dark:text-[#E2DFD6] border border-[#DCD9CE] dark:border-[#2C2E2A] shadow-2xs tabular-nums">
               <div className="space-y-1">
-                <span className="text-[10px] font-mono uppercase text-[#73736A] dark:text-[#A8A499]">Cohort Size</span>
+                <span className="text-[10px] font-mono uppercase text-[#5C5C54] dark:text-[#A8A499]">Cohort Size</span>
                 <div className="font-serif text-xl sm:text-2xl font-semibold text-[#181816] dark:text-[#E6E3DB]">50,281</div>
-                <span className="text-[10px] text-[#73736A] dark:text-[#9A968B] block">Sequenced Genomes</span>
+                <span className="text-[10px] text-[#5C5C54] dark:text-[#9A968B] block">Sequenced Genomes</span>
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] font-mono uppercase text-[#73736A] dark:text-[#A8A499]">Voyage Database</span>
+                <span className="text-[10px] font-mono uppercase text-[#5C5C54] dark:text-[#A8A499]">Voyage Database</span>
                 <div className="font-serif text-xl sm:text-2xl font-semibold text-[#3F6955] dark:text-[#6EA88F]">36,000+</div>
-                <span className="text-[10px] text-[#73736A] dark:text-[#9A968B] block">Transatlantic Routes</span>
+                <span className="text-[10px] text-[#5C5C54] dark:text-[#9A968B] block">Transatlantic Routes</span>
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] font-mono uppercase text-[#73736A] dark:text-[#A8A499]">US Nigerian Bias</span>
-                <div className="font-serif text-xl sm:text-2xl font-semibold text-[#96672E] dark:text-[#D1A268]">41% vs 24%</div>
-                <span className="text-[10px] text-[#73736A] dark:text-[#9A968B] block">Genomic Over-Rep.</span>
+                <span className="text-[10px] font-mono uppercase text-[#5C5C54] dark:text-[#A8A499]">US Nigerian Bias</span>
+                <div className="font-serif text-xl sm:text-2xl font-semibold text-[#784E1E] dark:text-[#D1A268]">41% vs 24%</div>
+                <span className="text-[10px] text-[#5C5C54] dark:text-[#9A968B] block">Genomic Over-Rep.</span>
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] font-mono uppercase text-[#73736A] dark:text-[#A8A499]">Maroon Retention</span>
+                <span className="text-[10px] font-mono uppercase text-[#5C5C54] dark:text-[#A8A499]">Maroon Retention</span>
                 <div className="font-serif text-xl sm:text-2xl font-semibold text-[#3F6955] dark:text-[#6EA88F]">98%</div>
-                <span className="text-[10px] text-[#73736A] dark:text-[#9A968B] block">Pure African DNA</span>
+                <span className="text-[10px] text-[#5C5C54] dark:text-[#9A968B] block">Pure African DNA</span>
               </div>
             </div>
 
@@ -498,9 +498,9 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
                 <span className="text-[0.75rem] font-mono uppercase tracking-[0.1em] text-[#854972] dark:text-[#C98EB6] font-semibold block mb-1.5">
                   Fig. 01 // Empirical Genomic Alignment
                 </span>
-                <h4 className="font-serif text-xl sm:text-2xl font-normal text-[#181816] dark:text-[#E6E3DB] mb-1.5">
+                <h3 className="font-serif text-xl sm:text-2xl font-normal text-[#181816] dark:text-[#E6E3DB] mb-1.5">
                   Historical Voyage Manifests vs Modern Genomic Haplotype Contributions
-                </h4>
+                </h3>
                 <p className="text-xs text-[#55554E] dark:text-[#A8A499] leading-relaxed">
                   Data adapted from Micheletti et al. (<em>AJHG</em> 2020) across 50,281 individuals in 5 major Americas regions.
                 </p>
@@ -517,7 +517,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
                       <XAxis 
                         dataKey="region" 
                         stroke="currentColor" 
-                        className="text-[#73736A] dark:text-[#A8A499]"
+                        className="text-[#5C5C54] dark:text-[#A8A499]"
                         fontSize={11}
                         interval={0}
                         angle={-15}
@@ -526,7 +526,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
                       />
                       <YAxis 
                         stroke="currentColor" 
-                        className="text-[#73736A] dark:text-[#A8A499]"
+                        className="text-[#5C5C54] dark:text-[#A8A499]"
                         fontSize={11}
                         unit="%"
                       />
@@ -539,7 +539,10 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
                           color: 'var(--tooltip-text-title)'
                         }}
                       />
-                      <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                      <Legend
+                        wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+                        formatter={(value) => <span className="text-[#343430] dark:text-[#CCC8BC] font-medium">{value}</span>}
+                      />
                       <Bar 
                         dataKey="historicalManifestPct" 
                         name="Historical Voyage Manifests (%)" 
@@ -572,9 +575,9 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
 
             {/* Ancient DNA Case Studies */}
             <div className="space-y-4">
-              <h4 className="text-xs font-mono font-semibold text-[#854972] dark:text-[#C98EB6] uppercase tracking-wider">
+              <h3 className="text-xs font-mono font-semibold text-[#854972] dark:text-[#C98EB6] uppercase tracking-wider">
                 Ancient DNA (aDNA) Case Studies
-              </h4>
+              </h3>
               <div className="space-y-3.5">
                 {ANCIENT_DNA_STUDIES.map((study) => (
                   <div key={study.id} className="p-6 sm:p-7 rounded-2xl bg-[#F6F4ED] text-[#1E1E1C] dark:bg-[#1B1D19] dark:text-[#E2DFD6] border border-[#DCD9CE] dark:border-[#2C2E2A] space-y-2.5 shadow-2xs relative overflow-hidden">
@@ -713,7 +716,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
           {/* SECTION 5: STRUCTURAL UNDERDEVELOPMENT & CAPITAL */}
           <section id="sec-underdevelopment" className="cv-auto scroll-reveal-item space-y-8 pt-8 pb-8">
             <div className="space-y-3 border-b border-[#DCD9CE] dark:border-[#2C2E2A] pb-6 mb-8">
-              <span className="text-xs font-mono font-medium uppercase tracking-[0.12em] text-[#9E6A2E] dark:text-[#D4A060] block">
+              <span className="text-xs font-mono font-medium uppercase tracking-[0.12em] text-[#7D511E] dark:text-[#D4A060] block">
                 05 // Structural Underdevelopment & Capital Accumulation
               </span>
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#1A1A18] dark:text-[#E6E3DB] tracking-tight leading-snug">
@@ -744,12 +747,12 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
               </div>
 
               <div className="p-6 rounded-2xl bg-[#F6F4ED] text-[#1E1E1C] dark:bg-[#1B1D19] dark:text-[#E2DFD6] border border-[#DCD9CE] dark:border-[#2C2E2A] space-y-2.5 shadow-2xs relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1.5 h-full bg-[#9E6A2E] dark:bg-[#BF843E]" />
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-[#7D511E] dark:bg-[#BF843E]" />
                 <span className="font-serif font-semibold text-base sm:text-lg text-[#181816] dark:text-[#E6E3DB] block pl-1.5">Plantation Demographics</span>
                 <p className="text-xs sm:text-sm text-[#55554E] dark:text-[#A8A499] leading-relaxed font-light pl-1.5">
                   {STRUCTURAL_UNDERDEVELOPMENT_DATA.plantationDemographicSink.mortalityAttrition}
                 </p>
-                <div className="text-[11px] font-mono text-[#9E6A2E] dark:text-[#D4A060] font-semibold pl-1.5">
+                <div className="text-[11px] font-mono text-[#7D511E] dark:text-[#D4A060] font-semibold pl-1.5">
                   {STRUCTURAL_UNDERDEVELOPMENT_DATA.plantationDemographicSink.regimeComparison}
                 </div>
               </div>
@@ -770,7 +773,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
           {/* SECTION 6: BIOARCHAEOLOGY & AFRICAN BURIAL GROUND */}
           <section id="sec-bioarchaeology" className="cv-auto scroll-reveal-item space-y-8 pt-8 pb-8">
             <div className="space-y-3 border-b border-[#DCD9CE] dark:border-[#2C2E2A] pb-6 mb-8">
-              <span className="text-xs font-mono font-medium uppercase tracking-[0.12em] text-[#9E6A2E] dark:text-[#D4A060] block">
+              <span className="text-xs font-mono font-medium uppercase tracking-[0.12em] text-[#7D511E] dark:text-[#D4A060] block">
                 06 // The Skeletal Counter-Archive
               </span>
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#1A1A18] dark:text-[#E6E3DB] tracking-tight leading-snug">
@@ -789,8 +792,8 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
 
             {/* Pathology Table */}
             <div className="p-6 sm:p-8 rounded-2xl bg-[#F6F4ED] text-[#1E1E1C] dark:bg-[#1B1D19] dark:text-[#E2DFD6] border border-[#DCD9CE] dark:border-[#2C2E2A] space-y-4 shadow-2xs relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1.5 h-full bg-[#9E6A2E] dark:bg-[#BF843E]" />
-              <span className="text-xs font-mono font-semibold text-[#9E6A2E] dark:text-[#D4A060] uppercase tracking-wider block pl-1.5">
+              <div className="absolute top-0 left-0 w-1.5 h-full bg-[#7D511E] dark:bg-[#BF843E]" />
+              <span className="text-xs font-mono font-semibold text-[#7D511E] dark:text-[#D4A060] uppercase tracking-wider block pl-1.5">
                 Skeletal Evidence & Cultural Persistence (NYABG)
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pl-1.5">
@@ -844,12 +847,12 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
 
             {/* Public Myths Deconstruction */}
             <div className="p-6 sm:p-7 rounded-2xl bg-[#F6F4ED] text-[#1E1E1C] dark:bg-[#1B1D19] dark:text-[#E2DFD6] border border-[#DCD9CE] dark:border-[#2C2E2A] space-y-3 shadow-2xs relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1.5 h-full bg-[#9E6A2E] dark:bg-[#BF843E]" />
+              <div className="absolute top-0 left-0 w-1.5 h-full bg-[#7D511E] dark:bg-[#BF843E]" />
               <div className="flex items-start gap-2.5 pl-1.5">
-                <AlertCircle className="w-4 h-4 text-[#9E6A2E] dark:text-[#D1A268] shrink-0 mt-0.5" />
+                <AlertCircle className="w-4 h-4 text-[#7D511E] dark:text-[#D1A268] shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-xs font-mono uppercase text-[#73736A] dark:text-[#A8A499]">Popular Misconception Analysis:</strong>
-                  <h4 className="font-serif font-semibold text-sm sm:text-base text-[#181816] dark:text-[#E6E3DB] mt-0.5">{PUBLIC_ARCHAEOLOGY_AND_MYTHS.theNativeAmericanMythAnalysis.phenomenon}</h4>
+                  <strong className="text-xs font-mono uppercase text-[#5C5C54] dark:text-[#A8A499]">Popular Misconception Analysis:</strong>
+                  <h3 className="font-serif font-semibold text-sm sm:text-base text-[#181816] dark:text-[#E6E3DB] mt-0.5">{PUBLIC_ARCHAEOLOGY_AND_MYTHS.theNativeAmericanMythAnalysis.phenomenon}</h3>
                 </div>
               </div>
               <div className="pl-7 space-y-2 text-xs sm:text-sm text-[#3C3C37] dark:text-[#C5C2B6] font-light leading-relaxed">
@@ -914,7 +917,7 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
             </div>
           </section>
 
-        </main>
+        </div>
     </article>
   );
 };

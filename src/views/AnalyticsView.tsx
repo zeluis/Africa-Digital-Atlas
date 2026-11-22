@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { m, useReducedMotion } from 'motion/react';
 import { SPRING_TACTILE, AnimatedTabPanel } from '../utils/motion';
+import { handleTabListKeyDown } from '../utils/a11y';
 import { atlas } from '../data/atlas-store';
 import { 
   getCorrelationDataset, 
@@ -73,21 +74,7 @@ const handleAnalyticsTabKeyDown = (
   ids: string[],
   currentIndex: number,
   onSelect: (id: string) => void
-) => {
-  if (ids.length === 0) return;
-  let nextIdx = -1;
-  if (e.key === 'ArrowRight') nextIdx = (currentIndex + 1) % ids.length;
-  else if (e.key === 'ArrowLeft') nextIdx = (currentIndex - 1 + ids.length) % ids.length;
-  else if (e.key === 'Home') nextIdx = 0;
-  else if (e.key === 'End') nextIdx = ids.length - 1;
-
-  if (nextIdx !== -1) {
-    e.preventDefault();
-    onSelect(ids[nextIdx]);
-    const nextBtn = e.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[nextIdx];
-    nextBtn?.focus();
-  }
-};
+) => handleTabListKeyDown(e, ids, currentIndex, onSelect, 'horizontal');
 
 export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   onSelectCountry,
@@ -104,6 +91,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   const [corrIndicatorY, setCorrIndicatorY] = useState<string>('SP.DYN.LE00.IN');
   const [bubbleSizing, setBubbleSizing] = useState<'population' | 'uniform'>('population');
   const [showRegressionLine, setShowRegressionLine] = useState<boolean>(true);
+  const chartContainerRef = useRef<HTMLDivElement>(null);
 
   // Time Series state
   const [selectedCountries, setSelectedCountries] = useState<string[]>(['NGA', 'ZAF', 'EGY', 'KEN', 'GHA']);
@@ -112,7 +100,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   const allEntities = useMemo(() => atlas.getAllEntities(), []);
 
   const handleDownloadChartSvg = (filename: string) => {
-    const svgEl = document.querySelector('.recharts-surface') as SVGSVGElement | null;
+    const svgEl = chartContainerRef.current?.querySelector('.recharts-surface') as SVGSVGElement | null;
     if (!svgEl) return;
     const serializer = new XMLSerializer();
     let source = serializer.serializeToString(svgEl);
@@ -198,12 +186,12 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
       }
     }
 
-    items.sort((a, b) => sortAscending ? a.obs.value - b.obs.value : b.obs.value - a.obs.value);
+    items.sort((a, b) => sortAscending ? (a.obs.value ?? 0) - (b.obs.value ?? 0) : (b.obs.value ?? 0) - (a.obs.value ?? 0));
 
     return items.map((item, idx) => ({
       rank: idx + 1,
       entity: item.entity,
-      value: item.obs.value,
+      value: item.obs.value ?? 0,
       formattedValue: formatValueByUnit(item.obs.value, indicator.unit),
       unit: indicator.unit,
       year: item.obs.period,
@@ -346,7 +334,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   return (
     <section aria-label="Indicator Analytics and Comparative Engine" className="space-y-8 animate-in fade-in duration-200">
       {/* Header Banner - Matches Global Japandi Standard */}
-      <header className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-sm transition-colors">
+      <header className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 sm:p-6 md:p-8 shadow-sm transition-colors">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <p className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
@@ -355,13 +343,13 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             <h1 className="text-2xl md:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display text-balance">
               Indicator Analytics &amp; Comparative Engine
             </h1>
-            <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400">
               Explore 50+ normalized socio-economic indicators across 54 African nations with real-time domain filtering and live search.
             </p>
           </div>
 
           {/* Mode Switcher */}
-          <div className="relative flex bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-2xl shrink-0" role="tablist" aria-label="Analytical mode switcher">
+          <div className="relative flex bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1 sm:p-1.5 rounded-2xl shrink-0 max-w-full overflow-x-auto no-scrollbar" role="tablist" aria-label="Analytical mode switcher">
             {[
               { id: 'rankings', label: 'Rankings', icon: TrendingUp },
               { id: 'timeseries', label: 'Time Series', icon: Layers },
@@ -387,7 +375,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                       (id) => setActiveTab(id as 'rankings' | 'timeseries' | 'correlation')
                     )
                   }
-                  className={`relative px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold transition-colors duration-150 cursor-pointer select-none flex items-center gap-2 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                  className={`relative px-2.5 sm:px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold transition-colors duration-150 cursor-pointer select-none flex items-center gap-1.5 sm:gap-2 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                     isActive
                       ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
@@ -613,7 +601,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                       onClick={() => setPlaySpeed(s)}
                       className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold transition-all cursor-pointer ${
                         playSpeed === s
-                          ? 'bg-emerald-600 text-white shadow-2xs'
+                          ? 'bg-emerald-700 text-white shadow-2xs'
                           : 'text-zinc-600 dark:text-zinc-400 hover:text-emerald-700'
                       }`}
                       title={`Play at ${s}x speed`}
@@ -638,7 +626,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
 
             {/* Slider Scrubber */}
             <div className="flex-1 w-full max-w-lg flex items-center gap-3">
-              <span className="text-[10px] font-mono font-bold text-zinc-400">2015</span>
+              <span className="text-[10px] font-mono font-bold text-zinc-600 dark:text-zinc-400">2015</span>
               <input
                 type="range"
                 min={2015}
@@ -646,10 +634,10 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                 step={1}
                 value={timelineYear}
                 onChange={(e) => setTimelineYear(Number(e.target.value))}
-                className="w-full h-1.5 bg-emerald-200 dark:bg-emerald-900/60 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                className="w-full h-1.5 bg-emerald-200 dark:bg-emerald-900/60 rounded-lg appearance-none cursor-pointer accent-emerald-700"
                 aria-label="Select Observation Year"
               />
-              <span className="text-[10px] font-mono font-bold text-zinc-400">2024</span>
+              <span className="text-[10px] font-mono font-bold text-zinc-600 dark:text-zinc-400">2024</span>
             </div>
           </div>
 
@@ -689,11 +677,11 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                       </button>
                     </td>
                     <td className="py-3.5 px-4 text-zinc-600 dark:text-zinc-400">{item.entity.region}</td>
-                    <td className="py-3.5 px-4 text-right font-mono tabular-nums font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+                    <td className="py-3.5 px-4 text-right font-mono tabular-nums font-bold text-emerald-700 dark:text-emerald-400 text-sm">
                       {item.value != null && !isNaN(item.value) ? item.value.toLocaleString() : '—'}{' '}
-                      <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">{item.unit}</span>
+                      <span className="text-xs font-normal text-zinc-600 dark:text-zinc-400">{item.unit}</span>
                     </td>
-                    <td className="py-3.5 px-4 text-right font-mono tabular-nums text-zinc-500 dark:text-zinc-400">{item.year}</td>
+                    <td className="py-3.5 px-4 text-right font-mono tabular-nums text-zinc-600 dark:text-zinc-400">{item.year}</td>
                     <td className="py-3.5 px-4 text-center">
                       <DataSourceBadge entityId={item.entity.id} indicatorId={selectedIndicatorId} />
                     </td>
@@ -766,9 +754,9 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                     {currentIndicator.domain}
                   </span>
                   <span aria-hidden="true" className="text-zinc-400">·</span>
-                  <h3 className="font-bold text-base md:text-lg text-zinc-900 dark:text-zinc-100">
+                  <h2 className="font-bold text-base md:text-lg text-zinc-900 dark:text-zinc-100">
                     {currentIndicator.name} Trajectory (2015–2024)
-                  </h3>
+                  </h2>
                 </div>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                   Unit: <strong>{currentIndicator.unit}</strong> • Source: {currentIndicator.preferredSource || 'World Bank / Multilateral'}
@@ -791,7 +779,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                       boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3)'
                     }}
                   />
-                  <Legend />
+                  <Legend formatter={(value) => <span className="text-zinc-700 dark:text-zinc-300 font-medium text-xs">{value}</span>} />
                   {selectedCountries.map((countryId, idx) => (
                     <Line
                       key={countryId}
@@ -950,9 +938,9 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 space-y-6 shadow-xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-100 dark:border-zinc-800 pb-4">
               <div>
-                <h3 className="font-bold text-base md:text-lg text-zinc-900 dark:text-zinc-100">
+                <h2 className="font-bold text-base md:text-lg text-zinc-900 dark:text-zinc-100">
                   Cross-Sectional African Scatter Matrix &amp; Regression
-                </h3>
+                </h2>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                   Click any country bubble to inspect its national dossier • {bubbleSizing === 'population' ? 'Bubble size scaled to population' : 'Uniform dot mode'}
                 </p>
@@ -1014,7 +1002,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
               </div>
             </div>
 
-            <div className="h-96 w-full">
+            <div ref={chartContainerRef} className="h-96 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" className="dark:stroke-zinc-800" />

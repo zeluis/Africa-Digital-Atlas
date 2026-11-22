@@ -402,8 +402,8 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
             </span>
           </div>
           <div className="w-[1px] h-3 bg-[#E5DDD0] dark:bg-[#38322B]" />
-          <div className="flex items-center gap-1.5 text-[11px] font-medium text-[#C86D3B] dark:text-[#F59E0B]">
-            <Sparkles className="w-3 h-3 animate-spin text-[#D97706]" style={{ animationDuration: '4s' }} />
+          <div className="flex items-center gap-1.5 text-[11px] font-medium text-[#9A4312] dark:text-[#FBBF24]">
+            <Sparkles className="w-3 h-3 text-[#9A4312] dark:text-[#F59E0B] motion-safe:animate-spin" style={{ animationDuration: '4s' }} aria-hidden="true" />
             <span className="tabular-nums">8 Basins</span>
           </div>
         </m.div>
@@ -411,11 +411,11 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
 
       {/* Bottom Editorial Narrative & Staggered Micro-Telemetry */}
       <div className="relative z-20 mt-4 sm:mt-6 flex flex-col items-center gap-2 px-4 text-center max-w-lg">
-        <h3 className="text-sm sm:text-base font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6] flex items-center gap-2 tracking-tight">
-          <Compass className="w-4 h-4 text-[#C86D3B] dark:text-[#F59E0B]" />
+        <h2 className="text-sm sm:text-base font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6] flex items-center gap-2 tracking-tight">
+          <Compass className="w-4 h-4 text-[#9A4312] dark:text-[#F59E0B]" aria-hidden="true" />
           <span>{title}</span>
-        </h3>
-        <p className="text-xs text-[#7D6B5A] dark:text-[#B5A492] leading-relaxed font-normal">
+        </h2>
+        <p className="text-xs text-[#5E4F41] dark:text-[#B5A492] leading-relaxed font-normal">
           {subtitle}
         </p>
 
@@ -428,7 +428,7 @@ export const RadialTreeSkeleton: React.FC<RadialTreeSkeletonProps> = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.25 }}
-              className="text-[11px] font-mono text-[#C86D3B] dark:text-[#FBBF24] font-medium tracking-wide"
+              className="text-[11px] font-mono text-[#9A4312] dark:text-[#FBBF24] font-medium tracking-wide"
             >
               {TELEMETRY_PHASES[phaseIndex]}
             </m.span>

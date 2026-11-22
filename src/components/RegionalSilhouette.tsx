@@ -105,12 +105,7 @@ export const RegionalSilhouette: React.FC<RegionalSilhouetteProps> = ({
                 M49: {data.m49Code}
               </span>
               <span 
-                className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md border"
-                style={{
-                  backgroundColor: `${tonal.warmAccent}15`,
-                  borderColor: `${tonal.warmAccent}40`,
-                  color: tonal.warmAccent
-                }}
+                className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-md border ${tonal.badge.bg} ${tonal.badge.border} ${tonal.badge.text}`}
               >
                 UN REGION
               </span>
@@ -195,30 +190,30 @@ export const RegionalSilhouette: React.FC<RegionalSilhouetteProps> = ({
             </svg>
 
             {/* Floating Watermark M49 ID */}
-            <div className="absolute right-2 bottom-1 font-mono text-[22px] font-black text-zinc-300 dark:text-zinc-800/40 pointer-events-none select-none tracking-widest">
+            <div aria-hidden="true" className="absolute right-2 bottom-1 font-mono text-[22px] font-black text-zinc-300 dark:text-zinc-800/40 pointer-events-none select-none tracking-widest">
               0{data.m49Code}
             </div>
 
             {/* Compass Rose Marker */}
-            <div className="absolute top-1 left-2 flex items-center gap-1 font-mono text-[9px] text-zinc-400 dark:text-zinc-500 pointer-events-none">
+            <div aria-hidden="true" className="absolute top-1 left-2 flex items-center gap-1 font-mono text-[9px] text-zinc-400 dark:text-zinc-500 pointer-events-none">
               <Navigation className="w-2.5 h-2.5 text-zinc-400 rotate-45" />
               <span>N</span>
             </div>
           </div>
 
           {/* Footer Geographical Coordinate & Facts Capsule */}
-          <div className="relative z-10 pt-2 border-t border-zinc-200 dark:border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
+          <div className="relative z-10 pt-2 border-t border-zinc-200 dark:border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-600 dark:text-zinc-400">
             <div className="flex items-center gap-1.5">
               <MapPin className="w-3 h-3" style={{ color: tonal.warmAccent }} />
               <span className="font-semibold text-zinc-800 dark:text-zinc-200">{data.keyCapitals[0]?.name || 'Regional Center'}</span>
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500">({data.memberIso3.length} States)</span>
+              <span className="text-[10px] text-zinc-600 dark:text-zinc-400">({data.memberIso3.length} States)</span>
             </div>
 
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setShowGrid(!showGrid)}
                 className={`p-1 rounded-md text-[10px] font-mono border transition-colors cursor-pointer ${
-                  showGrid ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-emerald-500' : 'border-zinc-200 dark:border-zinc-800 text-zinc-400'
+                  showGrid ? 'bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-emerald-700 dark:text-emerald-400' : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400'
                 }`}
                 title="Toggle Radar Grid"
               >

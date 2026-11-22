@@ -188,6 +188,7 @@ export const IndicatorQuickSearch: React.FC<IndicatorQuickSearchProps> = ({
           }}
           onKeyDown={handleKeyDown}
           placeholder={isOpen ? placeholder : currentIndicator?.name || placeholder}
+          aria-label={label || 'Search multilateral indicators'}
           className={`w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs md:text-sm font-semibold rounded-2xl pl-10 pr-24 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all ${
             compact ? 'py-2.5' : 'py-3'
           }`}
@@ -202,6 +203,7 @@ export const IndicatorQuickSearch: React.FC<IndicatorQuickSearchProps> = ({
                 setSearchQuery('');
                 inputRef.current?.focus();
               }}
+              aria-label="Clear indicator search"
               className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
             >
               <X className="w-3.5 h-3.5" />
@@ -222,6 +224,8 @@ export const IndicatorQuickSearch: React.FC<IndicatorQuickSearchProps> = ({
                 setTimeout(() => inputRef.current?.focus(), 50);
               }
             }}
+            aria-label={isOpen ? 'Close indicator list' : 'Open indicator list'}
+            aria-expanded={isOpen}
             className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-md transition-transform"
           >
             <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180 text-emerald-500' : ''}`} />

@@ -605,7 +605,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
           labels: false,
           tastCohorts: false,
         });
-        setActiveTastLayer(null);
+        setActiveTastLayer('all');
         setLiveAnnouncement('Molecular Migration & Genetics Overlay activated: centered on continental divergence hub, layers toggled off');
       } else {
         setSelectedMolecularNode(null);
@@ -1605,7 +1605,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
           layout
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="pointer-events-auto flex items-center flex-wrap gap-1 sm:gap-1.5 p-1.5 rounded-2xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-xl backdrop-blur-md text-xs no-drag select-none"
+          className="pointer-events-auto flex items-center flex-wrap gap-1 sm:gap-1.5 p-1.5 rounded-2xl bg-[#FAF7F2] dark:bg-[#1E1B18] border border-[#E5DDD0] dark:border-[#38322B] shadow-xl backdrop-blur-md text-xs no-drag select-none"
           id="afriata-master-top-control-bar"
         >
           {/* 1. Search & Focus Trigger Button */}
@@ -1615,17 +1615,18 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
               setIsUnifiedPanelOpen(prev => !prev);
               setIsUnifiedPanelMinimized(false);
             }}
+            aria-expanded={isUnifiedPanelOpen}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer shadow-xs active:scale-95 text-xs ${
               isUnifiedPanelOpen
-                ? 'bg-[#E67E48] text-white shadow-xs'
-                : 'bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/40'
+                ? 'bg-[#B85220] text-white shadow-xs'
+                : 'bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#9A4312] dark:text-[#FFA573] border border-[#E67E48]/40'
             }`}
             title={isUnifiedPanelOpen ? "Close search panel" : "Search Ethnic Groups, Lineages & Countries"}
           >
-            <Search className="w-3.5 h-3.5" />
+            <Search className="w-3.5 h-3.5" aria-hidden="true" />
             <span className="hidden xs:inline">Search & Focus</span>
             {(selectedRegion !== 'All' || selectedCountry !== 'All' || searchQuery) && (
-              <span className="w-1.5 h-1.5 rounded-full bg-[#E67E48] animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#B85220] motion-safe:animate-pulse" />
             )}
           </button>
 
@@ -1639,17 +1640,18 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                 setIsLayersDropdownOpen(prev => !prev);
                 setIsTastDropdownOpen(false);
               }}
+              aria-expanded={isLayersDropdownOpen}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer shadow-xs active:scale-95 text-xs border ${
                 isLayersDropdownOpen
-                  ? 'bg-[#E67E48] text-white border-[#E67E48] shadow-xs'
-                  : 'bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border-[#E67E48]/40'
+                  ? 'bg-[#B85220] text-white border-[#B85220] shadow-xs'
+                  : 'bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#9A4312] dark:text-[#FFA573] border-[#E67E48]/40'
               }`}
               title="Toggle Map Layers & Visibility (Nodes, Branches, Labels, TAST)"
             >
-              <Layers className="w-3.5 h-3.5" />
+              <Layers className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Layers</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#E67E48]" />
-              <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isLayersDropdownOpen ? 'rotate-180' : ''}`} />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#B85220]" />
+              <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isLayersDropdownOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
             </button>
 
             {/* Sleek Sliding Dropdown Panel */}
@@ -1660,17 +1662,18 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 6, scale: 0.96 }}
                   transition={{ duration: 0.15, ease: 'easeOut' }}
-                  className="absolute left-0 top-full mt-2 w-56 p-2 rounded-2xl bg-[#FAF7F2]/98 dark:bg-[#1E1B18]/98 border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl z-50 text-xs no-drag select-none"
+                  className="absolute left-0 top-full mt-2 w-56 p-2 rounded-2xl bg-[#FAF7F2] dark:bg-[#1E1B18] border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl z-50 text-xs no-drag select-none"
                   onWheel={(e) => e.stopPropagation()}
                 >
-                  <div className="text-[10px] uppercase font-mono font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492] px-2.5 py-1 flex items-center justify-between border-b border-[#E5DDD0]/60 dark:border-[#38322B]/60 mb-1">
+                  <div className="text-[10px] uppercase font-mono font-bold tracking-wider text-[#5E4F41] dark:text-[#B5A492] px-2.5 py-1 flex items-center justify-between border-b border-[#E5DDD0]/60 dark:border-[#38322B]/60 mb-1">
                     <span>Active Layers</span>
                     <button
                       type="button"
                       onClick={() => setIsLayersDropdownOpen(false)}
-                      className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 cursor-pointer"
+                      aria-label="Close active layers dropdown"
+                      className="text-[#5E4F41] dark:text-[#B5A492] hover:text-stone-700 dark:hover:text-stone-200 cursor-pointer"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-3.5 h-3.5" aria-hidden="true" />
                     </button>
                   </div>
 
@@ -1681,8 +1684,8 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                       onClick={() => setLayerVisibility(prev => ({ ...prev, nodes: !prev.nodes }))}
                       className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl transition-all cursor-pointer ${
                         layerVisibility.nodes
-                          ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] font-bold'
-                          : 'text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 opacity-60'
+                          ? 'bg-[#E67E48]/15 text-[#9A4312] dark:text-[#FFA573] font-bold'
+                          : 'text-[#5E4F41] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 opacity-60'
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -1698,8 +1701,8 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                       onClick={() => setLayerVisibility(prev => ({ ...prev, branches: !prev.branches }))}
                       className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl transition-all cursor-pointer ${
                         layerVisibility.branches
-                          ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] font-bold'
-                          : 'text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 opacity-60'
+                          ? 'bg-[#E67E48]/15 text-[#9A4312] dark:text-[#FFA573] font-bold'
+                          : 'text-[#5E4F41] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 opacity-60'
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -1715,8 +1718,8 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                       onClick={() => setLayerVisibility(prev => ({ ...prev, labels: !prev.labels }))}
                       className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl transition-all cursor-pointer ${
                         layerVisibility.labels
-                          ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] font-bold'
-                          : 'text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 opacity-60'
+                          ? 'bg-[#E67E48]/15 text-[#9A4312] dark:text-[#FFA573] font-bold'
+                          : 'text-[#5E4F41] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 opacity-60'
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -1733,7 +1736,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                       className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl transition-all cursor-pointer ${
                         layerVisibility.tastCohorts
                           ? 'bg-[#724E5B]/20 text-[#5F3B4A] dark:text-[#E2B2C6] font-bold'
-                          : 'text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 opacity-60'
+                          : 'text-[#5E4F41] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 opacity-60'
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -1780,15 +1783,16 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 6, scale: 0.96 }}
                   transition={{ duration: 0.15, ease: 'easeOut' }}
-                  className="absolute left-0 top-full mt-2 w-72 p-2 rounded-2xl bg-[#FAF7F2]/98 dark:bg-[#1E1B18]/98 border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl z-50 text-xs no-drag select-none"
+                  className="absolute left-0 top-full mt-2 w-72 p-2 rounded-2xl bg-[#FAF7F2] dark:bg-[#1E1B18] border border-[#E5DDD0] dark:border-[#38322B] shadow-2xl z-50 text-xs no-drag select-none"
                   onWheel={(e) => e.stopPropagation()}
                 >
-                  <div className="text-[10px] uppercase font-mono font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492] px-2.5 py-1 flex items-center justify-between border-b border-[#E5DDD0]/60 dark:border-[#38322B]/60 mb-1">
+                  <div className="text-[10px] uppercase font-mono font-bold tracking-wider text-[#5E4F41] dark:text-[#B5A492] px-2.5 py-1 flex items-center justify-between border-b border-[#E5DDD0]/60 dark:border-[#38322B]/60 mb-1">
                     <span>TAST Historical Basins</span>
                     <button
                       type="button"
                       onClick={() => setIsTastDropdownOpen(false)}
-                      className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 cursor-pointer"
+                      aria-label="Close TAST basins dropdown"
+                      className="text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200 cursor-pointer"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -1812,7 +1816,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                     >
                       <div>
                         <div className="font-bold">All Basins &amp; Overview</div>
-                        <div className={`text-[10px] ${activeTastLayer === 'all' ? 'text-white/80' : 'text-[#7D6B5A] dark:text-[#B5A492]'}`}>
+                        <div className={`text-[10px] ${activeTastLayer === 'all' ? 'text-white/80' : 'text-[#5E4F41] dark:text-[#B5A492]'}`}>
                           12,521,354 Documented Captives
                         </div>
                       </div>
@@ -1839,7 +1843,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                           <span className="w-2 h-2 rounded-full bg-[#049B4D] shrink-0" />
                           <span>1st Cohort · West Central Africa</span>
                         </div>
-                        <div className={`text-[10px] pl-3.5 ${activeTastLayer === 'first' ? 'text-white/80' : 'text-[#7D6B5A] dark:text-[#B5A492]'}`}>
+                        <div className={`text-[10px] pl-3.5 ${activeTastLayer === 'first' ? 'text-white/80' : 'text-[#5E4F41] dark:text-[#B5A492]'}`}>
                           5.69M Captives (45.4%) • Angola, Congo, Gabon
                         </div>
                       </div>
@@ -1866,7 +1870,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                           <span className="w-2 h-2 rounded-full bg-[#E06BA1] shrink-0" />
                           <span>2nd Cohort · Bights of Benin &amp; Biafra</span>
                         </div>
-                        <div className={`text-[10px] pl-3.5 ${activeTastLayer === 'second' ? 'text-white/80' : 'text-[#7D6B5A] dark:text-[#B5A492]'}`}>
+                        <div className={`text-[10px] pl-3.5 ${activeTastLayer === 'second' ? 'text-white/80' : 'text-[#5E4F41] dark:text-[#B5A492]'}`}>
                           4.80M Captives (38.3%) • Nigeria, Benin, Ghana
                         </div>
                       </div>
@@ -1884,7 +1888,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                       }}
                       className={`w-full text-left px-2.5 py-2 rounded-xl transition-all cursor-pointer flex items-center justify-between ${
                         activeTastLayer === 'third'
-                          ? 'bg-[#C68B29] text-white font-bold shadow-xs'
+                          ? 'bg-[#8E5F10] text-white font-bold shadow-xs'
                           : 'hover:bg-black/5 dark:hover:bg-white/5 text-[#2B241E] dark:text-[#F5EFE6]'
                       }`}
                     >
@@ -1893,7 +1897,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                           <span className="w-2 h-2 rounded-full bg-[#C68B29] shrink-0" />
                           <span>3rd Cohort · Upper Guinea &amp; Senegambia</span>
                         </div>
-                        <div className={`text-[10px] pl-3.5 ${activeTastLayer === 'third' ? 'text-white/80' : 'text-[#7D6B5A] dark:text-[#B5A492]'}`}>
+                        <div className={`text-[10px] pl-3.5 ${activeTastLayer === 'third' ? 'text-white/80' : 'text-[#5E4F41] dark:text-[#B5A492]'}`}>
                           2.02M Captives (16.1%) • Senegambia, Windward
                         </div>
                       </div>
@@ -1911,16 +1915,17 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
           <button
             type="button"
             onClick={handleToggleMolecularOverlay}
+            aria-pressed={isMolecularOverlayOpen}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[10px] font-bold transition-all cursor-pointer shadow-xs active:scale-95 border ${
               isMolecularOverlayOpen
-                ? 'bg-[#E67E48] text-white shadow-[#E67E48]/30 border-[#E67E48]'
-                : 'bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border-[#E67E48]/40'
+                ? 'bg-[#B85220] text-white shadow-[#B85220]/30 border-[#B85220]'
+                : 'bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#9A4312] dark:text-[#FFA573] border-[#E67E48]/40'
             }`}
             title="Toggle Molecular Migration & Genetics Overlay"
           >
-            <Dna className="w-3.5 h-3.5" />
+            <Dna className="w-3.5 h-3.5" aria-hidden="true" />
             <span className="hidden lg:inline">Molecular Migration</span>
-            <span className={`w-1.5 h-1.5 rounded-full ${isMolecularOverlayOpen ? 'bg-white animate-ping' : 'bg-[#E67E48]'}`} />
+            <span className={`w-1.5 h-1.5 rounded-full ${isMolecularOverlayOpen ? 'bg-white motion-safe:animate-ping' : 'bg-[#B85220]'}`} />
           </button>
 
           <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0 mx-0.5" />
@@ -1932,10 +1937,11 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                 key={p}
                 type="button"
                 onClick={() => setCanvasBg(p)}
+                aria-pressed={canvasBg === p}
                 className={`px-1.5 py-0.5 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer capitalize ${
                   canvasBg === p
-                    ? 'bg-[#E67E48] text-white shadow-xs'
-                    : 'text-[#7D6B5A] dark:text-[#B5A492] hover:text-[#2B241E] dark:hover:text-[#F5EFE6]'
+                    ? 'bg-[#B85220] text-white shadow-xs'
+                    : 'text-[#5E4F41] dark:text-[#B5A492] hover:text-[#2B241E] dark:hover:text-[#F5EFE6]'
                 }`}
               >
                 {p}
@@ -1950,21 +1956,23 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
             <button
               type="button"
               onClick={() => handleZoomDelta(0.82)}
+              aria-label="Zoom out of Ethnic Tree"
               className="w-6 h-6 rounded-lg flex items-center justify-center text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
               title="Zoom out"
             >
-              <ZoomOut className="w-3 h-3" />
+              <ZoomOut className="w-3 h-3" aria-hidden="true" />
             </button>
-            <span className="text-[10px] font-mono font-bold text-[#7D6B5A] dark:text-[#B5A492] min-w-[2.2rem] text-center">
+            <span className="text-[10px] font-mono font-bold text-[#5E4F41] dark:text-[#B5A492] min-w-[2.2rem] text-center">
               {Math.round(zoom * 100)}%
             </span>
             <button
               type="button"
               onClick={() => handleZoomDelta(1.22)}
+              aria-label="Zoom in to Ethnic Tree"
               className="w-6 h-6 rounded-lg flex items-center justify-center text-[#52463B] dark:text-[#C4B7A6] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
               title="Zoom in"
             >
-              <ZoomIn className="w-3 h-3" />
+              <ZoomIn className="w-3 h-3" aria-hidden="true" />
             </button>
           </div>
 
@@ -1975,7 +1983,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
             className="hidden xl:flex px-2 py-1 rounded-xl text-[10px] font-medium items-center gap-1 bg-black/5 dark:bg-white/5 hover:bg-black/10 text-[#52463B] dark:text-[#C4B7A6] border border-[#E5DDD0] dark:border-[#38322B] transition-colors cursor-pointer"
             title="Reset zoom to full tree"
           >
-            <RotateCcw className="w-3 h-3 text-[#7D6B5A]" />
+            <RotateCcw className="w-3 h-3 text-[#5E4F41]" />
             <span>Full Tree</span>
           </button>
 
@@ -1983,7 +1991,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
           <button
             type="button"
             onClick={panToCrucible}
-            className="flex px-2.5 py-1 rounded-xl text-[10px] font-bold items-center gap-1 bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/35 transition-all cursor-pointer shadow-xs active:scale-95"
+            className="flex px-2.5 py-1 rounded-xl text-[10px] font-bold items-center gap-1 bg-[#E67E48]/15 hover:bg-[#E67E48]/25 text-[#9A4312] dark:text-[#FFA573] border border-[#E67E48]/35 transition-all cursor-pointer shadow-xs active:scale-95"
             title="Crucible View: Zoom directly to Cabo Verde maritime crucible nexus"
           >
             <Compass className="w-3.5 h-3.5 text-[#E67E48]" />
@@ -2027,7 +2035,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
 
           {/* Afriata Title & SVG Info Tag */}
           <div className="w-[1px] h-4 bg-[#E5DDD0] dark:bg-[#38322B] shrink-0 mx-0.5" />
-          <div className="flex items-center gap-1 px-1 text-[10px] text-[#7D6B5A] dark:text-[#B5A492] font-medium shrink-0">
+          <div className="flex items-center gap-1 px-1 text-[10px] text-[#5E4F41] dark:text-[#B5A492] font-medium shrink-0">
             <span className="font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6]">Afriata</span>
           </div>
         </m.div>
@@ -2044,7 +2052,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -8 }}
             transition={{ type: "spring", damping: 27, stiffness: 330 }}
-            className={`fixed top-[132px] sm:top-[136px] left-1/2 -translate-x-1/2 z-40 rounded-3xl bg-[#FAF7F2]/98 dark:bg-[#1E1B18]/98 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_50px_rgba(75,55,35,0.18)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-200 ${
+            className={`fixed top-[132px] sm:top-[136px] left-1/2 -translate-x-1/2 z-40 rounded-3xl bg-[#FAF7F2] dark:bg-[#1E1B18] border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_16px_50px_rgba(75,55,35,0.18)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-200 ${
               isUnifiedPanelMinimized 
                 ? 'w-auto max-w-xs p-3 flex items-center gap-3' 
                 : 'w-80 sm:w-88 max-h-[calc(100vh-140px)] flex flex-col'
@@ -2055,28 +2063,30 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
               /* Minimized Floating Pill State (Afriata Title & SVG Info) */
               <div className="flex items-center justify-between w-full gap-3 select-none">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-[#E67E48] animate-pulse shrink-0" />
+                  <div className="w-2 h-2 rounded-full bg-[#B85220] motion-safe:animate-pulse shrink-0" />
                   <div className="text-xs font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6]">
                     Afriata
                   </div>
-                  <span className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">· SVG Info</span>
+                  <span className="text-[10px] text-[#5E4F41] dark:text-[#B5A492]">· SVG Info</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => setIsUnifiedPanelMinimized(false)}
-                    className="p-1.5 rounded-lg text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                    aria-label="Maximize search and focus panel"
+                    className="p-1.5 rounded-lg text-[#5E4F41] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
                     title="Maximize panel"
                   >
-                    <Maximize2 className="w-3.5 h-3.5 text-[#E67E48]" />
+                    <Maximize2 className="w-3.5 h-3.5 text-[#9A4312] dark:text-[#FFA573]" aria-hidden="true" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsUnifiedPanelOpen(false)}
-                    className="p-1.5 rounded-lg text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                    aria-label="Close search and focus panel"
+                    className="p-1.5 rounded-lg text-[#5E4F41] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
                     title="Close panel"
                   >
-                    <X className="w-3.5 h-3.5" />
+                    <X className="w-3.5 h-3.5" aria-hidden="true" />
                   </button>
                 </div>
               </div>
@@ -2086,13 +2096,13 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                 {/* Panel Header with Drag Handle, UN GeoScheme Toggle, Minimize & Close */}
                 <div className="flex items-center justify-between px-4 py-3 border-b border-[#E5DDD0] dark:border-[#38322B] cursor-grab active:cursor-grabbing select-none">
                   <div className="flex items-center gap-2">
-                    <GripHorizontal className="w-4 h-4 text-[#8C7C70] opacity-70" />
-                    <div className="w-7 h-7 rounded-xl bg-[#E67E48]/15 border border-[#E67E48]/40 text-[#B8571A] dark:text-[#FFA573] grid place-items-center shrink-0">
-                      <Compass className="w-4 h-4" />
+                    <GripHorizontal className="w-4 h-4 text-[#8C7C70] opacity-70" aria-hidden="true" />
+                    <div className="w-7 h-7 rounded-xl bg-[#E67E48]/15 border border-[#E67E48]/40 text-[#9A4312] dark:text-[#FFA573] grid place-items-center shrink-0">
+                      <Compass className="w-4 h-4" aria-hidden="true" />
                     </div>
                     <div>
                       <h2 className="text-xs font-bold text-[#2B241E] dark:text-[#F5EFE6] leading-tight">Focus & Tree Search</h2>
-                      <p className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">Sovereign Genealogical Navigator</p>
+                      <p className="text-[10px] text-[#5E4F41] dark:text-[#B5A492]">Sovereign Genealogical Navigator</p>
                     </div>
                   </div>
 
@@ -2103,42 +2113,46 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                       ref={fileInputRef}
                       accept=".svg,image/svg+xml,.html,text/html"
                       className="hidden"
+                      aria-label="Upload custom SVG or HTML file"
                       onChange={handleFileUpload}
                     />
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="p-1.5 rounded-lg text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                      aria-label="Upload custom SVG or HTML file"
+                      className="p-1.5 rounded-lg text-[#5E4F41] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
                       title="Upload custom SVG or HTML file"
                     >
-                      <Upload className="w-3.5 h-3.5" />
+                      <Upload className="w-3.5 h-3.5" aria-hidden="true" />
                     </button>
 
                     {/* Minimize Panel Button */}
                     <button
                       type="button"
                       onClick={() => setIsUnifiedPanelMinimized(true)}
-                      className="p-1.5 rounded-lg text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                      aria-label="Minimize search panel to pill"
+                      className="p-1.5 rounded-lg text-[#5E4F41] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
                       title="Minimize panel to pill"
                     >
-                      <Minimize2 className="w-3.5 h-3.5" />
+                      <Minimize2 className="w-3.5 h-3.5" aria-hidden="true" />
                     </button>
 
                     {/* Close Panel Button */}
                     <button
                       type="button"
                       onClick={() => setIsUnifiedPanelOpen(false)}
-                      className="p-1.5 rounded-lg text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                      aria-label="Close search panel"
+                      className="p-1.5 rounded-lg text-[#5E4F41] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
                       title="Close panel"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-3.5 h-3.5" aria-hidden="true" />
                     </button>
                   </div>
                 </div>
 
                 {/* Sub-Header: UN Geo Scheme Toggle & Tree Info */}
                 <div className="px-4 py-2 bg-black/[0.02] dark:bg-white/[0.02] border-b border-[#E5DDD0]/70 dark:border-[#38322B]/70 flex items-center justify-between gap-2 text-[10px]">
-                  <p className="text-[#7D6B5A] dark:text-[#B5A492] font-medium truncate">
+                  <p className="text-[#5E4F41] dark:text-[#B5A492] font-medium truncate">
                     Afriata Vector Tree · Raw SVG (100% fidelity)
                   </p>
                   <button
@@ -2149,8 +2163,8 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                     }}
                     className={`flex items-center gap-1 px-2 py-0.5 rounded-full font-semibold transition-all cursor-pointer shrink-0 ${
                       showUnGeoScheme
-                        ? 'bg-[#E67E48]/15 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/35 hover:bg-[#E67E48]/25'
-                        : 'bg-black/5 dark:bg-white/5 text-[#7D6B5A] dark:text-[#B5A492] border border-[#E5DDD0] dark:border-[#38322B]'
+                        ? 'bg-[#E67E48]/15 text-[#9A4312] dark:text-[#FFA573] border border-[#E67E48]/35 hover:bg-[#E67E48]/25'
+                        : 'bg-black/5 dark:bg-white/5 text-[#5E4F41] dark:text-[#B5A492] border border-[#E5DDD0] dark:border-[#38322B]'
                     }`}
                     title={showUnGeoScheme ? "Hide Africa UN Geo Scheme continent layer" : "Show Africa UN Geo Scheme continent layer"}
                   >
@@ -2175,6 +2189,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                           setIsSearchDropdownOpen(true);
                         }}
                         placeholder="Search nation, ethnic node, region..."
+                        aria-label="Search nations, ethnic lineages, or regions"
                         className="w-full bg-transparent outline-none text-[#2B241E] dark:text-[#F5EFE6] placeholder-[#8C7C70] text-xs"
                       />
                       {searchQuery && (
@@ -2184,7 +2199,8 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                             setSearchQuery('');
                             setIsSearchDropdownOpen(false);
                           }}
-                          className="p-0.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-[#8C7C70] cursor-pointer"
+                          aria-label="Clear search query"
+                          className="p-0.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-[#5E4F41] dark:text-[#B5A492] cursor-pointer"
                           title="Clear search"
                         >
                           <X className="w-3 h-3" />
@@ -2260,11 +2276,11 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                           >
                             <div className="truncate pr-2">
                               <p className="font-semibold text-[#2B241E] dark:text-[#F5EFE6] truncate">{item.name}</p>
-                              <p className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">
+                              <p className="text-[10px] text-[#5E4F41] dark:text-[#B5A492]">
                                 {item.type === 'ethnic' ? `${item.country} • ${item.region}` : item.region}
                               </p>
                             </div>
-                            <span className="text-[9px] px-1.5 py-0.5 rounded uppercase font-bold text-[#E67E48] bg-[#E67E48]/10 shrink-0">
+                            <span className="text-[9px] px-1.5 py-0.5 rounded uppercase font-bold text-[#9A4312] dark:text-[#FFA573] bg-[#E67E48]/10 shrink-0">
                               {item.type}
                             </span>
                           </button>
@@ -2280,7 +2296,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
 
                   {/* Region Filter Selector */}
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-[#5E4F41] dark:text-[#B5A492]">
                       UN Geoscheme Region
                     </label>
                     <AtlasSelect
@@ -2321,7 +2337,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
 
                   {/* Country Conduit Selector */}
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
+                    <label className="text-[10px] uppercase font-bold tracking-wider text-[#5E4F41] dark:text-[#B5A492]">
                       Nation / Conduit ({availableCountries.length})
                     </label>
                     <AtlasSelect
@@ -2362,7 +2378,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                   {/* Linguistic Phylum Selector from Wikipedia Atlas */}
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <label className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492] flex items-center gap-1">
+                      <label className="text-[10px] uppercase font-bold tracking-wider text-[#5E4F41] dark:text-[#B5A492] flex items-center gap-1">
                         <Languages className="w-3 h-3 text-[#E67E48]" />
                         <span>Linguistic Phylum (Wikipedia)</span>
                       </label>
@@ -2370,7 +2386,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                         <button 
                           type="button" 
                           onClick={() => setSelectedLinguisticFamily('All')}
-                          className="text-[10px] text-[#E67E48] hover:underline cursor-pointer"
+                          className="text-[10px] text-[#9A4312] dark:text-[#FFA573] hover:underline cursor-pointer"
                         >
                           Reset
                         </button>
@@ -2396,10 +2412,10 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                   {selectedLinguisticFamily !== 'All' && linguisticFilteredGroups.length > 0 && (
                     <div className="p-2.5 rounded-2xl bg-[#E67E48]/10 border border-[#E67E48]/25 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#B8571A] dark:text-[#FFA573]">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#9A4312] dark:text-[#FFA573]">
                           {selectedLinguisticFamily} Lineages ({linguisticFilteredGroups.length})
                         </span>
-                        <span className="text-[9px] text-[#7D6B5A] dark:text-[#B5A492]">Tap to inspect</span>
+                        <span className="text-[9px] text-[#5E4F41] dark:text-[#B5A492]">Tap to inspect</span>
                       </div>
                       <div className="relative overflow-hidden">
                         <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto stable-gutter sleek-scrollbar-amber pr-1 pb-3">
@@ -2420,7 +2436,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                                   coords: item.x && item.y ? { x: item.x, y: item.y, r: 12 } : undefined
                                 });
                               }}
-                              className="px-2 py-0.5 rounded-full text-[10px] bg-white dark:bg-[#2B241E] border border-[#E67E48]/30 hover:border-[#E67E48] text-[#2B241E] dark:text-[#F5EFE6] hover:text-[#E67E48] transition-colors cursor-pointer"
+                              className="px-2 py-0.5 rounded-full text-[10px] bg-white dark:bg-[#2B241E] border border-[#E67E48]/30 hover:border-[#E67E48] text-[#2B241E] dark:text-[#F5EFE6] hover:text-[#9A4312] dark:hover:text-[#FFA573] transition-colors cursor-pointer"
                             >
                               {item.name}
                             </button>
@@ -2445,7 +2461,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                         id="dock-reset-view-btn"
                         type="button"
                         onClick={fitView}
-                        className="flex-1 px-3 py-2 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-[#FA8C58]/15 hover:bg-[#FA8C58]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#FA8C58]/40 shadow-xs hover:shadow-sm active:scale-95"
+                        className="flex-1 px-3 py-2 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer bg-[#FA8C58]/15 hover:bg-[#FA8C58]/25 text-[#9A4312] dark:text-[#FFA573] border border-[#FA8C58]/40 shadow-xs hover:shadow-sm active:scale-95"
                         title="Reset zoom and center on origin"
                       >
                         <RotateCcw className="w-3.5 h-3.5 text-[#E67E48]" />
@@ -2485,7 +2501,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                                 6 Phyla
                               </span>
                             </div>
-                            <div className="text-[10px] text-[#7D6B5A] dark:text-[#B5A492]">
+                            <div className="text-[10px] text-[#5E4F41] dark:text-[#B5A492]">
                               Explore 2,000+ living tongues & soundscapes
                             </div>
                           </div>
@@ -2501,7 +2517,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                   <div className="pt-3 border-t border-[#E5DDD0] dark:border-[#38322B] space-y-3">
                     {/* TAST Historical Cohorts */}
                     <div className="space-y-1.5">
-                      <span className="text-[10px] font-bold uppercase tracking-wider font-mono text-[#7D6B5A] dark:text-[#B5A492] block">
+                      <span className="text-[10px] font-bold uppercase tracking-wider font-mono text-[#5E4F41] dark:text-[#B5A492] block">
                         TAST Historical Cohorts
                       </span>
                       <div className="grid grid-cols-2 gap-1.5">
@@ -2539,8 +2555,8 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                           }}
                           className={`px-2 py-1 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center truncate ${
                             activeTastLayer === 'second'
-                              ? 'bg-[#D87040] text-white shadow-xs'
-                              : 'bg-[#D87040]/15 hover:bg-[#D87040]/25 text-[#B05325] dark:text-[#FFB594] border border-[#D87040]/30'
+                              ? 'bg-[#A8491C] text-white shadow-xs'
+                              : 'bg-[#D87040]/15 hover:bg-[#D87040]/25 text-[#9A4312] dark:text-[#FFB594] border border-[#D87040]/30'
                           }`}
                           title="2nd Cohort (1601-1700): 4.80M Captives (Bights of Benin & Biafra)"
                         >
@@ -2554,8 +2570,8 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                           }}
                           className={`px-2 py-1 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center truncate ${
                             activeTastLayer === 'third'
-                              ? 'bg-[#C68B29] text-white shadow-xs'
-                              : 'bg-[#C68B29]/15 hover:bg-[#C68B29]/25 text-[#9C6918] dark:text-[#FCE19B] border border-[#C68B29]/30'
+                              ? 'bg-[#8E5F10] text-white shadow-xs'
+                              : 'bg-[#C68B29]/15 hover:bg-[#C68B29]/25 text-[#7A500B] dark:text-[#FCE19B] border border-[#C68B29]/30'
                           }`}
                           title="3rd Cohort (1701-1867): 2.02M Captives (Upper Guinea & Senegambia)"
                         >
@@ -2575,10 +2591,11 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                       <button
                         type="button"
                         onClick={() => setSilhouetteGlowEnabled(prev => !prev)}
+                        aria-pressed={silhouetteGlowEnabled}
                         className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
                           silhouetteGlowEnabled
-                            ? 'bg-[#E67E48] text-white shadow-xs'
-                            : 'bg-black/10 dark:bg-white/10 text-[#7D6B5A] dark:text-[#B5A492]'
+                            ? 'bg-[#B85220] text-white shadow-xs'
+                            : 'bg-black/10 dark:bg-white/10 text-[#5E4F41] dark:text-[#B5A492]'
                         }`}
                       >
                         {silhouetteGlowEnabled ? 'Active' : 'Off'}
@@ -2588,12 +2605,12 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                     {/* Sovereign Country Territory Alignment Under Lineage Label */}
                     <div className="flex items-center justify-between pt-1">
                       <div className="flex items-center gap-1.5">
-                        <Compass className="w-3.5 h-3.5 text-[#E67E48]" />
+                        <Compass className="w-3.5 h-3.5 text-[#9A4312] dark:text-[#FFA573]" aria-hidden="true" />
                         <div>
                           <span className="block text-[10px] font-medium text-[#2B241E] dark:text-[#F5EFE6]">
                             Align Territory Under Tree
                           </span>
-                          <span className="block text-[8px] text-[#7D6B5A] dark:text-[#B5A492]">
+                          <span className="block text-[8px] text-[#5E4F41] dark:text-[#B5A492]">
                             Centers country polygon under lineage label on zoom
                           </span>
                         </div>
@@ -2612,10 +2629,11 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                             return next;
                           });
                         }}
+                        aria-pressed={isTerritoryAlignmentEnabled}
                         className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
                           isTerritoryAlignmentEnabled
-                            ? 'bg-[#E67E48] text-white shadow-xs'
-                            : 'bg-black/10 dark:bg-white/10 text-[#7D6B5A] dark:text-[#B5A492]'
+                            ? 'bg-[#B85220] text-white shadow-xs'
+                            : 'bg-black/10 dark:bg-white/10 text-[#5E4F41] dark:text-[#B5A492]'
                         }`}
                       >
                         {isTerritoryAlignmentEnabled ? 'Active' : 'Off'}
@@ -2637,7 +2655,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                           <span className="block text-[10px] font-bold text-indigo-900 dark:text-indigo-200 group-hover/mono:text-indigo-600 truncate">
                             Molecular Report
                           </span>
-                          <span className="block text-[8px] text-[#7D6B5A] dark:text-[#A79888] truncate">
+                          <span className="block text-[8px] text-[#5E4F41] dark:text-[#A79888] truncate">
                             Genetics & Diaspora
                           </span>
                         </div>
@@ -2657,7 +2675,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                           <span className="block text-[10px] font-bold text-emerald-900 dark:text-emerald-200 group-hover/found:text-emerald-600 truncate">
                             Foundations Report
                           </span>
-                          <span className="block text-[8px] text-[#7D6B5A] dark:text-[#A79888] truncate">
+                          <span className="block text-[8px] text-[#5E4F41] dark:text-[#A79888] truncate">
                             Colonial Roots
                           </span>
                         </div>
@@ -2921,7 +2939,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                   fill="none" 
                   stroke="#E67E48" 
                   strokeWidth="3.5" 
-                  className="animate-pulse"
+                  className="motion-safe:animate-pulse"
                 />
                 <circle 
                   cx={0} 
@@ -3122,14 +3140,15 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
               <button
                 type="button"
                 onClick={() => setIsCountryDossierCollapsed(false)}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-[#FAF7F2]/95 dark:bg-[#1E1B18]/95 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_10px_30px_rgba(0,0,0,0.18)] backdrop-blur-md text-[#2B241E] dark:text-[#F5EFE6] hover:scale-105 active:scale-95 transition-all cursor-pointer group"
+                aria-label={`Expand ${selectedEntity.name} sovereign country dossier`}
+                className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-[#FAF7F2] dark:bg-[#1E1B18] border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_10px_30px_rgba(0,0,0,0.18)] backdrop-blur-md text-[#2B241E] dark:text-[#F5EFE6] hover:scale-105 active:scale-95 transition-all cursor-pointer group"
                 title="Expand Sovereign Country Dossier"
               >
-                <span className="w-2.5 h-2.5 rounded-full bg-[#E67E48] animate-pulse" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#B85220] motion-safe:animate-pulse" />
                 <span className="text-xs font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6]">
                   {selectedEntity.name}
                 </span>
-                <span className="text-[10px] uppercase font-mono tracking-wider text-[#B8571A] dark:text-[#FFA573] bg-[#E67E48]/15 px-2 py-0.5 rounded-full border border-[#E67E48]/30">
+                <span className="text-[10px] uppercase font-mono tracking-wider text-[#9A4312] dark:text-[#FFA573] bg-[#E67E48]/15 px-2 py-0.5 rounded-full border border-[#E67E48]/30">
                   Expand Dossier
                 </span>
               </button>
@@ -3141,20 +3160,20 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 20, scale: 0.98 }}
               transition={{ type: "spring", damping: 27, stiffness: 330 }}
-              className="absolute top-4 right-4 bottom-4 z-40 w-80 sm:w-96 max-w-[calc(100vw-32px)] rounded-3xl bg-[#FAF7F2]/98 dark:bg-[#1E1B18]/98 border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_15px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.6)] p-5 flex flex-col space-y-4 no-drag"
+              className="absolute top-4 right-4 bottom-4 z-40 w-80 sm:w-96 max-w-[calc(100vw-32px)] rounded-3xl bg-[#FAF7F2] dark:bg-[#1E1B18] border border-[#E5DDD0] dark:border-[#38322B] shadow-[0_15px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.6)] p-5 flex flex-col space-y-4 no-drag"
               id="scholarly-dossier-inspector"
             >
               {/* Drawer Header */}
               <div className="flex items-start justify-between pb-3 border-b border-[#E5DDD0] dark:border-[#38322B]">
                 <div>
-                  <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-[#B8571A] dark:text-[#FFA573] bg-[#E67E48]/15 px-2.5 py-0.5 rounded-full border border-[#E67E48]/30">
+                  <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-[#9A4312] dark:text-[#FFA573] bg-[#E67E48]/15 px-2.5 py-0.5 rounded-full border border-[#E67E48]/30">
                     {selectedEntity.type.toUpperCase()} CONDUIT
                   </span>
-                  <h3 className="text-lg font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6] mt-1.5 leading-snug">
+                  <h2 className="text-lg font-serif font-bold text-[#2B241E] dark:text-[#F5EFE6] mt-1.5 leading-snug">
                     {selectedEntity.name}
-                  </h3>
+                  </h2>
                   {selectedEntity.region && (
-                    <p className="text-xs text-[#7D6B5A] dark:text-[#B5A492] mt-0.5">
+                    <p className="text-xs text-[#5E4F41] dark:text-[#B5A492] mt-0.5">
                       {selectedEntity.country ? `${selectedEntity.country} • ` : ''}{selectedEntity.region}
                     </p>
                   )}
@@ -3163,18 +3182,20 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsCountryDossierCollapsed(true)}
-                    className="p-1.5 rounded-full text-[#7D6B5A] hover:bg-black/5 dark:hover:bg-white/10 text-zinc-500 transition-colors cursor-pointer"
+                    aria-label="Minimize country dossier"
+                    className="p-1.5 rounded-full text-[#5E4F41] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
                     title="Minimize dossier to floating pill"
                   >
-                    <span className="text-xs font-mono font-bold">_</span>
+                    <span className="text-xs font-mono font-bold" aria-hidden="true">_</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleClearFocus}
-                    className="p-1.5 rounded-full text-[#7D6B5A] hover:bg-black/5 dark:hover:bg-white/10 text-zinc-500 transition-colors cursor-pointer"
+                    aria-label="Close country dossier"
+                    className="p-1.5 rounded-full text-[#5E4F41] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
                     title="Close dossier"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-5 h-5" aria-hidden="true" />
                   </button>
                 </div>
               </div>
@@ -3185,7 +3206,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
               {/* Demographic or Volume Metrics */}
               {(selectedEntity.count || selectedEntity.tastVolumeShare) && (
                 <div className="p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B] space-y-1">
-                  <p className="text-[10px] uppercase font-bold tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-[#5E4F41] dark:text-[#B5A492]">
                     Documented TAST Volume
                   </p>
                   {selectedEntity.count && (
@@ -3194,8 +3215,8 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                     </p>
                   )}
                   {selectedEntity.tastVolumeShare && (
-                    <p className="text-[11px] text-[#7D6B5A] dark:text-[#B5A492]">
-                      Transatlantic Embarkation Share: <span className="font-bold text-[#E67E48]">{selectedEntity.tastVolumeShare}%</span>
+                    <p className="text-[11px] text-[#5E4F41] dark:text-[#B5A492]">
+                      Transatlantic Embarkation Share: <span className="font-bold text-[#9A4312] dark:text-[#FFA573]">{selectedEntity.tastVolumeShare}%</span>
                     </p>
                   )}
                 </div>
@@ -3211,10 +3232,10 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                 return (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
+                      <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#5E4F41] dark:text-[#B5A492]">
                         Documented Ethnic Lineages ({conduit.ethnicGroups.length})
-                      </h4>
-                      <span className="text-[9px] text-[#E67E48] font-semibold">Click for Wikipedia</span>
+                      </h3>
+                      <span className="text-[9px] text-[#9A4312] dark:text-[#FFA573] font-semibold">Click for Wikipedia</span>
                     </div>
                     <div className="relative overflow-hidden">
                       <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto stable-gutter sleek-scrollbar-amber p-1 pb-4">
@@ -3234,7 +3255,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
                               });
                               zoomToCountryRegion(conduit.name, { x: eg.nodeX, y: eg.nodeY });
                             }}
-                            className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#E67E48]/10 hover:bg-[#E67E48]/25 text-[#B8571A] dark:text-[#FFA573] border border-[#E67E48]/30 transition-all cursor-pointer flex items-center gap-1 active:scale-95"
+                            className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#E67E48]/10 hover:bg-[#E67E48]/25 text-[#9A4312] dark:text-[#FFA573] border border-[#E67E48]/30 transition-all cursor-pointer flex items-center gap-1 active:scale-95"
                             title={`Open Wikipedia Dossier for ${eg.name}`}
                           >
                             <span>{eg.name}</span>
@@ -3254,7 +3275,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
               {/* Historical Narrative */}
               {selectedEntity.description && (
                 <div className="space-y-1.5">
-                  <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#7D6B5A] dark:text-[#B5A492]">
+                  <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#5E4F41] dark:text-[#B5A492]">
                     Historical Description & Provenance
                   </h4>
                   <p className="text-[#52463B] dark:text-[#C4B7A6] leading-relaxed">
@@ -3278,7 +3299,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
 
               {/* Cabo Verde Crucible Linkage */}
               <div className="p-3 rounded-2xl bg-[#E67E48]/10 border border-[#E67E48]/25 space-y-1">
-                <p className="text-[10px] font-bold uppercase text-[#B8571A] dark:text-[#FFA573] flex items-center gap-1">
+                <p className="text-[10px] font-bold uppercase text-[#9A4312] dark:text-[#FFA573] flex items-center gap-1">
                   <Compass className="w-3.5 h-3.5" />
                   Cabo Verde Transatlantic Crucible Linkage
                 </p>
@@ -3312,7 +3333,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
             <button
               type="button"
               onClick={() => setSelectedEntity(null)}
-              className="w-full py-2 px-3 rounded-full text-xs font-semibold border border-[#E5DDD0] dark:border-[#38322B] text-[#7D6B5A] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer active:scale-95"
+              className="w-full py-2 px-3 rounded-full text-xs font-semibold border border-[#E5DDD0] dark:border-[#38322B] text-[#5E4F41] dark:text-[#B5A492] hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer active:scale-95"
             >
               Close Dossier
             </button>

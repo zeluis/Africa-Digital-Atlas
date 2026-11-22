@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { usePrefersReducedMotion } from '../utils/motion';
+import { handleTabListKeyDown } from '../utils/a11y';
 import { AtlasDialog } from './common/AtlasDialog';
 import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 import { 
@@ -35,6 +36,7 @@ interface MethodologyAuditModalProps {
 }
 
 type MethodologyTab = 'provenance' | 'flags' | 'voyages_ethnic' | 'hashes' | 'limitations';
+const METHODOLOGY_TABS: readonly MethodologyTab[] = ['provenance', 'flags', 'voyages_ethnic', 'hashes', 'limitations'];
 
 interface HashVerificationState {
   status: 'idle' | 'verifying' | 'matched' | 'mismatch' | 'unavailable' | 'error';
@@ -173,10 +175,14 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
             >
               <button
                 type="button"
+                id="methodology-tab-provenance"
                 role="tab"
                 aria-selected={activeTab === 'provenance'}
+                aria-controls="methodology-panel-provenance"
+                tabIndex={activeTab === 'provenance' ? 0 : -1}
                 onClick={() => setActiveTab('provenance')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap ${
+                onKeyDown={(e) => handleTabListKeyDown(e, METHODOLOGY_TABS, 0, setActiveTab, 'horizontal')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                   activeTab === 'provenance'
                     ? 'bg-emerald-600 text-white shadow-xs font-bold'
                     : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
@@ -187,10 +193,14 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
               </button>
               <button
                 type="button"
+                id="methodology-tab-flags"
                 role="tab"
                 aria-selected={activeTab === 'flags'}
+                aria-controls="methodology-panel-flags"
+                tabIndex={activeTab === 'flags' ? 0 : -1}
                 onClick={() => setActiveTab('flags')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap ${
+                onKeyDown={(e) => handleTabListKeyDown(e, METHODOLOGY_TABS, 1, setActiveTab, 'horizontal')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                   activeTab === 'flags'
                     ? 'bg-emerald-600 text-white shadow-xs font-bold'
                     : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
@@ -201,10 +211,14 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
               </button>
               <button
                 type="button"
+                id="methodology-tab-voyages_ethnic"
                 role="tab"
                 aria-selected={activeTab === 'voyages_ethnic'}
+                aria-controls="methodology-panel-voyages_ethnic"
+                tabIndex={activeTab === 'voyages_ethnic' ? 0 : -1}
                 onClick={() => setActiveTab('voyages_ethnic')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap ${
+                onKeyDown={(e) => handleTabListKeyDown(e, METHODOLOGY_TABS, 2, setActiveTab, 'horizontal')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                   activeTab === 'voyages_ethnic'
                     ? 'bg-emerald-600 text-white shadow-xs font-bold'
                     : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
@@ -215,10 +229,14 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
               </button>
               <button
                 type="button"
+                id="methodology-tab-hashes"
                 role="tab"
                 aria-selected={activeTab === 'hashes'}
+                aria-controls="methodology-panel-hashes"
+                tabIndex={activeTab === 'hashes' ? 0 : -1}
                 onClick={() => setActiveTab('hashes')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap ${
+                onKeyDown={(e) => handleTabListKeyDown(e, METHODOLOGY_TABS, 3, setActiveTab, 'horizontal')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                   activeTab === 'hashes'
                     ? 'bg-emerald-600 text-white shadow-xs font-bold'
                     : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
@@ -229,10 +247,14 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
               </button>
               <button
                 type="button"
+                id="methodology-tab-limitations"
                 role="tab"
                 aria-selected={activeTab === 'limitations'}
+                aria-controls="methodology-panel-limitations"
+                tabIndex={activeTab === 'limitations' ? 0 : -1}
                 onClick={() => setActiveTab('limitations')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap ${
+                onKeyDown={(e) => handleTabListKeyDown(e, METHODOLOGY_TABS, 4, setActiveTab, 'horizontal')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                   activeTab === 'limitations'
                     ? 'bg-emerald-600 text-white shadow-xs font-bold'
                     : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
@@ -248,7 +270,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
           <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain sleek-scrollbar p-4 sm:p-8 space-y-6 text-stone-800 dark:text-stone-200 font-sans">
             {/* TAB 1: Data Provenance & Harmonization */}
             {activeTab === 'provenance' && (
-              <div className="space-y-6">
+              <div id="methodology-panel-provenance" role="tabpanel" aria-labelledby="methodology-tab-provenance" className="space-y-6">
                 <div className="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 space-y-2">
                   <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100 font-serif">
                     1. Data Provenance
@@ -308,7 +330,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
 
             {/* TAB 2: Status Flags */}
             {activeTab === 'flags' && (
-              <div className="space-y-6">
+              <div id="methodology-panel-flags" role="tabpanel" aria-labelledby="methodology-tab-flags" className="space-y-6">
                 <div className="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 space-y-2">
                   <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100 font-serif">
                     2. Status Flags
@@ -360,7 +382,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
 
             {/* TAB 3: Slave-Trade Figures & Ethnic Groups Framework */}
             {activeTab === 'voyages_ethnic' && (
-              <div className="space-y-6">
+              <div id="methodology-panel-voyages_ethnic" role="tabpanel" aria-labelledby="methodology-tab-voyages_ethnic" className="space-y-6">
                 {/* Section 3: Slave-trade figures */}
                 <div className="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 space-y-4">
                   <div className="flex items-center gap-2">
@@ -424,7 +446,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
 
             {/* TAB 4: Dataset Integrity (SHA-256 Checksums) */}
             {activeTab === 'hashes' && (
-              <div className="space-y-6">
+              <div id="methodology-panel-hashes" role="tabpanel" aria-labelledby="methodology-tab-hashes" className="space-y-6">
                 <div className="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-1">
                     <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100 font-serif">
@@ -436,6 +458,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
                   </div>
 
                   <button
+                    type="button"
                     onClick={handleVerifyAllHashes}
                     disabled={isVerifyingAll}
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-mono font-bold transition-colors shrink-0 cursor-pointer"
@@ -470,6 +493,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
 
                           <div className="flex items-center gap-2">
                             <button
+                              type="button"
                               onClick={() => handleVerifyHash(hash)}
                               disabled={isVerifying}
                               className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-mono font-semibold transition-colors cursor-pointer ${
@@ -538,7 +562,7 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
 
             {/* TAB 5: Limitations & FAIR Open Science */}
             {activeTab === 'limitations' && (
-              <div className="space-y-6">
+              <div id="methodology-panel-limitations" role="tabpanel" aria-labelledby="methodology-tab-limitations" className="space-y-6">
                 <div className="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 space-y-3">
                   <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100 font-serif">
                     6. Limitations

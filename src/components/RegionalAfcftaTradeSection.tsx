@@ -50,7 +50,7 @@ export const RegionalAfcftaTradeSection: React.FC<RegionalAfcftaTradeSectionProp
             onClick={() => setActiveSubTab('profile')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeSubTab === 'profile'
-                ? 'bg-emerald-600 text-white font-bold shadow-xs'
+                ? 'bg-emerald-700 text-white font-bold shadow-xs'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
             }`}
           >
@@ -63,7 +63,7 @@ export const RegionalAfcftaTradeSection: React.FC<RegionalAfcftaTradeSectionProp
             onClick={() => setActiveSubTab('simulator')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeSubTab === 'simulator'
-                ? 'bg-emerald-600 text-white font-bold shadow-xs'
+                ? 'bg-emerald-700 text-white font-bold shadow-xs'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
             }`}
           >
@@ -114,7 +114,7 @@ export const RegionalAfcftaTradeSection: React.FC<RegionalAfcftaTradeSectionProp
                 <button
                   type="button"
                   onClick={() => setActiveSubTab('simulator')}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
                 >
                   <Sliders className="w-3.5 h-3.5" />
                   <span>Launch Live Simulator</span>
@@ -124,7 +124,7 @@ export const RegionalAfcftaTradeSection: React.FC<RegionalAfcftaTradeSectionProp
                   <span className="text-[10px] uppercase font-mono font-bold text-zinc-500 dark:text-zinc-400 block">
                     Intra-Regional Trade Share
                   </span>
-                  <span className="text-xl font-black font-mono" style={{ color: tonal.warmAccent }}>
+                  <span className={`text-xl font-black font-mono ${tonal.card.accentText}`}>
                     {profile.intraRegionalTradePct}%
                   </span>
                 </div>

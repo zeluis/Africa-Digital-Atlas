@@ -154,6 +154,12 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
         />
       )}
 
+      {activeTab !== 'curtain' && (
+        <h1 className="sr-only">
+          Archival Cartography, Oceanic Streamlines and Pre-Colonial Polities Observatory
+        </h1>
+      )}
+
       {/* =========================================================================
           TAB 2: SEASONAL OCEANIC STREAMLINES & HYDRODYNAMIC ENGINE WORKBENCH
           (Self-contained 100% full-bleed GIS canvas with sleek floating control bar)

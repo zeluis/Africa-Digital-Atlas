@@ -356,7 +356,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                   {isActive && (
                     <m.div
                       layoutId="languagesViewTabPill"
-                      className="absolute inset-0 rounded-xl bg-emerald-600 shadow-md shadow-emerald-950/20"
+                      className="absolute inset-0 rounded-xl bg-emerald-700 shadow-md shadow-emerald-950/20"
                       transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
                     />
                   )}
@@ -459,13 +459,13 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                   key={family.id}
                   className={`relative rounded-3xl border p-6 transition-all flex flex-col justify-between ${
                     isFamilySelected
-                      ? 'border-emerald-500 bg-emerald-950/10 dark:bg-emerald-950/30 shadow-xl ring-1 ring-emerald-500'
+                      ? 'border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/30 shadow-xl ring-1 ring-emerald-500'
                       : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-zinc-300 dark:hover:border-zinc-700'
                   }`}
                 >
                   <div>
                     <div className="flex items-center justify-between mb-3 gap-2 text-xs">
-                      <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">
+                      <span className="font-mono font-bold text-emerald-800 dark:text-emerald-400">
                         {family.languagesCount} · {family.speakers}
                       </span>
                       {greeting && (
@@ -487,9 +487,9 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                       aria-pressed={isFamilySelected}
                       className="text-left w-full group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-lg"
                     >
-                      <h3 className="text-xl font-extrabold text-zinc-900 dark:text-zinc-100 mb-2 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+                      <h2 className="text-xl font-extrabold text-zinc-900 dark:text-zinc-100 mb-2 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
                         {family.name}
-                      </h3>
+                      </h2>
                       <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4 line-clamp-3">
                         {family.description}
                       </p>
@@ -497,11 +497,11 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                   </div>
 
                   <div className="space-y-2 pt-3 border-t border-zinc-200 dark:border-zinc-800">
-                    <div className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
-                      Key Languages: <span className="font-medium text-zinc-800 dark:text-zinc-200">{family.keyLanguages.slice(0, 4).join(' · ')}</span>
+                    <div className="text-[11px] font-semibold text-zinc-700 dark:text-zinc-400">
+                      Key Languages: <span className="font-medium text-zinc-900 dark:text-zinc-200">{family.keyLanguages.slice(0, 4).join(' · ')}</span>
                     </div>
 
-                    <div className="pt-2 flex items-center justify-between border-t border-zinc-100 dark:border-zinc-900 mt-2">
+                    <div className="pt-2 flex items-center justify-between border-t border-zinc-200/70 dark:border-zinc-900 mt-2">
                       <button
                         type="button"
                         onClick={() => {
@@ -516,7 +516,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                           setActiveWaveformLangId(targetMap[family.id] || 'yoruba');
                           selectSubTab('waveforms');
                         }}
-                        className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 font-bold flex items-center gap-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                        className="text-[11px] font-mono text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 font-bold flex items-center gap-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
                       >
                         <Radio className="w-3 h-3" />
                         <span>Inspect Phonetic Waveform →</span>
@@ -543,7 +543,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
               <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-xl space-y-6">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-5">
                   <div>
-                    <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase">
+                    <span className="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase">
                       Linguistic Phylum Deep Dive
                     </span>
                     <h2 className="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 mt-1">
@@ -559,9 +559,9 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-2 space-y-4">
-                    <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
+                    <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
                       Phylum Overview &amp; Origins
-                    </h4>
+                    </h3>
                     <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
                       {family.description}
                     </p>
@@ -577,7 +577,7 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                             "{deepGreeting.nativePhrase}"
                           </p>
                           <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                            Phonetics: <code className="font-mono text-[11px] text-emerald-600 dark:text-emerald-400">{deepGreeting.phoneticGuide}</code> · <em>"{deepGreeting.meaningEn}"</em>
+                            Phonetics: <code className="font-mono text-[11px] text-emerald-800 dark:text-emerald-400">{deepGreeting.phoneticGuide}</code> · <em>"{deepGreeting.meaningEn}"</em>
                           </p>
                         </div>
                         <VoiceWelcomeFab
@@ -592,9 +592,9 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                     )}
 
                     <div className="space-y-1.5 pt-3">
-                      <h5 className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase">
+                      <h4 className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase">
                         Primary Geographic Regions
-                      </h5>
+                      </h4>
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold">
                         {family.primaryRegions.map((r, rIdx) => {
                           const tonal = getRegionTonalPalette(r);
@@ -613,9 +613,9 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                     className="space-y-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 shadow-xs transition-colors"
                     style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
                   >
-                    <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider flex items-center gap-2">
+                    <h3 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider flex items-center gap-2">
                       <Layers className="w-4 h-4 text-emerald-500" /> Sub-Branches & Taxa
-                    </h4>
+                    </h3>
                     <div className="space-y-1.5">
                       {family.majorBranches.map(b => (
                         <div key={b} className="flex items-center gap-2 text-xs text-zinc-700 dark:text-zinc-300">
@@ -626,9 +626,9 @@ export const LanguagesView: React.FC<LanguagesViewProps> = ({
                     </div>
 
                     <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800">
-                      <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider mb-1.5">
+                      <h3 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider mb-1.5">
                         Key Exemplar Languages
-                      </h4>
+                      </h3>
                       <p className="text-xs text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
                         {family.keyLanguages.join(' · ')}
                       </p>

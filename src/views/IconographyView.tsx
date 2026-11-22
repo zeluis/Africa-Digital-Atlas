@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { m, AnimatePresence } from 'motion/react';
 import { SlidingPill, usePrefersReducedMotion } from '../utils/motion';
+import { handleTabListKeyDown } from '../utils/a11y';
 import { 
   BookOpen, 
   Sparkles, 
@@ -27,8 +28,8 @@ import { ArchivalImageViewer } from '../components/common/ArchivalImageViewer';
 import { DynamicIcon } from '../components/DynamicIcon';
 import { resolveAssetPath, getAssetCandidateUrls } from '../utils/assetPath';
 
-// Curated selection of visually striking, high-detail plates
-const HERO_IMAGE_CANDIDATES = [17, 18, 19, 20, 731, 732, 735, 788, 789, 790, 831, 835, 1021, 1028, 1032, 1042];
+// Curated selection of locally archived, visually striking, high-detail plates
+const HERO_IMAGE_CANDIDATES = [17, 18, 19, 20, 21, 22, 27, 28, 29, 36, 46, 50, 536, 802, 1042];
 
 // Converted Castas archive items (32 plates from the public/castas repository)
 const castasIllustrations: SlaveTradeIllustration[] = CASTAS_ARCHIVE_ITEMS.map((item, idx) => ({
@@ -166,7 +167,7 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
                 <h1 className="font-serif font-bold text-xs sm:text-sm md:text-base text-stone-900 dark:text-stone-100 whitespace-nowrap">
                   Castas &amp; Colonial Visual Archive
                 </h1>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-900 dark:text-amber-300 font-mono text-[9.5px] font-bold border border-amber-500/30 whitespace-nowrap">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-900 dark:text-amber-300 font-mono text-[9.5px] font-bold border border-amber-500/30 whitespace-nowrap">
                   Plate {activeCastasItem.regId} of {castasIllustrations.length}
                 </span>
                 <span className="text-[11px] font-serif italic text-stone-700 dark:text-stone-300 truncate max-w-xs md:max-w-md hidden lg:inline">
@@ -182,7 +183,14 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
           {/* Right: Segmented Switchboard to toggle between Archival Plates Grid and Castas */}
           <div className="relative inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner self-start sm:self-auto" role="tablist" aria-label="Toggle between Archival Plates and Castas series">
             <button
+              type="button"
+              id="iconography-tab-registry"
+              role="tab"
+              aria-selected={false}
+              aria-controls="iconography-panel-registry"
+              tabIndex={-1}
               onClick={() => setActiveTab('registry')}
+              onKeyDown={(e) => handleTabListKeyDown(e, ['registry', 'ingestion'] as const, 0, setActiveTab, 'horizontal')}
               className="relative px-3 py-1 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
             >
               <DynamicIcon 
@@ -196,7 +204,14 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
             </button>
 
             <button
+              type="button"
+              id="iconography-tab-ingestion"
+              role="tab"
+              aria-selected={true}
+              aria-controls="iconography-panel-ingestion"
+              tabIndex={0}
               onClick={() => setActiveTab('ingestion')}
+              onKeyDown={(e) => handleTabListKeyDown(e, ['registry', 'ingestion'] as const, 1, setActiveTab, 'horizontal')}
               className="relative px-3 py-1 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 text-white dark:text-stone-900 shadow-sm"
             >
               <SlidingPill
@@ -219,7 +234,12 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
         </header>
 
         {/* Full-Bleed Archival Image Viewer Workspace */}
-        <div className="flex-1 w-full min-h-0 overflow-hidden relative">
+        <div
+          id="iconography-panel-ingestion"
+          role="tabpanel"
+          aria-labelledby="iconography-tab-ingestion"
+          className="flex-1 w-full min-h-0 overflow-hidden relative"
+        >
           <ArchivalImageViewer
             illustration={activeCastasItem}
             illustrationsList={castasIllustrations}
@@ -262,7 +282,7 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
                 exit={{ opacity: 0, scale: 0.98 }}
                 transition={{ duration: 1.4, ease: [0.25, 0.1, 0.25, 1] }}
                 className="absolute inset-0 bg-cover bg-right md:bg-[center_right_12%] sepia-[0.20] contrast-[1.18] brightness-[1.02] dark:brightness-[0.92] dark:contrast-125 dark:opacity-40 mix-blend-multiply dark:mix-blend-luminosity"
-                style={{ backgroundImage: `url(${heroState.url})` }}
+                style={{ backgroundImage: `url(${resolveAssetPath(heroState.url)})` }}
               />
             )}
           </AnimatePresence>
@@ -285,12 +305,13 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
         <div className="relative z-10 w-full px-4 sm:px-6 md:px-12 py-12 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 text-left">
           <div className="max-w-3xl space-y-4 md:space-y-5">
             <div className="flex flex-wrap items-center gap-2.5">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/15 dark:border-amber-400/20 text-amber-900 dark:text-amber-300 text-xs font-mono font-bold uppercase tracking-wider">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/15 dark:border-amber-400/20 text-amber-900 dark:text-amber-300 text-xs font-mono font-bold uppercase tracking-wider">
                 <BookOpen className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 shrink-0" />
-                <span>Scholarly Archival Iconography • Exhibition Plate SI-OB-{heroState.id}</span>
+                <span>Scholarly Archival Iconography · Exhibition Plate SI-OB-{heroState.id}</span>
               </div>
 
               <button 
+                type="button"
                 onClick={rotateHeroImage}
                 className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-200/60 hover:bg-stone-300/80 dark:bg-stone-800/60 dark:hover:bg-stone-700/80 transition-all text-[11px] font-mono text-stone-700 hover:text-stone-900 dark:text-stone-300 dark:hover:text-stone-100 cursor-pointer shadow-2xs"
                 title="Cross-fade to another archival engraving"
@@ -328,7 +349,8 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
 
           {/* Archival Showcase Card on Large Screens */}
           <div className="hidden lg:block shrink-0">
-            <m.div 
+            <m.button
+              type="button"
               key={heroState.id}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -338,7 +360,8 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
                   setInspectedIllustration(heroState.illustration);
                 }
               }}
-              className="w-72 bg-[#FAF8F5]/90 dark:bg-stone-900/90 backdrop-blur-md p-4 rounded-2xl border border-stone-300/80 dark:border-stone-700/80 shadow-md space-y-3 cursor-pointer hover:border-amber-500/50 hover:shadow-lg transition-all group"
+              aria-label={`Inspect ${heroState.title} (SI-OB-${heroState.id}) in archival loupe`}
+              className="w-72 text-left bg-[#FAF8F5]/90 dark:bg-stone-900/90 backdrop-blur-md p-4 rounded-2xl border border-stone-300/80 dark:border-stone-700/80 shadow-md space-y-3 cursor-pointer hover:border-amber-500/50 hover:shadow-lg transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
             >
               <div className="relative aspect-4/3 rounded-xl overflow-hidden border border-stone-200 dark:border-stone-800 bg-stone-100 dark:bg-stone-950">
                 <img 
@@ -346,7 +369,7 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
                   alt={heroState.title}
                   width={288}
                   height={216}
-                  loading="lazy"
+                  loading="eager"
                   decoding="async"
                   className="w-full h-full object-cover grayscale contrast-110 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
                   onError={(e) => {
@@ -360,12 +383,13 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
                     }
                   }}
                 />
-                <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-stone-900/80 text-amber-400 text-[9px] font-mono font-bold">
+                <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-stone-900/80 text-amber-400 text-[9px] font-mono font-bold">
                   SI-OB-{heroState.id}
                 </div>
                 <div className="absolute inset-0 bg-amber-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <span className="px-2.5 py-1 rounded-lg bg-stone-900/90 text-amber-300 font-mono text-[10px] font-bold shadow-md">
-                    Inspect in Loupe 🔍
+                  <span className="px-2.5 py-1 rounded-lg bg-stone-900/90 text-amber-300 font-mono text-[10px] font-bold shadow-md inline-flex items-center gap-1">
+                    <Maximize2 className="w-3 h-3" />
+                    <span>Inspect in Loupe</span>
                   </span>
                 </div>
               </div>
@@ -384,7 +408,7 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
                   </span>
                 </div>
               </div>
-            </m.div>
+            </m.button>
           </div>
         </div>
       </div>

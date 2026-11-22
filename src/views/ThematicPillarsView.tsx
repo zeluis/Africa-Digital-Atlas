@@ -664,6 +664,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
           <div className="rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-950/95 p-6 md:p-8 space-y-6 shadow-xl relative overflow-hidden backdrop-blur-xs flex flex-col lg:max-h-[820px]">
             {/* Ambient Tonal Gradient Glow */}
             <div 
+              aria-hidden="true"
               className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl pointer-events-none opacity-20 dark:opacity-25"
               style={{ background: tonal.warmAccent }}
             />
@@ -674,10 +675,10 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                 {/* Left Side: Editorial Kicker, Flag, Sovereign Title & Classification Pills */}
                 <div className="space-y-2.5 flex-1 min-w-0">
                   {/* Kicker Label */}
-                  <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest font-bold text-zinc-500 dark:text-zinc-400">
+                  <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest font-bold text-zinc-600 dark:text-zinc-400">
                     <Feather className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                     <span>CONTINENTAL ENCYCLOPEDIC DOSSIER</span>
-                    <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                    <span aria-hidden="true" className="text-zinc-500 dark:text-zinc-400">•</span>
                     <span>VOL. 2026</span>
                   </div>
 
@@ -784,7 +785,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                     {/* Vector Controls & Geo Coordinates */}
                     <div className="flex flex-col justify-between items-end h-full text-[9px] font-mono text-zinc-500 dark:text-zinc-400 pl-2.5 border-l border-zinc-200/70 dark:border-zinc-800/70 flex-1 min-w-0">
                       <div className="flex flex-col items-end leading-tight w-full truncate">
-                        <span className="text-[8px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500 font-semibold">GEO CENTER</span>
+                        <span className="text-[8px] uppercase tracking-wider text-zinc-600 dark:text-zinc-400 font-semibold">GEO CENTER</span>
                         <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-[9px] truncate tabular-nums">
                           {silhouette.geoCenter.lat >= 0 ? `${silhouette.geoCenter.lat.toFixed(1)}°N` : `${Math.abs(silhouette.geoCenter.lat).toFixed(1)}°S`}, {' '}
                           {silhouette.geoCenter.lng >= 0 ? `${silhouette.geoCenter.lng.toFixed(1)}°E` : `${Math.abs(silhouette.geoCenter.lng).toFixed(1)}°W`}
@@ -949,11 +950,11 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
               <div className="space-y-4 pt-1">
                 <div className="flex items-center gap-2 pb-2 border-b border-zinc-100 dark:border-zinc-800/80">
                   <Quote className="w-4 h-4 text-amber-500 shrink-0" />
-                  <h4 
+                  <h3 
                     className="font-serif-display font-medium text-base md:text-lg text-zinc-950 dark:text-zinc-100 tracking-tight"
                   >
                     {curatedNarrative.headline}
-                  </h4>
+                  </h3>
                 </div>
 
                 <div 
@@ -977,7 +978,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
                     <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                     <span>STRATEGIC BASELINE SPECIFICATIONS</span>
                   </div>
-                  <span className="text-[10px] font-mono text-zinc-400">UN / AU Harmonized</span>
+                  <span className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400">UN / AU Harmonized</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1002,10 +1003,10 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
               {activePillar === 'culture' && heritageSites.length > 0 && (
                 <div className="space-y-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 font-mono flex items-center gap-1.5">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 font-mono flex items-center gap-1.5">
                       <Sparkles className="w-3.5 h-3.5" />
                       <span>UNESCO Inscribed Properties ({heritageSites.length})</span>
-                    </h4>
+                    </h3>
                     <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">World Heritage List</span>
                   </div>
                   <div className="space-y-2">

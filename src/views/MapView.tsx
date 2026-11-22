@@ -36,6 +36,7 @@ export const MapView: React.FC<MapViewProps> = ({
 
   return (
     <section aria-label="Interactive Cartographic Map Observatory" className="w-full min-h-[100dvh] flex-1 flex flex-col select-none relative bg-zinc-50 dark:bg-zinc-950">
+      <h1 className="sr-only">Interactive African Cartographic Observatory</h1>
       {/* Main Full-Screen Map Viewport */}
       <div id="map-viewport-container" className="relative w-full flex-1 flex flex-col">
         <AfricaMap

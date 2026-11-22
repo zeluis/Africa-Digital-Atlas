@@ -88,7 +88,7 @@ export const EditorialCard: React.FC<EditorialCardProps> = ({
         {readMoreContent && (
           <button
             onClick={() => setIsExpanded(prev => !prev)}
-            className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 flex items-center gap-1 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-lg px-1.5 py-0.5"
+            className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 flex items-center gap-1 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-lg px-1.5 py-0.5"
             aria-expanded={isExpanded}
           >
             <span>{isExpanded ? 'Show Less' : 'Read More Narrative'}</span>

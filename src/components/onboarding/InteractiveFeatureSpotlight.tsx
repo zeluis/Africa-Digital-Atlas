@@ -89,7 +89,7 @@ export const InteractiveFeatureSpotlight: React.FC<InteractiveFeatureSpotlightPr
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-60" />
+            <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-60" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600" />
           </span>
           <span className="text-xs font-mono font-medium tracking-wide uppercase text-stone-700">

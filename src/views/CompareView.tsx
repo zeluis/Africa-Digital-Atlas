@@ -14,6 +14,8 @@ import {
 import { AtlasDialog } from '../components/common/AtlasDialog';
 import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
 import { atlas } from '../data/atlas-store';
+import { getContinentalSummary } from '../data/atlas-selectors';
+import { handleTabListKeyDown, useIsDarkTheme } from '../utils/a11y';
 import { CountryFlag } from '../components/CountryFlag';
 import { CountrySilhouette } from '../components/CountrySilhouette';
 import { getEntityGeographyMetadata, UN_M49_NUMERIC_CODES } from '../data/svgGeographySystem';
@@ -115,6 +117,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
   const [selectedRegionFilter, setSelectedRegionFilter] = useState<string>('ALL');
 
   const reducedMotion = usePrefersReducedMotion();
+  const isDark = useIsDarkTheme();
 
   const REGION_OPTIONS = [
     { id: 'ALL', label: 'All Regions' },
@@ -238,7 +241,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
           }
         },
         {
-          label: 'Purchasing Power Multiplier (ICP)',
+          label: 'Purchasing Power Multiplier (ICP 2021 Derived)',
           format: (id: string) => `${(PPP_PRICE_LEVEL_FACTORS[id] || 2.6).toFixed(2)}× local purchasing power`,
           isLeader: (values: number[]) => Math.max(...values),
           getValue: (id: string) => PPP_PRICE_LEVEL_FACTORS[id] || 2.6
@@ -256,7 +259,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
           format: (id: string) => {
             const p = atlas.getIndicatorValue(id, 'SP.POP.TOTL') || 0;
             if (normalizationScale === 'perCapita') {
-              return `${((p / 1450) * 100).toFixed(2)}% of Africa`;
+              const continentalTotal = getContinentalSummary().totalPopulationMillion || 1480;
+              return `${((p / continentalTotal) * 100).toFixed(2)}% of Africa`;
             }
             return formatPopulation(p);
           }, 
@@ -269,9 +273,15 @@ export const CompareView: React.FC<CompareViewProps> = ({
         { label: 'Urban Population Share', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'SP.URB.TOTL.IN.ZS')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'SP.URB.TOTL.IN.ZS') || 0 },
         { 
           label: 'CO2 Emissions (Metric Tons / Person)', 
-          format: (id: string) => `${(atlas.getIndicatorValue(id, 'EN.ATM.CO2E.PC') || 0.6).toFixed(2)} MT/capita`, 
-          isLeader: (values: number[]) => Math.min(...values.filter(v => v > 0)), 
-          getValue: (id: string) => atlas.getIndicatorValue(id, 'EN.ATM.CO2E.PC') || 0.6 
+          format: (id: string) => {
+            const co2 = atlas.getIndicatorValue(id, 'EN.ATM.CO2E.PC');
+            return co2 !== null ? `${co2.toFixed(2)} MT/capita` : 'Unavailable';
+          }, 
+          isLeader: (values: number[]) => {
+            const positive = values.filter(v => v > 0);
+            return positive.length > 0 ? Math.min(...positive) : 0;
+          }, 
+          getValue: (id: string) => atlas.getIndicatorValue(id, 'EN.ATM.CO2E.PC') || 0 
         },
       ]
     },
@@ -409,23 +419,23 @@ export const CompareView: React.FC<CompareViewProps> = ({
               whileHover={reducedMotion ? {} : { y: -2 }}
               className="p-4 rounded-2xl border transition-all relative group flex flex-col justify-between"
               style={{
-                backgroundColor: tonal.lightBackground,
-                borderColor: tonal.lightBorder,
+                backgroundColor: isDark ? tonal.darkBackground : tonal.lightBackground,
+                borderColor: isDark ? tonal.darkBorder : tonal.lightBorder,
                 boxShadow: `0 4px 16px -4px ${tonal.unBaseColor}20`
               }}
             >
               <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2.5 min-w-0">
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
                   <div className="shrink-0 drop-shadow-xs">
                     <CountryFlag entityId={country.id} size="md" />
                   </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="font-extrabold text-sm text-zinc-900 dark:text-zinc-100 truncate">
                       {country.name}
                     </div>
-                    <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 mt-0.5">
-                      <span>{country.id}</span>
-                      <span className="mx-1">·</span>
+                    <div className="flex items-center text-[11px] font-mono text-zinc-700 dark:text-zinc-300 mt-0.5 min-w-0">
+                      <span className="shrink-0">{country.id}</span>
+                      <span aria-hidden="true" className="mx-1 shrink-0">·</span>
                       <span className="truncate">{country.region}</span>
                     </div>
                   </div>
@@ -484,8 +494,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 <Plus className="w-4 h-4" />
               </div>
               <div className="text-center">
-                <span className="text-xs font-bold font-display block">Slot {slotNum} Available</span>
-                <span className="text-[10px] font-mono text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                <span className="text-xs font-bold font-display block text-zinc-700 dark:text-zinc-300">Slot {slotNum} Available</span>
+                <span className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
                   + Add Nation to Compare
                 </span>
               </div>
@@ -502,13 +512,17 @@ export const CompareView: React.FC<CompareViewProps> = ({
       >
         <button
           type="button"
+          id="compare-perspective-tab-matrix"
           role="tab"
           aria-selected={activeCompareTab === 'matrix'}
+          aria-controls="compare-perspective-panel-matrix"
+          tabIndex={activeCompareTab === 'matrix' ? 0 : -1}
           onClick={() => setActiveCompareTab('matrix')}
-          className={`relative flex items-center gap-2 px-4 py-2 min-h-[40px] whitespace-nowrap shrink-0 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
+          onKeyDown={(e) => handleTabListKeyDown(e, ['matrix', 'afcfta'] as const, 0, setActiveCompareTab, 'horizontal')}
+          className={`relative flex items-center gap-2 px-4 py-2 min-h-[40px] whitespace-nowrap shrink-0 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
             activeCompareTab === 'matrix'
               ? 'text-zinc-900 dark:text-zinc-100'
-              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
           }`}
         >
           {activeCompareTab === 'matrix' && (
@@ -522,13 +536,17 @@ export const CompareView: React.FC<CompareViewProps> = ({
 
         <button
           type="button"
+          id="compare-perspective-tab-afcfta"
           role="tab"
           aria-selected={activeCompareTab === 'afcfta'}
+          aria-controls="compare-perspective-panel-afcfta"
+          tabIndex={activeCompareTab === 'afcfta' ? 0 : -1}
           onClick={() => setActiveCompareTab('afcfta')}
-          className={`relative flex items-center gap-2 px-4 py-2 min-h-[40px] whitespace-nowrap shrink-0 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none ${
+          onKeyDown={(e) => handleTabListKeyDown(e, ['matrix', 'afcfta'] as const, 1, setActiveCompareTab, 'horizontal')}
+          className={`relative flex items-center gap-2 px-4 py-2 min-h-[40px] whitespace-nowrap shrink-0 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
             activeCompareTab === 'afcfta'
               ? 'text-zinc-900 dark:text-zinc-100'
-              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
           }`}
         >
           {activeCompareTab === 'afcfta' && (
@@ -542,19 +560,30 @@ export const CompareView: React.FC<CompareViewProps> = ({
       </div>
 
       {activeCompareTab === 'afcfta' ? (
-        <BilateralTradeComplementaritySection
-          countryIds={selectedIds}
-          onSelectCountry={onSelectCountry}
-        />
+        <div
+          id="compare-perspective-panel-afcfta"
+          role="tabpanel"
+          aria-labelledby="compare-perspective-tab-afcfta"
+        >
+          <BilateralTradeComplementaritySection
+            countryIds={selectedIds}
+            onSelectCountry={onSelectCountry}
+          />
+        </div>
       ) : (
-        <>
+        <div
+          id="compare-perspective-panel-matrix"
+          role="tabpanel"
+          aria-labelledby="compare-perspective-tab-matrix"
+          className="space-y-8"
+        >
           {/* Side-by-Side SVG Geographic Silhouettes */}
           {showSilhouettes && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-sm text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
+                <h2 className="font-bold text-sm text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
                   <Layers className="w-4 h-4 text-emerald-500" /> Comparative SVG Geography & Vector Silhouettes
-                </h3>
+                </h2>
                 <span className="text-[11px] font-mono text-zinc-500">Build-phase deterministic coordinates</span>
               </div>
 
@@ -580,9 +609,9 @@ export const CompareView: React.FC<CompareViewProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <h3 className="font-bold text-base text-zinc-900 dark:text-zinc-100 font-display">
+              <h2 className="font-bold text-base text-zinc-900 dark:text-zinc-100 font-display">
                 Historical Convergence Trajectory (2015–2024)
-              </h3>
+              </h2>
             </div>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
               Multi-year trajectory comparison tracking structural convergence between selected nations
@@ -590,7 +619,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
           </div>
 
           <div className="flex flex-nowrap overflow-x-auto scroll-shadow-x no-scrollbar sm:flex-wrap items-center gap-1.5 pb-1 sm:pb-0 max-w-full" role="tablist" aria-label="Convergence trajectory indicator">
-            {convergenceMetrics.map(metric => {
+            {convergenceMetrics.map((metric, mIdx) => {
               const isSelected = convergenceMetricId === metric.id;
               return (
                 <button
@@ -598,8 +627,10 @@ export const CompareView: React.FC<CompareViewProps> = ({
                   type="button"
                   role="tab"
                   aria-selected={isSelected}
+                  tabIndex={isSelected ? 0 : -1}
                   onClick={() => setConvergenceMetricId(metric.id)}
-                  className={`relative px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl text-xs font-mono font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 ${
+                  onKeyDown={(e) => handleTabListKeyDown(e, convergenceMetrics.map(mItem => mItem.id), mIdx, setConvergenceMetricId, 'horizontal')}
+                  className={`relative px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl text-xs font-mono font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                     isSelected
                       ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
                       : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
@@ -634,7 +665,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                   boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3)'
                 }}
               />
-              <Legend />
+              <Legend formatter={(value) => <span className="text-zinc-700 dark:text-zinc-300 font-medium text-xs">{value}</span>} />
               {selectedIds.map((cId, idx) => {
                 const ent = atlas.getEntity(cId);
                 return (
@@ -769,7 +800,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
               ? 'PPP Mode: Macro values adjusted via World Bank ICP 2021/2024 price level parity multipliers (reflects real domestic consumer & capital purchasing volume).'
               : 'Nominal USD Mode: Values converted using official market exchange rates.'}
           </span>
-          <span className="hidden md:inline text-[10px] text-zinc-400 shrink-0">
+          <span className="hidden md:inline text-[10px] text-zinc-600 dark:text-zinc-400 shrink-0">
             {normalizationScale === 'perCapita' ? 'Normalized per capita / per 1k residents' : 'Absolute national totals'}
           </span>
         </div>
@@ -816,13 +847,13 @@ export const CompareView: React.FC<CompareViewProps> = ({
                   <div className="space-y-2 pe-14 sm:pe-0">
                     <CountryFlag entityId={country.id} size="lg" />
                     <div>
-                      <h3 className="font-extrabold text-sm sm:text-base md:text-lg text-zinc-900 dark:text-zinc-100 font-display">
+                      <h2 className="font-extrabold text-sm sm:text-base md:text-lg text-zinc-900 dark:text-zinc-100 font-display">
                         {country.name}
-                      </h3>
+                      </h2>
                       <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-zinc-500 font-mono mt-0.5">
                         <span className="truncate">{country.region}</span>
                         <span>·</span>
-                        <span className="font-bold text-emerald-600 dark:text-emerald-400">{country.id}</span>
+                        <span className="font-bold text-emerald-700 dark:text-emerald-400">{country.id}</span>
                       </div>
                     </div>
                   </div>
@@ -838,7 +869,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                     </button>
                     <button
                       onClick={() => onSelectCountry(country.id)}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer"
                     >
                       Full Dossier <ArrowRight className="w-3 h-3" />
                     </button>
@@ -851,7 +882,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
             <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
               {metricGroups.map(group => (
                 <div key={group.group}>
-                  <div className="bg-zinc-100 dark:bg-zinc-950/80 px-4 md:px-6 py-2.5 font-bold text-xs text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-mono flex items-center gap-2">
+                  <div className="bg-zinc-100 dark:bg-zinc-950/80 px-4 md:px-6 py-2.5 font-bold text-xs text-emerald-800 dark:text-emerald-400 uppercase tracking-wider font-mono flex items-center gap-2">
                     <span>{group.group}</span>
                   </div>
 
@@ -878,7 +909,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
                               <div
                                 key={country.id}
                                 className={`p-3 sm:p-3.5 md:px-6 md:py-4 border-s border-zinc-200 dark:border-zinc-800 font-mono tabular-nums text-xs md:text-sm flex items-center justify-between gap-1.5 ${
-                                  isLeading ? 'font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20' : 'text-zinc-800 dark:text-zinc-200'
+                                  isLeading ? 'font-bold text-emerald-800 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20' : 'text-zinc-800 dark:text-zinc-200'
                                 }`}
                               >
                                 <span>{item.format(country.id)}</span>
@@ -900,7 +931,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
           </div>
         </div>
       </div>
-      </>
+      </div>
       )}
 
       {/* Sleek Interactive Country Selector Modal */}
@@ -977,7 +1008,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
 
                 {/* Region Filter Chips with SlidingPill */}
                 <div className="flex flex-nowrap overflow-x-auto scroll-shadow-x no-scrollbar sm:flex-wrap items-center gap-1.5 pb-1 sm:pb-0" role="tablist" aria-label="Geoscheme region filter">
-                  {REGION_OPTIONS.map(opt => {
+                  {REGION_OPTIONS.map((opt, rIdx) => {
                     const isSelected = selectedRegionFilter === opt.id;
                     return (
                       <button
@@ -985,8 +1016,10 @@ export const CompareView: React.FC<CompareViewProps> = ({
                         type="button"
                         role="tab"
                         aria-selected={isSelected}
+                        tabIndex={isSelected ? 0 : -1}
                         onClick={() => setSelectedRegionFilter(opt.id)}
-                        className={`relative px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl text-xs font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 ${
+                        onKeyDown={(e) => handleTabListKeyDown(e, REGION_OPTIONS.map(o => o.id), rIdx, setSelectedRegionFilter, 'horizontal')}
+                        className={`relative px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl text-xs font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                           isSelected
                             ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
                             : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'

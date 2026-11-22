@@ -161,11 +161,11 @@ export const PersonaSelector: React.FC<PersonaSelectorProps> = ({
                     <Icon className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <h4 className={`font-serif font-bold text-sm text-stone-900 transition-colors ${
+                    <h2 className={`font-serif font-bold text-sm text-stone-900 transition-colors ${
                       isEconomyStage ? 'group-hover:text-emerald-900' : 'group-hover:text-amber-900'
                     }`}>
                       {track.title}
-                    </h4>
+                    </h2>
                     <span className="text-[10px] text-stone-500 block font-mono">
                       {track.role}
                     </span>

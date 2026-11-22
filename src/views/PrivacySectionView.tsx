@@ -227,7 +227,7 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
 
       {/* Header Banner */}
       <header className="rounded-3xl border border-amber-900/10 dark:border-amber-500/15 bg-gradient-to-br from-amber-50/50 via-white to-orange-50/30 dark:from-zinc-900 dark:via-zinc-900/90 dark:to-amber-950/20 p-6 sm:p-10 shadow-xs relative overflow-hidden space-y-6">
-        <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-amber-500/10 dark:bg-amber-500/5 blur-3xl pointer-events-none" />
+        <div aria-hidden="true" className="absolute top-0 right-0 w-96 h-96 rounded-full bg-amber-500/10 dark:bg-amber-500/5 blur-3xl pointer-events-none" />
 
         <div className="relative space-y-3 max-w-3xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100/80 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700/60 text-xs font-mono font-semibold text-amber-900 dark:text-amber-300">
@@ -277,7 +277,7 @@ export const PrivacySectionView: React.FC<PrivacySectionViewProps> = ({
                       <span className="block text-xs font-mono font-bold tracking-tight">
                         {tab.label}
                       </span>
-                      <span className="block text-[11px] text-zinc-500 dark:text-zinc-400 font-sans truncate">
+                      <span className="block text-[11px] text-zinc-600 dark:text-zinc-400 font-sans truncate">
                         {tab.subtitle}
                       </span>
                     </div>

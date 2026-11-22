@@ -163,15 +163,15 @@ export const ThematicPillarBottomSection: React.FC<ThematicPillarBottomSectionPr
 
             <div className="grid grid-cols-3 gap-2 pt-2 border-t border-emerald-200/60 dark:border-emerald-800/40 text-center">
               <div className="p-2 rounded-xl bg-white/90 dark:bg-zinc-900/90 border border-emerald-200/70 dark:border-emerald-900/40">
-                <div className="text-[10px] font-mono text-zinc-400 uppercase">Capital</div>
+                <div className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400 uppercase">Capital</div>
                 <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate mt-0.5">{headerData?.capital || currentEntity.capital}</div>
               </div>
               <div className="p-2 rounded-xl bg-white/90 dark:bg-zinc-900/90 border border-emerald-200/70 dark:border-emerald-900/40">
-                <div className="text-[10px] font-mono text-zinc-400 uppercase">Forest</div>
-                <div className="text-xs font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">{currentEntity.facts?.forestCover || '28.5%'}</div>
+                <div className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400 uppercase">Forest</div>
+                <div className="text-xs font-bold font-mono text-emerald-700 dark:text-emerald-400 mt-0.5">{currentEntity.facts?.forestCover || '28.5%'}</div>
               </div>
               <div className="p-2 rounded-xl bg-white/90 dark:bg-zinc-900/90 border border-emerald-200/70 dark:border-emerald-900/40">
-                <div className="text-[10px] font-mono text-zinc-400 uppercase">Coastline</div>
+                <div className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400 uppercase">Coastline</div>
                 <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate mt-0.5">{silhouette?.shapeType === 'landlocked' ? 'Landlocked' : (currentEntity.facts?.coastline || 'Littoral')}</div>
               </div>
             </div>
@@ -190,7 +190,7 @@ export const ThematicPillarBottomSection: React.FC<ThematicPillarBottomSectionPr
                     High-Precision Vector Silhouette
                   </h4>
                 </div>
-                <span className="text-[10px] font-mono text-zinc-400">Natural Earth 50m</span>
+                <span className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400">Natural Earth 50m</span>
               </div>
 
               <div className="flex justify-center items-center py-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800/80">
@@ -199,25 +199,25 @@ export const ThematicPillarBottomSection: React.FC<ThematicPillarBottomSectionPr
 
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800">
-                  <div className="text-[10px] font-mono text-zinc-400 uppercase">Geographic Center</div>
+                  <div className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400 uppercase">Geographic Center</div>
                   <div className="font-mono font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">
                     {silhouette?.geoCenter ? `${silhouette.geoCenter.lat.toFixed(2)}°N, ${silhouette.geoCenter.lng.toFixed(2)}°E` : 'Documented'}
                   </div>
                 </div>
                 <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800">
-                  <div className="text-[10px] font-mono text-zinc-400 uppercase">Capital Coordinates</div>
+                  <div className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400 uppercase">Capital Coordinates</div>
                   <div className="font-mono font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">
                     {headerData?.capital || currentEntity.capital}
                   </div>
                 </div>
                 <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800">
-                  <div className="text-[10px] font-mono text-zinc-400 uppercase">Subregion</div>
+                  <div className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400 uppercase">Subregion</div>
                   <div className="font-mono font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">
                     {currentEntity.subregion}
                   </div>
                 </div>
                 <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800">
-                  <div className="text-[10px] font-mono text-zinc-400 uppercase">Timezone / UTC</div>
+                  <div className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400 uppercase">Timezone / UTC</div>
                   <div className="font-mono font-bold text-zinc-800 dark:text-zinc-200 mt-0.5">
                     {headerData?.utcOffset || 'UTC+1'} ({headerData?.timeZoneAbbr || 'WAT'})
                   </div>
@@ -237,7 +237,7 @@ export const ThematicPillarBottomSection: React.FC<ThematicPillarBottomSectionPr
                     Hydrographic Basins & Topographical Relief
                   </h4>
                 </div>
-                <span className="text-[10px] font-mono text-zinc-400">UN Statistics Division</span>
+                <span className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400">UN Statistics Division</span>
               </div>
 
               <div className="space-y-3">
@@ -282,7 +282,7 @@ export const ThematicPillarBottomSection: React.FC<ThematicPillarBottomSectionPr
                   <span className="text-xs font-bold font-display text-zinc-800 dark:text-zinc-200">
                     Regional Sovereign Partners ({currentEntity.region})
                   </span>
-                  <span className="text-[10px] font-mono text-zinc-400">Click to inspect</span>
+                  <span className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400">Click to inspect</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {atlas.getEntitiesByRegion(currentEntity.region).slice(0, 8).map(neighbor => (
@@ -291,7 +291,7 @@ export const ThematicPillarBottomSection: React.FC<ThematicPillarBottomSectionPr
                       onClick={() => onSelectCountry(neighbor.id)}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
                         neighbor.id === currentEntity.id
-                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
+                          ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
                           : 'bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
                       }`}
                     >

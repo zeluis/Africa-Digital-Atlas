@@ -24,13 +24,22 @@ const SMIL_ANIMATION_TAGS = new Set([
 
 const URI_ATTRS = new Set(['href', 'xlink:href', 'src', 'action', 'formaction']);
 
-function isUnsafeUri(value: string): boolean {
-  const normalized = value.replace(/[\u0000-\u0020]+/g, '').toLowerCase();
-  return (
-    normalized.startsWith('javascript:') ||
-    normalized.startsWith('vbscript:') ||
-    normalized.startsWith('data:text/html')
-  );
+function isUnsafeUri(value: string, tagName = ''): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) return false;
+
+  const compact = trimmed.replace(/[\u0000-\u0020]+/g, '').toLowerCase();
+  if (compact.startsWith('#')) return false;
+  if ((compact.startsWith('./') || compact.startsWith('/')) && !compact.startsWith('//')) {
+    return false;
+  }
+  if (/^data:image\/(?:png|jpeg|jpg|webp|gif);base64,[a-z0-9+/=]+$/i.test(compact)) {
+    return false;
+  }
+  if (tagName === 'a' && (compact.startsWith('https://') || compact.startsWith('http://'))) {
+    return false;
+  }
+  return true;
 }
 
 export function sanitizeSvgMarkup(rawMarkup: string): string {
@@ -73,7 +82,7 @@ export function sanitizeSvgMarkup(rawMarkup: string): string {
               if (localLower.startsWith('on')) {
                 node.removeAttribute(attr.name);
               } else if (URI_ATTRS.has(nameLower) || URI_ATTRS.has(localLower)) {
-                if (isUnsafeUri(attr.value)) {
+                if (isUnsafeUri(attr.value, tag)) {
                   node.setAttribute(attr.name, '#');
                 }
               }
@@ -106,7 +115,7 @@ export function sanitizeSvgMarkup(rawMarkup: string): string {
   sanitized = sanitized.replace(/\son[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
 
   sanitized = sanitized.replace(
-    /(\s(?:xlink:)?(?:href|src|action|formaction)\s*=\s*["'])\s*(?:javascript|vbscript|data:text\/html):[^"']*(["'])/gi,
+    /(\s(?:xlink:)?(?:href|src|action|formaction)\s*=\s*["'])\s*(?:(?:javascript|vbscript):|\/\/|data:(?!image\/(?:png|jpeg|jpg|webp|gif);base64,))[^"']*(["'])/gi,
     '$1#$2'
   );
 

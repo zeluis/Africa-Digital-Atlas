@@ -109,11 +109,11 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
     <section aria-label="African Research and Analytical Reports Directory" className="space-y-8 pb-16 animate-in fade-in duration-300" id="research-reports-directory-view">
       {/* Directory Banner Card */}
       <div className="p-6 md:p-10 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden space-y-6">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div aria-hidden="true" className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div className="space-y-2 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-500/20">
               <BookOpen className="w-3.5 h-3.5" />
               <span>Curated Research &amp; Literature Synthesis Archive</span>
             </div>
@@ -155,7 +155,7 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
                 setIngestionTargetMode('working-papers');
                 setIsIngestionModalOpen(true);
               }}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all cursor-pointer shadow-md"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white transition-all cursor-pointer shadow-md"
               title="Import Afriata Working Paper (.md) into content/working-papers"
             >
               <Sparkles className="w-4 h-4" />
@@ -184,6 +184,7 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search by topic, author, or keyword..."
+              aria-label="Search research reports by topic, author, or keyword"
               className="w-full pl-10 pr-4 py-2 rounded-2xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all"
             />
           </div>
@@ -217,45 +218,46 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
       {/* Featured Master Reports Section (when viewing all or TAST) */}
       {selectedCategory === 'all' && !searchQuery && (
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 font-mono">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-rose-700 dark:text-rose-300 font-mono">
             <Anchor className="w-4 h-4" />
             <span>Foundational Master Monographs</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {masterLegacyReports.map(mono => (
-              <div
+              <button
+                type="button"
                 key={mono.id}
                 onClick={mono.onSelect}
-                className="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-rose-500/50 dark:hover:border-rose-500/50 transition-all cursor-pointer group shadow-sm flex flex-col justify-between"
+                className="w-full text-left p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-rose-500/50 dark:hover:border-rose-500/50 transition-all cursor-pointer group shadow-sm flex flex-col justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-500 border border-rose-500/20">
+                    <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-800 dark:text-rose-300 border border-rose-500/25">
                       {mono.type}
                     </span>
-                    <span className="text-xs text-zinc-400 flex items-center gap-1">
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5" />
                       <span>{mono.readingTime} min</span>
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-bold font-serif text-zinc-900 dark:text-white group-hover:text-rose-500 transition-colors">
+                  <h2 className="text-lg font-bold font-serif text-zinc-900 dark:text-white group-hover:text-rose-700 dark:group-hover:text-rose-300 transition-colors">
                     {mono.title}
-                  </h3>
+                  </h2>
                   <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
                     {mono.subtitle}
                   </p>
                 </div>
 
-                <div className="pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
+                <div className="w-full pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
                   <span>{mono.authors[0]}</span>
-                  <span className="font-semibold text-rose-500 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                  <span className="font-semibold text-rose-700 dark:text-rose-300 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
                     <span>Read Treatise</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </span>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -269,58 +271,52 @@ export const ResearchReportsDirectoryView: React.FC<ResearchReportsDirectoryView
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredReports.map(rep => (
-            <div
+            <button
+              type="button"
               key={rep.id}
               onClick={() => onSelectReport(rep.id)}
-              className="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-lg transition-all cursor-pointer group flex flex-col justify-between"
+              className="w-full text-left p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-lg transition-all cursor-pointer group flex flex-col justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
             >
-              <div className="space-y-3">
+              <div className="space-y-3 w-full">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span 
-                      className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md inline-flex items-center gap-1.5"
-                      style={{ 
-                        backgroundColor: `${rep.categoryColor}15`, 
-                        color: rep.categoryColor,
-                        border: `1px solid ${rep.categoryColor}30`
-                      }}
-                    >
+                    <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md inline-flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
                       <DynamicIcon 
                         icon={rep.icon || (rep.category === 'genetics' ? 'lucide:dna' : rep.category === 'international-law' ? 'lucide:scale' : 'lucide:trending-up')} 
-                        className="w-3 h-3" 
+                        className="w-3 h-3 text-indigo-700 dark:text-indigo-300" 
                       />
                       <span>{rep.categoryLabel}</span>
                     </span>
                     {rep.isWorkingPaper && (
-                      <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                      <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30">
                         {rep.seriesNumber ? rep.seriesNumber.replace('Afriata ', '') : 'Working Paper'}
                       </span>
                     )}
                   </div>
-                  <span className="text-[11px] text-zinc-400 flex items-center gap-1">
+                  <span className="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     <span>{rep.readingTimeMinutes} min</span>
                   </span>
                 </div>
 
-                <h3 className="text-base font-bold font-serif text-zinc-900 dark:text-white group-hover:text-amber-500 transition-colors line-clamp-2">
+                <h2 className="text-base font-bold font-serif text-zinc-900 dark:text-white group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors line-clamp-2">
                   {rep.title}
-                </h3>
+                </h2>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-3 leading-relaxed">
                   {rep.executiveSummary}
                 </p>
               </div>
 
-              <div className="pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs">
-                <span className="text-zinc-400 font-mono text-[11px] truncate max-w-[150px]">
+              <div className="w-full pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs">
+                <span className="text-zinc-600 dark:text-zinc-400 font-mono text-[11px] truncate max-w-[150px]">
                   {rep.authors[0]}
                 </span>
-                <span className="font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
+                <span className="font-semibold text-amber-700 dark:text-amber-400 flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
                   <span>Read Report</span>
                   <ChevronRight className="w-3.5 h-3.5" />
                 </span>
               </div>
-            </div>
+            </button>
           ))}
         </div>
       </div>

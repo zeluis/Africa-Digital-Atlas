@@ -299,7 +299,7 @@ export default defineConfig(({ command }) => {
                   maxAgeSeconds: 60 * 60 * 24 * 30,
                 },
                 cacheableResponse: {
-                  statuses: [0, 200],
+                  statuses: [200],
                 },
               },
             },
@@ -369,7 +369,7 @@ export default defineConfig(({ command }) => {
                   maxAgeSeconds: 60 * 60 * 24 * 14,
                 },
                 cacheableResponse: {
-                  statuses: [0, 200],
+                  statuses: [200],
                 },
               },
             },
@@ -397,7 +397,7 @@ export default defineConfig(({ command }) => {
                   maxAgeSeconds: 60 * 60 * 24 * 30,
                 },
                 cacheableResponse: {
-                  statuses: [0, 200],
+                  statuses: [200],
                 },
               },
             },
@@ -411,7 +411,7 @@ export default defineConfig(({ command }) => {
                   maxAgeSeconds: 60 * 60 * 24 * 30,
                 },
                 cacheableResponse: {
-                  statuses: [0, 200],
+                  statuses: [200],
                 },
               },
             },
@@ -453,7 +453,7 @@ export default defineConfig(({ command }) => {
                   maxAgeSeconds: 60 * 60 * 24 * 30,
                 },
                 cacheableResponse: {
-                  statuses: [0, 200],
+                  statuses: [200],
                 },
               },
             },

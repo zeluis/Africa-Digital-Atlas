@@ -259,7 +259,7 @@ export const MultiCountryRadarMatrix: React.FC<MultiCountryRadarMatrixProps> = (
           <div className={`${activeView === 'both' ? 'lg:col-span-6' : 'w-full'} p-4 md:p-6 rounded-3xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-xl flex flex-col justify-between`}>
             <div>
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
                   Multivariate Radial Footprint
                 </span>
                 <span className="text-xs text-zinc-500 font-mono">
@@ -413,7 +413,7 @@ export const MultiCountryRadarMatrix: React.FC<MultiCountryRadarMatrixProps> = (
                                 {cd.country.id}
                               </span>
                               <div className="flex items-center gap-1.5">
-                                <span className="text-[9px] text-zinc-400 font-mono truncate max-w-[120px]">{cd.raw[p.id]}</span>
+                                <span className="text-[9px] text-zinc-600 dark:text-zinc-400 font-mono truncate max-w-[120px]">{cd.raw[p.id]}</span>
                                 <span className="font-mono font-bold text-zinc-900 dark:text-zinc-100">{score}</span>
                               </div>
                             </div>

@@ -30,12 +30,12 @@
 
     /* 2. Typography & Borders */
     --text-primary: #191816;
-    --border-strong: #C8C2B3;
+    --border-strong: light-dark(#C8C2B3, #3D475C);
 
     /* Universal Tooltip System */
-    --tooltip-bg: #FFFFFF;
-    --tooltip-text-title: #191816;
-    --tooltip-border: #E3DFD5;
+    --tooltip-bg: light-dark(#FFFFFF, #202634);
+    --tooltip-text-title: light-dark(#191816, #F8FAFC);
+    --tooltip-border: light-dark(#E3DFD5, #3D475C);
     --tooltip-shadow: 0 10px 25px -5px rgba(25, 24, 22, 0.08), 0 8px 10px -6px rgba(25, 24, 22, 0.04);
 
     --ease-japandi: cubic-bezier(0.2, 0, 0, 1);
@@ -46,13 +46,13 @@
       0.974 53.8%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1
     );
 
-    /* Regional Calm Surfaces */
-    --region-eastern-calm:   #FFF8ED;
-    --region-middle-calm:    #FEF7FE;
-    --region-northern-calm:  #F5F7FF;
-    --region-southern-calm:  #FFF5F5;
-    --region-western-calm:   #F3FFF3;
-    --region-pan-african-calm: #F4FAF5;
+    /* Regional Calm Surfaces (Baseline light-dark()) */
+    --region-eastern-calm:   light-dark(#FFF8ED, #231C18);
+    --region-middle-calm:    light-dark(#FEF7FE, #1C1E2C);
+    --region-northern-calm:  light-dark(#F5F7FF, #211E16);
+    --region-southern-calm:  light-dark(#FFF5F5, #24191E);
+    --region-western-calm:   light-dark(#F3FFF3, #15231C);
+    --region-pan-african-calm: light-dark(#F4FAF5, #181D26);
   }
 
   html.light {
@@ -69,9 +69,8 @@
     --bg-primary: #0F1218;
     --surface-card: #181D26;
 
-    /* 2. Typography & Borders */
+    /* 2. Typography */
     --text-primary: #F8FAFC;
-    --border-strong: #3D475C;
 
     /* 3. Scoped Tailwind Palette Mappings for Dark Theme Uniformity */
     --color-zinc-950: #181D26;
@@ -87,23 +86,17 @@
     --color-zinc-100: #F8FAFC;
     --color-zinc-50: #FFFFFF;
 
-    /* Universal Tooltip System */
-    --tooltip-bg: #202634;
-    --tooltip-text-title: #F8FAFC;
-    --tooltip-border: #3D475C;
+    /* Universal Tooltip Shadow */
     --tooltip-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.7), 0 8px 16px -6px rgba(0, 0, 0, 0.5);
-
-    /* MD3-Inspired Calm Tonal Regional Surfaces in Dark Mode */
-    --region-eastern-calm:   #231C18;
-    --region-middle-calm:    #1C1E2C;
-    --region-northern-calm:  #211E16;
-    --region-southern-calm:  #24191E;
-    --region-western-calm:   #15231C;
-    --region-pan-african-calm: #181D26;
   }
 
   html, body {
     -webkit-tap-highlight-color: transparent;
+  }
+
+  html:has([data-dialog-open="true"]) {
+    overflow: hidden;
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -118,8 +111,8 @@
   }
 
   .dark body {
-    /* Optical de-weighting on dark OLED/slate canvases to reduce photon dilation & eye strain */
-    font-weight: 385;
+    /* Standard weight with subtle tracking for legibility on dark slate canvases */
+    font-weight: 400;
     letter-spacing: 0.008em;
   }
 
@@ -396,99 +389,91 @@ abbr {
   scrollbar-gutter: stable;
 }
 
-/* Firefox Fallbacks (only applied if ::-webkit-scrollbar is not supported) */
-@supports not selector(::-webkit-scrollbar) {
-  .sleek-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(120, 113, 108, 0.45) transparent;
-  }
-  .dark .sleek-scrollbar {
-    scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
-  }
+/* Standard Baseline Scrollbar Styling */
+.sleek-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: light-dark(rgba(120, 113, 108, 0.45), rgba(148, 163, 184, 0.45)) transparent;
+}
 
-  .sleek-scrollbar-amber {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(217, 119, 6, 0.55) transparent;
-  }
-  .dark .sleek-scrollbar-amber {
-    scrollbar-color: rgba(245, 158, 11, 0.55) transparent;
-  }
+.sleek-scrollbar-amber {
+  scrollbar-width: thin;
+  scrollbar-color: light-dark(rgba(217, 119, 6, 0.55), rgba(245, 158, 11, 0.55)) transparent;
 }
 
 /* WebKit / Chromium / Blink / Safari Floating Scrollbars */
 .sleek-scrollbar::-webkit-scrollbar,
 .sleek-scrollbar-amber::-webkit-scrollbar {
-  width: 12px !important;
-  height: 12px !important;
+  width: 12px;
+  height: 12px;
 }
 
 .sleek-scrollbar::-webkit-scrollbar-track,
 .sleek-scrollbar-amber::-webkit-scrollbar-track {
-  background: transparent !important;
+  background: transparent;
 }
 
 .sleek-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(120, 113, 108, 0.38) !important;
-  border-radius: 9999px !important;
-  border: 4px solid transparent !important;
-  background-clip: padding-box !important;
-  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1) !important;
+  background-color: rgba(120, 113, 108, 0.38);
+  border-radius: 9999px;
+  border: 4px solid transparent;
+  background-clip: padding-box;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .sleek-scrollbar:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(120, 113, 108, 0.75) !important;
-  border-width: 2px !important;
+  background-color: rgba(120, 113, 108, 0.75);
+  border-width: 2px;
 }
 
 .sleek-scrollbar::-webkit-scrollbar-thumb:active {
-  background-color: rgba(120, 113, 108, 0.95) !important;
-  border-width: 2px !important;
+  background-color: rgba(120, 113, 108, 0.95);
+  border-width: 2px;
 }
 
 .dark .sleek-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(148, 163, 184, 0.35) !important;
+  background-color: rgba(148, 163, 184, 0.35);
 }
 
 .dark .sleek-scrollbar:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(148, 163, 184, 0.75) !important;
-  border-width: 2px !important;
+  background-color: rgba(148, 163, 184, 0.75);
+  border-width: 2px;
 }
 
 .dark .sleek-scrollbar::-webkit-scrollbar-thumb:active {
-  background-color: rgba(226, 232, 240, 0.95) !important;
-  border-width: 2px !important;
+  background-color: rgba(226, 232, 240, 0.95);
+  border-width: 2px;
 }
 
 .sleek-scrollbar-amber::-webkit-scrollbar-thumb {
-  background-color: rgba(217, 119, 6, 0.45) !important;
-  border-radius: 9999px !important;
-  border: 4px solid transparent !important;
-  background-clip: padding-box !important;
-  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1) !important;
+  background-color: rgba(217, 119, 6, 0.45);
+  border-radius: 9999px;
+  border: 4px solid transparent;
+  background-clip: padding-box;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .sleek-scrollbar-amber:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(217, 119, 6, 0.85) !important;
-  border-width: 2px !important;
+  background-color: rgba(217, 119, 6, 0.85);
+  border-width: 2px;
 }
 
 .sleek-scrollbar-amber::-webkit-scrollbar-thumb:active {
-  background-color: rgba(180, 83, 9, 1.0) !important;
-  border-width: 2px !important;
+  background-color: rgba(180, 83, 9, 1.0);
+  border-width: 2px;
 }
 
 .dark .sleek-scrollbar-amber::-webkit-scrollbar-thumb {
-  background-color: rgba(245, 158, 11, 0.45) !important;
+  background-color: rgba(245, 158, 11, 0.45);
 }
 
 .dark .sleek-scrollbar-amber:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(245, 158, 11, 0.85) !important;
-  border-width: 2px !important;
+  background-color: rgba(245, 158, 11, 0.85);
+  border-width: 2px;
 }
 
 .dark .sleek-scrollbar-amber::-webkit-scrollbar-thumb:active {
-  background-color: rgba(251, 191, 36, 1.0) !important;
-  border-width: 2px !important;
+  background-color: rgba(251, 191, 36, 1.0);
+  border-width: 2px;
 }
 
 /* =========================================================================
@@ -775,11 +760,17 @@ body.hide-app-footer #app-footer-container {
 }
 
 /* Editorial Anchor Offset below sticky navbar & chapter bars */
+section[id],
+h2[id],
+h3[id],
 [id^="sec-"] {
   scroll-margin-top: 4.5rem;
 }
 
 @media (min-width: 768px) {
+  section[id],
+  h2[id],
+  h3[id],
   [id^="sec-"] {
     scroll-margin-top: 8.25rem;
   }

@@ -59,7 +59,7 @@ PY  - ${year}
 PB  - ${illustration.source}
 M3  - Plate ${illustration.regId}
 UR  - ${url}
-N2  - ${illustration.description.replace(/\n+/g, ' ')}
+N2  - ${(illustration.description || '').replace(/\n+/g, ' ')}
 ER  - `;
 
   downloadAcademicFile(ris, `plate_${illustration.regId.replace(/[^a-zA-Z0-9]/g, '_')}.ris`, 'application/x-research-info-systems');

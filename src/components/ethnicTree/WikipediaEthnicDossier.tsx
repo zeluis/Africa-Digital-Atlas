@@ -241,7 +241,7 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
               <h2 className="text-xs font-bold text-[#2B241E] dark:text-[#F5EFE6] leading-tight truncate">
                 Wikipedia Cultural Dossier
               </h2>
-              <span className="inline-flex items-center px-1.5 py-0.2 text-[9px] font-semibold rounded-full bg-[#1A73E8]/15 text-[#1A73E8] dark:text-[#8AB4F8] border border-[#1A73E8]/30 shrink-0">
+              <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-semibold rounded-md bg-[#1A73E8]/15 text-[#1A73E8] dark:text-[#8AB4F8] border border-[#1A73E8]/30 shrink-0">
                 <ShieldCheck className="w-2.5 h-2.5 mr-0.5" />
                 Verified
               </span>
@@ -327,10 +327,10 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
                   {dossier.canonicalTitle || dossier.article || `${ethnicName} people`}
                 </h3>
                 <div className="flex items-center gap-1.5 text-[10px] text-white/90">
-                  <span className="font-mono bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-xs">
+                  <span className="font-mono bg-white/20 px-2 py-0.5 rounded-md backdrop-blur-xs">
                     Tree Node: {ethnicName}
                   </span>
-                  {countryName && <span>• {countryName}</span>}
+                  {countryName && <span>· {countryName}</span>}
                 </div>
               </div>
               <p className="text-[10px] opacity-90 truncate mt-1">
@@ -377,7 +377,7 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
               </div>
               {tastVolumeShare !== undefined && (
                 <span 
-                  className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-xs"
+                  className="px-2 py-0.5 rounded-md text-[10px] font-bold text-white shadow-xs"
                   style={{ backgroundColor: cohortColor || '#049B4D' }}
                 >
                   {tastVolumeShare.toFixed(1)}% Volume
@@ -466,7 +466,7 @@ export const WikipediaEthnicDossier: React.FC<WikipediaEthnicDossierProps> = ({
                 <div>
                   <div className="text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
                     <span>Explore African Languages Atlas</span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 font-mono font-bold uppercase tracking-wider">
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 font-mono font-bold uppercase tracking-wider">
                       6 Phyla
                     </span>
                   </div>

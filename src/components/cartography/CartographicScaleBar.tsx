@@ -64,22 +64,22 @@ export const CartographicScaleBar: React.FC<CartographicScaleBarProps> = ({
       >
         {/* Coordinates Readout */}
         <div className="flex items-center gap-1.5 text-[10px] font-mono leading-none">
-          <Compass className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-          <span className="hidden xl:inline font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider text-[9px]">
+          <Compass className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" aria-hidden="true" />
+          <span className="hidden xl:inline font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider text-[9px]">
             WGS 84
           </span>
-          <span className="hidden xl:inline text-zinc-300 dark:text-zinc-700">·</span>
+          <span className="hidden xl:inline text-zinc-500 dark:text-zinc-400" aria-hidden="true">·</span>
           <span className="font-semibold text-zinc-900 dark:text-zinc-100 tabular-nums">
             {formatCoord(centerLat, true)}
           </span>
-          <span className="text-zinc-300 dark:text-zinc-700">·</span>
+          <span className="text-zinc-500 dark:text-zinc-400" aria-hidden="true">·</span>
           <span className="font-semibold text-zinc-900 dark:text-zinc-100 tabular-nums">
             {formatCoord(centerLon, false)}
           </span>
           {showZoom && (
             <>
-              <span className="text-zinc-300 dark:text-zinc-700">·</span>
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold tabular-nums">
+              <span className="text-zinc-500 dark:text-zinc-400" aria-hidden="true">·</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-bold tabular-nums">
                 {Math.round(effectiveZoom * 100)}%
               </span>
             </>
@@ -90,7 +90,7 @@ export const CartographicScaleBar: React.FC<CartographicScaleBarProps> = ({
         <div className="hidden sm:flex items-center gap-1.5 pl-2 border-l border-zinc-200/90 dark:border-zinc-800">
           <div className="flex flex-col gap-0.5">
             <div
-              className="flex items-center justify-between text-[9px] font-mono text-zinc-500 dark:text-zinc-400 leading-none tabular-nums"
+              className="flex items-center justify-between text-[9px] font-mono text-zinc-700 dark:text-zinc-300 leading-none tabular-nums"
               style={{ width: `${actualBarWidthPx}px` }}
             >
               <span>0</span>
@@ -115,20 +115,20 @@ export const CartographicScaleBar: React.FC<CartographicScaleBarProps> = ({
     >
       {/* Geodesic WGS 84 Coordinates Header */}
       <div className="flex items-center gap-1.5 text-[10px] font-mono leading-none">
-        <Compass className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-        <span className="font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider text-[9px]">WGS 84</span>
-        <span className="text-zinc-300 dark:text-zinc-700">·</span>
+        <Compass className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" aria-hidden="true" />
+        <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider text-[9px]">WGS 84</span>
+        <span className="text-zinc-500 dark:text-zinc-400" aria-hidden="true">·</span>
         <span className="font-semibold text-zinc-900 dark:text-zinc-100 tabular-nums">
           {formatCoord(centerLat, true)}
         </span>
-        <span className="text-zinc-300 dark:text-zinc-700">·</span>
+        <span className="text-zinc-500 dark:text-zinc-400" aria-hidden="true">·</span>
         <span className="font-semibold text-zinc-900 dark:text-zinc-100 tabular-nums">
           {formatCoord(centerLon, false)}
         </span>
         {showZoom && (
           <>
-            <span className="text-zinc-300 dark:text-zinc-700">·</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-bold tabular-nums">
+            <span className="text-zinc-500 dark:text-zinc-400" aria-hidden="true">·</span>
+            <span className="text-emerald-700 dark:text-emerald-400 font-bold tabular-nums">
               {Math.round(effectiveZoom * 100)}%
             </span>
           </>

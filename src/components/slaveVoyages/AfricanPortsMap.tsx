@@ -877,7 +877,7 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
     const country = activePort.countryModern;
     const region = activePort.region;
     const embarkations = activePort.estimatedEmbarkations.toLocaleString();
-    const accessDate = 'October 2026';
+    const accessDate = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     const url = 'https://www.slavevoyages.org/voyage/database';
 
     switch (style) {

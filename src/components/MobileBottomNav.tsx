@@ -35,14 +35,14 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           }}
           className={`relative flex flex-col items-center justify-center min-touch-target py-1 transition-colors active-tactile cursor-pointer ${
             isMapActive 
-              ? 'text-amber-600 dark:text-amber-400 font-bold' 
-              : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
+              ? 'text-amber-800 dark:text-amber-400 font-bold' 
+              : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200'
           }`}
           aria-label="Continent Map"
           aria-current={isMapActive ? 'page' : undefined}
         >
           {isMapActive && (
-            <span className="absolute top-0 w-6 h-0.5 rounded-full bg-amber-600 dark:bg-amber-400" aria-hidden="true" />
+            <span className="absolute top-0 w-6 h-0.5 rounded-full bg-amber-700 dark:bg-amber-400" aria-hidden="true" />
           )}
           <Globe className={`w-5 h-5 transition-transform ${isMapActive ? 'scale-110' : ''}`} />
           <span className="text-[10px] tracking-tight mt-0.5 truncate">Map</span>
@@ -57,14 +57,14 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           }}
           className={`relative flex flex-col items-center justify-center min-touch-target py-1 transition-colors active-tactile cursor-pointer ${
             isExploreActive 
-              ? 'text-amber-600 dark:text-amber-400 font-bold' 
-              : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
+              ? 'text-amber-800 dark:text-amber-400 font-bold' 
+              : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200'
           }`}
           aria-label="Ethnolinguistic Explorer"
           aria-current={isExploreActive ? 'page' : undefined}
         >
           {isExploreActive && (
-            <span className="absolute top-0 w-6 h-0.5 rounded-full bg-amber-600 dark:bg-amber-400" aria-hidden="true" />
+            <span className="absolute top-0 w-6 h-0.5 rounded-full bg-amber-700 dark:bg-amber-400" aria-hidden="true" />
           )}
           <GitBranch className={`w-5 h-5 transition-transform ${isExploreActive ? 'scale-110' : ''}`} />
           <span className="text-[10px] tracking-tight mt-0.5 truncate">Explore</span>
@@ -77,10 +77,10 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
             triggerHaptic('selection');
             onOpenSearch();
           }}
-          className="relative flex flex-col items-center justify-center min-touch-target py-1 text-zinc-600 hover:text-amber-700 dark:text-zinc-300 dark:hover:text-amber-400 transition-colors active-tactile cursor-pointer"
+          className="relative flex flex-col items-center justify-center min-touch-target py-1 text-zinc-700 hover:text-amber-800 dark:text-zinc-300 dark:hover:text-amber-400 transition-colors active-tactile cursor-pointer"
           aria-label="Search Atlas Countries & Indicators"
         >
-          <span className="flex items-center justify-center w-8 h-7 rounded-xl bg-amber-500/12 dark:bg-amber-400/15 text-amber-700 dark:text-amber-400">
+          <span className="flex items-center justify-center w-8 h-7 rounded-xl bg-amber-500/12 dark:bg-amber-400/15 text-amber-800 dark:text-amber-400">
             <Search className="w-4 h-4" />
           </span>
           <span className="text-[10px] tracking-tight mt-0.5 truncate font-semibold">Search</span>
@@ -95,14 +95,14 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           }}
           className={`relative flex flex-col items-center justify-center min-touch-target py-1 transition-colors active-tactile cursor-pointer ${
             isAnalyticsActive 
-              ? 'text-amber-600 dark:text-amber-400 font-bold' 
-              : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
+              ? 'text-amber-800 dark:text-amber-400 font-bold' 
+              : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200'
           }`}
           aria-label="Analytics & Indicators"
           aria-current={isAnalyticsActive ? 'page' : undefined}
         >
           {isAnalyticsActive && (
-            <span className="absolute top-0 w-6 h-0.5 rounded-full bg-amber-600 dark:bg-amber-400" aria-hidden="true" />
+            <span className="absolute top-0 w-6 h-0.5 rounded-full bg-amber-700 dark:bg-amber-400" aria-hidden="true" />
           )}
           <TrendingUp className={`w-5 h-5 transition-transform ${isAnalyticsActive ? 'scale-110' : ''}`} />
           <span className="text-[10px] tracking-tight mt-0.5 truncate">Analytics</span>
@@ -115,7 +115,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
             triggerHaptic('medium');
             onOpenMenu();
           }}
-          className="flex flex-col items-center justify-center min-touch-target py-1 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors active-tactile cursor-pointer"
+          className="flex flex-col items-center justify-center min-touch-target py-1 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors active-tactile cursor-pointer"
           aria-label="Open Full Navigation Menu"
         >
           <Menu className="w-5 h-5" />

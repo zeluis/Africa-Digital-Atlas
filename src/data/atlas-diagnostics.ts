@@ -1,4 +1,5 @@
 import { atlas } from './atlas-store';
+import { ATLAS_DISPLAY_VERSION } from './platformMetadata';
 
 export interface IntegrityAuditResult {
   status: 'passed' | 'warnings' | 'failed';
@@ -37,17 +38,23 @@ export function runAtlasIntegrityAudit(): IntegrityAuditResult {
     const gdp = atlas.getIndicatorValue(ent.id, 'NY.GDP.MKTP.CD');
     const hdi = atlas.getIndicatorValue(ent.id, 'UNDP.HDI.INDEX');
 
-    if (pop === null || gdp === null || hdi === null) {
-      missingKeyValues++;
+    let missingCountForEntity = 0;
+    if (pop === null) missingCountForEntity++;
+    if (gdp === null) missingCountForEntity++;
+    if (hdi === null) missingCountForEntity++;
+
+    if (missingCountForEntity > 0) {
+      missingKeyValues += missingCountForEntity;
       diagnostics.push({
         type: 'warning',
         module: 'Observations',
-        message: `Entity ${ent.id} (${ent.name}) has partial key indicator coverage.`
+        message: `Entity ${ent.id} (${ent.name}) has partial key indicator coverage (${3 - missingCountForEntity}/3 core metrics).`
       });
     }
 
-    const obsList = atlas.getObservations(ent.id, 'NY.GDP.MKTP.CD');
-    totalObservationsCount += obsList.length;
+    for (const ind of indicators) {
+      totalObservationsCount += atlas.getObservations(ent.id, ind.id).length;
+    }
   }
 
   // 2. Validate indicators
@@ -68,7 +75,7 @@ export function runAtlasIntegrityAudit(): IntegrityAuditResult {
   diagnostics.push({
     type: 'info',
     module: 'Manifest',
-    message: `Atlas v1.2 loaded successfully with ${entities.length} entities and ${indicators.length} normalized indicators.`
+    message: `Atlas ${ATLAS_DISPLAY_VERSION} loaded cleanly with ${entities.length} entities and ${indicators.length} normalized indicators.`
   });
 
   const totalPossible = entities.length * 3;

@@ -60,7 +60,7 @@ export const EpistemicStatusBadge: React.FC<EpistemicStatusBadgeProps> = ({
             className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
               currentMode === 'observed'
                 ? 'bg-white dark:bg-zinc-800 text-emerald-800 dark:text-emerald-300 shadow-xs font-bold'
-                : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                : 'text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
             }`}
             title="Show only records explicitly documented in surviving logbooks and manifests"
           >
@@ -73,7 +73,7 @@ export const EpistemicStatusBadge: React.FC<EpistemicStatusBadgeProps> = ({
             className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
               currentMode === 'imputed'
                 ? 'bg-white dark:bg-zinc-800 text-amber-800 dark:text-amber-300 shadow-xs font-bold'
-                : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                : 'text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
             }`}
             title="Recommended standard: Combines observed data with statistical imputation for missing variables"
           >
@@ -86,7 +86,7 @@ export const EpistemicStatusBadge: React.FC<EpistemicStatusBadgeProps> = ({
             className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
               currentMode === 'estimates'
                 ? 'bg-white dark:bg-zinc-800 text-indigo-800 dark:text-indigo-300 shadow-xs font-bold'
-                : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                : 'text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
             }`}
             title="Macro demographic estimates accounting for missing/clandestine voyages"
           >

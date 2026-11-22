@@ -162,9 +162,9 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
               <Layers className="w-3.5 h-3.5" />
               <span>21 ANALYTICAL & REGIONAL ECONOMIC BLOCS</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-950 dark:text-zinc-50 font-display tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-950 dark:text-zinc-50 font-display tracking-tight">
               Regional Economic Communities & Geopolitical Tiers
-            </h2>
+            </h1>
             <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 max-w-3xl leading-relaxed">
               Explore trade integration agreements, customs unions, demographic baselines, geography, and Wikipedia dossiers across Africa's 21 recognized economic groupings.
             </p>
@@ -195,10 +195,10 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
             className="overflow-hidden rounded-3xl border border-zinc-200/90 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900/60 p-6 sm:p-8 space-y-6 shadow-sm"
           >
             <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-4">
-              <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 font-display flex items-center gap-2">
+              <h2 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 font-display flex items-center gap-2">
                 <ArrowRightLeft className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 <span>Side-by-Side Bloc Comparative Analysis</span>
-              </h3>
+              </h2>
               <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">Live Aggregate Data</span>
             </div>
 
@@ -289,10 +289,10 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
         <div className="lg:col-span-4 xl:col-span-4 flex flex-col">
           <div className="bg-white/95 dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-5 sm:p-6 space-y-4 shadow-sm">
             <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-800 dark:text-zinc-200 font-mono flex items-center gap-2">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-800 dark:text-zinc-200 font-mono flex items-center gap-2">
                 <Building2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 <span>21 Groupings</span>
-              </h3>
+              </h2>
               <span className="text-[10px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60">
                 5 Accordions
               </span>
@@ -425,10 +425,10 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                           {currentBloc.category}
                         </span>
                       </div>
-                      <h3 className="text-2xl sm:text-3xl font-extrabold text-zinc-950 dark:text-zinc-50 font-display tracking-tight flex flex-wrap items-center gap-2">
+                      <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-950 dark:text-zinc-50 font-display tracking-tight flex flex-wrap items-center gap-2">
                         <span>{currentBloc.name}</span>
                         <span className="text-zinc-500 dark:text-zinc-400 font-mono text-base sm:text-lg font-semibold">({currentBloc.id})</span>
-                      </h3>
+                      </h2>
                     </div>
 
                     <div className="flex items-center gap-2 self-start flex-wrap">
@@ -784,10 +784,10 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
         >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-800 dark:text-zinc-200 font-mono flex items-center gap-2">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-800 dark:text-zinc-200 font-mono flex items-center gap-2">
                 <Users className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 <span>{currentBloc.shortName} Member States ({currentMembers.length})</span>
-              </h4>
+              </h2>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
                 Detailed sovereign profiles, total population, nominal GDP, official languages, and government systems
               </p>
@@ -796,6 +796,7 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
               <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3" />
               <input
                 type="text"
+                aria-label="Filter bloc member states by country, capital, language, or government"
                 value={searchFilter}
                 onChange={e => setSearchFilter(e.target.value)}
                 placeholder="Filter by country, capital, language, or government..."

@@ -49,6 +49,7 @@ import {
 } from '../../utils/academicExport';
 import { resolveAssetPath, getAssetCandidateUrls } from '../../utils/assetPath';
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
+import { AFRIATA_SITE_URL } from '../../utils/citationFormatter';
 
 export type AcademiaVariant = 'slavery-images' | 'castas' | 'unesco';
 
@@ -422,7 +423,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
     if (!illustration) return '';
     
     const year = illustration.date ? illustration.date.replace(/[^0-9]/g, '').slice(0, 4) || 'n.d.' : 'n.d.';
-    const accessDate = 'September 2026';
+    const accessDate = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
     // Tailored citation generator for UNESCO World Heritage properties
     if (illustration.unescoMeta) {
@@ -462,7 +463,8 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
     const source = illustration.source;
     const regId = illustration.regId;
     const ideId = illustration.identifier;
-    const url = illustration.slaveryImagesPage || `https://zeluis.github.io/Africa-Digital-Atlas/castas/${ideId}`;
+    const url = illustration.slaveryImagesPage || `${AFRIATA_SITE_URL}/?tab=iconography&plate=${encodeURIComponent(ideId || regId)}`;
+    const safeBibtexKey = `Archival_Iconography_${String(regId || ideId || 'plate').replace(/[^A-Za-z0-9_-]/g, '_')}`;
 
     switch (style) {
       case 'chicago':
@@ -472,7 +474,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
       case 'harvard':
         return `${authors} (${year}) '${title}', Plate ${regId}. In ${source}. Available at: ${url} (Accessed: ${accessDate}).`;
       case 'bibtex':
-        return `@misc{Archival Iconography_${illustration.regId},
+        return `@misc{${safeBibtexKey},
   author = {${authors}},
   title = {${title}},
   year = {${year}},
@@ -567,14 +569,14 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
       {/* Top Header Bar — Polished Light Editorial Palette */}
       <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-stone-200/90 dark:border-stone-800 bg-[#F4EFE6]/90 dark:bg-stone-900/90 backdrop-blur-md shrink-0 z-20">
         <div className="flex items-center gap-3 min-w-0 pr-4">
-          <div className="px-2.5 py-1 rounded-full bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/15 dark:border-amber-400/20 text-amber-900 dark:text-amber-300 text-[10px] font-mono font-bold uppercase tracking-wider shrink-0">
+          <span className="px-2 py-0.5 rounded-md bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/15 dark:border-amber-400/20 text-amber-900 dark:text-amber-300 text-[10px] font-mono font-bold uppercase tracking-wider shrink-0">
             Plate {illustration.regId}
-          </div>
+          </span>
           <h2 className="text-xs sm:text-sm md:text-base font-serif font-bold text-stone-900 dark:text-stone-100 truncate">
             {illustration.title}
           </h2>
           {currentIndex !== -1 && illustrationsList.length > 0 && (
-            <span className="hidden md:inline-flex text-[11px] font-mono text-stone-500 dark:text-stone-400">
+            <span className="hidden md:inline-flex text-[11px] font-mono text-stone-700 dark:text-stone-300">
               ({currentIndex + 1} of {illustrationsList.length})
             </span>
           )}
@@ -585,14 +587,18 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
           {illustrationsList.length > 1 && (
             <div className="flex items-center gap-0.5 bg-stone-200/70 dark:bg-stone-900 border border-stone-300/80 dark:border-stone-700/80 rounded-xl p-0.5 mr-1">
               <button
+                type="button"
                 onClick={handlePrevIllustration}
+                aria-label="Previous Plate"
                 className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
                 title="Previous Plate (Alt + ←)"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
               </button>
               <button
+                type="button"
                 onClick={handleNextIllustration}
+                aria-label="Next Plate"
                 className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
                 title="Next Plate (Alt + →)"
               >
@@ -604,7 +610,9 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
           {/* Integrated Zoom, Full-Screen, Reset & Contrast Pill */}
           <div className="hidden sm:flex items-center bg-stone-200/70 dark:bg-stone-900 border border-stone-300/80 dark:border-stone-700/80 rounded-xl p-0.5 gap-0.5">
             <button
+              type="button"
               onClick={() => setZoomLevel(z => Math.min(z + 0.5, 5))}
+              aria-label="Zoom In"
               className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
               title="Zoom In (+)"
             >
@@ -614,6 +622,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
               {Math.round(zoomLevel * 100)}%
             </span>
             <button
+              type="button"
               onClick={() => {
                 setZoomLevel(z => {
                   const next = Math.max(z - 0.5, 1);
@@ -621,6 +630,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                   return next;
                 });
               }}
+              aria-label="Zoom Out"
               className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
               title="Zoom Out (-)"
             >
@@ -630,7 +640,9 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
             <div className="w-px h-3.5 bg-stone-300 dark:bg-white/20 mx-0.5" />
 
             <button
+              type="button"
               onClick={toggleFullscreen}
+              aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
               className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                 isFullscreen 
                   ? 'bg-amber-900 text-amber-50 font-bold dark:bg-amber-500 dark:text-stone-950' 
@@ -642,7 +654,9 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
             </button>
 
             <button
+              type="button"
               onClick={resetViewport}
+              aria-label="Reset Viewport"
               className="p-1.5 rounded-lg hover:bg-stone-300/80 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
               title="Reset Viewport"
             >
@@ -650,7 +664,10 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
             </button>
 
             <button
+              type="button"
               onClick={() => setIsHighContrast(!isHighContrast)}
+              aria-label="Toggle High Contrast Filter"
+              aria-pressed={isHighContrast}
               className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                 isHighContrast 
                   ? 'bg-amber-900 text-amber-50 font-bold dark:bg-amber-500 dark:text-stone-950' 
@@ -824,21 +841,21 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
           </div>
 
           {/* Caption & Navigation Guidance Bar — Positioned OUTSIDE the image/zoom container */}
-          <div className="w-full shrink-0 px-4 py-2.5 bg-[#F4EFE6]/95 dark:bg-stone-900/95 backdrop-blur-md border-t border-stone-200/90 dark:border-stone-800 flex flex-wrap items-center justify-between gap-3 text-xs z-10">
+          <div className="w-full max-w-full overflow-hidden shrink-0 px-3 sm:px-4 py-2.5 bg-[#F4EFE6]/95 dark:bg-stone-900/95 backdrop-blur-md border-t border-stone-200/90 dark:border-stone-800 flex flex-wrap items-center justify-between gap-2 sm:gap-3 text-xs z-10">
             {/* Archival Plate Caption */}
-            <div className="flex items-center gap-2 min-w-0 max-w-xl truncate text-stone-700 dark:text-stone-300">
+            <div className="flex items-center gap-2 min-w-0 max-w-full sm:max-w-xl text-stone-700 dark:text-stone-300">
               <span className="font-serif font-semibold text-stone-900 dark:text-stone-100 truncate">
                 {illustration.title}
               </span>
               {illustration.date && (
-                <span className="text-stone-500 dark:text-stone-400 font-mono text-[11px] shrink-0">
+                <span className="text-stone-600 dark:text-stone-400 font-mono text-[11px] shrink-0">
                   ({illustration.date})
                 </span>
               )}
             </div>
 
             {/* Navigation Information Label / Pill & Photographer / License Pill */}
-            <div className="flex items-center gap-2 shrink-0 text-[10px] font-mono text-stone-600 dark:text-stone-400 flex-wrap">
+            <div className="flex items-center gap-2 min-w-0 max-w-full text-[10px] font-mono text-stone-600 dark:text-stone-400 flex-wrap">
               {(resolvedPhotographer || resolvedLicense) && (
                 <button
                   type="button"
@@ -846,19 +863,19 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                     setIsMetadataOpen(true);
                     setActiveTab('metadata');
                   }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20 text-amber-950 dark:text-amber-200 shadow-2xs hover:bg-amber-900/15 dark:hover:bg-amber-400/20 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 max-w-full min-w-0 px-3 py-1 rounded-full bg-amber-900/10 dark:bg-amber-400/10 border border-amber-900/20 dark:border-amber-400/20 text-amber-950 dark:text-amber-200 shadow-2xs hover:bg-amber-900/15 dark:hover:bg-amber-400/20 transition-all cursor-pointer"
                   title="View complete attribution and rights metadata card"
                 >
-                  <Camera className="w-3 h-3 text-amber-700 dark:text-amber-400" />
-                  <span className="font-semibold truncate max-w-[180px]">{resolvedPhotographer}</span>
-                  <span className="w-1 h-1 rounded-full bg-amber-400/60" />
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-900/15 dark:bg-amber-400/20 font-bold">
+                  <Camera className="w-3 h-3 text-amber-700 dark:text-amber-400 shrink-0" />
+                  <span className="font-semibold truncate max-w-[140px] sm:max-w-[180px]">{resolvedPhotographer}</span>
+                  <span className="w-1 h-1 rounded-full bg-amber-400/60 shrink-0" />
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-900/15 dark:bg-amber-400/20 font-bold shrink-0">
                     {resolvedLicense}
                   </span>
                 </button>
               )}
 
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-stone-600 dark:text-stone-400">
+              <span className="hidden md:inline-flex items-center gap-1.5 text-[11px] font-mono text-stone-600 dark:text-stone-400">
                 <Compass className="w-3 h-3 text-amber-700 dark:text-amber-400" />
                 <span>Scroll wheel: Zoom · Drag: Pan · Alt + ← / →: Step plates</span>
               </span>
@@ -874,11 +891,13 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
 
               {/* Left Scroll Trigger */}
               <button
+                type="button"
                 onClick={() => scrollFilmstrip('left')}
+                aria-label="Scroll Left"
                 className="p-1.5 rounded-lg bg-stone-200/80 hover:bg-stone-300 text-stone-700 dark:bg-stone-900 dark:hover:bg-stone-800 dark:text-stone-300 border border-stone-300 dark:border-stone-700/60 transition-colors cursor-pointer shrink-0"
                 title="Scroll Left"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-4 h-4" aria-hidden="true" />
               </button>
 
               {/* Scrollable Container with all images */}
@@ -942,11 +961,13 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
 
               {/* Right Scroll Trigger */}
               <button
+                type="button"
                 onClick={() => scrollFilmstrip('right')}
+                aria-label="Scroll Right"
                 className="p-1.5 rounded-lg bg-stone-200/80 hover:bg-stone-300 text-stone-700 dark:bg-stone-900 dark:hover:bg-stone-800 dark:text-stone-300 border border-stone-300 dark:border-stone-700/60 transition-colors cursor-pointer shrink-0"
                 title="Scroll Right"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
           )}
@@ -1063,36 +1084,36 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                   {illustration.unescoMeta && (
                     <div className="grid grid-cols-2 gap-2.5 p-3.5 rounded-2xl bg-stone-100/90 dark:bg-stone-900/80 border border-stone-200/90 dark:border-stone-800 text-xs font-mono">
                       <div className="space-y-0.5">
-                        <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block">UNESCO Region</span>
+                        <span className="text-[10px] uppercase text-stone-600 dark:text-stone-400 block">UNESCO Region</span>
                         <span className="font-bold text-stone-900 dark:text-stone-100">{illustration.unescoMeta.region}</span>
                       </div>
                       <div className="space-y-0.5">
-                        <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block">State Party</span>
+                        <span className="text-[10px] uppercase text-stone-600 dark:text-stone-400 block">State Party</span>
                         <span className="font-bold text-stone-900 dark:text-stone-100">{illustration.unescoMeta.states}</span>
                       </div>
                       <div className="space-y-0.5">
-                        <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block">Category &amp; Criteria</span>
+                        <span className="text-[10px] uppercase text-stone-600 dark:text-stone-400 block">Category &amp; Criteria</span>
                         <span className="font-bold text-amber-900 dark:text-amber-400">
                           {illustration.unescoMeta.category} {illustration.unescoMeta.criteriaTxt}
                         </span>
                       </div>
                       <div className="space-y-0.5">
-                        <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block">Conservation Status</span>
-                        <span className={`font-bold ${illustration.unescoMeta.danger ? 'text-rose-600 dark:text-rose-400 flex items-center gap-1' : 'text-emerald-700 dark:text-emerald-400'}`}>
+                        <span className="text-[10px] uppercase text-stone-600 dark:text-stone-400 block">Conservation Status</span>
+                        <span className={`font-bold ${illustration.unescoMeta.danger ? 'text-rose-700 dark:text-rose-400 flex items-center gap-1' : 'text-emerald-700 dark:text-emerald-400'}`}>
                           {illustration.unescoMeta.danger && <AlertTriangle className="w-3 h-3 shrink-0" />}
                           {illustration.unescoMeta.danger ? 'In Danger List' : 'Regular Standing'}
                         </span>
                       </div>
                       <div className="space-y-0.5 col-span-2">
-                        <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block">Ecological Biome</span>
+                        <span className="text-[10px] uppercase text-stone-600 dark:text-stone-400 block">Ecological Biome</span>
                         <span className="font-bold text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
-                          <Globe2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                          <Globe2 className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
                           {deriveSiteBiome(illustration.unescoMeta)}
                         </span>
                       </div>
                       {(illustration.unescoMeta.latitude !== undefined && illustration.unescoMeta.longitude !== undefined) && (
                         <div className="space-y-0.5">
-                          <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block">Coordinates</span>
+                          <span className="text-[10px] uppercase text-stone-600 dark:text-stone-400 block">Coordinates</span>
                           <span className="font-semibold text-stone-800 dark:text-stone-200">
                             {illustration.unescoMeta.latitude.toFixed(4)}°, {illustration.unescoMeta.longitude.toFixed(4)}°
                           </span>
@@ -1100,7 +1121,7 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
                       )}
                       {illustration.unescoMeta.areaHectares !== undefined && illustration.unescoMeta.areaHectares !== '' && (
                         <div className="space-y-0.5">
-                          <span className="text-[10px] uppercase text-stone-500 dark:text-stone-400 block">Inscribed Area</span>
+                          <span className="text-[10px] uppercase text-stone-600 dark:text-stone-400 block">Inscribed Area</span>
                           <span className="font-semibold text-stone-800 dark:text-stone-200">
                             {Number(illustration.unescoMeta.areaHectares) > 0
                               ? `${Number(illustration.unescoMeta.areaHectares).toLocaleString()} ha`

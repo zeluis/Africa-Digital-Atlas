@@ -858,8 +858,9 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   }, [activeMetric]);
 
   // Compute min, max, and values for choropleth scale (supporting Time-Series 1990–2024 horizon)
-  const { metricValues, minVal, maxVal, continentalMean } = useMemo(() => {
+  const { metricValues, minVal, maxVal, continentalMean, modeledEntityIds, totalMappedCount } = useMemo(() => {
     const values: Record<string, number> = {};
+    const modeledIds = new Set<string>();
     let min = Infinity;
     let max = -Infinity;
     let sum = 0;
@@ -868,6 +869,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     const allMapIds = new Set([...Object.keys(AFRICA_SVG_MAP), ...Object.keys(AFRICA_FINAL_MAP)]);
     for (const id of allMapIds) {
       let val: number | null = null;
+      let isModeled = false;
 
       if (choroplethYear === 2024) {
         // Curated AKP or atlas latest value
@@ -881,13 +883,17 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             val = atlas.getIndicatorValue(id, 'COMTRADE.EXP.TOTL');
             if (val === null) {
               const gdp = atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD');
-              if (gdp) val = Math.round(gdp * 0.28 * 10) / 10;
+              if (gdp) {
+                val = Math.round(gdp * 0.28 * 10) / 10;
+                isModeled = true;
+              }
             }
           } else if (activeMetric === 'EG.ELC.RNWX.ZS') {
             val = atlas.getIndicatorValue(id, 'EG.ELC.RNWX.ZS');
             if (val === null) {
               const hdi = atlas.getIndicatorValue(id, 'UNDP.HDI.INDEX') || 0.5;
               val = Math.round((25 + (1 - hdi) * 45) * 10) / 10;
+              isModeled = true;
             }
           } else {
             val = atlas.getIndicatorValue(id, activeMetric);
@@ -903,6 +909,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           // Model historical trajectory from 1990 to 2024
           const val2024 = getAkpCountryValue(id, activeMetric) ?? atlas.getIndicatorValue(id, activeMetric);
           if (val2024 !== null && !isNaN(val2024)) {
+            isModeled = true;
             const yearDiff = 2024 - choroplethYear;
             const t = (choroplethYear - 1990) / 34; // 0 at 1990, 1 at 2024
 
@@ -933,6 +940,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
 
       if (val !== null && !isNaN(val)) {
         values[id] = val;
+        if (isModeled) modeledIds.add(id);
         if (val < min) min = val;
         if (val > max) max = val;
         sum += val;
@@ -944,7 +952,14 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
     if (max === -Infinity) max = 100;
     const continentalMean = count > 0 ? sum / count : 0;
 
-    return { metricValues: values, minVal: min, maxVal: max, continentalMean };
+    return {
+      metricValues: values,
+      minVal: min,
+      maxVal: max,
+      continentalMean,
+      modeledEntityIds: modeledIds,
+      totalMappedCount: count
+    };
   }, [activeMetric, choroplethYear, svgMapLoaded]);
 
   // Visibility toggle handlers
@@ -1628,9 +1643,11 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       const image = new Image();
       image.onload = () => {
         const scaleFactor = 2;
+        const baseWidth = 1000;
+        const baseHeight = cartographySource === 'authentic_final' ? Math.round(1000 * (5867 / 5796)) : 1100;
         const canvas = document.createElement('canvas');
-        canvas.width = 1000 * scaleFactor;
-        canvas.height = 1100 * scaleFactor;
+        canvas.width = baseWidth * scaleFactor;
+        canvas.height = baseHeight * scaleFactor;
         const ctx = canvas.getContext('2d');
 
         if (ctx) {
@@ -1799,9 +1816,9 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 strokeWidth={1.4}
               />
               <div className="hidden sm:flex items-baseline gap-1.5">
-                <h3 className="font-bold text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight whitespace-nowrap">
+                <h2 className="font-bold text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight whitespace-nowrap">
                   African Map
-                </h3>
+                </h2>
                 <span className="text-[10px] font-mono font-semibold text-zinc-500 dark:text-zinc-400">
                   · {isFinalMode ? 'Authentic' : 'UN M49'}
                 </span>
@@ -1827,7 +1844,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 {mapMode === 'authentic_palette' && (
                   <m.div
                     layoutId="activeMapModeHighlight"
-                    className="absolute inset-0 bg-emerald-600 rounded-lg shadow-xs -z-10"
+                    className="absolute inset-0 bg-emerald-700 rounded-lg shadow-xs -z-10"
                     transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
                   />
                 )}
@@ -1869,7 +1886,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 {mapMode === 'choropleth' && (
                   <m.div
                     layoutId="activeMapModeHighlight"
-                    className="absolute inset-0 bg-cyan-600 rounded-lg shadow-xs -z-10"
+                    className="absolute inset-0 bg-cyan-700 rounded-lg shadow-xs -z-10"
                     transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
                   />
                 )}
@@ -1911,7 +1928,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 {mapMode === 'un_geoscheme' && (
                   <m.div
                     layoutId="activeMapModeHighlight"
-                    className="absolute inset-0 bg-amber-600 rounded-lg shadow-xs -z-10"
+                    className="absolute inset-0 bg-amber-700 rounded-lg shadow-xs -z-10"
                     transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
                   />
                 )}
@@ -2060,7 +2077,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <span className={`text-[10px] font-mono font-bold tabular-nums ${
                 isUnifiedDeckOpen && unifiedDeckTab === 'regions'
                   ? 'text-emerald-200 dark:text-emerald-100'
-                  : 'text-zinc-500 dark:text-zinc-400'
+                  : 'text-zinc-700 dark:text-zinc-400'
               }`}>
                 {selectedBlocId !== 'ALL'
                   ? selectedBlocId
@@ -2097,7 +2114,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <span className={`text-[10px] font-mono font-bold tabular-nums ${
                 isUnifiedDeckOpen && unifiedDeckTab === 'atlas'
                   ? 'text-amber-100'
-                  : 'text-zinc-500 dark:text-zinc-400'
+                  : 'text-zinc-700 dark:text-zinc-400'
               }`}>
                 {atlasActiveCount}/7
               </span>
@@ -2129,7 +2146,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 <span className={`text-[10px] font-mono font-bold tabular-nums ${
                   isUnifiedDeckOpen && unifiedDeckTab === 'flows'
                     ? 'text-teal-100'
-                    : 'text-zinc-500 dark:text-zinc-400'
+                    : 'text-zinc-700 dark:text-zinc-400'
                 }`}>
                   {flowsPowerActiveCount}/3
                 </span>
@@ -2153,16 +2170,16 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 {isUnifiedDeckOpen && (unifiedDeckTab === 'inspector' || unifiedDeckTab === 'both') && (
                   <m.div
                     layoutId="activeHeaderDeckTrigger"
-                    className="absolute inset-0 bg-emerald-600 rounded-lg shadow-xs -z-10"
+                    className="absolute inset-0 bg-emerald-700 rounded-lg shadow-xs -z-10"
                     transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
                   />
                 )}
-                <MapPin className={`w-3 h-3 ${isUnifiedDeckOpen && (unifiedDeckTab === 'inspector' || unifiedDeckTab === 'both') ? 'text-emerald-100' : 'text-emerald-500'}`} />
+                <MapPin className={`w-3 h-3 ${isUnifiedDeckOpen && (unifiedDeckTab === 'inspector' || unifiedDeckTab === 'both') ? 'text-emerald-100' : 'text-emerald-600 dark:text-emerald-400'}`} />
                 <span>Inspector</span>
                 <span className={`text-[10px] font-mono font-bold tabular-nums ${
                   isUnifiedDeckOpen && (unifiedDeckTab === 'inspector' || unifiedDeckTab === 'both')
                     ? 'text-emerald-100'
-                    : 'text-zinc-500 dark:text-zinc-400'
+                    : 'text-zinc-700 dark:text-zinc-400'
                 }`}>
                   {currentCountryAdmin1.length > 0 ? `${currentCountryAdmin1.length}` : '1,017'}
                 </span>
@@ -2186,16 +2203,16 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                 {isUnifiedDeckOpen && (unifiedDeckTab === 'deck' || unifiedDeckTab === 'both') && (
                   <m.div
                     layoutId="activeHeaderDeckTrigger"
-                    className="absolute inset-0 bg-cyan-600 rounded-lg shadow-xs -z-10"
+                    className="absolute inset-0 bg-cyan-700 rounded-lg shadow-xs -z-10"
                     transition={{ type: 'spring', stiffness: 520, damping: 34, mass: 0.5 }}
                   />
                 )}
-                <SlidersHorizontal className={`w-3 h-3 ${isUnifiedDeckOpen && (unifiedDeckTab === 'deck' || unifiedDeckTab === 'both') ? 'text-cyan-100' : 'text-cyan-500'}`} />
+                <SlidersHorizontal className={`w-3 h-3 ${isUnifiedDeckOpen && (unifiedDeckTab === 'deck' || unifiedDeckTab === 'both') ? 'text-cyan-100' : 'text-cyan-600 dark:text-cyan-400'}`} />
                 <span>Layer Deck</span>
                 <span className={`text-[10px] font-mono font-bold tabular-nums ${
                   isUnifiedDeckOpen && (unifiedDeckTab === 'deck' || unifiedDeckTab === 'both')
                     ? 'text-cyan-100'
-                    : 'text-zinc-500 dark:text-zinc-400'
+                    : 'text-zinc-700 dark:text-zinc-400'
                 }`}>
                   {thematicActiveCount}/9
                 </span>
@@ -2339,6 +2356,9 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               metricName={currentMetricDef.label}
               metricUnit={currentMetricDef.unit}
               continentalMean={continentalMean}
+              isModeledTrajectory={modeledEntityIds.size > 0}
+              modeledCount={modeledEntityIds.size}
+              totalCount={totalMappedCount}
             />
           )}
 
@@ -3196,8 +3216,8 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                             <div
                               key={adm.id}
                               onMouseEnter={() => {
-                                setHoveredAdmin1({ id: adm.id, name: adm.name, countryId: adm.iso3 });
-                                setHoveredEntityId(adm.iso3);
+                                setHoveredAdmin1({ id: adm.id, name: adm.name, countryId: adm.iso3 || '' });
+                                setHoveredEntityId(adm.iso3 || null);
                               }}
                               onMouseLeave={() => {
                                 setHoveredAdmin1(null);
@@ -3212,7 +3232,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                               }`}
                             >
                               <div className="flex items-center gap-2 min-w-0">
-                                <CountryFlag entityId={adm.iso3} size="xs" />
+                                <CountryFlag entityId={adm.iso3 || ''} size="xs" />
                                 <div className="min-w-0">
                                   <p className="text-xs font-bold truncate leading-tight">{adm.name}</p>
                                   <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">
@@ -3409,7 +3429,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           >
             <AfricaMapFinalLayer
                 mapData={finalMapData}
-                selectedEntityId={selectedEntityId}
+                selectedEntityId={selectedEntityId ?? null}
                 activeTooltipEntityId={activeTooltipEntityId}
                 hoveredEntityId={hoveredEntityId}
                 hoveredAdmin1={hoveredAdmin1}
@@ -3474,17 +3494,19 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         {/* Rich Interactive Floating Hover Card for All Thematic Overlays & Beacons (Editorial Theme) */}
         {hoveredThematicItem && !selectedThematicItem && (() => {
           const info = getThematicItemDisplay(hoveredThematicItem);
+          const boundsW = containerRef.current?.clientWidth || window.innerWidth;
+          const boundsH = containerRef.current?.clientHeight || window.innerHeight;
           return (
             <div
               style={{
-                left: `${Math.min(window.innerWidth - 380, Math.max(20, cursorPos.x + 18))}px`,
-                top: `${Math.max(20, Math.min(window.innerHeight - 360, cursorPos.y - 140))}px`,
+                left: `${Math.min(Math.max(20, boundsW - 360), Math.max(20, cursorPos.x + 18))}px`,
+                top: `${Math.max(20, Math.min(Math.max(20, boundsH - 340), cursorPos.y - 140))}px`,
               }}
               className="absolute z-40 pointer-events-none w-84 p-4 rounded-2xl bg-white/98 dark:bg-zinc-950/98 text-zinc-900 dark:text-zinc-100 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
             >
               <div className="flex items-center justify-between gap-2 mb-2">
                 <span
-                  className="text-[10px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full border"
+                  className="text-[10px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-md border"
                   style={{
                     backgroundColor: `${info.accentColor}18`,
                     color: info.accentColor,
@@ -3543,7 +3565,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               >
                 <div className="flex items-center justify-between gap-2 mb-2.5">
                   <span
-                    className="text-[11px] font-mono uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full border"
+                    className="text-[11px] font-mono uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-md border"
                     style={{
                       backgroundColor: `${info.accentColor}18`,
                       color: info.accentColor,
@@ -3557,6 +3579,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                     onClick={() => setSelectedThematicItem(null)}
                     className="p-1 rounded-full text-zinc-400 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                     title="Close Inspector"
+                    aria-label="Close Inspector"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -3665,20 +3688,23 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
         )}
 
         {/* Interactive Hover Card for UNESCO World Heritage Sites */}
-        {hoveredUnescoSite && !selectedUnescoSite && !hoveredThematicItem && !selectedThematicItem && (
+        {hoveredUnescoSite && !selectedUnescoSite && !hoveredThematicItem && !selectedThematicItem && (() => {
+          const boundsW = containerRef.current?.clientWidth || window.innerWidth;
+          const boundsH = containerRef.current?.clientHeight || window.innerHeight;
+          return (
           <div
             style={{
-              left: `${Math.min(window.innerWidth - 340, Math.max(20, cursorPos.x + 18))}px`,
-              top: `${Math.max(20, Math.min(window.innerHeight - 260, cursorPos.y - 120))}px`,
+              left: `${Math.min(Math.max(20, boundsW - 340), Math.max(20, cursorPos.x + 18))}px`,
+              top: `${Math.max(20, Math.min(Math.max(20, boundsH - 260), cursorPos.y - 120))}px`,
             }}
             className="absolute z-40 pointer-events-none w-80 p-3.5 rounded-2xl bg-white/98 dark:bg-stone-900/98 text-stone-900 dark:text-stone-100 border border-stone-200/90 dark:border-stone-800/90 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
           >
             <div className="flex items-center justify-between gap-1.5 mb-1.5">
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30">
-                WHC #{hoveredUnescoSite.idNumber} • {hoveredUnescoSite.category} Heritage
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30">
+                WHC #{hoveredUnescoSite.idNumber} · {hoveredUnescoSite.category} Heritage
               </span>
               {hoveredUnescoSite.danger && (
-                <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 flex items-center gap-1">
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 flex items-center gap-1">
                   <AlertTriangle className="w-2.5 h-2.5" />
                   <span>In Danger</span>
                 </span>
@@ -3699,7 +3725,8 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
               <span>UNESCO Archive</span>
             </div>
           </div>
-        )}
+          );
+        })()}
 
         {/* Top-Docked Unified Tactical Inspector Drawer (Parchment / Editorial Light Theme) */}
         {activeTooltipEntityId && (
@@ -3776,7 +3803,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block font-medium">Population</span>
                   {atlas.getObservations(hoveredEntity.id, 'SP.POP.TOTL').length > 1 && (
                     <MicroSparkline 
-                      data={atlas.getObservations(hoveredEntity.id, 'SP.POP.TOTL').map(o => o.value)} 
+                      data={atlas.getObservations(hoveredEntity.id, 'SP.POP.TOTL').map(o => o.value).filter((v): v is number => v !== null)} 
                       width={38} 
                       height={14} 
                       color="#059669"
@@ -3792,7 +3819,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
                   <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block font-medium">Nominal GDP</span>
                   {atlas.getObservations(hoveredEntity.id, 'NY.GDP.MKTP.CD').length > 1 && (
                     <MicroSparkline 
-                      data={atlas.getObservations(hoveredEntity.id, 'NY.GDP.MKTP.CD').map(o => o.value)} 
+                      data={atlas.getObservations(hoveredEntity.id, 'NY.GDP.MKTP.CD').map(o => o.value).filter((v): v is number => v !== null)} 
                       width={38} 
                       height={14} 
                       color="#0284c7"
@@ -3820,8 +3847,11 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
             {/* Choropleth Metric Display for Current Horizon Year */}
             {mapMode === 'choropleth' && metricValues[hoveredEntity.id] !== undefined && (
               <div className="flex items-center justify-between text-xs px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-800/80 mb-2.5">
-                <span className="font-semibold text-emerald-900 dark:text-emerald-200 text-[11px] truncate max-w-[150px]">
-                  {currentMetricDef.label} ({choroplethYear}):
+                <span className="font-semibold text-emerald-900 dark:text-emerald-200 text-[11px] truncate max-w-[165px]">
+                  {currentMetricDef.label} ({choroplethYear})
+                  {modeledEntityIds.has(hoveredEntity.id) && (
+                    <span className="text-[9px] font-mono text-amber-700 dark:text-amber-300 ml-1">· Modeled</span>
+                  )}:
                 </span>
                 <span className="font-mono font-bold font-tabular text-emerald-700 dark:text-emerald-300 text-[11px]">
                   {metricValues[hoveredEntity.id].toLocaleString(undefined, { maximumFractionDigits: 1 })} {currentMetricDef.unit}
@@ -3896,7 +3926,7 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
           <AkpCatalogueModal
             isOpen={isCatalogueModalOpen}
             onClose={() => setIsCatalogueModalOpen(false)}
-            onSelectMetric={(metricId) => {
+            onSelectMetric={(metricId: string) => {
               if (onActiveMetricChange) {
                 onActiveMetricChange(metricId);
               } else {

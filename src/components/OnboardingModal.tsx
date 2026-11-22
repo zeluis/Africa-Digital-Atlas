@@ -86,10 +86,10 @@ const ONBOARDING_SCREENS: OnboardingScreenDef[] = [
     accentBadgeBg: 'bg-amber-50',
     accentBadgeBorder: 'border-amber-200',
     accentBadgeText: 'text-amber-900',
-    actionBtnBg: 'bg-amber-600',
-    actionBtnBorder: 'border-amber-700/30',
+    actionBtnBg: 'bg-amber-700',
+    actionBtnBorder: 'border-amber-800/40',
     actionBtnText: 'text-white',
-    actionBtnHover: 'hover:bg-amber-700 shadow-sm'
+    actionBtnHover: 'hover:bg-amber-800 shadow-sm'
   },
   {
     id: 2,
@@ -109,10 +109,10 @@ const ONBOARDING_SCREENS: OnboardingScreenDef[] = [
     accentBadgeBg: 'bg-emerald-50',
     accentBadgeBorder: 'border-emerald-200',
     accentBadgeText: 'text-emerald-900',
-    actionBtnBg: 'bg-emerald-600',
-    actionBtnBorder: 'border-emerald-700/30',
+    actionBtnBg: 'bg-emerald-700',
+    actionBtnBorder: 'border-emerald-800/40',
     actionBtnText: 'text-white',
-    actionBtnHover: 'hover:bg-emerald-700 shadow-sm'
+    actionBtnHover: 'hover:bg-emerald-800 shadow-sm'
   },
   {
     id: 3,
@@ -320,21 +320,27 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
         handleDirectCloseToDefaultApp();
         return;
       }
       if (e.key === 'ArrowRight' && currentStepIndex < ONBOARDING_SCREENS.length - 1) {
+        e.stopPropagation();
         setSlideDirection(1);
         setCurrentStepIndex(prev => prev + 1);
       } else if (e.key === 'ArrowLeft' && currentStepIndex > 0) {
+        e.stopPropagation();
         setSlideDirection(-1);
         setCurrentStepIndex(prev => prev - 1);
       } else if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+        e.preventDefault();
+        e.stopPropagation();
         setShowKeyboardShortcuts(prev => !prev);
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
   }, [isOpen, currentStepIndex]);
 
   const handleNext = () => {
@@ -495,46 +501,49 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
       {/* 3. Central Application Shell Wrapper */}
       <div className="relative z-10 flex flex-col justify-between h-full w-full">
         {/* Header Bar: Brand, Step Indicator, Narration & Controls */}
-        <header className="flex items-center justify-between px-4 sm:px-8 py-3 border-b border-stone-200/80 bg-white/90 backdrop-blur-md shrink-0 z-20 shadow-xs">
+        <header className="flex items-center justify-between gap-2 px-3 sm:px-8 py-3 border-b border-stone-200/80 bg-white/90 backdrop-blur-md shrink-0 z-20 shadow-xs">
           {/* Brand & Progress Label */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
             <AfricaUnLogo 
-              className="w-9 h-9 shrink-0" 
+              className="w-8 h-8 sm:w-9 sm:h-9 shrink-0" 
               interactive={false} 
             />
-            <div>
-              <div className="flex items-center gap-2">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                 <span className="font-serif font-bold tracking-wider text-sm sm:text-base uppercase text-stone-900">
                   Afriata
                 </span>
-                <span className="text-emerald-700 font-semibold text-xs tracking-widest uppercase">
+                <span className="hidden xs:inline text-emerald-700 font-semibold text-xs tracking-widest uppercase whitespace-nowrap">
                   • Data Atlas
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-[11px] text-stone-600 font-normal">
-                <span>{t('onboarding.curated_orientation', 'Curated Orientation')}</span>
-                <span className="w-1 h-1 rounded-full bg-amber-500" />
-                <span className="font-mono text-amber-800 font-semibold">{`${activeScreen.stageNumber} / 04`}</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] text-stone-600 font-normal">
+                <span className="hidden sm:inline">{t('onboarding.curated_orientation', 'Curated Orientation')}</span>
+                <span className="hidden sm:inline w-1 h-1 rounded-full bg-amber-500" />
+                <span className="font-mono text-amber-800 font-semibold whitespace-nowrap">{`${activeScreen.stageNumber} / 04`}</span>
               </div>
             </div>
           </div>
 
           {/* Action Controls: Voice Narration, Shortcuts, Language & Skip */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="flex items-center gap-1 sm:gap-2.5 shrink-0">
             {/* Keyboard Shortcuts Hint */}
             <button
+              type="button"
               onClick={() => setShowKeyboardShortcuts(!showKeyboardShortcuts)}
               className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 border border-stone-200 text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
               title="Keyboard navigation shortcuts (← / → / Esc)"
+              aria-label="Keyboard navigation shortcuts"
             >
-              <Keyboard className="w-3.5 h-3.5 text-stone-500" />
+              <Keyboard className="w-3.5 h-3.5 text-stone-600" />
               <span className="hidden md:inline text-[11px] font-mono">Shortcuts</span>
             </button>
 
             {/* Voice Narration Button */}
             <button
+              type="button"
               onClick={handleToggleVoice}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer border ${
+              className={`px-2 sm:px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 sm:gap-2 transition-all cursor-pointer border ${
                 isSpeaking 
                   ? 'bg-amber-100 text-amber-900 border-amber-300 ring-1 ring-amber-400/40' 
                   : 'bg-stone-100 text-stone-700 border-stone-200 hover:bg-stone-200 hover:text-stone-900'
@@ -545,15 +554,15 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               {isSpeaking ? (
                 <>
                   <div className="flex items-end gap-0.5 h-3.5 w-4">
-                    <span className="w-1 bg-amber-600 rounded-full animate-bounce [animation-delay:-0.3s] h-full" />
-                    <span className="w-1 bg-amber-500 rounded-full animate-bounce [animation-delay:-0.15s] h-2/3" />
-                    <span className="w-1 bg-amber-700 rounded-full animate-bounce h-full" />
+                    <span className="w-1 bg-amber-600 rounded-full motion-safe:animate-bounce [animation-delay:-0.3s] h-full" />
+                    <span className="w-1 bg-amber-500 rounded-full motion-safe:animate-bounce [animation-delay:-0.15s] h-2/3" />
+                    <span className="w-1 bg-amber-700 rounded-full motion-safe:animate-bounce h-full" />
                   </div>
                   <span className="hidden sm:inline font-medium text-amber-900">Narrating</span>
                 </>
               ) : (
                 <>
-                  <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <Volume2 className="w-3.5 h-3.5 text-emerald-700" />
                   <span className="hidden sm:inline">Audio</span>
                 </>
               )}
@@ -566,8 +575,9 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
             {/* Direct Close & Enter Default App */}
             <button
+              type="button"
               onClick={handleDirectCloseToDefaultApp}
-              className="min-touch-target p-2 rounded-xl text-stone-500 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 border border-stone-200 transition-colors cursor-pointer"
+              className="min-touch-target p-2 rounded-xl text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 border border-stone-200 transition-colors cursor-pointer"
               title="Close & Enter Data Atlas"
               aria-label="Close onboarding and enter default app"
             >
@@ -686,9 +696,9 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-amber-500" />
-                        <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-amber-900">
+                        <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-amber-900">
                           Curated Exploratory Gateways
-                        </h3>
+                        </h2>
                       </div>
                       <span className="text-xs text-stone-500 font-normal hidden sm:inline">
                         Tap any topic gateway to navigate directly to its dedicated page
@@ -713,10 +723,10 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                               </span>
                             </div>
                             <div>
-                              <h4 className={`font-serif font-bold text-sm text-stone-900 flex items-center justify-between ${topic.titleHover} transition-colors`}>
+                              <h3 className={`font-serif font-bold text-sm text-stone-900 flex items-center justify-between ${topic.titleHover} transition-colors`}>
                                 <span>{topic.title}</span>
                                 <ChevronRight className="w-4 h-4 text-stone-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                              </h4>
+                              </h3>
                               <p className="text-[11px] text-stone-600 leading-snug mt-0.5 font-normal">
                                 {topic.subtitle}
                               </p>
@@ -743,10 +753,10 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                           </span>
                         </div>
                         <div>
-                          <h4 className="font-serif font-bold text-sm text-stone-900 flex items-center justify-between group-hover:text-emerald-800 transition-colors">
+                          <h3 className="font-serif font-bold text-sm text-stone-900 flex items-center justify-between group-hover:text-emerald-800 transition-colors">
                             <span>Complete Overview</span>
                             <ChevronRight className="w-4 h-4 text-emerald-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                          </h4>
+                          </h3>
                           <p className="text-[11px] text-stone-600 leading-snug mt-0.5 font-normal">
                             Master Continental Dashboard, Map, Weather & Indicators
                           </p>
@@ -899,7 +909,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                         {/* Primary Action Button */}
                         <button
                           onClick={() => setShowDualEntryPanels(true)}
-                          className="w-full py-3.5 px-6 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm sm:text-base transition-all cursor-pointer flex items-center justify-center gap-2 border border-amber-700/30 shadow-sm active:scale-[0.99]"
+                          className="w-full py-3.5 px-6 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-sm sm:text-base transition-all cursor-pointer flex items-center justify-center gap-2 border border-amber-800/40 shadow-sm active:scale-[0.99]"
                         >
                           <CheckCircle2 className="w-4 h-4 text-white" />
                           <span>I Understand & Enter Space</span>
@@ -916,9 +926,9 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                            <h3 className="font-serif font-bold text-sm sm:text-base text-stone-900">
+                            <h2 className="font-serif font-bold text-sm sm:text-base text-stone-900">
                               Select Your Curated Entry Space
-                            </h3>
+                            </h2>
                           </div>
                           <button
                             onClick={() => setShowDualEntryPanels(false)}
@@ -945,9 +955,9 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                                     <span className="text-[11px] uppercase font-semibold tracking-widest text-amber-700 block">
                                       Option 1 • Atlantic Lineages
                                     </span>
-                                    <h4 className="font-serif font-bold text-lg sm:text-xl text-stone-900 group-hover:text-amber-800 transition-colors">
+                                    <h3 className="font-serif font-bold text-lg sm:text-xl text-stone-900 group-hover:text-amber-800 transition-colors">
                                       Ethnic Tree Explorer
-                                    </h4>
+                                    </h3>
                                   </div>
                                 </div>
                                 <span className="text-[11px] uppercase font-mono font-semibold tracking-wider text-amber-800 shrink-0">
@@ -991,7 +1001,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                                 e.stopPropagation();
                                 handleChooseDestination('ethnic-tree');
                               }}
-                              className="w-full py-3 px-5 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-2 border border-amber-700/30 shadow-sm"
+                              className="w-full py-3 px-5 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-2 border border-amber-800/40 shadow-sm"
                             >
                               <span>Launch Ethnic Tree Explorer</span>
                               <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
@@ -1013,9 +1023,9 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                                     <span className="text-[11px] uppercase font-semibold tracking-widest text-emerald-700 block">
                                       Option 2 • Continental Intelligence
                                     </span>
-                                    <h4 className="font-serif font-bold text-lg sm:text-xl text-stone-900 group-hover:text-emerald-800 transition-colors">
+                                    <h3 className="font-serif font-bold text-lg sm:text-xl text-stone-900 group-hover:text-emerald-800 transition-colors">
                                       Digital Data Atlas
-                                    </h4>
+                                    </h3>
                                   </div>
                                 </div>
                                 <span className="text-[11px] uppercase font-mono font-semibold tracking-wider text-emerald-800 shrink-0">
@@ -1062,7 +1072,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                                 e.stopPropagation();
                                 handleChooseDestination('overview');
                               }}
-                              className="w-full py-3 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-2 border border-emerald-700/30 shadow-sm"
+                              className="w-full py-3 px-5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-2 border border-emerald-800/40 shadow-sm"
                             >
                               <span>Launch Digital Data Atlas</span>
                               <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
@@ -1081,21 +1091,26 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
         {/* 5. Bottom Navigation Footer */}
         <footer className="flex items-center justify-between px-4 sm:px-8 py-3 safe-pb border-t border-stone-200/80 bg-white/90 backdrop-blur-md shrink-0 z-20 shadow-xs">
           {/* Step Progression Indicators with Step Names */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1 sm:gap-1.5">
             {ONBOARDING_SCREENS.map((screen, idx) => {
               const stepTitles = ['Heritage', 'Realities', 'Horizon', 'Entry'];
               return (
                 <button
+                  type="button"
                   key={screen.id}
                   onClick={() => handleJumpToStep(idx)}
-                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer flex items-center gap-1.5 ${
-                    idx === currentStepIndex 
-                      ? 'w-12 bg-amber-500' 
-                      : 'w-3 bg-stone-200 hover:bg-stone-300'
-                  }`}
+                  className="min-w-[24px] min-h-[24px] flex items-center justify-center rounded-full cursor-pointer group"
                   aria-label={`Jump to step ${idx + 1}: ${stepTitles[idx]}`}
                   title={`Step ${idx + 1}: ${stepTitles[idx]}`}
-                />
+                >
+                  <span
+                    className={`h-2 rounded-full transition-all duration-300 block ${
+                      idx === currentStepIndex
+                        ? 'w-10 bg-amber-600'
+                        : 'w-3 bg-stone-300 group-hover:bg-stone-400'
+                    }`}
+                  />
+                </button>
               );
             })}
           </div>

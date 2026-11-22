@@ -645,7 +645,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                 <button
                   type="button"
                   onClick={() => selectSubTab('flow-map')}
-                  className="px-5 py-3 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-amber-600/20 cursor-pointer"
+                  className="px-5 py-3 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-amber-700/20 cursor-pointer"
                 >
                   <Compass className="w-4 h-4" />
                   <span>Launch Atlantic Flow Map</span>
@@ -670,7 +670,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                 <h2 className="font-extrabold text-base text-zinc-900 dark:text-zinc-100">
                   African Embarkation Coasts: Cumulative Demographic Volume (1501–1866)
                 </h2>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">
                   Estimated distribution of 12,521,336 embarked captives across 8 macro-coastal zones documented by the SlaveVoyages database
                 </p>
               </div>
@@ -687,7 +687,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                   >
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-bold text-zinc-900 dark:text-zinc-100">{region.name}</span>
-                      <span className="font-mono tabular-nums text-[11px] font-bold text-amber-600 dark:text-amber-400">
+                      <span className="font-mono tabular-nums text-[11px] font-bold text-amber-700 dark:text-amber-400">
                         {region.pct}%
                       </span>
                     </div>
@@ -708,7 +708,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                       <span className="text-sm font-black font-mono tabular-nums text-zinc-900 dark:text-zinc-100">
                         {(region.embarked / 1000000).toFixed(2)}M
                       </span>
-                      <span className="text-[10px] font-mono tabular-nums text-rose-600 dark:text-rose-400">
+                      <span className="text-[10px] font-mono tabular-nums text-rose-700 dark:text-rose-400">
                         avg {region.mortality} mort.
                       </span>
                     </div>
@@ -759,7 +759,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                     formatter={(val: any) => [val.toLocaleString(), 'Captives']}
                     contentStyle={{ backgroundColor: '#18181b', borderRadius: '12px', border: '1px solid #27272a', color: '#fff' }}
                   />
-                  <Legend />
+                  <Legend formatter={(value) => <span className="text-zinc-700 dark:text-zinc-300 font-medium text-xs">{value}</span>} />
                   <Area type="monotone" dataKey="estimates" name="Macro Estimates" stroke="#6366f1" fillOpacity={1} fill="url(#colorEstimates)" isAnimationActive={!prefersReducedMotion} />
                   <Area type="monotone" dataKey="imputed" name="Observed + Imputed" stroke="#10b981" fillOpacity={1} fill="url(#colorImputed)" isAnimationActive={!prefersReducedMotion} />
                   <Area type="monotone" dataKey="observed" name="Observed Logbooks" stroke="#f59e0b" fillOpacity={0.3} fill="#f59e0b" isAnimationActive={!prefersReducedMotion} />
@@ -880,7 +880,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                 <AtlanticFlowMap
                   epistemicMode={filters.epistemicMode}
                   selectedRouteId={selectedRoute?.id}
-                  onSelectRoute={(r) => setSelectedRoute(r)}
+                  onSelectRoute={(r: RegionalRouteFlow) => setSelectedRoute(r)}
                   onNavigateToCartography={onNavigateToCartography}
                   isSeasonalityOpen={isSeasonalityOpen}
                   onToggleSeasonality={() => setIsSeasonalityOpen(prev => !prev)}
@@ -1805,8 +1805,8 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
               >
                 <div className="space-y-12">
                   <StorytellingGallery
-                    onSelectVoyage={(voyage) => setSelectedVoyage(voyage)}
-                    onSelectEssay={(essayId) => {
+                    onSelectVoyage={(voyage: CanonicalVoyage) => setSelectedVoyage(voyage)}
+                    onSelectEssay={(essayId: string) => {
                       setActiveEssayId(essayId);
                       const element = document.getElementById('academic-essay-reader');
                       if (element) {
@@ -1817,7 +1817,7 @@ export const SlaveTradeView: React.FC<SlaveTradeViewProps> = ({
                   <div id="academic-essay-reader" className="pt-4">
                     <SlaveVoyagesEssaysViewer
                       activeEssayId={activeEssayId}
-                      onSelectEssay={(id) => setActiveEssayId(id)}
+                      onSelectEssay={(id: string) => setActiveEssayId(id)}
                     />
                   </div>
                 </div>

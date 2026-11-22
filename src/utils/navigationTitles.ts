@@ -1,7 +1,7 @@
 import React from 'react';
 import type { CanonicalNavTab } from '../components/NavigationDrawer';
 import { AfricanRegion } from '../data/types';
-import { AFRICA_FINAL_MAP } from '../data/africaFinalGeometry';
+import { COUNTRIES_DATA } from '../data/africaData';
 import {
   Compass,
   Map as MapIcon,
@@ -135,13 +135,14 @@ export function getPageInfo(
 
   // Country Dossier
   if (tab === 'countries') {
-    const entity = selectedEntityId ? AFRICA_FINAL_MAP[selectedEntityId] : null;
+    const normalizedId = selectedEntityId?.toUpperCase();
+    const entity = normalizedId ? COUNTRIES_DATA[normalizedId] : null;
     if (entity) {
       return {
         title: entity.name,
         shortTitle: entity.name,
         fullTitle: `${entity.name} (${entity.id}) — Sovereign Country Dossier`,
-        category: `${entity.unRegion} • ${entity.id}`,
+        category: `${entity.region} • ${entity.id}`,
         Icon: MapPin,
         badge: entity.id
       };

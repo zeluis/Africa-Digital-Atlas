@@ -11,6 +11,7 @@ import { PreferencesDropdown } from './PreferencesDropdown';
 import { PWAInstallButton } from './PWAInstallButton';
 import { getPageInfo } from '../utils/navigationTitles';
 import { AfricanRegion } from '../data/types';
+import { ATLAS_VERSION } from '../data/platformMetadata';
 import { 
   Search, 
   WifiOff,
@@ -58,7 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const { t, language, currentLanguageOption } = useTranslation();
   const isOnline = useNetworkStatus();
-  const manifest = { atlasVersion: '1.2.0' };
+  const manifest = { atlasVersion: ATLAS_VERSION };
 
   const currentGreeting = TOP_BAR_UI_GREETINGS[language] || TOP_BAR_UI_GREETINGS['en'];
   const activePageInfo = getPageInfo(
@@ -75,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* ========================================================= */}
           {/* ZONE 1: BACK BUTTON, BRAND & ACTIVE PAGE TITLE (LEFT)     */}
           {/* ========================================================= */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink">
             {/* Back Navigation Button */}
             <button
               type="button"
@@ -94,13 +95,16 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Logo & Brand Identity (Standalone Masthead) */}
             <div className="flex items-center gap-2 sm:gap-2.5 select-none shrink-0">
-              <div 
-                className="relative flex items-center justify-center cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 shrink-0 scale-[0.82] sm:scale-100 origin-center"
-                onClick={() => onSelectTab('overview')}
-                title="Afriata Continental Atlas - Return to Primary Overview"
-              >
+              <div className="relative flex items-center justify-center transition-transform duration-200 hover:scale-105 active:scale-95 shrink-0 scale-[0.82] sm:scale-100 origin-center">
+                <button
+                  type="button"
+                  onClick={() => onSelectTab('overview')}
+                  title="Afriata Continental Atlas - Return to Primary Overview"
+                  aria-label="Afriata Continental Atlas - Return to Primary Overview"
+                  className="absolute inset-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
+                />
                 <AfricaUnLogo 
-                  className="shrink-0 drop-shadow-xs" 
+                  className="shrink-0 drop-shadow-xs pointer-events-none" 
                   size={54}
                   activeRegion={activeRegion}
                   onSelectRegion={(reg) => {
@@ -139,19 +143,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                     title={`Afriata Atlas v${manifest.atlasVersion} - Return to Primary Overview`}
                     aria-label={`Atlas v${manifest.atlasVersion} - Return to Overview`}
                   >
-                    <span className="font-semibold uppercase tracking-widest text-[8px] text-amber-900/75 dark:text-amber-300/75">Atlas</span>
-                    <span className="font-medium text-[8px] text-amber-800/70 dark:text-amber-300/70">v{manifest.atlasVersion}</span>
+                    <span className="font-semibold uppercase tracking-widest text-[8px] text-amber-900 dark:text-amber-200">Atlas</span>
+                    <span className="font-medium text-[8px] text-amber-900 dark:text-amber-200">v{manifest.atlasVersion}</span>
                   </button>
                 </div>
               </div>
             </div>
 
             {/* Breadcrumb Separator Divider */}
-            <div className="h-5 w-[1px] bg-zinc-200 dark:bg-zinc-800 shrink-0 mx-0.5" />
+            <div className="hidden sm:block h-5 w-[1px] bg-zinc-200 dark:bg-zinc-800 shrink-0 mx-0.5" />
 
             {/* Active Page Title & Icon Indicator */}
-            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 max-w-[130px] xs:max-w-[170px] sm:max-w-[210px] md:max-w-[250px] lg:max-w-[310px]">
-              <div className="p-1 sm:p-1.5 rounded-lg bg-amber-500/10 dark:bg-amber-400/10 text-amber-800 dark:text-amber-400 border border-amber-500/20 dark:border-amber-400/20 shrink-0 flex items-center justify-center">
+            <div className="hidden sm:flex items-center gap-2 min-w-0 sm:max-w-[210px] md:max-w-[250px] lg:max-w-[310px]">
+              <div className="p-1.5 rounded-lg bg-amber-500/10 dark:bg-amber-400/10 text-amber-800 dark:text-amber-400 border border-amber-500/20 dark:border-amber-400/20 shrink-0 flex items-center justify-center">
                 <activePageInfo.Icon className="w-3.5 h-3.5" />
               </div>
 
@@ -163,7 +167,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {activePageInfo.title}
                 </span>
                 {activePageInfo.category && (
-                  <span className="hidden sm:inline font-mono text-[9.5px] text-zinc-500 dark:text-zinc-400 truncate leading-none mt-0.5">
+                  <span className="font-mono text-[9.5px] text-zinc-500 dark:text-zinc-400 truncate leading-none mt-0.5">
                     {activePageInfo.category}
                   </span>
                 )}
@@ -174,21 +178,20 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* ========================================================= */}
           {/* ZONE 2: EXPLORATION & DISCOVERY COMMAND TRIGGER (CENTER)  */}
           {/* ========================================================= */}
-          <div className="flex-1 max-w-sm md:max-w-md lg:max-w-lg mx-1 sm:mx-4">
+          <div className="flex-1 min-w-0 flex justify-end sm:block max-w-sm md:max-w-md lg:max-w-lg mx-1 sm:mx-4">
             <button
               onClick={onOpenSearch}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-zinc-100/80 dark:bg-zinc-900/80 hover:bg-white dark:hover:bg-zinc-800/90 hover:border-amber-400/60 dark:hover:border-amber-600/60 text-zinc-600 dark:text-zinc-300 text-xs transition-all shadow-2xs group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="w-9 h-9 sm:w-full sm:h-auto flex items-center justify-center sm:justify-between px-0 sm:px-3 py-2 rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-zinc-100/80 dark:bg-zinc-900/80 hover:bg-white dark:hover:bg-zinc-800/90 hover:border-amber-400/60 dark:hover:border-amber-600/60 text-zinc-600 dark:text-zinc-300 text-xs transition-all shadow-2xs group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 shrink-0"
               aria-label="Quick command search and country jumper"
             >
-              <div className="flex items-center gap-2.5 truncate">
+              <div className="flex items-center gap-2.5 min-w-0">
                 <Search className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
-                <span className="font-sans text-xs text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 truncate">
-                  <span className="hidden sm:inline">Search 54 countries, indicators, or jump...</span>
-                  <span className="sm:hidden">Search countries...</span>
+                <span className="hidden sm:inline font-sans text-xs text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 truncate">
+                  Search 54 countries, indicators, or jump...
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 shrink-0 pl-2">
-                <kbd className="hidden sm:inline-flex items-center gap-0.5 bg-white dark:bg-zinc-950 border border-zinc-300/80 dark:border-zinc-700/80 px-1.5 py-0.5 rounded text-[10px] font-mono text-zinc-500 dark:text-zinc-400 font-semibold shadow-2xs">
+              <div className="hidden sm:flex items-center gap-1.5 shrink-0 pl-2">
+                <kbd className="inline-flex items-center gap-0.5 bg-white dark:bg-zinc-950 border border-zinc-300/80 dark:border-zinc-700/80 px-1.5 py-0.5 rounded text-[10px] font-mono text-zinc-500 dark:text-zinc-400 font-semibold shadow-2xs">
                   ⌘K
                 </kbd>
               </div>

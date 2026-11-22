@@ -132,21 +132,24 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
           <line x1="-5000" y1="1650" x2="12000" y2="1650" stroke="#d97706" strokeWidth="1.2" strokeDasharray="14 10" opacity="0.65" />
           <g transform="translate(5176, 1622)">
             <rect x="0" y="-28" width="560" height="56" rx="10" fill="#fffbeb" stroke="#d97706" strokeWidth="1.5" opacity="0.95" />
-            <text x="280" y="8" textAnchor="middle" fill="#b45309" fontSize="24" fontFamily="monospace" fontWeight="900">☀️ TROPIC OF CANCER 23.4°N</text>
+            <circle cx="34" cy="0" r="8" fill="#d97706" />
+            <text x="292" y="8" textAnchor="middle" fill="#b45309" fontSize="24" fontFamily="monospace" fontWeight="900">TROPIC OF CANCER 23.4°N</text>
           </g>
 
           {/* Equator 0° */}
           <line x1="-5000" y1="3280" x2="12000" y2="3280" stroke="#059669" strokeWidth="1.6" strokeDasharray="18 12" opacity="0.85" />
           <g transform="translate(5176, 3252)">
             <rect x="0" y="-30" width="560" height="60" rx="12" fill="#ecfdf5" stroke="#059669" strokeWidth="1.8" opacity="0.98" />
-            <text x="280" y="10" textAnchor="middle" fill="#047857" fontSize="26" fontFamily="monospace" fontWeight="900">☀️ EQUATOR 0° • EQUINOX</text>
+            <circle cx="36" cy="0" r="9" fill="#059669" />
+            <text x="294" y="10" textAnchor="middle" fill="#047857" fontSize="26" fontFamily="monospace" fontWeight="900">EQUATOR 0° · EQUINOX</text>
           </g>
 
           {/* Tropic of Capricorn 23.4° S */}
           <line x1="-5000" y1="4800" x2="12000" y2="4800" stroke="#d97706" strokeWidth="1.2" strokeDasharray="14 10" opacity="0.65" />
           <g transform="translate(5136, 4772)">
             <rect x="0" y="-28" width="600" height="56" rx="10" fill="#fffbeb" stroke="#d97706" strokeWidth="1.5" opacity="0.95" />
-            <text x="300" y="8" textAnchor="middle" fill="#b45309" fontSize="24" fontFamily="monospace" fontWeight="900">☀️ TROPIC OF CAPRICORN 23.4°S</text>
+            <circle cx="34" cy="0" r="8" fill="#d97706" />
+            <text x="312" y="8" textAnchor="middle" fill="#b45309" fontSize="24" fontFamily="monospace" fontWeight="900">TROPIC OF CAPRICORN 23.4°S</text>
           </g>
 
           {/* Polished Light-Themed Nautical Compass Rose in South Atlantic with Hairline Accents */}
@@ -333,7 +336,7 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
                   onClick={(e) => handleCountryClick('CPV', e)}
                 >
                   {(isSelected || isHovered) && (
-                    <circle r="170" fill="#81dc05" opacity="0.25" className="animate-ping pointer-events-none" />
+                    <circle r="170" fill="#81dc05" opacity="0.22" className="pointer-events-none" />
                   )}
                   <circle
                     r="150"
@@ -604,7 +607,7 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
                       fontWeight="800"
                       letterSpacing="0.02em"
                     >
-                      🌿 {reserveLabel}
+                      {reserveLabel}
                     </text>
                   </g>
                 </g>
@@ -633,7 +636,7 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
               const isGeo = plant.type === 'geothermal';
               const markerBg = isSolar ? '#f59e0b' : isWind ? '#0284c7' : isGeo ? '#dc2626' : '#0891b2';
               const ringColor = isSolar ? '#fbbf24' : isWind ? '#38bdf8' : isGeo ? '#f87171' : '#22d3ee';
-              const capText = `⚡ ${plant.capacity}`;
+              const capText = plant.capacity;
               const pillWidth = Math.max(260, capText.length * 24 + 60);
               const offsetX = plant.labelOffset?.x ?? 0;
               const offsetY = plant.labelOffset?.y ?? -60;
@@ -769,8 +772,9 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
           />
           <g transform="translate(1820, 1720)">
             <rect x="0" y="0" width="480" height="52" rx="12" fill="#ffffff" stroke="#0891b2" strokeWidth="2" opacity="0.96" />
-            <text x="240" y="32" textAnchor="middle" fill="#0e7490" fontSize="22" fontFamily="monospace" fontWeight="900">
-              🌧️ ITCZ JULY REACH • BOREAL MONSOON
+            <circle cx="28" cy="26" r="7" fill="#0891b2" />
+            <text x="252" y="32" textAnchor="middle" fill="#0e7490" fontSize="22" fontFamily="monospace" fontWeight="900">
+              ITCZ JULY REACH · BOREAL MONSOON
             </text>
           </g>
 
@@ -790,8 +794,9 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
           />
           <g transform="translate(2520, 4050)">
             <rect x="0" y="0" width="490" height="52" rx="12" fill="#ffffff" stroke="#2563eb" strokeWidth="2" opacity="0.96" />
-            <text x="245" y="32" textAnchor="middle" fill="#1d4ed8" fontSize="22" fontFamily="monospace" fontWeight="900">
-              🌧️ ITCZ JAN REACH • AUSTRAL FRONT
+            <circle cx="28" cy="26" r="7" fill="#2563eb" />
+            <text x="256" y="32" textAnchor="middle" fill="#1d4ed8" fontSize="22" fontFamily="monospace" fontWeight="900">
+              ITCZ JAN REACH · AUSTRAL FRONT
             </text>
           </g>
         </g>
@@ -815,8 +820,10 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
           />
           <g transform="translate(2620, 2890)">
             <rect x="0" y="0" width="540" height="52" rx="12" fill="#0f172a" stroke="#f59e0b" strokeWidth="2" opacity="0.96" />
-            <text x="270" y="33" textAnchor="middle" fill="#fbbf24" fontSize="22" fontFamily="monospace" fontWeight="900">
-              🌓 SOLAR TERMINATOR • TWILIGHT ISOCHRON
+            <circle cx="30" cy="26" r="9" fill="none" stroke="#fbbf24" strokeWidth="2.5" />
+            <path d="M 30 17 A 9 9 0 0 1 30 35 Z" fill="#fbbf24" />
+            <text x="284" y="33" textAnchor="middle" fill="#fbbf24" fontSize="22" fontFamily="monospace" fontWeight="900">
+              SOLAR TERMINATOR · TWILIGHT ISOCHRON
             </text>
           </g>
         </g>

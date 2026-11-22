@@ -137,7 +137,7 @@ export const AfricaUnLogo: React.FC<AfricaUnLogoProps> = ({
               <g 
                 key={regionName}
                 opacity={opacity}
-                className="transition-opacity duration-300 ease-in-out"
+                className={`transition-opacity duration-300 ease-in-out ${interactive && onSelectRegion ? 'pointer-events-auto cursor-pointer' : ''}`}
                 onMouseEnter={() => interactive && setHoveredRegion(regionName)}
                 onMouseLeave={() => interactive && setHoveredRegion(null)}
                 onClick={(e) => {

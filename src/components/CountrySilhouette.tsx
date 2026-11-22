@@ -135,7 +135,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
               rx="8"
               fill={themeStyles.stopStart}
               opacity="0.2"
-              className="animate-pulse"
+              className="motion-safe:animate-pulse"
             />
           )}
         </svg>
@@ -147,7 +147,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
     <>
       {/* Prominent Header Capsule */}
       <div 
-        className={`relative group rounded-3xl border border-zinc-200/90 bg-white/95 p-4 lg:p-5 shadow-xs overflow-hidden transition-all duration-300 hover:border-zinc-300 flex flex-col justify-between ${className}`}
+        className={`relative group rounded-3xl border border-zinc-200/90 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/90 p-4 lg:p-5 shadow-xs overflow-hidden transition-all duration-300 hover:border-zinc-300 dark:hover:border-zinc-700 flex flex-col justify-between ${className}`}
         style={{ minWidth: '260px', maxWidth: '340px' }}
       >
         {/* Ambient Top Glow */}
@@ -157,14 +157,14 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
         />
 
         {/* Header Ribbon of the Silhouette Card */}
-        <div className="relative z-10 flex items-center justify-between gap-2 border-b border-zinc-200/80 pb-2.5">
-          <div className="flex items-center gap-1.5 font-mono text-[11px] font-semibold text-zinc-600">
+        <div className="relative z-10 flex items-center justify-between gap-2 border-b border-zinc-200/80 dark:border-zinc-800 pb-2.5">
+          <div className="flex items-center gap-1.5 font-mono text-[11px] font-semibold text-zinc-600 dark:text-zinc-300">
             <Crosshair className={`w-3.5 h-3.5 ${themeStyles.accentText}`} />
             <span>AUTHENTIC SVG</span>
           </div>
 
           <div className="flex items-center gap-1">
-            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-zinc-100 text-zinc-700 border border-zinc-200">
+            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
               M49: {m49Code}
             </span>
             <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-md border ${themeStyles.badgeBg} ${themeStyles.badgeBorder} ${themeStyles.accentText}`}>
@@ -172,9 +172,11 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
             </span>
             {interactive && (
               <button
+                type="button"
                 onClick={() => setIsModalOpen(true)}
-                className="p-1 rounded-lg bg-zinc-100 border border-zinc-200 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-200 transition-colors cursor-pointer"
+                className="p-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                 title="Expand Fullscreen Vector"
+                aria-label={`Expand fullscreen vector silhouette of ${entity?.name || silhouette.name}`}
               >
                 <Maximize2 className="w-3.5 h-3.5" />
               </button>
@@ -238,7 +240,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
                 className="transition-all duration-300"
               />
             ) : (
-              <g className="animate-pulse opacity-40">
+              <g className="motion-safe:animate-pulse opacity-40">
                 <circle cx={capitalPos.x} cy={capitalPos.y} r="35" fill={themeStyles.stroke} opacity="0.3" />
               </g>
             )}
@@ -246,7 +248,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
             {/* Capital City Beacon Pin Point */}
             {showCapital && capitalPos && (
               <g transform={`translate(${capitalPos.x}, ${capitalPos.y})`} className="pointer-events-none">
-                <circle r="9" fill={themeStyles.stroke} opacity="0.3" className="animate-ping" />
+                <circle r="9" fill={themeStyles.stroke} opacity="0.3" className="motion-safe:animate-ping" />
                 <circle r="4.5" fill={themeStyles.stroke} opacity="0.8" />
                 <circle r="2" fill="#ffffff" />
               </g>
@@ -254,26 +256,26 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
           </svg>
 
           {/* Floating Watermark ISO ID */}
-          <div className="absolute right-2 bottom-1 font-mono text-[22px] font-black text-zinc-300 dark:text-zinc-800/40 pointer-events-none select-none tracking-widest">
+          <div aria-hidden="true" className="absolute right-2 bottom-1 font-mono text-[22px] font-black text-zinc-300 dark:text-zinc-800/40 pointer-events-none select-none tracking-widest">
             {entityId}
           </div>
 
           {/* Compass Rose Marker */}
-          <div className="absolute top-1 left-2 flex items-center gap-1 font-mono text-[9px] text-zinc-400 dark:text-zinc-500 pointer-events-none">
+          <div aria-hidden="true" className="absolute top-1 left-2 flex items-center gap-1 font-mono text-[9px] text-zinc-400 dark:text-zinc-500 pointer-events-none">
             <Navigation className="w-2.5 h-2.5 text-zinc-400 rotate-45" />
             <span>N</span>
           </div>
         </div>
 
         {/* Footer Geographical Coordinate & Facts Capsule */}
-        <div className="relative z-10 pt-2 border-t border-zinc-200/80 flex items-center justify-between text-[11px] font-mono text-zinc-500">
+        <div className="relative z-10 pt-2 border-t border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
           <div className="flex items-center gap-1">
             <MapPin className={`w-3 h-3 ${themeStyles.accentText}`} />
-            <span className="font-semibold text-zinc-800">{silhouette.capital?.name || entity?.capital}</span>
-            <span className="text-[10px] text-zinc-500">({entity?.capital || 'Capital'})</span>
+            <span className="font-semibold text-zinc-800 dark:text-zinc-100">{silhouette.capital?.name || entity?.capital}</span>
+            <span className="text-[10px] text-zinc-500 dark:text-zinc-400">({entity?.capital || 'Capital'})</span>
           </div>
 
-          <div className="text-[10px] text-zinc-500 font-mono">
+          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">
             {silhouette.geoCenter.lat >= 0 ? `${silhouette.geoCenter.lat.toFixed(1)}°N` : `${Math.abs(silhouette.geoCenter.lat).toFixed(1)}°S`}, {' '}
             {silhouette.geoCenter.lng >= 0 ? `${silhouette.geoCenter.lng.toFixed(1)}°E` : `${Math.abs(silhouette.geoCenter.lng).toFixed(1)}°W`}
           </div>
@@ -358,7 +360,7 @@ export const CountrySilhouette: React.FC<CountrySilhouetteProps> = ({
 
                 {showCapital && capitalPos && (
                   <g transform={`translate(${capitalPos.x}, ${capitalPos.y})`}>
-                    <circle r="12" fill={themeStyles.stroke} opacity="0.3" className="animate-ping" />
+                    <circle r="12" fill={themeStyles.stroke} opacity="0.3" className="motion-safe:animate-ping" />
                     <circle r="6" fill={themeStyles.stroke} opacity="0.9" />
                     <circle r="2.5" fill="#ffffff" />
                   </g>

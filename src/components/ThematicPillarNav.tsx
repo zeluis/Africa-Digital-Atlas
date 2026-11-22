@@ -119,7 +119,7 @@ export const ThematicPillarNav: React.FC<ThematicPillarNavProps> = ({
             <span className={`relative z-10 text-[10px] font-mono tabular-nums ${
               isActive
                 ? 'text-zinc-300 dark:text-zinc-700'
-                : 'text-zinc-400 dark:text-zinc-500'
+                : 'text-zinc-600 dark:text-zinc-400'
             }`}>
               {pillar.number}
             </span>

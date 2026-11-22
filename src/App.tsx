@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import { LazyMotion, MotionConfig, domAnimation, m, AnimatePresence } from 'motion/react';
 import { Navbar } from './components/Navbar';
 import type { CanonicalNavTab } from './components/NavigationDrawer';
+import type { SlaveTradeSubTab } from './views/SlaveTradeView';
 import { MainContentSkeleton } from './components/MainContentSkeleton';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { DensityProvider } from './contexts/DensityContext';
@@ -642,8 +643,9 @@ function AppContent() {
 
         {/* Main Content Area */}
         <main
+          tabIndex={-1}
           data-core={activeCore}
-          className={`core-${activeCore} flex-1 min-w-0 w-full ${
+          className={`core-${activeCore} flex-1 min-w-0 w-full focus:outline-none ${
             currentTab === 'map' || 
             currentTab === 'ethnic-tree' || 
             currentTab === 'archival-cartography' || 
@@ -665,21 +667,21 @@ function AppContent() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, transition: { duration: 0.12 } }}
               transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className={`core-${activeCore} w-full flex-1 flex flex-col`}
+              className={`core-${activeCore} w-full min-w-0 flex-1 flex flex-col`}
             >
               <ViewErrorBoundary fallbackTitle="Module Unavailable">
                 <Suspense fallback={<MainContentSkeleton viewType={currentTab} />}>
                   {currentTab === 'overview' && (
                     <OverviewView
                       onSelectCountry={handleSelectCountry}
-                      onNavigateTab={(tab) => handleSelectTab(tab as CanonicalNavTab)}
+                      onNavigateTab={(tab: string) => handleSelectTab(tab as CanonicalNavTab)}
                     />
                   )}
 
                   {currentTab === 'explore' && (
                     <ExploreView
                       onSelectCountry={handleSelectCountry}
-                      onNavigateTab={(tab) => handleSelectTab(tab as CanonicalNavTab)}
+                      onNavigateTab={(tab: string) => handleSelectTab(tab as CanonicalNavTab)}
                     />
                   )}
 
@@ -689,7 +691,7 @@ function AppContent() {
                       onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
                       onNavigateToIconography={() => handleSelectTab('iconography')}
                       onNavigateToCartography={() => handleSelectTab('archival-cartography')}
-                      onSubTabChange={(sub) => setSlaveTradeSubTab(sub)}
+                      onSubTabChange={(sub: SlaveTradeSubTab) => setSlaveTradeSubTab(sub)}
                     />
                   )}
 
@@ -740,7 +742,7 @@ function AppContent() {
                     <ThematicPillarsView
                       initialEntityId={selectedEntityId}
                       onSelectCountry={handleSelectCountry}
-                      onNavigateTab={(tab) => handleSelectTab(tab as CanonicalNavTab)}
+                      onNavigateTab={(tab: string) => handleSelectTab(tab as CanonicalNavTab)}
                     />
                   )}
 
@@ -762,7 +764,7 @@ function AppContent() {
                     <MapView
                       onSelectCountry={handleSelectCountry}
                       selectedEntityId={selectedEntityId}
-                      onNavigateToHeritage={(siteId) => {
+                      onNavigateToHeritage={(siteId: number) => {
                         setSelectedHeritageSiteId(siteId);
                         handleSelectTab(`heritage?id=${siteId}`);
                       }}
@@ -805,20 +807,20 @@ function AppContent() {
                   {currentTab === 'privacy' && (
                     <PrivacySectionView 
                       onBackToOverview={() => handleSelectTab('overview')}
-                      onNavigateTab={(tab) => handleSelectTab(tab)}
+                      onNavigateTab={(tab: CanonicalNavTab) => handleSelectTab(tab)}
                     />
                   )}
 
                   {currentTab === 'style-guide' && (
                     <UniversalStyleGuideView
-                      onNavigateTab={(tab) => handleSelectTab(tab)}
+                      onNavigateTab={(tab: CanonicalNavTab) => handleSelectTab(tab)}
                       onOpenMonographModal={() => atlasModalStore.openMonograph()}
                     />
                   )}
 
                   {currentTab === 'ethnic-tree' && (
                     <EthnicTreeOfLifeView
-                      onSelectReport={(reportId) => handleSelectTab(reportId as CanonicalNavTab)}
+                      onSelectReport={(reportId: string) => handleSelectTab(reportId as CanonicalNavTab)}
                       onNavigateToSlaveTrade={() => handleSelectTab('slave-trade')}
                       onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
                       onNavigateToFoundations={() => handleSelectTab('african-development-foundations')}
@@ -828,7 +830,7 @@ function AppContent() {
 
                   {currentTab === 'research-directory' && (
                     <ResearchReportsDirectoryView
-                      onSelectReport={(reportId) => handleSelectTab(reportId as CanonicalNavTab)}
+                      onSelectReport={(reportId: string) => handleSelectTab(reportId as CanonicalNavTab)}
                       onNavigateToEthnicTree={() => handleSelectTab('ethnic-tree')}
                       onNavigateToSlaveTrade={() => handleSelectTab('slave-trade')}
                       onNavigateToMolecular={() => handleSelectTab('molecular-legacies')}
@@ -842,7 +844,7 @@ function AppContent() {
                       onBackToDirectory={() => handleSelectTab('research-directory')}
                       onNavigateToEthnicTree={() => handleSelectTab('ethnic-tree')}
                       onNavigateToSlaveTrade={() => handleSelectTab('slave-trade')}
-                      onSelectOtherReport={(otherId) => handleSelectTab(otherId as CanonicalNavTab)}
+                      onSelectOtherReport={(otherId: string) => handleSelectTab(otherId as CanonicalNavTab)}
                     />
                   )}
                 </Suspense>

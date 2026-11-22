@@ -525,7 +525,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               isDesktopCollapsed ? 'px-1 justify-center' : 'px-3'
             }`}>
               {!isDesktopCollapsed && (
-                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
                   Navigation
                 </span>
               )}
@@ -546,9 +546,9 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               <div className="my-2 mx-auto w-6 h-px bg-zinc-200 dark:bg-zinc-800" />
             ) : (
               <div className="px-4 mb-2">
-                <h3 className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                <p className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                   {t('nav.africa', 'AFRICA')}
-                </h3>
+                </p>
               </div>
             )}
 
@@ -559,6 +559,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                   onSelectTab('overview');
                   if (isMobile) onCloseMobile();
                 }}
+                aria-label={t('nav.overview', 'Overview')}
                 title={t('nav.overview', 'Overview')}
                 className={`relative w-full flex items-center ${
                   isDesktopCollapsed ? 'justify-center p-2.5' : 'justify-between py-2.5 px-3.5 text-sm'
@@ -590,41 +591,45 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
               {/* 2. Explore (Collapsible Accordion: Directory Overview, 8 Pillars, 21 Blocs) */}
               <div className="pt-0.5">
-                <button
-                  onClick={() => {
-                    openSubmenuExclusively('explore');
-                    onSelectTab(exploreSubItems[0].id as CanonicalNavTab);
-                    if (isMobile) onCloseMobile();
-                  }}
-                  title={t('nav.explore', 'Explore')}
-                  className={`relative w-full flex items-center ${
-                    isDesktopCollapsed ? 'justify-center p-2.5' : 'justify-between py-2.5 px-3.5 text-sm'
-                  } text-left rounded-2xl transition-all cursor-pointer group ${
+                <div
+                  className={`relative w-full flex items-center rounded-2xl transition-all group ${
                     isExploreGroupActive
                       ? 'bg-blue-500/10 dark:bg-blue-500/15 text-blue-800 dark:text-blue-300 font-bold border border-blue-500/25'
                       : 'text-zinc-600 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200'
                   }`}
                 >
-                  <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-3'}`}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openSubmenuExclusively('explore');
+                      onSelectTab(exploreSubItems[0].id as CanonicalNavTab);
+                      if (isMobile) onCloseMobile();
+                    }}
+                    aria-label={t('nav.explore', 'Explore')}
+                    title={t('nav.explore', 'Explore')}
+                    className={`flex-1 min-w-0 flex items-center ${
+                      isDesktopCollapsed ? 'justify-center p-2.5 rounded-2xl' : 'gap-3 py-2.5 pl-3.5 pr-1 text-sm rounded-l-2xl'
+                    } text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500`}
+                  >
                     <Compass className={`w-5 h-5 shrink-0 ${isExploreGroupActive ? 'text-blue-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                     {!isDesktopCollapsed && <span>{t('nav.explore', 'Explore')}</span>}
-                  </div>
+                  </button>
                   {!isDesktopCollapsed && (
-                    <div 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleSubmenuExclusively('explore');
-                      }}
-                      className="flex items-center gap-1.5 p-1 -mr-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                    <button
+                      type="button"
+                      onClick={() => toggleSubmenuExclusively('explore')}
+                      aria-expanded={isExploreExpanded}
+                      aria-label={isExploreExpanded ? "Collapse Explore submenu" : "Expand Explore submenu"}
+                      className="flex items-center gap-1.5 py-2 pr-3 pl-1.5 mr-0.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                       title={isExploreExpanded ? "Collapse Explore submenu" : "Expand Explore submenu"}
                     >
-                      <span className="text-[10px] font-mono text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md">
+                      <span className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md">
                         {exploreSubItems.length}
                       </span>
                       {isExploreExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
-                    </div>
+                    </button>
                   )}
-                </button>
+                </div>
 
                 {!isDesktopCollapsed && (
                   <AnimatePresence initial={false}>
@@ -647,15 +652,15 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                 }}
                                 className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer px-3 py-2 text-xs group ${
                                   isSubActive
-                                    ? 'bg-blue-500/15 border border-blue-500/30 text-blue-400 font-bold'
-                                    : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
+                                    ? 'bg-blue-500/15 border border-blue-500/30 text-blue-800 dark:text-blue-300 font-bold'
+                                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0 pr-1">
                                   <DynamicIcon icon={sub.icon} className={`w-4 h-4 shrink-0 ${isSubActive ? 'text-blue-400' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                                   <div className="flex flex-col min-w-0">
                                     <span className="truncate">{sub.label}</span>
-                                    <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
+                                    <span className="text-[10px] font-mono text-zinc-700 dark:text-zinc-300 truncate">{sub.badge}</span>
                                   </div>
                                 </div>
                                 {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />}
@@ -671,41 +676,45 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
               {/* 3. Historical Legacies (TAST) (Dedicated Main Menu Accordion with Submenu) */}
               <div className="pt-0.5">
-                <button
-                  onClick={() => {
-                    openSubmenuExclusively('history');
-                    onSelectTab(historicalLegaciesSubItems[0].id as CanonicalNavTab);
-                    if (isMobile) onCloseMobile();
-                  }}
-                  title={t('nav.history', 'History')}
-                  className={`relative w-full flex items-center ${
-                    isDesktopCollapsed ? 'justify-center p-2.5' : 'justify-between py-2.5 px-3.5 text-sm'
-                  } text-left rounded-2xl transition-all cursor-pointer group ${
+                <div
+                  className={`relative w-full flex items-center rounded-2xl transition-all group ${
                     isHistoricalLegaciesGroupActive
                       ? 'bg-amber-500/10 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 font-bold border border-amber-500/25'
                       : 'text-zinc-600 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200'
                   }`}
                 >
-                  <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-3'}`}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openSubmenuExclusively('history');
+                      onSelectTab(historicalLegaciesSubItems[0].id as CanonicalNavTab);
+                      if (isMobile) onCloseMobile();
+                    }}
+                    aria-label={t('nav.history', 'History')}
+                    title={t('nav.history', 'History')}
+                    className={`flex-1 min-w-0 flex items-center ${
+                      isDesktopCollapsed ? 'justify-center p-2.5 rounded-2xl' : 'gap-3 py-2.5 pl-3.5 pr-1 text-sm rounded-l-2xl'
+                    } text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-amber-500`}
+                  >
                     <Anchor className={`w-5 h-5 shrink-0 ${isHistoricalLegaciesGroupActive ? 'text-amber-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                     {!isDesktopCollapsed && <span className="truncate">{t('nav.history', 'History')}</span>}
-                  </div>
+                  </button>
                   {!isDesktopCollapsed && (
-                    <div 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleSubmenuExclusively('history');
-                      }}
-                      className="flex items-center gap-1.5 p-1 -mr-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                    <button
+                      type="button"
+                      onClick={() => toggleSubmenuExclusively('history')}
+                      aria-expanded={isHistoricalLegaciesExpanded}
+                      aria-label={isHistoricalLegaciesExpanded ? "Collapse History submenu" : "Expand History submenu"}
+                      className="flex items-center gap-1.5 py-2 pr-3 pl-1.5 mr-0.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                       title={isHistoricalLegaciesExpanded ? "Collapse History submenu" : "Expand History submenu"}
                     >
-                      <span className="text-[10px] font-mono font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded-md border border-amber-500/20">
+                      <span className="text-[10px] font-mono font-bold text-amber-800 dark:text-amber-300 bg-amber-500/15 px-1.5 py-0.5 rounded-md border border-amber-500/25">
                         {historicalLegaciesSubItems.length}
                       </span>
                       {isHistoricalLegaciesExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
-                    </div>
+                    </button>
                   )}
-                </button>
+                </div>
 
                 {!isDesktopCollapsed && (
                   <AnimatePresence initial={false}>
@@ -728,8 +737,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                 }}
                                 className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer px-3 py-2 text-xs group ${
                                   isSubActive
-                                    ? 'bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold'
-                                    : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
+                                    ? 'bg-amber-500/15 border border-amber-500/30 text-amber-800 dark:text-amber-300 font-bold'
+                                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0 pr-1">
@@ -743,7 +752,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                   )}
                                   <div className="flex flex-col min-w-0">
                                     <span className="truncate">{t(`report.title.${sub.id}`, sub.label)}</span>
-                                    <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
+                                    <span className="text-[10px] font-mono text-zinc-700 dark:text-zinc-300 truncate">{sub.badge}</span>
                                   </div>
                                 </div>
                                 {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />}
@@ -759,41 +768,45 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
               {/* 4. Research & Reports (Collapsible Accordion with Topics: Genetics, International Law, Development) */}
               <div className="pt-0.5">
-                <button
-                  onClick={() => {
-                    openSubmenuExclusively('reports');
-                    onSelectTab(reportsSubGroups[0].items[0].id as CanonicalNavTab);
-                    if (isMobile) onCloseMobile();
-                  }}
-                  title={t('nav.reports', 'Reports')}
-                  className={`relative w-full flex items-center ${
-                    isDesktopCollapsed ? 'justify-center p-2.5' : 'justify-between py-2.5 px-3.5 text-sm'
-                  } text-left rounded-2xl transition-all cursor-pointer group ${
+                <div
+                  className={`relative w-full flex items-center rounded-2xl transition-all group ${
                     isReportsGroupActive
                       ? 'bg-indigo-500/10 dark:bg-indigo-500/15 text-indigo-800 dark:text-indigo-300 font-bold border border-indigo-500/25'
                       : 'text-zinc-600 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200'
                   }`}
                 >
-                  <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-3'}`}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openSubmenuExclusively('reports');
+                      onSelectTab(reportsSubGroups[0].items[0].id as CanonicalNavTab);
+                      if (isMobile) onCloseMobile();
+                    }}
+                    aria-label={t('nav.reports', 'Reports')}
+                    title={t('nav.reports', 'Reports')}
+                    className={`flex-1 min-w-0 flex items-center ${
+                      isDesktopCollapsed ? 'justify-center p-2.5 rounded-2xl' : 'gap-3 py-2.5 pl-3.5 pr-1 text-sm rounded-l-2xl'
+                    } text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500`}
+                  >
                     <DynamicIcon icon="lucide:book-open-text" className={`w-5 h-5 shrink-0 ${isReportsGroupActive ? 'text-indigo-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                     {!isDesktopCollapsed && <span>{t('nav.reports', 'Reports')}</span>}
-                  </div>
+                  </button>
                   {!isDesktopCollapsed && (
-                    <div 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleSubmenuExclusively('reports');
-                      }}
-                      className="flex items-center gap-1.5 p-1 -mr-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                    <button
+                      type="button"
+                      onClick={() => toggleSubmenuExclusively('reports')}
+                      aria-expanded={isReportsExpanded}
+                      aria-label={isReportsExpanded ? "Collapse Reports submenu" : "Expand Reports submenu"}
+                      className="flex items-center gap-1.5 py-2 pr-3 pl-1.5 mr-0.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                       title={isReportsExpanded ? "Collapse Reports submenu" : "Expand Reports submenu"}
                     >
-                      <span className="text-[10px] font-mono font-bold text-indigo-500 bg-indigo-500/10 px-1.5 py-0.5 rounded-md border border-indigo-500/20">
+                      <span className="text-[10px] font-mono font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-500/15 px-1.5 py-0.5 rounded-md border border-indigo-500/25">
                         {totalReportsCount}
                       </span>
                       {isReportsExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
-                    </div>
+                    </button>
                   )}
-                </button>
+                </div>
 
                 {!isDesktopCollapsed && (
                   <AnimatePresence initial={false}>
@@ -821,8 +834,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                     }}
                                     className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer px-3 py-1.5 text-xs group ${
                                       isSubActive
-                                        ? 'bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold'
-                                        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
+                                        ? 'bg-amber-500/15 border border-amber-500/30 text-amber-800 dark:text-amber-300 font-bold'
+                                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
                                     }`}
                                   >
                                     <div className="flex items-center gap-2 min-w-0 pr-1">
@@ -832,7 +845,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                       />
                                       <div className="flex flex-col min-w-0">
                                         <span className="truncate leading-tight">{t(`report.title.${sub.id}`, sub.label)}</span>
-                                        <span className="text-[9px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
+                                        <span className="text-[9px] font-mono text-zinc-700 dark:text-zinc-300 truncate">{sub.badge}</span>
                                       </div>
                                     </div>
                                     {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />}
@@ -850,41 +863,45 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
               {/* 5. Culture (Collapsible Accordion: Heritage Sites, Languages) */}
               <div className="pt-0.5">
-                <button
-                  onClick={() => {
-                    openSubmenuExclusively('culture');
-                    onSelectTab(cultureSubItems[0].id as CanonicalNavTab);
-                    if (isMobile) onCloseMobile();
-                  }}
-                  title={t('nav.culture', 'Culture')}
-                  className={`relative w-full flex items-center ${
-                    isDesktopCollapsed ? 'justify-center p-2.5' : 'justify-between py-2.5 px-3.5 text-sm'
-                  } text-left rounded-2xl transition-all cursor-pointer group ${
+                <div
+                  className={`relative w-full flex items-center rounded-2xl transition-all group ${
                     isCultureGroupActive
                       ? 'bg-purple-500/10 dark:bg-purple-500/15 text-purple-800 dark:text-purple-300 font-bold border border-purple-500/25'
                       : 'text-zinc-600 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200'
                   }`}
                 >
-                  <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-3'}`}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openSubmenuExclusively('culture');
+                      onSelectTab(cultureSubItems[0].id as CanonicalNavTab);
+                      if (isMobile) onCloseMobile();
+                    }}
+                    aria-label={t('nav.culture', 'Culture')}
+                    title={t('nav.culture', 'Culture')}
+                    className={`flex-1 min-w-0 flex items-center ${
+                      isDesktopCollapsed ? 'justify-center p-2.5 rounded-2xl' : 'gap-3 py-2.5 pl-3.5 pr-1 text-sm rounded-l-2xl'
+                    } text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-purple-500`}
+                  >
                     <Landmark className={`w-5 h-5 shrink-0 ${isCultureGroupActive ? 'text-purple-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                     {!isDesktopCollapsed && <span>{t('nav.culture', 'Culture')}</span>}
-                  </div>
+                  </button>
                   {!isDesktopCollapsed && (
-                    <div 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleSubmenuExclusively('culture');
-                      }}
-                      className="flex items-center gap-1.5 p-1 -mr-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                    <button
+                      type="button"
+                      onClick={() => toggleSubmenuExclusively('culture')}
+                      aria-expanded={isCultureExpanded}
+                      aria-label={isCultureExpanded ? "Collapse Culture submenu" : "Expand Culture submenu"}
+                      className="flex items-center gap-1.5 py-2 pr-3 pl-1.5 mr-0.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
                       title={isCultureExpanded ? "Collapse Culture submenu" : "Expand Culture submenu"}
                     >
-                      <span className="text-[10px] font-mono text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md">
+                      <span className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md">
                         {cultureSubItems.length}
                       </span>
                       {isCultureExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
-                    </div>
+                    </button>
                   )}
-                </button>
+                </div>
 
                 {!isDesktopCollapsed && (
                   <AnimatePresence initial={false}>
@@ -907,8 +924,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                 }}
                                 className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer px-3 py-2 text-xs group ${
                                   isSubActive
-                                    ? 'bg-purple-500/15 border border-purple-500/30 text-purple-400 font-bold'
-                                    : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
+                                    ? 'bg-purple-500/15 border border-purple-500/30 text-purple-800 dark:text-purple-300 font-bold'
+                                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0 pr-1">
@@ -922,7 +939,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                   )}
                                   <div className="flex flex-col min-w-0">
                                     <span className="truncate">{sub.label}</span>
-                                    <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
+                                    <span className="text-[10px] font-mono text-zinc-700 dark:text-zinc-300 truncate">{sub.badge}</span>
                                   </div>
                                 </div>
                                 {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0" />}
@@ -938,41 +955,45 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
 
               {/* 6. Analytics (Collapsible Accordion: Benchmarks, Continental Map, Ethnic Tree) */}
               <div className="pt-0.5">
-                <button
-                  onClick={() => {
-                    openSubmenuExclusively('analytics');
-                    onSelectTab(analyticsSubItems[0].id as CanonicalNavTab);
-                    if (isMobile) onCloseMobile();
-                  }}
-                  title={t('nav.analytics', 'Analytics')}
-                  className={`relative w-full flex items-center ${
-                    isDesktopCollapsed ? 'justify-center p-2.5' : 'justify-between py-2.5 px-3.5 text-sm'
-                  } text-left rounded-2xl transition-all cursor-pointer group ${
+                <div
+                  className={`relative w-full flex items-center rounded-2xl transition-all group ${
                     isAnalyticsGroupActive
                       ? 'bg-emerald-500/10 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-500/25'
                       : 'text-zinc-600 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200'
                   }`}
                 >
-                  <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-3'}`}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openSubmenuExclusively('analytics');
+                      onSelectTab(analyticsSubItems[0].id as CanonicalNavTab);
+                      if (isMobile) onCloseMobile();
+                    }}
+                    aria-label={t('nav.analytics', 'Analytics')}
+                    title={t('nav.analytics', 'Analytics')}
+                    className={`flex-1 min-w-0 flex items-center ${
+                      isDesktopCollapsed ? 'justify-center p-2.5 rounded-2xl' : 'gap-3 py-2.5 pl-3.5 pr-1 text-sm rounded-l-2xl'
+                    } text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500`}
+                  >
                     <DynamicIcon icon="glyphs-poly:analytics" className={`w-5 h-5 shrink-0 ${isAnalyticsGroupActive ? 'text-emerald-500' : 'text-zinc-500 group-hover:text-zinc-300'}`} />
                     {!isDesktopCollapsed && <span>{t('nav.analytics', 'Analytics')}</span>}
-                  </div>
+                  </button>
                   {!isDesktopCollapsed && (
-                    <div 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleSubmenuExclusively('analytics');
-                      }}
-                      className="flex items-center gap-1.5 p-1 -mr-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                    <button
+                      type="button"
+                      onClick={() => toggleSubmenuExclusively('analytics')}
+                      aria-expanded={isAnalyticsExpanded}
+                      aria-label={isAnalyticsExpanded ? "Collapse Analytics submenu" : "Expand Analytics submenu"}
+                      className="flex items-center gap-1.5 py-2 pr-3 pl-1.5 mr-0.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                       title={isAnalyticsExpanded ? "Collapse Analytics submenu" : "Expand Analytics submenu"}
                     >
-                      <span className="text-[10px] font-mono text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md">
+                      <span className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md">
                         {analyticsSubItems.length}
                       </span>
                       {isAnalyticsExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
-                    </div>
+                    </button>
                   )}
-                </button>
+                </div>
 
                 {!isDesktopCollapsed && (
                   <AnimatePresence initial={false}>
@@ -1014,7 +1035,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                   )}
                                   <div className="flex flex-col min-w-0">
                                     <span className="truncate">{sub.label}</span>
-                                    <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 truncate">{sub.badge}</span>
+                                    <span className="text-[10px] font-mono text-zinc-700 dark:text-zinc-300 truncate">{sub.badge}</span>
                                   </div>
                                 </div>
                                 {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 shrink-0" />}
@@ -1036,9 +1057,9 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               <div className="my-2 mx-auto w-6 h-px bg-zinc-200 dark:bg-zinc-800" />
             ) : (
               <div className="px-4 mb-2">
-                <h3 className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                <p className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                   {t('nav.regions_section', 'REGIONS (UN GEOSCHEME)')}
-                </h3>
+                </p>
               </div>
             )}
             <div className="space-y-1">
@@ -1057,17 +1078,17 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                       onSelectTab(item.id);
                       if (isMobile) onCloseMobile();
                     }}
+                    aria-label={item.defaultLabel}
                     title={item.defaultLabel}
                     className={`relative w-full flex items-center ${
                       isDesktopCollapsed ? 'justify-center p-1.5' : 'justify-between py-2 px-3 text-sm'
                     } text-left rounded-2xl transition-all cursor-pointer group ${
                       isActive
-                        ? 'font-bold shadow-xs'
+                        ? `font-bold shadow-xs ${regionTonal?.badge.text || 'text-zinc-900 dark:text-zinc-100'}`
                         : 'text-zinc-600 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-200'
                     }`}
                     style={{
                       backgroundColor: isActive ? `${regionTonal?.warmAccent}18` : undefined,
-                      color: isActive ? regionTonal?.warmAccent : undefined,
                       borderColor: isActive ? `${regionTonal?.warmAccent}30` : undefined,
                       borderWidth: isActive ? 1 : 0
                     }}
@@ -1096,21 +1117,22 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               onSelectTab('provenance');
               if (isMobile) onCloseMobile();
             }}
+            aria-label={t('nav.provenance', 'Pipeline')}
             title={t('nav.provenance', 'Pipeline')}
             className={`relative w-full flex items-center ${
               isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
             } text-left rounded-xl transition-all cursor-pointer ${
               currentTab === 'provenance'
                 ? 'bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 text-emerald-800 dark:text-emerald-300 font-bold'
-                : 'text-emerald-500 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-white/[0.04] hover:text-emerald-800 dark:hover:text-emerald-200'
+                : 'text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-white/[0.04] hover:text-emerald-900 dark:hover:text-emerald-200'
             }`}
           >
             <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
-              <Database className="w-4 h-4 text-emerald-500 shrink-0" />
+              <Database className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
               {!isDesktopCollapsed && <span>{t('nav.provenance', 'Pipeline')}</span>}
             </div>
             {!isDesktopCollapsed && currentTab === 'provenance' && (
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
             )}
           </button>
 
@@ -1121,17 +1143,18 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 if (isMobile) onCloseMobile();
                 onOpenWorkingPapers();
               }}
+              aria-label="Working Papers & Policy Briefs"
               title="Working Papers & Policy Briefs"
               className={`w-full flex items-center ${
                 isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
-              } text-left rounded-xl transition-all cursor-pointer text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 dark:hover:bg-amber-500/15 mt-1`}
+              } text-left rounded-xl transition-all cursor-pointer text-amber-800 dark:text-amber-300 hover:bg-amber-500/10 dark:hover:bg-amber-500/15 mt-1`}
             >
               <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
-                <FileText className="w-4 h-4 text-amber-600 dark:text-amber-500 shrink-0" />
+                <FileText className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
                 {!isDesktopCollapsed && <span>Working Papers</span>}
               </div>
               {!isDesktopCollapsed && (
-                <span className="text-[10px] font-mono uppercase bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-800 dark:text-amber-300">
+                <span className="text-[10px] font-mono uppercase bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-800 dark:text-amber-300 font-semibold">
                   Series
                 </span>
               )}
@@ -1145,17 +1168,18 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 if (isMobile) onCloseMobile();
                 onOpenOnboarding();
               }}
+              aria-label={t('nav.orientation', 'Orientation & Heritage')}
               title={t('nav.orientation', 'Orientation & Heritage')}
               className={`w-full flex items-center ${
                 isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
-              } text-left rounded-xl transition-all cursor-pointer text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 dark:hover:bg-amber-500/15 mt-1 font-medium`}
+              } text-left rounded-xl transition-all cursor-pointer text-amber-800 dark:text-amber-300 hover:bg-amber-500/10 dark:hover:bg-amber-500/15 mt-1 font-medium`}
             >
               <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
-                <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+                <Sparkles className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
                 {!isDesktopCollapsed && <span>{t('nav.orientation', 'Orientation & Heritage')}</span>}
               </div>
               {!isDesktopCollapsed && (
-                <span className="text-[10px] font-mono uppercase bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-700 dark:text-amber-300">
+                <span className="text-[10px] font-mono uppercase bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-900 dark:text-amber-200 font-semibold">
                   3-Step
                 </span>
               )}
@@ -1169,17 +1193,18 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 if (isMobile) onCloseMobile();
                 onOpenColophon();
               }}
+              aria-label="Cartographic Colophon & Imprint"
               title="Cartographic Colophon & Imprint"
               className={`w-full flex items-center ${
                 isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
               } text-left rounded-xl transition-all cursor-pointer text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-900 mt-1`}
             >
               <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
-                <Award className="w-4 h-4 text-amber-600 dark:text-amber-500 shrink-0" />
+                <Award className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
                 {!isDesktopCollapsed && <span>Colophon & Imprint</span>}
               </div>
               {!isDesktopCollapsed && (
-                <span className="text-[10px] font-mono uppercase bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded text-stone-600 dark:text-stone-400">
+                <span className="text-[10px] font-mono uppercase bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded text-stone-700 dark:text-stone-300">
                   Legal
                 </span>
               )}
@@ -1193,17 +1218,18 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                 if (isMobile) onCloseMobile();
                 onOpenCitationModal();
               }}
+              aria-label="Cite this Research Platform (DOI: 10.6084/m9.figshare.34065711)"
               title="Cite this Research Platform (DOI: 10.6084/m9.figshare.34065711)"
               className={`w-full flex items-center ${
                 isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
-              } text-left rounded-xl transition-all cursor-pointer text-amber-700 dark:text-amber-300 hover:bg-amber-500/10 dark:hover:bg-amber-500/15 mt-1 font-medium`}
+              } text-left rounded-xl transition-all cursor-pointer text-amber-800 dark:text-amber-300 hover:bg-amber-500/10 dark:hover:bg-amber-500/15 mt-1 font-medium`}
             >
               <div className={`flex items-center ${isDesktopCollapsed ? 'justify-center' : 'gap-2.5'}`}>
-                <Quote className="w-4 h-4 text-amber-600 dark:text-amber-500 shrink-0" />
+                <Quote className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
                 {!isDesktopCollapsed && <span>Cite Observatory</span>}
               </div>
               {!isDesktopCollapsed && (
-                <span className="text-[10px] font-mono uppercase bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-800 dark:text-amber-300 font-bold">
+                <span className="text-[10px] font-mono uppercase bg-amber-500/20 px-1.5 py-0.5 rounded text-amber-900 dark:text-amber-200 font-bold">
                   DOI
                 </span>
               )}
@@ -1216,12 +1242,13 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               onSelectTab('style-guide' as CanonicalNavTab);
               if (isMobile) onCloseMobile();
             }}
+            aria-label={t('nav.styleGuide', 'Style & Architecture')}
             title={t('nav.styleGuide', 'Style & Architecture')}
             className={`w-full flex items-center ${
               isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'
             } text-left rounded-xl transition-all cursor-pointer ${
               currentTab === 'style-guide'
-                ? 'bg-amber-600 text-white font-bold shadow-sm'
+                ? 'bg-amber-700 text-white font-bold shadow-sm'
                 : 'text-stone-700 dark:text-stone-300 hover:bg-amber-500/10 dark:hover:bg-amber-500/15 hover:text-amber-900 dark:hover:text-amber-200'
             } mt-1`}
           >
@@ -1232,8 +1259,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             {!isDesktopCollapsed && (
               <span className={`text-[10px] font-mono uppercase px-1.5 py-0.5 rounded font-bold transition-colors ${
                 currentTab === 'style-guide'
-                  ? 'bg-white/20 text-white'
-                  : 'bg-amber-500/20 text-amber-800 dark:text-amber-300'
+                  ? 'bg-amber-950/60 text-white'
+                  : 'bg-amber-500/20 text-amber-900 dark:text-amber-200'
               }`}>
                 Monograph
               </span>
@@ -1245,6 +1272,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             href={resolveDocsPath('')}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={t('nav.docs', 'Documentation & Guides')}
             title={t('nav.docs', 'Documentation & Guides')}
             className={`w-full flex items-center ${
               isDesktopCollapsed ? 'justify-center p-2' : 'justify-between py-2 px-3 text-xs'

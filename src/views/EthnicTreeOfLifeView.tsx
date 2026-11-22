@@ -22,6 +22,7 @@ export const EthnicTreeOfLifeView: React.FC<EthnicTreeOfLifeViewProps> = ({
       aria-label="Afriata Ethnic Tree of Life Cartographic Explorer"
       className="relative flex-1 w-full h-[calc(100dvh-64px)] min-h-[640px] overflow-hidden flex flex-col bg-[#161412]"
     >
+      <h1 className="sr-only">Afriata Sovereign Ethnic Tree of Life Explorer</h1>
       {/* Full-Screen Sovereign Cartography Engine displaying the authentic raw SVG with 100% fidelity */}
       <AfriataExplorer
         onSelectReport={onSelectReport}

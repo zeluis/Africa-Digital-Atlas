@@ -50,10 +50,12 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Brand & Overview Column */}
           <div className="col-span-2 md:col-span-4 lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div 
-                className="relative flex items-center justify-center cursor-pointer transition-transform duration-200 hover:scale-105 shrink-0"
+              <button
+                type="button"
+                className="relative flex items-center justify-center cursor-pointer transition-transform duration-200 hover:scale-105 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-xl"
                 onClick={() => onNavigateTab('overview')}
                 title="Afriata Continental Atlas - Return to Primary Overview"
+                aria-label="Afriata Continental Atlas - Return to Primary Overview"
               >
                 <AfricaUnLogo 
                   size={46} 
@@ -62,7 +64,7 @@ export const Footer: React.FC<FooterProps> = ({
                   fillOpacity={0.6}
                   className="shrink-0 drop-shadow-xs"
                 />
-              </div>
+              </button>
               <div className="flex flex-col justify-center">
                 <span 
                   className="font-serif-display font-extrabold text-xl tracking-tight text-amber-900 dark:text-amber-400 leading-tight"
@@ -73,7 +75,7 @@ export const Footer: React.FC<FooterProps> = ({
                   <span className="font-extrabold text-[11px] uppercase tracking-wider text-zinc-900 dark:text-zinc-100 font-mono">
                     AFRICA DIGITAL ATLAS
                   </span>
-                  <span className="rounded-full bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700/60 px-1.5 py-[1px] text-[9px] font-mono font-bold text-emerald-800 dark:text-emerald-300">
+                  <span className="rounded-md bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700/60 px-1.5 py-[1px] text-[9px] font-mono font-bold text-emerald-800 dark:text-emerald-300">
                     v{manifest.atlasVersion}
                   </span>
                 </div>
@@ -92,10 +94,10 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Group 1: AFRICA */}
           <div className="space-y-3">
-            <h4 className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+            <h2 className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
               <Globe2 className="w-4 h-4 text-emerald-500 shrink-0" />
               <span>AFRICA</span>
-            </h4>
+            </h2>
             <ul className="space-y-2.5 text-xs">
               <li>
                 <button
@@ -138,10 +140,10 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Group 2: RESEARCH */}
           <div className="space-y-3">
-            <h4 className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+            <h2 className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
               <BookOpen className="w-3.5 h-3.5 text-indigo-500" />
               <span>RESEARCH</span>
-            </h4>
+            </h2>
             <ul className="space-y-2.5 text-xs">
               <li>
                 <button
@@ -195,10 +197,10 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Group 3: DATA CITATIONS */}
           <div className="space-y-3">
-            <h4 className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+            <h2 className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
               <Database className="w-3.5 h-3.5 text-amber-500" />
               <span>DATA SOURCES</span>
-            </h4>
+            </h2>
             <ul className="space-y-2.5 text-xs">
               <li className="flex items-center gap-2">
                 <OrganizationLogo org="WB" size={16} />
@@ -271,7 +273,7 @@ export const Footer: React.FC<FooterProps> = ({
                 {onOpenCitationModal && (
                   <button
                     onClick={onOpenCitationModal}
-                    className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-colors cursor-pointer"
+                    className="px-3 py-1.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold transition-colors cursor-pointer"
                   >
                     Cite (DOI: 10.6084/m9.figshare.34065711)
                   </button>
@@ -281,7 +283,7 @@ export const Footer: React.FC<FooterProps> = ({
 
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 dark:text-zinc-400">
               <div className="flex items-center gap-2">
-                <span>Observatory Edition 2026.1</span>
+                <span>Observatory Edition {manifest.atlasVersion}</span>
                 <span>•</span>
                 <span>Permanent DOI: 10.6084/m9.figshare.34065711</span>
               </div>

@@ -133,7 +133,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
   };
 
   return (
-    <article aria-label="The Structural and Evolutionary Foundations of African Development Master Treatise" className={`report-frame max-w-[1440px] mx-auto border-x border-[#D7D6CD] dark:border-[#2D2E2A] px-4 sm:px-8 lg:px-12 py-10 sm:py-14 transition-colors duration-300 relative ${fontSizeClass === 'large' ? 'text-[1.125rem]' : 'text-[1.063rem]'}`} id="african-development-master-report-view">
+    <article aria-label="The Structural and Evolutionary Foundations of African Development Master Treatise" className={`report-frame w-full min-w-0 max-w-[1440px] mx-auto border-x border-[#D7D6CD] dark:border-[#2D2E2A] px-4 sm:px-8 lg:px-12 py-10 sm:py-14 transition-colors duration-300 relative overflow-x-clip ${fontSizeClass === 'large' ? 'text-[1.125rem]' : 'text-[1.063rem]'}`} id="african-development-master-report-view">
       <span className="sr-only" role="status" aria-live="polite">{liveAnnouncement}</span>
       {/* Top Reading Progress Bar */}
       <div className="fixed top-0 left-0 right-0 w-0 h-1 bg-amber-600 dark:bg-amber-400 z-50 transition-all duration-150 no-print scroll-reading-progress" />
@@ -144,12 +144,12 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
           
           {/* Top Metadata Kicker */}
           <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono uppercase tracking-[0.15em] text-[#5C5C55] dark:text-[#A8A499] font-semibold">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 min-w-0">
               <button 
                 onClick={onNavigateToAtlas}
                 className="hover:underline text-[#343430] dark:text-[#E6E3DB] flex items-center gap-1.5 cursor-pointer transition-colors"
               >
-                <Compass className="w-3.5 h-3.5 text-[#9E6A2E] dark:text-[#D4A060]" />
+                <Compass className="w-3.5 h-3.5 text-[#7D511E] dark:text-[#D4A060]" />
                 <span>Atlantic Slave Trade Atlas</span>
               </button>
               <span>//</span>
@@ -205,7 +205,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                 <span>28 min read • 6,800 words</span>
               </div>
               <div className="flex items-center gap-2">
-                <Award className="w-3.5 h-3.5 text-[#9E6A2E] dark:text-[#D4A060]" />
+                <Award className="w-3.5 h-3.5 text-[#7D511E] dark:text-[#D4A060]" />
                 <span>Econometric & Archival Synthesis (AER, QJE, UN GA Records)</span>
               </div>
             </div>
@@ -218,12 +218,12 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
       </header>
 
       {/* 2. EXECUTIVE ABSTRACT & QUANTITATIVE INDICATORS HERO BLOCK */}
-      <section className="space-y-8 mb-16 sm:mb-20">
+      <section className="space-y-8 mb-16 sm:mb-20 min-w-0">
         {/* Executive Abstract Hero Card - Calm Editorial Japanese Paper Surface */}
         <div className="bg-[#F6F4ED] text-[#1E1E1C] dark:bg-[#1B1D19] dark:text-[#E2DFD6] border border-[#DCD9CE] dark:border-[#2C2E2A] p-7 sm:p-9 rounded-2xl shadow-2xs relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-1.5 h-full bg-[#9E6A2E] dark:bg-[#BF843E]" />
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-[#7D511E] dark:bg-[#BF843E]" aria-hidden="true" />
           <div className="max-w-4xl space-y-4 pl-2 sm:pl-3">
-            <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.14em] text-[#9E6A2E] dark:text-[#D4A060] font-semibold">
+            <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.14em] text-[#7D511E] dark:text-[#D4A060] font-semibold">
               <span>Executive Epistemic Summary</span>
             </div>
             <p className="font-serif text-lg sm:text-xl md:text-[1.35rem] text-[#1A1A18] dark:text-[#E6E3DB] leading-relaxed italic font-normal">
@@ -236,12 +236,12 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
         </div>
 
         {/* Harmonious 1-Row Quantitative Benchmarks (Calm Mineral & Earth Tonal Palette) */}
-        <div className="space-y-4 pt-1">
-          <div className="flex flex-nowrap items-stretch gap-3.5 overflow-x-auto scroll-shadow-x no-scrollbar pb-1.5 w-full tabular-nums">
-            {/* Pill 1: RAO Baseline (Eastern Africa - Muted Amber #F9F6EE / Dark Clay #211E17, Accent #9E6A2E) */}
-            <div className="flex-1 min-w-[210px] p-4 rounded-xl bg-[#F9F6EE] dark:bg-[#211E17] border border-[#E5DECD] dark:border-[#373124] flex flex-col justify-between shadow-2xs hover:border-[#9E6A2E]/40 transition-all">
+        <div className="space-y-4 pt-1 min-w-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 items-stretch gap-3.5 w-full min-w-0 tabular-nums">
+            {/* Pill 1: RAO Baseline (Eastern Africa - Muted Amber #F9F6EE / Dark Clay #211E17, Accent #7D511E) */}
+            <div className="min-w-0 p-4 rounded-xl bg-[#F9F6EE] dark:bg-[#211E17] border border-[#E5DECD] dark:border-[#373124] flex flex-col justify-between shadow-2xs hover:border-[#7D511E]/40 transition-all">
               <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-[#E5DECD]/70 dark:border-[#373124]">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#9E6A2E] dark:text-[#D4A060]">RAO Baseline</span>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#7D511E] dark:text-[#D4A060]">RAO Baseline</span>
                 <span className="font-serif font-semibold text-xs sm:text-sm text-[#181816] dark:text-[#E6E3DB]">~150 kya</span>
               </div>
               <p className="text-xs text-[#55554E] dark:text-[#BBB7AB] leading-relaxed mt-2.5 font-light tracking-tight">
@@ -250,7 +250,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
             </div>
 
             {/* Pill 2: Victims (Southern Africa - Muted Terracotta #FAF3F1 / Dark Sienna #221817, Accent #A64E3E) */}
-            <div className="flex-1 min-w-[210px] p-4 rounded-xl bg-[#FAF3F1] dark:bg-[#221817] border border-[#E8D9D5] dark:border-[#3A2724] flex flex-col justify-between shadow-2xs hover:border-[#A64E3E]/40 transition-all">
+            <div className="min-w-0 p-4 rounded-xl bg-[#FAF3F1] dark:bg-[#221817] border border-[#E8D9D5] dark:border-[#3A2724] flex flex-col justify-between shadow-2xs hover:border-[#A64E3E]/40 transition-all">
               <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-[#E8D9D5]/70 dark:border-[#3A2724]">
                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#A64E3E] dark:text-[#DB8B7D]">Victims</span>
                 <span className="font-serif font-semibold text-xs sm:text-sm text-[#A64E3E] dark:text-[#DB8B7D]">18M+</span>
@@ -261,7 +261,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
             </div>
 
             {/* Pill 3: Pre-Colonial Autonomy (Middle Africa - Muted Mulberry #F9F4F8 / Dark Plum #20181F, Accent #854972) */}
-            <div className="flex-1 min-w-[210px] p-4 rounded-xl bg-[#F9F4F8] dark:bg-[#20181F] border border-[#E3D9E1] dark:border-[#352533] flex flex-col justify-between shadow-2xs hover:border-[#854972]/40 transition-all">
+            <div className="min-w-0 p-4 rounded-xl bg-[#F9F4F8] dark:bg-[#20181F] border border-[#E3D9E1] dark:border-[#352533] flex flex-col justify-between shadow-2xs hover:border-[#854972]/40 transition-all">
               <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-[#E3D9E1]/70 dark:border-[#352533]">
                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#854972] dark:text-[#C98EB6]">Autonomy</span>
                 <span className="font-serif font-semibold text-xs sm:text-sm text-[#181816] dark:text-[#E6E3DB]">98.2%</span>
@@ -272,7 +272,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
             </div>
 
             {/* Pill 4: Monopsony (Northern Africa - Muted Slate #F2F5F8 / Dark Indigo #181E24, Accent #3B5B75) */}
-            <div className="flex-1 min-w-[210px] p-4 rounded-xl bg-[#F2F5F8] dark:bg-[#181E24] border border-[#D3DDE6] dark:border-[#27323C] flex flex-col justify-between shadow-2xs hover:border-[#3B5B75]/40 transition-all">
+            <div className="min-w-0 p-4 rounded-xl bg-[#F2F5F8] dark:bg-[#181E24] border border-[#D3DDE6] dark:border-[#27323C] flex flex-col justify-between shadow-2xs hover:border-[#3B5B75]/40 transition-all">
               <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-[#D3DDE6]/70 dark:border-[#27323C]">
                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#3B5B75] dark:text-[#7B9BB5]">Monopsony</span>
                 <span className="font-serif font-semibold text-xs sm:text-sm text-[#3B5B75] dark:text-[#7B9BB5]">&gt;85% GFT</span>
@@ -283,7 +283,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
             </div>
 
             {/* Pill 5: UN GA (Western Africa - Muted Sage #F3F7F4 / Dark Spruce #16211C, Accent #3F6955) */}
-            <div className="flex-1 min-w-[210px] p-4 rounded-xl bg-[#F3F7F4] dark:bg-[#16211C] border border-[#D5E2D9] dark:border-[#25362E] flex flex-col justify-between shadow-2xs hover:border-[#3F6955]/40 transition-all">
+            <div className="min-w-0 p-4 rounded-xl bg-[#F3F7F4] dark:bg-[#16211C] border border-[#D5E2D9] dark:border-[#25362E] flex flex-col justify-between shadow-2xs hover:border-[#3F6955]/40 transition-all">
               <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-[#D5E2D9]/70 dark:border-[#25362E]">
                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#3F6955] dark:text-[#76A890]">UN GA 2026</span>
                 <span className="font-serif font-semibold text-xs sm:text-sm text-[#3F6955] dark:text-[#76A890]">123–3</span>
@@ -301,7 +301,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
             </div>
             <button
               onClick={onNavigateToMolecular}
-              className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-xl bg-[#A64E3E] hover:bg-[#8E3F31] text-[#FAF8F5] dark:bg-[#C25E4A] dark:hover:bg-[#B0503D] dark:text-[#181816] font-sans text-xs font-semibold shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer group"
+              className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-xl bg-[#A64E3E] hover:bg-[#8E3F31] text-[#FAF8F5] dark:bg-[#E07D68] dark:hover:bg-[#EB8F7C] dark:text-[#181816] font-sans text-xs font-semibold shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer group"
             >
               <div className="w-5 h-5 rounded-lg bg-white/20 dark:bg-black/15 flex items-center justify-center shrink-0">
                 <Dna className="w-3.5 h-3.5 text-[#FAF8F5] dark:text-[#181816] group-hover:rotate-12 transition-transform" />
@@ -340,14 +340,14 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
       </div>
 
       {/* 4. FULL CONTINUOUS EDITORIAL READING ENGINE (ALL SECTIONS DISPLAYED IN FULL) */}
-      <main className="max-w-4xl mx-auto space-y-28 sm:space-y-36 lg:space-y-40 text-left">
+      <div role="region" aria-label="Full Continuous Editorial Reading Engine" className="max-w-4xl mx-auto space-y-28 sm:space-y-36 lg:space-y-40 text-left">
           
           {/* ========================================================= */}
           {/* CHAPTER 1: EXECUTIVE SUMMARY & COMPOUNDING TRAJECTORY */}
           {/* ========================================================= */}
           <section id="sec-executive_summary" className="scroll-reveal-item space-y-8 pt-4 pb-8">
             <div className="space-y-3 border-b border-[#DCD9CE] dark:border-[#2C2E2A] pb-6 mb-8">
-              <span className="text-xs font-mono font-medium uppercase tracking-[0.12em] text-[#9E6A2E] dark:text-[#D4A060] block">
+              <span className="text-xs font-mono font-medium uppercase tracking-[0.12em] text-[#7D511E] dark:text-[#D4A060] block">
                 Chapter 01 // Executive Overview & Epistemological Framework
               </span>
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#1A1A18] dark:text-[#E6E3DB] tracking-tight leading-snug">
@@ -361,12 +361,12 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
             {/* 3 Core Theses - Japandi Paper Surface #F6F4ED */}
             <div className="space-y-4">
               <div className="p-6 sm:p-7 rounded-2xl bg-[#F6F4ED] text-[#1E1E1C] dark:bg-[#1B1D19] dark:text-[#E2DFD6] border border-[#DCD9CE] dark:border-[#2C2E2A] space-y-2.5 shadow-2xs relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1.5 h-full bg-[#9E6A2E] dark:bg-[#BF843E]" />
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-[#7D511E] dark:bg-[#BF843E]" />
                 <span className="font-serif font-semibold text-base sm:text-lg text-[#181816] dark:text-[#E6E3DB] block pl-1.5">1. The Macro-Geonomic Frontier</span>
                 <p className="text-xs sm:text-sm text-[#55554E] dark:text-[#C5C2B6] leading-relaxed font-light pl-1.5">
                   Traces the prehistoric <em>Recent African Origin</em> (RAO) migration gradient. The Serial Founder Effect caused genetic diversity to drop monotonically with distance from East Africa, establishing the <strong>Ashraf-Galor diversity-development trade-off</strong> between cognitive innovation benefits and social coordination friction.
                 </p>
-                <span className="text-[11px] font-mono text-[#9E6A2E] dark:text-[#D4A060] block font-medium pl-1.5">Ref: Ashraf & Galor (AER 2013)</span>
+                <span className="text-[11px] font-mono text-[#7D511E] dark:text-[#D4A060] block font-medium pl-1.5">Ref: Ashraf & Galor (AER 2013)</span>
               </div>
 
               <div className="p-6 sm:p-7 rounded-2xl bg-[#F6F4ED] text-[#1E1E1C] dark:bg-[#1B1D19] dark:text-[#E2DFD6] border border-[#DCD9CE] dark:border-[#2C2E2A] space-y-2.5 shadow-2xs relative overflow-hidden">
@@ -391,12 +391,12 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
             {/* Synthesized Compounding Shocks Timeline Visualizer (FIG. 01) */}
             <figure className="my-12 sm:my-14 pb-6 border-b border-[#DCD9CE] dark:border-[#2C2E2A] space-y-5">
               <figcaption className="mb-2">
-                <span className="text-[0.75rem] font-mono uppercase tracking-[0.1em] text-[#9E6A2E] dark:text-[#D4A060] font-semibold block mb-1.5">
+                <span className="text-[0.75rem] font-mono uppercase tracking-[0.1em] text-[#7D511E] dark:text-[#D4A060] font-semibold block mb-1.5">
                   Fig. 01 // Structural Trajectory
                 </span>
-                <h4 className="font-serif text-xl sm:text-2xl font-normal text-[#181816] dark:text-[#E6E3DB] mb-1.5">
+                <h3 className="font-serif text-xl sm:text-2xl font-normal text-[#181816] dark:text-[#E6E3DB] mb-1.5">
                   Compounding Epochs of African Comparative Development
-                </h4>
+                </h3>
                 <p className="text-xs sm:text-sm text-[#55554E] dark:text-[#A8A499] leading-relaxed">
                   Interactive multi-channel trajectory tracking how prehistoric genetic baselines, transatlantic demographic extractions, colonial trade monopsonies, and 2026 multilateral rule-making power shaped structural economic outcomes (150,000 BP – 2026+ CE).
                 </p>
@@ -423,10 +423,10 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
               {/* Interactive Trajectory Chart */}
               <div className="p-6 sm:p-7 rounded-2xl bg-[#FFFFFF] dark:bg-[#181A16] border border-[#DCD9CE] dark:border-[#2C2E2A] shadow-2xs space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-[#F0EDE4] dark:border-[#232622]">
-                  <span className="font-mono text-[11px] text-[#77776E] dark:text-[#A8A499] uppercase tracking-wider">
+                  <span className="font-mono text-[11px] text-[#5C5C54] dark:text-[#A8A499] uppercase tracking-wider">
                     Econometric Indicators Across Epochs (0–100 Scale)
                   </span>
-                  <span className="text-[11px] font-mono text-[#9E6A2E] dark:text-[#D4A060]">
+                  <span className="text-[11px] font-mono text-[#7D511E] dark:text-[#D4A060]">
                     Selected Epoch: <strong>{activeEpoch.timeRange}</strong>
                   </span>
                 </div>
@@ -459,10 +459,11 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                           fontSize: '12px',
                           boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                         }}
-                        formatter={(val: number) => [`${val}% / Index`, '']}
+                        formatter={(val) => [`${val ?? 0}% / Index`, '']}
                       />
                       <Legend
                         wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
+                        formatter={(value) => <span className="text-[#343430] dark:text-[#CCC8BC] font-medium">{value}</span>}
                       />
                       <Area
                         type="monotone"
@@ -488,7 +489,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                         type="monotone"
                         dataKey="socialTrustScore"
                         name="Interpersonal Trust Index (0–100)"
-                        stroke="#9E6A2E"
+                        stroke="#7D511E"
                         strokeWidth={2.4}
                         dot={{ r: 4 }}
                         isAnimationActive={!prefersReducedMotion}
@@ -516,10 +517,10 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                 
                 <div className="flex flex-wrap items-center justify-between gap-2 pl-1.5">
                   <div>
-                    <span className="font-mono text-xs text-[#77776E] dark:text-[#A8A499] block tabular-nums">{activeEpoch.timeRange}</span>
-                    <h5 className="font-serif font-semibold text-lg sm:text-xl text-[#181816] dark:text-[#E6E3DB]">
+                    <span className="font-mono text-xs text-[#5C5C54] dark:text-[#A8A499] block tabular-nums">{activeEpoch.timeRange}</span>
+                    <h4 className="font-serif font-semibold text-lg sm:text-xl text-[#181816] dark:text-[#E6E3DB]">
                       {activeEpoch.title}
-                    </h5>
+                    </h4>
                   </div>
                   <span className="text-[11px] font-mono text-[#55554E] dark:text-[#C5C2B6] font-semibold">
                     {activeEpoch.keyScholarsOrAccord}
@@ -533,28 +534,28 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                 {/* 4 Quantitative Metric Meters */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs ps-1.5 tabular-nums">
                   <div className="p-3.5 sm:p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#20231F] border border-[#DCD9CE] dark:border-[#2C2E2A] shadow-2xs space-y-1">
-                    <span className="text-[#77776E] dark:text-[#A8A499] text-[10px] block">Peasant GFT Retention:</span>
+                    <span className="text-[#5C5C54] dark:text-[#A8A499] text-[10px] block">Peasant GFT Retention:</span>
                     <div className="font-mono font-semibold text-[#3F6955] dark:text-[#76A890] text-sm sm:text-base">
                       {activeEpoch.gainsFromTradePct}%
                     </div>
                   </div>
 
                   <div className="p-3.5 sm:p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#20231F] border border-[#DCD9CE] dark:border-[#2C2E2A] shadow-2xs space-y-1">
-                    <span className="text-[#77776E] dark:text-[#A8A499] text-[10px] block">Social Trust Index:</span>
-                    <div className="font-mono font-semibold text-[#9E6A2E] dark:text-[#D4A060] text-sm sm:text-base">
+                    <span className="text-[#5C5C54] dark:text-[#A8A499] text-[10px] block">Social Trust Index:</span>
+                    <div className="font-mono font-semibold text-[#7D511E] dark:text-[#D4A060] text-sm sm:text-base">
                       {activeEpoch.socialTrustScore} / 100
                     </div>
                   </div>
 
                   <div className="p-3.5 sm:p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#20231F] border border-[#DCD9CE] dark:border-[#2C2E2A] shadow-2xs space-y-1">
-                    <span className="text-[#77776E] dark:text-[#A8A499] text-[10px] block">Sovereign Agency:</span>
+                    <span className="text-[#5C5C54] dark:text-[#A8A499] text-[10px] block">Sovereign Agency:</span>
                     <div className="font-mono font-semibold text-[#3B5B75] dark:text-[#7B9BB5] text-sm sm:text-base">
                       {activeEpoch.sovereignAgencyPct}%
                     </div>
                   </div>
 
                   <div className="p-3.5 sm:p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#20231F] border border-[#DCD9CE] dark:border-[#2C2E2A] shadow-2xs space-y-1">
-                    <span className="text-[#77776E] dark:text-[#A8A499] text-[10px] block">Extractive Pressure:</span>
+                    <span className="text-[#5C5C54] dark:text-[#A8A499] text-[10px] block">Extractive Pressure:</span>
                     <div className="font-mono font-semibold text-[#A64E3E] dark:text-[#DB8B7D] text-sm sm:text-base">
                       {activeEpoch.extractivePressurePct}%
                     </div>
@@ -568,11 +569,11 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                   onClick={() => setActiveEpochIndex(0)}
                   className={`p-5 rounded-xl text-left transition-all cursor-pointer border space-y-2 shadow-2xs ${
                     activeEpochIndex === 0
-                      ? 'bg-[#F9F6EE] dark:bg-[#211E17] border-[#9E6A2E] dark:border-[#D1A268]'
-                      : 'bg-[#F9F6EE] text-[#1E1E1C] dark:bg-[#211E17] dark:text-[#E2DFD6] border-[#E5DECD] dark:border-[#373124] hover:border-[#9E6A2E]'
+                      ? 'bg-[#F9F6EE] dark:bg-[#211E17] border-[#7D511E] dark:border-[#D1A268]'
+                      : 'bg-[#F9F6EE] text-[#1E1E1C] dark:bg-[#211E17] dark:text-[#E2DFD6] border-[#E5DECD] dark:border-[#373124] hover:border-[#7D511E]'
                   }`}
                 >
-                  <span className="font-mono text-[10px] text-[#9E6A2E] dark:text-[#D1A268] font-semibold block">150,000 – 60,000 BP</span>
+                  <span className="font-mono text-[10px] text-[#7D511E] dark:text-[#D1A268] font-semibold block">150,000 – 60,000 BP</span>
                   <span className="font-serif font-semibold text-sm sm:text-base text-[#181816] dark:text-[#E6E3DB] block">Recent African Origin (RAO)</span>
                   <p className="text-xs text-[#55554E] dark:text-[#CCC8BC] leading-relaxed font-light">
                     Mitochondrial Eve and Y-Chromosomal Adam coalesce in East Africa. Serial Founder Effect leaves Sub-Saharan Africa with the world’s highest genetic diversity.
@@ -632,7 +633,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
           {/* ========================================================= */}
           <section id="sec-biogeographic_baseline" className="cv-auto scroll-reveal-item space-y-8 pt-8 pb-8">
             <div className="space-y-3 border-b border-[#DCD9CE] dark:border-[#2C2E2A] pb-6 mb-8">
-              <span className="text-xs font-mono font-medium uppercase tracking-[0.12em] text-[#9E6A2E] dark:text-[#D4A060] block">
+              <span className="text-xs font-mono font-medium uppercase tracking-[0.12em] text-[#7D511E] dark:text-[#D4A060] block">
                 Chapter 02 // Deep-Time Biogeographic Baseline
               </span>
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#1A1A18] dark:text-[#E6E3DB] tracking-tight leading-snug">
@@ -646,7 +647,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
             <div className="space-y-4">
               {/* Insight Surface #F6F4ED */}
               <div className="p-6 sm:p-7 rounded-2xl bg-[#F6F4ED] text-[#1E1E1C] dark:bg-[#1B1D19] dark:text-[#E2DFD6] border border-[#DCD9CE] dark:border-[#2C2E2A] space-y-3.5 shadow-2xs relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1.5 h-full bg-[#9E6A2E] dark:bg-[#BF843E]" />
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-[#7D511E] dark:bg-[#BF843E]" />
                 <span className="font-serif font-semibold text-base sm:text-lg text-[#181816] dark:text-[#E6E3DB] block pl-1.5">1. Molecular Clock Calibrations & Coalescence</span>
                 <p className="text-xs sm:text-sm text-[#55554E] dark:text-[#C5C2B6] leading-relaxed font-light pl-1.5">
                   Genetic anthropology utilizing complete sequencing of mitochondrial DNA (mtDNA) and the Y chromosome confirms that all contemporary humans share a shallow ancestry converging in East Africa:
@@ -659,7 +660,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                       <strong className="text-[#181816] dark:text-[#E6E3DB] font-medium">Mitochondrial Eve (Maternal Lineage):</strong>
                       <p className="text-[#55554E] dark:text-[#A8A499] mt-0.5">Lived in East Africa ~99,000 to 148,000 years ago (broad estimates up to 200 kya).</p>
                     </div>
-                    <span className="font-mono text-[#9E6A2E] dark:text-[#D4A060] font-semibold shrink-0">~148 kya</span>
+                    <span className="font-mono text-[#7D511E] dark:text-[#D4A060] font-semibold shrink-0">~148 kya</span>
                   </div>
 
                   <div className="p-3.5 sm:p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#181A16] border border-[#DCD9CE] dark:border-[#2C2E2A] flex items-start justify-between gap-4 shadow-2xs">
@@ -667,7 +668,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                       <strong className="text-[#181816] dark:text-[#E6E3DB] font-medium">Y-Chromosomal Adam (Paternal Lineage):</strong>
                       <p className="text-[#55554E] dark:text-[#A8A499] mt-0.5">Lived in East Africa ~120,000 to 156,000 years ago.</p>
                     </div>
-                    <span className="font-mono text-[#9E6A2E] dark:text-[#D4A060] font-semibold shrink-0">~156 kya</span>
+                    <span className="font-mono text-[#7D511E] dark:text-[#D4A060] font-semibold shrink-0">~156 kya</span>
                   </div>
                 </div>
               </div>
@@ -687,12 +688,12 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
             {/* Interactive Chart: Ashraf-Galor Diversity-Development Hump */}
             <figure className="my-12 sm:my-14 pb-6 border-b border-[#DCD9CE] dark:border-[#2C2E2A] space-y-5">
               <figcaption className="mb-2">
-                <span className="text-[0.75rem] font-mono uppercase tracking-[0.1em] text-[#9E6A2E] dark:text-[#D4A060] font-semibold block mb-1.5">
+                <span className="text-[0.75rem] font-mono uppercase tracking-[0.1em] text-[#7D511E] dark:text-[#D4A060] font-semibold block mb-1.5">
                   Fig. 02 // Econometric Diversity Trade-Off
                 </span>
-                <h4 className="font-serif text-xl sm:text-2xl font-normal text-[#181816] dark:text-[#E6E3DB] mb-1.5">
+                <h3 className="font-serif text-xl sm:text-2xl font-normal text-[#181816] dark:text-[#E6E3DB] mb-1.5">
                   Ashraf & Galor (2013) Hump-Shaped Trade-Off
-                </h4>
+                </h3>
                 <p className="text-xs text-[#55554E] dark:text-[#A8A499] leading-relaxed">
                   Opposing channels: Cognitive Specialization & Technological Innovation (+) vs. Social Fragmentation & Mistrust Transaction Costs (-) (<em>AER</em> 2013).
                 </p>
@@ -726,12 +727,15 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                           color: '#FAF8F5'
                         }}
                       />
-                      <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
+                      <Legend
+                        wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
+                        formatter={(value) => <span className="text-[#343430] dark:text-[#CCC8BC] font-medium">{value}</span>}
+                      />
                       <Line
                         type="monotone"
                         dataKey="cognitiveSpecializationScore"
                         name="Cognitive Innovation Channel (+)"
-                        stroke="#9E6A2E"
+                        stroke="#7D511E"
                         strokeWidth={2.2}
                         dot={{ r: 3.5 }}
                         isAnimationActive={!prefersReducedMotion}
@@ -820,9 +824,9 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                 <span className="text-[0.75rem] font-mono uppercase tracking-[0.1em] text-[#A64E3E] dark:text-[#DB8B7D] font-semibold block mb-1.5">
                   Fig. 03 // Econometric Extraction Regression
                 </span>
-                <h4 className="font-serif text-xl sm:text-2xl font-normal text-[#181816] dark:text-[#E6E3DB] mb-1.5">
+                <h3 className="font-serif text-xl sm:text-2xl font-normal text-[#181816] dark:text-[#E6E3DB] mb-1.5">
                   Regional Slave Extraction Intensity vs. Current GDP per Capita
-                </h4>
+                </h3>
                 <p className="text-xs text-[#55554E] dark:text-[#A8A499] leading-relaxed">
                   Empirical data compiled across African regional zones (Nunn 2008, Nunn & Wantchekon 2011).
                 </p>
@@ -865,7 +869,10 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                           color: '#FAF8F5'
                         }}
                       />
-                      <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
+                      <Legend
+                        wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
+                        formatter={(value) => <span className="text-[#343430] dark:text-[#CCC8BC] font-medium">{value}</span>}
+                      />
                       <Bar
                         yAxisId="left"
                         dataKey="totalExportsMillions"
@@ -941,9 +948,9 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                 <span className="text-[0.75rem] font-mono uppercase tracking-[0.1em] text-[#3B5B75] dark:text-[#7B9BB5] font-semibold block mb-1.5">
                   Fig. 04 // Microeconomic Extraction
                 </span>
-                <h4 className="font-serif text-xl sm:text-2xl font-normal text-[#181816] dark:text-[#E6E3DB] mb-1.5">
+                <h3 className="font-serif text-xl sm:text-2xl font-normal text-[#181816] dark:text-[#E6E3DB] mb-1.5">
                   Federico Tadei’s Price-Gap Model: Colonial Monopsony
-                </h4>
+                </h3>
                 <p className="text-xs text-[#55554E] dark:text-[#A8A499] leading-relaxed">
                   Quantifying the destruction of African Gains from Trade under CFAO, SCOA & UAC Concessionaire Cartels (<em>EREH</em> 2020).
                 </p>
@@ -982,19 +989,19 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                   {/* Important Statistic White Cards */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs ps-1.5 tabular-nums">
                     <div className="p-3.5 sm:p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#20231F] border border-[#DCD9CE] dark:border-[#2C2E2A] shadow-2xs">
-                      <span className="text-[#77776E] dark:text-[#A8A499] text-[10px]">World Price:</span>
+                      <span className="text-[#5C5C54] dark:text-[#A8A499] text-[10px]">World Price:</span>
                       <div className="font-mono font-semibold text-[#181816] dark:text-[#E6E3DB] text-sm sm:text-base">${activeCommodity.worldPortPriceDollars}</div>
                     </div>
                     <div className="p-3.5 sm:p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#20231F] border border-[#DCD9CE] dark:border-[#2C2E2A] shadow-2xs">
-                      <span className="text-[#77776E] dark:text-[#A8A499] text-[10px]">Competitive:</span>
+                      <span className="text-[#5C5C54] dark:text-[#A8A499] text-[10px]">Competitive:</span>
                       <div className="font-mono font-semibold text-[#3F6955] dark:text-[#76A890] text-sm sm:text-base">${activeCommodity.competitiveCounterfactualPrice}</div>
                     </div>
                     <div className="p-3.5 sm:p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#20231F] border border-[#DCD9CE] dark:border-[#2C2E2A] shadow-2xs">
-                      <span className="text-[#77776E] dark:text-[#A8A499] text-[10px]">Actual Paid:</span>
+                      <span className="text-[#5C5C54] dark:text-[#A8A499] text-[10px]">Actual Paid:</span>
                       <div className="font-mono font-semibold text-[#A64E3E] dark:text-[#DB8B7D] text-sm sm:text-base">${activeCommodity.actualProducerPricePaid}</div>
                     </div>
                     <div className="p-3.5 sm:p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#20231F] border border-[#DCD9CE] dark:border-[#2C2E2A] shadow-2xs">
-                      <span className="text-[#77776E] dark:text-[#A8A499] text-[10px]">GFT Loss:</span>
+                      <span className="text-[#5C5C54] dark:text-[#A8A499] text-[10px]">GFT Loss:</span>
                       <div className="font-mono font-semibold text-[#A64E3E] dark:text-[#DB8B7D] text-sm sm:text-base">-{activeCommodity.reductionInGainsFromTradePct}%</div>
                     </div>
                   </div>
@@ -1087,9 +1094,9 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                 <span className="text-xs font-mono font-semibold text-[#3F6955] dark:text-[#76A890] uppercase tracking-wider block">
                   UN General Assembly Resolution // March 25, 2026
                 </span>
-                <h4 className="font-serif text-lg sm:text-xl font-semibold text-[#181816] dark:text-[#E6E3DB] mt-1">
+                <h3 className="font-serif text-lg sm:text-xl font-semibold text-[#181816] dark:text-[#E6E3DB] mt-1">
                   Declaration of Transatlantic Slavery as the "Gravest Crime Against Humanity"
-                </h4>
+                </h3>
                 <p className="text-xs sm:text-sm text-[#55554E] dark:text-[#C5C2B6] leading-relaxed font-light mt-2">
                   Adopted by a <strong>123-3 vote</strong> (Ghana/AU and CARICOM leading), this historic resolution establishes the permanent legal foundation for multilateral restorative justice and reparatory development frameworks.
                 </p>
@@ -1183,7 +1190,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
                 <div key={idx} className="cv-auto p-5 sm:p-6 rounded-2xl bg-[#F6F4ED] text-[#1E1E1C] dark:bg-[#1B1D19] dark:text-[#E2DFD6] border border-[#DCD9CE] dark:border-[#2C2E2A] space-y-2 shadow-2xs">
                   <div className="flex items-start justify-between gap-3">
                     <span className="font-serif font-semibold text-sm sm:text-base text-[#181816] dark:text-[#E6E3DB]">{item.title}</span>
-                    <span className="text-xs font-mono text-[#9E6A2E] dark:text-[#D4A060] shrink-0 font-semibold tabular-nums">
+                    <span className="text-xs font-mono text-[#7D511E] dark:text-[#D4A060] shrink-0 font-semibold tabular-nums">
                       {item.year}
                     </span>
                   </div>
@@ -1206,7 +1213,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
             </div>
           </section>
 
-        </main>
+        </div>
     </article>
   );
 };

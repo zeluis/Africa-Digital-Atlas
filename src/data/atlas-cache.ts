@@ -1,10 +1,12 @@
+import { ATLAS_VERSION } from './platformMetadata';
+
 /**
- * Cache and Offline Storage manager for Africa Data Atlas v1.2.
+ * Cache and Offline Storage manager for Africa Data Atlas.
  */
 
 const CACHE_VERSION_KEY = 'AFRICA_DATA_ATLAS_VERSION';
 const CACHE_TIMESTAMP_KEY = 'AFRICA_DATA_ATLAS_LAST_SYNC';
-const CURRENT_VERSION = '1.2.0';
+const CURRENT_VERSION = ATLAS_VERSION;
 
 export interface CacheStatus {
   isCached: boolean;

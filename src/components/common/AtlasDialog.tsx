@@ -14,18 +14,15 @@ const FOCUSABLE_SELECTOR = [
   '[contenteditable="true"]',
 ].join(', ');
 
-const BACKGROUND_INERT_SELECTOR =
-  'header, #main-content-workspace, #app-footer-container, #desktop-navigation-drawer, aside[aria-label], nav[aria-label]';
-
 // Track active dialog tokens so stacked dialogs keep top-most Esc/focus precedence
 const activeDialogStack: symbol[] = [];
 const previousInertState = new WeakMap<Element, boolean>();
 
 function syncBackgroundInert(shouldIsolate: boolean) {
   if (typeof document === 'undefined') return;
-  const targets = document.querySelectorAll(BACKGROUND_INERT_SELECTOR);
-  targets.forEach((el) => {
-    if (el.closest('[role="dialog"]')) return;
+  const bodyChildren = Array.from(document.body.children);
+  bodyChildren.forEach((el) => {
+    if (el.hasAttribute('data-dialog-open') || el.querySelector('[role="dialog"]')) return;
     const htmlEl = el as HTMLElement & { inert: boolean };
     if (shouldIsolate) {
       if (!previousInertState.has(el)) {
@@ -210,6 +207,7 @@ export const AtlasDialog: React.FC<AtlasDialogProps> = ({
 
   return createPortal(
     <div
+      data-dialog-open="true"
       className={overlayClassName}
       onClick={(e) => {
         if (closeOnBackdropClick && e.target === e.currentTarget) {

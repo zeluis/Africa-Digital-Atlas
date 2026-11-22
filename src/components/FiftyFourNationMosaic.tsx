@@ -21,6 +21,7 @@ import {
   getRegionCardTonalStyle,
   usePrefersReducedMotion 
 } from '../utils/motion';
+import { useIsDarkTheme } from '../utils/a11y';
 import { triggerHaptic } from '../utils/mobileHaptics';
 import { 
   Search, 
@@ -65,11 +66,11 @@ interface RegionTabItem {
 }
 
 const REGION_TABS: RegionTabItem[] = [
-  { id: 'All', label: 'All Africa', count: 54, color: '#10B981' },
+  { id: 'All', label: 'All Africa', count: 54, color: '#047857' },
   { id: 'Northern Africa', label: 'Northern', count: 7, color: '#2563EB' },
-  { id: 'Western Africa', label: 'Western', count: 16, color: '#16A34A' },
-  { id: 'Central Africa', label: 'Central', count: 9, color: '#C026D3' },
-  { id: 'Eastern Africa', label: 'Eastern', count: 18, color: '#EAB308' },
+  { id: 'Western Africa', label: 'Western', count: 16, color: '#15803D' },
+  { id: 'Central Africa', label: 'Central', count: 9, color: '#A21CAF' },
+  { id: 'Eastern Africa', label: 'Eastern', count: 18, color: '#A16207' },
   { id: 'Southern Africa', label: 'Southern', count: 5, color: '#DC2626' },
 ];
 
@@ -95,6 +96,7 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
   const [sortOrder, setSortOrder] = useState<MosaicSort>('desc');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const reducedMotion = usePrefersReducedMotion();
+  const isDark = useIsDarkTheme();
 
   // Pre-compute normalized data for all 54 sovereign nations from the atlas store
   const allCountriesData = useMemo<CountryMosaicItem[]>(() => {
@@ -265,7 +267,7 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
                     style={!isSelected ? { backgroundColor: tab.color } : undefined} 
                   />
                   <span>{tab.label}</span>
-                  <span className={`text-[10px] font-mono ${isSelected ? 'text-white/90' : 'text-zinc-400 dark:text-zinc-500'}`}>
+                  <span className={`text-[10px] font-mono ${isSelected ? 'text-white/90' : 'text-zinc-600 dark:text-zinc-400'}`}>
                     {tab.count}
                   </span>
                 </span>
@@ -352,13 +354,16 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Filter 54 nations..."
+              aria-label="Filter 54 sovereign nations"
               className="w-full pl-8 pr-7 py-1.5 text-xs rounded-xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/60 dark:border-zinc-700/60 text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all"
             />
             {searchQuery && (
               <button 
+                type="button"
                 onClick={() => setSearchQuery('')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-[10px] font-bold p-0.5 rounded cursor-pointer"
                 title="Clear filter"
+                aria-label="Clear filter"
               >
                 ✕
               </button>
@@ -379,14 +384,15 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
           return (
             <m.button
               key={item.entity.id}
+              type="button"
               layout={!reducedMotion}
               onClick={() => {
                 triggerHaptic('selection');
                 onSelectCountry(item.entity.id);
               }}
               style={{
-                backgroundColor: tonal.lightBackground,
-                borderColor: tonal.lightBorder,
+                backgroundColor: isDark ? tonal.darkBackground : tonal.lightBackground,
+                borderColor: isDark ? tonal.darkBorder : tonal.lightBorder,
               }}
               whileHover={
                 reducedMotion
@@ -415,7 +421,7 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-1.5">
                   <CountryFlag entityId={item.entity.id} size="xs" />
-                  <span className="font-mono text-[10px] font-bold text-zinc-500 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-zinc-100 transition-colors">
+                  <span className="font-mono text-[10px] font-bold text-zinc-700 group-hover:text-zinc-900 dark:text-zinc-300 dark:group-hover:text-zinc-100 transition-colors">
                     {item.entity.id}
                   </span>
                 </div>
@@ -433,7 +439,7 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
 
               {/* Bottom Row: Active Metric Badge */}
               <div className="flex items-center justify-between w-full pt-1 border-t border-zinc-200/50 dark:border-zinc-700/50">
-                <span className="text-[10px] text-zinc-400 font-mono uppercase">
+                <span className="text-[10px] text-zinc-700 dark:text-zinc-400 font-mono uppercase">
                   {activeMetric}
                 </span>
                 <span className={`text-xs font-bold ${getMetricBadgeStyle(item)}`}>
@@ -452,6 +458,7 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
             No sovereign nations match &ldquo;{searchQuery}&rdquo; in {selectedRegion}.
           </p>
           <button
+            type="button"
             onClick={() => {
               setSearchQuery('');
               setSelectedRegion('All');
@@ -485,8 +492,9 @@ export const FiftyFourNationMosaic: React.FC<FiftyFourNationMosaicProps> = ({
 
         <div className="flex items-center gap-3">
           <button
+            type="button"
             onClick={() => onNavigateTab?.('explore')}
-            className="font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 flex items-center gap-1 transition-colors cursor-pointer"
+            className="font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 flex items-center gap-1 transition-colors cursor-pointer"
           >
             <span>Explore 54 Country Dossiers</span>
             <ChevronRight className="w-3.5 h-3.5" />

@@ -7,6 +7,7 @@ import {
   StaggerGrid, 
   usePrefersReducedMotion 
 } from '../../utils/motion';
+import { handleTabListKeyDown } from '../../utils/a11y';
 import { AtlasSelect } from '../common/AtlasSelect';
 import { 
   Search, 
@@ -233,9 +234,9 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
               <BookOpen className="w-4.5 h-4.5" />
             </div>
             <div>
-              <h3 className="font-serif font-bold text-stone-900 dark:text-stone-100 text-sm tracking-tight leading-none">
+              <h2 className="font-serif font-bold text-stone-900 dark:text-stone-100 text-sm tracking-tight leading-none">
                 Visual Registry Catalog
-              </h3>
+              </h2>
               <p role="status" aria-live="polite" className="text-[10px] font-mono text-stone-500 dark:text-stone-400 mt-1">
                 Showing {filteredIllustrations.length} of {SLAVE_TRADE_ILLUSTRATIONS.length} cataloged plates
               </p>
@@ -249,6 +250,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 dark:text-stone-500" />
               <input
                 type="text"
+                aria-label="Search archival catalog titles, identifiers, and citations"
                 placeholder="Search catalog titles, identifiers, citations..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -258,7 +260,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
 
             {/* Page Size Selector */}
             <div className="hidden sm:flex items-center gap-1 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-1 text-[11px] font-mono">
-              <span className="text-stone-400 px-1.5 text-[10px]">Per page:</span>
+              <span className="text-stone-600 dark:text-stone-400 px-1.5 text-[10px]">Per page:</span>
               {[24, 48, 96].map(size => (
                 <button
                   key={size}
@@ -286,11 +288,11 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                 className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-bold transition-colors cursor-pointer ${
                   paginationMode === 'windowed'
                     ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-xs'
-                    : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+                    : 'text-stone-600 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
                 }`}
                 title="Windowed Pagination (60fps guaranteed, zero DOM overhead)"
               >
-                <Layers className="w-3 h-3" />
+                <Layers className="w-3 h-3" aria-hidden="true" />
                 <span className="hidden md:inline">Pages</span>
               </button>
               <button
@@ -299,11 +301,11 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                 className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-bold transition-colors cursor-pointer ${
                   paginationMode === 'stream'
                     ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-xs'
-                    : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+                    : 'text-stone-600 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
                 }`}
                 title="Continuous Stream Mode"
               >
-                <SlidersHorizontal className="w-3 h-3" />
+                <SlidersHorizontal className="w-3 h-3" aria-hidden="true" />
                 <span className="hidden md:inline">Stream</span>
               </button>
             </div>
@@ -329,6 +331,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
             {/* View Mode Toggle */}
             <div className="flex items-center border border-stone-200 dark:border-stone-800 rounded-xl p-0.5 bg-white dark:bg-stone-900 overflow-hidden">
               <button
+                type="button"
                 onClick={() => setViewMode('grid')}
                 className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                   viewMode === 'grid' 
@@ -336,10 +339,13 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                     : 'text-stone-400 hover:text-stone-600'
                 }`}
                 title="Grid View"
+                aria-label="Grid view"
+                aria-pressed={viewMode === 'grid'}
               >
                 <Grid className="w-3.5 h-3.5" />
               </button>
               <button
+                type="button"
                 onClick={() => setViewMode('list')}
                 className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                   viewMode === 'list' 
@@ -347,6 +353,8 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                     : 'text-stone-400 hover:text-stone-600'
                 }`}
                 title="List View"
+                aria-label="List view"
+                aria-pressed={viewMode === 'list'}
               >
                 <List className="w-3.5 h-3.5" />
               </button>
@@ -380,7 +388,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
               <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono font-black ${
                 selectedCollection === 'all'
                   ? 'bg-amber-900 text-amber-100'
-                  : 'bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 group-hover:bg-stone-200/85 dark:group-hover:bg-stone-700/85'
+                  : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 group-hover:bg-stone-200/85 dark:group-hover:bg-stone-700/85'
               }`}>
                 {SLAVE_TRADE_ILLUSTRATIONS.length}
               </span>
@@ -414,7 +422,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
               <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono font-black ${
                 selectedCollection !== 'all'
                   ? 'bg-amber-950/80 text-amber-200 dark:bg-stone-900 dark:text-amber-300'
-                  : 'bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 group-hover:bg-stone-200/85 dark:group-hover:bg-stone-700/85'
+                  : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 group-hover:bg-stone-200/85 dark:group-hover:bg-stone-700/85'
               }`}>
                 {selectedCollection === 'all' ? `${collections.length} Themes` : `${categoryCounts[selectedCollection] || 0} Plates`}
               </span>
@@ -441,7 +449,14 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
           {/* Right: Integrated Segmented Control */}
           <div className="relative inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner self-start lg:self-auto" role="tablist" aria-label="Toggle between Archival Plates and Castas series">
             <button
+              type="button"
+              id="iconography-grid-tab-registry"
+              role="tab"
+              aria-selected={activeTab === 'registry'}
+              aria-controls="iconography-grid-panel-registry"
+              tabIndex={activeTab === 'registry' ? 0 : -1}
               onClick={() => onTabChange?.('registry')}
+              onKeyDown={(e) => handleTabListKeyDown(e, ['registry', 'ingestion'] as const, 0, (val) => onTabChange?.(val), 'horizontal')}
               className={`relative px-3.5 py-1.5 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
                 activeTab === 'registry'
                   ? 'text-white dark:text-stone-900 shadow-sm'
@@ -471,7 +486,14 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
             </button>
 
             <button
+              type="button"
+              id="iconography-grid-tab-ingestion"
+              role="tab"
+              aria-selected={activeTab === 'ingestion'}
+              aria-controls={activeTab === 'ingestion' ? 'iconography-grid-panel-ingestion' : undefined}
+              tabIndex={activeTab === 'ingestion' ? 0 : -1}
               onClick={() => onTabChange?.('ingestion')}
+              onKeyDown={(e) => handleTabListKeyDown(e, ['registry', 'ingestion'] as const, 1, (val) => onTabChange?.(val), 'horizontal')}
               className={`relative px-3.5 py-1.5 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
                 activeTab === 'ingestion'
                   ? 'text-white dark:text-stone-900 shadow-sm'
@@ -515,11 +537,13 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                 <div className="flex items-center justify-between pb-2 border-b border-stone-200 dark:border-stone-800/80">
                   <div className="flex items-center gap-2">
                     <Tag className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-                    <h4 className="text-xs font-mono uppercase font-bold tracking-wider text-stone-900 dark:text-stone-100">
+                    <h3 className="text-xs font-mono uppercase font-bold tracking-wider text-stone-900 dark:text-stone-100">
                       Select Historical Archival Theme ({collections.length} Curated Topics)
-                    </h4>
+                    </h3>
                   </div>
                   <button
+                    type="button"
+                    aria-label="Close historical themes drawer"
                     onClick={() => setIsThemePanelOpen(false)}
                     className="p-1 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors cursor-pointer"
                   >
@@ -532,6 +556,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400" />
                   <input
                     type="text"
+                    aria-label="Search or filter historical theme categories"
                     value={themeSearchQuery}
                     onChange={(e) => setThemeSearchQuery(e.target.value)}
                     placeholder="Search or filter theme categories..."
@@ -539,6 +564,8 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                   />
                   {themeSearchQuery && (
                     <button
+                      type="button"
+                      aria-label="Clear theme filter search"
                       onClick={() => setThemeSearchQuery('')}
                       className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 p-0.5"
                     >
@@ -611,7 +638,13 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
       </div>
 
       {/* Grid or List View Container */}
-      <div ref={galleryTopRef} className="scroll-mt-36">
+      <div
+        ref={galleryTopRef}
+        id="iconography-grid-panel-registry"
+        role="tabpanel"
+        aria-labelledby="iconography-grid-tab-registry"
+        className="scroll-mt-36"
+      >
         {filteredIllustrations.length === 0 ? (
           <div className="p-16 rounded-3xl border border-dashed border-stone-200 dark:border-stone-800 text-center space-y-3">
             <HelpCircle className="w-10 h-10 text-stone-400 mx-auto" />
@@ -712,24 +745,24 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                         </span>
                       ))}
                       {item.date && (
-                        <span className="text-[10px] font-mono font-bold text-stone-400 flex items-center gap-1">
+                        <span className="text-[10px] font-mono font-bold text-stone-600 dark:text-stone-400 flex items-center gap-1">
                           <Calendar className="w-3 h-3 shrink-0" />
                           <span>{item.date}</span>
                         </span>
                       )}
                     </div>
 
-                    <h4 className="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 leading-snug line-clamp-2">
+                    <h3 className="font-serif font-bold text-sm text-stone-900 dark:text-stone-100 leading-snug line-clamp-2">
                       {item.title}
-                    </h4>
+                    </h3>
 
-                    <p className="text-[11px] font-sans text-stone-500 dark:text-stone-400 line-clamp-3 leading-relaxed">
+                    <p className="text-[11px] font-sans text-stone-600 dark:text-stone-400 line-clamp-3 leading-relaxed">
                       Source: {item.source}
                     </p>
                   </div>
 
                   {/* Bottom Footer Controls */}
-                  <div className="pt-3 border-t border-stone-100 dark:border-stone-800/80 flex items-center justify-between text-[11px] font-mono text-stone-400">
+                  <div className="pt-3 border-t border-stone-100 dark:border-stone-800/80 flex items-center justify-between text-[11px] font-mono text-stone-600 dark:text-stone-400">
                     <span>Ref: {item.identifier || 'N/A'}</span>
                     <span className="text-amber-800 dark:text-amber-500 font-sans font-bold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
                       <span>Inspect Details</span>
@@ -777,16 +810,16 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
                         {item.collectionNames[0]}
                       </span>
                     </div>
-                    <h4 className="font-serif font-bold text-xs sm:text-sm text-stone-900 dark:text-stone-100 line-clamp-1">
+                    <h3 className="font-serif font-bold text-xs sm:text-sm text-stone-900 dark:text-stone-100 line-clamp-1">
                       {item.title}
-                    </h4>
-                    <p className="text-[10px] text-stone-400 line-clamp-1">
+                    </h3>
+                    <p className="text-[10px] text-stone-600 dark:text-stone-400 line-clamp-1">
                       {item.source}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 shrink-0 text-xs font-sans text-stone-400">
+                <div className="flex items-center gap-4 shrink-0 text-xs font-sans text-stone-600 dark:text-stone-400">
                   {item.date && <span className="font-mono">{item.date}</span>}
                   <span className="text-amber-800 dark:text-amber-500 font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
                     <span>Inspect</span>
@@ -816,6 +849,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
               disabled={currentPage === 1}
               className="p-1.5 rounded-xl border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer"
               title="First Page"
+              aria-label="First page"
             >
               <ChevronsLeft className="w-4 h-4 text-stone-600 dark:text-stone-300" />
             </button>
@@ -827,6 +861,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
               disabled={currentPage === 1}
               className="p-1.5 rounded-xl border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer"
               title="Previous Page"
+              aria-label="Previous page"
             >
               <ChevronLeft className="w-4 h-4 text-stone-600 dark:text-stone-300" />
             </button>
@@ -836,7 +871,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
               {pageNumbers.map((p, idx) => {
                 if (p === '...') {
                   return (
-                    <span key={`ellipsis-${idx}`} className="px-1.5 text-stone-400 font-mono text-xs select-none">
+                    <span key={`ellipsis-${idx}`} aria-hidden="true" className="px-1.5 text-stone-600 dark:text-stone-400 font-mono text-xs select-none">
                       …
                     </span>
                   );
@@ -867,6 +902,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
               disabled={currentPage === totalPages}
               className="p-1.5 rounded-xl border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer"
               title="Next Page"
+              aria-label="Next page"
             >
               <ChevronRight className="w-4 h-4 text-stone-600 dark:text-stone-300" />
             </button>
@@ -878,6 +914,7 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
               disabled={currentPage === totalPages}
               className="p-1.5 rounded-xl border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer"
               title="Last Page"
+              aria-label="Last page"
             >
               <ChevronsRight className="w-4 h-4 text-stone-600 dark:text-stone-300" />
             </button>
@@ -885,11 +922,12 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
 
           {/* Jump To Page Input */}
           <form onSubmit={handleJumpSubmit} className="flex items-center gap-1.5 text-xs font-mono">
-            <span className="text-stone-400">Go to:</span>
+            <span className="text-stone-500 dark:text-stone-400">Go to:</span>
             <input
               type="number"
               min="1"
               max={totalPages}
+              aria-label="Page number to jump to"
               value={jumpInput}
               onChange={(e) => setJumpInput(e.target.value)}
               placeholder={String(currentPage)}

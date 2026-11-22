@@ -177,12 +177,7 @@ export const RegionalLivingCanvas: React.FC<RegionalLivingCanvasProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <span 
-              className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border"
-              style={{
-                backgroundColor: `${tonal.warmAccent}15`,
-                borderColor: `${tonal.warmAccent}40`,
-                color: tonal.warmAccent
-              }}
+              className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${tonal.badge.bg} ${tonal.badge.border} ${tonal.badge.text}`}
             >
               LIVING CONTINENTAL ATLAS • 60 FPS
             </span>
@@ -208,10 +203,9 @@ export const RegionalLivingCanvas: React.FC<RegionalLivingCanvasProps> = ({
                   onClick={() => setThemeFilter(opt.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                     isCurrent
-                      ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs scale-[1.02]'
+                      ? `bg-white dark:bg-zinc-800 ${tonal.card.accentText} shadow-xs scale-[1.02]`
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
                   }`}
-                  style={isCurrent ? { color: tonal.warmAccent } : undefined}
                 >
                   <Icon className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">{opt.label}</span>
@@ -226,7 +220,7 @@ export const RegionalLivingCanvas: React.FC<RegionalLivingCanvasProps> = ({
             title={zoomMode === 'focused' ? "Show full continental map" : `Center and focus on ${region}`}
             className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-mono font-bold transition-all cursor-pointer border ${
               zoomMode === 'focused'
-                ? 'bg-amber-500/10 border-amber-500/40 text-amber-700 dark:text-amber-300'
+                ? 'bg-amber-500/10 border-amber-500/40 text-amber-800 dark:text-amber-300'
                 : 'bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
             }`}
           >
@@ -315,18 +309,15 @@ export const RegionalLivingCanvas: React.FC<RegionalLivingCanvasProps> = ({
           >
             <div className="flex items-start justify-between gap-2">
               <span 
-                className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border"
-                style={{
-                  backgroundColor: `${tonal.warmAccent}15`,
-                  borderColor: `${tonal.warmAccent}40`,
-                  color: tonal.warmAccent
-                }}
+                className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${tonal.badge.bg} ${tonal.badge.border} ${tonal.badge.text}`}
               >
                 {selectedHub.category}
               </span>
               <button
+                type="button"
+                aria-label="Close hub dossier"
                 onClick={() => setSelectedHub(null)}
-                className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+                className="p-1 rounded-lg text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>

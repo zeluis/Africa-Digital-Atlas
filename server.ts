@@ -6,8 +6,24 @@ import { GoogleGenAI, Modality } from "@google/genai";
 
 dotenv.config();
 
+function resolvePort(): number {
+  const args = process.argv.slice(2);
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === "--port" || arg === "-p") {
+      const next = Number(args[i + 1]);
+      if (Number.isInteger(next) && next > 0) return next;
+    } else if (arg.startsWith("--port=")) {
+      const val = Number(arg.slice("--port=".length));
+      if (Number.isInteger(val) && val > 0) return val;
+    }
+  }
+  const envPort = Number(process.env.PORT);
+  return Number.isInteger(envPort) && envPort > 0 ? envPort : 3000;
+}
+
 const app = express();
-const PORT = Number(process.env.PORT) || 3000;
+const PORT = resolvePort();
 
 function resolveDistDir(): string {
   const candidates = [
@@ -30,7 +46,98 @@ function resolveMountPrefix(): string {
   return withLeading.replace(/\/+$/, "");
 }
 
-app.use(express.json());
+app.disable("x-powered-by");
+
+app.use((_req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  next();
+});
+
+app.use(express.json({ limit: "16kb" }));
+
+const MAX_CONNECTOR_PROBE_BYTES = 1024 * 1024; // 1 MB upstream probe read cap
+
+function createRateLimiter({ windowMs, max }: { windowMs: number; max: number }): express.RequestHandler {
+  const buckets = new Map<string, { count: number; resetAt: number }>();
+
+  return (req, res, next) => {
+    const now = Date.now();
+    if (buckets.size > 1000) {
+      for (const [key, bucket] of buckets.entries()) {
+        if (now >= bucket.resetAt) {
+          buckets.delete(key);
+        }
+      }
+    }
+
+    const clientIp = req.ip || req.socket?.remoteAddress || "unknown";
+    const existing = buckets.get(clientIp);
+
+    if (!existing || now >= existing.resetAt) {
+      buckets.set(clientIp, { count: 1, resetAt: now + windowMs });
+      return next();
+    }
+
+    if (existing.count >= max) {
+      const retryAfterSec = Math.max(1, Math.ceil((existing.resetAt - now) / 1000));
+      res.setHeader("Retry-After", String(retryAfterSec));
+      return res.status(429).json({
+        error: "Rate limit exceeded. Please retry shortly.",
+        retryAfterSeconds: retryAfterSec
+      });
+    }
+
+    existing.count += 1;
+    return next();
+  };
+}
+
+const connectorProbeLimiter = createRateLimiter({ windowMs: 60_000, max: 60 });
+const ttsLimiter = createRateLimiter({ windowMs: 60_000, max: 30 });
+
+async function readUpstreamTextCapped(response: globalThis.Response, maxBytes: number): Promise<{ text: string; byteLength: number }> {
+  const declaredLen = Number(response.headers.get("content-length"));
+  if (!response.body) {
+    return { text: "", byteLength: 0 };
+  }
+
+  const reader = response.body.getReader();
+  const chunks: Buffer[] = [];
+  let totalBytes = 0;
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!value || value.byteLength === 0) continue;
+
+      const remaining = maxBytes - totalBytes;
+      if (remaining <= 0) {
+        await reader.cancel().catch(() => {});
+        break;
+      }
+
+      if (value.byteLength > remaining) {
+        chunks.push(Buffer.from(value.subarray(0, remaining)));
+        totalBytes += remaining;
+        await reader.cancel().catch(() => {});
+        break;
+      }
+
+      chunks.push(Buffer.from(value));
+      totalBytes += value.byteLength;
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  return {
+    text: Buffer.concat(chunks).toString("utf8"),
+    byteLength: Number.isFinite(declaredLen) && declaredLen > totalBytes ? declaredLen : totalBytes
+  };
+}
 
 // In-memory speech audio cache keyed by phrase text + language (bounded LRU + TTL)
 const MAX_AUDIO_CACHE_ENTRIES = 100;
@@ -109,11 +216,14 @@ app.get("/api/health", (req, res) => {
  * Ingestion Engine Status & Telemetry
  */
 app.get("/api/ingest/status", (req, res) => {
+  const uniqueOrganizations = new Set(
+    EXTERNAL_API_CONNECTORS.map((connector: { organization?: string }) => connector.organization).filter(Boolean)
+  ).size;
   res.json({
     status: "operational",
     engineVersion: "2.4.0",
     connectorsCount: EXTERNAL_API_CONNECTORS.length,
-    institutionalSourcesCount: 11,
+    institutionalSourcesCount: uniqueOrganizations,
     akpDatasetsCount: 241,
     pipelineStagesCount: 7,
     canonicalEntitiesCount: 58,
@@ -173,7 +283,7 @@ app.get("/api/research/dataset-raw", async (req, res) => {
  * Server-Side Connector Handshake & Live Probe
  * Bypasses client-side browser CORS restrictions for multilateral data feeds
  */
-app.post("/api/ingest/test-connector", async (req, res) => {
+app.post("/api/ingest/test-connector", connectorProbeLimiter, async (req, res) => {
   const { connectorId, countryIso3 = "GHA" } = req.body || {};
   const safeIso3 = String(countryIso3 || "GHA").replace(/[^A-Za-z0-9]/g, "").toUpperCase().slice(0, 3) || "GHA";
   const connector = EXTERNAL_API_CONNECTORS.find(c => c.id === connectorId);
@@ -203,7 +313,7 @@ app.post("/api/ingest/test-connector", async (req, res) => {
     const latency = Math.round(performance.now() - startTime);
 
     if (upstreamRes.ok) {
-      const rawText = await upstreamRes.text();
+      const { text: rawText, byteLength } = await readUpstreamTextCapped(upstreamRes, MAX_CONNECTOR_PROBE_BYTES);
       let data: any = rawText;
       try {
         data = JSON.parse(rawText);
@@ -216,20 +326,20 @@ app.post("/api/ingest/test-connector", async (req, res) => {
         status: "SUCCESS",
         latencyMs: latency,
         statusCode: upstreamRes.status,
-        payloadSize: Buffer.byteLength(rawText, "utf8"),
+        payloadSize: byteLength,
         sampleRecord: Array.isArray(data) ? (data[1] || data[0] || data) : data,
         retrievedAt: new Date().toISOString()
       });
     }
 
-    const errText = await upstreamRes.text().catch(() => "");
+    const { byteLength: errBytes } = await readUpstreamTextCapped(upstreamRes, 16 * 1024).catch(() => ({ text: "", byteLength: 0 }));
     return res.json({
       connectorId,
       url: targetUrl,
       status: "UPSTREAM_ERROR",
       latencyMs: latency,
       statusCode: upstreamRes.status,
-      payloadSize: Buffer.byteLength(errText, "utf8"),
+      payloadSize: errBytes,
       errorMessage: `Upstream HTTP ${upstreamRes.status}`,
       sampleRecord: {
         error: `Upstream responded with HTTP ${upstreamRes.status}`,
@@ -264,7 +374,7 @@ app.post("/api/ingest/test-connector", async (req, res) => {
  * High-Fidelity Voice Synthesis Endpoint
  * Generates or retrieves natural, warm, expressive African female speech
  */
-app.post("/api/tts", async (req, res) => {
+app.post("/api/tts", ttsLimiter, async (req, res) => {
   try {
     const { text, langTag = "en-NG", languageName = "African English", voiceGender = "female" } = req.body;
 
@@ -462,15 +572,37 @@ async function startServer() {
   }
 
   if (process.env.NODE_ENV !== "production") {
-    const { createServer: createViteServer } = await import("vite");
-    const vite = await createViteServer({
-      server: {
-        middlewareMode: true,
-        allowedHosts: true,
-      },
-      appType: "spa",
+    let viteInstance: any = null;
+    const viteReady = import("vite")
+      .then(({ createServer: createViteServer }) =>
+        createViteServer({
+          server: {
+            middlewareMode: true,
+            allowedHosts: true,
+          },
+          appType: "spa",
+        })
+      )
+      .then((vite) => {
+        viteInstance = vite;
+        return vite;
+      })
+      .catch((err) => {
+        console.error("Failed to initialize Vite dev middleware:", err);
+        throw err;
+      });
+
+    app.use(async (req, res, next) => {
+      if (viteInstance) {
+        return viteInstance.middlewares(req, res, next);
+      }
+      try {
+        const vite = await viteReady;
+        return vite.middlewares(req, res, next);
+      } catch (err) {
+        return next(err);
+      }
     });
-    app.use(vite.middlewares);
   } else {
     const mountStaticAt = mountPrefix || "/";
     app.use(mountStaticAt, express.static(distPath));

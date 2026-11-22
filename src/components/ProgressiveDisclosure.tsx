@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { 
   ChevronDown, 
-  HelpCircle, 
   Sparkles, 
   Compass, 
   Info, 
@@ -9,6 +8,7 @@ import {
   ArrowRight,
   ShieldCheck
 } from 'lucide-react';
+import { handleTabListKeyDown } from '../utils/a11y';
 
 /* =========================================================================
    1. FIRST VIEWPORT CLARITY BANNER
@@ -25,21 +25,32 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
 }) => {
   const [activeQuestion, setActiveQuestion] = useState<'what' | 'why' | 'explore'>('what');
 
+  const questions = ['what', 'why', 'explore'] as const;
+
   return (
     <section 
       aria-label="Platform Orientation & Purpose"
       className={`rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md p-6 md:p-8 shadow-xl transition-all ${className}`}
     >
       {/* 3 Pillars Selector */}
-      <div className="flex flex-wrap items-center gap-2 mb-6 border-b border-zinc-200 dark:border-zinc-800/80 pb-4">
+      <div
+        role="tablist"
+        aria-label="Platform orientation questions"
+        className="flex flex-wrap items-center gap-2 mb-6 border-b border-zinc-200 dark:border-zinc-800/80 pb-4"
+      >
         <button
+          type="button"
+          id="orientation-tab-what"
           onClick={() => setActiveQuestion('what')}
+          onKeyDown={(e) => handleTabListKeyDown(e, questions, 0, setActiveQuestion, 'horizontal')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
             activeQuestion === 'what'
               ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-md'
               : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
           }`}
           aria-selected={activeQuestion === 'what'}
+          aria-controls="orientation-panel-what"
+          tabIndex={activeQuestion === 'what' ? 0 : -1}
           role="tab"
         >
           <Info className="w-4 h-4 text-emerald-500" />
@@ -47,13 +58,18 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
         </button>
 
         <button
+          type="button"
+          id="orientation-tab-why"
           onClick={() => setActiveQuestion('why')}
+          onKeyDown={(e) => handleTabListKeyDown(e, questions, 1, setActiveQuestion, 'horizontal')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
             activeQuestion === 'why'
               ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-md'
               : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
           }`}
           aria-selected={activeQuestion === 'why'}
+          aria-controls="orientation-panel-why"
+          tabIndex={activeQuestion === 'why' ? 0 : -1}
           role="tab"
         >
           <Sparkles className="w-4 h-4 text-amber-500" />
@@ -61,13 +77,18 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
         </button>
 
         <button
+          type="button"
+          id="orientation-tab-explore"
           onClick={() => setActiveQuestion('explore')}
+          onKeyDown={(e) => handleTabListKeyDown(e, questions, 2, setActiveQuestion, 'horizontal')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
             activeQuestion === 'explore'
               ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-md'
               : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
           }`}
           aria-selected={activeQuestion === 'explore'}
+          aria-controls="orientation-panel-explore"
+          tabIndex={activeQuestion === 'explore' ? 0 : -1}
           role="tab"
         >
           <Compass className="w-4 h-4 text-cyan-500" />
@@ -76,16 +97,21 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
       </div>
 
       {/* Question Content Panels with Japandi entrance */}
-      <div className="animate-enter-japandi">
+      <div
+        id={`orientation-panel-${activeQuestion}`}
+        role="tabpanel"
+        aria-labelledby={`orientation-tab-${activeQuestion}`}
+        className="animate-enter-japandi"
+      >
         {activeQuestion === 'what' && (
           <div className="space-y-3">
-            <h3 className="text-xl md:text-2xl font-bold font-display text-zinc-900 dark:text-zinc-100">
+            <h2 className="text-xl md:text-2xl font-bold font-display text-zinc-900 dark:text-zinc-100">
               An Open Statistical &amp; Cartographic Platform for the African Continent
-            </h3>
+            </h2>
             <p className="text-sm md:text-base text-zinc-600 dark:text-zinc-300 leading-relaxed max-w-4xl">
               The Africa Data Atlas harmonizes multidimensional demographic, macroeconomic, environmental, linguistic, and cultural heritage data across all 54 sovereign African states and affiliated island territories into a single, high-fidelity spatial engine.
             </p>
-            <div className="flex flex-wrap gap-3 pt-2 text-xs font-mono text-zinc-500 dark:text-zinc-400">
+            <div className="flex flex-wrap gap-3 pt-2 text-xs font-mono text-zinc-600 dark:text-zinc-400">
               <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> 54 Sovereign Nations
               </span>
@@ -101,9 +127,9 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
 
         {activeQuestion === 'why' && (
           <div className="space-y-3">
-            <h3 className="text-xl md:text-2xl font-bold font-display text-zinc-900 dark:text-zinc-100">
+            <h2 className="text-xl md:text-2xl font-bold font-display text-zinc-900 dark:text-zinc-100">
               Bridging Data Fragmentation with Transparent Provenance
-            </h3>
+            </h2>
             <p className="text-sm md:text-base text-zinc-600 dark:text-zinc-300 leading-relaxed max-w-4xl">
               African data has historically been siloed across disparate agency repositories, missing temporal continuity or geospatial context. This atlas eliminates ambiguity by cross-verifying World Bank, IMF, UN DESA, and UNESCO records with transparent ingestion pipelines and open-access licensing (CC-BY 4.0).
             </p>
@@ -113,21 +139,21 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
                 style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
               >
                 <div className="font-bold text-zinc-900 dark:text-zinc-100 mb-1">Verifiable Provenance</div>
-                <div className="text-zinc-500 dark:text-zinc-400">Direct indicator tracing down to source agency series codes.</div>
+                <div className="text-zinc-600 dark:text-zinc-400">Direct indicator tracing down to source agency series codes.</div>
               </div>
               <div 
                 className="p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 text-xs shadow-xs"
                 style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
               >
                 <div className="font-bold text-zinc-900 dark:text-zinc-100 mb-1">Comparative Integrity</div>
-                <div className="text-zinc-500 dark:text-zinc-400">Normalized currency values (USD) and population-weighted regional aggregates.</div>
+                <div className="text-zinc-600 dark:text-zinc-400">Normalized currency values (USD) and population-weighted regional aggregates.</div>
               </div>
               <div 
                 className="p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 text-xs shadow-xs"
                 style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
               >
                 <div className="font-bold text-zinc-900 dark:text-zinc-100 mb-1">Cultural Depth</div>
-                <div className="text-zinc-500 dark:text-zinc-400">104 UNESCO World Heritage properties and 4 major language super-families.</div>
+                <div className="text-zinc-600 dark:text-zinc-400">104 UNESCO World Heritage properties and 6 major language phyla.</div>
               </div>
             </div>
           </div>
@@ -135,9 +161,9 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
 
         {activeQuestion === 'explore' && (
           <div className="space-y-4">
-            <h3 className="text-xl md:text-2xl font-bold font-display text-zinc-900 dark:text-zinc-100">
+            <h2 className="text-xl md:text-2xl font-bold font-display text-zinc-900 dark:text-zinc-100">
               Interactive Tools & Analytical Workspaces
-            </h3>
+            </h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <button
                 onClick={() => onExploreClick?.('explore')}
@@ -148,7 +174,7 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
                   <span>Country Matrix</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </div>
-                <p className="text-[11px] text-zinc-500 mt-1">Explore all 54 sovereign states.</p>
+                <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-1">Explore all 54 sovereign states.</p>
               </button>
 
               <button
@@ -160,7 +186,7 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
                   <span>Time-Series</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </div>
-                <p className="text-[11px] text-zinc-500 mt-1">2015-2024 indicator trends.</p>
+                <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-1">2015-2024 indicator trends.</p>
               </button>
 
               <button
@@ -172,7 +198,7 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
                   <span>Linguistics</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </div>
-                <p className="text-[11px] text-zinc-500 mt-1">2,000+ African languages.</p>
+                <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-1">2,000+ African languages.</p>
               </button>
 
               <button
@@ -184,7 +210,7 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
                   <span>World Heritage</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </div>
-                <p className="text-[11px] text-zinc-500 mt-1">UNESCO inscribed properties.</p>
+                <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-1">UNESCO inscribed properties.</p>
               </button>
             </div>
           </div>
@@ -244,11 +270,11 @@ export const ProgressiveAccordion: React.FC<ProgressiveAccordionProps> = ({
             >
               <div className="space-y-0.5 pr-4">
                 <div className="flex items-center gap-2">
-                  <h4 className="font-bold text-sm md:text-base text-zinc-900 dark:text-zinc-100">
+                  <h3 className="font-bold text-sm md:text-base text-zinc-900 dark:text-zinc-100">
                     {item.title}
-                  </h4>
+                  </h3>
                   {item.badge && (
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                       {item.badge}
                     </span>
                   )}

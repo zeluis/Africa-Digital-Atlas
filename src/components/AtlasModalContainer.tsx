@@ -67,7 +67,7 @@ const DoiVerificationModal = lazyWithRetry(
 export interface AtlasModalContainerProps {
   onSelectCountry: (entityId: string) => void;
   onSelectIndicator: (indicatorId: string) => void;
-  onSelectTab: (tab: any) => void;
+  onSelectTab: (tab: string) => void;
   onToggleTheme?: () => void;
 }
 
@@ -111,7 +111,7 @@ export const AtlasModalContainer: React.FC<AtlasModalContainerProps> = ({
         <OnboardingModal
           isOpen={true}
           onClose={() => closeModal('onboarding')}
-          onNavigate={(targetTab) => {
+          onNavigate={(targetTab: string) => {
             closeModal('onboarding');
             onSelectTab(targetTab);
           }}
@@ -122,7 +122,7 @@ export const AtlasModalContainer: React.FC<AtlasModalContainerProps> = ({
         <KeyboardShortcutsModal
           isOpen={true}
           onClose={() => closeModal('shortcuts')}
-          onNavigateTab={(tab) => {
+          onNavigateTab={(tab: string) => {
             closeModal('shortcuts');
             onSelectTab(tab);
           }}
@@ -134,7 +134,7 @@ export const AtlasModalContainer: React.FC<AtlasModalContainerProps> = ({
         <UniversalMonographModal
           isOpen={true}
           onClose={() => closeModal('monograph')}
-          onNavigateTab={(tab) => {
+          onNavigateTab={(tab: string) => {
             closeModal('monograph');
             onSelectTab(tab);
           }}
@@ -155,7 +155,7 @@ export const AtlasModalContainer: React.FC<AtlasModalContainerProps> = ({
           isOpen={true}
           onClose={() => closeModal('workingPapers')}
           onOpenCitationModal={() => openAcademicExport()}
-          onSelectReport={(reportId) => {
+          onSelectReport={(reportId: string) => {
             closeModal('workingPapers');
             onSelectTab(reportId);
           }}

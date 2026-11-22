@@ -10,12 +10,20 @@ import {
   AtlasManifest 
 } from './types';
 
+import {
+  ATLAS_VERSION,
+  ATLAS_SCHEMA_VERSION,
+  ATLAS_RELEASE_DATE,
+  ATLAS_INTEGRITY_TIMESTAMP,
+  ATLAS_SOVEREIGN_COUNT
+} from './platformMetadata';
+
 export const ATLAS_MANIFEST: AtlasManifest = {
-  atlasVersion: '1.2.0',
-  releaseDate: '2025-01-15',
-  schemaVersion: '2025.1',
+  atlasVersion: ATLAS_VERSION,
+  releaseDate: ATLAS_RELEASE_DATE,
+  schemaVersion: ATLAS_SCHEMA_VERSION,
   totalEntities: 58,
-  sovereignEntities: 54,
+  sovereignEntities: ATLAS_SOVEREIGN_COUNT,
   totalIndicators: 52,
   totalObservations: 2600,
   totalHeritageSites: 104,
@@ -26,7 +34,7 @@ export const ATLAS_MANIFEST: AtlasManifest = {
     'Eastern Africa',
     'Southern Africa'
   ],
-  lastIntegrityCheck: '2025-01-15T12:00:00Z'
+  lastIntegrityCheck: ATLAS_INTEGRITY_TIMESTAMP
 };
 
 export const DATA_SOURCES: DataSource[] = [

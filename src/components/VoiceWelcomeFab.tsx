@@ -100,7 +100,7 @@ export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
           onClick={handleTogglePlay}
           className={`relative p-2 rounded-xl border transition-all duration-200 cursor-pointer flex items-center gap-1.5 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 select-none ${
             isPlaying
-              ? 'bg-emerald-500/20 dark:bg-emerald-500/30 border-emerald-500 text-emerald-700 dark:text-emerald-300 shadow-md ring-2 ring-emerald-500/30 animate-pulse'
+              ? 'bg-emerald-500/20 dark:bg-emerald-500/30 border-emerald-500 text-emerald-700 dark:text-emerald-300 shadow-md ring-2 ring-emerald-500/30 motion-safe:animate-pulse'
               : 'bg-zinc-100/90 dark:bg-zinc-900/90 hover:bg-zinc-200 dark:hover:bg-zinc-800 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 hover:text-emerald-600 dark:hover:text-emerald-400'
           } ${className}`}
           title={tooltip || (isPlaying ? 'Stop Voice Welcome' : 'Listen to Afriata Welcome in current language')}
@@ -109,9 +109,9 @@ export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
           {isPlaying ? (
             <div className="flex items-center gap-1">
               <span className="flex items-end gap-0.5 h-3.5 w-3.5">
-                <span className="w-0.5 h-3 bg-emerald-600 dark:bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-0.5 h-4 bg-emerald-600 dark:bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-0.5 h-2 bg-emerald-600 dark:bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <span className="w-0.5 h-3 bg-emerald-600 dark:bg-emerald-400 rounded-full motion-safe:animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-0.5 h-4 bg-emerald-600 dark:bg-emerald-400 rounded-full motion-safe:animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-0.5 h-2 bg-emerald-600 dark:bg-emerald-400 rounded-full motion-safe:animate-bounce" style={{ animationDelay: '300ms' }} />
               </span>
               <span className="hidden xl:inline text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-300">
                 Playing
@@ -175,9 +175,9 @@ export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
       >
         {isPlaying ? (
           <span className="flex items-end gap-0.5 h-3.5 w-3.5">
-            <span className="w-0.5 h-3 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-            <span className="w-0.5 h-4 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-            <span className="w-0.5 h-2.5 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+            <span className="w-0.5 h-3 bg-white rounded-full motion-safe:animate-bounce" style={{ animationDelay: '0ms' }} />
+            <span className="w-0.5 h-4 bg-white rounded-full motion-safe:animate-bounce" style={{ animationDelay: '150ms' }} />
+            <span className="w-0.5 h-2.5 bg-white rounded-full motion-safe:animate-bounce" style={{ animationDelay: '300ms' }} />
           </span>
         ) : (
           <Volume2 className="w-4 h-4 transition-transform group-hover/fab:scale-110" />

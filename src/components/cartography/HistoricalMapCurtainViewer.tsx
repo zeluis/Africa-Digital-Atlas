@@ -793,24 +793,24 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
       <header className="w-full shrink-0 border-b border-stone-200/90 dark:border-stone-800/90 bg-[#FAF8F5]/98 dark:bg-stone-950/98 backdrop-blur-md pl-14 sm:pl-16 lg:pl-18 pr-3 sm:pr-4 lg:pr-5 py-2 flex flex-col gap-1.5 z-20 overflow-x-auto no-scrollbar shadow-xs">
         
         {/* ROW 1: Title, Plate Badge, Layer Toggles, and Zoom Controls */}
-        <div className="flex items-center justify-between gap-3 min-w-0">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 min-w-0">
           
           {/* Left: View Title & Active Plate Badge */}
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center flex-wrap gap-x-2 gap-y-0.5 min-w-0 flex-1">
             <h1 className="font-serif font-bold text-xs sm:text-sm md:text-base text-stone-900 dark:text-stone-100 whitespace-nowrap">
               Georeferenced Map Curtain
             </h1>
             <span className="text-stone-400" aria-hidden="true">·</span>
-            <span className="font-mono text-[10px] font-bold text-amber-900 dark:text-amber-300 whitespace-nowrap">
+            <span className="font-mono text-[10px] font-bold text-amber-900 dark:text-amber-300 truncate max-w-[260px] sm:max-w-none">
               {selectedPlate.year} · {selectedPlate.shortTitle || selectedPlate.cartographer}
             </span>
-            <span className="text-[10px] font-mono text-stone-500 dark:text-stone-400 hidden xl:inline truncate">
+            <span className="text-[10px] font-mono text-stone-500 dark:text-stone-400 hidden 2xl:inline truncate">
               · 17th–18th Century Cartography vs. 2026 Borders
             </span>
           </div>
 
           {/* Right: Layer Toggles & Zoom Controls */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0 text-xs">
+          <div className="flex items-center flex-wrap gap-1 sm:gap-2 shrink-0 text-xs">
             {/* Layer Toggles (Kingdoms & Borders) + Chronology Scrubber Trigger */}
             <div className="flex items-center gap-1 p-0.5 rounded-xl bg-black/5 dark:bg-white/5 border border-[#E5DDD0] dark:border-[#38322B]">
               <button
@@ -890,8 +890,8 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                           onClick={() => setActiveCommodityFilter(com)}
                           className={`px-1.5 py-0.5 rounded uppercase font-bold transition-all cursor-pointer ${
                             activeCommodityFilter === com
-                              ? 'bg-amber-600 text-white shadow-2xs'
-                              : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+                              ? 'bg-amber-700 text-white shadow-2xs'
+                              : 'text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100'
                           }`}
                           title={`Filter trade corridors: ${com}`}
                         >
@@ -974,10 +974,11 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
               <button
                 type="button"
                 onClick={() => zoomPane('both', -0.15)}
-                className="w-6 h-6 rounded-lg flex items-center justify-center text-stone-600 dark:text-stone-300 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                aria-label="Zoom Out"
+                className="w-6 h-6 rounded-lg flex items-center justify-center text-stone-700 dark:text-stone-300 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
                 title="Zoom Out (or Mouse Wheel down)"
               >
-                <ZoomOut className="w-3 h-3" />
+                <ZoomOut className="w-3 h-3" aria-hidden="true" />
               </button>
 
               <span className="text-[10px] font-mono font-bold text-stone-800 dark:text-stone-200 min-w-[2.2rem] text-center font-tabular">
@@ -987,19 +988,21 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
               <button
                 type="button"
                 onClick={() => zoomPane('both', 0.15)}
-                className="w-6 h-6 rounded-lg flex items-center justify-center text-stone-600 dark:text-stone-300 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                aria-label="Zoom In"
+                className="w-6 h-6 rounded-lg flex items-center justify-center text-stone-700 dark:text-stone-300 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
                 title="Zoom In (or Mouse Wheel up)"
               >
-                <ZoomIn className="w-3 h-3" />
+                <ZoomIn className="w-3 h-3" aria-hidden="true" />
               </button>
 
               <button
                 type="button"
                 onClick={() => resetPane('both')}
-                className="w-6 h-6 rounded-lg flex items-center justify-center text-stone-500 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                aria-label="Reset View to 100%"
+                className="w-6 h-6 rounded-lg flex items-center justify-center text-stone-700 dark:text-stone-300 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
                 title="Reset to 100% Uncropped Full Africa View"
               >
-                <RotateCcw className="w-3 h-3" />
+                <RotateCcw className="w-3 h-3" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -1066,12 +1069,12 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                 onClick={() => setComparisonMode('curtain')}
                 className={`flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold transition-all cursor-pointer ${
                   comparisonMode === 'curtain'
-                    ? 'bg-amber-600 text-white shadow-xs'
-                    : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
+                    ? 'bg-amber-700 text-white shadow-xs'
+                    : 'text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100'
                 }`}
                 title="Interactive Split Curtain Comparison"
               >
-                <SlidersHorizontal className="w-3 h-3" />
+                <SlidersHorizontal className="w-3 h-3" aria-hidden="true" />
                 <span>Split Curtain</span>
               </button>
 
@@ -1080,12 +1083,12 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                 onClick={() => setComparisonMode('opacity')}
                 className={`flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold transition-all cursor-pointer ${
                   comparisonMode === 'opacity'
-                    ? 'bg-amber-600 text-white shadow-xs'
-                    : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
+                    ? 'bg-amber-700 text-white shadow-xs'
+                    : 'text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100'
                 }`}
                 title="Alpha Opacity Blend Mode"
               >
-                <Layers className="w-3 h-3" />
+                <Layers className="w-3 h-3" aria-hidden="true" />
                 <span>Opacity</span>
               </button>
 
@@ -1094,12 +1097,12 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                 onClick={() => setComparisonMode('sideBySide')}
                 className={`hidden md:flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold transition-all cursor-pointer ${
                   comparisonMode === 'sideBySide'
-                    ? 'bg-amber-600 text-white shadow-xs'
-                    : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
+                    ? 'bg-amber-700 text-white shadow-xs'
+                    : 'text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100'
                 }`}
                 title="Dual Side-by-Side Viewport"
               >
-                <Columns2 className="w-3 h-3" />
+                <Columns2 className="w-3 h-3" aria-hidden="true" />
                 <span>Side-by-Side</span>
               </button>
             </div>
@@ -1112,11 +1115,12 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                   min="0"
                   max="100"
                   value={curtainPosition}
+                  aria-label="Curtain Position Percentage"
                   onChange={e => setCurtainPosition(Number(e.target.value))}
-                  className="w-14 sm:w-20 accent-amber-600 cursor-pointer"
+                  className="w-14 sm:w-20 accent-amber-700 cursor-pointer"
                   title="Curtain Position"
                 />
-                <span className="w-7 text-right font-bold text-amber-700 dark:text-amber-400 font-tabular">{Math.round(curtainPosition)}%</span>
+                <span className="w-7 text-right font-bold text-amber-800 dark:text-amber-300 font-tabular">{Math.round(curtainPosition)}%</span>
               </div>
             )}
 
@@ -1127,11 +1131,12 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                   min="0"
                   max="100"
                   value={opacityLevel}
+                  aria-label="Historical Plate Opacity Percentage"
                   onChange={e => setOpacityLevel(Number(e.target.value))}
-                  className="w-14 sm:w-20 accent-amber-600 cursor-pointer"
+                  className="w-14 sm:w-20 accent-amber-700 cursor-pointer"
                   title="Plate Opacity"
                 />
-                <span className="w-7 text-right font-bold text-amber-700 dark:text-amber-400 font-tabular">{Math.round(opacityLevel)}%</span>
+                <span className="w-7 text-right font-bold text-amber-800 dark:text-amber-300 font-tabular">{Math.round(opacityLevel)}%</span>
               </div>
             )}
 
@@ -1144,8 +1149,8 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                   onClick={() => setBorderVibrancy(mode)}
                   className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold capitalize transition-all cursor-pointer ${
                     borderVibrancy === mode
-                      ? 'bg-emerald-600 text-white shadow-xs'
-                      : 'text-stone-600 dark:text-stone-400 hover:text-stone-900'
+                      ? 'bg-emerald-700 text-white shadow-xs'
+                      : 'text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100'
                   }`}
                   title={`2026 Sovereign Boundaries: ${mode}`}
                 >
@@ -1338,8 +1343,9 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                 <button
                   type="button"
                   onClick={handleCloseFilmstrip}
-                  className="p-1 rounded-lg text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer shrink-0"
+                  className="p-1 rounded-lg text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer shrink-0"
                   title="Collapse filmstrip"
+                  aria-label="Collapse filmstrip"
                 >
                   <PanelLeftClose className="w-3.5 h-3.5" />
                 </button>
@@ -1376,14 +1382,14 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                       </div>
 
                       <div className="w-full min-w-0 px-0.5 overflow-hidden">
-                        <h5 
+                        <h2 
                           className="w-full font-serif font-bold text-[11px] text-stone-900 dark:text-stone-100 truncate group-hover:text-amber-800 dark:group-hover:text-amber-400 leading-tight block overflow-hidden text-ellipsis whitespace-nowrap"
                           title={plate.title}
                         >
                           {plate.shortTitle || plate.title}
-                        </h5>
+                        </h2>
                         <p 
-                          className="w-full text-[9.5px] font-mono text-stone-500 dark:text-stone-400 truncate block overflow-hidden text-ellipsis whitespace-nowrap"
+                          className="w-full text-[9.5px] font-mono text-stone-700 dark:text-stone-300 truncate block overflow-hidden text-ellipsis whitespace-nowrap"
                           title={plate.cartographer}
                         >
                           {plate.cartographer}
@@ -2194,9 +2200,9 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                           <div className="text-[10px] font-mono uppercase tracking-wider text-rose-400 font-bold">
                             Dual-Era Toponym Crosshair
                           </div>
-                          <h4 className="text-base font-serif font-bold text-stone-50">
+                          <h2 className="text-base font-serif font-bold text-stone-50">
                             {selectedToponymPin.antiqueName}
-                          </h4>
+                          </h2>
                         </div>
                       </div>
 
@@ -2365,6 +2371,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                       onClick={handlePrevPlate}
                       className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
                       title="Previous Antique Plate"
+                      aria-label="Previous Antique Plate"
                     >
                       <ChevronLeft className="w-3.5 h-3.5" />
                     </button>
@@ -2376,6 +2383,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                       onClick={handleNextPlate}
                       className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
                       title="Next Antique Plate"
+                      aria-label="Next Antique Plate"
                     >
                       <ChevronRight className="w-3.5 h-3.5" />
                     </button>
@@ -2385,8 +2393,9 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                   <button
                     type="button"
                     onClick={handleCloseDossier}
-                    className="p-1.5 rounded-xl text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer shrink-0"
+                    className="p-1.5 rounded-xl text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer shrink-0"
                     title="Collapse dossier panel"
+                    aria-label="Collapse dossier panel"
                   >
                     <PanelRightClose className="w-4 h-4" />
                   </button>
@@ -2397,11 +2406,11 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
               <div className="relative flex-1 min-h-0 overflow-hidden flex flex-col">
                 <div className="flex-1 overflow-y-auto stable-gutter sleek-scrollbar-amber p-4 sm:p-5 space-y-4 text-left pb-16">
                   {/* Quick Actions (Citation & High-Res Scan) */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <button
                       type="button"
                       onClick={handleCopyCitation}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-mono font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
+                      className="flex-1 min-w-[135px] flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-mono font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
                     >
                       {copiedCitation ? (
                         <>
@@ -2468,9 +2477,9 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
 
                   {/* Historical & Epistemological Significance */}
                   <div className="space-y-1.5">
-                    <h4 className="text-[10px] font-mono uppercase font-bold text-stone-500 dark:text-stone-400">
+                    <h3 className="text-[10px] font-mono uppercase font-bold text-stone-600 dark:text-stone-400">
                       Historical &amp; Epistemological Significance
-                    </h4>
+                    </h3>
                     <p className="text-xs font-serif leading-relaxed text-stone-800 dark:text-stone-200">
                       {selectedPlate.description}
                     </p>
@@ -2483,9 +2492,9 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                   {/* Toponyms & Historic Regions to Observe */}
                   <div className="space-y-2 pt-1">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-[10px] font-mono uppercase font-bold text-stone-500 dark:text-stone-400">
+                      <h3 className="text-[10px] font-mono uppercase font-bold text-stone-600 dark:text-stone-400">
                         Toponyms &amp; Historic Regions to Observe
-                      </h4>
+                      </h3>
                       <button
                         type="button"
                         onClick={() => {
@@ -2520,11 +2529,11 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
 
                   {/* Bibliographical Reference */}
                   <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700 text-xs font-serif text-stone-700 dark:text-stone-300 space-y-1">
-                    <span className="text-[9.5px] font-mono uppercase font-bold text-stone-400 block">
+                    <span className="text-[9.5px] font-mono uppercase font-bold text-stone-600 dark:text-stone-400 block">
                       Bibliographical Source
                     </span>
                     <p className="italic">{selectedPlate.source}</p>
-                    <p className="text-[10px] font-mono text-stone-500 pt-0.5">
+                    <p className="text-[10px] font-mono text-stone-600 dark:text-stone-400 pt-0.5">
                       Preserved at: <strong>{selectedPlate.institution}</strong>
                     </p>
                   </div>

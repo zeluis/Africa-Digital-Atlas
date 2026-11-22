@@ -138,8 +138,8 @@ export const ProvenanceQualityView: React.FC = () => {
       <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 shadow-2xl transition-colors">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700/60 text-xs font-mono font-semibold text-emerald-700 dark:text-emerald-300 mb-2">
-              <ShieldCheck className="w-3.5 h-3.5" /> Provenance & Quality Assurance Subsystem
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700/60 text-xs font-mono font-semibold text-emerald-700 dark:text-emerald-300 mb-2">
+              <ShieldCheck className="w-3.5 h-3.5" /> Provenance &amp; Quality Assurance Subsystem
             </div>
             <h1 className="text-2xl md:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 font-display">
               Data Pipeline & Geography System
@@ -151,6 +151,7 @@ export const ProvenanceQualityView: React.FC = () => {
 
           <div className="flex flex-wrap items-center gap-2.5">
             <button
+              type="button"
               onClick={() => atlasModalStore.openMethodologyAudit()}
               className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 text-xs md:text-sm font-semibold transition-colors cursor-pointer"
             >
@@ -158,6 +159,7 @@ export const ProvenanceQualityView: React.FC = () => {
               <span>Harmonization &amp; Audit Dossier</span>
             </button>
             <button
+              type="button"
               onClick={() => atlasModalStore.openColophon()}
               className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs md:text-sm font-semibold border border-stone-200 dark:border-stone-700 transition-colors cursor-pointer"
             >
@@ -165,13 +167,14 @@ export const ProvenanceQualityView: React.FC = () => {
               <span>Colophon</span>
             </button>
             <button
+              type="button"
               onClick={() =>
                 atlasModalStore.openAcademicExport({
                   title: 'Africa Data Atlas & Cartographic Observatory',
                   sourceContext: 'Methodological Audit & Provenance Verification Subsystem',
                 })
               }
-              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs md:text-sm font-bold transition-all shadow-xs cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs md:text-sm font-bold transition-all shadow-xs cursor-pointer"
             >
               <Quote className="w-4 h-4" />
               <span>Cite (DOI)</span>
@@ -229,42 +232,42 @@ export const ProvenanceQualityView: React.FC = () => {
             className="border border-zinc-200/80 dark:border-zinc-800/80 p-3 rounded-2xl shadow-xs transition-colors"
             style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
           >
-            <span className="text-[10px] uppercase text-zinc-500 block font-bold">Predictability</span>
+            <span className="text-[10px] uppercase text-zinc-600 dark:text-zinc-400 block font-bold">Predictability</span>
             <span className="font-bold text-zinc-900 dark:text-zinc-100 text-xs">Deterministic</span>
           </div>
           <div 
             className="border border-zinc-200/80 dark:border-zinc-800/80 p-3 rounded-2xl shadow-xs transition-colors"
             style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
           >
-            <span className="text-[10px] uppercase text-zinc-500 block font-bold">Runtime Delay</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs">0ms Overhead</span>
+            <span className="text-[10px] uppercase text-zinc-600 dark:text-zinc-400 block font-bold">Runtime Delay</span>
+            <span className="font-bold text-emerald-700 dark:text-emerald-400 text-xs">0ms Overhead</span>
           </div>
           <div 
             className="border border-zinc-200/80 dark:border-zinc-800/80 p-3 rounded-2xl shadow-xs transition-colors"
             style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
           >
-            <span className="text-[10px] uppercase text-zinc-500 block font-bold">Connectivity</span>
-            <span className="font-bold text-cyan-600 dark:text-cyan-400 text-xs">100% Offline</span>
+            <span className="text-[10px] uppercase text-zinc-600 dark:text-zinc-400 block font-bold">Connectivity</span>
+            <span className="font-bold text-cyan-700 dark:text-cyan-400 text-xs">100% Offline</span>
           </div>
           <div 
             className="border border-zinc-200/80 dark:border-zinc-800/80 p-3 rounded-2xl shadow-xs transition-colors"
             style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
           >
-            <span className="text-[10px] uppercase text-zinc-500 block font-bold">Rendering</span>
-            <span className="font-bold text-amber-600 dark:text-amber-400 text-xs">Unified 1000px</span>
+            <span className="text-[10px] uppercase text-zinc-600 dark:text-zinc-400 block font-bold">Rendering</span>
+            <span className="font-bold text-amber-800 dark:text-amber-300 text-xs">Unified 1000px</span>
           </div>
           <div 
             className="border border-zinc-200/80 dark:border-zinc-800/80 p-3 rounded-2xl shadow-xs transition-colors"
             style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
           >
-            <span className="text-[10px] uppercase text-zinc-500 block font-bold">Country Silhouettes</span>
+            <span className="text-[10px] uppercase text-zinc-600 dark:text-zinc-400 block font-bold">Country Silhouettes</span>
             <span className="font-bold text-zinc-900 dark:text-zinc-100 text-xs">54 Reusable</span>
           </div>
           <div 
             className="border border-zinc-200/80 dark:border-zinc-800/80 p-3 rounded-2xl shadow-xs transition-colors"
             style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
           >
-            <span className="text-[10px] uppercase text-zinc-500 block font-bold">Regional Silhouettes</span>
+            <span className="text-[10px] uppercase text-zinc-600 dark:text-zinc-400 block font-bold">Regional Silhouettes</span>
             <span className="font-bold text-zinc-900 dark:text-zinc-100 text-xs">5 UN Geoscheme</span>
           </div>
         </div>
@@ -281,13 +284,13 @@ export const ProvenanceQualityView: React.FC = () => {
                 className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900/50 space-y-1.5"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-800/40">
+                  <span className="font-mono text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-800/40">
                     STAGE 0{idx + 1}
                   </span>
-                  <span className="font-mono text-[10px] text-zinc-500">{st.tech}</span>
+                  <span className="font-mono text-[10px] text-zinc-600 dark:text-zinc-400">{st.tech}</span>
                 </div>
                 <div className="font-bold text-sm text-zinc-800 dark:text-zinc-200">{st.title}</div>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">{st.desc}</p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">{st.desc}</p>
               </div>
             ))}
           </div>
@@ -301,13 +304,13 @@ export const ProvenanceQualityView: React.FC = () => {
           style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs text-zinc-500 font-medium">Entities Monitored</span>
+            <span className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">Entities Monitored</span>
             <Database className="w-4 h-4 text-emerald-500" />
           </div>
           <div className="text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 font-mono">
             {auditResult.totalEntitiesChecked}
           </div>
-          <p className="text-[11px] text-zinc-500">54 sovereign nations + territories</p>
+          <p className="text-[11px] text-zinc-600 dark:text-zinc-400">54 sovereign nations + territories</p>
         </div>
 
         <div 
@@ -315,13 +318,13 @@ export const ProvenanceQualityView: React.FC = () => {
           style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs text-zinc-500 font-medium">Statistical Observations</span>
+            <span className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">Statistical Observations</span>
             <Layers className="w-4 h-4 text-cyan-500" />
           </div>
-          <div className="text-2xl font-extrabold text-cyan-600 dark:text-cyan-400 font-mono">
+          <div className="text-2xl font-extrabold text-cyan-700 dark:text-cyan-400 font-mono">
             {(auditResult?.totalObservationsChecked ?? 0).toLocaleString()}
           </div>
-          <p className="text-[11px] text-zinc-500">Canonical data points ingested</p>
+          <p className="text-[11px] text-zinc-600 dark:text-zinc-400">Canonical data points ingested</p>
         </div>
 
         <div 
@@ -329,13 +332,13 @@ export const ProvenanceQualityView: React.FC = () => {
           style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs text-zinc-500 font-medium">Curated Sources</span>
+            <span className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">Curated Sources</span>
             <FileCode className="w-4 h-4 text-amber-500" />
           </div>
-          <div className="text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-mono">
+          <div className="text-2xl font-extrabold text-amber-700 dark:text-amber-400 font-mono">
             {sources.length}
           </div>
-          <p className="text-[11px] text-zinc-500">World Bank, IMF, UN DESA, UNESCO</p>
+          <p className="text-[11px] text-zinc-600 dark:text-zinc-400">World Bank, IMF, UN DESA, UNESCO</p>
         </div>
 
         <div 
@@ -343,13 +346,13 @@ export const ProvenanceQualityView: React.FC = () => {
           style={{ backgroundColor: 'var(--region-pan-african-calm)' }}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs text-zinc-500 font-medium">Integrity Score</span>
+            <span className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">Integrity Score</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
           </div>
-          <div className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
+          <div className="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400 font-mono">
             {auditResult.coveragePercentage}%
           </div>
-          <p className="text-[11px] text-zinc-500">Zero orphaned observations</p>
+          <p className="text-[11px] text-zinc-600 dark:text-zinc-400">Zero orphaned observations</p>
         </div>
       </div>
 
@@ -390,8 +393,8 @@ export const ProvenanceQualityView: React.FC = () => {
       <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 md:p-8 space-y-6 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-5">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700/60 text-xs font-mono font-semibold text-amber-700 dark:text-amber-300 mb-2">
-              <Globe2 className="w-3.5 h-3.5" /> {apiConnectors.length} Multilateral & Specialized Data Feeds
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700/60 text-xs font-mono font-semibold text-amber-700 dark:text-amber-300 mb-2">
+              <Globe2 className="w-3.5 h-3.5" /> {apiConnectors.length} Multilateral &amp; Specialized Data Feeds
             </div>
             <h2 className="text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-100">
               International Statistical API Connectors
@@ -423,12 +426,12 @@ export const ProvenanceQualityView: React.FC = () => {
                         {connector.acronym}
                       </span>
                     </div>
-                    <span className="text-[10px] font-mono text-zinc-400">
+                    <span className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400">
                       {connector.format}
                     </span>
                   </div>
-                  <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">{connector.name}</h4>
-                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">{connector.organization} • {connector.category}</p>
+                  <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">{connector.name}</h3>
+                  <p className="text-[11px] text-zinc-600 dark:text-zinc-400 font-medium">{connector.organization} • {connector.category}</p>
                   <p className="text-xs text-zinc-600 dark:text-zinc-300 line-clamp-2 leading-relaxed">
                     {connector.coverageSummary}
                   </p>
@@ -488,7 +491,7 @@ export const ProvenanceQualityView: React.FC = () => {
       <div className="rounded-3xl border border-[#DCD9CE] dark:border-[#2C2E2A] bg-[#FAF8F5] dark:bg-[#1E201B] p-6 md:p-8 space-y-6 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2DAD0] dark:border-[#2C2E2A] pb-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#3F6955]/10 text-[#3F6955] dark:text-[#6EA88F] text-[11px] font-mono font-semibold mb-1">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#3F6955]/10 text-[#3F6955] dark:text-[#6EA88F] text-[11px] font-mono font-semibold mb-1">
               <FileSpreadsheet className="w-3.5 h-3.5" />
               <span>RESEARCH DATA WORKBENCH</span>
             </div>
@@ -614,8 +617,8 @@ export const ProvenanceQualityView: React.FC = () => {
                       {flag.severity}
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-zinc-500 dark:text-zinc-400 max-w-xs">{flag.description}</td>
-                  <td className="py-3 px-4 text-emerald-600 dark:text-emerald-400 font-medium">{flag.resolution || 'Resolved'}</td>
+                  <td className="py-3 px-4 text-zinc-600 dark:text-zinc-400 max-w-xs">{flag.description}</td>
+                  <td className="py-3 px-4 text-emerald-800 dark:text-emerald-400 font-medium">{flag.resolution || 'Resolved'}</td>
                 </tr>
               ))}
             </tbody>

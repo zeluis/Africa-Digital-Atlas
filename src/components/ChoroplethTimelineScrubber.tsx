@@ -10,6 +10,9 @@ interface ChoroplethTimelineScrubberProps {
   metricName: string;
   metricUnit?: string;
   continentalMean?: number;
+  isModeledTrajectory?: boolean;
+  modeledCount?: number;
+  totalCount?: number;
 }
 
 const HISTORICAL_EPOCHS: Record<number, string> = {
@@ -34,7 +37,10 @@ export const ChoroplethTimelineScrubber: React.FC<ChoroplethTimelineScrubberProp
   onTogglePlay,
   metricName,
   metricUnit = '',
-  continentalMean
+  continentalMean,
+  isModeledTrajectory = false,
+  modeledCount = 0,
+  totalCount = 0
 }) => {
   const [playSpeed, setPlaySpeed] = useState<number>(1.0); // 0.5, 1.0, 2.0
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -85,6 +91,7 @@ export const ChoroplethTimelineScrubber: React.FC<ChoroplethTimelineScrubberProp
                 : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/30'
             }`}
             title={isPlaying ? 'Pause time-series animation' : 'Play time-series 1990–2024'}
+            aria-label={isPlaying ? 'Pause time-series animation' : 'Play time-series 1990–2024'}
           >
             {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
           </button>
@@ -96,6 +103,7 @@ export const ChoroplethTimelineScrubber: React.FC<ChoroplethTimelineScrubberProp
               disabled={currentYear <= 1990}
               className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 disabled:opacity-40 cursor-pointer"
               title="Step backward 1 year"
+              aria-label="Step backward 1 year"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -106,6 +114,7 @@ export const ChoroplethTimelineScrubber: React.FC<ChoroplethTimelineScrubberProp
               disabled={currentYear >= 2024}
               className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 disabled:opacity-40 cursor-pointer"
               title="Step forward 1 year"
+              aria-label="Step forward 1 year"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -115,6 +124,7 @@ export const ChoroplethTimelineScrubber: React.FC<ChoroplethTimelineScrubberProp
               onClick={() => onYearChange(2024)}
               className="p-1.5 rounded-lg text-zinc-400 hover:text-emerald-600 transition-colors cursor-pointer"
               title="Reset to latest 2024 observation"
+              aria-label="Reset to latest 2024 observation"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
@@ -151,6 +161,16 @@ export const ChoroplethTimelineScrubber: React.FC<ChoroplethTimelineScrubberProp
             <span className="text-[9px] font-mono text-zinc-500 dark:text-zinc-400 truncate max-w-[200px] sm:max-w-none">
               {nearestEpoch}
             </span>
+            {isModeledTrajectory && (
+              <span
+                className="text-[9px] font-mono font-semibold text-amber-700 dark:text-amber-300 truncate max-w-[220px] sm:max-w-none"
+                title="Missing historical observations are interpolated along documented continental growth and scaling curves."
+              >
+                {currentYear !== 2024
+                  ? `Modeled trajectory (${modeledCount}/${totalCount} interpolated)`
+                  : `Includes ${modeledCount} modeled estimates`}
+              </span>
+            )}
           </div>
         </div>
 
@@ -164,6 +184,8 @@ export const ChoroplethTimelineScrubber: React.FC<ChoroplethTimelineScrubberProp
               step="1"
               value={currentYear}
               onChange={(e) => onYearChange(Number(e.target.value))}
+              aria-label={`Scrub choropleth timeline year for ${metricName}`}
+              aria-valuetext={`${currentYear}`}
               className="w-full accent-emerald-600 cursor-pointer h-2 bg-emerald-200 dark:bg-emerald-900/60 rounded-lg"
             />
           </div>

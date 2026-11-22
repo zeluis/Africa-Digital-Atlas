@@ -8,6 +8,7 @@ import {
   getRegionCardTonalStyle,
   usePrefersReducedMotion 
 } from '../utils/motion';
+import { handleTabListKeyDown } from '../utils/a11y';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from '../components/CountryFlag';
 import { getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
@@ -279,8 +280,8 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                 UNESCO World Heritage Archive
               </h1>
               {activeMeta && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-900 dark:text-amber-300 font-mono text-[9.5px] font-bold border border-amber-500/30 whitespace-nowrap">
-                  WHC #{activeMeta.idNumber} • {activeMeta.region}
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-900 dark:text-amber-300 font-mono text-[9.5px] font-bold border border-amber-500/30 whitespace-nowrap">
+                  WHC #{activeMeta.idNumber} · {activeMeta.region}
                 </span>
               )}
               {activeMeta?.entityId && atlas.getEntity(activeMeta.entityId) && (
@@ -309,14 +310,17 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
         <div className="flex flex-wrap items-center gap-2">
           {/* Region Filter Pills */}
           <div className="relative inline-flex p-0.5 rounded-xl bg-stone-200/70 dark:bg-stone-900 border border-stone-300/60 dark:border-stone-800 text-[11px] font-mono" role="tablist" aria-label="Filter heritage sites by region">
-            {(['All', 'Africa', 'Arab States'] as RegionFilter[]).map(reg => {
+            {(['All', 'Africa', 'Arab States'] as RegionFilter[]).map((reg, rIdx, regArr) => {
               const isSelected = regionFilter === reg;
               return (
                 <button
                   key={reg}
+                  type="button"
                   role="tab"
                   aria-selected={isSelected}
+                  tabIndex={isSelected ? 0 : -1}
                   onClick={() => setRegionFilter(reg)}
+                  onKeyDown={(e) => handleTabListKeyDown(e, regArr, rIdx, setRegionFilter, 'horizontal')}
                   className={`relative px-2.5 py-1 rounded-lg font-bold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
                     isSelected
                       ? 'text-white dark:text-stone-950 shadow-2xs'
@@ -343,15 +347,18 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
 
           {/* Category Filter Pills */}
           <div className="relative inline-flex p-0.5 rounded-xl bg-stone-200/70 dark:bg-stone-900 border border-stone-300/60 dark:border-stone-800 text-[11px] font-mono overflow-x-auto max-w-full" role="tablist" aria-label="Filter heritage sites by category">
-            {(['All', 'Cultural', 'Natural', 'Mixed', 'Danger'] as CategoryFilter[]).map(cat => {
+            {(['All', 'Cultural', 'Natural', 'Mixed', 'Danger'] as CategoryFilter[]).map((cat, cIdx, catArr) => {
               const isActive = categoryFilter === cat;
               const isDanger = cat === 'Danger';
               return (
                 <button
                   key={cat}
+                  type="button"
                   role="tab"
                   aria-selected={isActive}
+                  tabIndex={isActive ? 0 : -1}
                   onClick={() => setCategoryFilter(cat)}
+                  onKeyDown={(e) => handleTabListKeyDown(e, catArr, cIdx, setCategoryFilter, 'horizontal')}
                   className={`relative px-2 py-1 rounded-lg font-bold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap flex items-center gap-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
                     isActive
                       ? isDanger
@@ -379,11 +386,12 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
 
           {/* Sleek Biome Slide Panel Trigger Button */}
           <button
+            type="button"
             onClick={() => setIsBiomePanelOpen(true)}
             className={`px-2.5 py-1 rounded-xl text-[11px] font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
               biomeFilter !== 'All Biomes'
                 ? 'bg-emerald-900/15 dark:bg-emerald-500/20 text-emerald-950 dark:text-emerald-300 border-emerald-600/40 dark:border-emerald-500/40 shadow-xs'
-                : 'bg-stone-200/70 hover:bg-stone-300/80 dark:bg-stone-900 dark:hover:bg-stone-850 text-stone-700 hover:text-stone-900 dark:text-stone-300 dark:hover:text-stone-100 border-stone-300/60 dark:border-stone-800'
+                : 'bg-stone-200/70 hover:bg-stone-300/80 dark:bg-stone-900 dark:hover:bg-stone-800 text-stone-700 hover:text-stone-900 dark:text-stone-300 dark:hover:text-stone-100 border-stone-300/60 dark:border-stone-800'
             }`}
             title="Open Ecological Biomes & Biospheres Catalog"
           >
@@ -391,7 +399,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
             <span className="truncate max-w-[120px] sm:max-w-[150px]">
               {biomeFilter === 'All Biomes' ? 'Biomes' : biomeFilter}
             </span>
-            <span className="px-1.5 py-0.2 rounded-full text-[9px] bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 font-mono font-bold">
+            <span className="px-1.5 py-0.2 rounded-md text-[9px] bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 font-mono font-bold">
               {biomeCounts[biomeFilter] ?? unescoSites.length}
             </span>
             <SlidersHorizontal className="w-3 h-3 text-stone-400 shrink-0" />
@@ -405,11 +413,14 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search site, state, #ID..."
+              aria-label="Search UNESCO heritage sites"
               className="w-full pl-8 pr-6 py-1 rounded-xl bg-white dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 text-xs font-mono text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-1 focus:ring-amber-600"
             />
             {searchQuery && (
               <button
+                type="button"
                 onClick={() => setSearchQuery('')}
+                aria-label="Clear heritage search"
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 cursor-pointer"
               >
                 <X className="w-3 h-3" />
@@ -419,6 +430,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
 
           {/* Import UNESCO XML Button */}
           <button
+            type="button"
             onClick={() => {
               setIsXmlModalOpen(true);
               setXmlImportStatus(null);
@@ -433,9 +445,14 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
           {/* Segmented Switchboard: Plate Viewer vs Directory Grid */}
           <div className="relative inline-flex p-0.5 rounded-xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner" role="tablist" aria-label="Switch heritage view format">
             <button
+              type="button"
+              id="heritage-view-tab-viewer"
               role="tab"
               aria-selected={viewMode === 'viewer'}
+              aria-controls="heritage-view-panel-viewer"
+              tabIndex={viewMode === 'viewer' ? 0 : -1}
               onClick={() => setViewMode('viewer')}
+              onKeyDown={(e) => handleTabListKeyDown(e, ['viewer', 'directory'] as const, 0, setViewMode, 'horizontal')}
               className={`relative px-2.5 py-1 rounded-lg text-xs font-sans font-bold transition-colors duration-150 cursor-pointer select-none flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
                 viewMode === 'viewer'
                   ? 'text-white dark:text-stone-900 shadow-xs'
@@ -458,9 +475,14 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
             </button>
 
             <button
+              type="button"
+              id="heritage-view-tab-directory"
               role="tab"
               aria-selected={viewMode === 'directory'}
+              aria-controls="heritage-view-panel-directory"
+              tabIndex={viewMode === 'directory' ? 0 : -1}
               onClick={() => setViewMode('directory')}
+              onKeyDown={(e) => handleTabListKeyDown(e, ['viewer', 'directory'] as const, 1, setViewMode, 'horizontal')}
               className={`relative px-2.5 py-1 rounded-lg text-xs font-sans font-bold transition-colors duration-150 cursor-pointer select-none flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
                 viewMode === 'directory'
                   ? 'text-white dark:text-stone-900 shadow-xs'
@@ -491,7 +513,12 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
 
       {/* Main Workspace Area: Embedded ArchivalImageViewer or Directory Cards Grid */}
       {viewMode === 'viewer' ? (
-        <div className="flex-1 w-full min-h-0 overflow-hidden relative">
+        <div
+          id="heritage-view-panel-viewer"
+          role="tabpanel"
+          aria-labelledby="heritage-view-tab-viewer"
+          className="flex-1 w-full min-h-0 overflow-hidden relative"
+        >
           {activeIllustration ? (
             <ArchivalImageViewer
               illustration={activeIllustration}
@@ -509,6 +536,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                 No UNESCO World Heritage properties match your current filter.
               </p>
               <button
+                type="button"
                 onClick={() => {
                   setRegionFilter('All');
                   setCategoryFilter('All');
@@ -523,7 +551,12 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
           )}
         </div>
       ) : (
-        <div className="flex-1 w-full min-h-0 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <div
+          id="heritage-view-panel-directory"
+          role="tabpanel"
+          aria-labelledby="heritage-view-tab-directory"
+          className="flex-1 w-full min-h-0 overflow-y-auto p-4 sm:p-6 lg:p-8"
+        >
           <StaggerGrid 
             role="region" 
             aria-label="UNESCO World Heritage Directory Grid" 
@@ -616,7 +649,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                     <div className="space-y-2">
                       <div className="flex items-center justify-between gap-2">
                         <span
-                          className={`text-[10px] uppercase font-mono font-bold px-2.5 py-0.5 rounded-full border ${
+                          className={`text-[10px] uppercase font-mono font-bold px-2.5 py-0.5 rounded-md border ${
                             meta.category === 'Cultural'
                               ? 'bg-amber-50 dark:bg-amber-950/80 border-amber-200 dark:border-amber-700 text-amber-800 dark:text-amber-300'
                               : meta.category === 'Natural'
@@ -626,7 +659,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
                         >
                           {meta.category} • {meta.criteriaTxt}
                         </span>
-                        <div className="flex items-center gap-1 font-mono text-xs text-stone-500 dark:text-stone-400">
+                        <div className="flex items-center gap-1 font-mono text-xs text-stone-600 dark:text-stone-400">
                           <Calendar className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
                           <span>{meta.dateInscribed}</span>
                         </div>

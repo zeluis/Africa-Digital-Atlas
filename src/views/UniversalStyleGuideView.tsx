@@ -118,7 +118,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
               <button
                 type="button"
                 onClick={onOpenMonographModal}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-sm cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold transition-all shadow-sm cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
               >
                 <BookOpen className="w-4 h-4" />
                 <span>Open Interactive Monograph</span>
@@ -174,7 +174,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                 {isActive && (
                   <m.div
                     layoutId="styleGuidePrimaryTab"
-                    className="absolute inset-0 rounded-xl bg-amber-600 shadow-sm"
+                    className="absolute inset-0 rounded-xl bg-amber-700 shadow-sm"
                     transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
                   />
                 )}
@@ -248,7 +248,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                     <Compass className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">Institutional Mandate</h3>
+                    <h2 className="text-base font-bold text-stone-900 dark:text-stone-100">Institutional Mandate</h2>
                     <p className="text-xs text-stone-500 dark:text-stone-400">Pan-African Sovereign Data Good</p>
                   </div>
                 </div>
@@ -268,7 +268,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                       <Lock className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">Dual Licensing: CC BY 4.0 &amp; MIT</h3>
+                      <h2 className="text-base font-bold text-stone-900 dark:text-stone-100">Dual Licensing: CC BY 4.0 &amp; MIT</h2>
                       <p className="text-xs text-stone-500 dark:text-stone-400 font-mono">LICENSE-ASSETS (CC BY 4.0) · LICENSE-CODE (MIT)</p>
                     </div>
                   </div>
@@ -282,7 +282,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                   </p>
                 </div>
                 <div className="flex items-center justify-between pt-1 text-xs">
-                  <span className="text-stone-500">Required Attribution Form:</span>
+                  <span className="text-stone-600 dark:text-stone-400">Required Attribution Form:</span>
                   <button
                     onClick={() => handleCopy('Cartographic visualization by ZéLuis F. Correia (Afriata: Africa Data Atlas, CC BY 4.0, https://doi.org/10.6084/m9.figshare.34065711).', 'legal-cite')}
                     className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 text-stone-700 dark:text-stone-300 text-[11px] font-medium transition-colors cursor-pointer"
@@ -300,10 +300,10 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
         {activeTab === 'design-system' && (
           <div className="space-y-6">
             <div className="p-6 rounded-3xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 space-y-4">
-              <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+              <h2 className="text-base font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
                 <Palette className="w-4 h-4 text-amber-500" />
                 <span>UN M49 Macro-Geoscheme Curated Regional Palette</span>
-              </h3>
+              </h2>
               <p className="text-xs text-stone-500 dark:text-stone-400">
                 To preserve geopolitical neutrality and eliminate projection bias, the five UN M49 macro-regions are strictly mapped to distinct, calm regional hues:
               </p>
@@ -315,7 +315,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
                       <span className="text-[11px] font-mono font-bold text-white drop-shadow-sm">{palette.warmAccent}</span>
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-stone-900 dark:text-stone-100 truncate">{region}</h4>
+                      <h3 className="text-xs font-bold text-stone-900 dark:text-stone-100 truncate">{region}</h3>
                       <p className="text-[10px] text-stone-500 font-mono truncate">M49 Code: {palette.m49Code}</p>
                     </div>
                   </div>
@@ -326,7 +326,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
             {/* Typography & Density Matrix */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="p-6 rounded-3xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 space-y-4">
-                <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">Typographic Polyphony</h3>
+                <h2 className="text-base font-bold text-stone-900 dark:text-stone-100">Typographic Polyphony</h2>
                 <div className="space-y-3 text-xs">
                   <div className="p-3 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800">
                     <span className="text-[10px] font-mono uppercase text-stone-400 block mb-1">Display & Headings</span>
@@ -350,7 +350,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
               </div>
 
               <div className="p-6 rounded-3xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 space-y-4">
-                <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">Density Adaptation Standards</h3>
+                <h2 className="text-base font-bold text-stone-900 dark:text-stone-100">Density Adaptation Standards</h2>
                 <div className="space-y-2.5 text-xs text-stone-600 dark:text-stone-300">
                   <div className="flex items-center justify-between p-3 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800">
                     <div>
@@ -385,7 +385,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="p-6 rounded-3xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 space-y-3">
                 <span className="text-xs font-mono font-bold text-amber-600 dark:text-amber-400">ENGINE SPECIFICATION</span>
-                <h4 className="text-xl font-extrabold text-stone-900 dark:text-stone-100">5796 × 5867 Grid</h4>
+                <h2 className="text-xl font-extrabold text-stone-900 dark:text-stone-100">5796 × 5867 Grid</h2>
                 <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
                   Cartesian bounding box calibrated directly from `public/africa-final.svg` preserving true spatial integrity and sub-pixel coastline curvatures across the Atlantic and Indian Oceans.
                 </p>
@@ -393,7 +393,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
 
               <div className="p-6 rounded-3xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 space-y-3">
                 <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">SUB-NATIONAL TOPOLOGY</span>
-                <h4 className="text-xl font-extrabold text-stone-900 dark:text-stone-100">1,017 Admin-1 Borders</h4>
+                <h2 className="text-xl font-extrabold text-stone-900 dark:text-stone-100">1,017 Admin-1 Borders</h2>
                 <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
                   Provincial, state, and county boundary paths dynamically rendered with hairline non-scaling strokes (0.4px to 1.2px) supporting sub-national data inspection.
                 </p>
@@ -401,7 +401,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
 
               <div className="p-6 rounded-3xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 space-y-3">
                 <span className="text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400">SCRUTINY ENGINE</span>
-                <h4 className="text-xl font-extrabold text-stone-900 dark:text-stone-100">Gesture Isolation</h4>
+                <h2 className="text-xl font-extrabold text-stone-900 dark:text-stone-100">Gesture Isolation</h2>
                 <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
                   Non-passive wheel interceptor (`passive: false`) and two-finger mobile Euclidean touch distance calculations eliminate page bouncing during deep plate inspection.
                 </p>
@@ -411,7 +411,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
             <div className="p-6 rounded-3xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-base font-bold text-stone-900 dark:text-stone-100">Direct Navigation & Visualizers</h4>
+                  <h2 className="text-base font-bold text-stone-900 dark:text-stone-100">Direct Navigation & Visualizers</h2>
                   <p className="text-xs text-stone-500">Explore live cartographic engines implemented across the platform</p>
                 </div>
               </div>
@@ -451,9 +451,9 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
         {activeTab === 'assets' && (
           <div className="space-y-6">
             <div className="p-6 rounded-3xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 space-y-4">
-              <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">
+              <h2 className="text-base font-bold text-stone-900 dark:text-stone-100">
                 Mathematical Pure Vector Emblems Catalog
-              </h3>
+              </h2>
               <p className="text-xs text-stone-500 dark:text-stone-400">
                 All institutional marks are pure inline SVG elements rendered locally with zero network latency:
               </p>
@@ -483,7 +483,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
             </div>
 
             <div className="p-6 rounded-3xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 space-y-3">
-              <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100">Archival Visual Collections</h4>
+              <h2 className="text-sm font-bold text-stone-900 dark:text-stone-100">Archival Visual Collections</h2>
               <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
                 The platform indexes <strong className="text-stone-900 dark:text-stone-100">1,252 high-resolution historical plates</strong>, including 1,220 documented visual records from the Middle Passage and 32 colonial <em>Pintura de Castas</em> series preserved at the <em>Museo Nacional del Virreinato</em>.
               </p>
@@ -504,7 +504,7 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
             <div className="p-6 rounded-3xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">16 Harmonized Multilateral Data Connectors</h3>
+                  <h2 className="text-base font-bold text-stone-900 dark:text-stone-100">16 Harmonized Multilateral Data Connectors</h2>
                   <p className="text-xs text-stone-500">Live API ingestion, fallback caches, and deterministic SHA-256 integrity audits</p>
                 </div>
                 <button
@@ -543,10 +543,10 @@ export const UniversalStyleGuideView: React.FC<UniversalStyleGuideViewProps> = (
         {activeTab === 'ethics-governance' && (
           <div className="space-y-6">
             <div className="p-6 rounded-3xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 space-y-4">
-              <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+              <h2 className="text-base font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-emerald-500" />
                 <span>Zero-Surveillance Standard & Academic Independence</span>
-              </h3>
+              </h2>
               <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
                 Afriata adheres strictly to the EU General Data Protection Regulation (GDPR) and the African Union Malabo Convention on Personal Data Protection. We operate zero commercial advertising cookies, zero third-party tracking scripts, and zero speech-recording storage.
               </p>

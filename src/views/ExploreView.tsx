@@ -35,7 +35,7 @@ import {
   Check
 } from 'lucide-react';
 import { getCountryTradeFlows } from '../data/criticalMineralsData';
-import { ENTITY_BLOCS } from '../data/entityBlocs';
+import { ENTITY_BLOCS, type EntityBlocId } from '../data/entityBlocs';
 
 interface ExploreViewProps {
   onSelectCountry: (entityId: string) => void;
@@ -97,12 +97,12 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   ];
 
   const REGION_ACCENT_COLORS: Record<AfricanRegion | 'All', string> = {
-    'All': '#10B981',
-    'Northern Africa': '#2563EB',
-    'Western Africa': '#16A34A',
-    'Central Africa': '#C026D3',
-    'Eastern Africa': '#EAB308',
-    'Southern Africa': '#DC2626'
+    'All': '#047857',
+    'Northern Africa': '#1D4ED8',
+    'Western Africa': '#15803D',
+    'Central Africa': '#A21CAF',
+    'Eastern Africa': '#A16207',
+    'Southern Africa': '#B91C1C'
   };
 
   const filteredAndSortedEntities = useMemo(() => {
@@ -133,7 +133,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
         const matchesGdp = minGdp === 0 || gdp >= minGdp;
         const matchesHdi = minHdi === 0 || hdiVal >= minHdi;
         const matchesTrade = minIntraTrade === 0 || tradeFlows.intraAfricanSharePct >= minIntraTrade;
-        const matchesRec = recFilter === 'ALL' || (ENTITY_BLOCS[recFilter]?.memberIso3s.includes(entity.id));
+        const matchesRec = recFilter === 'ALL' || Boolean(ENTITY_BLOCS[recFilter as EntityBlocId]?.memberIso3s.includes(entity.id));
 
         return matchesRegion && matchesTopology && matchesQuery && matchesPop && matchesGdp && matchesHdi && matchesTrade && matchesRec;
       })
@@ -214,7 +214,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                   className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors duration-150 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                     isActive
                       ? 'text-zinc-900 dark:text-zinc-100 shadow-xs'
-                      : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                      : 'text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                   }`}
                 >
                   {isActive && (
@@ -241,13 +241,14 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search by country, capital or ISO code..."
+              aria-label="Search nations by country, capital, or ISO code"
               className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs font-medium text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
             />
           </div>
 
           {/* Region Tabs Filter - Horizontal Swipe on Mobile, Wrapping on sm+ */}
           <div className="flex flex-nowrap overflow-x-auto scroll-shadow-x no-scrollbar sm:flex-wrap items-center gap-1.5 pb-1 sm:pb-0">
-            <span className="text-xs text-zinc-400 font-medium me-1 hidden lg:inline-flex items-center gap-1">
+            <span className="text-xs text-zinc-600 dark:text-zinc-400 font-medium me-1 hidden lg:inline-flex items-center gap-1">
               <Filter className="w-3 h-3" /> Region:
             </span>
             {regions.map(r => {
@@ -282,8 +283,8 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
         {/* Topology & Special Category Filters */}
         <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-900/60 flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-nowrap overflow-x-auto scroll-shadow-x no-scrollbar sm:flex-wrap items-center gap-1.5 pb-1 sm:pb-0 max-w-full">
-            <span className="text-xs text-zinc-400 font-mono flex items-center gap-1 me-1 shrink-0 whitespace-nowrap">
-              <Globe className="w-3.5 h-3.5 text-cyan-500" /> Topology:
+            <span className="text-xs text-zinc-600 dark:text-zinc-400 font-mono flex items-center gap-1 me-1 shrink-0 whitespace-nowrap">
+              <Globe className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" /> Topology:
             </span>
             {[
               { id: 'all' as TopologyFilter, label: 'All (54)' },
@@ -336,7 +337,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
               )}
             </m.button>
 
-            <span className="text-xs font-mono text-zinc-400 tabular-nums">
+            <span className="text-xs font-mono text-zinc-600 dark:text-zinc-400 tabular-nums">
               Showing {filteredAndSortedEntities.length} of 54 sovereign nations
             </span>
           </div>
@@ -357,9 +358,9 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 dark:border-purple-900/40 pb-3">
                 <div className="flex items-center gap-2">
                   <SlidersHorizontal className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                  <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 font-display">
+                  <h2 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 font-display">
                     Multivariate Econometric Screener &amp; Threshold Filters
-                  </h4>
+                  </h2>
                 </div>
                 <div className="flex items-center gap-3 tabular-nums">
                   {activeScreenerCount > 0 && (
@@ -498,7 +499,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2 flex-wrap max-w-full">
-          <span className="text-zinc-400 font-medium me-0.5 shrink-0">Sort by:</span>
+          <span className="text-zinc-600 dark:text-zinc-400 font-medium me-0.5 shrink-0">Sort by:</span>
           <div 
             className="flex items-center overflow-x-auto scroll-shadow-x no-scrollbar max-w-full bg-zinc-100 dark:bg-zinc-900 p-0.5 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs"
             role="group"
@@ -664,12 +665,12 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                     )}
                   </div>
 
-                  <h3 className={`font-extrabold text-lg text-zinc-900 dark:text-zinc-100 ${tonal.card.accentText} transition-colors`}>
+                  <h2 className={`font-extrabold text-lg text-zinc-900 dark:text-zinc-100 ${tonal.card.accentText} transition-colors`}>
                     {entity.name}
-                  </h3>
-                  <div className="flex items-center gap-2 mb-4 mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                  </h2>
+                  <div className="flex items-center gap-2 mb-4 mt-1 text-xs text-zinc-600 dark:text-zinc-400">
                     <span>{entity.capital}</span>
-                    <span className="text-zinc-300 dark:text-zinc-700">·</span>
+                    <span aria-hidden="true" className="text-zinc-400 dark:text-zinc-600">·</span>
                     <span className={`font-semibold ${tonal.badge.text}`}>
                       {entity.region}
                     </span>
@@ -741,7 +742,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                           <CountryFlag entityId={entity.id} size="sm" />
                           <div>
                             <div className="font-bold text-zinc-900 dark:text-zinc-100">{entity.name}</div>
-                            <div className="text-[10px] font-mono text-zinc-400">{entity.id}</div>
+                            <div className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400">{entity.id}</div>
                           </div>
                         </div>
                       </td>
@@ -757,7 +758,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                       <td className="py-3.5 px-4 text-right font-mono font-bold text-zinc-800 dark:text-zinc-200">
                         {formatGDP(gdp)}
                       </td>
-                      <td className="py-3.5 px-4 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                      <td className="py-3.5 px-4 text-right font-mono font-bold text-emerald-700 dark:text-emerald-400">
                         {formatHDI(hdi)}
                       </td>
                       <td className="py-3.5 px-4 text-right font-mono text-zinc-600 dark:text-zinc-400">
@@ -827,7 +828,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                       <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100 truncate">
                         {entity.name}
                       </div>
-                      <div className="text-[10px] font-mono text-zinc-400">
+                      <div className="text-[10px] font-mono text-zinc-600 dark:text-zinc-400">
                         {entity.id} · {entity.region}
                       </div>
                     </div>
@@ -846,20 +847,20 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-2 border-t border-zinc-100 dark:border-zinc-800/80 text-[10px] font-mono tabular-nums">
                   <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/60">
-                    <span className="text-zinc-400 block text-[9px]">POPULATION</span>
+                    <span className="text-zinc-600 dark:text-zinc-400 block text-[9px]">POPULATION</span>
                     <span className="font-bold text-zinc-800 dark:text-zinc-200">{formatPopulation(pop)}</span>
                   </div>
                   <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/60">
-                    <span className="text-zinc-400 block text-[9px]">NOM. GDP</span>
+                    <span className="text-zinc-600 dark:text-zinc-400 block text-[9px]">NOM. GDP</span>
                     <span className="font-bold text-zinc-800 dark:text-zinc-200">{formatGDP(gdp)}</span>
                   </div>
                   <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/60">
-                    <span className="text-zinc-400 block text-[9px]">PER CAPITA</span>
+                    <span className="text-zinc-600 dark:text-zinc-400 block text-[9px]">PER CAPITA</span>
                     <span className="font-bold text-zinc-800 dark:text-zinc-200">{gdpPerCap ? `$${gdpPerCap.toLocaleString()}` : '—'}</span>
                   </div>
                   <div className="p-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/60">
-                    <span className="text-zinc-400 block text-[9px]">HDI / ELEC</span>
-                    <span className="font-bold text-emerald-600 dark:text-emerald-400">{formatHDI(hdi)} · {elec ? `${Math.round(elec)}%` : '—'}</span>
+                    <span className="text-zinc-600 dark:text-zinc-400 block text-[9px]">HDI / ELEC</span>
+                    <span className="font-bold text-emerald-700 dark:text-emerald-400">{formatHDI(hdi)} · {elec ? `${Math.round(elec)}%` : '—'}</span>
                   </div>
                 </div>
               </m.div>
