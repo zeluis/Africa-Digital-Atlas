@@ -19,8 +19,12 @@ const transfer = (f) => (/\.(js|css|html|svg|json)$/.test(f) ? zlib.gzipSync(fs.
 let problems = 0;
 const section = (t) => console.log(`\n${t}`);
 
+const cfgTs = fs.existsSync('vite.config.ts') ? fs.readFileSync('vite.config.ts', 'utf8') : '';
+const hasWoff2RuntimeRule = /\.woff2/i.test(cfgTs);
+const isDeferredLocaleFont = (f) => hasWoff2RuntimeRule && /^assets\/noto-sans-(?:arabic|ethiopic)-.*\.woff2$/i.test(f);
+
 // 1. App code must work offline
-const code = files.filter((f) => /^assets\/.*\.(js|css|woff2)$/.test(f) || f === 'index.html');
+const code = files.filter((f) => (/^assets\/.*\.(js|css|woff2)$/.test(f) || f === 'index.html') && !isDeferredLocaleFont(f));
 const missing = code.filter((f) => !precached.has(f));
 section(`1. App code in the service-worker precache: ${code.length - missing.length}/${code.length}`);
 missing.forEach((f) => console.log(`   NOT PRECACHED  ${f}  (${mb(size(f))} MB)  -> this view/feature fails offline until visited`));
@@ -41,7 +45,6 @@ section('3. Precache cost');
 console.log(`   ${pre.length} files, storage ${mb(pre.reduce((s, u) => s + size(u), 0))} MB, approx first-visit transfer ${mb(pre.reduce((s, u) => s + transfer(u), 0))} MB`);
 
 // 4. Local media that is neither precached nor covered by a runtime rule
-const cfgTs = fs.existsSync('vite.config.ts') ? fs.readFileSync('vite.config.ts', 'utf8') : '';
 const runtimeHosts = [...cfgTs.matchAll(/urlPattern:\s*\/\^https:\\\/\\\/(.+?)\\\//g)].map((m) => m[1].replace(/\\\./g, '.'));
 const sameOriginRule = /urlPattern:\s*\(\s*\{\s*url\s*\}\s*\)/.test(cfgTs);
 const media = files.filter((f) => /\.(jpe?g|png|webp|avif)$/i.test(f) && !precached.has(f));

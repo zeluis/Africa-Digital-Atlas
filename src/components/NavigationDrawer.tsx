@@ -103,6 +103,7 @@ interface NavigationDrawerProps {
   onOpenMethodologyAudit?: () => void;
   onOpenAfcftaSimulator?: () => void;
   isIconographyIngestion?: boolean;
+  onPreloadTab?: (tab: CanonicalNavTab) => void;
 }
 
 interface NavItemDef {
@@ -259,7 +260,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onOpenWorkingPapers,
   onOpenMethodologyAudit,
   onOpenAfcftaSimulator,
-  isIconographyIngestion
+  isIconographyIngestion,
+  onPreloadTab
 }) => {
   const { t } = useTranslation();
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -559,6 +561,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                   onSelectTab('overview');
                   if (isMobile) onCloseMobile();
                 }}
+                onPointerEnter={() => onPreloadTab?.('overview')}
+                onFocus={() => onPreloadTab?.('overview')}
                 aria-label={t('nav.overview', 'Overview')}
                 title={t('nav.overview', 'Overview')}
                 className={`relative w-full flex items-center ${
@@ -605,6 +609,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                       onSelectTab(exploreSubItems[0].id as CanonicalNavTab);
                       if (isMobile) onCloseMobile();
                     }}
+                    onPointerEnter={() => onPreloadTab?.(exploreSubItems[0].id as CanonicalNavTab)}
+                    onFocus={() => onPreloadTab?.(exploreSubItems[0].id as CanonicalNavTab)}
                     aria-label={t('nav.explore', 'Explore')}
                     title={t('nav.explore', 'Explore')}
                     className={`flex-1 min-w-0 flex items-center ${
@@ -650,6 +656,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                   onSelectTab(sub.id as CanonicalNavTab);
                                   if (isMobile) onCloseMobile();
                                 }}
+                                onPointerEnter={() => onPreloadTab?.(sub.id as CanonicalNavTab)}
+                                onFocus={() => onPreloadTab?.(sub.id as CanonicalNavTab)}
                                 className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer px-3 py-2 text-xs group ${
                                   isSubActive
                                     ? 'bg-blue-500/15 border border-blue-500/30 text-blue-800 dark:text-blue-300 font-bold'
@@ -690,6 +698,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                       onSelectTab(historicalLegaciesSubItems[0].id as CanonicalNavTab);
                       if (isMobile) onCloseMobile();
                     }}
+                    onPointerEnter={() => onPreloadTab?.(historicalLegaciesSubItems[0].id as CanonicalNavTab)}
+                    onFocus={() => onPreloadTab?.(historicalLegaciesSubItems[0].id as CanonicalNavTab)}
                     aria-label={t('nav.history', 'History')}
                     title={t('nav.history', 'History')}
                     className={`flex-1 min-w-0 flex items-center ${
@@ -735,6 +745,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                   onSelectTab(sub.id as CanonicalNavTab);
                                   if (isMobile) onCloseMobile();
                                 }}
+                                onPointerEnter={() => onPreloadTab?.(sub.id as CanonicalNavTab)}
+                                onFocus={() => onPreloadTab?.(sub.id as CanonicalNavTab)}
                                 className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer px-3 py-2 text-xs group ${
                                   isSubActive
                                     ? 'bg-amber-500/15 border border-amber-500/30 text-amber-800 dark:text-amber-300 font-bold'
@@ -782,6 +794,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                       onSelectTab(reportsSubGroups[0].items[0].id as CanonicalNavTab);
                       if (isMobile) onCloseMobile();
                     }}
+                    onPointerEnter={() => onPreloadTab?.(reportsSubGroups[0].items[0].id as CanonicalNavTab)}
+                    onFocus={() => onPreloadTab?.(reportsSubGroups[0].items[0].id as CanonicalNavTab)}
                     aria-label={t('nav.reports', 'Reports')}
                     title={t('nav.reports', 'Reports')}
                     className={`flex-1 min-w-0 flex items-center ${
@@ -832,6 +846,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                       onSelectTab(sub.id as CanonicalNavTab);
                                       if (isMobile) onCloseMobile();
                                     }}
+                                    onPointerEnter={() => onPreloadTab?.(sub.id as CanonicalNavTab)}
+                                    onFocus={() => onPreloadTab?.(sub.id as CanonicalNavTab)}
                                     className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer px-3 py-1.5 text-xs group ${
                                       isSubActive
                                         ? 'bg-amber-500/15 border border-amber-500/30 text-amber-800 dark:text-amber-300 font-bold'
@@ -877,6 +893,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                       onSelectTab(cultureSubItems[0].id as CanonicalNavTab);
                       if (isMobile) onCloseMobile();
                     }}
+                    onPointerEnter={() => onPreloadTab?.(cultureSubItems[0].id as CanonicalNavTab)}
+                    onFocus={() => onPreloadTab?.(cultureSubItems[0].id as CanonicalNavTab)}
                     aria-label={t('nav.culture', 'Culture')}
                     title={t('nav.culture', 'Culture')}
                     className={`flex-1 min-w-0 flex items-center ${
@@ -922,6 +940,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                   onSelectTab(sub.id as CanonicalNavTab);
                                   if (isMobile) onCloseMobile();
                                 }}
+                                onPointerEnter={() => onPreloadTab?.(sub.id as CanonicalNavTab)}
+                                onFocus={() => onPreloadTab?.(sub.id as CanonicalNavTab)}
                                 className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer px-3 py-2 text-xs group ${
                                   isSubActive
                                     ? 'bg-purple-500/15 border border-purple-500/30 text-purple-800 dark:text-purple-300 font-bold'
@@ -969,6 +989,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                       onSelectTab(analyticsSubItems[0].id as CanonicalNavTab);
                       if (isMobile) onCloseMobile();
                     }}
+                    onPointerEnter={() => onPreloadTab?.(analyticsSubItems[0].id as CanonicalNavTab)}
+                    onFocus={() => onPreloadTab?.(analyticsSubItems[0].id as CanonicalNavTab)}
                     aria-label={t('nav.analytics', 'Analytics')}
                     title={t('nav.analytics', 'Analytics')}
                     className={`flex-1 min-w-0 flex items-center ${
@@ -1018,6 +1040,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                                   }
                                   if (isMobile) onCloseMobile();
                                 }}
+                                onPointerEnter={() => { if (!sub.isAction) onPreloadTab?.(sub.id as CanonicalNavTab); }}
+                                onFocus={() => { if (!sub.isAction) onPreloadTab?.(sub.id as CanonicalNavTab); }}
                                 className={`relative w-full flex items-center justify-between text-left rounded-xl transition-all cursor-pointer px-3 py-2 text-xs group ${
                                   isSubActive
                                     ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-bold'
@@ -1078,6 +1102,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
                       onSelectTab(item.id);
                       if (isMobile) onCloseMobile();
                     }}
+                    onPointerEnter={() => onPreloadTab?.(item.id)}
+                    onFocus={() => onPreloadTab?.(item.id)}
                     aria-label={item.defaultLabel}
                     title={item.defaultLabel}
                     className={`relative w-full flex items-center ${
@@ -1117,6 +1143,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               onSelectTab('provenance');
               if (isMobile) onCloseMobile();
             }}
+            onPointerEnter={() => onPreloadTab?.('provenance')}
+            onFocus={() => onPreloadTab?.('provenance')}
             aria-label={t('nav.provenance', 'Pipeline')}
             title={t('nav.provenance', 'Pipeline')}
             className={`relative w-full flex items-center ${
@@ -1242,6 +1270,8 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               onSelectTab('style-guide' as CanonicalNavTab);
               if (isMobile) onCloseMobile();
             }}
+            onPointerEnter={() => onPreloadTab?.('style-guide')}
+            onFocus={() => onPreloadTab?.('style-guide')}
             aria-label={t('nav.styleGuide', 'Style & Architecture')}
             title={t('nav.styleGuide', 'Style & Architecture')}
             className={`w-full flex items-center ${

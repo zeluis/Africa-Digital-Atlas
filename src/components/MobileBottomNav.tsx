@@ -8,13 +8,15 @@ export interface MobileBottomNavProps {
   onSelectTab: (tab: CanonicalNavTab) => void;
   onOpenMenu: () => void;
   onOpenSearch: () => void;
+  onPreloadTab?: (tab: CanonicalNavTab) => void;
 }
 
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   currentTab,
   onSelectTab,
   onOpenMenu,
-  onOpenSearch
+  onOpenSearch,
+  onPreloadTab
 }) => {
   const isMapActive = currentTab === 'overview' || currentTab === 'map';
   const isExploreActive = currentTab === 'ethnic-tree' || currentTab === 'explore' || currentTab === 'heritage';
@@ -33,6 +35,8 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
             triggerHaptic('selection');
             onSelectTab('overview');
           }}
+          onPointerEnter={() => onPreloadTab?.('overview')}
+          onFocus={() => onPreloadTab?.('overview')}
           className={`relative flex flex-col items-center justify-center min-touch-target py-1 transition-colors active-tactile cursor-pointer ${
             isMapActive 
               ? 'text-amber-800 dark:text-amber-400 font-bold' 
@@ -55,6 +59,8 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
             triggerHaptic('selection');
             onSelectTab('ethnic-tree');
           }}
+          onPointerEnter={() => onPreloadTab?.('ethnic-tree')}
+          onFocus={() => onPreloadTab?.('ethnic-tree')}
           className={`relative flex flex-col items-center justify-center min-touch-target py-1 transition-colors active-tactile cursor-pointer ${
             isExploreActive 
               ? 'text-amber-800 dark:text-amber-400 font-bold' 
@@ -93,6 +99,8 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
             triggerHaptic('selection');
             onSelectTab('analytics');
           }}
+          onPointerEnter={() => onPreloadTab?.('analytics')}
+          onFocus={() => onPreloadTab?.('analytics')}
           className={`relative flex flex-col items-center justify-center min-touch-target py-1 transition-colors active-tactile cursor-pointer ${
             isAnalyticsActive 
               ? 'text-amber-800 dark:text-amber-400 font-bold' 

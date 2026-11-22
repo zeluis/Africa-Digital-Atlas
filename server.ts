@@ -196,7 +196,14 @@ function getGenAI(): GoogleGenAI | null {
 }
 
 import externalApisPayload from "./src/data/externalApisIngestion.json";
+import { AKP_PILLARS_META } from "./src/data/akpRegistry241";
+import { INITIAL_PIPELINE_STEPS } from "./src/data/atlas-pipeline";
+import { getInitialEntities } from "./src/data/atlas-raw-data";
+
 const EXTERNAL_API_CONNECTORS = externalApisPayload.connectors;
+const AKP_DATASETS_COUNT = AKP_PILLARS_META.reduce((sum, pillar) => sum + pillar.count, 0);
+const PIPELINE_STAGES_COUNT = INITIAL_PIPELINE_STEPS.length;
+const CANONICAL_ENTITIES_COUNT = getInitialEntities().length;
 
 /**
  * Health check endpoint
@@ -224,9 +231,9 @@ app.get("/api/ingest/status", (req, res) => {
     engineVersion: "2.4.0",
     connectorsCount: EXTERNAL_API_CONNECTORS.length,
     institutionalSourcesCount: uniqueOrganizations,
-    akpDatasetsCount: 241,
-    pipelineStagesCount: 7,
-    canonicalEntitiesCount: 58,
+    akpDatasetsCount: AKP_DATASETS_COUNT,
+    pipelineStagesCount: PIPELINE_STAGES_COUNT,
+    canonicalEntitiesCount: CANONICAL_ENTITIES_COUNT,
     offlineCacheActive: true,
     timestamp: new Date().toISOString()
   });
@@ -463,7 +470,10 @@ app.post("/api/tts", ttsLimiter, async (req, res) => {
             mimeType,
           });
         } else {
-          const errDetail = await elResponse.text();
+          const { text: errDetail } = await readUpstreamTextCapped(elResponse, 16 * 1024).catch(() => ({
+            text: "",
+            byteLength: 0
+          }));
           console.warn("ElevenLabs TTS error status:", elResponse.status, errDetail);
         }
       } catch (elErr) {
@@ -561,6 +571,21 @@ async function startServer() {
     });
   }
 
+  const createStaticCacheHeaders = (rootDir: string) => {
+    const resolvedRoot = path.resolve(rootDir);
+    return (res: express.Response, filePath: string) => {
+      const rel = path.relative(resolvedRoot, path.resolve(filePath)).replace(/\\/g, "/");
+      const baseName = path.posix.basename(rel);
+      if (baseName === "index.html" || baseName === "sw.js" || baseName === "manifest.webmanifest") {
+        res.setHeader("Cache-Control", "no-cache");
+        return;
+      }
+      if (rel.startsWith("assets/") && /[-.][A-Za-z0-9_-]{8}\.[^./]+$/.test(baseName)) {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      }
+    };
+  };
+
   const docsMount = `${mountPrefix}/docs`;
   if (fs.existsSync(path.join(docsPath, "index.html"))) {
     app.use(docsMount, (req, res, next) => {
@@ -568,7 +593,7 @@ async function startServer() {
         return res.redirect(301, `${docsMount}/`);
       }
       next();
-    }, express.static(docsPath));
+    }, express.static(docsPath, { setHeaders: createStaticCacheHeaders(docsPath) }));
   }
 
   if (process.env.NODE_ENV !== "production") {
@@ -605,7 +630,7 @@ async function startServer() {
     });
   } else {
     const mountStaticAt = mountPrefix || "/";
-    app.use(mountStaticAt, express.static(distPath));
+    app.use(mountStaticAt, express.static(distPath, { setHeaders: createStaticCacheHeaders(distPath) }));
     if (mountPrefix) {
       app.get(mountPrefix, (req, res, next) => {
         if (req.originalUrl.split("?")[0] === mountPrefix) {
@@ -615,6 +640,7 @@ async function startServer() {
       });
     }
     app.get("*", (_req, res) => {
+      res.setHeader("Cache-Control", "no-cache");
       res.sendFile(path.join(distPath, "index.html"));
     });
   }

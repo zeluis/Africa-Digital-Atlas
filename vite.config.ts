@@ -239,6 +239,8 @@ export default defineConfig(({ command }) => {
             '**/archives/**',
             '**/assets/images/**',
             '**/docs/**',
+            '**/noto-sans-arabic-*.woff2',
+            '**/noto-sans-ethiopic-*.woff2',
           ],
           maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
           navigateFallback: 'index.html',
@@ -247,6 +249,20 @@ export default defineConfig(({ command }) => {
             /^\/(?:[^/]+\/)*api(?:\/|$)/,
           ],
           runtimeCaching: [
+            {
+              urlPattern: ({ url }) => url.origin === self.location.origin && /\.woff2$/i.test(url.pathname),
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'locale-fonts-cache',
+                expiration: {
+                  maxEntries: 30,
+                  maxAgeSeconds: 60 * 60 * 24 * 90,
+                },
+                cacheableResponse: {
+                  statuses: [200],
+                },
+              },
+            },
             {
               urlPattern: ({ url }) => url.origin === self.location.origin && /\.(?:png|jpe?g|webp|avif|gif|svg|mp3|opus|wav)$/i.test(url.pathname),
               handler: 'CacheFirst',

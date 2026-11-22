@@ -37,90 +37,95 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ onOpenColoph
     }
   }, [isOnline, wasOffline]);
 
-  if (swUpdateAvailable && !updateDismissed) {
-    return (
-      <div
-        id="sw-update-available-toast"
-        role="status"
-        aria-live="polite"
-        className="fixed bottom-20 lg:bottom-5 right-4 lg:right-5 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-zinc-900 dark:bg-zinc-800 text-zinc-100 border border-zinc-700 shadow-2xl text-xs font-medium"
-      >
-        <RefreshCw className="w-4 h-4 text-emerald-400 shrink-0" />
-        <span>New Atlas version ready</span>
-        <button
-          type="button"
-          onClick={() => window.dispatchEvent(new CustomEvent('afriata-sw-apply-update'))}
-          className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-colors cursor-pointer"
-        >
-          Reload
-        </button>
-        <button
-          type="button"
-          onClick={() => setUpdateDismissed(true)}
-          aria-label="Dismiss update notification"
-          className="p-1 text-zinc-400 hover:text-white rounded-lg transition-colors cursor-pointer"
-          title="Dismiss notice"
-        >
-          <X className="w-3.5 h-3.5" />
-        </button>
-      </div>
-    );
-  }
+  const showSwUpdate = swUpdateAvailable && !updateDismissed;
+  const showOfflineBanner = !showRestored && !isOnline && !dismissed;
 
-  if (showRestored) {
-    return (
-      <div 
-        id="network-status-restored-toast"
-        role="status"
-        aria-live="polite"
-        className="fixed bottom-20 lg:bottom-5 right-4 lg:right-5 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-emerald-600 text-white shadow-xl text-xs font-medium animate-in slide-in-from-bottom-5 duration-300"
-      >
-        <CheckCircle2 className="w-4 h-4 text-emerald-200" />
-        <span>Connection Restored — Live Sync Active</span>
-      </div>
-    );
-  }
-
-  if (isOnline || dismissed) return null;
+  if (!showSwUpdate && !showRestored && !showOfflineBanner) return null;
 
   return (
-    <div 
-      id="network-offline-banner"
-      role="status"
-      aria-live="polite"
-      className="fixed bottom-20 lg:bottom-5 right-4 lg:right-5 z-50 flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-zinc-900/95 dark:bg-zinc-800/95 text-zinc-100 border border-zinc-700/80 shadow-2xl backdrop-blur-md text-xs font-medium animate-in slide-in-from-bottom-5 duration-300"
+    <div
+      className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] lg:bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))] right-4 lg:right-5 z-50 flex flex-col items-end gap-2 pointer-events-none max-w-[calc(100vw-2rem)]"
     >
-      <div className="flex items-center gap-2">
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
-        </span>
-        <WifiOff className="w-4 h-4 text-amber-400" />
-      </div>
-
-      <div className="flex items-center gap-1.5 text-zinc-300">
-        <span>Offline Research Active</span>
-        <span className="text-zinc-500">•</span>
-        <button
-          type="button"
-          onClick={() => onOpenColophon?.()}
-          className="text-[11px] text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer font-mono"
-          title="Inspect Offline Expedition Cache Diagnostics"
+      {showSwUpdate && (
+        <div
+          id="sw-update-available-toast"
+          role="status"
+          aria-live="polite"
+          className="pointer-events-auto flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-zinc-900 dark:bg-zinc-800 text-zinc-100 border border-zinc-700 shadow-2xl text-xs font-medium"
         >
-          <Database className="w-3 h-3 text-emerald-400" />
-          <span>Vector Atlas 100% Primed</span>
-        </button>
-      </div>
+          <RefreshCw className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>New Atlas version ready</span>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent('afriata-sw-apply-update'))}
+            className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-colors cursor-pointer"
+          >
+            Reload
+          </button>
+          <button
+            type="button"
+            onClick={() => setUpdateDismissed(true)}
+            aria-label="Dismiss update notification"
+            className="p-1 text-zinc-400 hover:text-white rounded-lg transition-colors cursor-pointer"
+            title="Dismiss notice"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
-      <button
-        type="button"
-        onClick={() => setDismissed(true)}
-        aria-label="Dismiss offline notice"
-        className="p-1 text-zinc-400 hover:text-white rounded-lg transition-colors ml-1 cursor-pointer"
-        title="Dismiss notice"
-      >
-        <X className="w-3.5 h-3.5" />
-      </button>
+      {showRestored && (
+        <div
+          id="network-status-restored-toast"
+          role="status"
+          aria-live="polite"
+          className="pointer-events-auto flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-emerald-600 text-white shadow-xl text-xs font-medium animate-in slide-in-from-bottom-5 duration-300"
+        >
+          <CheckCircle2 className="w-4 h-4 text-emerald-200" />
+          <span>Connection Restored — Live Sync Active</span>
+        </div>
+      )}
+
+      {showOfflineBanner && (
+        <div
+          id="network-offline-banner"
+          role="status"
+          aria-live="polite"
+          className="pointer-events-auto flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-zinc-900/95 dark:bg-zinc-800/95 text-zinc-100 border border-zinc-700/80 shadow-2xl backdrop-blur-md text-xs font-medium animate-in slide-in-from-bottom-5 duration-300"
+        >
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+            </span>
+            <WifiOff className="w-4 h-4 text-amber-400" />
+          </div>
+
+          <div className="flex items-center gap-1.5 text-zinc-300">
+            <span>Offline Research Active</span>
+            <span className="text-zinc-500">•</span>
+            <button
+              type="button"
+              onClick={() => onOpenColophon?.()}
+              className="text-[11px] text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer font-mono"
+              title="Inspect Offline Expedition Cache Diagnostics"
+            >
+              <Database className="w-3 h-3 text-emerald-400" />
+              <span>Vector Atlas 100% Primed</span>
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setDismissed(true)}
+            aria-label="Dismiss offline notice"
+            className="p-1 text-zinc-400 hover:text-white rounded-lg transition-colors ml-1 cursor-pointer"
+            title="Dismiss notice"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

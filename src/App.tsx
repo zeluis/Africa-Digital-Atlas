@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
-import { LazyMotion, MotionConfig, domAnimation, m, AnimatePresence } from 'motion/react';
+import { LazyMotion, MotionConfig, domAnimation, m } from 'motion/react';
 import { Navbar } from './components/Navbar';
 import type { CanonicalNavTab } from './components/NavigationDrawer';
 import type { SlaveTradeSubTab } from './views/SlaveTradeView';
@@ -64,6 +64,41 @@ const UniversalStyleGuideView = lazyWithRetry(() => import('./views/UniversalSty
 const ResearchReportsDirectoryView = lazyWithRetry(() => import('./views/ResearchReportsDirectoryView').then(m => ({ default: m.ResearchReportsDirectoryView || (m as any).default })), 'ResearchReportsDirectoryView');
 const ResearchReportArticleView = lazyWithRetry(() => import('./views/ResearchReportArticleView').then(m => ({ default: m.ResearchReportArticleView || (m as any).default })), 'ResearchReportArticleView');
 const PrivacySectionView = lazyWithRetry(() => import('./views/PrivacySectionView').then(m => ({ default: m.PrivacySectionView || (m as any).default })), 'PrivacySectionView');
+
+const preloadTabView = (rawTab: CanonicalNavTab | string): void => {
+  const baseTab = String(rawTab).split('?')[0];
+  if (!baseTab) return;
+  if (baseTab === 'regions' || baseTab.startsWith('region-')) {
+    RegionalView.preload();
+    return;
+  }
+  if (isReportOrPaperTab(baseTab)) {
+    ResearchReportArticleView.preload();
+    return;
+  }
+  switch (baseTab) {
+    case 'overview': OverviewView.preload(); break;
+    case 'explore': ExploreView.preload(); break;
+    case 'countries': CountryView.preload(); break;
+    case 'analytics': AnalyticsView.preload(); break;
+    case 'heritage': HeritageView.preload(); break;
+    case 'compare': CompareView.preload(); break;
+    case 'provenance': ProvenanceQualityView.preload(); break;
+    case 'map': MapView.preload(); break;
+    case 'languages': LanguagesView.preload(); break;
+    case 'slave-trade': SlaveTradeView.preload(); break;
+    case 'iconography': IconographyView.preload(); break;
+    case 'archival-cartography': ArchivalCartographyView.preload(); break;
+    case 'molecular-legacies': MolecularLegaciesArticleView.preload(); break;
+    case 'african-development-foundations': AfricanDevelopmentMasterReportView.preload(); break;
+    case 'pillars': ThematicPillarsView.preload(); break;
+    case 'blocs': EntityBlocsBrowser.preload(); break;
+    case 'ethnic-tree': EthnicTreeOfLifeView.preload(); break;
+    case 'style-guide': UniversalStyleGuideView.preload(); break;
+    case 'research-directory': ResearchReportsDirectoryView.preload(); break;
+    case 'privacy': PrivacySectionView.preload(); break;
+  }
+};
 
 const REGION_ID_TO_NAME: Record<string, AfricanRegion> = {
   'region-northern': 'Northern Africa',
@@ -249,6 +284,7 @@ function AppContent() {
     region?: AfricanRegion;
     indicator?: string;
   }>>([]);
+  const shouldPushHistoryRef = useRef<boolean>(false);
 
   // Active Typographic & Conceptual Core: Economics, Archival, or Academic
   const activeCore = useMemo<'economics' | 'archival' | 'academic'>(() => {
@@ -285,7 +321,7 @@ function AppContent() {
     }
   }, [theme]);
 
-  // Synchronize active app state with URL hash for seamless bookmarking & deep linking
+  // Synchronize active app state with URL hash & browser history for native Back/Forward & deep linking
   useEffect(() => {
     if (typeof window === 'undefined') return;
     let targetHash = currentTab as string;
@@ -304,11 +340,13 @@ function AppContent() {
     } else if (currentTab === 'archival-cartography') {
       const currentHash = window.location.hash.replace(/^#\/?/, '').trim();
       if (currentHash.startsWith('cartography') || currentHash.startsWith('archival-cartography')) {
+        shouldPushHistoryRef.current = false;
         return;
       }
     } else if (currentTab === 'slave-trade') {
       const currentHash = window.location.hash.replace(/^#\/?/, '').trim();
       if (currentHash.startsWith('slave-trade?')) {
+        shouldPushHistoryRef.current = false;
         return;
       }
     } else if (currentTab === 'heritage') {
@@ -322,21 +360,28 @@ function AppContent() {
     if (currentHash !== targetHash || needsPathReset) {
       const nextUrl = needsPathReset ? `${basePath}#${targetHash}` : `#${targetHash}`;
       try {
-        window.history.replaceState(null, '', nextUrl);
+        if (shouldPushHistoryRef.current && !needsPathReset) {
+          window.history.pushState(null, '', nextUrl);
+        } else {
+          window.history.replaceState(null, '', nextUrl);
+        }
       } catch {
         // Ignore history restrictions in sandboxed/opaque-origin iframes
       }
     }
+    shouldPushHistoryRef.current = false;
   }, [currentTab, selectedEntityId, activeRegion, selectedIndicatorForAnalytics, selectedHeritageSiteId, compareInitialCountries]);
 
-  // Listen to browser hash navigation (Back/Forward buttons & external hash links)
+  // Listen to browser hash & popstate navigation (Back/Forward buttons & external hash links)
   useEffect(() => {
-    const handleHashChange = () => {
+    const handleUrlNavigation = () => {
+      shouldPushHistoryRef.current = false;
       const parsed = parseUrlHash();
       React.startTransition(() => {
         setCurrentTab(parsed.tab);
         if (parsed.entityId) setSelectedEntityId(parsed.entityId);
         if (parsed.region) setActiveRegion(parsed.region);
+        else if (parsed.tab === 'regions') setActiveRegion(undefined);
         if (parsed.indicator) setSelectedIndicatorForAnalytics(parsed.indicator);
         if (parsed.plateId !== undefined) {
           setActiveIconographyPlateId(parsed.plateId);
@@ -347,8 +392,12 @@ function AppContent() {
         if (parsed.compareCountries) setCompareInitialCountries(parsed.compareCountries);
       });
     };
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('hashchange', handleUrlNavigation);
+    window.addEventListener('popstate', handleUrlNavigation);
+    return () => {
+      window.removeEventListener('hashchange', handleUrlNavigation);
+      window.removeEventListener('popstate', handleUrlNavigation);
+    };
   }, []);
 
   const toggleTheme = () => {
@@ -356,6 +405,13 @@ function AppContent() {
       setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
     });
   };
+
+  // Stable action refs for single-mount global keyboard listener
+  const keyActionsRef = useRef({
+    onSelectTab: (_tab: CanonicalNavTab | string) => {},
+    onGoBack: () => {},
+    onToggleTheme: () => {},
+  });
 
   // Keyboard shortcuts: Cmd+K / Ctrl+K search, Cmd+B / Ctrl+B drawer, Alt+Left back, '?' shortcuts modal, 1-5 regions, 0 overview
   useEffect(() => {
@@ -379,7 +435,7 @@ function AppContent() {
       }
       if (e.altKey && e.key === 'ArrowLeft') {
         e.preventDefault();
-        handleGoBack();
+        keyActionsRef.current.onGoBack();
         return;
       }
 
@@ -395,25 +451,25 @@ function AppContent() {
         if (!e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey) {
           if (e.key === '1') {
             e.preventDefault();
-            handleSelectTab('region-northern');
+            keyActionsRef.current.onSelectTab('region-northern');
           } else if (e.key === '2') {
             e.preventDefault();
-            handleSelectTab('region-western');
+            keyActionsRef.current.onSelectTab('region-western');
           } else if (e.key === '3') {
             e.preventDefault();
-            handleSelectTab('region-central');
+            keyActionsRef.current.onSelectTab('region-central');
           } else if (e.key === '4') {
             e.preventDefault();
-            handleSelectTab('region-eastern');
+            keyActionsRef.current.onSelectTab('region-eastern');
           } else if (e.key === '5') {
             e.preventDefault();
-            handleSelectTab('region-southern');
+            keyActionsRef.current.onSelectTab('region-southern');
           } else if (e.key === '0') {
             e.preventDefault();
-            handleSelectTab('overview');
+            keyActionsRef.current.onSelectTab('overview');
           } else if (e.key === 'd' || e.key === 'D') {
             e.preventDefault();
-            toggleTheme();
+            keyActionsRef.current.onToggleTheme();
           }
         }
 
@@ -422,26 +478,26 @@ function AppContent() {
           const upper = e.key.toUpperCase();
           if (upper === 'O') {
             e.preventDefault();
-            handleSelectTab('overview');
+            keyActionsRef.current.onSelectTab('overview');
           } else if (upper === 'M') {
             e.preventDefault();
-            handleSelectTab('map');
+            keyActionsRef.current.onSelectTab('map');
           } else if (upper === 'C') {
             e.preventDefault();
-            handleSelectTab('compare');
+            keyActionsRef.current.onSelectTab('compare');
           } else if (upper === 'A') {
             e.preventDefault();
-            handleSelectTab('analytics');
+            keyActionsRef.current.onSelectTab('analytics');
           } else if (upper === 'V') {
             e.preventDefault();
-            handleSelectTab('iconography');
+            keyActionsRef.current.onSelectTab('iconography');
           }
         }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [navHistory, currentTab, selectedEntityId, activeRegion, selectedIndicatorForAnalytics]);
+  }, []);
 
   // Menu Toggle handler (always visible in navbar, no visible label)
   const handleToggleMenu = () => {
@@ -477,6 +533,7 @@ function AppContent() {
     }
 
     if (targetTab === currentTab && !queryString) return;
+    shouldPushHistoryRef.current = true;
     setNavHistory(prev => [
       ...prev.slice(-30),
       {
@@ -502,6 +559,7 @@ function AppContent() {
   const handleSelectCountry = (id: string) => {
     const formattedId = id.toUpperCase();
     if (formattedId === selectedEntityId && currentTab === 'countries') return;
+    shouldPushHistoryRef.current = true;
     setNavHistory(prev => [
       ...prev.slice(-30),
       {
@@ -520,6 +578,7 @@ function AppContent() {
 
   const handleSelectIndicator = (indId: string) => {
     if (indId === selectedIndicatorForAnalytics && currentTab === 'analytics') return;
+    shouldPushHistoryRef.current = true;
     setNavHistory(prev => [
       ...prev.slice(-30),
       {
@@ -538,6 +597,7 @@ function AppContent() {
 
   const handleGoBack = () => {
     if (navHistory.length > 0) {
+      shouldPushHistoryRef.current = true;
       const lastItem = navHistory[navHistory.length - 1];
       setNavHistory(prev => prev.slice(0, -1));
       React.startTransition(() => {
@@ -548,11 +608,18 @@ function AppContent() {
       });
       window.scrollTo({ top: 0, behavior: 'instant' });
     } else if (currentTab !== 'overview') {
+      shouldPushHistoryRef.current = true;
       React.startTransition(() => {
         setCurrentTab('overview');
       });
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
+  };
+
+  keyActionsRef.current = {
+    onSelectTab: handleSelectTab,
+    onGoBack: handleGoBack,
+    onToggleTheme: toggleTheme,
   };
 
   const canGoBack = navHistory.length > 0 || currentTab !== 'overview';
@@ -564,6 +631,13 @@ function AppContent() {
   // Check if current tab is a regional tab
   const isRegionalTab = currentTab === 'regions' || currentTab.startsWith('region-');
   const pageInfo = getPageInfo(currentTab, selectedEntityId, activeRegion);
+
+  useEffect(() => {
+    const baseTitle = 'Afriata: Africa Data Atlas';
+    document.title = currentTab === 'overview'
+      ? baseTitle
+      : `${pageInfo.fullTitle || pageInfo.title} — Afriata`;
+  }, [currentTab, pageInfo.title, pageInfo.fullTitle]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col selection:bg-emerald-500 selection:text-zinc-950 transition-colors duration-200">
@@ -595,6 +669,7 @@ function AppContent() {
         onGoBack={handleGoBack}
         canGoBack={canGoBack}
         previousPageTitle={previousPageTitle}
+        onPreloadTab={preloadTabView}
       />
 
       {/* Main Workspace Layout with Desktop Navigation Drawer & Content */}
@@ -617,6 +692,7 @@ function AppContent() {
           onSelectTab={handleSelectTab}
           onOpenMenu={() => setIsMobileNavOpen(true)}
           onOpenSearch={() => atlasModalStore.openSearch()}
+          onPreloadTab={preloadTabView}
         />
 
         {/* Desktop Navigation Drawer (Starts open, 272px width, doesn't close on tab clicks) + Mobile Bottom Sheet */}
@@ -637,6 +713,7 @@ function AppContent() {
               onOpenMethodologyAudit={() => atlasModalStore.openMethodologyAudit()}
               onOpenAfcftaSimulator={() => atlasModalStore.openAfcftaSimulator()}
               isIconographyIngestion={isIconographyIngestion}
+              onPreloadTab={preloadTabView}
             />
           </Suspense>
         </ViewErrorBoundary>
@@ -659,16 +736,14 @@ function AppContent() {
           }`}
           id="main-content-workspace"
         >
-          <AnimatePresence mode="wait">
-            <m.div
-              key={`view-${currentTab}`}
-              data-core={activeCore}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, transition: { duration: 0.12 } }}
-              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className={`core-${activeCore} w-full min-w-0 flex-1 flex flex-col`}
-            >
+          <m.div
+            key={`view-${currentTab}`}
+            data-core={activeCore}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            className={`core-${activeCore} w-full min-w-0 flex-1 flex flex-col`}
+          >
               <ViewErrorBoundary fallbackTitle="Module Unavailable">
                 <Suspense fallback={<MainContentSkeleton viewType={currentTab} />}>
                   {currentTab === 'overview' && (
@@ -850,7 +925,6 @@ function AppContent() {
                 </Suspense>
               </ViewErrorBoundary>
             </m.div>
-          </AnimatePresence>
         </main>
       </div>
 
