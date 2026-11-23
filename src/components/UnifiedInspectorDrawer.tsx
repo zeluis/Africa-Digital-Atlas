@@ -49,6 +49,8 @@ export const UnifiedInspectorDrawer: React.FC<UnifiedInspectorDrawerProps> = ({
   // Listen for Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.isComposing || e.keyCode === 229) return;
+      if (document.querySelector('[data-dialog-open="true"]')) return;
       if (e.key === 'Escape' && isOpen) {
         onClose();
       }

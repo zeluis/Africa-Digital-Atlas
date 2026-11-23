@@ -424,6 +424,7 @@ function AppContent() {
       if (e.isComposing || e.keyCode === 229) return;
       const target = e.target as HTMLElement;
       const isInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable || target.tagName === 'SELECT');
+      const hasOpenDialog = Boolean(document.querySelector('[data-dialog-open="true"]'));
 
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
@@ -439,6 +440,8 @@ function AppContent() {
         }
         return;
       }
+      if (hasOpenDialog) return;
+
       if (e.altKey && e.key === 'ArrowLeft') {
         e.preventDefault();
         keyActionsRef.current.onGoBack();

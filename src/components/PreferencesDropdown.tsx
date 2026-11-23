@@ -34,6 +34,7 @@ export const PreferencesDropdown: React.FC<PreferencesDropdownProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const { density, setDensity } = useDensity();
   const { t } = useTranslation();
   const isOnline = useNetworkStatus();
@@ -47,8 +48,10 @@ export const PreferencesDropdown: React.FC<PreferencesDropdownProps> = ({
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.isComposing || event.keyCode === 229) return;
       if (event.key === 'Escape') {
         setIsOpen(false);
+        triggerRef.current?.focus();
       }
     };
 
@@ -71,6 +74,7 @@ export const PreferencesDropdown: React.FC<PreferencesDropdownProps> = ({
   return (
     <div className="relative" ref={dropdownRef}>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={`p-2 rounded-xl border transition-all cursor-pointer flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
@@ -80,6 +84,7 @@ export const PreferencesDropdown: React.FC<PreferencesDropdownProps> = ({
         }`}
         aria-label="Application Preferences & Display Settings"
         aria-expanded={isOpen}
+        aria-haspopup="menu"
         title="Application Preferences & Display Settings"
       >
         <SlidersHorizontal className="w-4 h-4" />

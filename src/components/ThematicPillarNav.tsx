@@ -44,7 +44,11 @@ export const ThematicPillarNav: React.FC<ThematicPillarNavProps> = ({
   // Global keyboard shortcut: Press 1-8 to switch pillars
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) {
+      if (e.isComposing || e.keyCode === 229) return;
+      if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+      if (document.querySelector('[data-dialog-open="true"]')) return;
+      const target = e.target as HTMLElement | null;
+      if (target && (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) || target.isContentEditable)) {
         return;
       }
 
