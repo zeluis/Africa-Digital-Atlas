@@ -1,7 +1,7 @@
 import React from 'react';
 import { LanguageSelector } from './LanguageSelector';
 import { VoiceWelcomeFab } from './VoiceWelcomeFab';
-import { TOP_BAR_UI_GREETINGS } from '../utils/afriataVoiceEngine';
+import { TOP_BAR_UI_GREETINGS } from '../data/topBarGreetings';
 import { useTranslation } from '../i18n/LanguageContext';
 import { JapandiTooltip } from './JapandiTooltip';
 import type { CanonicalNavTab } from './NavigationDrawer';

@@ -20,6 +20,7 @@ import { AFRICA_FINAL_MAP } from '../data/africaFinalGeometry';
 import { triggerHaptic } from '../utils/mobileHaptics';
 import { usePrefersReducedMotion } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
+import { useDismissibleLayer } from '../hooks/useDismissibleLayer';
 
 export type SheetSnapTier = 'peek' | 'half' | 'full';
 
@@ -39,6 +40,9 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
   onOpenCompare
 }) => {
   const sheetRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const wasOpenRef = useRef(false);
   const reducedMotion = usePrefersReducedMotion();
   const dragStartY = useRef<number | null>(null);
   const dragStartTime = useRef<number>(0);
@@ -46,6 +50,7 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
 
   // Standardized 3-tier snap levels: 'peek' (25%) | 'half' (55%) | 'full' (92%)
   const [snapTier, setSnapTier] = useState<SheetSnapTier>('half');
+  const activeOpen = Boolean(isOpen && countryId && AFRICA_FINAL_MAP[countryId]);
 
   // Reset to 'half' whenever a new country is opened
   useEffect(() => {
@@ -53,6 +58,41 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
       setSnapTier('half');
     }
   }, [countryId, isOpen]);
+
+  // Focus management & restoration across open/close transitions
+  useEffect(() => {
+    if (activeOpen && !wasOpenRef.current) {
+      wasOpenRef.current = true;
+      const activeEl = typeof document !== 'undefined' ? (document.activeElement as HTMLElement | null) : null;
+      if (activeEl && !sheetRef.current?.contains(activeEl)) {
+        previousFocusRef.current = activeEl;
+      }
+      const raf = typeof requestAnimationFrame === 'function'
+        ? requestAnimationFrame(() => {
+            if (closeButtonRef.current) closeButtonRef.current.focus();
+            else sheetRef.current?.focus();
+          })
+        : 0;
+      return () => {
+        if (raf && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(raf);
+      };
+    } else if (!activeOpen && wasOpenRef.current) {
+      wasOpenRef.current = false;
+      const prev = previousFocusRef.current;
+      previousFocusRef.current = null;
+      if (prev && prev.isConnected) {
+        prev.focus();
+      }
+    }
+  }, [activeOpen]);
+
+  useDismissibleLayer({
+    isOpen: activeOpen,
+    onDismiss: onClose,
+    refs: [sheetRef],
+    restoreFocusRef: previousFocusRef,
+    pointerEvent: 'pointerdown',
+  });
 
   const country = countryId ? AFRICA_FINAL_MAP[countryId] : null;
   const entityData = countryId ? atlas.getEntity(countryId) : null;
@@ -157,6 +197,7 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
         {/* Sliding 3-Snap Bottom Sheet Container */}
         <m.div
           ref={sheetRef}
+          tabIndex={-1}
           initial={reducedMotion ? { opacity: 0 } : { y: '100%' }}
           animate={reducedMotion ? { opacity: 1 } : { y: 0 }}
           exit={reducedMotion ? { opacity: 0 } : { y: '100%' }}
@@ -164,22 +205,52 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          className={`relative bg-white dark:bg-zinc-900 rounded-t-3xl border-t border-zinc-200/90 dark:border-zinc-800 shadow-2xl safe-pb px-4 flex flex-col select-none transition-all duration-300 ${snapHeights[snapTier]}`}
+          className={`relative bg-white dark:bg-zinc-900 rounded-t-3xl border-t border-zinc-200/90 dark:border-zinc-800 shadow-2xl safe-pb px-4 flex flex-col select-none transition-all duration-300 focus:outline-none ${snapHeights[snapTier]}`}
         >
-          {/* Tactile Ergonomic Grab Handle Bar */}
-          <button
-            type="button"
-            onClick={cycleSnapTier}
-            className="w-full pt-2.5 pb-2 shrink-0 cursor-grab active:cursor-grabbing flex flex-col items-center justify-center gap-1"
-            title="Drag or tap to change view height"
-            aria-label={`Change sheet height (currently ${snapTier})`}
-          >
-            <span className="w-12 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full hover:bg-zinc-400 dark:hover:bg-zinc-600 transition-colors" aria-hidden="true" />
-            <span className="flex items-center gap-1 text-[10px] font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-              <span>{snapTier === 'peek' ? 'Peek 25%' : snapTier === 'half' ? 'Indicators 55%' : 'Full Dossier 92%'}</span>
-              <ChevronUp className={`w-3 h-3 transition-transform ${snapTier === 'full' ? 'rotate-180' : ''}`} />
-            </span>
-          </button>
+          {/* Tactile Ergonomic Grab Handle & Keyboard Snap-Tier Bar */}
+          <div className="w-full pt-2.5 pb-2 shrink-0 flex flex-col items-center justify-center gap-1.5">
+            <button
+              type="button"
+              onClick={cycleSnapTier}
+              className="w-full flex flex-col items-center justify-center gap-1 cursor-grab active:cursor-grabbing rounded-lg py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              title="Drag or tap to cycle view height"
+              aria-label={`Cycle sheet height (currently ${snapTier})`}
+            >
+              <span className="w-12 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full hover:bg-zinc-400 dark:hover:bg-zinc-600 transition-colors" aria-hidden="true" />
+              <span className="flex items-center gap-1 text-[10px] font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                <span>{snapTier === 'peek' ? 'Peek 25%' : snapTier === 'half' ? 'Indicators 55%' : 'Full Dossier 92%'}</span>
+                <ChevronUp className={`w-3 h-3 transition-transform ${snapTier === 'full' ? 'rotate-180' : ''}`} />
+              </span>
+            </button>
+            <div className="inline-flex items-center gap-1 p-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700/80" role="group" aria-label="Sheet height presets">
+              {([
+                { id: 'peek', label: 'Peek', pct: '25%' },
+                { id: 'half', label: 'Half', pct: '55%' },
+                { id: 'full', label: 'Full', pct: '92%' },
+              ] as const).map((tier) => {
+                const isSelected = snapTier === tier.id;
+                return (
+                  <button
+                    key={tier.id}
+                    type="button"
+                    aria-pressed={isSelected}
+                    aria-label={`Snap sheet to ${tier.label} height (${tier.pct})`}
+                    onClick={() => {
+                      triggerHaptic('selection');
+                      setSnapTier(tier.id);
+                    }}
+                    className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
+                      isSelected
+                        ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-2xs'
+                        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'
+                    }`}
+                  >
+                    {tier.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Sheet Header: Flag, Name, Code, Region & Close Button */}
           <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-100 dark:border-zinc-800/80 shrink-0">
@@ -210,12 +281,13 @@ export const MobileCountryPeekSheet: React.FC<MobileCountryPeekSheetProps> = ({
 
             {/* Close Button with >= 44px hit target */}
             <button
+              ref={closeButtonRef}
               type="button"
               onClick={() => {
                 triggerHaptic('light');
                 onClose();
               }}
-              className="min-touch-target p-2 -mr-1 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
+              className="min-touch-target p-2 -mr-1 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
               aria-label="Close country preview"
             >
               <X className="w-5 h-5" />

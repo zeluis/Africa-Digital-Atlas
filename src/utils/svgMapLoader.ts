@@ -12,6 +12,7 @@ import {
   updateAfricaFinalMapWithAdmin1 
 } from '../data/africaFinalGeometry';
 import { resolveAppBasePath } from './assetPath';
+import { fetchWithTimeout } from './apiClient';
 
 /**
  * Asynchronous In-Memory Cached SVG Map Loader
@@ -45,7 +46,7 @@ export async function fetchAfricaFinalSvg(): Promise<string> {
     let lastError: Error | null = null;
     for (const url of assetCandidates) {
       try {
-        const response = await fetch(url);
+        const response = await fetchWithTimeout(url, { timeoutMs: 15000 });
         if (response.ok) {
           const text = await response.text();
           // Ensure we actually got an SVG and not an HTML 404 fallback page
@@ -229,7 +230,7 @@ function checkIsMapLoaded(): boolean {
  * React hook to consume streamed Africa vector map data with loading & error states.
  */
 export function useAfricaFinalMap() {
-  const [mapData, setMapData] = useState<Record<string, AfricaFinalCountryPath>>(parsedCountryMapCache || AFRICA_FINAL_MAP);
+  const [mapData, setMapData] = useState<Record<string, AfricaFinalCountryPath>>(() => parsedCountryMapCache || AFRICA_FINAL_MAP);
   const [isLoaded, setIsLoaded] = useState<boolean>(checkIsMapLoaded);
   const [isLoading, setIsLoading] = useState<boolean>(() => !checkIsMapLoaded());
   const [error, setError] = useState<Error | null>(null);
@@ -238,9 +239,7 @@ export function useAfricaFinalMap() {
     let isMounted = true;
 
     if (checkIsMapLoaded()) {
-      if (parsedCountryMapCache && mapData !== parsedCountryMapCache) {
-        setMapData(parsedCountryMapCache);
-      }
+      setMapData((prev) => (parsedCountryMapCache && prev !== parsedCountryMapCache ? parsedCountryMapCache : prev));
       setIsLoaded(true);
       setIsLoading(false);
       return;

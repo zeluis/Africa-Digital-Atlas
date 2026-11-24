@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { m, AnimatePresence } from 'motion/react';
 import { SlidingPill, usePrefersReducedMotion } from '../utils/motion';
-import { handleTabListKeyDown } from '../utils/a11y';
+import { AtlasTabList } from '../components/common/AtlasTabList';
 import { 
   BookOpen, 
   Sparkles, 
@@ -181,53 +181,62 @@ export const IconographyView: React.FC<IconographyViewProps> = ({
           </div>
 
           {/* Right: Segmented Switchboard to toggle between Archival Plates Grid and Castas */}
-          <div className="relative inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner self-start sm:self-auto" role="tablist" aria-label="Toggle between Archival Plates and Castas series">
-            <button
-              type="button"
-              id="iconography-tab-registry"
-              role="tab"
-              aria-selected={false}
-              aria-controls="iconography-panel-registry"
-              tabIndex={-1}
-              onClick={() => setActiveTab('registry')}
-              onKeyDown={(e) => handleTabListKeyDown(e, ['registry', 'ingestion'] as const, 0, setActiveTab, 'horizontal')}
-              className="relative px-3 py-1 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
-            >
-              <DynamicIcon 
-                icon="fluent-mdl2:picture-tile" 
-                className="w-3.5 h-3.5 shrink-0 relative z-10 transition-colors text-stone-500 dark:text-stone-400" 
-              />
-              <span className="relative z-10">Archival Plates Grid</span>
-              <span className="relative z-10 px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold bg-stone-200/80 dark:bg-stone-800 text-stone-600 dark:text-stone-400">
-                {SLAVE_TRADE_ILLUSTRATIONS.length}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              id="iconography-tab-ingestion"
-              role="tab"
-              aria-selected={true}
-              aria-controls="iconography-panel-ingestion"
-              tabIndex={0}
-              onClick={() => setActiveTab('ingestion')}
-              onKeyDown={(e) => handleTabListKeyDown(e, ['registry', 'ingestion'] as const, 1, setActiveTab, 'horizontal')}
-              className="relative px-3 py-1 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 text-white dark:text-stone-900 shadow-sm"
-            >
+          <AtlasTabList<'registry' | 'ingestion'>
+            ariaLabel="Toggle between Archival Plates and Castas series"
+            className="relative inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner self-start sm:self-auto"
+            value={activeTab}
+            onChange={setActiveTab}
+            items={[
+              {
+                id: 'registry',
+                tabId: 'iconography-tab-registry',
+                controlsId: 'iconography-panel-registry',
+                label: 'Archival Plates Grid',
+                badge: SLAVE_TRADE_ILLUSTRATIONS.length,
+              },
+              {
+                id: 'ingestion',
+                tabId: 'iconography-tab-ingestion',
+                controlsId: 'iconography-panel-ingestion',
+                label: 'Castas Series',
+                badge: castasIllustrations.length,
+              },
+            ]}
+            getTabClassName={(_item, isActive) =>
+              `relative px-3 py-1 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
+                isActive
+                  ? 'text-white dark:text-stone-900 shadow-sm'
+                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
+              }`
+            }
+            renderActiveIndicator={() => (
               <SlidingPill
                 layoutId="iconographyHeaderTabPill"
                 className="absolute inset-0 rounded-xl bg-stone-900 dark:bg-stone-100 shadow-sm"
               />
-              <DynamicIcon 
-                icon="lucide:gallery-thumbnails" 
-                className="w-3.5 h-3.5 shrink-0 relative z-10 transition-colors text-amber-400 dark:text-amber-600" 
-              />
-              <span className="relative z-10">Castas Series</span>
-              <span className="relative z-10 px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold bg-stone-800 text-amber-300 dark:bg-stone-200 dark:text-stone-900">
-                {castasIllustrations.length}
-              </span>
-            </button>
-          </div>
+            )}
+            renderItem={({ item, isActive, activeIndicator }) => (
+              <>
+                {activeIndicator}
+                <DynamicIcon
+                  icon={item.id === 'registry' ? 'fluent-mdl2:picture-tile' : 'lucide:gallery-thumbnails'}
+                  className={`w-3.5 h-3.5 shrink-0 relative z-10 transition-colors ${
+                    isActive ? 'text-amber-400 dark:text-amber-600' : 'text-stone-500 dark:text-stone-400'
+                  }`}
+                />
+                <span className="relative z-10">{item.label}</span>
+                <span
+                  className={`relative z-10 px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold ${
+                    isActive
+                      ? 'bg-stone-800 text-amber-300 dark:bg-stone-200 dark:text-stone-900'
+                      : 'bg-stone-200/80 dark:bg-stone-800 text-stone-600 dark:text-stone-400'
+                  }`}
+                >
+                  {item.badge}
+                </span>
+              </>
+            )}
+          />
           <div role="status" aria-live="polite" className="sr-only">
             Castas and Colonial Visual Archive active. Viewing Plate {activeCastasItem.regId}: {activeCastasItem.title}.
           </div>

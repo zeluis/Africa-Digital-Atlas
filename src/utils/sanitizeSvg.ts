@@ -24,6 +24,55 @@ const SMIL_ANIMATION_TAGS = new Set([
 
 const URI_ATTRS = new Set(['href', 'xlink:href', 'src', 'action', 'formaction']);
 
+const SMIL_VALUE_ATTRS = ['values', 'from', 'to', 'by'];
+
+function sanitizeInlineStyleValue(rawStyle: string): string {
+  if (!rawStyle || typeof rawStyle !== 'string') return '';
+  const withoutComments = rawStyle.replace(/\/\*[\s\S]*?\*\//g, '');
+  const declarations = withoutComments.split(';');
+  const safeDeclarations: string[] = [];
+
+  for (const decl of declarations) {
+    const trimmed = decl.trim();
+    if (!trimmed || !trimmed.includes(':')) continue;
+
+    const compact = trimmed.replace(/[\u0000-\u0020]+/g, '').toLowerCase();
+    if (
+      compact.includes('expression(') ||
+      compact.includes('-moz-binding') ||
+      compact.includes('javascript:') ||
+      compact.includes('vbscript:')
+    ) {
+      continue;
+    }
+
+    let hasExternalUrl = false;
+    trimmed.replace(/url\s*\(\s*(['"]?)([\s\S]*?)\1\s*\)/gi, (_m, _quote, inner: string) => {
+      const target = inner.replace(/[\u0000-\u0020]+/g, '');
+      if (!target.startsWith('#')) {
+        hasExternalUrl = true;
+      }
+      return '';
+    });
+
+    if (
+      !hasExternalUrl &&
+      /url\s*\(/i.test(trimmed) &&
+      !/url\s*\(\s*(['"]?)#[^)'"]+\1\s*\)/i.test(trimmed)
+    ) {
+      hasExternalUrl = true;
+    }
+
+    if (hasExternalUrl) {
+      continue;
+    }
+
+    safeDeclarations.push(trimmed);
+  }
+
+  return safeDeclarations.join('; ');
+}
+
 function isUnsafeUri(value: string, tagName = ''): boolean {
   const trimmed = value.trim();
   if (!trimmed) return false;
@@ -66,11 +115,19 @@ export function sanitizeSvgMarkup(rawMarkup: string): string {
             if (
               targetAttr === 'href' ||
               targetAttr === 'xlink:href' ||
+              targetAttr === 'style' ||
               targetAttr.startsWith('on') ||
               node.hasAttribute('href') ||
               node.hasAttribute('xlink:href')
             ) {
               toRemove.push(node);
+            } else {
+              for (const valAttr of SMIL_VALUE_ATTRS) {
+                const attrVal = node.getAttribute(valAttr);
+                if (attrVal && /url\s*\(/i.test(attrVal)) {
+                  node.removeAttribute(valAttr);
+                }
+              }
             }
           }
 
@@ -81,6 +138,13 @@ export function sanitizeSvgMarkup(rawMarkup: string): string {
               const localLower = (attr.localName || attr.name).toLowerCase();
               if (localLower.startsWith('on')) {
                 node.removeAttribute(attr.name);
+              } else if (localLower === 'style') {
+                const safeStyle = sanitizeInlineStyleValue(attr.value);
+                if (safeStyle) {
+                  node.setAttribute(attr.name, safeStyle);
+                } else {
+                  node.removeAttribute(attr.name);
+                }
               } else if (URI_ATTRS.has(nameLower) || URI_ATTRS.has(localLower)) {
                 if (isUnsafeUri(attr.value, tag)) {
                   node.setAttribute(attr.name, '#');
@@ -110,9 +174,22 @@ export function sanitizeSvgMarkup(rawMarkup: string): string {
     .replace(/<foreignObject[\s\S]*?<\/foreignObject>/gi, '')
     .replace(/<(iframe|object|embed|applet|meta|style)[^>]*>[\s\S]*?<\/\1>/gi, '')
     .replace(/<(iframe|object|embed|applet|meta|style)[^>]*\/\s*>/gi, '')
-    .replace(/<(animate|animateTransform|animateMotion|set)\b[^>]*attributeName\s*=\s*["']\s*(?:xlink:)?href\s*["'][^>]*\/?>/gi, '');
+    .replace(/<(animate|animateTransform|animateMotion|set)\b[^>]*attributeName\s*=\s*["']\s*(?:(?:xlink:)?href|style|on[a-z]+)\s*["'][^>]*>[\s\S]*?<\/\1>/gi, '')
+    .replace(/<(animate|animateTransform|animateMotion|set)\b[^>]*attributeName\s*=\s*["']\s*(?:(?:xlink:)?href|style|on[a-z]+)\s*["'][^>]*\/?>/gi, '')
+    .replace(/(<(?:animate|animateTransform|animateMotion|set)\b[^>]*?)\s(?:values|from|to|by)\s*=\s*(?:"[^"]*url\s*\([^"]*"|'[^']*url\s*\([^']*')([^>]*>)/gi, '$1$2');
 
   sanitized = sanitized.replace(/\son[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+
+  sanitized = sanitized.replace(
+    /\sstyle\s*=\s*(?:"([^"]*)"|'([^']*)')/gi,
+    (_match, dblVal: string | undefined, sglVal: string | undefined) => {
+      const rawStyle = dblVal ?? sglVal ?? '';
+      const safeStyle = sanitizeInlineStyleValue(rawStyle);
+      if (!safeStyle) return '';
+      const quote = dblVal !== undefined ? '"' : "'";
+      return ` style=${quote}${safeStyle}${quote}`;
+    }
+  );
 
   sanitized = sanitized.replace(
     /(\s(?:xlink:)?(?:href|src|action|formaction)\s*=\s*["'])\s*(?:(?:javascript|vbscript):|\/\/|data:(?!image\/(?:png|jpeg|jpg|webp|gif);base64,))[^"']*(["'])/gi,

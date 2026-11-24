@@ -35,6 +35,7 @@ import { InteractiveFeatureSpotlight } from './onboarding/InteractiveFeatureSpot
 import { speakAfriataGreeting, stopAfriataSpeech, playWarmAfricanChime } from '../utils/afriataVoiceEngine';
 import { ONBOARDING_TRANSLATIONS } from '../data/onboardingTranslations';
 import { resolveAssetPath } from '../utils/assetPath';
+import { writeStorageString } from '../utils/storageCache';
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -320,12 +321,6 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.isComposing || e.keyCode === 229) return;
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        e.stopPropagation();
-        handleDirectCloseToDefaultApp();
-        return;
-      }
       const target = e.target as HTMLElement | null;
       if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) {
         return;
@@ -403,11 +398,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
     stopAfriataSpeech();
     setIsSpeaking(false);
     setShowDualEntryPanels(false);
-    try {
-      localStorage.setItem('afriata_onboarding_v1', 'true');
-    } catch {
-      // safe fallback
-    }
+    writeStorageString('afriata_onboarding_v1', 'true');
     onClose();
     onNavigate('overview');
   };
@@ -416,11 +407,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
     stopAfriataSpeech();
     setIsSpeaking(false);
     playWarmAfricanChime();
-    try {
-      localStorage.setItem('afriata_onboarding_v1', 'true');
-    } catch {
-      // safe fallback
-    }
+    writeStorageString('afriata_onboarding_v1', 'true');
     onNavigate(destinationTab);
     onClose();
   };
@@ -446,7 +433,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   return (
     <AtlasDialog
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleDirectCloseToDefaultApp}
       id="afriata-onboarding-container"
       label="Afriata Onboarding Experience"
       closeOnBackdropClick={false}

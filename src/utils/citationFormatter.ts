@@ -1,5 +1,6 @@
 import type { ResearchReport } from '../data/reportsData';
 import type { AfriataReport } from '../types/afriataReport';
+import { writeTextWithFallback } from '../hooks/useCopyToClipboard';
 
 export const AFRIATA_DOI = '10.6084/m9.figshare.34065711';
 export const AFRIATA_ORCID = '0000-0001-9421-6555';
@@ -226,13 +227,6 @@ ER  - `;
 }
 
 export async function copyTextToClipboard(text: string): Promise<boolean> {
-  if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return true;
-    } catch {
-      // Fallback below
-    }
-  }
-  return false;
+  if (!text) return false;
+  return writeTextWithFallback(text);
 }

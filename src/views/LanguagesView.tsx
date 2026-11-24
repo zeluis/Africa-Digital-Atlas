@@ -211,6 +211,7 @@ const INDIGENOUS_LINGUA_FRANCAS: IndigenousLinguaFranca[] = [
 
 interface LanguagesViewProps {
   onSelectCountry: (entityId: string) => void;
+  initialLanguageId?: string;
 }
 
 type LangSubTab = 'families' | 'waveforms' | 'comparator' | 'typology' | 'lingua-francas' | 'countries';
@@ -247,17 +248,28 @@ const handleLangTabKeyDown = (
 };
 
 export const LanguagesView: React.FC<LanguagesViewProps> = ({
-  onSelectCountry
+  onSelectCountry,
+  initialLanguageId
 }) => {
   useCountrySilhouettesLoaded();
   const prefersReducedMotion = useReducedMotion();
-  const [activeTab, setActiveTab] = useState<LangSubTab>('families');
+  const resolvedInitialLang = initialLanguageId && AFRICAN_MOTHER_TONGUES[initialLanguageId] ? initialLanguageId : 'yoruba';
+  const [activeTab, setActiveTab] = useState<LangSubTab>(() =>
+    initialLanguageId && AFRICAN_MOTHER_TONGUES[initialLanguageId] ? 'waveforms' : 'families'
+  );
   const [lastLabTab, setLastLabTab] = useState<'waveforms' | 'comparator' | 'typology'>('waveforms');
   const headerLoaded = useCountryHeaderDataLoaded();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFamilyId, setSelectedFamilyId] = useState<string>('niger-congo');
-  const [activeWaveformLangId, setActiveWaveformLangId] = useState<string>('yoruba');
+  const [activeWaveformLangId, setActiveWaveformLangId] = useState<string>(resolvedInitialLang);
   const [selectedTypologyId, setSelectedTypologyId] = useState<string>('clicks');
+
+  React.useEffect(() => {
+    if (initialLanguageId && AFRICAN_MOTHER_TONGUES[initialLanguageId]) {
+      setActiveWaveformLangId(initialLanguageId);
+      setActiveTab('waveforms');
+    }
+  }, [initialLanguageId]);
 
   const allEntities = atlas.getAllEntities();
 

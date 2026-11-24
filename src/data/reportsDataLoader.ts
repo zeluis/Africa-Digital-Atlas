@@ -18,6 +18,7 @@ import {
 import { MARKDOWN_REPORTS_MANIFEST } from './markdownReportsManifest';
 import { AfriataReport } from '../types/afriataReport';
 import { WorkingPaperEntry, WORKING_PAPERS_SERIES as BASELINE_WORKING_PAPERS } from './methodologyDossierData';
+import { readStorageJson } from '../utils/storageCache';
 import { LucideIcon, Dna, Scale, TrendingUp } from 'lucide-react';
 
 /**
@@ -196,25 +197,25 @@ export function getAllWorkingPapers(): Record<string, ResearchReport> {
   }
 
   // Merge client-side dynamically uploaded working papers from localStorage
-  try {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const savedWp = localStorage.getItem('afriata_custom_working_papers') || localStorage.getItem('africalia_custom_working_papers');
-      if (savedWp) {
-        const parsed = JSON.parse(savedWp);
-        Object.assign(unifiedWp, parsed);
-      }
-      const savedReports = localStorage.getItem('afriata_custom_reports') || localStorage.getItem('africalia_custom_reports');
-      if (savedReports) {
-        const parsedReports = JSON.parse(savedReports) as Record<string, ResearchReport>;
-        for (const [id, rep] of Object.entries(parsedReports)) {
-          if (rep.isWorkingPaper) {
-            unifiedWp[id] = rep;
-          }
-        }
+  const savedWp = readStorageJson<Record<string, ResearchReport>>(
+    'afriata_custom_working_papers',
+    {},
+    { legacyKey: 'africalia_custom_working_papers' }
+  );
+  if (savedWp && typeof savedWp === 'object') {
+    Object.assign(unifiedWp, savedWp);
+  }
+  const savedReports = readStorageJson<Record<string, ResearchReport>>(
+    'afriata_custom_reports',
+    {},
+    { legacyKey: 'africalia_custom_reports' }
+  );
+  if (savedReports && typeof savedReports === 'object') {
+    for (const [id, rep] of Object.entries(savedReports)) {
+      if (rep?.isWorkingPaper) {
+        unifiedWp[id] = rep;
       }
     }
-  } catch {
-    // Ignore parse errors or blocked iframe storage
   }
 
   return unifiedWp;
@@ -300,21 +301,21 @@ export function getAllReports(): Record<string, ResearchReport> {
     ...dropInWorkingPapers
   };
 
-  try {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const savedReports = localStorage.getItem('afriata_custom_reports') || localStorage.getItem('africalia_custom_reports');
-      if (savedReports) {
-        const parsed = JSON.parse(savedReports);
-        Object.assign(unified, parsed);
-      }
-      const savedWp = localStorage.getItem('afriata_custom_working_papers') || localStorage.getItem('africalia_custom_working_papers');
-      if (savedWp) {
-        const parsedWp = JSON.parse(savedWp);
-        Object.assign(unified, parsedWp);
-      }
-    }
-  } catch {
-    // Ignore parse errors or blocked iframe storage
+  const savedReports = readStorageJson<Record<string, ResearchReport>>(
+    'afriata_custom_reports',
+    {},
+    { legacyKey: 'africalia_custom_reports' }
+  );
+  if (savedReports && typeof savedReports === 'object') {
+    Object.assign(unified, savedReports);
+  }
+  const savedWp = readStorageJson<Record<string, ResearchReport>>(
+    'afriata_custom_working_papers',
+    {},
+    { legacyKey: 'africalia_custom_working_papers' }
+  );
+  if (savedWp && typeof savedWp === 'object') {
+    Object.assign(unified, savedWp);
   }
 
   return unified;

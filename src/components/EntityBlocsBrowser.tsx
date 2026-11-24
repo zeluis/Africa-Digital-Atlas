@@ -441,7 +441,7 @@ export const EntityBlocsBrowser: React.FC<EntityBlocsBrowserProps> = ({
                         <a
                           href={wikiDossier.url}
                           target="_blank"
-                          rel="noreferrer"
+                          rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/70 text-xs font-mono font-bold text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors"
                         >
                           <BookOpen className="w-3.5 h-3.5" />

@@ -47,6 +47,9 @@ function resolveMountPrefix(): string {
 }
 
 app.disable("x-powered-by");
+if (process.env.TRUST_PROXY !== "false") {
+  app.set("trust proxy", 1);
+}
 
 app.use((_req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
@@ -58,6 +61,7 @@ app.use((_req, res, next) => {
 app.use(express.json({ limit: "16kb" }));
 
 const MAX_CONNECTOR_PROBE_BYTES = 1024 * 1024; // 1 MB upstream probe read cap
+const MAX_RATE_LIMIT_BUCKETS = 5000;
 
 function createRateLimiter({ windowMs, max }: { windowMs: number; max: number }): express.RequestHandler {
   const buckets = new Map<string, { count: number; resetAt: number }>();
@@ -71,11 +75,17 @@ function createRateLimiter({ windowMs, max }: { windowMs: number; max: number })
         }
       }
     }
+    while (buckets.size >= MAX_RATE_LIMIT_BUCKETS) {
+      const oldestKey = buckets.keys().next().value;
+      if (!oldestKey) break;
+      buckets.delete(oldestKey);
+    }
 
     const clientIp = req.ip || req.socket?.remoteAddress || "unknown";
     const existing = buckets.get(clientIp);
 
     if (!existing || now >= existing.resetAt) {
+      if (existing) buckets.delete(clientIp);
       buckets.set(clientIp, { count: 1, resetAt: now + windowMs });
       return next();
     }
@@ -97,15 +107,19 @@ function createRateLimiter({ windowMs, max }: { windowMs: number; max: number })
 const connectorProbeLimiter = createRateLimiter({ windowMs: 60_000, max: 60 });
 const ttsLimiter = createRateLimiter({ windowMs: 60_000, max: 30 });
 
-async function readUpstreamTextCapped(response: globalThis.Response, maxBytes: number): Promise<{ text: string; byteLength: number }> {
+async function readUpstreamBytesCapped(
+  response: globalThis.Response,
+  maxBytes: number
+): Promise<{ buffer: Buffer; byteLength: number; truncated: boolean }> {
   const declaredLen = Number(response.headers.get("content-length"));
   if (!response.body) {
-    return { text: "", byteLength: 0 };
+    return { buffer: Buffer.alloc(0), byteLength: 0, truncated: false };
   }
 
   const reader = response.body.getReader();
   const chunks: Buffer[] = [];
   let totalBytes = 0;
+  let truncated = false;
 
   try {
     while (true) {
@@ -115,6 +129,7 @@ async function readUpstreamTextCapped(response: globalThis.Response, maxBytes: n
 
       const remaining = maxBytes - totalBytes;
       if (remaining <= 0) {
+        truncated = true;
         await reader.cancel().catch(() => {});
         break;
       }
@@ -122,6 +137,7 @@ async function readUpstreamTextCapped(response: globalThis.Response, maxBytes: n
       if (value.byteLength > remaining) {
         chunks.push(Buffer.from(value.subarray(0, remaining)));
         totalBytes += remaining;
+        truncated = true;
         await reader.cancel().catch(() => {});
         break;
       }
@@ -134,8 +150,17 @@ async function readUpstreamTextCapped(response: globalThis.Response, maxBytes: n
   }
 
   return {
-    text: Buffer.concat(chunks).toString("utf8"),
-    byteLength: Number.isFinite(declaredLen) && declaredLen > totalBytes ? declaredLen : totalBytes
+    buffer: Buffer.concat(chunks),
+    byteLength: Number.isFinite(declaredLen) && declaredLen > totalBytes ? declaredLen : totalBytes,
+    truncated
+  };
+}
+
+async function readUpstreamTextCapped(response: globalThis.Response, maxBytes: number): Promise<{ text: string; byteLength: number }> {
+  const { buffer, byteLength } = await readUpstreamBytesCapped(response, maxBytes);
+  return {
+    text: buffer.toString("utf8"),
+    byteLength
   };
 }
 
@@ -205,15 +230,15 @@ const AKP_DATASETS_COUNT = AKP_PILLARS_META.reduce((sum, pillar) => sum + pillar
 const PIPELINE_STAGES_COUNT = INITIAL_PIPELINE_STEPS.length;
 const CANONICAL_ENTITIES_COUNT = getInitialEntities().length;
 
+const apiRouter = express.Router();
+
 /**
  * Health check endpoint
  */
-app.get("/api/health", (req, res) => {
-  const elevenLabsKey = process.env.ELEVENLABS_API_KEY || "";
+apiRouter.get("/health", (req, res) => {
   res.json({
     status: "ok",
     geminiEnabled: !!process.env.GEMINI_API_KEY,
-    elevenLabsEnabled: !!elevenLabsKey,
     ingestionEngine: "operational",
     timestamp: new Date().toISOString()
   });
@@ -222,7 +247,7 @@ app.get("/api/health", (req, res) => {
 /**
  * Ingestion Engine Status & Telemetry
  */
-app.get("/api/ingest/status", (req, res) => {
+apiRouter.get("/ingest/status", (req, res) => {
   const uniqueOrganizations = new Set(
     EXTERNAL_API_CONNECTORS.map((connector: { organization?: string }) => connector.organization).filter(Boolean)
   ).size;
@@ -253,7 +278,7 @@ const ALLOWED_TRACKED_DATASETS = new Set([
   "src/data/atlas-observations-seed.ts"
 ]);
 
-app.get("/api/research/dataset-raw", async (req, res) => {
+apiRouter.get("/research/dataset-raw", async (req, res) => {
   const fileScope = String(req.query.file || "");
   if (!ALLOWED_TRACKED_DATASETS.has(fileScope)) {
     return res.status(400).json({ error: "Invalid dataset scope" });
@@ -290,7 +315,7 @@ app.get("/api/research/dataset-raw", async (req, res) => {
  * Server-Side Connector Handshake & Live Probe
  * Bypasses client-side browser CORS restrictions for multilateral data feeds
  */
-app.post("/api/ingest/test-connector", connectorProbeLimiter, async (req, res) => {
+apiRouter.post("/ingest/test-connector", connectorProbeLimiter, async (req, res) => {
   const { connectorId, countryIso3 = "GHA" } = req.body || {};
   const safeIso3 = String(countryIso3 || "GHA").replace(/[^A-Za-z0-9]/g, "").toUpperCase().slice(0, 3) || "GHA";
   const connector = EXTERNAL_API_CONNECTORS.find(c => c.id === connectorId);
@@ -381,7 +406,7 @@ app.post("/api/ingest/test-connector", connectorProbeLimiter, async (req, res) =
  * High-Fidelity Voice Synthesis Endpoint
  * Generates or retrieves natural, warm, expressive African female speech
  */
-app.post("/api/tts", ttsLimiter, async (req, res) => {
+apiRouter.post("/tts", ttsLimiter, async (req, res) => {
   try {
     const { text, langTag = "en-NG", languageName = "African English", voiceGender = "female" } = req.body;
 
@@ -405,83 +430,7 @@ app.post("/api/tts", ttsLimiter, async (req, res) => {
       });
     }
 
-    // 1. First priority: ElevenLabs if key is configured
-    const elevenLabsKey = process.env.ELEVENLABS_API_KEY || "";
-    if (elevenLabsKey) {
-      try {
-        const langLower = (langTag || "").toLowerCase();
-        const isEuropean = langLower.startsWith("pt") || 
-                           langLower.startsWith("es") || 
-                           langLower.startsWith("it") || 
-                           langLower.startsWith("nl") || 
-                           langLower.startsWith("de") || 
-                           (langLower.startsWith("fr") && !langLower.includes("sn") && !langLower.includes("ci") && !langLower.includes("mg"));
-
-        // Voice profiles:
-        // European languages use FGY2WhTYpPnrIDTdsKH5 (Laura - warm, friendly, casual European tone)
-        // African languages use EXAVITQu4vr4xnSDxMaL (Bella - grounded, expressive, warm storyteller)
-        let defaultVoice = isEuropean ? "FGY2WhTYpPnrIDTdsKH5" : "EXAVITQu4vr4xnSDxMaL";
-        
-        // Voice-specific settings
-        // European voices: lighter stability, friendly style accentuation
-        // African voices: higher similarity, grounded maternal resonance
-        const voiceSettings = isEuropean ? {
-          stability: 0.48,
-          similarity_boost: 0.88,
-          style: 0.32,
-          use_speaker_boost: true,
-        } : {
-          stability: 0.55,
-          similarity_boost: 0.85,
-          style: 0.20,
-          use_speaker_boost: true,
-        };
-
-        const voiceId = process.env.ELEVENLABS_VOICE_ID || defaultVoice;
-        const elResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
-          method: "POST",
-          signal: AbortSignal.timeout(10000),
-          headers: {
-            "Content-Type": "application/json",
-            "xi-api-key": elevenLabsKey.trim(),
-          },
-          body: JSON.stringify({
-            text: normalizedText,
-            model_id: "eleven_multilingual_v2",
-            voice_settings: voiceSettings,
-          }),
-        });
-
-        if (elResponse.ok) {
-          const arrayBuffer = await elResponse.arrayBuffer();
-          const base64Audio = Buffer.from(arrayBuffer).toString("base64");
-          const mimeType = "audio/mpeg";
-
-          setCachedAudio(cacheKey, {
-            base64Audio,
-            mimeType,
-            timestamp: Date.now(),
-          });
-
-          return res.json({
-            success: true,
-            source: "elevenlabs",
-            audioBase64: base64Audio,
-            mimeType,
-          });
-        } else {
-          const { text: errDetail } = await readUpstreamTextCapped(elResponse, 16 * 1024).catch(() => ({
-            text: "",
-            byteLength: 0
-          }));
-          console.warn("ElevenLabs TTS error status:", elResponse.status, errDetail);
-        }
-      } catch (elErr) {
-        console.warn("ElevenLabs TTS request failed, falling back to Gemini:", elErr);
-      }
-    }
-
-    // 2. Second priority: Gemini Generative TTS (gemini-3.8-flash-lite-tts)
+    // 1. Priority: Gemini Generative TTS (gemini-3.8-flash-lite-tts)
     const now = Date.now();
     const isRateLimited = now < geminiTtsRateLimitedUntil;
     const ai = isRateLimited ? null : getGenAI();
@@ -552,23 +501,20 @@ app.post("/api/tts", ttsLimiter, async (req, res) => {
   }
 });
 
+// Return structured JSON 404 for unknown API endpoints instead of falling through to SPA HTML
+apiRouter.all("*", (_req, res) => {
+  res.status(404).json({ error: "API endpoint not found" });
+});
+
 // Production static file serving or development Vite handling
 async function startServer() {
   const mountPrefix = resolveMountPrefix();
   const distPath = resolveDistDir();
   const docsPath = path.join(distPath, "docs");
 
-  // Return structured JSON 404 for unknown API endpoints instead of falling through to SPA HTML
-  app.all("/api/*", (_req, res) => {
-    res.status(404).json({ error: "API endpoint not found" });
-  });
-
+  app.use("/api", apiRouter);
   if (mountPrefix) {
-    // Allow mounted reverse-proxy subpath calls like /atlas/api/* to reuse registered /api/* handlers
-    app.use(`${mountPrefix}/api`, (req, res, next) => {
-      req.url = `/api${req.url}`;
-      app(req, res, next);
-    });
+    app.use(`${mountPrefix}/api`, apiRouter);
   }
 
   const createStaticCacheHeaders = (rootDir: string) => {
@@ -639,7 +585,8 @@ async function startServer() {
         next();
       });
     }
-    app.get("*", (_req, res) => {
+    const spaFallbackRoute = mountPrefix ? `${mountPrefix}/*` : "*";
+    app.get(spaFallbackRoute, (_req, res) => {
       res.setHeader("Cache-Control", "no-cache");
       res.sendFile(path.join(distPath, "index.html"));
     });

@@ -898,6 +898,111 @@ const CLIP_SPECS = [
     provenanceBadge: 'Meta MMS-TTS (Yorùbá VITS)',
     isProxy: false,
   },
+  // Pre-rendered Top-Bar UI Language Greetings (Eliminates runtime cloud TTS calls)
+  {
+    id: 'ui-greeting-en',
+    tier: 'core',
+    kind: 'ui-greeting',
+    language: 'English (UI Greeting)',
+    langTag: 'en-NG',
+    displayPhrase: 'Welcome to the Afriata experience, the Atlantic Ethnic Explorer. Please enjoy.',
+    spokenInput: 'Welcome to the Afriata experience, the Atlantic Ethnic Explorer. Please enjoy.',
+    engine: 'gtts',
+    tl: 'en',
+    provenanceBadge: 'Pre-rendered Static Neural Audio (English)',
+    isProxy: false,
+  },
+  {
+    id: 'ui-greeting-fr',
+    tier: 'core',
+    kind: 'ui-greeting',
+    language: 'Français (UI Greeting)',
+    langTag: 'fr-FR',
+    displayPhrase: "Bienvenue dans l'expérience Afriata, l'explorateur ethnique de l'Atlantique. Bonne découverte.",
+    spokenInput: "Bienvenue dans l'expérience Afriata, l'explorateur ethnique de l'Atlantique. Bonne découverte.",
+    engine: 'gtts',
+    tl: 'fr',
+    provenanceBadge: 'Pre-rendered Static Neural Audio (Français)',
+    isProxy: false,
+  },
+  {
+    id: 'ui-greeting-pt',
+    tier: 'core',
+    kind: 'ui-greeting',
+    language: 'Português (UI Greeting)',
+    langTag: 'pt-PT',
+    displayPhrase: 'Olá, bem-vindo à experiência Afriata, o Explorador Étnico do Atlântico. Desfrute da sua exploração.',
+    spokenInput: 'Olá, bem-vindo à experiência Afriata, o Explorador Étnico do Atlântico. Desfrute da sua exploração.',
+    engine: 'gtts',
+    tl: 'pt-PT',
+    provenanceBadge: 'Pre-rendered Static Neural Audio (Português)',
+    isProxy: false,
+  },
+  {
+    id: 'ui-greeting-es',
+    tier: 'core',
+    kind: 'ui-greeting',
+    language: 'Español (UI Greeting)',
+    langTag: 'es-ES',
+    displayPhrase: 'Hola, bienvenido a la experiencia Afriata, el Explorador Étnico del Atlántico. Disfrute de su exploración.',
+    spokenInput: 'Hola, bienvenido a la experiencia Afriata, el Explorador Étnico del Atlántico. Disfrute de su exploración.',
+    engine: 'gtts',
+    tl: 'es',
+    provenanceBadge: 'Pre-rendered Static Neural Audio (Español)',
+    isProxy: false,
+  },
+  {
+    id: 'ui-greeting-it',
+    tier: 'core',
+    kind: 'ui-greeting',
+    language: 'Italiano (UI Greeting)',
+    langTag: 'it-IT',
+    displayPhrase: "Ciao e benvenuto nell'esperienza Afriata, l'Esploratore Etnico dell'Atlantico. Buona scoperta.",
+    spokenInput: "Ciao e benvenuto nell'esperienza Afriata, l'Esploratore Etnico dell'Atlantico. Buona scoperta.",
+    engine: 'gtts',
+    tl: 'it',
+    provenanceBadge: 'Pre-rendered Static Neural Audio (Italiano)',
+    isProxy: false,
+  },
+  {
+    id: 'ui-greeting-nl',
+    tier: 'core',
+    kind: 'ui-greeting',
+    language: 'Nederlands (UI Greeting)',
+    langTag: 'nl-NL',
+    displayPhrase: 'Hallo, welkom bij de Afriata-ervaring, de Atlantische Etnische Verkenner. Veel plezier met uw ontdekkingstocht.',
+    spokenInput: 'Hallo, welkom bij de Afriata-ervaring, de Atlantische Etnische Verkenner. Veel plezier met uw ontdekkingstocht.',
+    engine: 'gtts',
+    tl: 'nl',
+    provenanceBadge: 'Pre-rendered Static Neural Audio (Nederlands)',
+    isProxy: false,
+  },
+  {
+    id: 'ui-greeting-de',
+    tier: 'core',
+    kind: 'ui-greeting',
+    language: 'Deutsch (UI Greeting)',
+    langTag: 'de-DE',
+    displayPhrase: 'Willkommen zum Afriata-Erlebnis, der Atlantische Ethnische Entdecker. Viel Vergnügen.',
+    spokenInput: 'Willkommen zum Afriata-Erlebnis, der Atlantische Ethnische Entdecker. Viel Vergnügen.',
+    engine: 'gtts',
+    tl: 'de',
+    provenanceBadge: 'Pre-rendered Static Neural Audio (Deutsch)',
+    isProxy: false,
+  },
+  {
+    id: 'ui-greeting-ar',
+    tier: 'core',
+    kind: 'ui-greeting',
+    language: 'العربية (UI Greeting)',
+    langTag: 'ar-MA',
+    displayPhrase: 'مرحباً بكم في تجربة أفرياتا، مستكشف التنوع الإفريقي والأطلسي.',
+    spokenInput: 'مرحباً بكم في تجربة أفرياتا، مستكشف التنوع الإفريقي والأطلسي.',
+    engine: 'gtts',
+    tl: 'ar',
+    provenanceBadge: 'Pre-rendered Static Neural Audio (Arabic)',
+    isProxy: false,
+  },
 ];
 
 async function main() {
@@ -905,19 +1010,47 @@ async function main() {
   ensureDir(EXTENDED_OUT_DIR);
   ensureDir(TMP_DIR);
 
+  const onlyKindArg = process.argv.find((arg) => arg.startsWith('--only-kind='));
+  const onlyKind = onlyKindArg ? onlyKindArg.slice('--only-kind='.length).trim() : '';
+  const manifestPath = path.join(OUT_DIR, 'manifest.json');
+  const existingManifestMap = new Map();
+  if (onlyKind && fs.existsSync(manifestPath)) {
+    try {
+      const prev = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      for (const entry of prev.clips || []) {
+        existingManifestMap.set(entry.id, entry);
+      }
+    } catch {
+      // Ignore malformed prior manifest
+    }
+  }
+
   const orderedEntries = new Array(CLIP_SPECS.length);
   let coreTotalBytes = 0;
   let extendedTotalBytes = 0;
 
   // Group execution by engine+model so each ONNX model downloads and loads only once
-  const indexedSpecs = CLIP_SPECS.map((spec, idx) => ({ spec, idx }));
+  const indexedSpecs = CLIP_SPECS
+    .map((spec, idx) => ({ spec, idx }))
+    .filter(({ spec, idx }) => {
+      if (!onlyKind || spec.kind === onlyKind) return true;
+      const existing = existingManifestMap.get(spec.id);
+      if (!existing) return true;
+      orderedEntries[idx] = existing;
+      if (existing.tier === 'extended') {
+        extendedTotalBytes += existing.bytes || 0;
+      } else {
+        coreTotalBytes += existing.bytes || 0;
+      }
+      return false;
+    });
   indexedSpecs.sort((a, b) => {
     const keyA = `${a.spec.engine}:${a.spec.model || a.spec.voice || a.spec.tl || ''}`;
     const keyB = `${b.spec.engine}:${b.spec.model || b.spec.voice || b.spec.tl || ''}`;
     return keyA.localeCompare(keyB);
   });
 
-  console.log(`Generating ${CLIP_SPECS.length} static African voice clips into ${path.relative(ROOT, OUT_DIR)}...\n`);
+  console.log(`Generating ${indexedSpecs.length} static voice clips into ${path.relative(ROOT, OUT_DIR)}...\n`);
 
   for (const { spec, idx } of indexedSpecs) {
     const isExtended = spec.tier === 'extended';
@@ -976,7 +1109,6 @@ async function main() {
   const manifestEntries = orderedEntries;
 
   const totalBytes = coreTotalBytes + extendedTotalBytes;
-  const manifestPath = path.join(OUT_DIR, 'manifest.json');
   fs.writeFileSync(
     manifestPath,
     JSON.stringify(

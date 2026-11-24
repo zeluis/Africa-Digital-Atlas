@@ -49,18 +49,6 @@ export const CartographicColophonModal: React.FC<CartographicColophonModalProps>
   const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
-
-  useEffect(() => {
     if (isOpen) {
       checkArchivalCacheReadiness().then(stats => {
         setCacheStats(stats);

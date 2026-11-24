@@ -12,7 +12,7 @@ import {
 } from '../../utils/motion';
 import { AtlasSelect } from '../common/AtlasSelect';
 import { ChartAccessibleTable } from '../common/ChartAccessibleTable';
-import { downloadFile } from '../../utils/exportUtils';
+import { downloadFile, escapeCsvCell } from '../../utils/exportUtils';
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 import { 
   TrendingUp, 
@@ -193,12 +193,12 @@ Audit Reference: AfCFTA Secretariat Modalities Annex 2
     const headers = ['Regime', 'Applied Duty Rate', 'Customs Duty (USD)', 'Total Landed Savings (USD)', 'Transit Days', 'Border Clearance Hours', 'Rules of Origin Status'];
     const csvLines = [
       `# Afriata AfCFTA Trade Corridor Simulation · ${selectedCorridor.name} (${selectedCorridor.rec}) · ${selectedCommodity.hsCode} ${selectedCommodity.name}`,
-      headers.join(','),
-      ...regimeComparisonRows.map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')),
+      headers.map((h) => escapeCsvCell(h, { quoteAllStrings: true })).join(','),
+      ...regimeComparisonRows.map((row) => row.map((v) => escapeCsvCell(v, { quoteAllStrings: true })).join(',')),
     ];
     downloadFile(
       `afriata-afcfta-${selectedCorridor.id}-${selectedCommodity.hsCode.replace(/\s+/g, '')}.csv`,
-      csvLines.join('\n'),
+      '\uFEFF' + csvLines.join('\r\n'),
       'text/csv;charset=utf-8;'
     );
     setStatusMessage(`Downloaded CSV regime comparison for ${selectedCorridor.name}.`);

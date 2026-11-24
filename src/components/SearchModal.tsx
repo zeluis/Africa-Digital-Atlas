@@ -15,6 +15,31 @@ import { CountryFlag } from './CountryFlag';
 import { useSavedEntities } from '../contexts/SavedEntitiesContext';
 import { AtlasDialog } from './common/AtlasDialog';
 import { normalizeSearchText, tokenizeSearchText } from '../utils/textNormalize';
+import {
+  PRE_COLONIAL_ENTITIES,
+  PreColonialEntity
+} from '../data/archivalCartographyData';
+import {
+  DETAILED_KINGDOMS_DATA,
+  KingdomDetailedRecord,
+  ensureDetailedKingdomsLoaded,
+  subscribeDetailedKingdoms
+} from '../data/preColonialKingdomsDetailed';
+import {
+  INITIAL_UNESCO_HERITAGE_SITES,
+  ISO2_TO_ISO3_MAP,
+  ensureUnescoHeritageSitesLoaded,
+  subscribeUnescoHeritageSites
+} from '../data/unescoHeritageRegistry';
+import {
+  AFRICAN_MOTHER_TONGUES,
+  MotherTongueEntry
+} from '../data/motherTonguesAudioData';
+import {
+  WORKING_PAPERS_SERIES,
+  WorkingPaperEntry
+} from '../data/methodologyDossierData';
+import { atlasModalStore } from '../stores/useAtlasModalStore';
 import { 
   Search, 
   Globe, 
@@ -31,7 +56,9 @@ import {
   Image as ImageIcon,
   FileText,
   Sliders,
-  Palette
+  Palette,
+  Crown,
+  Volume2
 } from 'lucide-react';
 import { DynamicIcon } from './DynamicIcon';
 
@@ -41,6 +68,7 @@ interface SearchModalProps {
   onSelectCountry: (entityId: string) => void;
   onSelectIndicator: (indicatorId: string) => void;
   onSelectTab?: (tab: string) => void;
+  onToggleTheme?: () => void;
 }
 
 export interface AppCommandItem {
@@ -48,6 +76,7 @@ export interface AppCommandItem {
   title: string;
   subtitle: string;
   tab: string;
+  action?: 'toggleTheme' | 'openAfcfta' | 'openAcademicExport' | 'openDoiVerification';
   iconName: string;
   category: string;
   shortcut?: string;
@@ -73,18 +102,39 @@ export const APP_COMMAND_REGISTRY: AppCommandItem[] = [
   { id: 'cmd-provenance', title: 'Epistemic Provenance & SHA-256 Verifier', subtitle: 'Cryptographic dataset hashes & 17 multilateral API connectors', tab: 'provenance', iconName: 'ShieldCheck', category: 'System', keywords: ['provenance', 'sha256', 'hash', 'integrity', 'audit', 'connectors'] },
   { id: 'cmd-privacy', title: 'Zero-Telemetry & GDPR Article 17 Wipe', subtitle: 'Transparent privacy notice & local cache reset', tab: 'privacy', iconName: 'ShieldCheck', category: 'System', keywords: ['privacy', 'telemetry', 'gdpr', 'wipe', 'storage'] },
   { id: 'cmd-style-guide', title: 'Universal Living Style Guide', subtitle: 'Japandi-Sahel design tokens, typography & accessibility tokens', tab: 'style-guide', iconName: 'Palette', category: 'System', keywords: ['style guide', 'design', 'tokens', 'japandi', 'theme'] },
+  { id: 'cmd-toggle-theme', title: 'Toggle Light / Dark Theme', subtitle: 'Switch Atlas color appearance between daylight and dark mode', tab: 'utility:theme', action: 'toggleTheme', iconName: 'Palette', category: 'Utility', shortcut: 'T', keywords: ['theme', 'dark', 'light', 'mode', 'contrast', 'appearance', 'toggle'] },
+  { id: 'cmd-afcfta-sim', title: 'Open AfCFTA Trade Corridor Simulator', subtitle: 'Model intra-African tariff schedules & industrial corridor scenarios', tab: 'utility:afcfta', action: 'openAfcfta', iconName: 'Sliders', category: 'Utility', keywords: ['afcfta', 'simulator', 'tariff', 'corridor', 'trade', 'customs'] },
+  { id: 'cmd-academic-export', title: 'Open Academic Export & Cite Publication', subtitle: 'Generate BibTeX, RIS, APA citations & publication bundle exports', tab: 'utility:cite', action: 'openAcademicExport', iconName: 'BookOpen', category: 'Utility', keywords: ['export', 'cite', 'citation', 'bibtex', 'ris', 'apa', 'publication'] },
+  { id: 'cmd-doi-verification', title: 'Open DOI Verification Matrix', subtitle: 'Inspect registered Figshare DOIs & bibliographic metadata records', tab: 'utility:doi', action: 'openDoiVerification', iconName: 'ShieldCheck', category: 'Utility', keywords: ['doi', 'verify', 'verification', 'crossref', 'figshare', 'bibliography'] },
 ];
 
-type SearchCategory = 'all' | 'commands' | 'countries' | 'indicators' | 'iconography' | 'reports' | 'heritage';
+type SearchCategory =
+  | 'all'
+  | 'commands'
+  | 'countries'
+  | 'kingdoms'
+  | 'indicators'
+  | 'iconography'
+  | 'reports'
+  | 'heritage'
+  | 'languages';
+
+interface IndexedHeritageRecord extends HeritageSite {
+  whcId?: number;
+  states?: string;
+}
 
 type SearchItemType = 
   | { type: 'command'; data: AppCommandItem }
   | { type: 'entity'; data: AtlasEntity }
+  | { type: 'kingdom'; data: PreColonialEntity & { detail?: KingdomDetailedRecord } }
+  | { type: 'language'; data: MotherTongueEntry }
   | { type: 'indicator'; data: IndicatorDefinition }
-  | { type: 'heritage'; data: HeritageSite }
+  | { type: 'heritage'; data: IndexedHeritageRecord }
   | { type: 'iconography'; data: SlaveTradeIllustration }
   | { type: 'castas'; data: CastasArchivalItem }
-  | { type: 'report'; data: ResearchReport };
+  | { type: 'report'; data: ResearchReport }
+  | { type: 'workingPaper'; data: WorkingPaperEntry };
 
 interface UnifiedSearchDoc {
   id: string;
@@ -101,12 +151,13 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   onClose,
   onSelectCountry,
   onSelectIndicator,
-  onSelectTab
+  onSelectTab,
+  onToggleTheme
 }) => {
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<SearchCategory>('all');
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [illustrationsVersion, setIllustrationsVersion] = useState(0);
+  const [lazyDataVersion, setLazyDataVersion] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listboxRef = useRef<HTMLDivElement>(null);
   const { recentSearches, addRecentSearch, clearRecentSearches, isCountrySaved, toggleSaveCountry } = useSavedEntities();
@@ -119,19 +170,29 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     }
     const timer = window.setTimeout(() => inputRef.current?.focus(), 50);
     setSelectedIndex(0);
-    const unsub = subscribeSlaveTradeIllustrations(() => {
-      setIllustrationsVersion(v => v + 1);
-    });
+    const bump = () => setLazyDataVersion(v => v + 1);
+    const unsubIllustrations = subscribeSlaveTradeIllustrations(bump);
+    const unsubKingdoms = subscribeDetailedKingdoms(bump);
+    const unsubUnesco = subscribeUnescoHeritageSites(bump);
     return () => {
       window.clearTimeout(timer);
-      unsub();
+      unsubIllustrations();
+      unsubKingdoms();
+      unsubUnesco();
     };
   }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
-    if (selectedCategory === 'iconography' || query.trim().length >= 2) {
+    const hasQuery = query.trim().length >= 2;
+    if (selectedCategory === 'iconography' || hasQuery) {
       ensureSlaveTradeIllustrationsHydrated();
+    }
+    if (selectedCategory === 'kingdoms' || hasQuery) {
+      ensureDetailedKingdomsLoaded();
+    }
+    if (selectedCategory === 'heritage' || hasQuery) {
+      ensureUnescoHeritageSitesLoaded();
     }
   }, [isOpen, selectedCategory, query]);
 
@@ -139,6 +200,73 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   const isCommandPrefix = rawTrimmed.startsWith('>');
   const normalizedQuery = normalizeSearchText(isCommandPrefix ? rawTrimmed.slice(1) : rawTrimmed);
   const q = normalizedQuery;
+
+  const indexedKingdoms = useMemo(() => {
+    const map = new Map<string, PreColonialEntity & { detail?: KingdomDetailedRecord }>();
+    for (const entity of PRE_COLONIAL_ENTITIES) {
+      map.set(entity.id, { ...entity, detail: DETAILED_KINGDOMS_DATA[entity.id] });
+    }
+    for (const detail of Object.values(DETAILED_KINGDOMS_DATA)) {
+      if (!map.has(detail.id)) {
+        map.set(detail.id, {
+          id: detail.id,
+          name: detail.name,
+          period: detail.period,
+          region: detail.region,
+          regionBadge: detail.regionBadge,
+          capital: detail.capital,
+          coordinates: detail.coordinates,
+          svgCoordinates: detail.svgCoordinates,
+          modernCountries: detail.modernCountries,
+          significance: detail.summaryNarrative,
+          tradeSpecialty: detail.majorCommodities.join(', '),
+          color: detail.color,
+          detail,
+        });
+      }
+    }
+    return Array.from(map.values());
+  }, [lazyDataVersion]);
+
+  const indexedHeritage = useMemo<IndexedHeritageRecord[]>(() => {
+    const merged: IndexedHeritageRecord[] = [];
+    const seenKeys = new Set<string>();
+
+    for (const site of INITIAL_UNESCO_HERITAGE_SITES) {
+      const firstIso2 = (site.isoCode || '').split(',')[0]?.trim().toLowerCase() || '';
+      const mappedEntityId = site.entityId || ISO2_TO_ISO3_MAP[firstIso2] || 'AFR';
+      const normKey = normalizeSearchText(site.site);
+      seenKeys.add(normKey);
+      merged.push({
+        id: `whc-${site.idNumber}`,
+        unescoId: site.idNumber,
+        whcId: site.idNumber,
+        entityId: mappedEntityId,
+        name: site.site,
+        category: site.category,
+        inscribedYear: site.dateInscribed,
+        description: site.shortDescription || `${site.category} UNESCO World Heritage site in ${site.states}`,
+        location: site.location || site.states,
+        states: site.states,
+        criteria: site.criteriaTxt,
+        endangered: Boolean(site.danger),
+      });
+    }
+
+    for (const site of atlas.getHeritageSites()) {
+      const normKey = normalizeSearchText(site.name);
+      if (seenKeys.has(normKey)) continue;
+      seenKeys.add(normKey);
+      merged.push(site);
+    }
+
+    return merged;
+  }, [lazyDataVersion]);
+
+  const indexedLanguages = useMemo<MotherTongueEntry[]>(
+    () => Object.values(AFRICAN_MOTHER_TONGUES),
+    []
+  );
 
   const searchBundle = useMemo(() => {
     const docs: UnifiedSearchDoc[] = [];
@@ -165,6 +293,28 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         payload: { type: 'entity', data: e },
       });
     }
+    for (const kingdom of indexedKingdoms) {
+      docs.push({
+        id: `kng:${kingdom.id}`,
+        kind: 'kingdom',
+        primary: kingdom.name,
+        code: `${kingdom.capital} ${(kingdom.detail?.modernIso3Codes || []).join(' ')}`,
+        secondary: `${kingdom.period} ${kingdom.region} ${kingdom.tradeSpecialty}`,
+        meta: `${kingdom.modernCountries.join(' ')} ${kingdom.significance} ${kingdom.detail?.nativeName || ''} ${kingdom.detail?.dynasty || ''}`,
+        payload: { type: 'kingdom', data: kingdom },
+      });
+    }
+    for (const lang of indexedLanguages) {
+      docs.push({
+        id: `lng:${lang.id}`,
+        kind: 'language',
+        primary: `${lang.language} ${lang.autonym}`,
+        code: `${lang.isoCode} ${lang.bcp47Tag}`,
+        secondary: `${lang.family} ${lang.country}`,
+        meta: `${lang.greetingText} ${lang.greetingMeaning} ${lang.proverbTranslation} ${lang.provenanceBadge}`,
+        payload: { type: 'language', data: lang },
+      });
+    }
     for (const ind of atlas.getAllIndicators()) {
       docs.push({
         id: `ind:${ind.id}`,
@@ -176,15 +326,29 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         payload: { type: 'indicator', data: ind },
       });
     }
+    const seenReportTitles = new Set<string>();
     for (const rep of Object.values(getAllReports())) {
+      seenReportTitles.add(normalizeSearchText(rep.title));
       docs.push({
         id: `rep:${rep.id}`,
         kind: 'report',
         primary: rep.title,
-        code: rep.seriesNumber || rep.id,
+        code: `${rep.seriesNumber || rep.id} ${rep.doi || ''}`,
         secondary: rep.subtitle || rep.categoryLabel,
-        meta: `${rep.authors.join(' ')} ${rep.categoryLabel}`,
+        meta: `${rep.authors.join(' ')} ${rep.categoryLabel} ${rep.isWorkingPaper ? 'working paper policy brief' : 'monograph'}`,
         payload: { type: 'report', data: rep },
+      });
+    }
+    for (const wp of WORKING_PAPERS_SERIES) {
+      if (seenReportTitles.has(normalizeSearchText(wp.title))) continue;
+      docs.push({
+        id: `wkp:${wp.id}`,
+        kind: 'workingPaper',
+        primary: wp.title,
+        code: `${wp.seriesNumber} ${wp.jelCodes.join(' ')}`,
+        secondary: `${wp.type} ${wp.subtitle}`,
+        meta: `${wp.author} ${wp.abstract} ${wp.keyFindings.join(' ')}`,
+        payload: { type: 'workingPaper', data: wp },
       });
     }
     for (const ill of SLAVE_TRADE_ILLUSTRATIONS) {
@@ -209,13 +373,13 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         payload: { type: 'castas', data: c },
       });
     }
-    for (const site of atlas.getHeritageSites()) {
+    for (const site of indexedHeritage) {
       docs.push({
         id: `her:${site.id}`,
         kind: 'heritage',
         primary: site.name,
-        code: site.entityId,
-        secondary: `${site.location} ${site.category}`,
+        code: `${site.entityId} ${site.whcId ? `WHC ${site.whcId}` : ''}`,
+        secondary: `${site.location} ${site.states || ''} ${site.category}`,
         meta: site.description || '',
         payload: { type: 'heritage', data: site },
       });
@@ -230,32 +394,39 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     });
     mini.addAll(docs);
     return { mini, docsById };
-  }, [illustrationsVersion]);
+  }, [lazyDataVersion, indexedKingdoms, indexedHeritage, indexedLanguages]);
 
   const groupedResults = useMemo(() => {
     if (!q) {
       return {
-        commands: (selectedCategory === 'all' || selectedCategory === 'commands') ? APP_COMMAND_REGISTRY.slice(0, 4) : [],
+        commands: (selectedCategory === 'all' || selectedCategory === 'commands') ? APP_COMMAND_REGISTRY.slice(0, selectedCategory === 'commands' ? 8 : 4) : [],
         entities: (selectedCategory === 'all' || selectedCategory === 'countries') ? atlas.getAllEntities().slice(0, 6) : [],
+        kingdoms: (selectedCategory === 'all' || selectedCategory === 'kingdoms') ? indexedKingdoms.slice(0, selectedCategory === 'kingdoms' ? 8 : 2) : [],
+        languages: (selectedCategory === 'all' || selectedCategory === 'languages') ? indexedLanguages.slice(0, selectedCategory === 'languages' ? 8 : 2) : [],
         indicators: (selectedCategory === 'all' || selectedCategory === 'indicators') ? atlas.getAllIndicators().slice(0, 4) : [],
         reports: (selectedCategory === 'all' || selectedCategory === 'reports') ? Object.values(getAllReports()).slice(0, 3) : [],
+        workingPapers: (selectedCategory === 'all' || selectedCategory === 'reports') ? WORKING_PAPERS_SERIES.slice(0, 2) : [],
         iconography: (selectedCategory === 'all' || selectedCategory === 'iconography') ? SLAVE_TRADE_ILLUSTRATIONS.slice(0, 3) : [],
         castas: (selectedCategory === 'all' || selectedCategory === 'iconography') ? CASTAS_ARCHIVE_ITEMS.slice(0, 2) : [],
-        heritage: (selectedCategory === 'all' || selectedCategory === 'heritage') ? atlas.getHeritageSites().slice(0, 2) : [],
+        heritage: (selectedCategory === 'all' || selectedCategory === 'heritage') ? indexedHeritage.slice(0, selectedCategory === 'heritage' ? 8 : 2) : [],
       };
     }
 
     const allowedKinds = new Set<SearchItemType['type']>(
       selectedCategory === 'all'
-        ? ['command', 'entity', 'indicator', 'report', 'iconography', 'castas', 'heritage']
+        ? ['command', 'entity', 'kingdom', 'language', 'indicator', 'report', 'workingPaper', 'iconography', 'castas', 'heritage']
         : selectedCategory === 'commands'
         ? ['command']
         : selectedCategory === 'countries'
         ? ['entity']
+        : selectedCategory === 'kingdoms'
+        ? ['kingdom']
+        : selectedCategory === 'languages'
+        ? ['language']
         : selectedCategory === 'indicators'
         ? ['indicator']
         : selectedCategory === 'reports'
-        ? ['report']
+        ? ['report', 'workingPaper']
         : selectedCategory === 'iconography'
         ? ['iconography', 'castas']
         : ['heritage']
@@ -271,33 +442,42 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
     const commands: AppCommandItem[] = [];
     const entities: AtlasEntity[] = [];
+    const kingdoms: Array<PreColonialEntity & { detail?: KingdomDetailedRecord }> = [];
+    const languages: MotherTongueEntry[] = [];
     const indicators: IndicatorDefinition[] = [];
     const reports: ResearchReport[] = [];
+    const workingPapers: WorkingPaperEntry[] = [];
     const iconography: SlaveTradeIllustration[] = [];
     const castas: CastasArchivalItem[] = [];
-    const heritage: HeritageSite[] = [];
+    const heritage: IndexedHeritageRecord[] = [];
 
     for (const hit of hits) {
       const doc = searchBundle.docsById.get(String(hit.id));
       if (!doc) continue;
       const { payload } = doc;
-      if (payload.type === 'command' && commands.length < 4) commands.push(payload.data);
+      if (payload.type === 'command' && commands.length < 5) commands.push(payload.data);
       else if (payload.type === 'entity' && entities.length < 6) entities.push(payload.data);
+      else if (payload.type === 'kingdom' && kingdoms.length < 4) kingdoms.push(payload.data);
+      else if (payload.type === 'language' && languages.length < 4) languages.push(payload.data);
       else if (payload.type === 'indicator' && indicators.length < 5) indicators.push(payload.data);
       else if (payload.type === 'report' && reports.length < 4) reports.push(payload.data);
+      else if (payload.type === 'workingPaper' && workingPapers.length < 3) workingPapers.push(payload.data);
       else if (payload.type === 'iconography' && iconography.length < 4) iconography.push(payload.data);
       else if (payload.type === 'castas' && castas.length < 3) castas.push(payload.data);
-      else if (payload.type === 'heritage' && heritage.length < 3) heritage.push(payload.data);
+      else if (payload.type === 'heritage' && heritage.length < 5) heritage.push(payload.data);
     }
 
-    return { commands, entities, indicators, reports, iconography, castas, heritage };
-  }, [q, selectedCategory, searchBundle]);
+    return { commands, entities, kingdoms, languages, indicators, reports, workingPapers, iconography, castas, heritage };
+  }, [q, selectedCategory, searchBundle, indexedKingdoms, indexedHeritage, indexedLanguages]);
 
   const {
     commands: matchedCommands,
     entities: matchedEntities,
+    kingdoms: matchedKingdoms,
+    languages: matchedLanguages,
     indicators: matchedIndicators,
     reports: matchedReports,
+    workingPapers: matchedWorkingPapers,
     iconography: matchedIconography,
     castas: matchedCastas,
     heritage: matchedHeritage,
@@ -308,13 +488,27 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     const list: SearchItemType[] = [];
     matchedCommands.forEach(data => list.push({ type: 'command', data }));
     matchedEntities.forEach(data => list.push({ type: 'entity', data }));
+    matchedKingdoms.forEach(data => list.push({ type: 'kingdom', data }));
     matchedReports.forEach(data => list.push({ type: 'report', data }));
+    matchedWorkingPapers.forEach(data => list.push({ type: 'workingPaper', data }));
+    matchedHeritage.forEach(data => list.push({ type: 'heritage', data }));
+    matchedLanguages.forEach(data => list.push({ type: 'language', data }));
     matchedIconography.forEach(data => list.push({ type: 'iconography', data }));
     matchedCastas.forEach(data => list.push({ type: 'castas', data }));
     matchedIndicators.forEach(data => list.push({ type: 'indicator', data }));
-    matchedHeritage.forEach(data => list.push({ type: 'heritage', data }));
     return list;
-  }, [matchedCommands, matchedEntities, matchedReports, matchedIconography, matchedCastas, matchedIndicators, matchedHeritage]);
+  }, [
+    matchedCommands,
+    matchedEntities,
+    matchedKingdoms,
+    matchedReports,
+    matchedWorkingPapers,
+    matchedHeritage,
+    matchedLanguages,
+    matchedIconography,
+    matchedCastas,
+    matchedIndicators,
+  ]);
 
   // Reset selected index when results change
   useEffect(() => {
@@ -335,9 +529,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen || e.isComposing || e.keyCode === 229) return;
 
-      if (e.key === 'Escape') {
-        onClose();
-      } else if (e.key === 'ArrowDown') {
+      if (e.key === 'ArrowDown') {
         e.preventDefault();
         setSelectedIndex(prev => (prev + 1) % (flattenedItems.length || 1));
       } else if (e.key === 'ArrowUp') {
@@ -372,7 +564,15 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   const handleExecuteSelection = (item: SearchItemType) => {
     if (item.type === 'command') {
       addRecentSearch(item.data.title);
-      if (onSelectTab) {
+      if (item.data.action === 'toggleTheme') {
+        onToggleTheme?.();
+      } else if (item.data.action === 'openAfcfta') {
+        atlasModalStore.openAfcftaSimulator();
+      } else if (item.data.action === 'openAcademicExport') {
+        atlasModalStore.openAcademicExport();
+      } else if (item.data.action === 'openDoiVerification') {
+        atlasModalStore.openDoiVerification();
+      } else if (onSelectTab) {
         onSelectTab(item.data.tab);
       } else {
         window.location.hash = item.data.tab;
@@ -382,13 +582,35 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       addRecentSearch(item.data.name);
       onSelectCountry(item.data.id);
       onClose();
+    } else if (item.type === 'kingdom') {
+      addRecentSearch(item.data.name);
+      const target = `archival-cartography?tab=kingdoms&kingdom=${item.data.id}`;
+      if (onSelectTab) {
+        onSelectTab(target);
+      } else {
+        window.location.hash = target;
+      }
+      onClose();
+    } else if (item.type === 'language') {
+      addRecentSearch(item.data.language);
+      const target = `languages?lang=${item.data.id}`;
+      if (onSelectTab) {
+        onSelectTab(target);
+      } else {
+        window.location.hash = target;
+      }
+      onClose();
     } else if (item.type === 'indicator') {
       addRecentSearch(item.data.name);
       onSelectIndicator(item.data.id);
       onClose();
     } else if (item.type === 'heritage') {
       addRecentSearch(item.data.name);
-      onSelectCountry(item.data.entityId);
+      if (item.data.whcId && onSelectTab) {
+        onSelectTab(`heritage?id=${item.data.whcId}`);
+      } else {
+        onSelectCountry(item.data.entityId);
+      }
       onClose();
     } else if (item.type === 'iconography') {
       addRecentSearch(item.data.title);
@@ -407,6 +629,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       if (onSelectTab) {
         onSelectTab(item.data.id);
       }
+      onClose();
+    } else if (item.type === 'workingPaper') {
+      addRecentSearch(item.data.title);
+      atlasModalStore.openWorkingPapers();
       onClose();
     }
   };
@@ -438,7 +664,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
             aria-activedescendant={flattenedItems.length > 0 ? `search-result-option-${selectedIndex}` : undefined}
             value={query}
             onChange={e => setQuery(e.target.value)}
-            placeholder="Search African countries, plates, monographs, indicators..."
+            placeholder="Search nations, kingdoms, UNESCO sites, mother tongues, papers..."
             className="w-full bg-transparent text-sm md:text-base text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none font-sans"
           />
           {query && (
@@ -506,6 +732,45 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           </button>
           <button
             type="button"
+            aria-pressed={selectedCategory === 'kingdoms'}
+            onClick={() => setSelectedCategory('kingdoms')}
+            className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
+              selectedCategory === 'kingdoms'
+                ? 'bg-purple-600 text-white font-bold shadow-xs'
+                : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800'
+            }`}
+          >
+            <Crown className="w-3 h-3" />
+            <span>Kingdoms</span>
+          </button>
+          <button
+            type="button"
+            aria-pressed={selectedCategory === 'heritage'}
+            onClick={() => setSelectedCategory('heritage')}
+            className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
+              selectedCategory === 'heritage'
+                ? 'bg-purple-600 text-white font-bold shadow-xs'
+                : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800'
+            }`}
+          >
+            <Landmark className="w-3 h-3" />
+            <span>Heritage</span>
+          </button>
+          <button
+            type="button"
+            aria-pressed={selectedCategory === 'languages'}
+            onClick={() => setSelectedCategory('languages')}
+            className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
+              selectedCategory === 'languages'
+                ? 'bg-teal-600 text-white font-bold shadow-xs'
+                : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800'
+            }`}
+          >
+            <Volume2 className="w-3 h-3" />
+            <span>Languages</span>
+          </button>
+          <button
+            type="button"
             aria-pressed={selectedCategory === 'reports'}
             onClick={() => setSelectedCategory('reports')}
             className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
@@ -561,15 +826,35 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                 No matching records found for &ldquo;{query}&rdquo;
               </p>
               <p className="text-xs font-mono text-zinc-500">
-                Try searching for &ldquo;Nigeria&rdquo;, &ldquo;Castas&rdquo;, &ldquo;Genetics&rdquo;, or &ldquo;GDP&rdquo;
+                Try searching for &ldquo;Nigeria&rdquo;, &ldquo;Ashanti&rdquo;, &ldquo;Yorùbá&rdquo;, &ldquo;Lalibela&rdquo;, or &ldquo;GDP&rdquo;
               </p>
             </div>
           ) : (
             flattenedItems.map((item, idx) => {
               const isSelected = idx === selectedIndex;
+              const itemKey =
+                item.type === 'command'
+                  ? `command:${item.data.id}`
+                  : item.type === 'entity'
+                    ? `entity:${item.data.id}`
+                    : item.type === 'kingdom'
+                      ? `kingdom:${item.data.id}`
+                      : item.type === 'language'
+                        ? `language:${item.data.id}`
+                        : item.type === 'report'
+                          ? `report:${item.data.id}`
+                          : item.type === 'workingPaper'
+                            ? `workingPaper:${item.data.id}`
+                            : item.type === 'iconography'
+                              ? `iconography:${item.data.objectId || item.data.regId}`
+                              : item.type === 'castas'
+                                ? `castas:${item.data.id}`
+                                : item.type === 'indicator'
+                                  ? `indicator:${item.data.id}`
+                                  : `heritage:${item.data.id}`;
               return (
                 <button
-                  key={idx}
+                  key={itemKey}
                   id={`search-result-option-${idx}`}
                   type="button"
                   role="option"
@@ -592,7 +877,17 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                     {item.type === 'entity' && (
                       <CountryFlag entityId={item.data.id} size="sm" />
                     )}
-                    {item.type === 'report' && (
+                    {item.type === 'kingdom' && (
+                      <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                        <Crown className="w-4 h-4" />
+                      </div>
+                    )}
+                    {item.type === 'language' && (
+                      <div className="w-8 h-8 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
+                        <Volume2 className="w-4 h-4" />
+                      </div>
+                    )}
+                    {(item.type === 'report' || item.type === 'workingPaper') && (
                       <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 flex items-center justify-center shrink-0">
                         <FileText className="w-4 h-4" />
                       </div>
@@ -624,7 +919,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                         <span className="text-sm font-sans font-bold text-zinc-900 dark:text-zinc-100 truncate">
                           {item.type === 'command' && item.data.title}
                           {item.type === 'entity' && item.data.name}
+                          {item.type === 'kingdom' && item.data.name}
+                          {item.type === 'language' && `${item.data.language} (${item.data.autonym})`}
                           {item.type === 'report' && item.data.title}
+                          {item.type === 'workingPaper' && item.data.title}
                           {item.type === 'iconography' && item.data.title}
                           {item.type === 'castas' && item.data.title}
                           {item.type === 'indicator' && item.data.name}
@@ -640,6 +938,21 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                             {item.data.id}
                           </span>
                         )}
+                        {item.type === 'kingdom' && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-700 dark:text-purple-300">
+                            {item.data.period}
+                          </span>
+                        )}
+                        {item.type === 'language' && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-700 dark:text-teal-300">
+                            Mother Tongue
+                          </span>
+                        )}
+                        {item.type === 'workingPaper' && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-700 dark:text-indigo-300">
+                            {item.data.seriesNumber}
+                          </span>
+                        )}
                         {item.type === 'iconography' && (
                           <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400">
                             Plate {item.data.regId}
@@ -650,15 +963,23 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                             Castas Archive
                           </span>
                         )}
+                        {item.type === 'heritage' && item.data.whcId && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-700 dark:text-purple-300">
+                            WHC #{item.data.whcId}
+                          </span>
+                        )}
                       </div>
                       <span className="text-xs font-serif text-zinc-500 dark:text-zinc-400 truncate">
-                        {item.type === 'command' && `${item.data.subtitle} (Route: #${item.data.tab})`}
+                        {item.type === 'command' && (item.data.action ? item.data.subtitle : `${item.data.subtitle} (Route: #${item.data.tab})`)}
                         {item.type === 'entity' && `${item.data.region} • Capital: ${item.data.capital}`}
+                        {item.type === 'kingdom' && `${item.data.region} • Capital: ${item.data.capital} • ${item.data.modernCountries.join(', ')}`}
+                        {item.type === 'language' && `${item.data.family} • ${item.data.country} • “${item.data.greetingText}”`}
                         {item.type === 'report' && `${item.data.categoryLabel} • ${item.data.authors[0]}`}
+                        {item.type === 'workingPaper' && `${item.data.type} • ${item.data.author}`}
                         {item.type === 'iconography' && `${item.data.date || 'Historical'} • ${item.data.source}`}
                         {item.type === 'castas' && `${item.data.date} • ${item.data.creator}`}
                         {item.type === 'indicator' && `${item.data.domain} • ${item.data.unit}`}
-                        {item.type === 'heritage' && `${item.data.location} • ${item.data.category}`}
+                        {item.type === 'heritage' && `${item.data.states || item.data.location} • ${item.data.category}`}
                       </span>
                     </div>
                   </div>

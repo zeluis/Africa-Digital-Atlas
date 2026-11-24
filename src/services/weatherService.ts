@@ -4,6 +4,8 @@
  * with offline resilience, WMO code decoding, wind vectors, and localStorage caching.
  */
 import { parseOpenMeteoResponse } from '../utils/apiSchemas';
+import { fetchWithTimeout } from '../utils/apiClient';
+import { createBoundedStorageLru } from '../utils/storageCache';
 
 export interface LiveWeatherData {
   temperatureC: number;
@@ -75,27 +77,16 @@ const CACHE_INDEX_KEY = 'atlas_weather_cache_index_v1';
 const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes fresh cache
 const MAX_WEATHER_CACHE_ENTRIES = 54;
 
-function saveWeatherToCache(cacheKey: string, timestamp: number, data: LiveWeatherData) {
-  try {
-    localStorage.setItem(cacheKey, JSON.stringify({ timestamp, data }));
-    const rawIndex = localStorage.getItem(CACHE_INDEX_KEY);
-    const indexList: string[] = rawIndex ? JSON.parse(rawIndex) : [];
-    const existingIdx = indexList.indexOf(cacheKey);
-    if (existingIdx !== -1) {
-      indexList.splice(existingIdx, 1);
-    }
-    indexList.push(cacheKey);
-    while (indexList.length > MAX_WEATHER_CACHE_ENTRIES) {
-      const oldestKey = indexList.shift();
-      if (oldestKey) {
-        localStorage.removeItem(oldestKey);
-      }
-    }
-    localStorage.setItem(CACHE_INDEX_KEY, JSON.stringify(indexList));
-  } catch {
-    // Ignore storage overflow
-  }
+interface CachedWeatherEntry {
+  timestamp: number;
+  data: LiveWeatherData;
 }
+
+const weatherCacheLru = createBoundedStorageLru<CachedWeatherEntry>({
+  prefix: CACHE_PREFIX,
+  indexKey: CACHE_INDEX_KEY,
+  maxEntries: MAX_WEATHER_CACHE_ENTRIES,
+});
 
 export async function fetchLiveWeather(
   entityId: string,
@@ -110,35 +101,22 @@ export async function fetchLiveWeather(
     condition: string;
   }
 ): Promise<LiveWeatherData> {
-  const cacheKey = `${CACHE_PREFIX}${entityId.toUpperCase()}`;
+  const cacheEntryKey = entityId.toUpperCase();
   const now = Date.now();
 
   // Check cached copy first
-  try {
-    const rawCache = localStorage.getItem(cacheKey);
-    if (rawCache) {
-      const parsed = JSON.parse(rawCache);
-      if (now - parsed.timestamp < CACHE_TTL_MS && parsed.data) {
-        return {
-          ...parsed.data,
-          isCached: true,
-        };
-      }
-    }
-  } catch {
-    // Ignore cache parse error
+  const freshCached = weatherCacheLru.get(cacheEntryKey);
+  if (freshCached && now - freshCached.timestamp < CACHE_TTL_MS && freshCached.data) {
+    return {
+      ...freshCached.data,
+      isCached: true,
+    };
   }
 
   // Attempt live fetch from Open-Meteo
   try {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m&timezone=auto`;
-    
-    // Set 5-second fetch timeout to prevent hanging on slow networks
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-    const res = await fetch(url, { signal: controller.signal });
-    clearTimeout(timeoutId);
+    const res = await fetchWithTimeout(url, { timeoutMs: 5000 });
 
     if (res.ok) {
       const rawPayload = await res.json();
@@ -176,7 +154,7 @@ export async function fetchLiveWeather(
         };
 
         // Cache successful response with bounded LRU eviction
-        saveWeatherToCache(cacheKey, now, liveData);
+        weatherCacheLru.set(cacheEntryKey, { timestamp: now, data: liveData });
 
         return liveData;
       }
@@ -186,21 +164,14 @@ export async function fetchLiveWeather(
   }
 
   // Graceful offline fallback: Use previously stored cache or realistic climatology baseline
-  try {
-    const rawCache = localStorage.getItem(cacheKey);
-    if (rawCache) {
-      const parsed = JSON.parse(rawCache);
-      if (parsed.data) {
-        return {
-          ...parsed.data,
-          isLive: false,
-          isCached: true,
-          source: 'Offline Climatology Cache',
-        };
-      }
-    }
-  } catch {
-    // Ignore error
+  const staleCached = weatherCacheLru.get(cacheEntryKey);
+  if (staleCached?.data) {
+    return {
+      ...staleCached.data,
+      isLive: false,
+      isCached: true,
+      source: 'Offline Climatology Cache',
+    };
   }
 
   // Fallback to baseline climatology

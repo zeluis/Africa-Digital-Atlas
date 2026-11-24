@@ -22,7 +22,8 @@ import { InteractiveMapLegend, SUBREGION_PILL_DEFS } from './InteractiveMapLegen
 import { CountryFlag } from './CountryFlag';
 import { formatValueByUnit, formatPopulation, formatGDP, formatHDI } from '../data/atlas-formatters';
 import { MicroSparkline } from './common/MicroSparkline';
-import { downloadFile } from '../utils/exportUtils';
+import { downloadBlob, downloadFile, svgMarkupToPngBlob } from '../utils/exportUtils';
+import { readStorageJson } from '../utils/storageCache';
 import { 
   ZoomIn, 
   ZoomOut, 
@@ -443,15 +444,12 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
   const handleToggleUnescoSites = onToggleUnescoSites || (() => setInternalShowUnescoSites(prev => !prev));
 
   const [unescoSites, setUnescoSites] = useState<UnescoSiteMetadata[]>(() => {
-    try {
-      const saved = localStorage.getItem('afriata_unesco_xml_sites_v1') || localStorage.getItem('africalia_unesco_xml_sites_v1');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch {
-      // Storage unavailable fallback
-    }
+    const parsed = readStorageJson<UnescoSiteMetadata[] | null>(
+      'afriata_unesco_xml_sites_v1',
+      null,
+      { legacyKey: 'africalia_unesco_xml_sites_v1' }
+    );
+    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     return INITIAL_UNESCO_HERITAGE_SITES;
   });
 
@@ -1635,63 +1633,32 @@ export const AfricaMap: React.FC<AfricaMapProps> = ({
       const serializer = new XMLSerializer();
       let svgString = serializer.serializeToString(svgEl);
 
-      if (!svgString.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
-        svgString = svgString.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
-      }
+      const baseWidth = 1000;
+      const baseHeight = cartographySource === 'authentic_final' ? Math.round(1000 * (5867 / 5796)) : 1100;
+      const pngBlob = await svgMarkupToPngBlob(svgString, {
+        width: baseWidth,
+        height: baseHeight,
+        scale: 2,
+        background: bgChoice,
+        drawOverlay: exportIncludeWatermark
+          ? (ctx, canvas) => {
+              ctx.fillStyle = bgChoice === 'dark' ? '#10b981' : '#047857';
+              ctx.font = 'bold 24px monospace';
+              ctx.fillText('AFRICA DATA ATLAS • AUTHENTIC CARTOGRAPHY', 40, canvas.height - 40);
 
-      const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-      const blobURL = URL.createObjectURL(svgBlob);
+              ctx.fillStyle = bgChoice === 'dark' ? '#a1a1aa' : '#64748b';
+              ctx.font = '16px monospace';
+              ctx.fillText(`Exported ${new Date().toISOString().split('T')[0]} • 54 Sovereign African Nations & Territories`, 40, canvas.height - 18);
+            }
+          : undefined,
+      });
+      downloadBlob(`africa_data_atlas_${mapMode}_${new Date().toISOString().split('T')[0]}.png`, pngBlob);
 
-      const image = new Image();
-      image.onload = () => {
-        const scaleFactor = 2;
-        const baseWidth = 1000;
-        const baseHeight = cartographySource === 'authentic_final' ? Math.round(1000 * (5867 / 5796)) : 1100;
-        const canvas = document.createElement('canvas');
-        canvas.width = baseWidth * scaleFactor;
-        canvas.height = baseHeight * scaleFactor;
-        const ctx = canvas.getContext('2d');
-
-        if (ctx) {
-          if (bgChoice === 'dark') {
-            ctx.fillStyle = '#09090b';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-          } else if (bgChoice === 'white') {
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-          } else {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-          }
-
-          ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-          if (exportIncludeWatermark) {
-            ctx.fillStyle = bgChoice === 'dark' ? '#10b981' : '#047857';
-            ctx.font = 'bold 24px monospace';
-            ctx.fillText('AFRICA DATA ATLAS • AUTHENTIC CARTOGRAPHY', 40, canvas.height - 40);
-
-            ctx.fillStyle = bgChoice === 'dark' ? '#a1a1aa' : '#64748b';
-            ctx.font = '16px monospace';
-            ctx.fillText(`Exported ${new Date().toISOString().split('T')[0]} • 54 Sovereign African Nations & Territories`, 40, canvas.height - 18);
-          }
-
-          const pngUrl = canvas.toDataURL('image/png');
-          const link = document.createElement('a');
-          link.download = `africa_data_atlas_${mapMode}_${new Date().toISOString().split('T')[0]}.png`;
-          link.href = pngUrl;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(blobURL);
-
-          setExportSuccess(true);
-          setTimeout(() => setExportSuccess(false), 3000);
-        }
-        setIsExporting(false);
-      };
-      image.src = blobURL;
+      setExportSuccess(true);
+      setTimeout(() => setExportSuccess(false), 3000);
     } catch (err) {
       console.error('Failed to export map PNG', err);
+    } finally {
       setIsExporting(false);
     }
   };

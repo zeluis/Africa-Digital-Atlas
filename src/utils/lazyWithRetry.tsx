@@ -1,5 +1,7 @@
 import React, { ReactNode } from 'react';
 
+const LazyRetryEpochContext = React.createContext<number>(0);
+
 /**
  * Robust lazy import with automatic retry on chunk failure.
  * Retries transient module load failures smoothly before delegating to the ErrorBoundary.
@@ -10,7 +12,7 @@ export function lazyWithRetry<T extends React.ComponentType<any>>(
 ): React.LazyExoticComponent<T> & { preload: () => Promise<any> } {
   let cachedPromise: Promise<{ default: T }> | null = null;
 
-  const load = (retriesLeft = 5, delay = 350): Promise<{ default: T }> => {
+  const load = (retriesLeft = 5, delay = 300, isPreload = false): Promise<{ default: T }> => {
     if (cachedPromise) return cachedPromise;
 
     cachedPromise = factory()
@@ -46,35 +48,55 @@ export function lazyWithRetry<T extends React.ComponentType<any>>(
       .catch(error => {
         cachedPromise = null;
         if (retriesLeft > 0) {
-          console.warn(`[Module Loader] Retrying dynamic import for "${componentName}" (${retriesLeft} retries left)...`);
+          if (!isPreload) {
+            console.warn(`[Module Loader] Retrying dynamic import for "${componentName}" (${retriesLeft} retries left)...`);
+          }
           return new Promise(resolve => setTimeout(resolve, delay)).then(() =>
-            load(retriesLeft - 1, Math.min(delay * 1.5, 1200))
+            load(retriesLeft - 1, Math.min(delay * 1.5, 1500), isPreload)
           );
         }
-        console.error(`[Module Loader] Failed to load component "${componentName}":`, error);
+        if (!isPreload) {
+          console.error(`[Module Loader] Failed to load component "${componentName}":`, error);
+        }
         throw error;
       });
 
     return cachedPromise;
   };
 
-  const LazyComponent = React.lazy(load) as any;
-  LazyComponent.preload = () => load().catch((err) => {
-    // Safe preload suppression - errors will be handled gracefully if/when view is actually rendered
-    console.debug(`[Module Preload] Idle preload completed for "${componentName}" with fallback:`, err?.message || err);
-  });
-  return LazyComponent;
+  let lazyEpoch = 0;
+  let currentLazy = React.lazy(() => load());
+
+  const RetryableLazy: any = (props: React.ComponentProps<T>) => {
+    const epoch = React.useContext(LazyRetryEpochContext);
+    if (lazyEpoch !== epoch) {
+      lazyEpoch = epoch;
+      cachedPromise = null;
+      currentLazy = React.lazy(() => load());
+    }
+    const ActiveLazy = currentLazy;
+    return <ActiveLazy {...props} />;
+  };
+  RetryableLazy.displayName = `LazyWithRetry(${componentName})`;
+  RetryableLazy.preload = () =>
+    load(2, 300, true).catch((err) => {
+      // Safe preload suppression - errors will be handled gracefully if/when view is actually rendered
+      console.debug(`[Module Preload] Idle preload completed for "${componentName}" with fallback:`, err?.message || err);
+    });
+  return RetryableLazy;
 }
 
 interface ErrorBoundaryProps {
   children: ReactNode;
   fallbackTitle?: string;
   compact?: boolean;
+  resetKey?: string | number;
 }
 
 interface ErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
+  retryCount: number;
 }
 
 /**
@@ -82,14 +104,20 @@ interface ErrorBoundaryState {
  * from causing a blank screen. Displays an elegant recovery interface.
  */
 export class ViewErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  public override state: ErrorBoundaryState = { hasError: false, error: null };
+  public override state: ErrorBoundaryState = { hasError: false, error: null, retryCount: 0 };
 
   constructor(props: ErrorBoundaryProps) {
     super(props);
   }
 
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     return { hasError: true, error };
+  }
+
+  override componentDidUpdate(prevProps: ErrorBoundaryProps) {
+    if (this.state.hasError && prevProps.resetKey !== this.props.resetKey) {
+      this.setState(prev => ({ hasError: false, error: null, retryCount: prev.retryCount + 1 }));
+    }
   }
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
@@ -118,7 +146,7 @@ export class ViewErrorBoundary extends React.Component<ErrorBoundaryProps, Error
   };
 
   handleReset = () => {
-    this.setState({ hasError: false, error: null });
+    this.setState(prev => ({ hasError: false, error: null, retryCount: prev.retryCount + 1 }));
   };
 
   override render(): ReactNode {
@@ -183,6 +211,10 @@ export class ViewErrorBoundary extends React.Component<ErrorBoundaryProps, Error
       );
     }
 
-    return this.props.children;
+    return (
+      <LazyRetryEpochContext.Provider value={this.state.retryCount}>
+        {this.props.children}
+      </LazyRetryEpochContext.Provider>
+    );
   }
 }

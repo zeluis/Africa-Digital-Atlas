@@ -6,6 +6,8 @@ import {
   ensureWikipediaAtlasLoaded
 } from '../data/wikipediaEthnicAtlas';
 import { parseWikipediaSummaryResponse } from '../utils/apiSchemas';
+import { fetchWithTimeout } from '../utils/apiClient';
+import { createBoundedStorageLru } from '../utils/storageCache';
 
 export type ThematicPillarId = 
   | 'geography' 
@@ -123,16 +125,6 @@ export interface WikiSummaryData {
   content_urls?: {
     desktop?: { page: string };
   };
-}
-
-async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 6000): Promise<Response> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    return await fetch(url, { ...options, signal: controller.signal });
-  } finally {
-    clearTimeout(timeoutId);
-  }
 }
 
 export async function fetchWikipediaSummary(articleTitle: string): Promise<WikiSummaryData | null> {
@@ -297,8 +289,22 @@ export function getCuratedPillarNarrative(
   }
 }
 
-// Memory cache for runtime fetched summaries
+// Memory and bounded localStorage LRU caches for runtime fetched summaries
+interface CachedLiveWikiSummary {
+  title?: string;
+  canonicalTitle?: string;
+  extract?: string;
+  thumbnail?: string | null;
+  description?: string;
+  url?: string;
+}
+
 const RUNTIME_SUMMARY_CACHE = new Map<string, Partial<WikipediaEthnicEntry>>();
+const WIKI_SUMMARY_LRU = createBoundedStorageLru<CachedLiveWikiSummary>({
+  prefix: 'wiki_summary_',
+  indexKey: 'wiki_summary_index',
+  maxEntries: 150,
+});
 
 /**
  * Clean and parse language lineage string into a navigable chain of badges
@@ -333,17 +339,12 @@ export async function fetchLiveWikipediaSummary(
     return RUNTIME_SUMMARY_CACHE.get(cacheKey) || null;
   }
 
-  // Check localStorage for offline persistence
-  const localKey = `wiki_summary_${lang}_${cleanTitle}`;
-  try {
-    const stored = localStorage.getItem(localKey);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      RUNTIME_SUMMARY_CACHE.set(cacheKey, parsed);
-      return parsed;
-    }
-  } catch {
-    // ignore localStorage errors in sandboxed iframes
+  // Check localStorage for offline persistence (with LRU bump)
+  const lruKey = `${lang}_${cleanTitle}`;
+  const stored = WIKI_SUMMARY_LRU.get(lruKey);
+  if (stored) {
+    RUNTIME_SUMMARY_CACHE.set(cacheKey, stored);
+    return stored;
   }
 
   // Helper to fetch summary from a specific subdomain and title
@@ -387,9 +388,7 @@ export async function fetchLiveWikipediaSummary(
             const localizedSummary = await tryFetchSummary(lang, foreignTitle.replace(/\s+/g, '_'));
             if (localizedSummary && localizedSummary.extract) {
               RUNTIME_SUMMARY_CACHE.set(cacheKey, localizedSummary);
-              try {
-                localStorage.setItem(localKey, JSON.stringify(localizedSummary));
-              } catch {}
+              WIKI_SUMMARY_LRU.set(lruKey, localizedSummary);
               return localizedSummary;
             }
           }
@@ -419,24 +418,7 @@ export async function fetchLiveWikipediaSummary(
       const result = await tryFetchSummary(targetLang, candidate);
       if (result) {
         RUNTIME_SUMMARY_CACHE.set(cacheKey, result);
-        try {
-          // Safe localStorage with LRU eviction safeguard (cap at 150 summaries to avoid QuotaExceededError)
-          localStorage.setItem(localKey, JSON.stringify(result));
-          const indexKey = 'wiki_summary_index';
-          const rawIndex = localStorage.getItem(indexKey);
-          const indexList: string[] = rawIndex ? JSON.parse(rawIndex) : [];
-          if (!indexList.includes(cacheKey)) {
-            indexList.push(cacheKey);
-            if (indexList.length > 150) {
-              const oldest = indexList.shift();
-              if (oldest) localStorage.removeItem(`wiki_summary_${oldest}`);
-            }
-            localStorage.setItem(indexKey, JSON.stringify(indexList));
-          }
-        } catch {
-          // Safe fallback for sandboxed iframes or quota exhaustion
-        }
-
+        WIKI_SUMMARY_LRU.set(lruKey, result);
         return result;
       }
     }

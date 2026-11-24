@@ -1,6 +1,6 @@
 import { DataSource, IndicatorDefinition, Observation, ObservationStatus } from './types';
 import { createLazyAssetStore } from '../utils/lazyDataLoader';
-import { isBackendApiAvailable, resolveApiUrl } from '../utils/apiClient';
+import { fetchWithTimeout, isBackendApiAvailable, resolveApiUrl } from '../utils/apiClient';
 
 export interface ExternalApiConnector {
   id: string;
@@ -367,11 +367,11 @@ export async function testLiveApiConnection(connectorId: string, countryIso3 = '
   // 1. Try server-side proxy endpoint first when backend API is present
   try {
     if (await isBackendApiAvailable()) {
-      const serverRes = await fetch(resolveApiUrl('/api/ingest/test-connector'), {
+      const serverRes = await fetchWithTimeout(resolveApiUrl('/api/ingest/test-connector'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ connectorId, countryIso3: safeIso3 }),
-        signal: AbortSignal.timeout(5500)
+        timeoutMs: 5500
       });
       if (serverRes.ok) {
         const serverResult: LiveApiTestResult = await serverRes.json();
@@ -387,11 +387,7 @@ export async function testLiveApiConnection(connectorId: string, countryIso3 = '
   const targetUrl = connector.sampleEndpoint.replace(/\{iso3\}/g, encodeURIComponent(safeIso3));
 
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-    const res = await fetch(targetUrl, { signal: controller.signal, mode: 'cors' });
-    clearTimeout(timeoutId);
+    const res = await fetchWithTimeout(targetUrl, { timeoutMs: 5000, mode: 'cors' });
     const latency = Math.round(performance.now() - startTime);
 
     if (res.ok) {

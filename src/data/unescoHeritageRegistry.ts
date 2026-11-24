@@ -1,4 +1,5 @@
 import { SlaveTradeIllustration, UnescoSiteMetadata } from './slaveTradeIllustrations';
+import { fetchWithTimeout } from '../utils/apiClient';
 
 const unescoSitesJsonUrl = new URL('./unescoHeritageSites.json', import.meta.url).href;
 const unescoPhotoRegistryUrl = new URL('./unescoPhotoRegistry.json', import.meta.url).href;
@@ -311,8 +312,8 @@ export function ensureUnescoHeritageSitesLoaded(): Promise<UnescoSiteMetadata[]>
   }
 
   unescoLoadPromise = Promise.all([
-    fetch(unescoSitesJsonUrl).then(r => (r.ok ? r.json() : [])),
-    fetch(unescoPhotoRegistryUrl).then(r => (r.ok ? r.json() : null)).catch(() => null)
+    fetchWithTimeout(unescoSitesJsonUrl, { timeoutMs: 15000 }).then(r => (r.ok ? r.json() : [])),
+    fetchWithTimeout(unescoPhotoRegistryUrl, { timeoutMs: 15000 }).then(r => (r.ok ? r.json() : null)).catch(() => null)
   ])
     .then(([sitesRaw, photoRaw]: [UnescoSiteMetadata[], any]) => {
       if (photoRaw && Array.isArray(photoRaw.sites)) {

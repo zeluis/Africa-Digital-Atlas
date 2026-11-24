@@ -6,7 +6,7 @@
  */
 
 import { resolveAssetPath } from '../utils/assetPath';
-import { isBackendApiAvailable, resolveApiUrl } from '../utils/apiClient';
+import { fetchWithTimeout, isBackendApiAvailable, resolveApiUrl } from '../utils/apiClient';
 
 export interface MultilateralHarmonizationRule {
   id: string;
@@ -182,7 +182,7 @@ export async function computeDatasetSha256InBrowser(fileScope: string): Promise<
 
   for (const url of candidateUrls) {
     try {
-      const response = await fetch(url);
+      const response = await fetchWithTimeout(url, { timeoutMs: 12000 });
       if (response.ok) {
         const contentType = response.headers.get('content-type') || '';
         if (!contentType.includes('text/html')) {

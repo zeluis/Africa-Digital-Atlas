@@ -96,6 +96,7 @@ export const AtlasModalContainer: React.FC<AtlasModalContainerProps> = ({
           onSelectCountry={onSelectCountry}
           onSelectIndicator={onSelectIndicator}
           onSelectTab={onSelectTab}
+          onToggleTheme={onToggleTheme}
         />
       )}
 

@@ -8,7 +8,7 @@ import {
   getRegionCardTonalStyle,
   usePrefersReducedMotion 
 } from '../utils/motion';
-import { handleTabListKeyDown } from '../utils/a11y';
+import { AtlasTabList } from '../components/common/AtlasTabList';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from '../components/CountryFlag';
 import { getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
@@ -28,6 +28,8 @@ import {
 import { SlaveTradeIllustration, UnescoSiteMetadata } from '../data/slaveTradeIllustrations';
 import { EcologicalBiomeSlidePanel } from '../components/heritage/EcologicalBiomeSlidePanel';
 import { AtlasDialog } from '../components/common/AtlasDialog';
+import { readUploadedTextFile } from '../utils/fileUpload';
+import { readStorageJson, writeStorageJson, removeStorageKey } from '../utils/storageCache';
 import {
   Landmark,
   Search,
@@ -65,29 +67,22 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
 }) => {
   // Load custom ingested XML rows from localStorage or hydrate the curated Africa + Arab States registry lazily
   const [hasCustomXml, setHasCustomXml] = useState<boolean>(() => {
-    try {
-      const saved = localStorage.getItem(UNESCO_CUSTOM_XML_STORAGE_KEY) || localStorage.getItem('africalia_unesco_xml_sites_v1');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) && parsed.length > 0 && Boolean(parsed[0]?.license);
-      }
-    } catch {
-      // ignore storage errors
-    }
-    return false;
+    const parsed = readStorageJson<UnescoSiteMetadata[] | null>(
+      UNESCO_CUSTOM_XML_STORAGE_KEY,
+      null,
+      { legacyKey: 'africalia_unesco_xml_sites_v1' }
+    );
+    return Array.isArray(parsed) && parsed.length > 0 && Boolean(parsed[0]?.license);
   });
 
   const [unescoSites, setUnescoSites] = useState<UnescoSiteMetadata[]>(() => {
-    try {
-      const saved = localStorage.getItem(UNESCO_CUSTOM_XML_STORAGE_KEY) || localStorage.getItem('africalia_unesco_xml_sites_v1');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.license) {
-          return parsed;
-        }
-      }
-    } catch {
-      // ignore storage errors
+    const parsed = readStorageJson<UnescoSiteMetadata[] | null>(
+      UNESCO_CUSTOM_XML_STORAGE_KEY,
+      null,
+      { legacyKey: 'africalia_unesco_xml_sites_v1' }
+    );
+    if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.license) {
+      return parsed;
     }
     return INITIAL_UNESCO_HERITAGE_SITES;
   });
@@ -218,11 +213,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
       return;
     }
     setUnescoSites(extracted);
-    try {
-      localStorage.setItem(UNESCO_CUSTOM_XML_STORAGE_KEY, JSON.stringify(extracted));
-    } catch {
-      // ignore quota errors
-    }
+    writeStorageJson(UNESCO_CUSTOM_XML_STORAGE_KEY, extracted);
     setXmlImportStatus({
       type: 'success',
       message: `Extracted ${extracted.length} UNESCO World Heritage sites across Africa and the Arab States.`
@@ -233,21 +224,17 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
     }, 1200);
   };
 
-  const handleXmlFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleXmlFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const content = String(reader.result || '');
+    try {
+      const content = await readUploadedTextFile(file);
       setXmlInputText(content);
       const extracted = parseUnescoXmlRows(content);
       if (extracted.length > 0) {
         setUnescoSites(extracted);
-        try {
-          localStorage.setItem(UNESCO_CUSTOM_XML_STORAGE_KEY, JSON.stringify(extracted));
-        } catch {
-          // ignore
-        }
+        writeStorageJson(UNESCO_CUSTOM_XML_STORAGE_KEY, extracted);
         setXmlImportStatus({
           type: 'success',
           message: `Extracted ${extracted.length} UNESCO World Heritage sites (${extracted.filter(s => s.region === 'Africa').length} Africa, ${extracted.filter(s => s.region === 'Arab States').length} Arab States).`
@@ -258,8 +245,12 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
           message: 'Could not find Africa or Arab States <row> entries in this XML file.'
         });
       }
-    };
-    reader.readAsText(file);
+    } catch (err) {
+      setXmlImportStatus({
+        type: 'error',
+        message: err instanceof Error ? err.message : 'Failed to read XML file.'
+      });
+    }
   };
 
   const activeMeta = activeIllustration?.unescoMeta;
@@ -309,80 +300,79 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
         {/* Center / Right Controls: Region Filter, Category Filter, Search, XML Ingest & View Switcher */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Region Filter Pills */}
-          <div className="relative inline-flex p-0.5 rounded-xl bg-stone-200/70 dark:bg-stone-900 border border-stone-300/60 dark:border-stone-800 text-[11px] font-mono" role="tablist" aria-label="Filter heritage sites by region">
-            {(['All', 'Africa', 'Arab States'] as RegionFilter[]).map((reg, rIdx, regArr) => {
-              const isSelected = regionFilter === reg;
-              return (
-                <button
-                  key={reg}
-                  type="button"
-                  role="tab"
-                  aria-selected={isSelected}
-                  tabIndex={isSelected ? 0 : -1}
-                  onClick={() => setRegionFilter(reg)}
-                  onKeyDown={(e) => handleTabListKeyDown(e, regArr, rIdx, setRegionFilter, 'horizontal')}
-                  className={`relative px-2.5 py-1 rounded-lg font-bold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
-                    isSelected
-                      ? 'text-white dark:text-stone-950 shadow-2xs'
-                      : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
-                  }`}
-                >
-                  {isSelected && (
-                    <SlidingPill
-                      layoutId="heritageRegionPill"
-                      className="absolute inset-0 rounded-lg bg-amber-900 dark:bg-amber-500 shadow-2xs"
-                    />
-                  )}
-                  <span className="relative z-10">
-                    {reg === 'All'
-                      ? `All (${unescoSites.length})`
-                      : reg === 'Africa'
-                      ? `Africa (${africaCount})`
-                      : `Arab States (${arabStatesCount})`}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+          <AtlasTabList<RegionFilter>
+            ariaLabel="Filter heritage sites by region"
+            className="relative inline-flex p-0.5 rounded-xl bg-stone-200/70 dark:bg-stone-900 border border-stone-300/60 dark:border-stone-800 text-[11px] font-mono"
+            value={regionFilter}
+            onChange={setRegionFilter}
+            items={(['All', 'Africa', 'Arab States'] as RegionFilter[]).map((reg) => ({
+              id: reg,
+              label:
+                reg === 'All'
+                  ? `All (${unescoSites.length})`
+                  : reg === 'Africa'
+                  ? `Africa (${africaCount})`
+                  : `Arab States (${arabStatesCount})`,
+            }))}
+            getTabClassName={(_item, isSelected) =>
+              `relative px-2.5 py-1 rounded-lg font-bold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
+                isSelected
+                  ? 'text-white dark:text-stone-950 shadow-2xs'
+                  : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
+              }`
+            }
+            renderActiveIndicator={() => (
+              <SlidingPill
+                layoutId="heritageRegionPill"
+                className="absolute inset-0 rounded-lg bg-amber-900 dark:bg-amber-500 shadow-2xs"
+              />
+            )}
+            renderItem={({ item, activeIndicator }) => (
+              <>
+                {activeIndicator}
+                <span className="relative z-10">{item.label}</span>
+              </>
+            )}
+          />
 
           {/* Category Filter Pills */}
-          <div className="relative inline-flex p-0.5 rounded-xl bg-stone-200/70 dark:bg-stone-900 border border-stone-300/60 dark:border-stone-800 text-[11px] font-mono overflow-x-auto max-w-full" role="tablist" aria-label="Filter heritage sites by category">
-            {(['All', 'Cultural', 'Natural', 'Mixed', 'Danger'] as CategoryFilter[]).map((cat, cIdx, catArr) => {
-              const isActive = categoryFilter === cat;
-              const isDanger = cat === 'Danger';
-              return (
-                <button
-                  key={cat}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  tabIndex={isActive ? 0 : -1}
-                  onClick={() => setCategoryFilter(cat)}
-                  onKeyDown={(e) => handleTabListKeyDown(e, catArr, cIdx, setCategoryFilter, 'horizontal')}
-                  className={`relative px-2 py-1 rounded-lg font-bold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap flex items-center gap-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
-                    isActive
-                      ? isDanger
-                        ? 'text-white shadow-2xs'
-                        : 'text-white dark:text-stone-950 shadow-2xs'
-                      : isDanger
-                      ? 'text-rose-700 dark:text-rose-400 hover:bg-rose-500/10'
-                      : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
-                  }`}
-                >
-                  {isActive && (
-                    <SlidingPill
-                      layoutId="heritageCategoryPill"
-                      className={`absolute inset-0 rounded-lg shadow-2xs ${
-                        isDanger ? 'bg-rose-600' : 'bg-stone-900 dark:bg-stone-100'
-                      }`}
-                    />
-                  )}
-                  {isDanger && <AlertTriangle className="w-3 h-3 shrink-0 relative z-10" />}
-                  <span className="relative z-10">{isDanger ? `In Danger (${dangerCount})` : cat}</span>
-                </button>
-              );
-            })}
-          </div>
+          <AtlasTabList<CategoryFilter>
+            ariaLabel="Filter heritage sites by category"
+            className="relative inline-flex p-0.5 rounded-xl bg-stone-200/70 dark:bg-stone-900 border border-stone-300/60 dark:border-stone-800 text-[11px] font-mono overflow-x-auto max-w-full"
+            value={categoryFilter}
+            onChange={setCategoryFilter}
+            items={(['All', 'Cultural', 'Natural', 'Mixed', 'Danger'] as CategoryFilter[]).map((cat) => ({
+              id: cat,
+              label: cat === 'Danger' ? `In Danger (${dangerCount})` : cat,
+            }))}
+            getTabClassName={(item, isActive) => {
+              const isDanger = item.id === 'Danger';
+              return `relative px-2 py-1 rounded-lg font-bold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap flex items-center gap-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
+                isActive
+                  ? isDanger
+                    ? 'text-white shadow-2xs'
+                    : 'text-white dark:text-stone-950 shadow-2xs'
+                  : isDanger
+                  ? 'text-rose-700 dark:text-rose-400 hover:bg-rose-500/10'
+                  : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
+              }`;
+            }}
+            renderActiveIndicator={(item) => (
+              <SlidingPill
+                layoutId="heritageCategoryPill"
+                className={`absolute inset-0 rounded-lg shadow-2xs ${
+                  item.id === 'Danger' ? 'bg-rose-600' : 'bg-stone-900 dark:bg-stone-100'
+                }`}
+              />
+            )}
+            renderItem={({ item, activeIndicator }) => (
+              <>
+                {activeIndicator}
+                {item.id === 'Danger' && <AlertTriangle className="w-3 h-3 shrink-0 relative z-10" />}
+                <span className="relative z-10">{item.label}</span>
+              </>
+            )}
+          />
 
           {/* Sleek Biome Slide Panel Trigger Button */}
           <button
@@ -443,67 +433,41 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
           </button>
 
           {/* Segmented Switchboard: Plate Viewer vs Directory Grid */}
-          <div className="relative inline-flex p-0.5 rounded-xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner" role="tablist" aria-label="Switch heritage view format">
-            <button
-              type="button"
-              id="heritage-view-tab-viewer"
-              role="tab"
-              aria-selected={viewMode === 'viewer'}
-              aria-controls="heritage-view-panel-viewer"
-              tabIndex={viewMode === 'viewer' ? 0 : -1}
-              onClick={() => setViewMode('viewer')}
-              onKeyDown={(e) => handleTabListKeyDown(e, ['viewer', 'directory'] as const, 0, setViewMode, 'horizontal')}
-              className={`relative px-2.5 py-1 rounded-lg text-xs font-sans font-bold transition-colors duration-150 cursor-pointer select-none flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
-                viewMode === 'viewer'
+          <AtlasTabList<'viewer' | 'directory'>
+            ariaLabel="Switch heritage view format"
+            className="relative inline-flex p-0.5 rounded-xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner"
+            value={viewMode}
+            onChange={setViewMode}
+            items={[
+              { id: 'viewer', tabId: 'heritage-view-tab-viewer', controlsId: 'heritage-view-panel-viewer', label: 'Heritage Viewer' },
+              { id: 'directory', tabId: 'heritage-view-tab-directory', controlsId: 'heritage-view-panel-directory', label: `Grid (${illustrationsList.length})` },
+            ]}
+            getTabClassName={(_item, isActive) =>
+              `relative px-2.5 py-1 rounded-lg text-xs font-sans font-bold transition-colors duration-150 cursor-pointer select-none flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
+                isActive
                   ? 'text-white dark:text-stone-900 shadow-xs'
                   : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
-              }`}
-            >
-              {viewMode === 'viewer' && (
-                <SlidingPill
-                  layoutId="heritageViewModePill"
-                  className="absolute inset-0 rounded-lg bg-stone-900 dark:bg-stone-100 shadow-xs"
-                />
-              )}
-              <DynamicIcon
-                icon="lucide:gallery-thumbnails"
-                className={`w-3.5 h-3.5 shrink-0 relative z-10 ${
-                  viewMode === 'viewer' ? 'text-amber-400 dark:text-amber-600' : 'text-stone-500'
-                }`}
+              }`
+            }
+            renderActiveIndicator={() => (
+              <SlidingPill
+                layoutId="heritageViewModePill"
+                className="absolute inset-0 rounded-lg bg-stone-900 dark:bg-stone-100 shadow-xs"
               />
-              <span className="relative z-10">Heritage Viewer</span>
-            </button>
-
-            <button
-              type="button"
-              id="heritage-view-tab-directory"
-              role="tab"
-              aria-selected={viewMode === 'directory'}
-              aria-controls="heritage-view-panel-directory"
-              tabIndex={viewMode === 'directory' ? 0 : -1}
-              onClick={() => setViewMode('directory')}
-              onKeyDown={(e) => handleTabListKeyDown(e, ['viewer', 'directory'] as const, 1, setViewMode, 'horizontal')}
-              className={`relative px-2.5 py-1 rounded-lg text-xs font-sans font-bold transition-colors duration-150 cursor-pointer select-none flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
-                viewMode === 'directory'
-                  ? 'text-white dark:text-stone-900 shadow-xs'
-                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
-              }`}
-            >
-              {viewMode === 'directory' && (
-                <SlidingPill
-                  layoutId="heritageViewModePill"
-                  className="absolute inset-0 rounded-lg bg-stone-900 dark:bg-stone-100 shadow-xs"
+            )}
+            renderItem={({ item, isActive, activeIndicator }) => (
+              <>
+                {activeIndicator}
+                <DynamicIcon
+                  icon={item.id === 'viewer' ? 'lucide:gallery-thumbnails' : 'fluent-mdl2:picture-tile'}
+                  className={`w-3.5 h-3.5 shrink-0 relative z-10 ${
+                    isActive ? 'text-amber-400 dark:text-amber-600' : 'text-stone-500'
+                  }`}
                 />
-              )}
-              <DynamicIcon
-                icon="fluent-mdl2:picture-tile"
-                className={`w-3.5 h-3.5 shrink-0 relative z-10 ${
-                  viewMode === 'directory' ? 'text-amber-400 dark:text-amber-600' : 'text-stone-500'
-                }`}
-              />
-              <span className="relative z-10">Grid ({illustrationsList.length})</span>
-            </button>
-          </div>
+                <span className="relative z-10">{item.label}</span>
+              </>
+            )}
+          />
         </div>
         <div role="status" aria-live="polite" className="sr-only">
           Showing {illustrationsList.length} UNESCO World Heritage {illustrationsList.length === 1 ? 'property' : 'properties'}.
@@ -823,7 +787,7 @@ export const HeritageView: React.FC<HeritageViewProps> = ({
             <div className="flex items-center justify-between pt-2 border-t border-stone-200 dark:border-stone-800">
               <button
                 onClick={async () => {
-                  localStorage.removeItem(UNESCO_CUSTOM_XML_STORAGE_KEY);
+                  removeStorageKey(UNESCO_CUSTOM_XML_STORAGE_KEY, 'africalia_unesco_xml_sites_v1');
                   setHasCustomXml(false);
                   const defaultSites = await ensureUnescoHeritageSitesLoaded();
                   setUnescoSites([...defaultSites]);

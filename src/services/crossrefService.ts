@@ -10,6 +10,8 @@
  * 6. Implements client-side in-memory and localStorage caching to minimize network overhead.
  */
 import { parseCrossrefSearchResponse, parseCrossrefWorkResponse } from '../utils/apiSchemas';
+import { fetchWithTimeout } from '../utils/apiClient';
+import { createBoundedStorageLru } from '../utils/storageCache';
 
 export interface CrossrefAuthor {
   given?: string;
@@ -60,6 +62,12 @@ const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const MAX_LOCAL_CACHE_ENTRIES = 100;
 const MAX_MEMORY_CACHE_ENTRIES = 200;
 const memoryCache = new Map<string, { result: DoiVerificationResult; timestamp: number }>();
+const crossrefStorageLru = createBoundedStorageLru<DoiVerificationResult>({
+  prefix: CACHE_PREFIX,
+  indexKey: CACHE_INDEX_KEY,
+  maxEntries: MAX_LOCAL_CACHE_ENTRIES,
+  legacyPrefix: 'africalia_crossref_v1_',
+});
 
 function setMemoryCacheEntry(key: string, result: DoiVerificationResult, timestamp: number) {
   if (memoryCache.has(key)) {
@@ -178,38 +186,26 @@ export async function verifyDoiWithCrossref(
     }
 
     // Check localStorage cache
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        const stored = localStorage.getItem(CACHE_PREFIX + cleanDoi) || localStorage.getItem('africalia_crossref_v1_' + cleanDoi);
-        if (stored) {
-          const parsed = JSON.parse(stored) as DoiVerificationResult;
-          const verifiedTs = parsed.verifiedAt ? Date.parse(parsed.verifiedAt) : 0;
-          if (!verifiedTs || now - verifiedTs < CACHE_TTL_MS) {
-            setMemoryCacheEntry(cacheKey, parsed, verifiedTs || now);
-            return { ...parsed, source: 'cached' };
-          }
-          localStorage.removeItem(CACHE_PREFIX + cleanDoi);
-        }
+    const stored = crossrefStorageLru.get(cleanDoi);
+    if (stored) {
+      const verifiedTs = stored.verifiedAt ? Date.parse(stored.verifiedAt) : 0;
+      if (!verifiedTs || now - verifiedTs < CACHE_TTL_MS) {
+        setMemoryCacheEntry(cacheKey, stored, verifiedTs || now);
+        return { ...stored, source: 'cached' };
       }
-    } catch {
-      // Continue to network request
+      crossrefStorageLru.remove(cleanDoi);
     }
   }
 
   // 2. Fetch directly from Crossref REST API
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
-
     const endpoint = `https://api.crossref.org/works/${encodeURIComponent(cleanDoi)}?mailto=atlas-curator@afriata.org`;
-    const response = await fetch(endpoint, {
-      signal: controller.signal,
+    const response = await fetchWithTimeout(endpoint, {
+      timeoutMs: 8000,
       headers: {
         Accept: 'application/json'
       }
     });
-
-    clearTimeout(timeoutId);
 
     if (response.status === 404) {
       const result: DoiVerificationResult = {
@@ -345,19 +341,12 @@ export async function searchCrossrefByTitle(title: string, author?: string): Pro
   try {
     const query = author ? `${title} ${author}` : title;
     const url = `https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(query)}&rows=5&mailto=atlas-curator@afriata.org`;
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
-    let response: Response;
-    try {
-      response = await fetch(url, {
-        signal: controller.signal,
-        headers: {
-          Accept: 'application/json'
-        }
-      });
-    } finally {
-      clearTimeout(timeoutId);
-    }
+    const response = await fetchWithTimeout(url, {
+      timeoutMs: 8000,
+      headers: {
+        Accept: 'application/json'
+      }
+    });
 
     if (!response.ok) return [];
 
@@ -398,25 +387,5 @@ export async function searchCrossrefByTitle(title: string, author?: string): Pro
 function saveToCache(doi: string, result: DoiVerificationResult) {
   const now = Date.now();
   setMemoryCacheEntry(`${doi}_${result.expectedTitle || ''}`, result, now);
-  try {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.setItem(CACHE_PREFIX + doi, JSON.stringify(result));
-      const rawIndex = localStorage.getItem(CACHE_INDEX_KEY);
-      const indexList: string[] = rawIndex ? JSON.parse(rawIndex) : [];
-      const existingIdx = indexList.indexOf(doi);
-      if (existingIdx !== -1) {
-        indexList.splice(existingIdx, 1);
-      }
-      indexList.push(doi);
-      while (indexList.length > MAX_LOCAL_CACHE_ENTRIES) {
-        const oldestDoi = indexList.shift();
-        if (oldestDoi) {
-          localStorage.removeItem(CACHE_PREFIX + oldestDoi);
-        }
-      }
-      localStorage.setItem(CACHE_INDEX_KEY, JSON.stringify(indexList));
-    }
-  } catch {
-    // Storage quota reached or unavailable
-  }
+  crossrefStorageLru.set(doi, result);
 }

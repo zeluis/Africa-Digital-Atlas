@@ -35,6 +35,7 @@ import {
 import { getAllReports } from '../data/reportsDataLoader';
 import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
 import { downloadFile } from '../utils/exportUtils';
+import { readUploadedTextFile } from '../utils/fileUpload';
 
 interface DoiVerificationModalProps {
   isOpen: boolean;
@@ -59,18 +60,6 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
   const [confirmReset, setConfirmReset] = useState(false);
 
   const allReports = React.useMemo(() => Object.values(getAllReports()), []);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
 
   useEffect(() => {
     if (isOpen) {
@@ -167,17 +156,21 @@ export const DoiVerificationModal: React.FC<DoiVerificationModalProps> = ({
   /**
    * File drop / input handler
    */
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
+    try {
+      const text = await readUploadedTextFile(file);
       setUploadText(text);
       setUploadFeedback(null);
-    };
-    reader.readAsText(file);
+    } catch (err) {
+      setUploadFeedback({
+        success: false,
+        message: err instanceof Error ? err.message : 'Failed to read uploaded JSON file.'
+      });
+    }
   };
 
   /**

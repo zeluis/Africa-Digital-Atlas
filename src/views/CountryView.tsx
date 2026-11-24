@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { m, useReducedMotion } from 'motion/react';
 import { SPRING_TACTILE, AnimatedTabPanel } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
@@ -9,10 +9,32 @@ import { ClimateEcologySection } from '../components/ClimateEcologySection';
 import { MicroSparkline } from '../components/common/MicroSparkline';
 import { DataSourceBadge } from '../components/DataSourceBadge';
 import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
+import { AtlasTabList } from '../components/common/AtlasTabList';
 import { getRegionCalmColor, getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
 import { useTranslation } from '../i18n/LanguageContext';
 import { useSavedEntities } from '../contexts/SavedEntitiesContext';
 import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
+import { normalizeSearchText } from '../utils/textNormalize';
+import { atlasModalStore } from '../stores/useAtlasModalStore';
+import {
+  INITIAL_UNESCO_HERITAGE_SITES,
+  ISO2_TO_ISO3_MAP,
+  ensureUnescoHeritageSitesLoaded,
+  subscribeUnescoHeritageSites
+} from '../data/unescoHeritageRegistry';
+import { PRE_COLONIAL_ENTITIES } from '../data/archivalCartographyData';
+import {
+  DETAILED_KINGDOMS_DATA,
+  ensureDetailedKingdomsLoaded,
+  subscribeDetailedKingdoms
+} from '../data/preColonialKingdomsDetailed';
+import {
+  AFRICAN_EMBARKATION_PORTS,
+  ensureSlaveVoyagesPortsLoaded,
+  subscribeSlaveVoyagesPorts
+} from '../data/slaveVoyagesPorts';
+import { REGIONAL_ROUTE_FLOWS } from '../data/slaveVoyagesData';
+import { AFRICAN_MOTHER_TONGUES } from '../data/motherTonguesAudioData';
 import { 
   formatPopulation, 
   formatGDP, 
@@ -56,7 +78,11 @@ import {
   BatteryCharging,
   ArrowUpRight,
   Volume2,
-  ArrowLeft
+  ArrowLeft,
+  Compass,
+  Crown,
+  Anchor,
+  GitCompare
 } from 'lucide-react';
 import { CountryFactsheetModal } from '../components/CountryFactsheetModal';
 import { getCountryMineralsProfile, getCountryTradeFlows } from '../data/criticalMineralsData';
@@ -72,6 +98,7 @@ interface CountryViewProps {
   entityId: string;
   onSelectCountry: (entityId: string) => void;
   onSelectIndicator?: (indicatorId: string) => void;
+  onNavigateTab?: (tab: string) => void;
 }
 
 type TabType = 'overview' | 'climate' | 'economy' | 'demographics' | 'health_edu' | 'infrastructure' | 'governance' | 'heritage' | 'subnational' | 'provenance';
@@ -98,31 +125,28 @@ const GROUP_SUBTABS: Record<PrimaryGroup, TabType[]> = {
   provenance: ['provenance'],
 };
 
-const handleTabListKeyDown = (
-  e: React.KeyboardEvent<HTMLButtonElement>,
-  ids: string[],
-  currentIndex: number,
-  onSelect: (id: string) => void
-) => {
-  if (ids.length === 0) return;
-  let nextIndex = -1;
-  if (e.key === 'ArrowRight') nextIndex = (currentIndex + 1) % ids.length;
-  else if (e.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + ids.length) % ids.length;
-  else if (e.key === 'Home') nextIndex = 0;
-  else if (e.key === 'End') nextIndex = ids.length - 1;
-
-  if (nextIndex !== -1) {
-    e.preventDefault();
-    const nextId = ids[nextIndex];
-    onSelect(nextId);
-    const nextEl = e.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[nextIndex];
-    nextEl?.focus();
+const getEntitySearchAliases = (name: string, officialName: string): string[] => {
+  const base = [normalizeSearchText(name), normalizeSearchText(officialName)].filter(Boolean);
+  const joined = base.join(' ');
+  const aliases = new Set(base);
+  if (joined.includes('cote d')) aliases.add('ivory coast');
+  if (joined.includes('cabo verde')) aliases.add('cape verde');
+  if (joined.includes('gambia')) aliases.add('gambia');
+  if (joined.includes('congo') && joined.includes('democratic')) {
+    aliases.add('dr congo');
+    aliases.add('drc');
+  } else if (joined.includes('congo')) {
+    aliases.add('congo');
   }
+  if (joined.includes('eswatini')) aliases.add('swaziland');
+  if (joined.includes('tanzania')) aliases.add('tanzania');
+  return Array.from(aliases);
 };
 
 export const CountryView: React.FC<CountryViewProps> = ({
   entityId,
-  onSelectCountry
+  onSelectCountry,
+  onNavigateTab
 }) => {
   const { t } = useTranslation();
   useCountryHeaderDataLoaded();
@@ -138,6 +162,22 @@ export const CountryView: React.FC<CountryViewProps> = ({
   });
   const [showFactsheet, setShowFactsheet] = useState<boolean>(false);
   const [isSpeakingName, setIsSpeakingName] = useState<boolean>(false);
+  const [observatoryVersion, setObservatoryVersion] = useState<number>(0);
+
+  useEffect(() => {
+    const bump = () => setObservatoryVersion(v => v + 1);
+    const unsubUnesco = subscribeUnescoHeritageSites(bump);
+    const unsubKingdoms = subscribeDetailedKingdoms(bump);
+    const unsubPorts = subscribeSlaveVoyagesPorts(bump);
+    ensureUnescoHeritageSitesLoaded();
+    ensureDetailedKingdomsLoaded();
+    ensureSlaveVoyagesPortsLoaded();
+    return () => {
+      unsubUnesco();
+      unsubKingdoms();
+      unsubPorts();
+    };
+  }, [entityId]);
   
   const entity = atlas.getEntity(entityId) || atlas.getEntity('NGA')!;
   const isSaved = isCountrySaved(entity.id);
@@ -228,6 +268,94 @@ export const CountryView: React.FC<CountryViewProps> = ({
   const activeGroupSubTabs = GROUP_SUBTABS[activeGroup];
   const regionPalette = getCountryRegionTonalPalette(entity.id);
   const countryCalmBg = getRegionCalmColor(entity.region);
+
+  const navigateObservatoryTab = (target: string) => {
+    if (onNavigateTab) {
+      onNavigateTab(target);
+    } else if (typeof window !== 'undefined') {
+      window.location.hash = target;
+    }
+  };
+
+  const handleOpenCiteDossier = () => {
+    atlasModalStore.openAcademicExport({
+      title: `${entity.name} (${entity.id}) — Sovereign Country Dossier`,
+      sourceContext: `${entity.region} · ${entity.officialName} · Harmonized Multilateral Observatory`,
+      citationMetadata: {
+        year: 2026,
+        datasetName: `Afriata Country Observatory: ${entity.name} (${entity.id})`,
+        version: '2026.1',
+      },
+    });
+  };
+
+  const connectedObservatory = useMemo(() => {
+    const aliases = getEntitySearchAliases(entity.name, entity.officialName);
+    const matchesCountryString = (raw?: string) => {
+      if (!raw) return false;
+      const norm = normalizeSearchText(raw);
+      return aliases.some(alias => alias.length >= 4 && norm.includes(alias));
+    };
+
+    const unescoMatches = INITIAL_UNESCO_HERITAGE_SITES.filter(site => {
+      const isoMatches = (site.isoCode || '')
+        .split(',')
+        .map(code => ISO2_TO_ISO3_MAP[code.trim().toLowerCase()])
+        .includes(entity.id);
+      return isoMatches || site.entityId === entity.id || matchesCountryString(site.states);
+    }).map(site => ({
+      id: site.idNumber,
+      name: site.site,
+      category: site.category,
+      danger: Boolean(site.danger),
+    }));
+
+    const matchedKingdomIds = new Set<string>();
+    const kingdoms: Array<{ id: string; name: string; period: string; capital: string }> = [];
+
+    for (const k of PRE_COLONIAL_ENTITIES) {
+      const detail = DETAILED_KINGDOMS_DATA[k.id];
+      const matchesIso = detail?.modernIso3Codes?.includes(entity.id);
+      const matchesName = k.modernCountries.some(c => matchesCountryString(c));
+      if (matchesIso || matchesName) {
+        matchedKingdomIds.add(k.id);
+        kingdoms.push({ id: k.id, name: k.name, period: k.period, capital: k.capital });
+      }
+    }
+    for (const detail of Object.values(DETAILED_KINGDOMS_DATA)) {
+      if (matchedKingdomIds.has(detail.id)) continue;
+      if (detail.modernIso3Codes?.includes(entity.id) || detail.modernCountries.some(c => matchesCountryString(c))) {
+        matchedKingdomIds.add(detail.id);
+        kingdoms.push({ id: detail.id, name: detail.name, period: detail.period, capital: detail.capital });
+      }
+    }
+
+    const ports = AFRICAN_EMBARKATION_PORTS.filter(port => matchesCountryString(port.countryModern));
+    const portRegions: string[] = Array.from(new Set(ports.map(p => p.region)));
+    const totalPortEmbarkations = ports.reduce((acc, p) => acc + (p.estimatedEmbarkations || 0), 0);
+    const matchingRouteFlows = REGIONAL_ROUTE_FLOWS.filter(
+      flow => portRegions.includes(flow.sourceRegion) || (portRegions.includes('Southeast Africa') && flow.sourceRegion.startsWith('Southeast Africa'))
+    );
+
+    const motherTongues = Object.values(AFRICAN_MOTHER_TONGUES).filter(entry =>
+      matchesCountryString(entry.country)
+    );
+
+    const peerId = entity.borders?.[0] || (entity.id === 'NGA' ? 'GHA' : 'NGA');
+    const peerEntity = atlas.getEntity(peerId);
+
+    return {
+      unescoMatches,
+      kingdoms,
+      ports,
+      portRegions,
+      totalPortEmbarkations,
+      matchingRouteFlows,
+      motherTongues,
+      peerId,
+      peerName: peerEntity?.name || peerId,
+    };
+  }, [entity.id, entity.name, entity.officialName, entity.borders, observatoryVersion]);
 
   const handleSpeakCountry = () => {
     if (isSpeakingName) {
@@ -447,6 +575,16 @@ export const CountryView: React.FC<CountryViewProps> = ({
                       <FileDown className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                       <span>.ris</span>
                     </button>
+
+                    <button
+                      type="button"
+                      onClick={handleOpenCiteDossier}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-xs font-semibold shadow-xs transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                      title="Cite or Export Dossier via Academic Export Studio"
+                    >
+                      <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                      <span>Cite / Export Dossier</span>
+                    </button>
                   </div>
 
                   <p className="text-xs md:text-sm text-zinc-700 dark:text-zinc-200 font-medium">
@@ -555,92 +693,64 @@ export const CountryView: React.FC<CountryViewProps> = ({
 
       {/* Primary Consolidated 5-Section WAI-ARIA Tablist */}
       <div className="space-y-3 border-b border-zinc-200 dark:border-zinc-800 pb-3">
-        <div
+        <AtlasTabList<PrimaryGroup>
+          ariaLabel="Country dossier primary sections"
           className="flex flex-wrap items-center gap-2"
-          role="tablist"
-          aria-label="Country dossier primary sections"
-        >
-          {primaryGroups.map((group, idx) => {
-            const isActive = activeGroup === group.id;
-            return (
-              <button
-                key={group.id}
-                type="button"
-                id={`country-group-tab-${group.id}`}
-                role="tab"
-                aria-selected={isActive}
-                aria-controls={`country-group-panel-${group.id}`}
-                tabIndex={isActive ? 0 : -1}
-                onClick={() => selectGroup(group.id)}
-                onKeyDown={(e) =>
-                  handleTabListKeyDown(
-                    e,
-                    primaryGroups.map((g) => g.id),
-                    idx,
-                    (id) => selectGroup(id as PrimaryGroup)
-                  )
-                }
-                style={!isActive ? { backgroundColor: countryCalmBg } : undefined}
-                className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold whitespace-nowrap cursor-pointer select-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 ${
-                  isActive
-                    ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
-                    : 'border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:opacity-90'
-                }`}
-              >
-                {isActive && (
-                  <m.div
-                    layoutId="countryDossierTabPill"
-                    className="absolute inset-0 rounded-xl bg-emerald-700 dark:bg-zinc-100 shadow-xs"
-                    transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
-                  />
-                )}
-                <span className="relative z-10">{group.icon}</span>
-                <span className="relative z-10">{group.label}</span>
-              </button>
-            );
-          })}
-        </div>
+          value={activeGroup}
+          onChange={selectGroup}
+          items={primaryGroups.map((group) => ({
+            id: group.id,
+            tabId: `country-group-tab-${group.id}`,
+            controlsId: `country-group-panel-${group.id}`,
+            icon: group.icon,
+            label: group.label,
+          }))}
+          getTabClassName={(_item, isActive) =>
+            `relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold whitespace-nowrap cursor-pointer select-none transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 ${
+              isActive
+                ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
+                : 'border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:opacity-90'
+            }`
+          }
+          getTabStyle={(_item, isActive) => (!isActive ? { backgroundColor: countryCalmBg } : undefined)}
+          renderActiveIndicator={() => (
+            <m.div
+              layoutId="countryDossierTabPill"
+              className="absolute inset-0 rounded-xl bg-emerald-700 dark:bg-zinc-100 shadow-xs"
+              transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
+            />
+          )}
+          renderItem={({ item, activeIndicator }) => (
+            <>
+              {activeIndicator}
+              <span className="relative z-10">{item.icon}</span>
+              <span className="relative z-10">{item.label}</span>
+            </>
+          )}
+        />
 
         {/* Contextual In-Panel Sub-Switcher for multi-view groups */}
         {activeGroupSubTabs.length > 1 && (
-          <div
-            role="tablist"
-            aria-label="Section sub-views"
+          <AtlasTabList<TabType>
+            ariaLabel="Section sub-views"
             className="inline-flex flex-wrap items-center gap-1 p-1 rounded-xl bg-zinc-100/90 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800"
-          >
-            {activeGroupSubTabs.map((subId, idx) => {
-              const isSelected = activeTab === subId;
-              const meta = subTabMeta[subId];
-              return (
-                <button
-                  key={subId}
-                  type="button"
-                  id={`country-subtab-${subId}`}
-                  role="tab"
-                  aria-selected={isSelected}
-                  aria-controls={`country-subpanel-${subId}`}
-                  tabIndex={isSelected ? 0 : -1}
-                  onClick={() => selectTab(subId)}
-                  onKeyDown={(e) =>
-                    handleTabListKeyDown(
-                      e,
-                      activeGroupSubTabs,
-                      idx,
-                      (id) => selectTab(id as TabType)
-                    )
-                  }
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                    isSelected
-                      ? 'bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-300 shadow-2xs'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
-                  }`}
-                >
-                  {meta.icon}
-                  <span>{meta.label}</span>
-                </button>
-              );
-            })}
-          </div>
+            value={activeTab}
+            onChange={selectTab}
+            items={activeGroupSubTabs.map((subId) => ({
+              id: subId,
+              tabId: `country-subtab-${subId}`,
+              controlsId: `country-subpanel-${subId}`,
+              icon: subTabMeta[subId].icon,
+              label: subTabMeta[subId].label,
+            }))}
+            getTabClassName={(_item, isSelected) =>
+              `inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                isSelected
+                  ? 'bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-300 shadow-2xs'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
+              }`
+            }
+          />
         )}
       </div>
 
@@ -891,6 +1001,197 @@ export const CountryView: React.FC<CountryViewProps> = ({
                   headers={['Year', 'Population (Millions)']}
                   rows={popSeries.map(d => [d.year, d.population])}
                 />
+              </div>
+            </div>
+
+            {/* Full-Width Connected Observatory Records */}
+            <div className="lg:col-span-12">
+              <div
+                className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-5 md:p-6 space-y-4 shadow-xs transition-colors"
+                style={{ backgroundColor: countryCalmBg }}
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200/60 dark:border-zinc-800 pb-3">
+                  <div>
+                    <h2 className="font-bold text-base text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                      <Compass className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                      <span>Connected Observatory Records</span>
+                    </h2>
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">
+                      Cross-module historical, heritage, maritime, and linguistic records linked to {entity.name}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => navigateObservatoryTab(`compare?countries=${entity.id},${connectedObservatory.peerId}`)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 hover:border-emerald-300 dark:hover:border-emerald-700 text-xs font-semibold text-zinc-800 dark:text-zinc-200 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                    >
+                      <GitCompare className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                      <span>Compare with {connectedObservatory.peerName}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleOpenCiteDossier}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span>Cite / Export Dossier</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                  {/* 1. UNESCO Heritage */}
+                  <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/80 p-4 flex flex-col justify-between gap-3">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400">
+                        <Landmark className="w-3.5 h-3.5" />
+                        <span>UNESCO Heritage</span>
+                      </div>
+                      {connectedObservatory.unescoMatches.length > 0 ? (
+                        <div className="space-y-1">
+                          <div className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+                            {connectedObservatory.unescoMatches.length} documented property{connectedObservatory.unescoMatches.length === 1 ? '' : 'ies'}
+                          </div>
+                          <div className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
+                            {connectedObservatory.unescoMatches.slice(0, 2).map(s => s.name).join(' · ')}
+                          </div>
+                        </div>
+                      ) : heritageSites.length > 0 ? (
+                        <div className="space-y-1">
+                          <div className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+                            {heritageSites.length} curated heritage site{heritageSites.length === 1 ? '' : 's'}
+                          </div>
+                          <div className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
+                            {heritageSites.slice(0, 2).map(s => s.name).join(' · ')}
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                          Explore continental UNESCO Cultural &amp; Natural inscriptions archive.
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const firstWhcId = connectedObservatory.unescoMatches[0]?.id;
+                        navigateObservatoryTab(firstWhcId ? `heritage?id=${firstWhcId}` : 'heritage');
+                      }}
+                      className="inline-flex items-center justify-between text-xs font-semibold text-purple-700 dark:text-purple-400 hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                    >
+                      <span>Open Heritage Archive</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {/* 2. Pre-Colonial Kingdoms */}
+                  <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/80 p-4 flex flex-col justify-between gap-3">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                        <Crown className="w-3.5 h-3.5" />
+                        <span>Pre-Colonial Polities</span>
+                      </div>
+                      {connectedObservatory.kingdoms.length > 0 ? (
+                        <div className="space-y-1">
+                          <div className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+                            {connectedObservatory.kingdoms.map(k => k.name).slice(0, 2).join(' · ')}
+                          </div>
+                          <div className="text-xs font-mono text-zinc-600 dark:text-zinc-400">
+                            {connectedObservatory.kingdoms[0].period} · Capital {connectedObservatory.kingdoms[0].capital}
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                          Inspect 1688–1851 copperplate cartography &amp; pre-colonial state matrices.
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const firstK = connectedObservatory.kingdoms[0]?.id;
+                        navigateObservatoryTab(
+                          firstK ? `archival-cartography?tab=kingdoms&kingdom=${firstK}` : 'archival-cartography'
+                        );
+                      }}
+                      className="inline-flex items-center justify-between text-xs font-semibold text-amber-700 dark:text-amber-400 hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                    >
+                      <span>Open Archival Cartography</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {/* 3. SlaveVoyages Maritime Ports & Flows */}
+                  <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/80 p-4 flex flex-col justify-between gap-3">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">
+                        <Anchor className="w-3.5 h-3.5" />
+                        <span>Middle Passage Ports</span>
+                      </div>
+                      {connectedObservatory.ports.length > 0 ? (
+                        <div className="space-y-1">
+                          <div className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+                            {connectedObservatory.ports.length} coastal enclave{connectedObservatory.ports.length === 1 ? '' : 's'} · {connectedObservatory.portRegions.join(' / ')}
+                          </div>
+                          <div className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
+                            {connectedObservatory.ports.slice(0, 3).map(p => p.name).join(' · ')}
+                            {connectedObservatory.totalPortEmbarkations > 0
+                              ? ` · ~${connectedObservatory.totalPortEmbarkations.toLocaleString()} est. embarkations`
+                              : ''}
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                          Explore 36,108 documented voyages &amp; 47 African coastal embarkation enclaves.
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => navigateObservatoryTab('slave-trade')}
+                      className="inline-flex items-center justify-between text-xs font-semibold text-sky-700 dark:text-sky-400 hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                    >
+                      <span>Open Voyages Observatory</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {/* 4. Mother Tongues Audio Clips */}
+                  <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/80 p-4 flex flex-col justify-between gap-3">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-teal-700 dark:text-teal-400">
+                        <Volume2 className="w-3.5 h-3.5" />
+                        <span>Mother Tongue Audio</span>
+                      </div>
+                      {connectedObservatory.motherTongues.length > 0 ? (
+                        <div className="space-y-1">
+                          <div className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+                            {connectedObservatory.motherTongues.map(m => `${m.language} (${m.autonym})`).slice(0, 2).join(' · ')}
+                          </div>
+                          <div className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
+                            {connectedObservatory.motherTongues[0].family} · &ldquo;{connectedObservatory.motherTongues[0].greetingText}&rdquo;
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                          Listen to 18 documented African mother-tongue waveforms &amp; phonetic typologies.
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const firstLangId = connectedObservatory.motherTongues[0]?.id;
+                        navigateObservatoryTab(firstLangId ? `languages?lang=${firstLangId}` : 'languages');
+                      }}
+                      className="inline-flex items-center justify-between text-xs font-semibold text-teal-700 dark:text-teal-400 hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
+                    >
+                      <span>Open Languages &amp; Audio</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

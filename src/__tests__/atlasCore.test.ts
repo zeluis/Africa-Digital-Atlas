@@ -503,7 +503,7 @@ describe('Afriata Core Test Suite', () => {
       expect(resolveAssetPath('./africa-final.svg')).toBe('/team/atlas/africa-final.svg');
       expect(resolveDocsPath('')).toBe('/team/atlas/docs/');
       expect(resolveDocsPath('UNIVERSAL_STYLE_GUIDE.md')).toBe('/team/atlas/docs/UNIVERSAL_STYLE_GUIDE.html');
-      expect(resolveApiUrl('/api/tts')).toBe('/team/atlas/api/tts');
+      expect(resolveApiUrl('/api/health')).toBe('/team/atlas/api/health');
       expect(getDeploymentCacheScope()).toBe('team-atlas');
     });
 
@@ -640,21 +640,221 @@ describe('Afriata Core Test Suite', () => {
       }
     });
 
-    it('skips server /api/tts when /api/health reports zero cloud TTS keys', async () => {
-      const { isBackendTtsAvailable, resetApiAvailabilityCache } = await import('../utils/apiClient');
-      resetApiAvailabilityCache();
+    it('pre-renders all 8 TOP_BAR_UI_GREETINGS into static audio pack and makes zero runtime /api/tts calls', async () => {
+      const {
+        TOP_BAR_UI_GREETINGS,
+        resolveStaticAudioClip,
+        speakAfriataGreeting,
+        stopAfriataSpeech,
+        STATIC_AFRICAN_AUDIO_CLIPS,
+      } = await import('../utils/afriataVoiceEngine');
+
+      const uiLangs = ['en', 'fr', 'pt', 'es', 'it', 'nl', 'de', 'ar'];
+      const manifestPath = path.resolve(process.cwd(), 'public/audio/tongues/manifest.json');
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const manifestMap = new Map<string, any>(manifest.clips.map((c: any) => [c.id, c]));
+
+      for (const code of uiLangs) {
+        const greeting = TOP_BAR_UI_GREETINGS[code];
+        expect(greeting).toBeDefined();
+        expect(greeting.audioClipId).toBe(`ui-greeting-${code}`);
+
+        const clip = resolveStaticAudioClip({ audioClipId: greeting.audioClipId, text: greeting.phrase });
+        expect(clip).not.toBeNull();
+        expect(clip?.file).toBe(`audio/tongues/ui-greeting-${code}.mp3`);
+        expect(STATIC_AFRICAN_AUDIO_CLIPS[clip!.id]).toBeDefined();
+        expect(fs.existsSync(path.resolve(process.cwd(), 'public', clip!.file))).toBe(true);
+        expect(manifestMap.get(clip!.id)?.file).toBe(clip!.file);
+      }
+
       const origFetch = globalThis.fetch;
-      globalThis.fetch = vi.fn().mockResolvedValue({
-        ok: true,
-        headers: new Headers({ 'content-type': 'application/json' }),
-        json: async () => ({ status: 'ok', geminiEnabled: false, elevenLabsEnabled: false }),
-      }) as any;
+      const fetchSpy = vi.fn();
+      globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
       try {
-        expect(await isBackendTtsAvailable()).toBe(false);
+        speakAfriataGreeting({
+          text: TOP_BAR_UI_GREETINGS.en.phrase,
+          audioClipId: TOP_BAR_UI_GREETINGS.en.audioClipId,
+          langTag: TOP_BAR_UI_GREETINGS.en.langTag,
+        });
+        speakAfriataGreeting({
+          text: 'Dynamic screen reader narrative fallback without static clip',
+          langTag: 'en-NG',
+        });
+        expect(fetchSpy).not.toHaveBeenCalled();
       } finally {
-        resetApiAvailabilityCache();
+        stopAfriataSpeech();
         globalThis.fetch = origFetch;
+      }
+    });
+  });
+
+  // =========================================================================
+  // 9. SHARED STORAGE LRU, FETCH TIMEOUT & CSV FORMULA NEUTRALIZATION
+  // =========================================================================
+  describe('Shared Storage LRU, Fetch Timeout & CSV Formula Neutralization', () => {
+    beforeEach(() => {
+      localStorage.clear();
+    });
+
+    afterEach(() => {
+      localStorage.clear();
+      vi.useRealTimers();
+    });
+
+    it('enforces LRU eviction order, legacy migration, and malformed JSON recovery in createBoundedStorageLru', async () => {
+      const { createBoundedStorageLru } = await import('../utils/storageCache');
+      const lru = createBoundedStorageLru<{ v: number }>({
+        prefix: 'test_lru_',
+        indexKey: 'test_lru_index',
+        maxEntries: 2,
+        legacyPrefix: 'legacy_lru_',
+      });
+
+      lru.set('a', { v: 1 });
+      lru.set('b', { v: 2 });
+      // Access 'a' so 'b' becomes the least-recently-used key
+      expect(lru.get('a')).toEqual({ v: 1 });
+
+      // Adding 'c' must evict 'b' while retaining 'a' and 'c'
+      lru.set('c', { v: 3 });
+      expect(lru.get('b')).toBeNull();
+      expect(localStorage.getItem('test_lru_b')).toBeNull();
+      expect(lru.get('a')).toEqual({ v: 1 });
+      expect(lru.get('c')).toEqual({ v: 3 });
+
+      // Malformed JSON value and malformed index recover safely without throwing
+      localStorage.setItem('test_lru_corrupt', '{not-valid-json');
+      localStorage.setItem('test_lru_index', 'not-json-either');
+      expect(lru.get('corrupt')).toBeNull();
+      expect(localStorage.getItem('test_lru_corrupt')).toBeNull();
+
+      // Legacy prefix migration
+      localStorage.setItem('legacy_lru_mig', JSON.stringify({ v: 99 }));
+      expect(lru.get('mig')).toEqual({ v: 99 });
+      expect(localStorage.getItem('test_lru_mig')).toBe(JSON.stringify({ v: 99 }));
+      expect(localStorage.getItem('legacy_lru_mig')).toBeNull();
+    });
+
+    it('clears fetchWithTimeout timer cleanly on resolution, rejection, and abort', async () => {
+      const { fetchWithTimeout } = await import('../utils/apiClient');
+      const clearSpy = vi.spyOn(globalThis, 'clearTimeout');
+      const origFetch = globalThis.fetch;
+
+      try {
+        // 1. Resolution clears timer
+        globalThis.fetch = vi.fn().mockResolvedValue(new Response('ok', { status: 200 })) as unknown as typeof fetch;
+        const okRes = await fetchWithTimeout('https://example.org/ok', { timeoutMs: 5000 });
+        expect(okRes.status).toBe(200);
+        expect(clearSpy).toHaveBeenCalled();
+
+        clearSpy.mockClear();
+
+        // 2. Rejection clears timer
+        globalThis.fetch = vi.fn().mockRejectedValue(new Error('network fail')) as unknown as typeof fetch;
+        await expect(fetchWithTimeout('https://example.org/err', { timeoutMs: 5000 })).rejects.toThrow('network fail');
+        expect(clearSpy).toHaveBeenCalled();
+
+        clearSpy.mockClear();
+
+        // 3. Timeout triggers AbortController and clears timer
+        vi.useFakeTimers();
+        const fakeClearSpy = vi.spyOn(globalThis, 'clearTimeout');
+        globalThis.fetch = vi.fn((_url, init?: RequestInit) => {
+          return new Promise<Response>((_resolve, reject) => {
+            init?.signal?.addEventListener('abort', () => {
+              const abortErr = new Error('The operation was aborted.');
+              abortErr.name = 'AbortError';
+              reject(abortErr);
+            });
+          });
+        }) as unknown as typeof fetch;
+
+        const pending = fetchWithTimeout('https://example.org/slow', { timeoutMs: 1200 });
+        const expectation = expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+        await vi.advanceTimersByTimeAsync(1200);
+        await expectation;
+        expect(fakeClearSpy).toHaveBeenCalled();
+      } finally {
+        vi.useRealTimers();
+        vi.restoreAllMocks();
+        globalThis.fetch = origFetch;
+      }
+    });
+
+    it('neutralizes CSV formula payloads and quotes delimiters via escapeCsvCell', async () => {
+      const { escapeCsvCell } = await import('../utils/exportUtils');
+
+      expect(escapeCsvCell('=CMD|"/C calc"!A0')).toBe(`"'=CMD|""/C calc""!A0"`);
+      expect(escapeCsvCell('+1+1')).toBe(`"'+1+1"`);
+      expect(escapeCsvCell('-2*3')).toBe(`"'-2*3"`);
+      expect(escapeCsvCell('@SUM(A1:A2)')).toBe(`"'@SUM(A1:A2)"`);
+      expect(escapeCsvCell('  =HYPERLINK("https://evil.example")')).toBe(`"'  =HYPERLINK(""https://evil.example"")"`);
+      expect(escapeCsvCell('ECOWAS, Corridor', { quoteAllStrings: true })).toBe('"ECOWAS, Corridor"');
+      expect(escapeCsvCell(1250)).toBe('1250');
+    });
+
+    it('migrates legacy storage keys safely via readStorageString/readStorageJson and enforces upload bounds in readUploadedTextFile', async () => {
+      const { readStorageString, readStorageJson, removeStorageKey } = await import('../utils/storageCache');
+      const { readUploadedTextFile } = await import('../utils/fileUpload');
+
+      localStorage.setItem('legacy_flag_key', 'true');
+      expect(readStorageString('modern_flag_key', undefined, { legacyKey: 'legacy_flag_key' })).toBe('true');
+      expect(localStorage.getItem('modern_flag_key')).toBe('true');
+      expect(localStorage.getItem('legacy_flag_key')).toBeNull();
+
+      localStorage.setItem('legacy_json_key', JSON.stringify({ count: 3 }));
+      expect(readStorageJson('modern_json_key', { count: 0 }, { legacyKey: 'legacy_json_key' })).toEqual({ count: 3 });
+      removeStorageKey('modern_json_key', 'legacy_json_key');
+      expect(localStorage.getItem('modern_json_key')).toBeNull();
+
+      const validFile = new File(['<svg></svg>'], 'map.svg', { type: 'image/svg+xml' });
+      await expect(readUploadedTextFile(validFile, { allowedExtensions: ['.svg'] })).resolves.toBe('<svg></svg>');
+
+      const oversized = new File(['x'.repeat(32)], 'big.svg', { type: 'image/svg+xml' });
+      await expect(readUploadedTextFile(oversized, { maxBytes: 10 })).rejects.toThrow(/maximum file size/i);
+
+      const wrongType = new File(['{}'], 'bad.txt', { type: 'text/plain' });
+      await expect(
+        readUploadedTextFile(wrongType, { allowedExtensions: ['.svg'], allowedMimeTypes: ['image/svg+xml'] })
+      ).rejects.toThrow(/Unsupported file type/i);
+    });
+  });
+
+  // =========================================================================
+  // 10. ENTRY BUNDLE HYGIENE, DEFERRED ONBOARDING & HOOKS
+  // =========================================================================
+  describe('Startup Bundle Hygiene & Shared Hooks', () => {
+    it('keeps TOP_BAR_UI_GREETINGS decoupled from afriataVoiceEngine in Navbar and VoiceWelcomeFab', () => {
+      const topBarGreetings = fs.readFileSync(path.resolve(process.cwd(), 'src/data/topBarGreetings.ts'), 'utf8');
+      expect(topBarGreetings).toContain('export const TOP_BAR_UI_GREETINGS');
+      expect(topBarGreetings).toContain('export const AFRIATA_SPEECH_STOP_EVENT');
+
+      const navbarSrc = fs.readFileSync(path.resolve(process.cwd(), 'src/components/Navbar.tsx'), 'utf8');
+      expect(navbarSrc).toContain('../data/topBarGreetings');
+      expect(navbarSrc).not.toMatch(/from\s+['"]\.\.\/utils\/afriataVoiceEngine['"]/);
+
+      const fabSrc = fs.readFileSync(path.resolve(process.cwd(), 'src/components/VoiceWelcomeFab.tsx'), 'utf8');
+      expect(fabSrc).not.toMatch(/from\s+['"]\.\.\/utils\/afriataVoiceEngine['"]/);
+      expect(fabSrc).toContain("import('../utils/afriataVoiceEngine')");
+    });
+
+    it('defers first-visit onboarding auto-open off synchronous mount in useAtlasModalStore', async () => {
+      localStorage.removeItem('afriata_onboarding_v1');
+      localStorage.removeItem('africalia_onboarding_v1');
+      vi.resetModules();
+      vi.useFakeTimers();
+
+      try {
+        const { atlasModalStore } = await import('../stores/useAtlasModalStore');
+        // Immediately after construction, onboarding modal must NOT be active yet
+        expect(atlasModalStore.getState().activeModal).toBeNull();
+
+        await vi.advanceTimersByTimeAsync(700);
+        expect(atlasModalStore.getState().activeModal).toBe('onboarding');
+        atlasModalStore.closeModal('onboarding');
+      } finally {
+        vi.useRealTimers();
       }
     });
   });

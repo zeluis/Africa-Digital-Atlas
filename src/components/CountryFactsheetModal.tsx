@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { atlas } from '../data/atlas-store';
 import { CountryFlag } from './CountryFlag';
 import { CountrySilhouette } from './CountrySilhouette';
@@ -66,15 +66,6 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
 }) => {
   useCountryHeaderDataLoaded();
   const { copied, copyToClipboard } = useCopyToClipboard({ resetMs: 2200 });
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

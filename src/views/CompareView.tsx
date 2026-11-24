@@ -15,7 +15,8 @@ import { AtlasDialog } from '../components/common/AtlasDialog';
 import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
 import { atlas } from '../data/atlas-store';
 import { getContinentalSummary } from '../data/atlas-selectors';
-import { handleTabListKeyDown, useIsDarkTheme } from '../utils/a11y';
+import { useIsDarkTheme } from '../utils/a11y';
+import { AtlasTabList } from '../components/common/AtlasTabList';
 import { CountryFlag } from '../components/CountryFlag';
 import { CountrySilhouette } from '../components/CountrySilhouette';
 import { getEntityGeographyMetadata, UN_M49_NUMERIC_CODES } from '../data/svgGeographySystem';
@@ -505,59 +506,47 @@ export const CompareView: React.FC<CompareViewProps> = ({
       </div>
 
       {/* Compare View Switcher Tabs with SlidingPill */}
-      <div 
-        className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-fit max-w-full overflow-x-auto scroll-shadow-x no-scrollbar" 
-        role="tablist" 
-        aria-label="Comparative analysis perspective"
-      >
-        <button
-          type="button"
-          id="compare-perspective-tab-matrix"
-          role="tab"
-          aria-selected={activeCompareTab === 'matrix'}
-          aria-controls="compare-perspective-panel-matrix"
-          tabIndex={activeCompareTab === 'matrix' ? 0 : -1}
-          onClick={() => setActiveCompareTab('matrix')}
-          onKeyDown={(e) => handleTabListKeyDown(e, ['matrix', 'afcfta'] as const, 0, setActiveCompareTab, 'horizontal')}
-          className={`relative flex items-center gap-2 px-4 py-2 min-h-[40px] whitespace-nowrap shrink-0 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-            activeCompareTab === 'matrix'
+      <AtlasTabList<'matrix' | 'afcfta'>
+        ariaLabel="Comparative analysis perspective"
+        className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 w-fit max-w-full overflow-x-auto scroll-shadow-x no-scrollbar"
+        value={activeCompareTab}
+        onChange={setActiveCompareTab}
+        items={[
+          {
+            id: 'matrix',
+            tabId: 'compare-perspective-tab-matrix',
+            controlsId: 'compare-perspective-panel-matrix',
+            icon: <GitCompare className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />,
+            label: 'Macroeconomic & Indicator Matrix',
+          },
+          {
+            id: 'afcfta',
+            tabId: 'compare-perspective-tab-afcfta',
+            controlsId: 'compare-perspective-panel-afcfta',
+            icon: <ArrowRightLeft className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />,
+            label: 'AfCFTA & Bilateral Trade Complementarity',
+          },
+        ]}
+        getTabClassName={(_item, isActive) =>
+          `relative flex items-center gap-2 px-4 py-2 min-h-[40px] whitespace-nowrap shrink-0 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+            isActive
               ? 'text-zinc-900 dark:text-zinc-100'
               : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
-          }`}
-        >
-          {activeCompareTab === 'matrix' && (
-            <SlidingPill layoutId="compareActivePerspectiveTab" className="absolute inset-0 rounded-xl bg-white dark:bg-zinc-800 shadow-xs" />
-          )}
-          <span className="relative z-10 flex items-center gap-2">
-            <GitCompare className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>Macroeconomic &amp; Indicator Matrix</span>
-          </span>
-        </button>
-
-        <button
-          type="button"
-          id="compare-perspective-tab-afcfta"
-          role="tab"
-          aria-selected={activeCompareTab === 'afcfta'}
-          aria-controls="compare-perspective-panel-afcfta"
-          tabIndex={activeCompareTab === 'afcfta' ? 0 : -1}
-          onClick={() => setActiveCompareTab('afcfta')}
-          onKeyDown={(e) => handleTabListKeyDown(e, ['matrix', 'afcfta'] as const, 1, setActiveCompareTab, 'horizontal')}
-          className={`relative flex items-center gap-2 px-4 py-2 min-h-[40px] whitespace-nowrap shrink-0 rounded-xl text-xs font-bold transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-            activeCompareTab === 'afcfta'
-              ? 'text-zinc-900 dark:text-zinc-100'
-              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
-          }`}
-        >
-          {activeCompareTab === 'afcfta' && (
-            <SlidingPill layoutId="compareActivePerspectiveTab" className="absolute inset-0 rounded-xl bg-white dark:bg-zinc-800 shadow-xs" />
-          )}
-          <span className="relative z-10 flex items-center gap-2">
-            <ArrowRightLeft className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>AfCFTA &amp; Bilateral Trade Complementarity</span>
-          </span>
-        </button>
-      </div>
+          }`
+        }
+        renderActiveIndicator={() => (
+          <SlidingPill layoutId="compareActivePerspectiveTab" className="absolute inset-0 rounded-xl bg-white dark:bg-zinc-800 shadow-xs" />
+        )}
+        renderItem={({ item, activeIndicator }) => (
+          <>
+            {activeIndicator}
+            <span className="relative z-10 flex items-center gap-2">
+              {item.icon}
+              <span>{item.label}</span>
+            </span>
+          </>
+        )}
+      />
 
       {activeCompareTab === 'afcfta' ? (
         <div
@@ -618,36 +607,33 @@ export const CompareView: React.FC<CompareViewProps> = ({
             </p>
           </div>
 
-          <div className="flex flex-nowrap overflow-x-auto scroll-shadow-x no-scrollbar sm:flex-wrap items-center gap-1.5 pb-1 sm:pb-0 max-w-full" role="tablist" aria-label="Convergence trajectory indicator">
-            {convergenceMetrics.map((metric, mIdx) => {
-              const isSelected = convergenceMetricId === metric.id;
-              return (
-                <button
-                  key={metric.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isSelected}
-                  tabIndex={isSelected ? 0 : -1}
-                  onClick={() => setConvergenceMetricId(metric.id)}
-                  onKeyDown={(e) => handleTabListKeyDown(e, convergenceMetrics.map(mItem => mItem.id), mIdx, setConvergenceMetricId, 'horizontal')}
-                  className={`relative px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl text-xs font-mono font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                    isSelected
-                      ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
-                      : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
-                  }`}
-                >
-                  {isSelected && (
-                    <m.div
-                      layoutId="compareConvergenceMetric"
-                      className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs"
-                      transition={SPRING_TACTILE}
-                    />
-                  )}
-                  <span className="relative z-10">{metric.label}</span>
-                </button>
-              );
-            })}
-          </div>
+          <AtlasTabList<string>
+            ariaLabel="Convergence trajectory indicator"
+            className="flex flex-nowrap overflow-x-auto scroll-shadow-x no-scrollbar sm:flex-wrap items-center gap-1.5 pb-1 sm:pb-0 max-w-full"
+            value={convergenceMetricId}
+            onChange={setConvergenceMetricId}
+            items={convergenceMetrics.map((mItem) => ({ id: mItem.id, label: mItem.label }))}
+            getTabClassName={(_item, isSelected) =>
+              `relative px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl text-xs font-mono font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                isSelected
+                  ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
+                  : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
+              }`
+            }
+            renderActiveIndicator={() => (
+              <m.div
+                layoutId="compareConvergenceMetric"
+                className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs"
+                transition={SPRING_TACTILE}
+              />
+            )}
+            renderItem={({ item, activeIndicator }) => (
+              <>
+                {activeIndicator}
+                <span className="relative z-10">{item.label}</span>
+              </>
+            )}
+          />
         </div>
 
         <div className="h-64 sm:h-72 w-full pt-2">
@@ -1007,32 +993,29 @@ export const CompareView: React.FC<CompareViewProps> = ({
                 </div>
 
                 {/* Region Filter Chips with SlidingPill */}
-                <div className="flex flex-nowrap overflow-x-auto scroll-shadow-x no-scrollbar sm:flex-wrap items-center gap-1.5 pb-1 sm:pb-0" role="tablist" aria-label="Geoscheme region filter">
-                  {REGION_OPTIONS.map((opt, rIdx) => {
-                    const isSelected = selectedRegionFilter === opt.id;
-                    return (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        role="tab"
-                        aria-selected={isSelected}
-                        tabIndex={isSelected ? 0 : -1}
-                        onClick={() => setSelectedRegionFilter(opt.id)}
-                        onKeyDown={(e) => handleTabListKeyDown(e, REGION_OPTIONS.map(o => o.id), rIdx, setSelectedRegionFilter, 'horizontal')}
-                        className={`relative px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl text-xs font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                          isSelected
-                            ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
-                            : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
-                        }`}
-                      >
-                        {isSelected && (
-                          <SlidingPill layoutId="selectorRegionPill" className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs" />
-                        )}
-                        <span className="relative z-10">{opt.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
+                <AtlasTabList<string>
+                  ariaLabel="Geoscheme region filter"
+                  className="flex flex-nowrap overflow-x-auto scroll-shadow-x no-scrollbar sm:flex-wrap items-center gap-1.5 pb-1 sm:pb-0"
+                  value={selectedRegionFilter}
+                  onChange={setSelectedRegionFilter}
+                  items={REGION_OPTIONS.map((opt) => ({ id: opt.id, label: opt.label }))}
+                  getTabClassName={(_item, isSelected) =>
+                    `relative px-3 py-1.5 min-h-[36px] whitespace-nowrap shrink-0 rounded-xl text-xs font-semibold transition-colors duration-150 cursor-pointer select-none border border-zinc-200 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                      isSelected
+                        ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
+                        : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'
+                    }`
+                  }
+                  renderActiveIndicator={() => (
+                    <SlidingPill layoutId="selectorRegionPill" className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs" />
+                  )}
+                  renderItem={({ item, activeIndicator }) => (
+                    <>
+                      {activeIndicator}
+                      <span className="relative z-10">{item.label}</span>
+                    </>
+                  )}
+                />
               </div>
 
               {/* Nations Grid */}

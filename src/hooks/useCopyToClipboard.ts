@@ -19,7 +19,7 @@ export interface UseCopyToClipboardReturn {
  * Fallback copy helper using a temporary off-screen textarea when
  * navigator.clipboard is unavailable (e.g., restricted iframe contexts).
  */
-async function writeTextWithFallback(text: string): Promise<boolean> {
+export async function writeTextWithFallback(text: string): Promise<boolean> {
   if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
     try {
       await navigator.clipboard.writeText(text);
@@ -51,6 +51,8 @@ async function writeTextWithFallback(text: string): Promise<boolean> {
     return false;
   }
 }
+
+export const writeTextToClipboard = writeTextWithFallback;
 
 export function useCopyToClipboard(options: UseCopyToClipboardOptions = {}): UseCopyToClipboardReturn {
   const { resetMs = 2000, announcementText = 'Copied to clipboard' } = options;

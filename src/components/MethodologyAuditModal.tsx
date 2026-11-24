@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { usePrefersReducedMotion } from '../utils/motion';
-import { handleTabListKeyDown } from '../utils/a11y';
+import { AtlasTabList } from './common/AtlasTabList';
 import { AtlasDialog } from './common/AtlasDialog';
 import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 import { 
@@ -36,7 +36,6 @@ interface MethodologyAuditModalProps {
 }
 
 type MethodologyTab = 'provenance' | 'flags' | 'voyages_ethnic' | 'hashes' | 'limitations';
-const METHODOLOGY_TABS: readonly MethodologyTab[] = ['provenance', 'flags', 'voyages_ethnic', 'hashes', 'limitations'];
 
 interface HashVerificationState {
   status: 'idle' | 'verifying' | 'matched' | 'mismatch' | 'unavailable' | 'error';
@@ -54,18 +53,6 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
   const [verificationStates, setVerificationStates] = useState<Record<string, HashVerificationState>>({});
   const [isVerifyingAll, setIsVerifyingAll] = useState(false);
   const reducedMotion = usePrefersReducedMotion();
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
 
   const handleCopy = (text: string, key: string) => {
     void copyToClipboard(text, key, 'Copied SHA-256 digest to clipboard');
@@ -168,102 +155,26 @@ export const MethodologyAuditModal: React.FC<MethodologyAuditModalProps> = ({
 
           {/* Navigation Bar */}
           <div className="bg-white/95 dark:bg-stone-900/95 border-b border-stone-200 dark:border-stone-800 px-4 sm:px-6 py-2.5 shrink-0 shadow-xs">
-            <div
-              role="tablist"
-              aria-label="Methodology Dossier Sections"
+            <AtlasTabList<MethodologyTab>
+              ariaLabel="Methodology Dossier Sections"
               className="p-1 rounded-2xl bg-stone-100 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 flex flex-nowrap overflow-x-auto no-scrollbar scroll-shadow-x items-center gap-1"
-            >
-              <button
-                type="button"
-                id="methodology-tab-provenance"
-                role="tab"
-                aria-selected={activeTab === 'provenance'}
-                aria-controls="methodology-panel-provenance"
-                tabIndex={activeTab === 'provenance' ? 0 : -1}
-                onClick={() => setActiveTab('provenance')}
-                onKeyDown={(e) => handleTabListKeyDown(e, METHODOLOGY_TABS, 0, setActiveTab, 'horizontal')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                  activeTab === 'provenance'
+              value={activeTab}
+              onChange={setActiveTab}
+              items={[
+                { id: 'provenance', tabId: 'methodology-tab-provenance', controlsId: 'methodology-panel-provenance', icon: <Scale className="w-3.5 h-3.5" />, label: <span>1. Data Provenance</span> },
+                { id: 'flags', tabId: 'methodology-tab-flags', controlsId: 'methodology-panel-flags', icon: <Sliders className="w-3.5 h-3.5" />, label: <span>2. Status Flags</span> },
+                { id: 'voyages_ethnic', tabId: 'methodology-tab-voyages_ethnic', controlsId: 'methodology-panel-voyages_ethnic', icon: <Anchor className="w-3.5 h-3.5" />, label: <span>3–4. Voyages &amp; Ethnic Framework</span> },
+                { id: 'hashes', tabId: 'methodology-tab-hashes', controlsId: 'methodology-panel-hashes', icon: <Fingerprint className="w-3.5 h-3.5" />, label: <span>5. Dataset Integrity (SHA-256)</span> },
+                { id: 'limitations', tabId: 'methodology-tab-limitations', controlsId: 'methodology-panel-limitations', icon: <FileCheck className="w-3.5 h-3.5" />, label: <span>6. Limitations &amp; FAIR</span> },
+              ]}
+              getTabClassName={(_item, isSelected) =>
+                `flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                  isSelected
                     ? 'bg-emerald-600 text-white shadow-xs font-bold'
                     : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
-                }`}
-              >
-                <Scale className="w-3.5 h-3.5" />
-                <span>1. Data Provenance</span>
-              </button>
-              <button
-                type="button"
-                id="methodology-tab-flags"
-                role="tab"
-                aria-selected={activeTab === 'flags'}
-                aria-controls="methodology-panel-flags"
-                tabIndex={activeTab === 'flags' ? 0 : -1}
-                onClick={() => setActiveTab('flags')}
-                onKeyDown={(e) => handleTabListKeyDown(e, METHODOLOGY_TABS, 1, setActiveTab, 'horizontal')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                  activeTab === 'flags'
-                    ? 'bg-emerald-600 text-white shadow-xs font-bold'
-                    : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
-                }`}
-              >
-                <Sliders className="w-3.5 h-3.5" />
-                <span>2. Status Flags</span>
-              </button>
-              <button
-                type="button"
-                id="methodology-tab-voyages_ethnic"
-                role="tab"
-                aria-selected={activeTab === 'voyages_ethnic'}
-                aria-controls="methodology-panel-voyages_ethnic"
-                tabIndex={activeTab === 'voyages_ethnic' ? 0 : -1}
-                onClick={() => setActiveTab('voyages_ethnic')}
-                onKeyDown={(e) => handleTabListKeyDown(e, METHODOLOGY_TABS, 2, setActiveTab, 'horizontal')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                  activeTab === 'voyages_ethnic'
-                    ? 'bg-emerald-600 text-white shadow-xs font-bold'
-                    : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
-                }`}
-              >
-                <Anchor className="w-3.5 h-3.5" />
-                <span>3–4. Voyages &amp; Ethnic Framework</span>
-              </button>
-              <button
-                type="button"
-                id="methodology-tab-hashes"
-                role="tab"
-                aria-selected={activeTab === 'hashes'}
-                aria-controls="methodology-panel-hashes"
-                tabIndex={activeTab === 'hashes' ? 0 : -1}
-                onClick={() => setActiveTab('hashes')}
-                onKeyDown={(e) => handleTabListKeyDown(e, METHODOLOGY_TABS, 3, setActiveTab, 'horizontal')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                  activeTab === 'hashes'
-                    ? 'bg-emerald-600 text-white shadow-xs font-bold'
-                    : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
-                }`}
-              >
-                <Fingerprint className="w-3.5 h-3.5" />
-                <span>5. Dataset Integrity (SHA-256)</span>
-              </button>
-              <button
-                type="button"
-                id="methodology-tab-limitations"
-                role="tab"
-                aria-selected={activeTab === 'limitations'}
-                aria-controls="methodology-panel-limitations"
-                tabIndex={activeTab === 'limitations' ? 0 : -1}
-                onClick={() => setActiveTab('limitations')}
-                onKeyDown={(e) => handleTabListKeyDown(e, METHODOLOGY_TABS, 4, setActiveTab, 'horizontal')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                  activeTab === 'limitations'
-                    ? 'bg-emerald-600 text-white shadow-xs font-bold'
-                    : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800'
-                }`}
-              >
-                <FileCheck className="w-3.5 h-3.5" />
-                <span>6. Limitations &amp; FAIR</span>
-              </button>
-            </div>
+                }`
+              }
+            />
           </div>
 
           {/* Scrollable Content Body */}

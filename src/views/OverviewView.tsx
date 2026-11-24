@@ -6,7 +6,7 @@ import {
   getIndicatorRankings 
 } from '../data/atlas-selectors';
 import { atlas } from '../data/atlas-store';
-import { handleTabListKeyDown } from '../utils/a11y';
+import { AtlasTabList } from '../components/common/AtlasTabList';
 import { AfricanRegion } from '../data/types';
 import { FiftyFourNationMosaic } from '../components/FiftyFourNationMosaic';
 import { CountryFlag } from '../components/CountryFlag';
@@ -261,49 +261,50 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       <section aria-label="Overview Analytical Perspectives" className="space-y-6 cascade-item cascade-3">
         <div className="flex flex-col gap-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-3">
           {/* Perspective Navigation Tabs (Full-width 4-column grid on md+, 2-col on mobile) */}
-          <div 
-            className="w-full grid grid-cols-2 md:grid-cols-4 gap-2 p-1.5 rounded-2xl bg-zinc-100/90 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700/80 shadow-xs" 
-            role="tablist" 
-            aria-label="Overview Analytical Perspectives"
-          >
-            {PERSPECTIVES.map((pId, idx) => {
+          <AtlasTabList<OverviewPerspective>
+            ariaLabel="Overview Analytical Perspectives"
+            className="w-full grid grid-cols-2 md:grid-cols-4 gap-2 p-1.5 rounded-2xl bg-zinc-100/90 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700/80 shadow-xs"
+            value={activePerspective}
+            onChange={setActivePerspective}
+            items={PERSPECTIVES.map((pId) => {
               const cfg = PERSPECTIVE_CONFIG[pId];
-              const Icon = cfg.icon;
-              const isActive = activePerspective === pId;
-
+              return {
+                id: pId,
+                tabId: `overview-perspective-tab-${pId}`,
+                controlsId: `overview-perspective-panel-${pId}`,
+                label: cfg.label,
+              };
+            })}
+            getTabClassName={(item, isActive) => {
+              const cfg = PERSPECTIVE_CONFIG[item.id];
+              return `relative w-full min-h-[44px] px-3 py-2.5 sm:px-3.5 sm:py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                isActive
+                  ? `${cfg.activeText} shadow-xs font-bold`
+                  : `text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 ${cfg.hoverBg}`
+              }`;
+            }}
+            renderActiveIndicator={(item) => {
+              const cfg = PERSPECTIVE_CONFIG[item.id];
               return (
-                <button
-                  key={pId}
-                  type="button"
-                  id={`overview-perspective-tab-${pId}`}
-                  role="tab"
-                  aria-selected={isActive}
-                  aria-controls={`overview-perspective-panel-${pId}`}
-                  tabIndex={isActive ? 0 : -1}
-                  onClick={() => setActivePerspective(pId)}
-                  onKeyDown={(e) => handleTabListKeyDown(e, PERSPECTIVES, idx, setActivePerspective, 'horizontal')}
-                  className={`relative w-full min-h-[44px] px-3 py-2.5 sm:px-3.5 sm:py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                    isActive 
-                      ? `${cfg.activeText} shadow-xs font-bold` 
-                      : `text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 ${cfg.hoverBg}`
-                  }`}
-                >
-                  {/* Snappy sliding animated background pill */}
-                  {isActive && (
-                    <m.div
-                      layoutId="overviewPerspectivePill"
-                      className={`absolute inset-0 rounded-xl ${cfg.activeBg} border ${cfg.activeBorder} shadow-xs`}
-                      transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                    />
-                  )}
-
-                  {/* Button Content */}
+                <m.div
+                  layoutId="overviewPerspectivePill"
+                  className={`absolute inset-0 rounded-xl ${cfg.activeBg} border ${cfg.activeBorder} shadow-xs`}
+                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                />
+              );
+            }}
+            renderItem={({ item, isActive, activeIndicator }) => {
+              const cfg = PERSPECTIVE_CONFIG[item.id];
+              const Icon = cfg.icon;
+              return (
+                <>
+                  {activeIndicator}
                   <div className="relative z-10 flex items-center justify-center gap-1.5 sm:gap-2 min-w-0">
                     <Icon className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 group-hover:scale-110 ${isActive ? cfg.iconColor : 'text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-200'}`} />
                     <span className="truncate font-semibold tracking-tight">{cfg.label}</span>
                     {cfg.badge && (
                       <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-md transition-colors shrink-0 ${
-                        isActive 
+                        isActive
                           ? cfg.badgeActiveBg
                           : 'bg-zinc-200/70 dark:bg-zinc-700/60 text-zinc-700 dark:text-zinc-300'
                       }`}>
@@ -311,10 +312,10 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                       </span>
                     )}
                   </div>
-                </button>
+                </>
               );
-            })}
-          </div>
+            }}
+          />
 
           {/* Status & Provenance Metadata Row with ample horizontal space */}
           <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 dark:text-zinc-400 px-1 pt-0.5 min-w-0">

@@ -38,6 +38,7 @@ import {
 import { atlasModalStore } from '../../stores/useAtlasModalStore';
 import { MolecularMigrationDrawer, MolecularMigrationCanvasLayer, MolecularDivergenceNode } from './MolecularMigrationOverlay';
 import { sanitizeSvgMarkup } from '../../utils/sanitizeSvg';
+import { resolveAssetPath } from '../../utils/assetPath';
 import { 
   VBW, 
   VBH, 
@@ -55,6 +56,7 @@ import { ALL_ADMIN1_SUBDIVISIONS } from '../../data/afriataGeographyData';
 import { RadialTreeSkeleton } from './RadialTreeSkeleton';
 import { useCanvasViewport } from '../../hooks/useCanvasViewport';
 import { getCanonicalCountryForEthnic } from '../../data/ethnicToCountryMap';
+import { readUploadedTextFile } from '../../utils/fileUpload';
 import type { WorkerSearchRequest, WorkerSearchResponse } from '../../workers/ethnicAtlasWorker';
 
 interface AfriataExplorerProps {
@@ -299,6 +301,51 @@ const HISTORICAL_REGION_COUNTRY_MAP: Record<string, string[]> = {
   'Eastern Africa': ['tanzania', 'kenya', 'uganda', 'rwanda', 'nubia-south-sudan', 'ethiopia', 'somalia', 'eritrea']
 };
 
+let cachedEthnicTreeSvgText: string | null = null;
+let cachedEthnicTreeSvgPromise: Promise<string | null> | null = null;
+
+function loadSharedEthnicTreeSvg(): Promise<string | null> {
+  if (cachedEthnicTreeSvgText) {
+    return Promise.resolve(cachedEthnicTreeSvgText);
+  }
+  if (cachedEthnicTreeSvgPromise) {
+    return cachedEthnicTreeSvgPromise;
+  }
+
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const fetchTimer = controller ? setTimeout(() => controller.abort(), 15000) : null;
+  const assetUrl = resolveAssetPath('afriata-ethnic-tree.svg');
+
+  cachedEthnicTreeSvgPromise = fetch(assetUrl, controller ? { signal: controller.signal } : undefined)
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const contentType = (res.headers.get('content-type') || '').toLowerCase();
+      if (contentType.includes('text/html')) {
+        throw new Error('Unexpected HTML fallback response for SVG asset');
+      }
+      return res.text();
+    })
+    .then(svgText => {
+      if (svgText && /<svg(?=[\s>])/i.test(svgText)) {
+        cachedEthnicTreeSvgText = svgText;
+        return svgText;
+      }
+      return null;
+    })
+    .catch(err => {
+      cachedEthnicTreeSvgPromise = null;
+      if (err?.name !== 'AbortError') {
+        console.info('Fallback SVG fetch warning:', err);
+      }
+      return null;
+    })
+    .finally(() => {
+      if (fetchTimer) clearTimeout(fetchTimer);
+    });
+
+  return cachedEthnicTreeSvgPromise;
+}
+
 export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
   onSelectReport,
   onNavigateToSlaveTrade,
@@ -339,40 +386,38 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
   });
 
   // Custom SVG upload and dynamic fetch state
-  const [customSvgMarkup, setCustomSvgMarkup] = useState<string | null>(null);
-  const [isSvgLoading, setIsSvgLoading] = useState<boolean>(true);
+  const [customSvgMarkup, setCustomSvgMarkup] = useState<string | null>(() => cachedEthnicTreeSvgText);
+  const [isSvgLoading, setIsSvgLoading] = useState<boolean>(() => !cachedEthnicTreeSvgText);
   const [canvasBg, setCanvasBg] = useState<'parchment' | 'white' | 'sepia'>('parchment');
 
-  // Dynamically fetch public master SVG with cache busting, while bundled fallback is immediately available
+  // Dynamically fetch public master SVG once (shared across StrictMode mounts)
   useEffect(() => {
+    if (cachedEthnicTreeSvgText) {
+      setCustomSvgMarkup(prev => prev || cachedEthnicTreeSvgText);
+      setIsSvgLoading(false);
+      return;
+    }
+
     let isMounted = true;
-    const timer = setTimeout(() => {
+    const loadingTimer = setTimeout(() => {
       if (isMounted) setIsSvgLoading(false);
     }, 450);
 
-    const base = (import.meta.env?.BASE_URL || './').replace(/\/$/, '');
-    const assetUrl = `${base}/afriata-ethnic-tree.svg`;
-    fetch(assetUrl)
-      .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.text();
-      })
+    loadSharedEthnicTreeSvg()
       .then(svgText => {
-        if (isMounted && svgText && svgText.includes('<svg')) {
+        if (isMounted && svgText) {
           setCustomSvgMarkup(svgText);
         }
-      })
-      .catch(err => {
-        console.info('Fallback SVG fetch warning:', err);
       })
       .finally(() => {
         if (isMounted) {
           setIsSvgLoading(false);
         }
       });
+
     return () => {
       isMounted = false;
-      clearTimeout(timer);
+      clearTimeout(loadingTimer);
     };
   }, []);
 
@@ -381,10 +426,10 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
     let svg = customSvgMarkup || '';
     if (svg) {
       if (!svg.includes('id="afriata-master-sovereign-svg"')) {
-        svg = svg.replace('<svg ', '<svg id="afriata-master-sovereign-svg" ');
+        svg = svg.replace(/<svg(?=[\s>])/i, '<svg id="afriata-master-sovereign-svg"');
       }
       if (!svg.includes('data-author=')) {
-        svg = svg.replace('<svg ', '<svg data-author="ZéLuis F. Correia" data-curator="Afriata" data-license="CC BY 4.0 (LICENSE-ASSETS)" data-copyright="© 2024-2026 ZéLuis F. Correia (Afriata). Licensed under CC BY 4.0." data-doi="10.6084/m9.figshare.34065711" ');
+        svg = svg.replace(/<svg(?=[\s>])/i, '<svg data-author="ZéLuis F. Correia" data-curator="Afriata" data-license="CC BY 4.0 (LICENSE-ASSETS)" data-copyright="© 2024-2026 ZéLuis F. Correia (Afriata). Licensed under CC BY 4.0." data-doi="10.6084/m9.figshare.34065711"');
       }
       if (!svg.includes('AFRIATA CARTOGRAPHIC OBSERVATORY')) {
         const comment = `<!--
@@ -1556,23 +1601,24 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
   };
 
   // Upload custom SVG / HTML file
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      let content = event.target?.result as string;
+    try {
+      const content = await readUploadedTextFile(file);
       if (!content) return;
       // If it's an HTML file, extract the <svg>...</svg> and sanitize active content
-      if (content.includes('<svg')) {
+      if (/<svg(?=[\s>])/i.test(content)) {
         const match = content.match(/<svg[\s\S]*?<\/svg>/i);
         const cleanSvg = sanitizeSvgMarkup(match ? match[0] : content);
-        if (cleanSvg.includes('<svg')) {
+        if (/<svg(?=[\s>])/i.test(cleanSvg)) {
           setCustomSvgMarkup(cleanSvg);
         }
       }
-    };
-    reader.readAsText(file);
+    } catch (err) {
+      console.warn('Custom SVG upload failed:', err instanceof Error ? err.message : 'File upload error');
+    }
   };
 
   return (
@@ -2873,43 +2919,52 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
           )}
 
           {/* Dynamic SVG Country Silhouette Spotlight and Continent Deep Dimming */}
-          {silhouetteGlowEnabled && activeGeoCountryId && (
-            <style>{`
-              #geo--Africa--un-geoscheme {
-                opacity: 0.12 !important;
-                filter: grayscale(90%) contrast(85%) !important;
-                transition: opacity 0.4s ease-in-out, filter 0.4s ease-in-out;
-              }
-              [id="${activeGeoCountryId}"] {
-                opacity: 1 !important;
-                fill: #E67E48 !important;
-                stroke: #FFFFFF !important;
-                stroke-width: 4.5px !important;
-                stroke-linejoin: round !important;
-                stroke-linecap: round !important;
-                filter: drop-shadow(0 0 16px #E67E48) drop-shadow(0 0 32px rgba(230,126,72,0.85)) !important;
-                transition: all 0.4s ease-in-out;
-              }
-              ${activeCountrySlug ? `
-              [id="TREE"] [id*="${activeCountrySlug}" i],
-              [id="LABELS"] [id*="${activeCountrySlug}" i],
-              [id*="branch--country--${activeCountrySlug}" i],
-              [id*="branches--country--${activeCountrySlug}" i],
-              [id*="label--country--${activeCountrySlug}" i] {
-                opacity: 1 !important;
-                filter: drop-shadow(0 0 8px rgba(230,126,72,0.75)) !important;
-                transition: all 0.3s ease-in-out;
-              }
-              ` : ''}
-              ${selectedEntity?.id ? `
-              [id="${selectedEntity.id}"] {
-                opacity: 1 !important;
-                filter: drop-shadow(0 0 14px #E67E48) !important;
-                transition: all 0.3s ease-in-out;
-              }
-              ` : ''}
-            `}</style>
-          )}
+          {silhouetteGlowEnabled && activeGeoCountryId && (() => {
+            const escapeCssValue = (val: string) =>
+              typeof CSS !== 'undefined' && typeof CSS.escape === 'function'
+                ? CSS.escape(val)
+                : val.replace(/[^a-zA-Z0-9_-]/g, '\\$&');
+            const safeGeoCountryId = escapeCssValue(activeGeoCountryId);
+            const safeCountrySlug = activeCountrySlug ? escapeCssValue(activeCountrySlug) : '';
+            const safeSelectedEntityId = selectedEntity?.id ? escapeCssValue(selectedEntity.id) : '';
+            return (
+              <style>{`
+                #geo--Africa--un-geoscheme {
+                  opacity: 0.12 !important;
+                  filter: grayscale(90%) contrast(85%) !important;
+                  transition: opacity 0.4s ease-in-out, filter 0.4s ease-in-out;
+                }
+                [id="${safeGeoCountryId}"] {
+                  opacity: 1 !important;
+                  fill: #E67E48 !important;
+                  stroke: #FFFFFF !important;
+                  stroke-width: 4.5px !important;
+                  stroke-linejoin: round !important;
+                  stroke-linecap: round !important;
+                  filter: drop-shadow(0 0 16px #E67E48) drop-shadow(0 0 32px rgba(230,126,72,0.85)) !important;
+                  transition: all 0.4s ease-in-out;
+                }
+                ${safeCountrySlug ? `
+                [id="TREE"] [id*="${safeCountrySlug}" i],
+                [id="LABELS"] [id*="${safeCountrySlug}" i],
+                [id*="branch--country--${safeCountrySlug}" i],
+                [id*="branches--country--${safeCountrySlug}" i],
+                [id*="label--country--${safeCountrySlug}" i] {
+                  opacity: 1 !important;
+                  filter: drop-shadow(0 0 8px rgba(230,126,72,0.75)) !important;
+                  transition: all 0.3s ease-in-out;
+                }
+                ` : ''}
+                ${safeSelectedEntityId ? `
+                [id="${safeSelectedEntityId}"] {
+                  opacity: 1 !important;
+                  filter: drop-shadow(0 0 14px #E67E48) !important;
+                  transition: all 0.3s ease-in-out;
+                }
+                ` : ''}
+              `}</style>
+            );
+          })()}
 
           {/* Raw Authentic SVG rendered directly with 100% fidelity */}
           <div 

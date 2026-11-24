@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useAnimationActive } from '../../hooks/useAnimationActive';
 import { m, AnimatePresence } from 'motion/react';
 import { REGIONAL_ROUTE_FLOWS } from '../../data/slaveVoyagesData';
 import { RegionalRouteFlow, EpistemicMode } from '../../data/slaveVoyagesTypes';
@@ -183,20 +184,17 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
   const showTradeWindsRef = useRef<boolean>(showTradeWinds);
   const wakeFlowLoopRef = useRef<(() => void) | null>(null);
 
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(() =>
-    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
-      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      : false
-  );
-  const [isDocumentHidden, setIsDocumentHidden] = useState<boolean>(() =>
-    typeof document !== 'undefined' ? document.hidden : false
-  );
-  const prefersReducedMotionRef = useRef<boolean>(prefersReducedMotion);
-
-  useEffect(() => {
-    prefersReducedMotionRef.current = prefersReducedMotion;
-    wakeFlowLoopRef.current?.();
-  }, [prefersReducedMotion]);
+  const {
+    isDocumentHidden,
+    prefersReducedMotion,
+    stateRef: animationStateRef,
+  } = useAnimationActive(oceanCanvasRef, {
+    threshold: 0.05,
+    enabled: showOceanCurrents,
+    onActiveChange: () => {
+      wakeFlowLoopRef.current?.();
+    },
+  });
 
   useEffect(() => {
     const target = mapCalendarSeasonToHydro(selectedSeason);
@@ -257,6 +255,7 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.translate(offsetX * dpr, offsetY * dpr);
       ctx.scale(scale * dpr, scale * dpr);
+      wakeFlowLoopRef.current?.();
     };
 
     handleResize();
@@ -295,72 +294,13 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
     });
     themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
-    const motionMql = typeof window.matchMedia === 'function'
-      ? window.matchMedia('(prefers-reduced-motion: reduce)')
-      : null;
-    const handleMotionChange = (e: MediaQueryListEvent) => {
-      prefersReducedMotionRef.current = e.matches;
-      setPrefersReducedMotion(e.matches);
-      syncLoop();
-    };
-    motionMql?.addEventListener('change', handleMotionChange);
-
     let lastTime = performance.now();
-    let isCanvasIntersecting = true;
 
     const shouldAnimate = () =>
-      showOceanCurrentsRef.current &&
-      isCanvasIntersecting &&
-      !document.hidden &&
-      !prefersReducedMotionRef.current;
+      showOceanCurrentsRef.current && animationStateRef.current.isActive;
 
-    const syncLoop = () => {
-      if (shouldAnimate()) {
-        if (!animFrameIdRef.current) {
-          lastTime = performance.now();
-          animFrameIdRef.current = requestAnimationFrame(render);
-        }
-      } else {
-        if (animFrameIdRef.current) {
-          cancelAnimationFrame(animFrameIdRef.current);
-          animFrameIdRef.current = null;
-        }
-        if (!showOceanCurrentsRef.current || prefersReducedMotionRef.current) {
-          ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
-        }
-      }
-    };
-    wakeFlowLoopRef.current = syncLoop;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isCanvasIntersecting = entry.isIntersecting;
-        syncLoop();
-      },
-      { threshold: 0.05 }
-    );
-    observer.observe(canvas);
-
-    const handleVisibilityChange = () => {
-      setIsDocumentHidden(document.hidden);
-      syncLoop();
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    const render = (now: number) => {
-      animFrameIdRef.current = null;
-      if (!shouldAnimate()) {
-        if (!showOceanCurrentsRef.current || prefersReducedMotionRef.current) {
-          ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
-        }
-        return;
-      }
-      animFrameIdRef.current = requestAnimationFrame(render);
-
-      const dt = Math.min((now - lastTime) / 1000, 0.04);
-      lastTime = now;
-
-      if (transitionProgressRef.current < 1.0) {
+    const drawHydroFrame = (dt: number, advanceParticles: boolean) => {
+      if (advanceParticles && transitionProgressRef.current < 1.0) {
         transitionProgressRef.current = Math.min(1.0, transitionProgressRef.current + dt * 1.85);
       }
       const t = easeInOutCubic(transitionProgressRef.current);
@@ -396,8 +336,9 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
         particles[idx + 2] = particles[idx + 2] * 0.88 + tvx * 0.12;
         particles[idx + 3] = particles[idx + 3] * 0.88 + tvy * 0.12;
 
-        const nextX = px + particles[idx + 2] * curSpeed * (dt * 60);
-        const nextY = py + particles[idx + 3] * curSpeed * (dt * 60);
+        const stepScale = advanceParticles ? dt * 60 : 1;
+        const nextX = px + particles[idx + 2] * curSpeed * stepScale;
+        const nextY = py + particles[idx + 3] * curSpeed * stepScale;
 
         if (i < activeLimit) {
           const lifeAlpha = Math.sin((age / maxAge) * Math.PI);
@@ -421,20 +362,61 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
           ctx.stroke();
         }
 
-        particles[idx] = nextX;
-        particles[idx + 1] = nextY;
-        particles[idx + 4] = age + 1;
+        if (advanceParticles) {
+          particles[idx] = nextX;
+          particles[idx + 1] = nextY;
+          particles[idx + 4] = age + 1;
 
-        if (age >= maxAge || nextX < -10 || nextX > VIRTUAL_WIDTH + 10 || nextY < -10 || nextY > VIRTUAL_HEIGHT + 10) {
-          particles[idx] = Math.random() * VIRTUAL_WIDTH;
-          particles[idx + 1] = Math.random() * VIRTUAL_HEIGHT;
-          particles[idx + 4] = 0;
-          particles[idx + 5] = 70 + Math.random() * 80;
-          const newVec = evaluateHydrodynamicVector(particles[idx], particles[idx + 1], hydroSeasonRef.current, true, showTradeWindsRef.current);
-          particles[idx + 2] = newVec.vx;
-          particles[idx + 3] = newVec.vy;
+          if (age >= maxAge || nextX < -10 || nextX > VIRTUAL_WIDTH + 10 || nextY < -10 || nextY > VIRTUAL_HEIGHT + 10) {
+            particles[idx] = Math.random() * VIRTUAL_WIDTH;
+            particles[idx + 1] = Math.random() * VIRTUAL_HEIGHT;
+            particles[idx + 4] = 0;
+            particles[idx + 5] = 70 + Math.random() * 80;
+            const newVec = evaluateHydrodynamicVector(particles[idx], particles[idx + 1], hydroSeasonRef.current, true, showTradeWindsRef.current);
+            particles[idx + 2] = newVec.vx;
+            particles[idx + 3] = newVec.vy;
+          }
         }
       }
+    };
+
+    const syncLoop = () => {
+      if (shouldAnimate()) {
+        if (!animFrameIdRef.current) {
+          lastTime = performance.now();
+          animFrameIdRef.current = requestAnimationFrame(render);
+        }
+      } else {
+        if (animFrameIdRef.current) {
+          cancelAnimationFrame(animFrameIdRef.current);
+          animFrameIdRef.current = null;
+        }
+        if (!showOceanCurrentsRef.current) {
+          ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+        } else if (
+          animationStateRef.current.prefersReducedMotion &&
+          animationStateRef.current.isIntersecting &&
+          !animationStateRef.current.isDocumentHidden
+        ) {
+          drawHydroFrame(1 / 60, false);
+        }
+      }
+    };
+    wakeFlowLoopRef.current = syncLoop;
+
+    const render = (now: number) => {
+      animFrameIdRef.current = null;
+      if (!shouldAnimate()) {
+        if (!showOceanCurrentsRef.current) {
+          ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+        }
+        return;
+      }
+      animFrameIdRef.current = requestAnimationFrame(render);
+
+      const dt = Math.min((now - lastTime) / 1000, 0.04);
+      lastTime = now;
+      drawHydroFrame(dt, true);
     };
 
     syncLoop();
@@ -444,9 +426,6 @@ export const AtlanticFlowMap: React.FC<AtlanticFlowMapProps> = ({
       window.removeEventListener('resize', handleResize);
       resizeObserver?.disconnect();
       themeObserver.disconnect();
-      motionMql?.removeEventListener('change', handleMotionChange);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      observer.disconnect();
       if (animFrameIdRef.current) {
         cancelAnimationFrame(animFrameIdRef.current);
         animFrameIdRef.current = null;

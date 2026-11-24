@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { usePrefersReducedMotion } from '../utils/motion';
 import { AtlasDialog } from './common/AtlasDialog';
 import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
@@ -40,18 +40,6 @@ export const UniversalMonographModal: React.FC<UniversalMonographModalProps> = (
   const [activeSection, setActiveSection] = useState<GuideSection>('all');
   const { copiedKey, liveAnnouncement, copyToClipboard } = useCopyToClipboard();
   const reducedMotion = usePrefersReducedMotion();
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
 
   const handleCopy = (text: string, key: string) => {
     void copyToClipboard(text, key, 'Copied monograph snippet to clipboard');

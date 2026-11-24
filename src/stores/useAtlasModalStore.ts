@@ -8,6 +8,7 @@
 import { useSyncExternalStore } from 'react';
 import type { ResearchReport } from '../data/reportsData';
 import type { AfriataReport } from '../types/afriataReport';
+import { readStorageString } from '../utils/storageCache';
 
 export type AtlasModalType =
   | 'search'
@@ -66,18 +67,34 @@ class AtlasModalStore {
 
   private listeners = new Set<Listener>();
 
+  private hasManualInteraction = false;
+
   constructor() {
-    // Auto-open onboarding modal for first-time visitors
+    // Schedule first-visit onboarding modal after initial paint/idle so OnboardingModal chunk
+    // does not block initial mount or First Contentful Paint.
     if (typeof window !== 'undefined') {
-      try {
-        const hasVisited =
-          localStorage.getItem('afriata_onboarding_v1') === 'true' ||
-          localStorage.getItem('africalia_onboarding_v1') === 'true';
-        if (!hasVisited) {
-          this.state.activeModal = 'onboarding';
+      const hasVisited =
+        readStorageString('afriata_onboarding_v1', undefined, {
+          legacyKey: 'africalia_onboarding_v1',
+        }) === 'true';
+      if (!hasVisited) {
+        const triggerOnboarding = () => {
+          if (!this.hasManualInteraction && this.state.activeModal === null) {
+            this.state = {
+              activeModal: 'onboarding',
+              payload: null
+            };
+            this.notify();
+          }
+        };
+        const ric = (window as Window & {
+          requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+        }).requestIdleCallback;
+        if (typeof ric === 'function') {
+          ric(triggerOnboarding, { timeout: 600 });
+        } else {
+          globalThis.setTimeout(triggerOnboarding, 150);
         }
-      } catch {
-        // LocalStorage access restricted in certain iframe sandboxes
       }
     }
   }
@@ -98,6 +115,7 @@ class AtlasModalStore {
   };
 
   public openModal = (modal: AtlasModalType, payload: AtlasModalPayload = null) => {
+    this.hasManualInteraction = true;
     this.state = {
       activeModal: modal,
       payload
@@ -106,6 +124,7 @@ class AtlasModalStore {
   };
 
   public closeModal = (modal?: AtlasModalType) => {
+    this.hasManualInteraction = true;
     if (!modal || this.state.activeModal === modal) {
       this.state = {
         activeModal: null,
@@ -116,6 +135,7 @@ class AtlasModalStore {
   };
 
   public closeAllModals = () => {
+    this.hasManualInteraction = true;
     this.state = {
       activeModal: null,
       payload: null

@@ -1,3 +1,5 @@
+import { fetchWithTimeout } from '../utils/apiClient';
+
 const recordsJsonAssetUrl = new URL('./records-with-descriptions.json', import.meta.url).href;
 
 export interface UnescoSiteMetadata {
@@ -1076,8 +1078,8 @@ export function ensureSlaveTradeIllustrationsHydrated(): Promise<SlaveTradeIllus
     return Promise.resolve(SLAVE_TRADE_ILLUSTRATIONS);
   }
   hydrationPromise = Promise.all([
-    fetch(recordsJsonAssetUrl).then(res => (res.ok ? res.json() : { records: [] })),
-    fetch(extendedIllustrationsJsonAssetUrl)
+    fetchWithTimeout(recordsJsonAssetUrl, { timeoutMs: 15000 }).then(res => (res.ok ? res.json() : { records: [] })),
+    fetchWithTimeout(extendedIllustrationsJsonAssetUrl, { timeoutMs: 15000 })
       .then(res => (res.ok ? res.json() : []))
       .catch(() => [])
   ])

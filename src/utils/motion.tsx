@@ -68,7 +68,7 @@ export const TRANSITION_FAST: Transition = {
 // ============================================================================
 
 export const isReducedMotionActive = (): boolean => {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 };
 
@@ -76,7 +76,7 @@ export const usePrefersReducedMotion = (): boolean => {
   const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     setReduced(media.matches);
 

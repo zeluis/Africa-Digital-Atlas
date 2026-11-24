@@ -9,7 +9,8 @@ import {
   exportCountriesToCsv, 
   exportCountriesToJson, 
   exportSlaveVoyagesToCsv, 
-  exportAcademicBibtex 
+  exportAcademicBibtex,
+  downloadFile
 } from '../utils/exportUtils';
 import { ExternalApiConnector, LiveApiTestResult, useExternalApisLoaded } from '../data/externalApisIngestion';
 import { OrganizationLogo } from '../components/OrganizationLogo';
@@ -111,13 +112,11 @@ export const ProvenanceQualityView: React.FC = () => {
       audit: auditResult
     };
 
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(canonicalPayload, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `africa_atlas_canonical_v${manifest.atlasVersion}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
+    downloadFile(
+      `africa_atlas_canonical_v${manifest.atlasVersion}.json`,
+      JSON.stringify(canonicalPayload, null, 2),
+      'application/json;charset=utf-8'
+    );
   };
 
   const geoPipelineStages = [

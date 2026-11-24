@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Download, 
   Share2, 
@@ -68,15 +68,6 @@ export const AcademicExportModal: React.FC<AcademicExportModalProps> = ({
   const [isGeneratingDossier, setIsGeneratingDossier] = useState<boolean>(false);
   const [isPackagingZip, setIsPackagingZip] = useState<boolean>(false);
   const { savedCountries, savedPlates, toggleSaveCountry, toggleSavePlate } = useSavedEntities();
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

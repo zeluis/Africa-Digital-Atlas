@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { usePrefersReducedMotion } from '../utils/motion';
 import { atlas } from '../data/atlas-store';
 import {
@@ -55,18 +55,6 @@ export const MultiSourceApiHubModal: React.FC<MultiSourceApiHubModalProps> = ({
   const [batchProgress, setBatchProgress] = useState<number>(0);
   const [inspectedConnector, setInspectedConnector] = useState<ExternalApiConnector | null>(null);
   const reducedMotion = usePrefersReducedMotion();
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
 
   const apisLoaded = useExternalApisLoaded();
   const connectors = useMemo(() => {

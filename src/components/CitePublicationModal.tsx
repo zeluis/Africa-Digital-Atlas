@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ResearchReport } from '../data/reportsData';
 import { AfriataReport } from '../types/afriataReport';
 import { Copy, Check, Download, BookOpen, X, Code2, Share2 } from 'lucide-react';
@@ -26,15 +26,6 @@ export const CitePublicationModal: React.FC<CitePublicationModalProps> = ({
 }) => {
   const [style, setStyle] = useState<ReportCitationFormat>('chicago');
   const { copied, copiedKey: copiedFormat, liveAnnouncement, copyToClipboard } = useCopyToClipboard();
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

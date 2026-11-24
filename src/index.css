@@ -240,44 +240,9 @@
   font-optical-sizing: auto;
 }
 
-/* Fluid Typographic Scale Classes (Utopia.fyi & MD3 Hierarchy) */
-.type-display {
-  font-size: clamp(2.25rem, 1.8rem + 2.2vw, 3.5rem);
-  line-height: 1.12;
-  letter-spacing: -0.03em;
-  text-wrap: balance;
-}
-
-.type-headline-lg {
-  font-size: clamp(1.75rem, 1.45rem + 1.4vw, 2.5rem);
-  line-height: 1.20;
-  letter-spacing: -0.025em;
-  text-wrap: balance;
-}
-
-.type-headline-md {
-  font-size: clamp(1.35rem, 1.15rem + 1.0vw, 1.85rem);
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-}
-
-.type-title-lg {
-  font-size: clamp(1.05rem, 0.98rem + 0.4vw, 1.25rem);
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-}
-
 .type-body-editorial {
   font-size: clamp(1.00rem, 0.94rem + 0.3vw, 1.1875rem);
   line-height: 1.80;
-  letter-spacing: -0.005em;
-  text-wrap: pretty;
-}
-
-.type-body-archival {
-  font-size: clamp(0.9375rem, 0.88rem + 0.25vw, 1.0625rem);
-  line-height: 1.68;
   letter-spacing: -0.005em;
   text-wrap: pretty;
 }

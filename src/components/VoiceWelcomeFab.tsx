@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Volume2, VolumeX, Sparkles } from 'lucide-react';
-import {
-  AFRIATA_SPEECH_STOP_EVENT,
-  speakAfriataGreeting,
-  stopAfriataSpeech
-} from '../utils/afriataVoiceEngine';
+import { AFRIATA_SPEECH_STOP_EVENT } from '../data/topBarGreetings';
+
+type VoiceEngineModule = typeof import('../utils/afriataVoiceEngine');
 
 interface VoiceWelcomeFabProps {
   text: string;
@@ -32,6 +30,8 @@ export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const isPlayingRef = useRef(false);
   const isStartingRef = useRef(false);
+  const playTokenRef = useRef(0);
+  const voiceEngineRef = useRef<VoiceEngineModule | null>(null);
 
   useEffect(() => {
     isPlayingRef.current = isPlaying;
@@ -40,6 +40,7 @@ export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
   useEffect(() => {
     const handleGlobalStop = () => {
       if (isStartingRef.current) return;
+      playTokenRef.current += 1;
       isPlayingRef.current = false;
       setIsPlaying(false);
     };
@@ -47,9 +48,10 @@ export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
     window.addEventListener(AFRIATA_SPEECH_STOP_EVENT, handleGlobalStop);
     return () => {
       window.removeEventListener(AFRIATA_SPEECH_STOP_EVENT, handleGlobalStop);
+      playTokenRef.current += 1;
       if (isPlayingRef.current) {
         isPlayingRef.current = false;
-        stopAfriataSpeech();
+        voiceEngineRef.current?.stopAfriataSpeech();
       }
     };
   }, []);
@@ -58,38 +60,65 @@ export const VoiceWelcomeFab: React.FC<VoiceWelcomeFabProps> = ({
     e.stopPropagation(); // Avoid triggering parent card clicks
 
     if (isPlayingRef.current) {
+      playTokenRef.current += 1;
       isPlayingRef.current = false;
-      stopAfriataSpeech();
+      isStartingRef.current = false;
+      voiceEngineRef.current?.stopAfriataSpeech();
       setIsPlaying(false);
       return;
     }
 
+    const token = ++playTokenRef.current;
     isStartingRef.current = true;
     isPlayingRef.current = true;
     setIsPlaying(true);
 
-    try {
-      speakAfriataGreeting({
-        text,
-        audioClipId,
-        langTag,
-        languageName,
-        onStart: () => {
-          isPlayingRef.current = true;
-          setIsPlaying(true);
-        },
-        onEnd: () => {
-          isPlayingRef.current = false;
-          setIsPlaying(false);
-        },
-        onError: () => {
-          isPlayingRef.current = false;
-          setIsPlaying(false);
-        }
-      });
-    } finally {
-      isStartingRef.current = false;
+    const invokeSpeak = (engine: VoiceEngineModule) => {
+      voiceEngineRef.current = engine;
+      if (playTokenRef.current !== token || !isPlayingRef.current) {
+        isStartingRef.current = false;
+        return;
+      }
+      try {
+        engine.speakAfriataGreeting({
+          text,
+          audioClipId,
+          langTag,
+          languageName,
+          onStart: () => {
+            if (playTokenRef.current !== token) return;
+            isPlayingRef.current = true;
+            setIsPlaying(true);
+          },
+          onEnd: () => {
+            if (playTokenRef.current !== token) return;
+            isPlayingRef.current = false;
+            setIsPlaying(false);
+          },
+          onError: () => {
+            if (playTokenRef.current !== token) return;
+            isPlayingRef.current = false;
+            setIsPlaying(false);
+          }
+        });
+      } finally {
+        isStartingRef.current = false;
+      }
+    };
+
+    if (voiceEngineRef.current) {
+      invokeSpeak(voiceEngineRef.current);
+      return;
     }
+
+    void import('../utils/afriataVoiceEngine')
+      .then(invokeSpeak)
+      .catch(() => {
+        if (playTokenRef.current !== token) return;
+        isStartingRef.current = false;
+        isPlayingRef.current = false;
+        setIsPlaying(false);
+      });
   };
 
   if (variant === 'navbar') {

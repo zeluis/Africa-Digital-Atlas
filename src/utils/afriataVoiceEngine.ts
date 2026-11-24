@@ -18,8 +18,14 @@
  * 3. Acoustic Resonator: Web Audio API pentatonic kalimba/marimba chord progression.
  */
 
-import { isBackendTtsAvailable, resolveApiUrl } from './apiClient';
 import { resolveAssetPath } from './assetPath';
+import {
+  AFRIATA_SPEECH_STOP_EVENT,
+  TOP_BAR_UI_GREETINGS,
+  type TopBarUiGreeting,
+} from '../data/topBarGreetings';
+
+export { AFRIATA_SPEECH_STOP_EVENT, TOP_BAR_UI_GREETINGS, type TopBarUiGreeting };
 
 export interface StaticAudioClipSpec {
   id: string;
@@ -415,6 +421,86 @@ export const STATIC_AFRICAN_AUDIO_CLIPS: Record<string, StaticAudioClipSpec> = {
     engineLabel: 'Meta MMS-TTS (Yorùbá VITS)',
     isProxy: false,
   },
+  'ui-greeting-en': {
+    id: 'ui-greeting-en',
+    tier: 'core',
+    file: 'audio/tongues/ui-greeting-en.mp3',
+    langTag: 'en-NG',
+    phrase: 'Welcome to the Afriata experience, the Atlantic Ethnic Explorer. Please enjoy.',
+    durationSeconds: 6.58,
+    engineLabel: 'Pre-rendered Static Neural Audio (English)',
+    isProxy: false,
+  },
+  'ui-greeting-fr': {
+    id: 'ui-greeting-fr',
+    tier: 'core',
+    file: 'audio/tongues/ui-greeting-fr.mp3',
+    langTag: 'fr-FR',
+    phrase: 'Bienvenue dans l\'expérience Afriata, l\'explorateur ethnique de l\'Atlantique. Bonne découverte.',
+    durationSeconds: 6.79,
+    engineLabel: 'Pre-rendered Static Neural Audio (Français)',
+    isProxy: false,
+  },
+  'ui-greeting-pt': {
+    id: 'ui-greeting-pt',
+    tier: 'core',
+    file: 'audio/tongues/ui-greeting-pt.mp3',
+    langTag: 'pt-PT',
+    phrase: 'Olá, bem-vindo à experiência Afriata, o Explorador Étnico do Atlântico. Desfrute da sua exploração.',
+    durationSeconds: 8.06,
+    engineLabel: 'Pre-rendered Static Neural Audio (Português)',
+    isProxy: false,
+  },
+  'ui-greeting-es': {
+    id: 'ui-greeting-es',
+    tier: 'core',
+    file: 'audio/tongues/ui-greeting-es.mp3',
+    langTag: 'es-ES',
+    phrase: 'Hola, bienvenido a la experiencia Afriata, el Explorador Étnico del Atlántico. Disfrute de su exploración.',
+    durationSeconds: 9.55,
+    engineLabel: 'Pre-rendered Static Neural Audio (Español)',
+    isProxy: false,
+  },
+  'ui-greeting-it': {
+    id: 'ui-greeting-it',
+    tier: 'core',
+    file: 'audio/tongues/ui-greeting-it.mp3',
+    langTag: 'it-IT',
+    phrase: 'Ciao e benvenuto nell\'esperienza Afriata, l\'Esploratore Etnico dell\'Atlantico. Buona scoperta.',
+    durationSeconds: 7.03,
+    engineLabel: 'Pre-rendered Static Neural Audio (Italiano)',
+    isProxy: false,
+  },
+  'ui-greeting-nl': {
+    id: 'ui-greeting-nl',
+    tier: 'core',
+    file: 'audio/tongues/ui-greeting-nl.mp3',
+    langTag: 'nl-NL',
+    phrase: 'Hallo, welkom bij de Afriata-ervaring, de Atlantische Etnische Verkenner. Veel plezier met uw ontdekkingstocht.',
+    durationSeconds: 9.02,
+    engineLabel: 'Pre-rendered Static Neural Audio (Nederlands)',
+    isProxy: false,
+  },
+  'ui-greeting-de': {
+    id: 'ui-greeting-de',
+    tier: 'core',
+    file: 'audio/tongues/ui-greeting-de.mp3',
+    langTag: 'de-DE',
+    phrase: 'Willkommen zum Afriata-Erlebnis, der Atlantische Ethnische Entdecker. Viel Vergnügen.',
+    durationSeconds: 7.08,
+    engineLabel: 'Pre-rendered Static Neural Audio (Deutsch)',
+    isProxy: false,
+  },
+  'ui-greeting-ar': {
+    id: 'ui-greeting-ar',
+    tier: 'core',
+    file: 'audio/tongues/ui-greeting-ar.mp3',
+    langTag: 'ar-MA',
+    phrase: 'مرحباً بكم في تجربة أفرياتا، مستكشف التنوع الإفريقي والأطلسي.',
+    durationSeconds: 7.80,
+    engineLabel: 'Pre-rendered Static Neural Audio (Arabic)',
+    isProxy: false,
+  },
 };
 
 function normalizePhraseKey(raw: string): string {
@@ -459,8 +545,6 @@ export interface SpeechGreetingConfig {
   onError?: () => void;
 }
 
-export const AFRIATA_SPEECH_STOP_EVENT = 'afriata-speech-stop';
-
 // Global state to track currently speaking audio
 let currentAudioElement: HTMLAudioElement | null = null;
 let activeAudioProgressRaf: number | null = null;
@@ -470,20 +554,6 @@ const activeChimeOscillators = new Set<OscillatorNode>();
 let voicesFallbackTimer: ReturnType<typeof setTimeout> | null = null;
 let speechSessionCounter = 0;
 let activeSpeechSessionId = 0;
-const MAX_CLIENT_AUDIO_CACHE = 40;
-const clientAudioCache = new Map<string, string>(); // key -> base64 data URL
-
-function setClientAudioCache(key: string, value: string) {
-  if (clientAudioCache.has(key)) {
-    clientAudioCache.delete(key);
-  }
-  while (clientAudioCache.size >= MAX_CLIENT_AUDIO_CACHE) {
-    const oldestKey = clientAudioCache.keys().next().value;
-    if (!oldestKey) break;
-    clientAudioCache.delete(oldestKey);
-  }
-  clientAudioCache.set(key, value);
-}
 
 // Male voice keywords to avoid for the default persona
 const MALE_VOICE_NAMES = [
@@ -985,7 +1055,11 @@ export function stopAfriataSpeech() {
     }
   }
 
-  if (typeof window !== 'undefined') {
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.dispatchEvent === 'function' &&
+    typeof CustomEvent === 'function'
+  ) {
     window.dispatchEvent(new CustomEvent(AFRIATA_SPEECH_STOP_EVENT, { detail: { sessionId: activeSpeechSessionId } }));
   }
 }
@@ -1129,10 +1203,10 @@ export function speakAcademicNarration(config: {
 }
 
 /**
- * Speak welcoming phrase using Static African Audio Pack first, optional server TTS if keys are configured,
- * or the upgraded native OS voice engine.
+ * Speak welcoming phrase using Static African & UI Audio Pack first (0ms offline-ready),
+ * or the upgraded native OS voice engine for arbitrary dynamic strings.
  */
-export async function speakAfriataGreeting(config: SpeechGreetingConfig) {
+export function speakAfriataGreeting(config: SpeechGreetingConfig) {
   if (typeof window === 'undefined') return;
 
   // Always stop existing audio first
@@ -1144,7 +1218,7 @@ export async function speakAfriataGreeting(config: SpeechGreetingConfig) {
 
   const formattedText = formatSpeechTextWithNaturalBreaths(config.text);
 
-  // 1. Synchronous Static African Audio Pack match (0ms latency, zero API key, offline-ready, iOS gesture safe)
+  // 1. Synchronous Static Audio Pack match (0ms latency, zero API key, offline-ready, iOS gesture safe)
   const staticClip = resolveStaticAudioClip({
     audioClipId: config.audioClipId,
     text: config.text,
@@ -1159,57 +1233,7 @@ export async function speakAfriataGreeting(config: SpeechGreetingConfig) {
     return;
   }
 
-  const cacheKey = `${config.langTag || 'default'}:${formattedText}`;
-
-  // 2. Try local memory cache of dynamic neural audio if available
-  if (clientAudioCache.has(cacheKey)) {
-    const audioDataUrl = clientAudioCache.get(cacheKey)!;
-    playAudioClipElement(audioDataUrl, { ...config, text: formattedText }, sessionId);
-    return;
-  }
-
-  // 3. Query optional Server-Side TTS API ONLY when backend explicitly reports keys configured
-  try {
-    if (await isBackendTtsAvailable()) {
-      if (sessionId !== activeSpeechSessionId) return;
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 6000);
-      try {
-        const res = await fetch(resolveApiUrl('/api/tts'), {
-          method: 'POST',
-          signal: controller.signal,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: formattedText,
-            langTag: config.langTag,
-            languageName: config.languageName,
-          }),
-        });
-
-        if (sessionId !== activeSpeechSessionId) return;
-
-        if (res.ok) {
-          const data = await res.json();
-          if (sessionId !== activeSpeechSessionId) return;
-          if (data.audioBase64) {
-            const mime = data.mimeType || 'audio/mp3';
-            const dataUrl = `data:${mime};base64,${data.audioBase64}`;
-            setClientAudioCache(cacheKey, dataUrl);
-            playAudioClipElement(dataUrl, { ...config, text: formattedText }, sessionId);
-            return;
-          }
-        }
-      } finally {
-        clearTimeout(timeoutId);
-      }
-    }
-  } catch {
-    // Graceful silent fallback to native OS speech synthesis
-  }
-
-  if (sessionId !== activeSpeechSessionId) return;
-
-  // 4. Upgraded Native OS Speech Synthesis
+  // 2. Upgraded Native OS Speech Synthesis for dynamic narration strings
   speakWithClientSynthesis({ ...config, text: formattedText }, sessionId);
 }
 
@@ -1380,97 +1404,4 @@ function speakWithClientSynthesis(config: SpeechGreetingConfig, sessionId = acti
   }
 }
 
-/**
- * High-Intelligibility UI Language Greetings for the App Top Bar
- */
-export const TOP_BAR_UI_GREETINGS: Record<string, { phrase: string; langTag: string; languageName: string; audioClipId?: string }> = {
-  'en': {
-    phrase: 'Welcome to the Afriata experience, the Atlantic Ethnic Explorer. Please enjoy.',
-    langTag: 'en-NG',
-    languageName: 'English (Sovereign Voice)'
-  },
-  'fr': {
-    phrase: 'Bienvenue dans l\'expérience Afriata, l\'explorateur ethnique de l\'Atlantique. Bonne découverte.',
-    langTag: 'fr-FR',
-    languageName: 'Français'
-  },
-  'pt': {
-    phrase: 'Olá, bem-vindo à experiência Afriata, o Explorador Étnico do Atlântico. Desfrute da sua exploração.',
-    langTag: 'pt-PT',
-    languageName: 'Português (Portugal)'
-  },
-  'es': {
-    phrase: 'Hola, bienvenido a la experiencia Afriata, el Explorador Étnico del Atlántico. Disfrute de su exploración.',
-    langTag: 'es-ES',
-    languageName: 'Español'
-  },
-  'it': {
-    phrase: 'Ciao e benvenuto nell\'esperienza Afriata, l\'Esploratore Etnico dell\'Atlantico. Buona scoperta.',
-    langTag: 'it-IT',
-    languageName: 'Italiano'
-  },
-  'nl': {
-    phrase: 'Hallo, welkom bij de Afriata-ervaring, de Atlantische Etnische Verkenner. Veel plezier met uw ontdekkingstocht.',
-    langTag: 'nl-NL',
-    languageName: 'Nederlands'
-  },
-  'de': {
-    phrase: 'Willkommen zum Afriata-Erlebnis, der Atlantische Ethnische Entdecker. Viel Vergnügen.',
-    langTag: 'de-DE',
-    languageName: 'Deutsch'
-  },
-  'ar': {
-    phrase: 'مرحباً بكم في تجربة أفرياتا، مستكشف التنوع الإفريقي والأطلسي.',
-    langTag: 'ar-MA',
-    languageName: 'العربية (Arabic)'
-  },
-  'yo': {
-    phrase: 'Báwo ni?',
-    audioClipId: 'mother-yoruba',
-    langTag: 'yo-NG',
-    languageName: 'Yorùbá'
-  },
-  'ha': {
-    phrase: 'Sannu / Ina kwana?',
-    audioClipId: 'mother-hausa',
-    langTag: 'ha-NG',
-    languageName: 'Hausa'
-  },
-  'ig': {
-    phrase: 'Ndewo / Kèdú?',
-    audioClipId: 'mother-igbo',
-    langTag: 'ig-NG',
-    languageName: 'Igbo'
-  },
-  'sw': {
-    phrase: 'Hujambo / Habari yako?',
-    audioClipId: 'mother-swahili',
-    langTag: 'sw-KE',
-    languageName: 'Kiswahili'
-  },
-  'am': {
-    phrase: 'Selam! (ሰላም) / Tena Yistillign',
-    audioClipId: 'mother-amharic',
-    langTag: 'am-ET',
-    languageName: 'Amharic (አማርኛ)'
-  },
-  'wo': {
-    phrase: 'Nanga def? / Mangi fi rekk',
-    audioClipId: 'mother-wolof',
-    langTag: 'wo-SN',
-    languageName: 'Wolof'
-  },
-  'zu': {
-    phrase: 'Sawubona!',
-    audioClipId: 'mother-zulu',
-    langTag: 'zu-ZA',
-    languageName: 'isiZulu'
-  },
-  'xh': {
-    phrase: 'Molo! Kunjani?',
-    audioClipId: 'mother-xhosa',
-    langTag: 'xh-ZA',
-    languageName: 'isiXhosa'
-  }
-};
 

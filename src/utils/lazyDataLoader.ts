@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { fetchWithTimeout } from './apiClient';
 
 export interface LazyAssetStore<T> {
   isLoaded: () => boolean;
@@ -37,7 +38,7 @@ export function createLazyAssetStore<T>(
     }
 
     loadPromise = Promise.all(
-      urls.map((u) => fetch(u).then((r) => (r.ok ? r.json() : null)))
+      urls.map((u) => fetchWithTimeout(u, { timeoutMs: 15000 }).then((r) => (r.ok ? r.json() : null)))
     )
       .then((payloads) => {
         const result = hydrate(payloads);

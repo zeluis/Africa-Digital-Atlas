@@ -9,6 +9,7 @@
  */
 
 import { sanitizeDoi } from '../services/crossrefService';
+import { readStorageJson, writeStorageJson, removeStorageKey } from '../utils/storageCache';
 
 export interface DoiConcordanceEntry {
   id: string; // Report ID, working paper ID, or normalized title slug
@@ -262,34 +263,28 @@ export function normalizeTitleKey(title: string): string {
  * Retrieves the active user concordance overrides from localStorage
  */
 export function getUserConcordanceOverrides(): Record<string, Partial<DoiConcordanceEntry>> {
-  try {
-    if (typeof window === 'undefined' || !window.localStorage) return {};
-    const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    let modified = false;
+  const parsed = readStorageJson<Record<string, Partial<DoiConcordanceEntry>>>(LOCAL_STORAGE_KEY, {});
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+  let modified = false;
 
-    // Purge outdated or erroneous overrides for Working Paper No. 08
-    for (const [key, val] of Object.entries(parsed)) {
-      const entry = val as Partial<DoiConcordanceEntry>;
-      if (
-        entry.doi === '10.1515/9780773576810-003' ||
-        key === 'wkp-economics-europe-atlantic-2026' ||
-        key === 'rep-economics-europe-atlantic-2026' ||
-        key === 'Atlantic Slavery, European Development, and Colonial Extraction'
-      ) {
-        delete parsed[key];
-        modified = true;
-      }
+  // Purge outdated or erroneous overrides for Working Paper No. 08
+  for (const [key, val] of Object.entries(parsed)) {
+    const entry = val as Partial<DoiConcordanceEntry>;
+    if (
+      entry?.doi === '10.1515/9780773576810-003' ||
+      key === 'wkp-economics-europe-atlantic-2026' ||
+      key === 'rep-economics-europe-atlantic-2026' ||
+      key === 'Atlantic Slavery, European Development, and Colonial Extraction'
+    ) {
+      delete parsed[key];
+      modified = true;
     }
-
-    if (modified) {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(parsed));
-    }
-    return parsed;
-  } catch {
-    return {};
   }
+
+  if (modified) {
+    writeStorageJson(LOCAL_STORAGE_KEY, parsed);
+  }
+  return parsed;
 }
 
 /**
@@ -453,15 +448,9 @@ export function importUserConcordanceJson(jsonContent: string): {
     }
 
     // Save to localStorage
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        const existing = getUserConcordanceOverrides();
-        const merged = { ...existing, ...normalizedMap };
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
-      }
-    } catch {
-      // Ignore blocked iframe storage or quota errors
-    }
+    const existing = getUserConcordanceOverrides();
+    const merged = { ...existing, ...normalizedMap };
+    writeStorageJson(LOCAL_STORAGE_KEY, merged);
 
     return { success: true, count };
   } catch (err: any) {
@@ -496,11 +485,5 @@ export function exportCurrentConcordanceJson(): string {
  * Clears user concordance overrides from localStorage
  */
 export function clearUserConcordanceOverrides(): void {
-  try {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.removeItem(LOCAL_STORAGE_KEY);
-    }
-  } catch {
-    // Ignore blocked iframe storage
-  }
+  removeStorageKey(LOCAL_STORAGE_KEY);
 }

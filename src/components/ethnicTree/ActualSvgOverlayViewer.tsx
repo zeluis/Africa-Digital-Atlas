@@ -21,6 +21,7 @@ import {
 import { ETHNIC_NODES, CORE_CLUSTERS, EthnicNode } from '../../data/ethnicTreeData';
 import { AtlasDialog } from '../common/AtlasDialog';
 import { sanitizeSvgMarkup } from '../../utils/sanitizeSvg';
+import { readUploadedTextFile } from '../../utils/fileUpload';
 
 interface ActualSvgOverlayViewerProps {
   onSelectReport?: (reportId: string) => void;
@@ -322,18 +323,18 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
   };
 
   // Custom SVG File Upload handler
-  const handleFileUpload = (file: File) => {
+  const handleFileUpload = async (file: File) => {
     setUploadError(null);
-    if (!file.name.endsWith('.svg') && file.type !== 'image/svg+xml') {
-      setUploadError('Please upload a valid .svg vector file.');
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const content = event.target?.result as string;
-      if (content && content.includes('<svg')) {
+    try {
+      const content = await readUploadedTextFile(file, {
+        allowedExtensions: ['.svg'],
+        allowedMimeTypes: ['image/svg+xml'],
+        invalidTypeErrorMessage: 'Please upload a valid .svg vector file.',
+        maxSizeErrorMessage: 'The uploaded SVG exceeds the 10 MB maximum file size.',
+      });
+      if (content && /<svg(?=[\s>])/i.test(content)) {
         const cleanSvg = sanitizeSvgMarkup(content);
-        if (!cleanSvg.includes('<svg')) {
+        if (!/<svg(?=[\s>])/i.test(cleanSvg)) {
           setUploadError('The uploaded SVG did not contain valid vector markup.');
           return;
         }
@@ -346,8 +347,9 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
       } else {
         setUploadError('The uploaded file does not contain valid SVG markup.');
       }
-    };
-    reader.readAsText(file);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Failed to read the uploaded SVG file. Please try again.');
+    }
   };
 
   // Filtered search results
@@ -376,7 +378,7 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
         
         {/* Left Badge: Actual SVG Status */}
         <div className="flex items-center gap-2 pointer-events-auto bg-zinc-900/90 dark:bg-zinc-950/90 border border-zinc-800 backdrop-blur-xl px-3.5 py-2 rounded-2xl shadow-xl">
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 motion-safe:animate-pulse" />
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
               <span className="text-xs font-bold text-zinc-100">
@@ -551,7 +553,7 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
                             r="28"
                             fill={node.color}
                             opacity={isSelected ? 0.35 : 0.15}
-                            className="animate-ping"
+                            className="motion-safe:animate-ping"
                             style={{ animationDuration: '3s' }}
                           />
                           <circle

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
 import { m, AnimatePresence } from 'motion/react';
 import { resolveDocsPath } from '../utils/assetPath';
+import { readStorageString, writeStorageString, removeStorageKey } from '../utils/storageCache';
 import { 
   Compass, 
   Map as MapIcon, 
@@ -302,12 +303,10 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   const [openSubmenu, setOpenSubmenu] = useState<SubmenuKey | null>(() => {
     const tabSubmenu = getActiveSubmenuFromTab(currentTab);
     if (tabSubmenu) return tabSubmenu;
-    try {
-      const stored = localStorage.getItem(ACTIVE_SUBMENU_STORAGE_KEY) as SubmenuKey | null;
-      if (stored && ['explore', 'history', 'reports', 'culture', 'regions', 'analytics'].includes(stored)) {
-        return stored === 'regions' ? 'culture' : stored;
-      }
-    } catch {}
+    const stored = readStorageString(ACTIVE_SUBMENU_STORAGE_KEY) as SubmenuKey | undefined;
+    if (stored && ['explore', 'history', 'reports', 'culture', 'regions', 'analytics'].includes(stored)) {
+      return stored === 'regions' ? 'culture' : stored;
+    }
     return 'history'; // default single open submenu
   });
 
@@ -316,25 +315,23 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
     const activeSubmenu = getActiveSubmenuFromTab(currentTab);
     if (activeSubmenu) {
       setOpenSubmenu(activeSubmenu);
-      try { localStorage.setItem(ACTIVE_SUBMENU_STORAGE_KEY, activeSubmenu); } catch {}
+      writeStorageString(ACTIVE_SUBMENU_STORAGE_KEY, activeSubmenu);
     }
   }, [currentTab]);
 
   const openSubmenuExclusively = (menuKey: SubmenuKey) => {
     setOpenSubmenu(menuKey);
-    try { localStorage.setItem(ACTIVE_SUBMENU_STORAGE_KEY, menuKey); } catch {}
+    writeStorageString(ACTIVE_SUBMENU_STORAGE_KEY, menuKey);
   };
 
   const toggleSubmenuExclusively = (menuKey: SubmenuKey) => {
     setOpenSubmenu(prev => {
       const next = prev === menuKey ? null : menuKey;
-      try {
-        if (next) {
-          localStorage.setItem(ACTIVE_SUBMENU_STORAGE_KEY, next);
-        } else {
-          localStorage.removeItem(ACTIVE_SUBMENU_STORAGE_KEY);
-        }
-      } catch {}
+      if (next) {
+        writeStorageString(ACTIVE_SUBMENU_STORAGE_KEY, next);
+      } else {
+        removeStorageKey(ACTIVE_SUBMENU_STORAGE_KEY);
+      }
       return next;
     });
   };

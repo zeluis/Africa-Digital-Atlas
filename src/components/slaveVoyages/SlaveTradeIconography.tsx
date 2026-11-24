@@ -7,8 +7,9 @@ import {
   StaggerGrid, 
   usePrefersReducedMotion 
 } from '../../utils/motion';
-import { handleTabListKeyDown } from '../../utils/a11y';
+import { AtlasTabList } from '../common/AtlasTabList';
 import { AtlasSelect } from '../common/AtlasSelect';
+import { useDismissibleLayer } from '../../hooks/useDismissibleLayer';
 import { 
   Search, 
   Filter, 
@@ -90,26 +91,12 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
   const themePanelRef = useRef<HTMLDivElement>(null);
   const galleryTopRef = useRef<HTMLDivElement>(null);
 
-  // Close theme panel on click outside or Escape
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (themePanelRef.current && !themePanelRef.current.contains(e.target as Node)) {
-        setIsThemePanelOpen(false);
-      }
-    };
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.isComposing || e.keyCode === 229) return;
-      if (e.key === 'Escape') setIsThemePanelOpen(false);
-    };
-    if (isThemePanelOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleKeyDown);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isThemePanelOpen]);
+  useDismissibleLayer({
+    isOpen: isThemePanelOpen,
+    onDismiss: () => setIsThemePanelOpen(false),
+    refs: [themePanelRef],
+    pointerEvent: 'mousedown',
+  });
   
   // High-performance windowed virtualization & pagination state
   const [paginationMode, setPaginationMode] = useState<'windowed' | 'stream'>('windowed');
@@ -448,81 +435,66 @@ export const SlaveTradeIconography: React.FC<SlaveTradeIconographyProps> = ({
           </div>
 
           {/* Right: Integrated Segmented Control */}
-          <div className="relative inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner self-start lg:self-auto" role="tablist" aria-label="Toggle between Archival Plates and Castas series">
-            <button
-              type="button"
-              id="iconography-grid-tab-registry"
-              role="tab"
-              aria-selected={activeTab === 'registry'}
-              aria-controls="iconography-grid-panel-registry"
-              tabIndex={activeTab === 'registry' ? 0 : -1}
-              onClick={() => onTabChange?.('registry')}
-              onKeyDown={(e) => handleTabListKeyDown(e, ['registry', 'ingestion'] as const, 0, (val) => onTabChange?.(val), 'horizontal')}
-              className={`relative px-3.5 py-1.5 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
-                activeTab === 'registry'
+          <AtlasTabList<'registry' | 'ingestion'>
+            ariaLabel="Toggle between Archival Plates and Castas series"
+            className="relative inline-flex p-1 rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 shrink-0 shadow-inner self-start lg:self-auto"
+            value={activeTab}
+            onChange={(val) => onTabChange?.(val)}
+            items={[
+              {
+                id: 'registry',
+                tabId: 'iconography-grid-tab-registry',
+                controlsId: 'iconography-grid-panel-registry',
+                label: 'Archival Plates Grid',
+                badge: SLAVE_TRADE_ILLUSTRATIONS.length,
+              },
+              {
+                id: 'ingestion',
+                tabId: 'iconography-grid-tab-ingestion',
+                controlsId: activeTab === 'ingestion' ? 'iconography-grid-panel-ingestion' : undefined,
+                label: 'Castas & Colonial Archive',
+                badge: `${castasCount} Plates`,
+              },
+            ]}
+            getTabClassName={(_item, isActive) =>
+              `relative px-3.5 py-1.5 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
+                isActive
                   ? 'text-white dark:text-stone-900 shadow-sm'
                   : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
-              }`}
-            >
-              {activeTab === 'registry' && (
-                <SlidingPill
-                  layoutId="slaveTradeIconographyTabPill"
-                  className="absolute inset-0 rounded-xl bg-stone-900 dark:bg-stone-100 shadow-sm"
-                />
-              )}
-              <DynamicIcon 
-                icon="fluent-mdl2:picture-tile" 
-                className={`w-3.5 h-3.5 shrink-0 relative z-10 transition-colors ${
-                  activeTab === 'registry' ? 'text-amber-400 dark:text-amber-600' : 'text-stone-500 dark:text-stone-400'
-                }`} 
+              }`
+            }
+            renderActiveIndicator={() => (
+              <SlidingPill
+                layoutId="slaveTradeIconographyTabPill"
+                className="absolute inset-0 rounded-xl bg-stone-900 dark:bg-stone-100 shadow-sm"
               />
-              <span className="relative z-10">Archival Plates Grid</span>
-              <span className={`relative z-10 px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold ${
-                activeTab === 'registry'
-                  ? 'bg-stone-800 text-amber-300 dark:bg-stone-200 dark:text-stone-900'
-                  : 'bg-stone-200/80 dark:bg-stone-800 text-stone-600 dark:text-stone-400'
-              }`}>
-                {SLAVE_TRADE_ILLUSTRATIONS.length}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              id="iconography-grid-tab-ingestion"
-              role="tab"
-              aria-selected={activeTab === 'ingestion'}
-              aria-controls={activeTab === 'ingestion' ? 'iconography-grid-panel-ingestion' : undefined}
-              tabIndex={activeTab === 'ingestion' ? 0 : -1}
-              onClick={() => onTabChange?.('ingestion')}
-              onKeyDown={(e) => handleTabListKeyDown(e, ['registry', 'ingestion'] as const, 1, (val) => onTabChange?.(val), 'horizontal')}
-              className={`relative px-3.5 py-1.5 rounded-xl text-xs font-sans font-bold transition-all cursor-pointer flex items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 ${
-                activeTab === 'ingestion'
-                  ? 'text-white dark:text-stone-900 shadow-sm'
-                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
-              }`}
-            >
-              {activeTab === 'ingestion' && (
-                <SlidingPill
-                  layoutId="slaveTradeIconographyTabPill"
-                  className="absolute inset-0 rounded-xl bg-stone-900 dark:bg-stone-100 shadow-sm"
+            )}
+            renderItem={({ item, isActive, activeIndicator }) => (
+              <>
+                {activeIndicator}
+                <DynamicIcon
+                  icon={item.id === 'registry' ? 'fluent-mdl2:picture-tile' : 'lucide:gallery-thumbnails'}
+                  className={`w-3.5 h-3.5 shrink-0 relative z-10 transition-colors ${
+                    isActive
+                      ? 'text-amber-400 dark:text-amber-600'
+                      : item.id === 'ingestion'
+                      ? 'text-amber-600 dark:text-amber-400'
+                      : 'text-stone-500 dark:text-stone-400'
+                  }`}
                 />
-              )}
-              <DynamicIcon 
-                icon="lucide:gallery-thumbnails" 
-                className={`w-3.5 h-3.5 shrink-0 relative z-10 transition-colors ${
-                  activeTab === 'ingestion' ? 'text-amber-400 dark:text-amber-600' : 'text-amber-600 dark:text-amber-400'
-                }`} 
-              />
-              <span className="relative z-10">Castas &amp; Colonial Archive</span>
-              <span className={`relative z-10 px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold ${
-                activeTab === 'ingestion'
-                  ? 'bg-stone-800 text-amber-300 dark:bg-stone-200 dark:text-stone-900'
-                  : 'bg-stone-200/80 dark:bg-stone-800 text-stone-600 dark:text-stone-400'
-              }`}>
-                {castasCount} Plates
-              </span>
-            </button>
-          </div>
+                <span className="relative z-10">{item.label}</span>
+                <span
+                  className={`relative z-10 px-1.5 py-0.5 rounded-md text-[9px] font-mono font-bold ${
+                    isActive
+                      ? 'bg-stone-800 text-amber-300 dark:bg-stone-200 dark:text-stone-900'
+                      : 'bg-stone-200/80 dark:bg-stone-800 text-stone-600 dark:text-stone-400'
+                  }`}
+                >
+                  {item.badge}
+                </span>
+              </>
+            )}
+          />
 
           {/* Smooth & Snappy Expanding Sophisticated Selector Panel */}
           <AnimatePresence>

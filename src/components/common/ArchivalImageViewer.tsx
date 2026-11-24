@@ -39,6 +39,8 @@ import {
 } from 'lucide-react';
 import { DynamicIcon } from '../DynamicIcon';
 import { AtlasDialog } from './AtlasDialog';
+import { useFullscreenContainer } from '../../hooks/useFullscreenContainer';
+import { dispatchViewportKeyboardShortcut } from '../../hooks/useCanvasViewport';
 import { SlaveTradeIllustration } from '../../data/slaveTradeIllustrations';
 import { deriveSiteBiome } from '../../data/unescoHeritageRegistry';
 import { 
@@ -97,7 +99,6 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
   const [rotation, setRotation] = useState<number>(0);
   const [isHighContrast, setIsHighContrast] = useState<boolean>(false);
   const [isInverted, setIsInverted] = useState<boolean>(false);
-  const [isFullscreen, setIsFullscreen] = useState<boolean>(mode === 'fullscreen');
   const [isThumbnailsOpen, setIsThumbnailsOpen] = useState<boolean>(showThumbnails);
   
   // Collapsible Right Metadata Drawer state
@@ -142,29 +143,12 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
     }
   }, [mode]);
 
-  // Sync fullscreen state with document fullscreen changes
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(Boolean(document.fullscreenElement));
-    };
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, []);
-
-  const toggleFullscreen = useCallback(() => {
-    if (mode === 'embedded') {
-      const targetElement = rootRef.current || containerRef.current?.closest('.archival-viewer-root') || document.documentElement;
-      if (!document.fullscreenElement) {
-        targetElement.requestFullscreen?.().catch(() => {
-          setIsFullscreen(prev => !prev);
-        });
-      } else {
-        document.exitFullscreen?.().catch(() => {});
-      }
-    } else {
-      setIsFullscreen(prev => !prev);
-    }
-  }, [mode]);
+  const { isFullscreen, toggleFullscreen } = useFullscreenContainer({
+    targetRef: rootRef,
+    fallbackSelector: '.archival-viewer-root',
+    initialFullscreen: mode === 'fullscreen',
+    useNative: mode === 'embedded',
+  });
 
   // Reset viewport upon new illustration
   useEffect(() => {
@@ -204,52 +188,31 @@ export const ArchivalImageViewer: React.FC<ArchivalImageViewerProps> = ({
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!illustration || e.isComposing || e.keyCode === 229) return;
-      const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) {
-        return;
-      }
-      const openDialogs = document.querySelectorAll('[data-dialog-open="true"]');
-      if (openDialogs.length > 0) {
-        const topDialog = openDialogs[openDialogs.length - 1];
-        if (!containerRef.current || !topDialog.contains(containerRef.current)) return;
-      }
-      if (e.key === 'Escape' && mode === 'embedded' && onClose) {
-        onClose();
-      } else if (e.key === '+' || e.key === '=') {
-        setZoomLevel(z => Math.min(z + 0.5, 5));
-      } else if (e.key === '-' || e.key === '_') {
-        setZoomLevel(z => {
-          const next = Math.max(z - 0.5, 1);
-          if (next === 1) setPanOffset({ x: 0, y: 0 });
-          return next;
-        });
-      } else if (e.key === '0') {
-        setZoomLevel(1);
-        setPanOffset({ x: 0, y: 0 });
-      } else if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        toggleFullscreen();
-      } else if (e.key === 'ArrowLeft' && e.altKey) {
-        handlePrevIllustration();
-      } else if (e.key === 'ArrowRight' && e.altKey) {
-        handleNextIllustration();
-      } else if (e.key === 'ArrowLeft' && !e.altKey && !e.ctrlKey && !e.metaKey) {
-        e.preventDefault();
-        setPanOffset(p => ({ ...p, x: p.x + 50 }));
-      } else if (e.key === 'ArrowRight' && !e.altKey && !e.ctrlKey && !e.metaKey) {
-        e.preventDefault();
-        setPanOffset(p => ({ ...p, x: p.x - 50 }));
-      } else if (e.key === 'ArrowUp' && !e.altKey && !e.ctrlKey && !e.metaKey) {
-        e.preventDefault();
-        setPanOffset(p => ({ ...p, y: p.y + 50 }));
-      } else if (e.key === 'ArrowDown' && !e.altKey && !e.ctrlKey && !e.metaKey) {
-        e.preventDefault();
-        setPanOffset(p => ({ ...p, y: p.y - 50 }));
-      }
+      if (!illustration) return;
+      dispatchViewportKeyboardShortcut(e, {
+        containerRef,
+        panStep: 50,
+        onEscape: mode === 'embedded' && onClose ? onClose : undefined,
+        onZoomIn: () => setZoomLevel(z => Math.min(z + 0.5, 5)),
+        onZoomOut: () =>
+          setZoomLevel(z => {
+            const next = Math.max(z - 0.5, 1);
+            if (next === 1) setPanOffset({ x: 0, y: 0 });
+            return next;
+          }),
+        onReset: () => {
+          setZoomLevel(1);
+          setPanOffset({ x: 0, y: 0 });
+        },
+        onToggleFullscreen: toggleFullscreen,
+        onPrev: handlePrevIllustration,
+        onNext: handleNextIllustration,
+        onPan: (dx, dy) => setPanOffset(p => ({ x: p.x + dx, y: p.y + dy })),
+      });
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [illustration, onClose, handlePrevIllustration, handleNextIllustration, toggleFullscreen]);
+  }, [illustration, mode, onClose, handlePrevIllustration, handleNextIllustration, toggleFullscreen]);
 
   // Isolate wheel zoom on containerRef so pointer over image ONLY zooms and never scrolls the window
   useEffect(() => {

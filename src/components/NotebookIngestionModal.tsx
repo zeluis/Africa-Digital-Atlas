@@ -4,6 +4,8 @@ import { ResearchReport } from '../data/reportsData';
 import { SAFE_EXTERNAL_LINK_PROPS } from '../data/externalLinksRegistry';
 import { AtlasDialog } from './common/AtlasDialog';
 import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
+import { readUploadedTextFile } from '../utils/fileUpload';
+import { readStorageJson, writeStorageJson } from '../utils/storageCache';
 import { 
   X, 
   Upload, 
@@ -210,19 +212,6 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
     setTargetPipeline(defaultTargetPipeline);
   }, [defaultTargetPipeline]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.isComposing || e.keyCode === 229) return;
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
-
   if (!isOpen) return null;
 
   const handlePipelineSwitch = (mode: 'reports' | 'working-papers') => {
@@ -245,12 +234,12 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
     setActiveTab('preview');
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const content = event.target?.result as string;
+    try {
+      const content = await readUploadedTextFile(file);
       if (content) {
         setMarkdownInput(content);
         const sourcePrefix = targetPipeline === 'working-papers' ? `working-papers/${file.name}` : `reports/${file.name}`;
@@ -263,8 +252,9 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
         setIngestionResult(res);
         setActiveTab('preview');
       }
-    };
-    reader.readAsText(file);
+    } catch {
+      // Ignore unreadable or oversized file upload
+    }
   };
 
   const handleCopyJson = () => {
@@ -289,17 +279,13 @@ export const NotebookIngestionModal: React.FC<NotebookIngestionModalProps> = ({
   };
 
   const persistPublication = (rep: ResearchReport) => {
-    try {
-      const storageKey = rep.isWorkingPaper || targetPipeline === 'working-papers'
-        ? 'afriata_custom_working_papers'
-        : 'afriata_custom_reports';
-      const saved = localStorage.getItem(storageKey);
-      const existing = saved ? JSON.parse(saved) : {};
-      existing[rep.id] = rep;
-      localStorage.setItem(storageKey, JSON.stringify(existing));
+    const storageKey = rep.isWorkingPaper || targetPipeline === 'working-papers'
+      ? 'afriata_custom_working_papers'
+      : 'afriata_custom_reports';
+    const existing = readStorageJson<Record<string, ResearchReport>>(storageKey, {});
+    existing[rep.id] = rep;
+    if (writeStorageJson(storageKey, existing)) {
       window.dispatchEvent(new CustomEvent('afriata-publications-updated'));
-    } catch {
-      // Ignore storage quota errors
     }
   };
 

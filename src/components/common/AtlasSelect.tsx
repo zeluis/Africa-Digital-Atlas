@@ -10,6 +10,7 @@ import React, {
 import { createPortal } from 'react-dom';
 import { Check, ChevronDown } from 'lucide-react';
 import { useReducedMotion } from 'motion/react';
+import { useDismissibleLayer } from '../../hooks/useDismissibleLayer';
 
 export interface AtlasSelectOption {
   value: string;
@@ -324,34 +325,13 @@ export const AtlasSelect: React.FC<AtlasSelectProps> = ({
   }, [computeMenuPosition]);
 
   // Fallback outside click & Escape when native popover API is unavailable
-  useEffect(() => {
-    if (!isOpen || supportsNativePopover()) return;
-
-    const handleDocPointerDown = (e: PointerEvent) => {
-      const target = e.target as Node;
-      if (
-        popoverRef.current?.contains(target) ||
-        triggerRef.current?.contains(target)
-      ) {
-        return;
-      }
-      setIsOpen(false);
-    };
-    const handleDocKeyDown = (e: KeyboardEvent) => {
-      if (e.isComposing || e.keyCode === 229) return;
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        closeMenu(true);
-      }
-    };
-
-    document.addEventListener('pointerdown', handleDocPointerDown);
-    document.addEventListener('keydown', handleDocKeyDown);
-    return () => {
-      document.removeEventListener('pointerdown', handleDocPointerDown);
-      document.removeEventListener('keydown', handleDocKeyDown);
-    };
-  }, [closeMenu, isOpen, supportsNativePopover]);
+  useDismissibleLayer({
+    isOpen,
+    disabled: supportsNativePopover(),
+    onDismiss: () => closeMenu(true),
+    refs: [popoverRef, triggerRef],
+    pointerEvent: 'pointerdown',
+  });
 
   // Keep menu anchored cleanly on scroll / viewport resize
   useEffect(() => {

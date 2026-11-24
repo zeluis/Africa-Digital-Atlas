@@ -3,6 +3,7 @@ import type { KingdomDetailedRecord, Artifact3DRecord } from '../../data/preColo
 import { AtlasDialog } from '../common/AtlasDialog';
 import { usePrefersReducedMotion } from '../../utils/motion';
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
+import { canvasToPngBlob, downloadBlob } from '../../utils/exportUtils';
 import { 
   Box, 
   RotateCw, 
@@ -138,13 +139,15 @@ export const KingdomArtifact3DViewerModal: React.FC<KingdomArtifact3DViewerModal
   };
 
   // High-Resolution PNG Export
-  const handleExportPNG = () => {
+  const handleExportPNG = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const link = document.createElement('a');
-    link.download = `${selectedArtifact ? selectedArtifact.id : kingdom.id}-3d-artifact.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+    try {
+      const pngBlob = await canvasToPngBlob(canvas);
+      downloadBlob(`${selectedArtifact ? selectedArtifact.id : kingdom.id}-3d-artifact.png`, pngBlob);
+    } catch {
+      // Fallback if blob encoding fails in constrained contexts
+    }
   };
 
   // Copy Chicago Style Citation

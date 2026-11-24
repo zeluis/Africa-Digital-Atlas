@@ -3,6 +3,7 @@ import { SupportedLanguage, LanguageOption, TranslationDictionary } from './type
 import { LANGUAGE_OPTIONS } from './languages';
 import EN_DICTIONARY from './locales/en';
 import { initNativeTranslationEngine, syncNativeTranslation } from '../utils/nativeTranslationBridge';
+import { readStorageString, writeStorageString } from '../utils/storageCache';
 
 export { LANGUAGE_OPTIONS };
 
@@ -21,13 +22,9 @@ const STORAGE_KEY = 'atlas_language_v1';
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<SupportedLanguage>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved && LANGUAGE_OPTIONS.some(l => l.code === saved)) {
-        return saved as SupportedLanguage;
-      }
-    } catch {
-      // Ignore storage errors
+    const saved = readStorageString(STORAGE_KEY);
+    if (saved && LANGUAGE_OPTIONS.some(l => l.code === saved)) {
+      return saved as SupportedLanguage;
     }
     return 'en';
   });
@@ -63,11 +60,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const setLanguage = (lang: SupportedLanguage) => {
     setLanguageState(lang);
-    try {
-      localStorage.setItem(STORAGE_KEY, lang);
-    } catch {
-      // Ignore storage errors
-    }
+    writeStorageString(STORAGE_KEY, lang);
     syncNativeTranslation(lang);
   };
 

@@ -24,6 +24,89 @@ export function downloadFile(filename: string, content: string, mimeType: string
   downloadBlob(filename, blob);
 }
 
+/**
+ * Encodes an HTMLCanvasElement as a PNG Blob.
+ */
+export function canvasToPngBlob(canvas: HTMLCanvasElement): Promise<Blob> {
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error('Failed to encode canvas as PNG'));
+    }, 'image/png');
+  });
+}
+
+export interface RasterizeSvgOptions {
+  width: number;
+  height: number;
+  scale?: number;
+  background?: 'white' | 'dark' | 'transparent' | string;
+  drawOverlay?: (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => void;
+}
+
+/**
+ * Rasterizes an SVG markup string onto an offscreen 2D canvas with guaranteed Blob URL cleanup.
+ */
+export async function rasterizeSvgToCanvas(
+  svgXml: string,
+  { width, height, scale = 2, background = 'transparent', drawOverlay }: RasterizeSvgOptions
+): Promise<HTMLCanvasElement | null> {
+  const normalizedSvg = /^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/i.test(svgXml)
+    ? svgXml
+    : svgXml.replace(/^<svg(?=[\s>])/i, '<svg xmlns="http://www.w3.org/2000/svg"');
+
+  const svgBlob = new Blob([normalizedSvg], { type: 'image/svg+xml;charset=utf-8' });
+  const blobUrl = URL.createObjectURL(svgBlob);
+
+  try {
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error('Failed to decode SVG markup for PNG export'));
+      image.src = blobUrl;
+    });
+
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(width * scale));
+    canvas.height = Math.max(1, Math.round(height * scale));
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    if (background === 'dark') {
+      ctx.fillStyle = '#09090b';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    } else if (background === 'white') {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    } else if (background && background !== 'transparent') {
+      ctx.fillStyle = background;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    drawOverlay?.(ctx, canvas);
+    return canvas;
+  } finally {
+    URL.revokeObjectURL(blobUrl);
+  }
+}
+
+/**
+ * Converts SVG markup directly to a rasterized PNG Blob with guaranteed resource cleanup.
+ */
+export async function svgMarkupToPngBlob(
+  svgXml: string,
+  options: RasterizeSvgOptions
+): Promise<Blob> {
+  const canvas = await rasterizeSvgToCanvas(svgXml, options);
+  if (!canvas) {
+    throw new Error('Canvas 2D context unavailable for PNG export');
+  }
+  return canvasToPngBlob(canvas);
+}
+
 const CSV_FORMULA_PREFIX_RE = /^[=+\-@\t\r]|^\s+[=+\-@]/;
 
 /**

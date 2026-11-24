@@ -6,6 +6,111 @@ export interface ViewportPosition {
   y: number;
 }
 
+export interface ViewportKeyboardShortcutActions {
+  containerRef?: React.RefObject<HTMLElement | null>;
+  panStep?: number;
+  onPan?: (dx: number, dy: number) => void;
+  onZoomIn?: () => void;
+  onZoomOut?: () => void;
+  onReset?: () => void;
+  onToggleFullscreen?: () => void;
+  onPrev?: () => void;
+  onNext?: () => void;
+  onEscape?: () => void;
+}
+
+export function isScrollablePanelTarget(target: EventTarget | null): boolean {
+  const el = target as HTMLElement | null;
+  return Boolean(
+    el?.closest?.(
+      '.overflow-y-auto, .overflow-x-auto, .no-drag, [data-panel-scroll="true"], .stable-gutter, .sleek-scrollbar, .sleek-scrollbar-amber, #scholarly-dossier-inspector, #afriata-left-dock, #afriata-master-top-control-bar, aside, dialog, .modal-scroll-pane'
+    )
+  );
+}
+
+export function shouldIgnoreViewportShortcut(
+  e: KeyboardEvent,
+  containerRef?: React.RefObject<HTMLElement | null>
+): boolean {
+  if (e.isComposing || e.keyCode === 229) return true;
+  const target = e.target as HTMLElement | null;
+  if (target?.closest?.('input, textarea, select') || target?.isContentEditable) return true;
+  if (typeof document !== 'undefined') {
+    const openDialogs = document.querySelectorAll('[data-dialog-open="true"]');
+    if (openDialogs.length > 0) {
+      const topDialog = openDialogs[openDialogs.length - 1];
+      if (!containerRef?.current || !topDialog.contains(containerRef.current)) return true;
+    }
+  }
+  return false;
+}
+
+export function dispatchViewportKeyboardShortcut(
+  e: KeyboardEvent,
+  actions: ViewportKeyboardShortcutActions
+): boolean {
+  if (shouldIgnoreViewportShortcut(e, actions.containerRef)) return false;
+
+  const step = actions.panStep ?? 48;
+  if (e.key === 'Escape' && actions.onEscape) {
+    actions.onEscape();
+    return true;
+  }
+  if (e.altKey && e.key === 'ArrowLeft' && actions.onPrev) {
+    e.preventDefault();
+    actions.onPrev();
+    return true;
+  }
+  if (e.altKey && e.key === 'ArrowRight' && actions.onNext) {
+    e.preventDefault();
+    actions.onNext();
+    return true;
+  }
+  if (!e.altKey && !e.ctrlKey && !e.metaKey) {
+    if (e.key === 'ArrowUp' && actions.onPan) {
+      e.preventDefault();
+      actions.onPan(0, step);
+      return true;
+    }
+    if (e.key === 'ArrowDown' && actions.onPan) {
+      e.preventDefault();
+      actions.onPan(0, -step);
+      return true;
+    }
+    if (e.key === 'ArrowLeft' && actions.onPan) {
+      e.preventDefault();
+      actions.onPan(step, 0);
+      return true;
+    }
+    if (e.key === 'ArrowRight' && actions.onPan) {
+      e.preventDefault();
+      actions.onPan(-step, 0);
+      return true;
+    }
+    if ((e.key === 'f' || e.key === 'F') && actions.onToggleFullscreen) {
+      e.preventDefault();
+      actions.onToggleFullscreen();
+      return true;
+    }
+  }
+  if ((e.key === '+' || e.key === '=') && actions.onZoomIn) {
+    e.preventDefault();
+    actions.onZoomIn();
+    return true;
+  }
+  if ((e.key === '-' || e.key === '_') && actions.onZoomOut) {
+    e.preventDefault();
+    actions.onZoomOut();
+    return true;
+  }
+  if (e.key === '0' && actions.onReset) {
+    e.preventDefault();
+    actions.onReset();
+    return true;
+  }
+  return false;
+}
+
 export interface UseCanvasViewportOptions {
   initialZoom?: number;
   minZoom?: number;
@@ -277,8 +382,7 @@ export function useCanvasViewport(
   // Mouse Wheel Zoom
   const handleWheel = useCallback((e: React.WheelEvent) => {
     // Isolate zooming: If user is wheel-scrolling inside any floating panel, drawer, or scrollable element, allow natural scroll and DO NOT zoom canvas
-    const target = e.target as HTMLElement;
-    if (target?.closest?.('.overflow-y-auto, .overflow-x-auto, .no-drag, [data-panel-scroll="true"], .stable-gutter, .sleek-scrollbar, .sleek-scrollbar-amber, #scholarly-dossier-inspector, #afriata-left-dock, #afriata-master-top-control-bar, aside, dialog, .modal-scroll-pane')) {
+    if (isScrollablePanelTarget(e.target)) {
       return;
     }
 
@@ -303,52 +407,18 @@ export function useCanvasViewport(
   // Keyboard navigation & accessibility controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.isComposing || e.keyCode === 229) return;
-      // Ignore if user is currently typing in an input/textarea/select/contentEditable
-      const target = e.target as HTMLElement | null;
-      if (target?.closest('input, textarea, select') || target?.isContentEditable) return;
-      const openDialogs = document.querySelectorAll('[data-dialog-open="true"]');
-      if (openDialogs.length > 0) {
-        const topDialog = openDialogs[openDialogs.length - 1];
-        if (!containerRef.current || !topDialog.contains(containerRef.current)) return;
-      }
-
-      const step = 48;
-      switch (e.key) {
-        case 'ArrowUp':
-          e.preventDefault();
-          setPos(prev => ({ ...prev, y: prev.y + step }));
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          setPos(prev => ({ ...prev, y: prev.y - step }));
-          break;
-        case 'ArrowLeft':
-          e.preventDefault();
-          setPos(prev => ({ ...prev, x: prev.x + step }));
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          setPos(prev => ({ ...prev, x: prev.x - step }));
-          break;
-        case '+':
-        case '=':
-          e.preventDefault();
-          handleZoomDelta(1.15);
-          break;
-        case '-':
-        case '_':
-          e.preventDefault();
-          handleZoomDelta(0.85);
-          break;
-        default:
-          break;
-      }
+      dispatchViewportKeyboardShortcut(e, {
+        containerRef,
+        panStep: 48,
+        onPan: (dx, dy) => setPos((prev) => ({ x: prev.x + dx, y: prev.y + dy })),
+        onZoomIn: () => handleZoomDelta(1.15),
+        onZoomOut: () => handleZoomDelta(0.85),
+      });
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleZoomDelta]);
+  }, [containerRef, handleZoomDelta]);
 
   return {
     zoom,

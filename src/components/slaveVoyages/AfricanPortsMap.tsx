@@ -16,6 +16,8 @@ import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { m, AnimatePresence } from 'motion/react';
 import { AtlasSelect } from '../common/AtlasSelect';
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
+import { useFullscreenContainer } from '../../hooks/useFullscreenContainer';
+import { dispatchViewportKeyboardShortcut } from '../../hooks/useCanvasViewport';
 import {
   Castle,
   Shield,
@@ -243,7 +245,6 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
   const [currentViewBox, setCurrentViewBox] = useState(CONTINENTAL_111_VIEWBOX);
   const [isZoomedIn, setIsZoomedIn] = useState<boolean>(false);
   const [isHighContrast, setIsHighContrast] = useState<boolean>(false);
-  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   // Layout Drawers (collapsed by default on initial view)
   const [isMetadataOpen, setIsMetadataOpen] = useState<boolean>(false);
@@ -605,69 +606,36 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
     return () => clearTimeout(timer);
   }, [activePort, isFilmstripOpen]);
 
-  // Fullscreen toggle handler
-  const toggleFullscreen = useCallback(() => {
-    const el = rootRef.current || document.documentElement;
-    if (!document.fullscreenElement) {
-      el.requestFullscreen?.().then(() => setIsFullscreen(true)).catch(() => setIsFullscreen(prev => !prev));
-    } else {
-      document.exitFullscreen?.().then(() => setIsFullscreen(false)).catch(() => setIsFullscreen(false));
-    }
-  }, []);
+  const { isFullscreen, toggleFullscreen } = useFullscreenContainer({
+    targetRef: rootRef,
+  });
 
-  useEffect(() => {
-    const onFsChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
-    document.addEventListener('fullscreenchange', onFsChange);
-    return () => document.removeEventListener('fullscreenchange', onFsChange);
-  }, []);
-
-  // Keyboard Navigation: Esc, +, -, 0, f, Alt+Left, Alt+Right
+  // Keyboard Navigation: Esc, +, -, 0, f, Alt+Left, Alt+Right, Arrow pan
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.isComposing || e.keyCode === 229) return;
-      if (document.querySelector('[data-dialog-open="true"]')) return;
-      const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) return;
-
-      if (e.key === 'Escape') {
-        if (isMetadataOpen) {
-          handleCloseDossier();
-        } else if (onClose) {
-          onClose();
-        }
-      } else if (e.key === '+' || e.key === '=') {
-        handleStepZoom(0.8);
-      } else if (e.key === '-' || e.key === '_') {
-        handleStepZoom(1.25);
-      } else if (e.key === '0') {
-        handleResetZoom();
-      } else if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        toggleFullscreen();
-      } else if (e.key === 'ArrowLeft' && e.altKey) {
-        handlePrevPort();
-      } else if (e.key === 'ArrowRight' && e.altKey) {
-        handleNextPort();
-      } else if (e.key === 'ArrowLeft' && !e.altKey && !e.ctrlKey && !e.metaKey) {
-        e.preventDefault();
-        const cur = currentViewBoxRef.current;
-        const delta = Math.round(cur.w * 0.12);
-        setCurrentViewBox({ ...cur, x: Math.max(-500, cur.x - delta) });
-      } else if (e.key === 'ArrowRight' && !e.altKey && !e.ctrlKey && !e.metaKey) {
-        e.preventDefault();
-        const cur = currentViewBoxRef.current;
-        const delta = Math.round(cur.w * 0.12);
-        setCurrentViewBox({ ...cur, x: Math.min(5500, cur.x + delta) });
-      } else if (e.key === 'ArrowUp' && !e.altKey && !e.ctrlKey && !e.metaKey) {
-        e.preventDefault();
-        const cur = currentViewBoxRef.current;
-        const delta = Math.round(cur.h * 0.12);
-        setCurrentViewBox({ ...cur, y: Math.max(0, cur.y - delta) });
-      } else if (e.key === 'ArrowDown' && !e.altKey && !e.ctrlKey && !e.metaKey) {
-        e.preventDefault();
-        const cur = currentViewBoxRef.current;
-        const delta = Math.round(cur.h * 0.12);
-        setCurrentViewBox({ ...cur, y: Math.min(4800, cur.y + delta) });
-      }
+      dispatchViewportKeyboardShortcut(e, {
+        containerRef: rootRef,
+        onEscape: () => {
+          if (isMetadataOpen) handleCloseDossier();
+          else if (onClose) onClose();
+        },
+        onZoomIn: () => handleStepZoom(0.8),
+        onZoomOut: () => handleStepZoom(1.25),
+        onReset: handleResetZoom,
+        onToggleFullscreen: toggleFullscreen,
+        onPrev: handlePrevPort,
+        onNext: handleNextPort,
+        onPan: (dx, dy) => {
+          const cur = currentViewBoxRef.current;
+          const stepX = dx !== 0 ? Math.round(cur.w * 0.12) * (dx > 0 ? -1 : 1) : 0;
+          const stepY = dy !== 0 ? Math.round(cur.h * 0.12) * (dy > 0 ? -1 : 1) : 0;
+          setCurrentViewBox({
+            ...cur,
+            x: Math.max(-500, Math.min(5500, cur.x + stepX)),
+            y: Math.max(0, Math.min(4800, cur.y + stepY)),
+          });
+        },
+      });
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);

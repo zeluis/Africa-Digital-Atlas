@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { readStorageString, writeStorageString } from '../utils/storageCache';
 
 export type DensityMode = 'standard' | 'analytical' | 'editorial';
 
@@ -12,24 +13,16 @@ const DensityContext = createContext<DensityContextType | undefined>(undefined);
 
 export const DensityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [density, setDensityState] = useState<DensityMode>(() => {
-    try {
-      const saved = localStorage.getItem('atlas_density');
-      if (saved === 'analytical' || saved === 'editorial' || saved === 'standard') {
-        return saved;
-      }
-    } catch {
-      // Ignore storage restrictions in sandboxed/private iframes
+    const saved = readStorageString('atlas_density');
+    if (saved === 'analytical' || saved === 'editorial' || saved === 'standard') {
+      return saved;
     }
     return 'standard';
   });
 
   const setDensity = (mode: DensityMode) => {
     setDensityState(mode);
-    try {
-      localStorage.setItem('atlas_density', mode);
-    } catch {
-      // Ignore storage restrictions
-    }
+    writeStorageString('atlas_density', mode);
   };
 
   const cycleDensity = () => {

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { readStorageJson, writeStorageJson } from '../utils/storageCache';
 
 interface SavedEntitiesContextType {
   savedCountries: string[];
@@ -17,73 +18,45 @@ interface SavedEntitiesContextType {
 
 const SavedEntitiesContext = createContext<SavedEntitiesContextType | undefined>(undefined);
 
+const DEFAULT_SAVED_COUNTRIES = ['NGA', 'ZAF', 'KEN', 'EGY', 'ETH'];
+const DEFAULT_SAVED_PLATES = ['danville-1749', 'arrows-1802'];
+const DEFAULT_RECENT_SEARCHES = ['Nigeria', 'GDP', 'Serengeti', 'Kenya'];
+
 export const SavedEntitiesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [savedCountries, setSavedCountries] = useState<string[]>(() => {
-    try {
-      const saved = localStorage.getItem('atlas_saved_countries');
-      return saved ? JSON.parse(saved) : ['NGA', 'ZAF', 'KEN', 'EGY', 'ETH'];
-    } catch {
-      return ['NGA', 'ZAF', 'KEN', 'EGY', 'ETH'];
-    }
+    const parsed = readStorageJson<unknown>('atlas_saved_countries', DEFAULT_SAVED_COUNTRIES);
+    return Array.isArray(parsed) ? parsed : DEFAULT_SAVED_COUNTRIES;
   });
 
   const [savedRegions, setSavedRegions] = useState<string[]>(() => {
-    try {
-      const saved = localStorage.getItem('atlas_saved_regions');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
+    const parsed = readStorageJson<unknown>('atlas_saved_regions', []);
+    return Array.isArray(parsed) ? parsed : [];
   });
 
   const [savedPlates, setSavedPlates] = useState<string[]>(() => {
-    try {
-      const saved = localStorage.getItem('atlas_saved_plates');
-      return saved ? JSON.parse(saved) : ['danville-1749', 'arrows-1802'];
-    } catch {
-      return ['danville-1749', 'arrows-1802'];
-    }
+    const parsed = readStorageJson<unknown>('atlas_saved_plates', DEFAULT_SAVED_PLATES);
+    return Array.isArray(parsed) ? parsed : DEFAULT_SAVED_PLATES;
   });
 
   const [recentSearches, setRecentSearches] = useState<string[]>(() => {
-    try {
-      const saved = localStorage.getItem('atlas_recent_searches');
-      return saved ? JSON.parse(saved) : ['Nigeria', 'GDP', 'Serengeti', 'Kenya'];
-    } catch {
-      return ['Nigeria', 'GDP', 'Serengeti', 'Kenya'];
-    }
+    const parsed = readStorageJson<unknown>('atlas_recent_searches', DEFAULT_RECENT_SEARCHES);
+    return Array.isArray(parsed) ? parsed : DEFAULT_RECENT_SEARCHES;
   });
 
   useEffect(() => {
-    try {
-      localStorage.setItem('atlas_saved_countries', JSON.stringify(savedCountries));
-    } catch {
-      // Ignore storage restrictions
-    }
+    writeStorageJson('atlas_saved_countries', savedCountries);
   }, [savedCountries]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('atlas_saved_regions', JSON.stringify(savedRegions));
-    } catch {
-      // Ignore storage restrictions
-    }
+    writeStorageJson('atlas_saved_regions', savedRegions);
   }, [savedRegions]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('atlas_saved_plates', JSON.stringify(savedPlates));
-    } catch {
-      // Ignore storage restrictions
-    }
+    writeStorageJson('atlas_saved_plates', savedPlates);
   }, [savedPlates]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('atlas_recent_searches', JSON.stringify(recentSearches));
-    } catch {
-      // Ignore storage restrictions
-    }
+    writeStorageJson('atlas_recent_searches', recentSearches);
   }, [recentSearches]);
 
   const toggleSaveCountry = (countryId: string) => {

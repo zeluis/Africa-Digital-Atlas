@@ -10,7 +10,7 @@ import { COUNTRY_SILHOUETTES, ensureCountrySilhouettesLoaded } from '../data/cou
 import { getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
 import { UN_M49_NUMERIC_CODES } from '../data/svgGeographySystem';
 
-import { downloadBlob, downloadFile, escapeCsvCell } from './exportUtils';
+import { downloadBlob, downloadFile, escapeCsvCell, rasterizeSvgToCanvas } from './exportUtils';
 import {
   AFRIATA_DOI,
   AFRIATA_ORCID_URL,
@@ -240,8 +240,8 @@ export async function loadImageAsDataUrl(
   }
 
   for (const url of candidates) {
+    let objectUrl = '';
     try {
-      let objectUrl = '';
       try {
         const res = await fetch(url);
         if (res.ok) {
@@ -276,7 +276,6 @@ export async function loadImageAsDataUrl(
       canvas.height = naturalH;
       const ctx = canvas.getContext('2d');
       if (!ctx) {
-        if (objectUrl) URL.revokeObjectURL(objectUrl);
         continue;
       }
 
@@ -289,8 +288,6 @@ export async function loadImageAsDataUrl(
       const mime = preferredFormat === 'PNG' ? 'image/png' : 'image/jpeg';
       const dataUrl = canvas.toDataURL(mime, 0.95);
 
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
-
       return {
         dataUrl,
         width: naturalW,
@@ -301,6 +298,10 @@ export async function loadImageAsDataUrl(
     } catch {
       // Try next candidate
       continue;
+    } finally {
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
     }
   }
 
@@ -357,37 +358,16 @@ export async function renderCountrySilhouetteToCanvas(
     </svg>
   `.trim();
 
-  const svgBlob = new Blob([svgXml], { type: 'image/svg+xml;charset=utf-8' });
-  const blobUrl = URL.createObjectURL(svgBlob);
+  const canvas = await rasterizeSvgToCanvas(svgXml, { width, height, scale: 2 });
+  if (!canvas) return null;
 
-  try {
-    const img = new Image();
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve();
-      img.onerror = reject;
-      img.src = blobUrl;
-    });
-
-    const canvas = document.createElement('canvas');
-    canvas.width = width * 2; // 2x Retina
-    canvas.height = height * 2;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
-
-    ctx.scale(2, 2);
-    ctx.drawImage(img, 0, 0, width, height);
-    const dataUrl = canvas.toDataURL('image/png');
-
-    return {
-      dataUrl,
-      width: width * 2,
-      height: height * 2,
-      aspectRatio: width / height,
-      format: 'PNG'
-    };
-  } finally {
-    URL.revokeObjectURL(blobUrl);
-  }
+  return {
+    dataUrl: canvas.toDataURL('image/png'),
+    width: width * 2,
+    height: height * 2,
+    aspectRatio: width / height,
+    format: 'PNG'
+  };
 }
 
 /**

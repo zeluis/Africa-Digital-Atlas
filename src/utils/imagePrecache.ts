@@ -5,6 +5,8 @@
  */
 
 import { resolveAssetPath, getDeploymentCacheScope } from './assetPath';
+import { fetchWithTimeout } from './apiClient';
+import { readStorageJson } from './storageCache';
 
 const CACHE_SCOPE = getDeploymentCacheScope();
 const CACHE_NAME = `africa-archival-plates-${CACHE_SCOPE}-v1`;
@@ -38,18 +40,17 @@ export const getUnescoHeritageImageUrls = async (): Promise<string[]> => {
       }
     });
 
-    if (typeof localStorage !== 'undefined') {
-      const saved = localStorage.getItem('afriata_unesco_xml_sites_v1') || localStorage.getItem('africalia_unesco_xml_sites_v1');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          parsed.forEach((site: { imageUrl?: string; idNumber?: number }) => {
-            if (site.imageUrl && !urls.includes(site.imageUrl)) {
-              urls.push(site.imageUrl);
-            }
-          });
+    const parsed = readStorageJson<Array<{ imageUrl?: string; idNumber?: number }> | null>(
+      'afriata_unesco_xml_sites_v1',
+      null,
+      { legacyKey: 'africalia_unesco_xml_sites_v1', migrateLegacy: false }
+    );
+    if (Array.isArray(parsed)) {
+      parsed.forEach((site) => {
+        if (site.imageUrl && !urls.includes(site.imageUrl)) {
+          urls.push(site.imageUrl);
         }
-      }
+      });
     }
   } catch {
     // Ignore dynamic import deferral
@@ -89,7 +90,7 @@ export const prewarmUnescoHeritageCache = async (): Promise<{ cached: number; to
           try {
             const existing = await cache.match(url);
             if (!existing) {
-              const res = await fetch(url, { mode: 'no-cors' });
+              const res = await fetchWithTimeout(url, { mode: 'no-cors', timeoutMs: 8000 });
               if (res.status === 200 || res.type === 'opaque') {
                 await cache.put(url, res);
                 cachedCount++;
@@ -186,7 +187,7 @@ export const prewarmArchivalImageCache = async (): Promise<{ cached: number; tot
           try {
             const existing = await cache.match(url);
             if (!existing) {
-              const res = await fetch(url, { mode: 'no-cors' });
+              const res = await fetchWithTimeout(url, { mode: 'no-cors', timeoutMs: 8000 });
               if (res.status === 200 || res.type === 'opaque') {
                 await cache.put(url, res);
                 cachedCount++;

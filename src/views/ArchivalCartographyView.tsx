@@ -65,6 +65,7 @@ type CartographyWorkbenchTab = 'curtain' | 'streamlines' | 'kingdoms';
 
 interface ArchivalCartographyViewProps {
   initialPlateId?: string;
+  initialKingdomId?: string;
   onNavigateTab?: (tab: CanonicalNavTab) => void;
   onSelectCountry?: (countryCode: string) => void;
   onOpenColophon?: () => void;
@@ -75,6 +76,7 @@ interface ArchivalCartographyViewProps {
 
 export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = ({ 
   initialPlateId,
+  initialKingdomId,
   onNavigateTab,
   onSelectCountry,
   onOpenColophon,
@@ -83,21 +85,37 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
   onOpenMethodologyAudit
 }) => {
   const initialData = React.useMemo(() => {
-    if (typeof window === 'undefined') return { plate: HISTORICAL_MAP_PLATES[0], tab: 'curtain' as CartographyWorkbenchTab };
+    if (typeof window === 'undefined') return { plate: HISTORICAL_MAP_PLATES[0], tab: 'curtain' as CartographyWorkbenchTab, kingdomId: initialKingdomId };
     const hash = window.location.hash.replace(/^#\/?/, '').trim();
     const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
     const pId = params.get('plate') || initialPlateId;
     const foundPlate = pId ? HISTORICAL_MAP_PLATES.find(p => p.id === pId) : undefined;
+    const kId = params.get('kingdom') || initialKingdomId;
     const tabParam = params.get('tab');
-    const validTab: CartographyWorkbenchTab = (tabParam === 'streamlines' || tabParam === 'kingdoms' || tabParam === 'curtain') ? (tabParam as CartographyWorkbenchTab) : 'curtain';
+    const validTab: CartographyWorkbenchTab =
+      (tabParam === 'streamlines' || tabParam === 'kingdoms' || tabParam === 'curtain')
+        ? (tabParam as CartographyWorkbenchTab)
+        : kId
+          ? 'kingdoms'
+          : 'curtain';
     return {
       plate: foundPlate || HISTORICAL_MAP_PLATES[0],
-      tab: validTab
+      tab: validTab,
+      kingdomId: kId
     };
-  }, [initialPlateId]);
+  }, [initialPlateId, initialKingdomId]);
 
   useDetailedKingdomsLoaded();
   const [activeTab, setActiveTab] = useState<CartographyWorkbenchTab>(initialData.tab);
+  const [highlightedKingdomId, setHighlightedKingdomId] = useState<string | undefined>(initialData.kingdomId);
+
+  React.useEffect(() => {
+    if (initialKingdomId) {
+      setActiveTab('kingdoms');
+      setHighlightedKingdomId(initialKingdomId);
+    }
+  }, [initialKingdomId]);
+
   const reducedMotion = usePrefersReducedMotion();
   const [selectedPlate, setSelectedPlate] = useState<HistoricalMapPlate>(initialData.plate);
   const [focusedEntity, setFocusedEntity] = useState<PreColonialEntity | null>(null);
@@ -990,7 +1008,11 @@ export const ArchivalCartographyView: React.FC<ArchivalCartographyViewProps> = (
                           transition: SPRING_TACTILE
                         }
                   }
-                  className="p-5 rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xs transition-colors flex flex-col justify-between space-y-4 group select-none"
+                  className={`p-5 rounded-3xl bg-white dark:bg-stone-900 border shadow-xs transition-colors flex flex-col justify-between space-y-4 group select-none ${
+                    highlightedKingdomId === entity.id
+                      ? 'border-purple-500 ring-2 ring-purple-500/60 dark:border-purple-400'
+                      : 'border-stone-200 dark:border-stone-800'
+                  }`}
                 >
                   <div className="space-y-3.5">
                     <div className="flex items-center justify-between gap-2">

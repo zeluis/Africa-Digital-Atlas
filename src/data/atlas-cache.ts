@@ -1,4 +1,5 @@
 import { ATLAS_VERSION } from './platformMetadata';
+import { readStorageString, writeStorageString, removeStorageKey } from '../utils/storageCache';
 
 /**
  * Cache and Offline Storage manager for Africa Data Atlas.
@@ -17,42 +18,26 @@ export interface CacheStatus {
 }
 
 export function getCacheStatus(): CacheStatus {
-  try {
-    const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY);
-    const lastSync = localStorage.getItem(CACHE_TIMESTAMP_KEY) || new Date().toISOString();
-    const isCached = cachedVersion === CURRENT_VERSION;
+  const cachedVersion = readStorageString(CACHE_VERSION_KEY);
+  const lastSync = readStorageString(CACHE_TIMESTAMP_KEY) || new Date().toISOString();
+  const isCached = cachedVersion === CURRENT_VERSION;
 
-    return {
-      isCached,
-      version: cachedVersion || CURRENT_VERSION,
-      lastSync,
-      isStale: !isCached,
-      storageType: 'IndexedDB/LocalStorage'
-    };
-  } catch (e) {
-    return {
-      isCached: true,
-      version: CURRENT_VERSION,
-      lastSync: new Date().toISOString(),
-      isStale: false,
-      storageType: 'Memory'
-    };
-  }
+  return {
+    isCached,
+    version: cachedVersion || CURRENT_VERSION,
+    lastSync,
+    isStale: !isCached,
+    storageType: typeof window !== 'undefined' ? 'IndexedDB/LocalStorage' : 'Memory'
+  };
 }
 
 export function refreshLocalCache(): boolean {
-  try {
-    localStorage.setItem(CACHE_VERSION_KEY, CURRENT_VERSION);
-    localStorage.setItem(CACHE_TIMESTAMP_KEY, new Date().toISOString());
-    return true;
-  } catch (e) {
-    return false;
-  }
+  const wroteVer = writeStorageString(CACHE_VERSION_KEY, CURRENT_VERSION);
+  const wroteTs = writeStorageString(CACHE_TIMESTAMP_KEY, new Date().toISOString());
+  return wroteVer && wroteTs;
 }
 
 export function clearAtlasCache(): void {
-  try {
-    localStorage.removeItem(CACHE_VERSION_KEY);
-    localStorage.removeItem(CACHE_TIMESTAMP_KEY);
-  } catch (e) {}
+  removeStorageKey(CACHE_VERSION_KEY);
+  removeStorageKey(CACHE_TIMESTAMP_KEY);
 }

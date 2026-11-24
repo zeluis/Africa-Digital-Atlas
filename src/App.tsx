@@ -15,6 +15,7 @@ import { PanelLeftOpen } from 'lucide-react';
 import { getPageInfo, isReportOrPaperTab } from './utils/navigationTitles';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { resolveAppBasePath } from './utils/assetPath';
+import { readStorageString, writeStorageString } from './utils/storageCache';
 
 const NavigationDrawer = lazyWithRetry(() => import('./components/NavigationDrawer').then(m => ({ default: m.NavigationDrawer })), 'NavigationDrawer');
 const Footer = lazyWithRetry(() => import('./components/Footer').then(m => ({ default: m.Footer })), 'Footer');
@@ -117,6 +118,8 @@ const parseUrlHash = (): {
   searchQuery?: string;
   siteId?: number;
   compareCountries?: string[];
+  kingdomId?: string;
+  langId?: string;
 } => {
   if (typeof window === 'undefined') return { tab: 'overview' };
   const rawHash = window.location.hash.replace(/^#\/?/, '').trim();
@@ -197,7 +200,14 @@ const parseUrlHash = (): {
   if (hashRoute.startsWith('cartography') || hashRoute.startsWith('archival-cartography')) {
     const params = getCombinedParams();
     const plate = params.get('plate') || undefined;
-    return { tab: 'archival-cartography', plateId: plate };
+    const kingdom = params.get('kingdom') || undefined;
+    return { tab: 'archival-cartography', plateId: plate, kingdomId: kingdom };
+  }
+
+  if (hashRoute.startsWith('languages')) {
+    const params = getCombinedParams();
+    const lang = params.get('lang') || undefined;
+    return { tab: 'languages', langId: lang };
   }
 
   if (hashRoute.startsWith('compare')) {
@@ -239,12 +249,7 @@ function AppContent() {
   const initialRoute = useMemo(() => parseUrlHash(), []);
 
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    try {
-      const saved = localStorage.getItem('atlas_theme');
-      return saved === 'dark' ? 'dark' : 'light';
-    } catch {
-      return 'light';
-    }
+    return readStorageString('atlas_theme') === 'dark' ? 'dark' : 'light';
   });
 
   // Canonical Navigation Tab State (starts at URL route or 'overview')
@@ -264,6 +269,8 @@ function AppContent() {
   // Universal Search & Deep link target for Iconography and Archival Cartography
   const [activeIconographyPlateId, setActiveIconographyPlateId] = useState<string | undefined>(initialRoute.plateId);
   const [activeArchivalPlateId, setActiveArchivalPlateId] = useState<string | undefined>(initialRoute.plateId);
+  const [activeArchivalKingdomId, setActiveArchivalKingdomId] = useState<string | undefined>(initialRoute.kingdomId);
+  const [activeLanguageId, setActiveLanguageId] = useState<string | undefined>(initialRoute.langId);
   const [activeIconographySearchQuery, setActiveIconographySearchQuery] = useState<string | undefined>(initialRoute.searchQuery);
   const [isIconographyIngestion, setIsIconographyIngestion] = useState(false);
 
@@ -319,11 +326,7 @@ function AppContent() {
       root.classList.remove('dark');
       root.setAttribute('data-theme', 'light');
     }
-    try {
-      localStorage.setItem('atlas_theme', theme);
-    } catch {
-      // Ignore storage restrictions in sandboxed/private iframes
-    }
+    writeStorageString('atlas_theme', theme);
   }, [theme]);
 
   // Synchronize active app state with URL hash & browser history for native Back/Forward & deep linking
@@ -356,6 +359,14 @@ function AppContent() {
       }
     } else if (currentTab === 'heritage') {
       targetHash = selectedHeritageSiteId ? `heritage?id=${selectedHeritageSiteId}` : 'heritage';
+    } else if (currentTab === 'archival-cartography') {
+      if (activeArchivalKingdomId) {
+        targetHash = `archival-cartography?tab=kingdoms&kingdom=${activeArchivalKingdomId}`;
+      } else if (activeArchivalPlateId) {
+        targetHash = `archival-cartography?plate=${activeArchivalPlateId}`;
+      }
+    } else if (currentTab === 'languages') {
+      targetHash = activeLanguageId ? `languages?lang=${activeLanguageId}` : 'languages';
     }
 
     const currentHash = window.location.hash.replace(/^#\/?/, '').trim();
@@ -375,7 +386,7 @@ function AppContent() {
       }
     }
     shouldPushHistoryRef.current = false;
-  }, [currentTab, selectedEntityId, activeRegion, selectedIndicatorForAnalytics, selectedHeritageSiteId, compareInitialCountries]);
+  }, [currentTab, selectedEntityId, activeRegion, selectedIndicatorForAnalytics, selectedHeritageSiteId, compareInitialCountries, activeArchivalKingdomId, activeArchivalPlateId, activeLanguageId]);
 
   // Listen to browser hash & popstate navigation (Back/Forward buttons & external hash links)
   useEffect(() => {
@@ -392,6 +403,8 @@ function AppContent() {
           setActiveIconographyPlateId(parsed.plateId);
           setActiveArchivalPlateId(parsed.plateId);
         }
+        if (parsed.kingdomId !== undefined) setActiveArchivalKingdomId(parsed.kingdomId);
+        if (parsed.langId !== undefined) setActiveLanguageId(parsed.langId);
         if (parsed.searchQuery !== undefined) setActiveIconographySearchQuery(parsed.searchQuery);
         if (parsed.siteId !== undefined) setSelectedHeritageSiteId(parsed.siteId);
         if (parsed.compareCountries) setCompareInitialCountries(parsed.compareCountries);
@@ -519,6 +532,25 @@ function AppContent() {
     }
   };
 
+  const pushNavSnapshot = () => {
+    shouldPushHistoryRef.current = true;
+    setNavHistory(prev => [
+      ...prev.slice(-30),
+      {
+        tab: currentTab,
+        entityId: selectedEntityId,
+        region: activeRegion,
+        indicator: selectedIndicatorForAnalytics
+      }
+    ]);
+  };
+
+  const resetViewportScroll = () => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  };
+
   // High-performance canonical tab navigation handler
   const handleSelectTab = (tab: CanonicalNavTab | string) => {
     const rawTabStr = tab as string;
@@ -529,29 +561,55 @@ function AppContent() {
       const params = new URLSearchParams(queryString);
       const plate = params.get('plate') || params.get('castas');
       const q = params.get('q');
-      if (plate) setActiveIconographyPlateId(plate);
+      if (plate) {
+        if (targetTab === 'archival-cartography') {
+          setActiveArchivalPlateId(plate);
+        } else {
+          setActiveIconographyPlateId(plate);
+        }
+      }
       if (q) setActiveIconographySearchQuery(q);
       const heritageId = params.get('id');
       if (heritageId) {
         const parsedHeritageId = parseInt(heritageId, 10);
         if (!isNaN(parsedHeritageId)) setSelectedHeritageSiteId(parsedHeritageId);
       }
-    } else if (targetTab !== 'iconography') {
-      setActiveIconographyPlateId(undefined);
-      setActiveIconographySearchQuery(undefined);
+      const countriesParam = params.get('countries');
+      if (countriesParam && targetTab === 'compare') {
+        const parsedCountries = countriesParam
+          .split(',')
+          .map(c => c.trim().toUpperCase())
+          .filter(Boolean);
+        if (parsedCountries.length > 0) {
+          setCompareInitialCountries(parsedCountries);
+        }
+      }
+      const kingdomParam = params.get('kingdom');
+      if (kingdomParam && targetTab === 'archival-cartography') {
+        setActiveArchivalKingdomId(kingdomParam);
+      } else if (targetTab === 'archival-cartography' && !kingdomParam) {
+        setActiveArchivalKingdomId(undefined);
+      }
+      const langParam = params.get('lang');
+      if (langParam && targetTab === 'languages') {
+        setActiveLanguageId(langParam);
+      }
+    } else {
+      if (targetTab !== 'iconography') {
+        setActiveIconographyPlateId(undefined);
+        setActiveIconographySearchQuery(undefined);
+      }
+      if (targetTab !== 'archival-cartography') {
+        setActiveArchivalPlateId(undefined);
+        setActiveArchivalKingdomId(undefined);
+      }
+      if (targetTab !== 'languages') {
+        setActiveLanguageId(undefined);
+      }
     }
 
     if (targetTab === currentTab && !queryString) return;
-    shouldPushHistoryRef.current = true;
-    setNavHistory(prev => [
-      ...prev.slice(-30),
-      {
-        tab: currentTab,
-        entityId: selectedEntityId,
-        region: activeRegion,
-        indicator: selectedIndicatorForAnalytics
-      }
-    ]);
+    pushNavSnapshot();
     React.startTransition(() => {
       setCurrentTab(targetTab);
       
@@ -562,46 +620,28 @@ function AppContent() {
         setActiveRegion(undefined);
       }
     });
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    resetViewportScroll();
   };
 
   const handleSelectCountry = (id: string) => {
     const formattedId = id.toUpperCase();
     if (formattedId === selectedEntityId && currentTab === 'countries') return;
-    shouldPushHistoryRef.current = true;
-    setNavHistory(prev => [
-      ...prev.slice(-30),
-      {
-        tab: currentTab,
-        entityId: selectedEntityId,
-        region: activeRegion,
-        indicator: selectedIndicatorForAnalytics
-      }
-    ]);
+    pushNavSnapshot();
     React.startTransition(() => {
       setSelectedEntityId(formattedId);
       setCurrentTab('countries');
     });
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    resetViewportScroll();
   };
 
   const handleSelectIndicator = (indId: string) => {
     if (indId === selectedIndicatorForAnalytics && currentTab === 'analytics') return;
-    shouldPushHistoryRef.current = true;
-    setNavHistory(prev => [
-      ...prev.slice(-30),
-      {
-        tab: currentTab,
-        entityId: selectedEntityId,
-        region: activeRegion,
-        indicator: selectedIndicatorForAnalytics
-      }
-    ]);
+    pushNavSnapshot();
     React.startTransition(() => {
       setSelectedIndicatorForAnalytics(indId);
       setCurrentTab('analytics');
     });
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    resetViewportScroll();
   };
 
   const handleGoBack = () => {
@@ -616,7 +656,7 @@ function AppContent() {
         else if (lastItem.tab === 'regions') setActiveRegion(undefined);
         if (lastItem.indicator) setSelectedIndicatorForAnalytics(lastItem.indicator);
       });
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      resetViewportScroll();
     } else if (currentTab !== 'overview') {
       shouldPushHistoryRef.current = false;
       React.startTransition(() => {
@@ -754,7 +794,7 @@ function AppContent() {
             transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
             className={`core-${activeCore} w-full min-w-0 flex-1 flex flex-col`}
           >
-              <ViewErrorBoundary fallbackTitle="Module Unavailable">
+              <ViewErrorBoundary fallbackTitle="Module Unavailable" resetKey={currentTab}>
                 <Suspense fallback={<MainContentSkeleton viewType={currentTab} />}>
                   {currentTab === 'overview' && (
                     <OverviewView
@@ -792,6 +832,7 @@ function AppContent() {
                   {currentTab === 'archival-cartography' && (
                     <ArchivalCartographyView 
                       initialPlateId={activeArchivalPlateId}
+                      initialKingdomId={activeArchivalKingdomId}
                       onNavigateTab={handleSelectTab}
                       onSelectCountry={handleSelectCountry}
                       onOpenColophon={() => atlasModalStore.openColophon()}
@@ -859,6 +900,7 @@ function AppContent() {
                   {currentTab === 'languages' && (
                     <LanguagesView
                       onSelectCountry={handleSelectCountry}
+                      initialLanguageId={activeLanguageId}
                     />
                   )}
 
@@ -874,6 +916,7 @@ function AppContent() {
                       entityId={selectedEntityId}
                       onSelectCountry={handleSelectCountry}
                       onSelectIndicator={handleSelectIndicator}
+                      onNavigateTab={handleSelectTab}
                     />
                   )}
 

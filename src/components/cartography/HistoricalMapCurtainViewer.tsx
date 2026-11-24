@@ -1,6 +1,8 @@
 import React, { useState, useRef, useCallback, useEffect, Suspense } from 'react';
 import { lazyWithRetry } from '../../utils/lazyWithRetry';
 import { m, AnimatePresence } from 'motion/react';
+import { useFullscreenContainer } from '../../hooks/useFullscreenContainer';
+import { dispatchViewportKeyboardShortcut, isScrollablePanelTarget } from '../../hooks/useCanvasViewport';
 import { 
   HistoricalMapPlate, 
   PreColonialEntity, 
@@ -14,6 +16,8 @@ import {
   ZoomIn, 
   ZoomOut, 
   RotateCcw, 
+  Maximize2,
+  Minimize2,
   Info, 
   Sparkles, 
   MapPin, 
@@ -48,7 +52,6 @@ import {
   Share2,
   Clock,
   History,
-  Maximize2,
   Crosshair
 } from 'lucide-react';
 import { AfricaMapFinalLayer } from '../AfricaMapFinalLayer';
@@ -309,9 +312,11 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
     setIsDossierOpen(false);
   }, []);
 
+  const viewerRootRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const filmstripScrollRef = useRef<HTMLDivElement>(null);
   const isDraggingCurtainRef = useRef<boolean>(false);
+  const { isFullscreen, toggleFullscreen } = useFullscreenContainer({ targetRef: viewerRootRef });
 
   // Reset viewport upon new plate selection to 100% full uncropped view
   useEffect(() => {
@@ -467,6 +472,7 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
 
   // Wheel zoom handler across all viewport modes
   const handleWheelZoom = useCallback((e: React.WheelEvent) => {
+    if (isScrollablePanelTarget(e.target)) return;
     e.preventDefault();
     const delta = e.deltaY < 0 ? 0.15 : -0.15;
     zoomPane('both', delta);
@@ -620,78 +626,40 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
   // Universal Keyboard Cartographic Navigation (Arrow pan, +/- zoom, 0 reset, F fullscreen, Alt+Arrows plate step, Escape)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.isComposing || e.keyCode === 229) return;
-      if (document.querySelector('[data-dialog-open="true"]')) return;
-      const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) {
-        return;
-      }
-
-      if (e.key === 'Escape') {
-        if (selectedEntity || selectedTradeCorridor || activeToponymFocus) {
-          setSelectedEntity(null);
-          setSelectedTradeCorridor(null);
-          setActiveToponymFocus(null);
-          if (onClearFocusedEntity) onClearFocusedEntity();
-          resetPane('both');
-        }
-        return;
-      }
-
-      if (e.altKey && e.key === 'ArrowLeft') {
-        e.preventDefault();
-        const prevIdx = (HISTORICAL_MAP_PLATES.findIndex(p => p.id === selectedPlate.id) - 1 + HISTORICAL_MAP_PLATES.length) % HISTORICAL_MAP_PLATES.length;
-        const prevPlate = HISTORICAL_MAP_PLATES[prevIdx];
-        if (onSelectPlate) onSelectPlate(prevPlate);
-        resetPane('both');
-        return;
-      }
-
-      if (e.altKey && e.key === 'ArrowRight') {
-        e.preventDefault();
-        const nextIdx = (HISTORICAL_MAP_PLATES.findIndex(p => p.id === selectedPlate.id) + 1) % HISTORICAL_MAP_PLATES.length;
-        const nextPlate = HISTORICAL_MAP_PLATES[nextIdx];
-        if (onSelectPlate) onSelectPlate(nextPlate);
-        resetPane('both');
-        return;
-      }
-
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        nudgePan(48, 0, 'both');
-      } else if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        nudgePan(-48, 0, 'both');
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        nudgePan(0, 48, 'both');
-      } else if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        nudgePan(0, -48, 'both');
-      } else if (e.key === '+' || e.key === '=') {
-        e.preventDefault();
-        zoomPane('both', 0.2);
-      } else if (e.key === '-' || e.key === '_') {
-        e.preventDefault();
-        zoomPane('both', -0.2);
-      } else if (e.key === '0') {
-        e.preventDefault();
-        resetPane('both');
-      } else if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        e.preventDefault();
-        const el = containerRef.current;
-        if (el) {
-          if (document.fullscreenElement) {
-            document.exitFullscreen().catch(() => {});
-          } else {
-            el.requestFullscreen?.().catch(() => {});
+      dispatchViewportKeyboardShortcut(e, {
+        containerRef,
+        panStep: 48,
+        onEscape: () => {
+          if (selectedEntity || selectedTradeCorridor || activeToponymFocus) {
+            setSelectedEntity(null);
+            setSelectedTradeCorridor(null);
+            setActiveToponymFocus(null);
+            if (onClearFocusedEntity) onClearFocusedEntity();
+            resetPane('both');
           }
-        }
-      }
+        },
+        onPrev: () => {
+          const prevIdx = (HISTORICAL_MAP_PLATES.findIndex(p => p.id === selectedPlate.id) - 1 + HISTORICAL_MAP_PLATES.length) % HISTORICAL_MAP_PLATES.length;
+          const prevPlate = HISTORICAL_MAP_PLATES[prevIdx];
+          if (onSelectPlate) onSelectPlate(prevPlate);
+          resetPane('both');
+        },
+        onNext: () => {
+          const nextIdx = (HISTORICAL_MAP_PLATES.findIndex(p => p.id === selectedPlate.id) + 1) % HISTORICAL_MAP_PLATES.length;
+          const nextPlate = HISTORICAL_MAP_PLATES[nextIdx];
+          if (onSelectPlate) onSelectPlate(nextPlate);
+          resetPane('both');
+        },
+        onPan: (dx, dy) => nudgePan(dx, dy, 'both'),
+        onZoomIn: () => zoomPane('both', 0.2),
+        onZoomOut: () => zoomPane('both', -0.2),
+        onReset: () => resetPane('both'),
+        onToggleFullscreen: toggleFullscreen,
+      });
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedEntity, selectedTradeCorridor, activeToponymFocus, onClearFocusedEntity, resetPane, nudgePan, zoomPane, selectedPlate.id, onSelectPlate]);
+  }, [selectedEntity, selectedTradeCorridor, activeToponymFocus, onClearFocusedEntity, resetPane, nudgePan, zoomPane, selectedPlate.id, onSelectPlate, toggleFullscreen]);
 
   // Selection of an antique plate: opens Provenance dossier, collapses kingdom panel, and resets zoom
   const handleSelectPlateItem = useCallback((plate: HistoricalMapPlate) => {
@@ -786,7 +754,12 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
   }, [borderVibrancy, hoveredEntity, selectedEntity]);
 
   return (
-    <div className="relative w-full h-[calc(100vh-64px)] min-h-[600px] flex flex-col overflow-hidden bg-[#FAF8F5] dark:bg-stone-950 select-none">
+    <div
+      ref={viewerRootRef}
+      className={`w-full flex flex-col overflow-hidden bg-[#FAF8F5] dark:bg-stone-950 select-none ${
+        isFullscreen ? 'fixed inset-0 z-50 h-[100dvh]' : 'relative h-[calc(100vh-64px)] min-h-[600px]'
+      }`}
+    >
       
       {/* =========================================================================
           1. INTEGRATED FULL-BLEED FIXED VIEWER HEADER CONTROLS BAR
@@ -1005,6 +978,20 @@ export const HistoricalMapCurtainViewer: React.FC<HistoricalMapCurtainViewerProp
                 title="Reset to 100% Uncropped Full Africa View"
               >
                 <RotateCcw className="w-3 h-3" aria-hidden="true" />
+              </button>
+
+              <button
+                type="button"
+                onClick={toggleFullscreen}
+                aria-label={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
+                className={`w-6 h-6 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
+                  isFullscreen
+                    ? 'bg-amber-700 text-white shadow-xs'
+                    : 'text-stone-700 dark:text-stone-300 hover:bg-black/5 dark:hover:bg-white/10'
+                }`}
+                title={isFullscreen ? 'Exit Fullscreen (F)' : 'Enter Fullscreen (F)'}
+              >
+                {isFullscreen ? <Minimize2 className="w-3 h-3" aria-hidden="true" /> : <Maximize2 className="w-3 h-3" aria-hidden="true" />}
               </button>
             </div>
           </div>

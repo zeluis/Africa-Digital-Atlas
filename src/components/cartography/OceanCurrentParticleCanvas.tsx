@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useAnimationActive } from '../../hooks/useAnimationActive';
 import { 
   OceanCurrentDef, 
   SeasonalWindRegime 
@@ -498,7 +499,6 @@ const OceanCurrentParticleCanvasComponent: React.FC<OceanCurrentParticleCanvasPr
   useAtlanticPathsLoaded();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const isVisibleRef = useRef<boolean>(true);
   const lastTelemetryTimeRef = useRef<number>(0);
   
   // Interactive port selection & pinned dossier state
@@ -517,6 +517,13 @@ const OceanCurrentParticleCanvasComponent: React.FC<OceanCurrentParticleCanvasPr
   const isPlayingRef = useRef(isPlaying);
   const themeRef = useRef(theme);
   const wakeLoopRef = useRef<(() => void) | null>(null);
+  const { stateRef: animationStateRef } = useAnimationActive(canvasRef, {
+    threshold: 0.05,
+    enabled: isPlaying,
+    onActiveChange: () => {
+      wakeLoopRef.current?.();
+    },
+  });
 
   useEffect(() => {
     if (activeSeasonRef.current !== activeSeasonId) {
@@ -672,6 +679,7 @@ const OceanCurrentParticleCanvasComponent: React.FC<OceanCurrentParticleCanvasPr
       ctx.scale(dpr, dpr);
       ctx.translate(0, 120 * scaleY);
       ctx.scale(scaleX, scaleY);
+      wakeLoopRef.current?.();
     };
 
     resizeCanvas();
@@ -682,47 +690,32 @@ const OceanCurrentParticleCanvasComponent: React.FC<OceanCurrentParticleCanvasPr
 
     let animationFrameId = 0;
 
-    const shouldRun = () => isVisibleRef.current && isPlayingRef.current && !document.hidden;
+    const shouldRun = () => animationStateRef.current.isActive && isPlayingRef.current;
 
-    const ensureRunning = () => {
-      if (!animationFrameId && shouldRun()) {
-        animationFrameId = requestAnimationFrame(render);
-      }
-    };
-    wakeLoopRef.current = ensureRunning;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisibleRef.current = entry.isIntersecting;
-        if (entry.isIntersecting) {
-          ensureRunning();
-        } else if (animationFrameId) {
+    const syncLoop = () => {
+      if (shouldRun()) {
+        if (!animationFrameId) {
+          animationFrameId = requestAnimationFrame(render);
+        }
+      } else {
+        if (animationFrameId) {
           cancelAnimationFrame(animationFrameId);
           animationFrameId = 0;
         }
-      },
-      { threshold: 0.05 }
-    );
-    observer.observe(canvas);
-
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        ensureRunning();
-      } else if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = 0;
+        if (
+          animationStateRef.current.prefersReducedMotion &&
+          animationStateRef.current.isIntersecting &&
+          !animationStateRef.current.isDocumentHidden &&
+          isPlayingRef.current
+        ) {
+          drawParticlesFrame(false);
+        }
       }
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    wakeLoopRef.current = syncLoop;
 
-    const render = () => {
-      animationFrameId = 0;
-      if (!shouldRun()) {
-        return;
-      }
-      animationFrameId = requestAnimationFrame(render);
-
-      if (transitionTimeRef.current < 1.0) {
+    const drawParticlesFrame = (advanceParticles: boolean) => {
+      if (advanceParticles && transitionTimeRef.current < 1.0) {
         transitionTimeRef.current = Math.min(1.0, transitionTimeRef.current + 0.03);
       }
 
@@ -770,30 +763,35 @@ const OceanCurrentParticleCanvasComponent: React.FC<OceanCurrentParticleCanvasPr
         const effectiveVx = vx * globalSpeedFactor;
         const effectiveVy = vy * globalSpeedFactor;
 
-        const nextX = x + effectiveVx;
-        const nextY = y + effectiveVy;
+        const nextX = advanceParticles ? x + effectiveVx : x;
+        const nextY = advanceParticles ? y + effectiveVy : y;
 
-        age += 1;
+        if (advanceParticles) {
+          age += 1;
 
-        // Clean out-of-bounds respawn across the complete virtual canvas
-        if (age >= maxAge || nextX < -15 || nextX > 1015 || nextY < -115 || nextY > 585) {
-          const [spawnX, spawnY] = isWind 
-            ? getRandomWindCoord() 
-            : getRandomOceanCoord();
-          particles[idx] = spawnX;
-          particles[idx + 1] = spawnY;
-          particles[idx + 2] = 0;
-          particles[idx + 3] = 0;
-          particles[idx + 4] = 0;
-          particles[idx + 5] = 55 + Math.random() * 70;
-          continue;
+          // Clean out-of-bounds respawn across the complete virtual canvas
+          if (age >= maxAge || nextX < -15 || nextX > 1015 || nextY < -115 || nextY > 585) {
+            const [spawnX, spawnY] = isWind 
+              ? getRandomWindCoord() 
+              : getRandomOceanCoord();
+            particles[idx] = spawnX;
+            particles[idx + 1] = spawnY;
+            particles[idx + 2] = 0;
+            particles[idx + 3] = 0;
+            particles[idx + 4] = 0;
+            particles[idx + 5] = 55 + Math.random() * 70;
+            continue;
+          }
+
+          particles[idx] = nextX;
+          particles[idx + 1] = nextY;
+          particles[idx + 2] = vx;
+          particles[idx + 3] = vy;
+          particles[idx + 4] = age;
+        } else {
+          particles[idx + 2] = vx;
+          particles[idx + 3] = vy;
         }
-
-        particles[idx] = nextX;
-        particles[idx + 1] = nextY;
-        particles[idx + 2] = vx;
-        particles[idx + 3] = vy;
-        particles[idx + 4] = age;
 
         const lifeRatio = age / maxAge;
         const baseAlpha = Math.sin(lifeRatio * Math.PI);
@@ -912,14 +910,21 @@ const OceanCurrentParticleCanvasComponent: React.FC<OceanCurrentParticleCanvasPr
       }
     };
 
-    ensureRunning();
+    const render = () => {
+      animationFrameId = 0;
+      if (!shouldRun()) {
+        return;
+      }
+      animationFrameId = requestAnimationFrame(render);
+      drawParticlesFrame(true);
+    };
+
+    syncLoop();
 
     return () => {
       wakeLoopRef.current = null;
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
       resizeObserver.disconnect();
-      observer.disconnect();
     };
   }, []);
 

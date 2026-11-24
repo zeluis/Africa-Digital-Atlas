@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { m, useReducedMotion } from 'motion/react';
 import { SPRING_TACTILE, AnimatedTabPanel } from '../utils/motion';
-import { handleTabListKeyDown } from '../utils/a11y';
+import { AtlasTabList } from '../components/common/AtlasTabList';
 import { atlas } from '../data/atlas-store';
 import { 
   getCorrelationDataset, 
@@ -12,7 +12,7 @@ import { CountryFlag } from '../components/CountryFlag';
 import { DataSourceBadge } from '../components/DataSourceBadge';
 import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
 import { IndicatorQuickSearch } from '../components/IndicatorQuickSearch';
-import { exportBivariateCorrelationToCsv, downloadFile } from '../utils/exportUtils';
+import { exportBivariateCorrelationToCsv, downloadFile, escapeCsvCell } from '../utils/exportUtils';
 import { formatValueByUnit } from '../data/atlas-formatters';
 import { 
   ResponsiveContainer, 
@@ -68,13 +68,6 @@ const DOMAIN_CONFIGS: DomainConfig[] = [
   { id: 'Education', label: 'Education', aliases: ['Education'], defaultIndicator: 'SE.ADT.LITR.ZS', corrPreset: { x: 'SE.PRM.ENRR', y: 'SE.ADT.LITR.ZS' } },
   { id: 'Infrastructure', label: 'Infrastructure', aliases: ['Infrastructure'], defaultIndicator: 'EG.ELC.ACCS.ZS', corrPreset: { x: 'EG.ELC.ACCS.ZS', y: 'IT.NET.USER.ZS' } },
 ];
-
-const handleAnalyticsTabKeyDown = (
-  e: React.KeyboardEvent<HTMLButtonElement>,
-  ids: string[],
-  currentIndex: number,
-  onSelect: (id: string) => void
-) => handleTabListKeyDown(e, ids, currentIndex, onSelect, 'horizontal');
 
 export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   onSelectCountry,
@@ -281,25 +274,19 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   const handleExportCSV = () => {
     const headers = ['Rank', 'Country ID', 'Country Name', 'Region', 'Indicator ID', 'Value', 'Unit', 'Source', 'Period'];
     const rows = rankings.map(r => [
-      r.rank,
-      r.entity.id,
-      `"${r.entity.name}"`,
-      `"${r.entity.region}"`,
-      selectedIndicatorId,
-      r.value,
-      `"${r.unit}"`,
-      r.source,
-      r.year
+      escapeCsvCell(r.rank),
+      escapeCsvCell(r.entity.id),
+      escapeCsvCell(r.entity.name, { quoteAllStrings: true }),
+      escapeCsvCell(r.entity.region, { quoteAllStrings: true }),
+      escapeCsvCell(selectedIndicatorId),
+      escapeCsvCell(r.value),
+      escapeCsvCell(r.unit, { quoteAllStrings: true }),
+      escapeCsvCell(r.source, { quoteAllStrings: true }),
+      escapeCsvCell(r.year)
     ]);
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `africa_atlas_${selectedIndicatorId}_rankings.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const csvContent = '\uFEFF' + [headers.map(h => escapeCsvCell(h)).join(','), ...rows.map(e => e.join(','))].join('\r\n');
+    downloadFile(`africa_atlas_${selectedIndicatorId}_rankings.csv`, csvContent, 'text/csv;charset=utf-8');
   };
 
   // Export JSON
@@ -320,13 +307,11 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
       }))
     };
 
-    const jsonStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportPayload, null, 2));
-    const link = document.createElement('a');
-    link.setAttribute('href', jsonStr);
-    link.setAttribute('download', `africa_atlas_${selectedIndicatorId}_rankings.json`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    downloadFile(
+      `africa_atlas_${selectedIndicatorId}_rankings.json`,
+      JSON.stringify(exportPayload, null, 2),
+      'application/json;charset=utf-8'
+    );
   };
 
   const COUNTRY_COLORS = ['#10b981', '#06b6d4', '#8b5cf6', '#f59e0b', '#f43f5e', '#3b82f6', '#ec4899', '#14b8a6'];
@@ -349,51 +334,38 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           </div>
 
           {/* Mode Switcher */}
-          <div className="relative flex bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1 sm:p-1.5 rounded-2xl shrink-0 max-w-full overflow-x-auto no-scrollbar" role="tablist" aria-label="Analytical mode switcher">
-            {[
-              { id: 'rankings', label: 'Rankings', icon: TrendingUp },
-              { id: 'timeseries', label: 'Time Series', icon: Layers },
-              { id: 'correlation', label: 'Correlations', icon: ScatterIcon },
-            ].map((tab, idx, arr) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  id={`analytics-mode-tab-${tab.id}`}
-                  role="tab"
-                  aria-selected={isActive}
-                  aria-controls={`analytics-mode-panel-${tab.id}`}
-                  tabIndex={isActive ? 0 : -1}
-                  onClick={() => setActiveTab(tab.id as 'rankings' | 'timeseries' | 'correlation')}
-                  onKeyDown={(e) =>
-                    handleAnalyticsTabKeyDown(
-                      e,
-                      arr.map((t) => t.id),
-                      idx,
-                      (id) => setActiveTab(id as 'rankings' | 'timeseries' | 'correlation')
-                    )
-                  }
-                  className={`relative px-2.5 sm:px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold transition-colors duration-150 cursor-pointer select-none flex items-center gap-1.5 sm:gap-2 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                    isActive
-                      ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
-                  }`}
-                >
-                  {isActive && (
-                    <m.div
-                      layoutId="analyticsModeSwitch"
-                      className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-white shadow-xs"
-                      transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
-                    />
-                  )}
-                  <Icon className="w-4 h-4 relative z-10" />
-                  <span className="relative z-10">{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
+          <AtlasTabList<'rankings' | 'timeseries' | 'correlation'>
+            ariaLabel="Analytical mode switcher"
+            className="relative flex bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-1 sm:p-1.5 rounded-2xl shrink-0 max-w-full overflow-x-auto no-scrollbar"
+            value={activeTab}
+            onChange={setActiveTab}
+            items={[
+              { id: 'rankings', tabId: 'analytics-mode-tab-rankings', controlsId: 'analytics-mode-panel-rankings', label: 'Rankings', icon: <TrendingUp className="w-4 h-4 relative z-10" /> },
+              { id: 'timeseries', tabId: 'analytics-mode-tab-timeseries', controlsId: 'analytics-mode-panel-timeseries', label: 'Time Series', icon: <Layers className="w-4 h-4 relative z-10" /> },
+              { id: 'correlation', tabId: 'analytics-mode-tab-correlation', controlsId: 'analytics-mode-panel-correlation', label: 'Correlations', icon: <ScatterIcon className="w-4 h-4 relative z-10" /> },
+            ]}
+            getTabClassName={(_item, isActive) =>
+              `relative px-2.5 sm:px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold transition-colors duration-150 cursor-pointer select-none flex items-center gap-1.5 sm:gap-2 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                isActive
+                  ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
+              }`
+            }
+            renderActiveIndicator={() => (
+              <m.div
+                layoutId="analyticsModeSwitch"
+                className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-white shadow-xs"
+                transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
+              />
+            )}
+            renderItem={({ item, activeIndicator }) => (
+              <>
+                {activeIndicator}
+                {item.icon}
+                <span className="relative z-10">{item.label}</span>
+              </>
+            )}
+          />
         </div>
       </header>
 
@@ -411,44 +383,34 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 pt-1" role="tablist" aria-label="Select indicator domain">
-            {DOMAIN_CONFIGS.map((d, idx) => {
-              const isSelected = selectedDomain === d.id;
-              return (
-                <button
-                  key={d.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isSelected}
-                  tabIndex={isSelected ? 0 : -1}
-                  onClick={() => handleDomainChange(d.id)}
-                  onKeyDown={(e) =>
-                    handleAnalyticsTabKeyDown(
-                      e,
-                      DOMAIN_CONFIGS.map((dom) => dom.id),
-                      idx,
-                      handleDomainChange
-                    )
-                  }
-                  className={`relative px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap flex items-center gap-1.5 border border-zinc-200 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                    isSelected
-                      ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
-                      : 'bg-zinc-50 dark:bg-zinc-900/80 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-300 dark:hover:border-zinc-700'
-                  }`}
-                >
-                  {isSelected && (
-                    <m.div
-                      layoutId="analyticsDomainPill"
-                      className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs"
-                      transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
-                    />
-                  )}
-                  {isSelected && <Check className="w-3 h-3 text-emerald-400 dark:text-emerald-600 relative z-10" />}
-                  <span className="relative z-10">{d.label}</span>
-                </button>
-              );
-            })}
-          </div>
+          <AtlasTabList<string>
+            ariaLabel="Select indicator domain"
+            className="flex flex-wrap items-center gap-2 pt-1"
+            value={selectedDomain}
+            onChange={handleDomainChange}
+            items={DOMAIN_CONFIGS.map((d) => ({ id: d.id, label: d.label }))}
+            getTabClassName={(_item, isSelected) =>
+              `relative px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors duration-150 cursor-pointer select-none whitespace-nowrap flex items-center gap-1.5 border border-zinc-200 dark:border-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+                isSelected
+                  ? 'text-white dark:text-zinc-950 font-bold shadow-xs'
+                  : 'bg-zinc-50 dark:bg-zinc-900/80 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-300 dark:hover:border-zinc-700'
+              }`
+            }
+            renderActiveIndicator={() => (
+              <m.div
+                layoutId="analyticsDomainPill"
+                className="absolute inset-0 rounded-xl bg-zinc-900 dark:bg-zinc-100 shadow-xs"
+                transition={prefersReducedMotion ? { duration: 0 } : SPRING_TACTILE}
+              />
+            )}
+            renderItem={({ item, isActive, activeIndicator }) => (
+              <>
+                {activeIndicator}
+                {isActive && <Check className="w-3 h-3 text-emerald-400 dark:text-emerald-600 relative z-10" />}
+                <span className="relative z-10">{item.label}</span>
+              </>
+            )}
+          />
         </div>
 
         {/* Quick Search Autocomplete & Actions */}

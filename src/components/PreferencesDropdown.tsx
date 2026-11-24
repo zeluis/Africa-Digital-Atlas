@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
+import { useDismissibleLayer } from '../hooks/useDismissibleLayer';
 import { m, AnimatePresence } from 'motion/react';
 import { 
   SlidersHorizontal, 
@@ -39,31 +40,13 @@ export const PreferencesDropdown: React.FC<PreferencesDropdownProps> = ({
   const { t } = useTranslation();
   const isOnline = useNetworkStatus();
 
-  // Close when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.isComposing || event.keyCode === 229) return;
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-        triggerRef.current?.focus();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleKeyDown);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen]);
+  useDismissibleLayer({
+    isOpen,
+    onDismiss: () => setIsOpen(false),
+    refs: [dropdownRef],
+    restoreFocusRef: triggerRef,
+    pointerEvent: 'mousedown',
+  });
 
   const densityOptions: { id: DensityMode; label: string; desc: string }[] = [
     { id: 'standard', label: 'Standard', desc: 'Balanced spacing and font scaling' },
