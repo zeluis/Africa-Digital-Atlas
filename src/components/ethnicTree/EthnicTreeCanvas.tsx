@@ -21,7 +21,8 @@ import {
   CORE_CLUSTERS, 
   EthnicNode, 
   CountryBranch,
-  CoreClusterNode 
+  CoreClusterNode,
+  useEthnicTreeDataLoaded
 } from '../../data/ethnicTreeData';
 import { MolecularMigrationDrawer, MolecularMigrationCanvasLayer, MolecularDivergenceNode } from './MolecularMigrationOverlay';
 import { VBW, VBH, CX, CY } from '../../data/afriataMasterTreeData';
@@ -37,6 +38,7 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
   onNavigateToSlaveTrade,
   onNavigateToMolecular
 }) => {
+  const ethnicTreeLoaded = useEthnicTreeDataLoaded();
   // SVG Canvas dimensions (viewBox 0 0 2000 2000, center at 1000, 1000)
   const SVG_SIZE = 2000;
   const CENTER_X = 1000;
@@ -283,7 +285,7 @@ export const EthnicTreeCanvas: React.FC<EthnicTreeCanvasProps> = ({
            n.country.toLowerCase().includes(q) ||
            n.region.toLowerCase().includes(q)
     ).slice(0, 8);
-  }, [searchQuery]);
+  }, [searchQuery, ethnicTreeLoaded]);
 
   return (
     <div 

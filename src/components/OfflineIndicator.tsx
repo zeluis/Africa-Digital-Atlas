@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
+import { getExtendedArchivePinStatus } from '../utils/offlineArchivePin';
 import { WifiOff, Database, CheckCircle2, RefreshCw, X } from 'lucide-react';
 
 interface OfflineIndicatorProps {
@@ -13,6 +14,19 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ onOpenColoph
   const [showRestored, setShowRestored] = useState(false);
   const [swUpdateAvailable, setSwUpdateAvailable] = useState(false);
   const [updateDismissed, setUpdateDismissed] = useState(false);
+  const [isExtendedArchivePinned, setIsExtendedArchivePinned] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    getExtendedArchivePinStatus()
+      .then((status) => {
+        if (active) setIsExtendedArchivePinned(status.isPinned);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [isOnline]);
 
   useEffect(() => {
     let active = true;
@@ -129,7 +143,7 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ onOpenColoph
               title="Inspect Offline Expedition Cache Diagnostics"
             >
               <Database className="w-3 h-3 text-emerald-400" />
-              <span>Vector Atlas 100% Primed</span>
+              <span>{isExtendedArchivePinned ? 'Extended Archive Pinned' : 'Vector Atlas 100% Primed'}</span>
             </button>
           </div>
 

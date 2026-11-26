@@ -26,6 +26,7 @@ import {
   speakAcademicNarration,
   stopAfriataSpeech
 } from '../utils/afriataVoiceEngine';
+import { useAnimationActive } from '../hooks/useAnimationActive';
 
 interface MotherTonguesWaveformScrubberProps {
   initialLanguageId?: string;
@@ -305,6 +306,16 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
     }
   }, [initialLanguageId]);
 
+  const { isDocumentHidden } = useAnimationActive(waveformContainerRef, {
+    enabled: isPlaying || isPlayingProverb,
+  });
+
+  useEffect(() => {
+    if (isDocumentHidden) {
+      stopAudio();
+    }
+  }, [isDocumentHidden, stopAudio]);
+
   useEffect(() => {
     const handleGlobalStop = () => {
       if (isStartingRef.current) return;
@@ -312,16 +323,9 @@ export const MotherTonguesWaveformScrubber: React.FC<MotherTonguesWaveformScrubb
       setIsPlaying(false);
       setIsPlayingProverb(false);
     };
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        stopAudio();
-      }
-    };
     window.addEventListener(AFRIATA_SPEECH_STOP_EVENT, handleGlobalStop);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => {
       window.removeEventListener(AFRIATA_SPEECH_STOP_EVENT, handleGlobalStop);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
       stopAudio();
       if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
         audioCtxRef.current.close().catch(() => {});

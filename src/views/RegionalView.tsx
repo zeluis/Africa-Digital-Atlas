@@ -13,7 +13,7 @@ import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable'
 import { UN_M49_REGIONS, UN_M49_NUMERIC_CODES } from '../data/svgGeographySystem';
 import { getRegionTonalPalette } from '../data/unGeoschemeColors';
 import { formatPopulation, formatGDP, formatHDI } from '../data/atlas-formatters';
-import { WIKIPEDIA_REGIONAL_ATLAS, RegionalWikiDossier } from '../data/wikipediaRegionalAtlas';
+import { WIKIPEDIA_REGIONAL_ATLAS, RegionalWikiDossier, useWikipediaRegionalAtlasLoaded } from '../data/wikipediaRegionalAtlas';
 import { 
   PieChart, 
   ResponsiveContainer, 
@@ -120,6 +120,7 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
   onSelectRegion
 }) => {
   const prefersReducedMotion = useReducedMotion();
+  const wikiAtlasLoaded = useWikipediaRegionalAtlasLoaded();
   const [viewMode, setViewMode] = useState<RegionalTabMode>('region-dossier');
   const [selectedRegion, setSelectedRegion] = useState<AfricanRegion>(initialRegion);
   const [activeSection, setActiveSection] = useState<RegionSectionId>('overview');
@@ -293,6 +294,14 @@ export const RegionalView: React.FC<RegionalViewProps> = ({
     selectSubSection(target.id);
     document.getElementById(`subtab-${target.id}`)?.focus();
   };
+
+  if (!wikiAtlasLoaded || !wikiDossier) {
+    return (
+      <section aria-label="UN M49 African Regional Portals and Macro-Geoscheme Observatory" className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-12 text-center text-sm font-mono text-zinc-500">
+        Loading UN M49 regional encyclopedia dossiers…
+      </section>
+    );
+  }
 
   return (
     <section aria-label="UN M49 African Regional Portals and Macro-Geoscheme Observatory" className="space-y-6 animate-in fade-in duration-200">

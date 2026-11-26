@@ -5,7 +5,8 @@ import { COUNTRY_HEADER_DATA, useCountryHeaderDataLoaded } from '../data/country
 import { getCountrySilhouette, useCountrySilhouettesLoaded } from '../data/countrySilhouettes';
 import { 
   getPillarThematicImage, 
-  getPillarWikiSearchCandidates 
+  getPillarWikiSearchCandidates,
+  useCountryPillarImagesLoaded
 } from '../data/countryPillarImages';
 import { UN_M49_NUMERIC_CODES } from '../data/svgGeographySystem';
 import { 
@@ -77,6 +78,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
   }, [isSilhouetteModalOpen]);
 
   const silhouettesLoaded = useCountrySilhouettesLoaded();
+  const pillarImagesLoaded = useCountryPillarImagesLoaded();
   const countries = useMemo(() => atlas.getSovereignCountries(), []);
   const currentEntity = atlas.getEntity(selectedEntityId) || countries[0];
   const tonal = getCountryRegionTonalPalette(currentEntity.id);
@@ -162,7 +164,7 @@ export const ThematicPillarsView: React.FC<ThematicPillarsViewProps> = ({
   // Curated Topic Photography across all 8 Pillars (People, Climate, Future, History, Culture, Economy, Languages, Geography)
   const curatedPillarImage = useMemo(() => {
     return getPillarThematicImage(currentEntity.id, activePillar, currentEntity.name);
-  }, [currentEntity.id, activePillar, currentEntity.name]);
+  }, [currentEntity.id, activePillar, currentEntity.name, pillarImagesLoaded]);
 
   // Resolve Editorial Image: prioritize authentic topic photography for the active pillar
   const editorialImage = useMemo(() => {

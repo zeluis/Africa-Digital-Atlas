@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   BookOpen, 
   ExternalLink, 
@@ -39,6 +39,7 @@ import { exportPublicationPDF } from '../utils/academicExport';
 import { AfriataReport } from '../types/afriataReport';
 import { downloadFile } from '../utils/exportUtils';
 import { AFRIATA_SITE_URL } from '../utils/citationFormatter';
+import { useSectionSpy } from '../hooks/useSectionSpy';
 
 interface ResearchReportArticleViewProps {
   reportId: string;
@@ -171,27 +172,10 @@ export const ResearchReportArticleView: React.FC<ResearchReportArticleViewProps>
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Zero-reflow IntersectionObserver section spy
-  useEffect(() => {
-    if (typeof IntersectionObserver === 'undefined') return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveSectionId(entry.target.id);
-          }
-        }
-      },
-      { rootMargin: '-18% 0px -65% 0px', threshold: 0 }
-    );
-
-    const targets = report.sections
-      .map(s => document.getElementById(s.id))
-      .filter((el): el is HTMLElement => Boolean(el));
-    targets.forEach(el => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, [report.sections]);
+  const sectionIds = useMemo(() => report.sections.map(s => s.id), [report.sections]);
+  useSectionSpy(sectionIds, (id) => {
+    setActiveSectionId(id);
+  });
 
   const handleExportJson = () => {
     downloadFile(`${report.id}_afriata_report.json`, JSON.stringify(report, null, 2), 'application/json');

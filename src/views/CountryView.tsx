@@ -85,7 +85,7 @@ import {
   GitCompare
 } from 'lucide-react';
 import { CountryFactsheetModal } from '../components/CountryFactsheetModal';
-import { getCountryMineralsProfile, getCountryTradeFlows } from '../data/criticalMineralsData';
+import { getCountryMineralsProfile, getCountryTradeFlows, useCriticalMineralsLoaded } from '../data/criticalMineralsData';
 import { 
   exportCountryIntelligenceBriefingPDF,
   exportCountryDossierBibTeX,
@@ -150,6 +150,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
 }) => {
   const { t } = useTranslation();
   useCountryHeaderDataLoaded();
+  const criticalMineralsLoaded = useCriticalMineralsLoaded();
   const prefersReducedMotion = useReducedMotion();
   const { isCountrySaved, toggleSaveCountry } = useSavedEntities();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
@@ -224,7 +225,7 @@ export const CountryView: React.FC<CountryViewProps> = ({
   // Critical Energy Transition Minerals Profile
   const mineralsProfile = useMemo(() => {
     return getCountryMineralsProfile(entity.id, entity.name);
-  }, [entity.id, entity.name]);
+  }, [entity.id, entity.name, criticalMineralsLoaded]);
 
   // Bilateral & Regional Trade Flow Profile
   const tradeProfile = useMemo(() => {

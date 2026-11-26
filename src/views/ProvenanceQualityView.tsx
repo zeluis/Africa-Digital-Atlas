@@ -16,6 +16,12 @@ import { ExternalApiConnector, LiveApiTestResult, useExternalApisLoaded } from '
 import { OrganizationLogo } from '../components/OrganizationLogo';
 import { DATASET_INTEGRITY_HASHES } from '../data/methodologyDossierData';
 import { atlasModalStore } from '../stores/useAtlasModalStore';
+import {
+  ExtendedArchivePinStatus,
+  getExtendedArchivePinStatus,
+  pinExtendedOfflineArchive,
+  isExtendedArchivePinSupported
+} from '../utils/offlineArchivePin';
 
 const AkpCatalogueModal = lazyWithRetry(() => import('../components/AkpCatalogueModal').then(m => ({ default: m.AkpCatalogueModal })), 'AkpCatalogueModal');
 import { 
@@ -52,6 +58,32 @@ export const ProvenanceQualityView: React.FC = () => {
   const [testingApiId, setTestingApiId] = useState<string | null>(null);
   const [apiTestResults, setApiTestResults] = useState<Record<string, LiveApiTestResult>>({});
   const [isAkpModalOpen, setIsAkpModalOpen] = useState(false);
+  const [archivePinStatus, setArchivePinStatus] = useState<ExtendedArchivePinStatus | null>(null);
+  const [isPinningArchive, setIsPinningArchive] = useState(false);
+
+  React.useEffect(() => {
+    let active = true;
+    getExtendedArchivePinStatus()
+      .then((status) => {
+        if (active) setArchivePinStatus(status);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handlePinExtendedArchive = async () => {
+    if (!isExtendedArchivePinSupported() || isPinningArchive) return;
+    setIsPinningArchive(true);
+    try {
+      await pinExtendedOfflineArchive();
+      const updated = await getExtendedArchivePinStatus();
+      setArchivePinStatus(updated);
+    } finally {
+      setIsPinningArchive(false);
+    }
+  };
 
   const apisLoaded = useExternalApisLoaded();
   const manifest = atlas.getManifest();
@@ -578,6 +610,63 @@ export const ProvenanceQualityView: React.FC = () => {
             >
               <Download className="w-3.5 h-3.5" /> Download BibTeX (.bib)
             </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-2">
+          <div className="rounded-2xl border border-[#E2DAD0] dark:border-[#2C2E2A] bg-[#FFFFFF] dark:bg-[#151613] p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs font-semibold text-[#1E1E1C] dark:text-[#FAF8F5]">
+                <HardDrive className="w-4 h-4 text-[#3F6955] dark:text-[#6EA88F]" />
+                <span>Extended Field Offline Archive</span>
+              </div>
+              <p className="text-xs text-[#66665E] dark:text-[#A8A499] leading-relaxed">
+                Pin large vector plates (<span className="font-mono">afriata-ethnic-tree.svg</span>, <span className="font-mono">africa-final.svg</span>) and archival JSON indexes for zero-connectivity research.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handlePinExtendedArchive}
+              disabled={isPinningArchive || (archivePinStatus !== null && !archivePinStatus.supported)}
+              className={`shrink-0 inline-flex items-center justify-center gap-2 py-2 px-3.5 rounded-xl text-xs font-semibold transition-opacity cursor-pointer disabled:opacity-60 ${
+                archivePinStatus?.isPinned
+                  ? 'bg-[#3F6955] text-white'
+                  : 'bg-[#2D2926] dark:bg-[#FAF8F5] text-[#FAF8F5] dark:text-[#181816] hover:opacity-90'
+              }`}
+            >
+              {archivePinStatus?.isPinned ? (
+                <>
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Pinned (Ready Offline)</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-3.5 h-3.5" />
+                  <span>{isPinningArchive ? 'Pinning Archive...' : 'Pin Extended Offline Archive'}</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="rounded-2xl border border-[#E2DAD0] dark:border-[#2C2E2A] bg-[#FFFFFF] dark:bg-[#151613] p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs font-semibold text-[#1E1E1C] dark:text-[#FAF8F5]">
+                <Scale className="w-4 h-4 text-[#9E6A2E] dark:text-[#E0A865]" />
+                <span>Errata &amp; Data Correction Protocol</span>
+              </div>
+              <p className="text-xs text-[#66665E] dark:text-[#A8A499] leading-relaxed">
+                Tracked under <span className="font-mono">CORRECTIONS.md</span> · Report series discrepancies or source updates for documented peer review.
+              </p>
+            </div>
+            <a
+              href="https://github.com/zeluis/Africa-Digital-Atlas/issues/new?template=data-correction.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 inline-flex items-center justify-center gap-1.5 py-2 px-3.5 rounded-xl border border-[#DCD9CE] dark:border-[#2C2E2A] text-xs font-semibold text-[#1E1E1C] dark:text-[#FAF8F5] hover:bg-[#FAF8F5] dark:hover:bg-[#1E201B] transition-colors"
+            >
+              <span>Submit Variance Report</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
           </div>
         </div>
       </div>

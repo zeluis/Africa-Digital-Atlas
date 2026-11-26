@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getCountryClimateData, CountryClimateData } from '../data/climateData';
+import { getCountryClimateData, CountryClimateData, useClimateDataLoaded } from '../data/climateData';
 import { fetchLiveWeather, LiveWeatherData, decodeWmoCode } from '../services/weatherService';
 import { atlas } from '../data/atlas-store';
 import { getRegionCalmColor, getCountryRegionTonalPalette } from '../data/unGeoschemeColors';
@@ -65,6 +65,7 @@ export const ClimateEcologySection: React.FC<ClimateEcologySectionProps> = ({
   const [weatherData, setWeatherData] = useState<LiveWeatherData | null>(null);
   const [isLoadingWeather, setIsLoadingWeather] = useState<boolean>(false);
 
+  const climateLoaded = useClimateDataLoaded();
   const climateData = getCountryClimateData(entityId, countryName);
   const entity = atlas.getEntity(entityId);
   const regionCalmBg = entity ? getRegionCalmColor(entity.region) : 'var(--region-pan-african-calm, #f4f5f4)';
@@ -90,7 +91,7 @@ export const ClimateEcologySection: React.FC<ClimateEcologySectionProps> = ({
 
   useEffect(() => {
     loadWeather();
-  }, [entityId, climateData.coordinates.lat, climateData.coordinates.lng]);
+  }, [entityId, climateLoaded, climateData.coordinates.lat, climateData.coordinates.lng]);
 
   // Format monthly cycle data for chart according to selected temp unit
   const chartCycleData = climateData.monthlyCycle.map(item => ({

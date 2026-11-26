@@ -8,7 +8,7 @@ import {
   ArrowRight,
   ShieldCheck
 } from 'lucide-react';
-import { handleTabListKeyDown } from '../utils/a11y';
+import { AtlasTabList, AtlasTabItem } from './common/AtlasTabList';
 
 /* =========================================================================
    1. FIRST VIEWPORT CLARITY BANNER
@@ -25,7 +25,11 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
 }) => {
   const [activeQuestion, setActiveQuestion] = useState<'what' | 'why' | 'explore'>('what');
 
-  const questions = ['what', 'why', 'explore'] as const;
+  const orientationTabs: AtlasTabItem<'what' | 'why' | 'explore'>[] = [
+    { id: 'what', label: '1. What is this?', tabId: 'orientation-tab-what', controlsId: 'orientation-panel-what', icon: <Info className="w-4 h-4 text-emerald-500" /> },
+    { id: 'why', label: '2. Why does it matter?', tabId: 'orientation-tab-why', controlsId: 'orientation-panel-why', icon: <Sparkles className="w-4 h-4 text-amber-500" /> },
+    { id: 'explore', label: '3. What can I explore?', tabId: 'orientation-tab-explore', controlsId: 'orientation-panel-explore', icon: <Compass className="w-4 h-4 text-cyan-500" /> },
+  ];
 
   return (
     <section 
@@ -33,68 +37,26 @@ export const FirstViewportClarity: React.FC<FirstViewportClarityProps> = ({
       className={`rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md p-6 md:p-8 shadow-xl transition-all ${className}`}
     >
       {/* 3 Pillars Selector */}
-      <div
-        role="tablist"
-        aria-label="Platform orientation questions"
+      <AtlasTabList
+        items={orientationTabs}
+        value={activeQuestion}
+        onChange={setActiveQuestion}
+        ariaLabel="Platform orientation questions"
         className="flex flex-wrap items-center gap-2 mb-6 border-b border-zinc-200 dark:border-zinc-800/80 pb-4"
-      >
-        <button
-          type="button"
-          id="orientation-tab-what"
-          onClick={() => setActiveQuestion('what')}
-          onKeyDown={(e) => handleTabListKeyDown(e, questions, 0, setActiveQuestion, 'horizontal')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-            activeQuestion === 'what'
+        getTabClassName={(_item, isActive) =>
+          `flex items-center gap-2 px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
+            isActive
               ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-md'
               : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
-          }`}
-          aria-selected={activeQuestion === 'what'}
-          aria-controls="orientation-panel-what"
-          tabIndex={activeQuestion === 'what' ? 0 : -1}
-          role="tab"
-        >
-          <Info className="w-4 h-4 text-emerald-500" />
-          <span>1. What is this?</span>
-        </button>
-
-        <button
-          type="button"
-          id="orientation-tab-why"
-          onClick={() => setActiveQuestion('why')}
-          onKeyDown={(e) => handleTabListKeyDown(e, questions, 1, setActiveQuestion, 'horizontal')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-            activeQuestion === 'why'
-              ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-md'
-              : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
-          }`}
-          aria-selected={activeQuestion === 'why'}
-          aria-controls="orientation-panel-why"
-          tabIndex={activeQuestion === 'why' ? 0 : -1}
-          role="tab"
-        >
-          <Sparkles className="w-4 h-4 text-amber-500" />
-          <span>2. Why does it matter?</span>
-        </button>
-
-        <button
-          type="button"
-          id="orientation-tab-explore"
-          onClick={() => setActiveQuestion('explore')}
-          onKeyDown={(e) => handleTabListKeyDown(e, questions, 2, setActiveQuestion, 'horizontal')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-            activeQuestion === 'explore'
-              ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-md'
-              : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
-          }`}
-          aria-selected={activeQuestion === 'explore'}
-          aria-controls="orientation-panel-explore"
-          tabIndex={activeQuestion === 'explore' ? 0 : -1}
-          role="tab"
-        >
-          <Compass className="w-4 h-4 text-cyan-500" />
-          <span>3. What can I explore?</span>
-        </button>
-      </div>
+          }`
+        }
+        renderItem={({ item }) => (
+          <>
+            {item.icon}
+            <span>{item.label}</span>
+          </>
+        )}
+      />
 
       {/* Question Content Panels with Japandi entrance */}
       <div

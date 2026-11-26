@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { 
   ZoomIn, 
   ZoomOut, 
@@ -18,7 +18,7 @@ import {
   Sliders,
   Sparkles
 } from 'lucide-react';
-import { ETHNIC_NODES, CORE_CLUSTERS, EthnicNode } from '../../data/ethnicTreeData';
+import { ETHNIC_NODES, CORE_CLUSTERS, EthnicNode, useEthnicTreeDataLoaded } from '../../data/ethnicTreeData';
 import { AtlasDialog } from '../common/AtlasDialog';
 import { sanitizeSvgMarkup } from '../../utils/sanitizeSvg';
 import { readUploadedTextFile } from '../../utils/fileUpload';
@@ -122,6 +122,7 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
   onSelectReport,
   onNavigateToSlaveTrade
 }) => {
+  useEthnicTreeDataLoaded();
   // SVG Content state (can be default or uploaded by user)
   const [svgMarkup, setSvgMarkup] = useState<string>(DEFAULT_AUTHENTIC_SVG);
   const [isCustomSvgLoaded, setIsCustomSvgLoaded] = useState<boolean>(false);
@@ -188,6 +189,11 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
     setSelectedHotspot(null);
     setInspectedElement(null);
   }, []);
+
+  const safeSvgMarkup = useMemo(
+    () => sanitizeSvgMarkup(svgMarkup, { preserveStyleElement: true }),
+    [svgMarkup]
+  );
 
   // Zoom In / Out
   const handleZoom = (delta: number) => {
@@ -523,7 +529,7 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
             {showBaseSvg && (
               <div 
                 className="absolute inset-0 w-full h-full"
-                dangerouslySetInnerHTML={{ __html: svgMarkup }}
+                dangerouslySetInnerHTML={{ __html: safeSvgMarkup }}
               />
             )}
 
@@ -536,7 +542,9 @@ export const ActualSvgOverlayViewer: React.FC<ActualSvgOverlayViewerProps> = ({
                 {/* Hotspot Pins and Demographic Badges */}
                 {showHotspots && (
                   <g id="interactive-hotspots-overlay">
-                    {representativeHotspots.map(({ id, node, x, y }) => {
+                    {representativeHotspots
+                      .filter((h): h is { id: string; node: EthnicNode; x: number; y: number } => Boolean(h.node))
+                      .map(({ id, node, x, y }) => {
                       const isSelected = selectedHotspot?.id === node.id;
                       return (
                         <g

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Dna, 
   Skull, 
@@ -48,6 +48,7 @@ import { ReportVoiceReader } from '../components/ReportVoiceReader';
 import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
 import { usePrefersReducedMotion } from '../utils/motion';
 import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
+import { useSectionSpy } from '../hooks/useSectionSpy';
 import { 
   IBD_GENOMIC_CONCORDANCE, 
   SEX_BIASED_GENE_FLOW, 
@@ -153,27 +154,10 @@ export const MolecularLegaciesArticleView: React.FC<MolecularLegaciesArticleView
   const { copied: copiedCitation, liveAnnouncement, copyToClipboard } = useCopyToClipboard({ resetMs: 2500 });
   const [fontSizeClass, setFontSizeClass] = useState<'normal' | 'large'>('normal');
 
-  // Zero-reflow IntersectionObserver for active section indicator
-  useEffect(() => {
-    if (typeof IntersectionObserver === 'undefined') return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id as ArticleSectionId);
-          }
-        }
-      },
-      { rootMargin: '-18% 0px -65% 0px', threshold: 0 }
-    );
-
-    const targets = ARTICLE_SECTIONS
-      .map(s => document.getElementById(s.id))
-      .filter((el): el is HTMLElement => Boolean(el));
-    targets.forEach(el => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, []);
+  const sectionIds = useMemo(() => ARTICLE_SECTIONS.map(s => s.id), []);
+  useSectionSpy(sectionIds, (id) => {
+    setActiveSection(id as ArticleSectionId);
+  });
 
   const scrollToSection = (id: ArticleSectionId) => {
     setActiveSection(id);

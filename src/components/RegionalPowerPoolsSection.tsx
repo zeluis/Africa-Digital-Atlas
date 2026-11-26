@@ -1,6 +1,6 @@
 import React from 'react';
 import { AfricanRegion } from '../data/types';
-import { REGIONAL_POWER_POOLS, RegionalPowerPool } from '../data/regionalSpecializedAtlas';
+import { REGIONAL_POWER_POOLS, RegionalPowerPool, useRegionalSpecializedAtlasLoaded } from '../data/regionalSpecializedAtlas';
 import { getRegionTonalPalette, getRegionCalmColor } from '../data/unGeoschemeColors';
 import { 
   Zap, 
@@ -23,6 +23,7 @@ interface RegionalPowerPoolsSectionProps {
 export const RegionalPowerPoolsSection: React.FC<RegionalPowerPoolsSectionProps> = ({
   region
 }) => {
+  useRegionalSpecializedAtlasLoaded();
   const pool: RegionalPowerPool | undefined = REGIONAL_POWER_POOLS[region];
   const tonal = getRegionTonalPalette(region);
   const calmBg = getRegionCalmColor(region);

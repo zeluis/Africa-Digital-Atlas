@@ -146,6 +146,12 @@ interface UnifiedSearchDoc {
   payload: SearchItemType;
 }
 
+let cachedSearchIndex: {
+  key: string;
+  mini: MiniSearch<UnifiedSearchDoc>;
+  docsById: Map<string, UnifiedSearchDoc>;
+} | null = null;
+
 export const SearchModal: React.FC<SearchModalProps> = ({
   isOpen,
   onClose,
@@ -269,6 +275,12 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   );
 
   const searchBundle = useMemo(() => {
+    const allReports = Object.values(getAllReports());
+    const cacheKey = `${indexedKingdoms.length}:${indexedHeritage.length}:${indexedLanguages.length}:${allReports.length}:${SLAVE_TRADE_ILLUSTRATIONS.length}`;
+    if (cachedSearchIndex && cachedSearchIndex.key === cacheKey) {
+      return { mini: cachedSearchIndex.mini, docsById: cachedSearchIndex.docsById };
+    }
+
     const docs: UnifiedSearchDoc[] = [];
 
     for (const cmd of APP_COMMAND_REGISTRY) {
@@ -327,7 +339,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       });
     }
     const seenReportTitles = new Set<string>();
-    for (const rep of Object.values(getAllReports())) {
+    for (const rep of allReports) {
       seenReportTitles.add(normalizeSearchText(rep.title));
       docs.push({
         id: `rep:${rep.id}`,
@@ -393,6 +405,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
       processTerm: (term) => (term.length >= 1 ? term : null),
     });
     mini.addAll(docs);
+    cachedSearchIndex = { key: cacheKey, mini, docsById };
     return { mini, docsById };
   }, [lazyDataVersion, indexedKingdoms, indexedHeritage, indexedLanguages]);
 

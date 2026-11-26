@@ -342,98 +342,64 @@
   scrollbar-gutter: stable;
 }
 
-/* Standard Baseline Scrollbar Styling */
+/* Standard & Amber Floating Scrollbars (Tokenized) */
 .sleek-scrollbar {
+  --sb-color: rgba(120, 113, 108, 0.45);
+  --sb-thumb: rgba(120, 113, 108, 0.38);
+  --sb-thumb-hover: rgba(120, 113, 108, 0.75);
+  --sb-thumb-active: rgba(120, 113, 108, 0.95);
   scrollbar-width: thin;
-  scrollbar-color: rgba(120, 113, 108, 0.45) transparent;
+  scrollbar-color: var(--sb-color) transparent;
 }
 
 .dark .sleek-scrollbar {
-  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+  --sb-color: rgba(148, 163, 184, 0.45);
+  --sb-thumb: rgba(148, 163, 184, 0.35);
+  --sb-thumb-hover: rgba(148, 163, 184, 0.75);
+  --sb-thumb-active: rgba(226, 232, 240, 0.95);
 }
 
 .sleek-scrollbar-amber {
+  --sb-color: rgba(217, 119, 6, 0.55);
+  --sb-thumb: rgba(217, 119, 6, 0.45);
+  --sb-thumb-hover: rgba(217, 119, 6, 0.85);
+  --sb-thumb-active: rgba(180, 83, 9, 1);
   scrollbar-width: thin;
-  scrollbar-color: rgba(217, 119, 6, 0.55) transparent;
+  scrollbar-color: var(--sb-color) transparent;
 }
 
 .dark .sleek-scrollbar-amber {
-  scrollbar-color: rgba(245, 158, 11, 0.55) transparent;
+  --sb-color: rgba(245, 158, 11, 0.55);
+  --sb-thumb: rgba(245, 158, 11, 0.45);
+  --sb-thumb-hover: rgba(245, 158, 11, 0.85);
+  --sb-thumb-active: rgba(251, 191, 36, 1);
 }
 
-/* WebKit / Chromium / Blink / Safari Floating Scrollbars */
-.sleek-scrollbar::-webkit-scrollbar,
-.sleek-scrollbar-amber::-webkit-scrollbar {
+:is(.sleek-scrollbar, .sleek-scrollbar-amber)::-webkit-scrollbar {
   width: 12px;
   height: 12px;
 }
 
-.sleek-scrollbar::-webkit-scrollbar-track,
-.sleek-scrollbar-amber::-webkit-scrollbar-track {
+:is(.sleek-scrollbar, .sleek-scrollbar-amber)::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.sleek-scrollbar::-webkit-scrollbar-thumb,
-.sleek-scrollbar-amber::-webkit-scrollbar-thumb {
+:is(.sleek-scrollbar, .sleek-scrollbar-amber)::-webkit-scrollbar-thumb {
   border-radius: 9999px;
   border: 4px solid transparent;
   background-clip: padding-box;
+  background-color: var(--sb-thumb);
   transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
-.sleek-scrollbar:hover::-webkit-scrollbar-thumb,
-.sleek-scrollbar::-webkit-scrollbar-thumb:active,
-.sleek-scrollbar-amber:hover::-webkit-scrollbar-thumb,
-.sleek-scrollbar-amber::-webkit-scrollbar-thumb:active {
+:is(.sleek-scrollbar, .sleek-scrollbar-amber):hover::-webkit-scrollbar-thumb {
   border-width: 2px;
+  background-color: var(--sb-thumb-hover);
 }
 
-.sleek-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(120, 113, 108, 0.38);
-}
-
-.sleek-scrollbar:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(120, 113, 108, 0.75);
-}
-
-.sleek-scrollbar::-webkit-scrollbar-thumb:active {
-  background-color: rgba(120, 113, 108, 0.95);
-}
-
-.dark .sleek-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(148, 163, 184, 0.35);
-}
-
-.dark .sleek-scrollbar:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(148, 163, 184, 0.75);
-}
-
-.dark .sleek-scrollbar::-webkit-scrollbar-thumb:active {
-  background-color: rgba(226, 232, 240, 0.95);
-}
-
-.sleek-scrollbar-amber::-webkit-scrollbar-thumb {
-  background-color: rgba(217, 119, 6, 0.45);
-}
-
-.sleek-scrollbar-amber:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(217, 119, 6, 0.85);
-}
-
-.sleek-scrollbar-amber::-webkit-scrollbar-thumb:active {
-  background-color: rgba(180, 83, 9, 1.0);
-}
-
-.dark .sleek-scrollbar-amber::-webkit-scrollbar-thumb {
-  background-color: rgba(245, 158, 11, 0.45);
-}
-
-.dark .sleek-scrollbar-amber:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(245, 158, 11, 0.85);
-}
-
-.dark .sleek-scrollbar-amber::-webkit-scrollbar-thumb:active {
-  background-color: rgba(251, 191, 36, 1.0);
+:is(.sleek-scrollbar, .sleek-scrollbar-amber)::-webkit-scrollbar-thumb:active {
+  border-width: 2px;
+  background-color: var(--sb-thumb-active);
 }
 
 /* =========================================================================

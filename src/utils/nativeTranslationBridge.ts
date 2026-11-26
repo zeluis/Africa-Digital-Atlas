@@ -141,8 +141,10 @@ export function syncNativeTranslation(targetLang: SupportedLanguage): void {
 
   // 2. Manage googtrans cookie
   if (targetCode === 'en') {
-    deleteCookie('googtrans');
-    deleteCookie('googtrans_en');
+    if (document.cookie && document.cookie.includes('googtrans')) {
+      deleteCookie('googtrans');
+      deleteCookie('googtrans_en');
+    }
   } else {
     const cookieValue = `/en/${targetCode}`;
     setCookie('googtrans', cookieValue);

@@ -91,8 +91,24 @@ function isUnsafeUri(value: string, tagName = ''): boolean {
   return true;
 }
 
-export function sanitizeSvgMarkup(rawMarkup: string): string {
+export interface SanitizeSvgOptions {
+  preserveStyleElement?: boolean;
+}
+
+function sanitizeSvgStyleSheet(rawCss: string): string {
+  if (!rawCss || typeof rawCss !== 'string') return '';
+  return rawCss
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/@import\b[^;]*(?:;|$)/gi, '')
+    .replace(/expression\s*\([^)]*\)/gi, '')
+    .replace(/-moz-binding\s*:[^;]*(?:;|$)/gi, '')
+    .replace(/url\s*\(\s*(['"]?)(?!#)[^)]*\1\s*\)/gi, 'none')
+    .trim();
+}
+
+export function sanitizeSvgMarkup(rawMarkup: string, options: SanitizeSvgOptions = {}): string {
   if (!rawMarkup || typeof rawMarkup !== 'string') return '';
+  const preserveStyleElement = Boolean(options.preserveStyleElement);
 
   if (typeof DOMParser !== 'undefined' && typeof XMLSerializer !== 'undefined') {
     try {
@@ -108,7 +124,9 @@ export function sanitizeSvgMarkup(rawMarkup: string): string {
 
         while (node) {
           const tag = (node.localName || node.tagName || '').toLowerCase();
-          if (DISALLOWED_TAGS.has(tag)) {
+          if (tag === 'style' && preserveStyleElement) {
+            node.textContent = sanitizeSvgStyleSheet(node.textContent || '');
+          } else if (DISALLOWED_TAGS.has(tag)) {
             toRemove.push(node);
           } else if (SMIL_ANIMATION_TAGS.has(tag)) {
             const targetAttr = (node.getAttribute('attributeName') || '').trim().toLowerCase();
@@ -172,8 +190,21 @@ export function sanitizeSvgMarkup(rawMarkup: string): string {
     .replace(/<script[\s\S]*?<\/script>/gi, '')
     .replace(/<script[^>]*\/\s*>/gi, '')
     .replace(/<foreignObject[\s\S]*?<\/foreignObject>/gi, '')
-    .replace(/<(iframe|object|embed|applet|meta|style)[^>]*>[\s\S]*?<\/\1>/gi, '')
-    .replace(/<(iframe|object|embed|applet|meta|style)[^>]*\/\s*>/gi, '')
+    .replace(/<(iframe|object|embed|applet|meta)[^>]*>[\s\S]*?<\/\1>/gi, '')
+    .replace(/<(iframe|object|embed|applet|meta)[^>]*\/\s*>/gi, '');
+
+  if (!preserveStyleElement) {
+    sanitized = sanitized
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<style[^>]*\/\s*>/gi, '');
+  } else {
+    sanitized = sanitized.replace(/<style([^>]*)>([\s\S]*?)<\/style>/gi, (_m, attrs: string, css: string) => {
+      const cleanCss = sanitizeSvgStyleSheet(css);
+      return cleanCss ? `<style${attrs}>${cleanCss}</style>` : '';
+    });
+  }
+
+  sanitized = sanitized
     .replace(/<(animate|animateTransform|animateMotion|set)\b[^>]*attributeName\s*=\s*["']\s*(?:(?:xlink:)?href|style|on[a-z]+)\s*["'][^>]*>[\s\S]*?<\/\1>/gi, '')
     .replace(/<(animate|animateTransform|animateMotion|set)\b[^>]*attributeName\s*=\s*["']\s*(?:(?:xlink:)?href|style|on[a-z]+)\s*["'][^>]*\/?>/gi, '')
     .replace(/(<(?:animate|animateTransform|animateMotion|set)\b[^>]*?)\s(?:values|from|to|by)\s*=\s*(?:"[^"]*url\s*\([^"]*"|'[^']*url\s*\([^']*')([^>]*>)/gi, '$1$2');

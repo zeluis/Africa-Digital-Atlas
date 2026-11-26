@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   MASTER_REPORT_SECTIONS,
   GEONOMIC_DIVERSITY_GRADIENT,
@@ -8,7 +8,8 @@ import {
   PRE_COLONIAL_GOVERNANCE_DATA,
   COMPOUNDING_STRUCTURAL_EPOCHS,
   CompoundingStructuralEpoch,
-  MasterReportSection
+  MasterReportSection,
+  useAfricanDevelopmentMasterLoaded
 } from '../data/africanDevelopmentMasterData';
 import {
   FileText,
@@ -61,6 +62,7 @@ import { ReportVoiceReader } from '../components/ReportVoiceReader';
 import { ChartAccessibleTable } from '../components/common/ChartAccessibleTable';
 import { usePrefersReducedMotion } from '../utils/motion';
 import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
+import { useSectionSpy } from '../hooks/useSectionSpy';
 
 interface AfricanDevelopmentMasterReportViewProps {
   onNavigateToAtlas?: () => void;
@@ -72,6 +74,7 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
   onNavigateToMolecular
 }) => {
   const prefersReducedMotion = usePrefersReducedMotion();
+  const masterLoaded = useAfricanDevelopmentMasterLoaded();
   const [activeSectionId, setActiveSectionId] = useState<string>('executive_summary');
   const [activeEpochIndex, setActiveEpochIndex] = useState<number>(0);
   const [activeCommodityIndex, setActiveCommodityIndex] = useState<number>(0);
@@ -95,27 +98,10 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
     }
   };
 
-  // Zero-reflow IntersectionObserver for active section indicator
-  useEffect(() => {
-    if (typeof IntersectionObserver === 'undefined') return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveSectionId(entry.target.id.replace(/^sec-/, ''));
-          }
-        }
-      },
-      { rootMargin: '-18% 0px -65% 0px', threshold: 0 }
-    );
-
-    const targets = MASTER_REPORT_SECTIONS
-      .map(s => document.getElementById(`sec-${s.id}`))
-      .filter((el): el is HTMLElement => Boolean(el));
-    targets.forEach(el => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, []);
+  const sectionIds = useMemo(() => MASTER_REPORT_SECTIONS.map(s => `sec-${s.id}`), [masterLoaded]);
+  useSectionSpy(sectionIds, (id) => {
+    setActiveSectionId(id.replace(/^sec-/, ''));
+  });
 
   const scrollToSection = (id: string) => {
     setActiveSectionId(id);
@@ -131,6 +117,18 @@ export const AfricanDevelopmentMasterReportView: React.FC<AfricanDevelopmentMast
     const citationText = `Acemoglu, D., Nunn, N., & Robinson, J. A. (2026). The Structural & Evolutionary Foundations of African Development: An Interdisciplinary Synthesis. Global Economic History Dossier, 16(1), 1-84.`;
     void copyToClipboard(citationText, 'citation', 'Copied master report citation to clipboard');
   };
+
+  if (!masterLoaded || MASTER_REPORT_SECTIONS.length === 0 || !activeEpoch || !activeCommodity) {
+    return (
+      <article
+        aria-label="The Structural and Evolutionary Foundations of African Development Master Treatise"
+        className="report-frame w-full min-w-0 max-w-[1440px] mx-auto border-x border-[#D7D6CD] dark:border-[#2D2E2A] px-4 sm:px-8 lg:px-12 py-16 text-center text-sm font-mono text-[#5C5C55] dark:text-[#A8A499]"
+        id="african-development-master-report-view"
+      >
+        Loading structural &amp; evolutionary treatise dossier…
+      </article>
+    );
+  }
 
   return (
     <article aria-label="The Structural and Evolutionary Foundations of African Development Master Treatise" className={`report-frame w-full min-w-0 max-w-[1440px] mx-auto border-x border-[#D7D6CD] dark:border-[#2D2E2A] px-4 sm:px-8 lg:px-12 py-10 sm:py-14 transition-colors duration-300 relative overflow-x-clip ${fontSizeClass === 'large' ? 'text-[1.125rem]' : 'text-[1.063rem]'}`} id="african-development-master-report-view">

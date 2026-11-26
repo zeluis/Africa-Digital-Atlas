@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AfricanRegion } from '../data/types';
-import { REGIONAL_ECOLOGICAL_SYSTEMS, TransboundaryEcology } from '../data/regionalSpecializedAtlas';
+import { REGIONAL_ECOLOGICAL_SYSTEMS, TransboundaryEcology, useRegionalSpecializedAtlasLoaded } from '../data/regionalSpecializedAtlas';
 import { getRegionTonalPalette, getRegionCalmColor } from '../data/unGeoschemeColors';
 import { 
   Trees, 
@@ -22,6 +22,7 @@ interface RegionalEcologySectionProps {
 export const RegionalEcologySection: React.FC<RegionalEcologySectionProps> = ({
   region
 }) => {
+  useRegionalSpecializedAtlasLoaded();
   const ecoSystems = REGIONAL_ECOLOGICAL_SYSTEMS[region] || [];
   const tonal = getRegionTonalPalette(region);
   const calmBg = getRegionCalmColor(region);

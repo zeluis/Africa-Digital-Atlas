@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import type { KingdomDetailedRecord, Artifact3DRecord } from '../../data/preColonialKingdomsDetailed';
 import { AtlasDialog } from '../common/AtlasDialog';
-import { usePrefersReducedMotion } from '../../utils/motion';
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
+import { useAnimationActive } from '../../hooks/useAnimationActive';
 import { canvasToPngBlob, downloadBlob } from '../../utils/exportUtils';
 import { 
   Box, 
@@ -63,36 +63,20 @@ export const KingdomArtifact3DViewerModal: React.FC<KingdomArtifact3DViewerModal
   const { copied: copiedCitation, liveAnnouncement, copyToClipboard } = useCopyToClipboard({ resetMs: 2400 });
   const [activeTab, setActiveTab] = useState<'overview' | 'materiality' | 'provenance' | 'significance'>('overview');
 
-  const reducedMotion = usePrefersReducedMotion();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animFrameRef = useRef<number | null>(null);
+  const { isActive: isAutoRotationActive } = useAnimationActive(canvasRef, {
+    enabled: isAutoRotating && !isDragging,
+  });
 
-  // Auto-rotation loop respecting reduced-motion preference and tab visibility
+  // Auto-rotation loop respecting reduced-motion preference, viewport intersection, and tab visibility
   useEffect(() => {
-    if (!isAutoRotating || isDragging || reducedMotion) return;
-    let interval: ReturnType<typeof setInterval> | null = null;
-    const startLoop = () => {
-      if (!document.hidden && !interval) {
-        interval = setInterval(() => {
-          setRotationY(prev => (prev + 0.6) % 360);
-        }, 30);
-      }
-    };
-    const handleVisibility = () => {
-      if (document.hidden && interval) {
-        clearInterval(interval);
-        interval = null;
-      } else {
-        startLoop();
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-    startLoop();
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibility);
-      if (interval) clearInterval(interval);
-    };
-  }, [isAutoRotating, isDragging, reducedMotion]);
+    if (!isAutoRotationActive) return;
+    const interval = setInterval(() => {
+      setRotationY(prev => (prev + 0.6) % 360);
+    }, 30);
+    return () => clearInterval(interval);
+  }, [isAutoRotationActive]);
 
   // Pointer drag controls
   const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {

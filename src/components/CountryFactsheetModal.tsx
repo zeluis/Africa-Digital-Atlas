@@ -6,7 +6,7 @@ import { AtlasDialog } from './common/AtlasDialog';
 import { UN_M49_NUMERIC_CODES, getEntityGeographyMetadata } from '../data/svgGeographySystem';
 import { ENTITY_BLOC_MEMBERSHIP } from '../data/entityBlocs';
 import { COUNTRY_HEADER_DATA, useCountryHeaderDataLoaded } from '../data/countryHeaderData';
-import { getCountryHistoricalDevelopmentDossier } from '../data/countryHistoricalDevelopmentData';
+import { getCountryHistoricalDevelopmentDossier, useCountryHistoricalLoaded } from '../data/countryHistoricalDevelopmentData';
 import { 
   formatPopulation, 
   formatGDP, 
@@ -65,6 +65,7 @@ export const CountryFactsheetModal: React.FC<CountryFactsheetModalProps> = ({
   onClose
 }) => {
   useCountryHeaderDataLoaded();
+  useCountryHistoricalLoaded();
   const { copied, copyToClipboard } = useCopyToClipboard({ resetMs: 2200 });
 
   if (!isOpen) return null;

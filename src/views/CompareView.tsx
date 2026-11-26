@@ -49,7 +49,7 @@ import {
   Filter,
   Globe
 } from 'lucide-react';
-import { getCountryHistoricalDevelopmentDossier } from '../data/countryHistoricalDevelopmentData';
+import { getCountryHistoricalDevelopmentDossier, useCountryHistoricalLoaded } from '../data/countryHistoricalDevelopmentData';
 import { MultiCountryRadarMatrix } from '../components/MultiCountryRadarMatrix';
 import { CountryFactsheetModal } from '../components/CountryFactsheetModal';
 import { BilateralTradeComplementaritySection } from '../components/afcfta/BilateralTradeComplementaritySection';
@@ -88,6 +88,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
   initialCountries = ['NGA', 'ZAF', 'EGY', 'KEN'],
   onCountriesChange
 }) => {
+  useCountryHistoricalLoaded();
   const [selectedIds, setSelectedIds] = useState<string[]>(initialCountries);
 
   // Sync external initialCountries (e.g., from deep link or browser navigation)
@@ -202,12 +203,22 @@ export const CompareView: React.FC<CompareViewProps> = ({
   const COUNTRY_CHART_COLORS = ['#10b981', '#06b6d4', '#8b5cf6', '#f59e0b'];
 
   // Metrics definitions for the comparison table
-  const metricGroups = [
+  const metricGroups: Array<{
+    group: string;
+    items: Array<{
+      label: string;
+      indicatorId?: string;
+      format: (id: string) => string;
+      isLeader: (values: number[]) => number;
+      getValue: (id: string) => number;
+    }>;
+  }> = [
     {
       group: 'Macroeconomic & Monetary Architecture',
       items: [
         { 
           label: valuationMode === 'ppp' ? 'GDP (PPP Int\'l $, 2024)' : 'Nominal GDP (USD, 2024)', 
+          indicatorId: 'NY.GDP.MKTP.CD',
           format: (id: string) => {
             const nominal = atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD') || 0;
             if (valuationMode === 'ppp') {
@@ -224,6 +235,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
         },
         { 
           label: valuationMode === 'ppp' ? 'GDP per Capita (PPP Int\'l $)' : 'GDP per Capita (Nominal USD)', 
+          indicatorId: 'NY.GDP.MKTP.CD',
           format: (id: string) => {
             const gdp = atlas.getIndicatorValue(id, 'NY.GDP.MKTP.CD') || 0;
             const pop = atlas.getIndicatorValue(id, 'SP.POP.TOTL') || 0;
@@ -247,9 +259,9 @@ export const CompareView: React.FC<CompareViewProps> = ({
           isLeader: (values: number[]) => Math.max(...values),
           getValue: (id: string) => PPP_PRICE_LEVEL_FACTORS[id] || 2.6
         },
-        { label: 'Real GDP Growth Rate', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'NY.GDP.MKTP.KD.ZG')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'NY.GDP.MKTP.KD.ZG') || 0 },
-        { label: 'Inflation Rate (CPI)', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'FP.CPI.TOTL.ZG')), isLeader: (values: number[]) => Math.min(...values.filter(v => v > 0)), getValue: (id: string) => atlas.getIndicatorValue(id, 'FP.CPI.TOTL.ZG') || 0 },
-        { label: 'Govt Debt to GDP %', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'GC.DOD.TOTL.GD.ZS')), isLeader: (values: number[]) => Math.min(...values.filter(v => v > 0)), getValue: (id: string) => atlas.getIndicatorValue(id, 'GC.DOD.TOTL.GD.ZS') || 0 },
+        { label: 'Real GDP Growth Rate', indicatorId: 'NY.GDP.MKTP.KD.ZG', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'NY.GDP.MKTP.KD.ZG')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'NY.GDP.MKTP.KD.ZG') || 0 },
+        { label: 'Inflation Rate (CPI)', indicatorId: 'FP.CPI.TOTL.ZG', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'FP.CPI.TOTL.ZG')), isLeader: (values: number[]) => Math.min(...values.filter(v => v > 0)), getValue: (id: string) => atlas.getIndicatorValue(id, 'FP.CPI.TOTL.ZG') || 0 },
+        { label: 'Govt Debt to GDP %', indicatorId: 'GC.DOD.TOTL.GD.ZS', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'GC.DOD.TOTL.GD.ZS')), isLeader: (values: number[]) => Math.min(...values.filter(v => v > 0)), getValue: (id: string) => atlas.getIndicatorValue(id, 'GC.DOD.TOTL.GD.ZS') || 0 },
       ]
     },
     {
@@ -257,6 +269,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
       items: [
         { 
           label: normalizationScale === 'perCapita' ? 'Population Share of Africa %' : 'Total National Population', 
+          indicatorId: 'SP.POP.TOTL',
           format: (id: string) => {
             const p = atlas.getIndicatorValue(id, 'SP.POP.TOTL') || 0;
             if (normalizationScale === 'perCapita') {
@@ -268,12 +281,13 @@ export const CompareView: React.FC<CompareViewProps> = ({
           isLeader: (values: number[]) => Math.max(...values), 
           getValue: (id: string) => atlas.getIndicatorValue(id, 'SP.POP.TOTL') || 0 
         },
-        { label: 'Human Development (HDI)', format: (id: string) => formatHDI(atlas.getIndicatorValue(id, 'UNDP.HDI.INDEX')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'UNDP.HDI.INDEX') || 0 },
-        { label: 'Life Expectancy at Birth', format: (id: string) => `${(atlas.getIndicatorValue(id, 'SP.DYN.LE00.IN') || 0).toFixed(1)} yrs`, isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'SP.DYN.LE00.IN') || 0 },
-        { label: 'Adult Literacy Rate', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'SE.ADT.LITR.ZS')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'SE.ADT.LITR.ZS') || 0 },
-        { label: 'Urban Population Share', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'SP.URB.TOTL.IN.ZS')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'SP.URB.TOTL.IN.ZS') || 0 },
+        { label: 'Human Development (HDI)', indicatorId: 'UNDP.HDI.INDEX', format: (id: string) => formatHDI(atlas.getIndicatorValue(id, 'UNDP.HDI.INDEX')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'UNDP.HDI.INDEX') || 0 },
+        { label: 'Life Expectancy at Birth', indicatorId: 'SP.DYN.LE00.IN', format: (id: string) => `${(atlas.getIndicatorValue(id, 'SP.DYN.LE00.IN') || 0).toFixed(1)} yrs`, isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'SP.DYN.LE00.IN') || 0 },
+        { label: 'Adult Literacy Rate', indicatorId: 'SE.ADT.LITR.ZS', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'SE.ADT.LITR.ZS')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'SE.ADT.LITR.ZS') || 0 },
+        { label: 'Urban Population Share', indicatorId: 'SP.URB.TOTL.IN.ZS', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'SP.URB.TOTL.IN.ZS')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'SP.URB.TOTL.IN.ZS') || 0 },
         { 
           label: 'CO2 Emissions (Metric Tons / Person)', 
+          indicatorId: 'EN.ATM.CO2E.PC',
           format: (id: string) => {
             const co2 = atlas.getIndicatorValue(id, 'EN.ATM.CO2E.PC');
             return co2 !== null ? `${co2.toFixed(2)} MT/capita` : 'Unavailable';
@@ -305,8 +319,8 @@ export const CompareView: React.FC<CompareViewProps> = ({
         { label: 'UN M49 Numeric ID', format: (id: string) => UN_M49_NUMERIC_CODES[id] || '—', isLeader: () => 0, getValue: (id: string) => Number(UN_M49_NUMERIC_CODES[id]) || 0 },
         { label: 'Shape Topology', format: (id: string) => getEntityGeographyMetadata(id)?.shapeType.toUpperCase() || 'CONTINENTAL', isLeader: () => 0, getValue: () => 0 },
         { label: 'UNESCO Heritage Sites', format: (id: string) => `${atlas.getHeritageSites(id).length} Sites`, isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getHeritageSites(id).length },
-        { label: 'Electricity Access %', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'EG.ELC.ACCS.ZS')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'EG.ELC.ACCS.ZS') || 0 },
-        { label: 'Renewable Energy Share %', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'EG.FEC.RNEW.ZS')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'EG.FEC.RNEW.ZS') || 0 },
+        { label: 'Electricity Access %', indicatorId: 'EG.ELC.ACCS.ZS', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'EG.ELC.ACCS.ZS')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'EG.ELC.ACCS.ZS') || 0 },
+        { label: 'Renewable Energy Share %', indicatorId: 'EG.FEC.RNEW.ZS', format: (id: string) => formatPercentage(atlas.getIndicatorValue(id, 'EG.FEC.RNEW.ZS')), isLeader: (values: number[]) => Math.max(...values), getValue: (id: string) => atlas.getIndicatorValue(id, 'EG.FEC.RNEW.ZS') || 0 },
       ]
     },
     {
@@ -890,6 +904,9 @@ export const CompareView: React.FC<CompareViewProps> = ({
                           {countries.map(country => {
                             const val = item.getValue(country.id);
                             const isLeading = leaderVal !== 0 && val === leaderVal;
+                            const obsStatus = item.indicatorId
+                              ? atlas.getLatestObservation(country.id, item.indicatorId)?.status
+                              : undefined;
 
                             return (
                               <div
@@ -898,7 +915,14 @@ export const CompareView: React.FC<CompareViewProps> = ({
                                   isLeading ? 'font-bold text-emerald-800 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20' : 'text-zinc-800 dark:text-zinc-200'
                                 }`}
                               >
-                                <span>{item.format(country.id)}</span>
+                                <div>
+                                  <span>{item.format(country.id)}</span>
+                                  {obsStatus && obsStatus !== 'observed' && (
+                                    <span className="block text-[10px] font-mono font-normal text-zinc-500 dark:text-zinc-400 mt-0.5 capitalize">
+                                      · {obsStatus}
+                                    </span>
+                                  )}
+                                </div>
                                 {isLeading && (
                                   <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 inline-flex items-center gap-0.5 shrink-0">
                                     <Check className="w-3 h-3" /> High

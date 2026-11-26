@@ -52,7 +52,7 @@ import { WikipediaEthnicDossier } from './WikipediaEthnicDossier';
 import { RichEditorialCountryDevelopmentPanel } from './RichEditorialCountryDevelopmentPanel';
 import { getMajorLinguisticFamilies } from '../../services/wikipediaService';
 import { findWikipediaEntry, WIKIPEDIA_TABLE_ENTRIES, useWikipediaAtlasLoaded } from '../../data/wikipediaEthnicAtlas';
-import { ALL_ADMIN1_SUBDIVISIONS } from '../../data/afriataGeographyData';
+import { ALL_ADMIN1_SUBDIVISIONS, useAfriataGeographyLoaded } from '../../data/afriataGeographyData';
 import { RadialTreeSkeleton } from './RadialTreeSkeleton';
 import { useCanvasViewport } from '../../hooks/useCanvasViewport';
 import { getCanonicalCountryForEthnic } from '../../data/ethnicToCountryMap';
@@ -327,8 +327,11 @@ function loadSharedEthnicTreeSvg(): Promise<string | null> {
     })
     .then(svgText => {
       if (svgText && /<svg(?=[\s>])/i.test(svgText)) {
-        cachedEthnicTreeSvgText = svgText;
-        return svgText;
+        const safeSvg = sanitizeSvgMarkup(svgText, { preserveStyleElement: true });
+        if (safeSvg) {
+          cachedEthnicTreeSvgText = safeSvg;
+          return safeSvg;
+        }
       }
       return null;
     })
@@ -354,6 +357,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
   onNavigateToLanguages
 }) => {
   const wikiAtlasLoaded = useWikipediaAtlasLoaded();
+  const geographyLoaded = useAfriataGeographyLoaded();
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -1085,7 +1089,7 @@ export const AfriataExplorer: React.FC<AfriataExplorerProps> = ({
     });
 
     return list;
-  }, [wikiAtlasLoaded]);
+  }, [wikiAtlasLoaded, geographyLoaded]);
 
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];

@@ -35,10 +35,12 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const isRTL = language === 'ar';
 
-  // Initialize native translation bridge on initial app mount
+  // Defer Google Translate bridge injection until a non-English language is active or selected
   useEffect(() => {
-    initNativeTranslationEngine();
-  }, []);
+    if (language !== 'en') {
+      initNativeTranslationEngine();
+    }
+  }, [language]);
 
   // Dynamically load only the active non-English locale dictionary chunk on demand
   useEffect(() => {
@@ -61,6 +63,9 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
   const setLanguage = (lang: SupportedLanguage) => {
     setLanguageState(lang);
     writeStorageString(STORAGE_KEY, lang);
+    if (lang !== 'en') {
+      initNativeTranslationEngine();
+    }
     syncNativeTranslation(lang);
   };
 

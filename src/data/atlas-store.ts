@@ -161,7 +161,10 @@ class AtlasDataStore {
         import('./worldBankComprehensiveData'),
         import('./externalApisIngestion')
       ]).then(async ([wbMod, extMod]) => {
-        await extMod.ensureExternalApisLoaded();
+        await Promise.all([
+          wbMod.ensureWorldBankComprehensiveLoaded(),
+          extMod.ensureExternalApisLoaded()
+        ]);
         for (const src of extMod.EXTERNAL_DATA_SOURCES) {
           this.sources.set(src.id, src);
         }

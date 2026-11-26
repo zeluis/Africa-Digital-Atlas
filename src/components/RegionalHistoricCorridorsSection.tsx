@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AfricanRegion } from '../data/types';
-import { HISTORICAL_REGIONAL_ROUTES, HistoricalTradeRoute } from '../data/regionalSpecializedAtlas';
+import { HISTORICAL_REGIONAL_ROUTES, HistoricalTradeRoute, useRegionalSpecializedAtlasLoaded } from '../data/regionalSpecializedAtlas';
 import { getRegionTonalPalette, getRegionCalmColor } from '../data/unGeoschemeColors';
 import { 
   Compass, 
@@ -21,6 +21,7 @@ interface RegionalHistoricCorridorsSectionProps {
 export const RegionalHistoricCorridorsSection: React.FC<RegionalHistoricCorridorsSectionProps> = ({
   region
 }) => {
+  useRegionalSpecializedAtlasLoaded();
   const routes = HISTORICAL_REGIONAL_ROUTES[region] || [];
   const tonal = getRegionTonalPalette(region);
   const calmBg = getRegionCalmColor(region);

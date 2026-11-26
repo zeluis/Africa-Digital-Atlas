@@ -30,6 +30,10 @@ export const MapView: React.FC<MapViewProps> = ({
   const handleToggleUnesco = externalOnToggleUnescoSites || (() => setInternalShowUnescoSites(prev => !prev));
 
   const handleCountrySelect = (entityId: string) => {
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+      onSelectCountry(entityId);
+      return;
+    }
     setPeekCountryId(entityId);
     setIsPeekOpen(true);
   };

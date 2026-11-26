@@ -1,4 +1,5 @@
 import express from "express";
+import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
@@ -51,10 +52,71 @@ if (process.env.TRUST_PROXY !== "false") {
   app.set("trust proxy", 1);
 }
 
-app.use((_req, res, next) => {
+function computeSpaInlineScriptHashes(distDir: string): string[] {
+  const indexHtmlPath = path.join(distDir, "index.html");
+  if (!fs.existsSync(indexHtmlPath)) return [];
+  try {
+    const html = fs.readFileSync(indexHtmlPath, "utf8");
+    const hashes: string[] = [];
+    const scriptRegex = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
+    let match: RegExpExecArray | null;
+    while ((match = scriptRegex.exec(html)) !== null) {
+      const body = match[1];
+      if (body && body.trim().length > 0) {
+        const digest = crypto.createHash("sha256").update(body, "utf8").digest("base64");
+        hashes.push(`'sha256-${digest}'`);
+      }
+    }
+    return hashes;
+  } catch {
+    return [];
+  }
+}
+
+const mountPrefixForCsp = resolveMountPrefix();
+const docsPathPrefix = `${mountPrefixForCsp}/docs`;
+let cachedSpaScriptHashes: string[] | null = null;
+
+app.use((req, res, next) => {
+  const isProdEnv = process.env.NODE_ENV === "production";
+  const reqPath = req.path || "/";
+  const isDocsRoute = reqPath === docsPathPrefix || reqPath.startsWith(`${docsPathPrefix}/`);
+
+  if (isProdEnv && cachedSpaScriptHashes === null) {
+    cachedSpaScriptHashes = computeSpaInlineScriptHashes(resolveDistDir());
+  }
+
+  const scriptSrcTokens = [
+    "'self'",
+    ...(isProdEnv && !isDocsRoute
+      ? (cachedSpaScriptHashes && cachedSpaScriptHashes.length > 0 ? cachedSpaScriptHashes : [])
+      : ["'unsafe-inline'"]),
+    "https://translate.google.com",
+    "https://translate.googleapis.com",
+    "https://translate-pa.googleapis.com",
+    "https://www.gstatic.com",
+    ...(isProdEnv ? [] : ["'unsafe-eval'"]),
+  ];
+
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  res.setHeader(
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      "base-uri 'self'",
+      "object-src 'none'",
+      "form-action 'self'",
+      "img-src 'self' data: blob: https:",
+      "media-src 'self' data: blob: https:",
+      "font-src 'self' data: https:",
+      "style-src 'self' 'unsafe-inline' https://translate.googleapis.com https://www.gstatic.com",
+      "worker-src 'self' blob:",
+      `script-src ${scriptSrcTokens.join(" ")}`,
+      `connect-src 'self' https:${isProdEnv ? "" : " ws: wss:"}`,
+    ].join("; ")
+  );
   next();
 });
 
@@ -221,12 +283,12 @@ function getGenAI(): GoogleGenAI | null {
 }
 
 import externalApisPayload from "./src/data/externalApisIngestion.json";
-import { AKP_PILLARS_META } from "./src/data/akpRegistry241";
+import akpRegistryPayload from "./src/data/akpRegistry241.json";
 import { INITIAL_PIPELINE_STEPS } from "./src/data/atlas-pipeline";
 import { getInitialEntities } from "./src/data/atlas-raw-data";
 
 const EXTERNAL_API_CONNECTORS = externalApisPayload.connectors;
-const AKP_DATASETS_COUNT = AKP_PILLARS_META.reduce((sum, pillar) => sum + pillar.count, 0);
+const AKP_DATASETS_COUNT = akpRegistryPayload.pillarsMeta.reduce((sum, pillar) => sum + pillar.count, 0);
 const PIPELINE_STAGES_COUNT = INITIAL_PIPELINE_STEPS.length;
 const CANONICAL_ENTITIES_COUNT = getInitialEntities().length;
 
@@ -283,7 +345,11 @@ apiRouter.get("/research/dataset-raw", async (req, res) => {
   if (!ALLOWED_TRACKED_DATASETS.has(fileScope)) {
     return res.status(400).json({ error: "Invalid dataset scope" });
   }
-  const fullPath = path.join(process.cwd(), fileScope);
+  const baseDir = path.resolve(process.cwd());
+  const fullPath = path.resolve(baseDir, fileScope);
+  if (!fullPath.startsWith(baseDir + path.sep)) {
+    return res.status(400).json({ error: "Invalid dataset path" });
+  }
   try {
     const stat = await fs.promises.stat(fullPath);
     if (!stat.isFile()) {
@@ -338,8 +404,25 @@ apiRouter.post("/ingest/test-connector", connectorProbeLimiter, async (req, res)
   const targetUrl = connector.sampleEndpoint.replace(/\{iso3\}/g, encodeURIComponent(safeIso3));
 
   try {
-    const upstreamRes = await fetch(targetUrl, {
+    const parsedUrl = new URL(targetUrl);
+    const host = parsedUrl.hostname.toLowerCase();
+    const isBlockedHost =
+      parsedUrl.protocol !== "https:" ||
+      host === "localhost" ||
+      host === "127.0.0.1" ||
+      host === "::1" ||
+      host.startsWith("169.254.") ||
+      host.startsWith("10.") ||
+      host.startsWith("192.168.") ||
+      /^172\.(1[6-9]|2\d|3[0-1])\./.test(host) ||
+      host.endsWith(".local");
+    if (isBlockedHost) {
+      return res.status(400).json({ error: "Connector target URL is not permitted" });
+    }
+
+    const upstreamRes = await fetch(parsedUrl.toString(), {
       signal: AbortSignal.timeout(5000),
+      redirect: "error",
       headers: { "User-Agent": "Afriata-Data-Atlas/2.4 (Open Knowledge Research)" }
     });
     const latency = Math.round(performance.now() - startTime);

@@ -18,7 +18,8 @@ import {
 } from 'lucide-react';
 import { 
   getCountryHistoricalDevelopmentDossier, 
-  CountryHistoricalDevelopmentDossier 
+  CountryHistoricalDevelopmentDossier,
+  useCountryHistoricalLoaded
 } from '../../data/countryHistoricalDevelopmentData';
 
 interface RichEditorialCountryDevelopmentPanelProps {
@@ -44,6 +45,7 @@ export const RichEditorialCountryDevelopmentPanel: React.FC<RichEditorialCountry
   onSelectReport,
   compact = false
 }) => {
+  useCountryHistoricalLoaded();
   const [isExpanded, setIsExpanded] = useState<boolean>(!compact);
   const [showAllWiki, setShowAllWiki] = useState<boolean>(false);
 

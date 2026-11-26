@@ -192,8 +192,19 @@ export function exportCountriesToCsv(selectedIndicatorIds?: string[]): void {
     ].join(',');
   });
 
-  const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
-  downloadFile(`africa_atlas_master_dataset_${new Date().toISOString().slice(0, 10)}.csv`, csvContent, 'text/csv;charset=utf-8');
+  const exportedAt = new Date().toISOString();
+  const metaLines = [
+    '# Afriata: Africa Data Atlas - Master Matrix Export',
+    '# DOI: 10.6084/m9.figshare.34065711',
+    '# License: CC BY 4.0 (Data/Assets) / MIT (Code)',
+    `# Exported At: ${exportedAt}`,
+    '# Epistemic Flags: Cell suffixes [derived], [estimated], [forecast] denote non-observed series',
+    '# Errata / Data Corrections: https://github.com/zeluis/Africa-Digital-Atlas/blob/main/CORRECTIONS.md',
+    '#'
+  ];
+
+  const csvContent = '\uFEFF' + [...metaLines, headers.join(','), ...rows].join('\r\n');
+  downloadFile(`africa_atlas_master_dataset_${exportedAt.slice(0, 10)}.csv`, csvContent, 'text/csv;charset=utf-8');
 }
 
 /**
@@ -244,6 +255,9 @@ export function exportCountriesToJson(selectedIndicatorIds?: string[]): void {
     metadata: {
       title: 'Africa Data Atlas & Socio-Economic Database',
       version: manifest.atlasVersion,
+      doi: '10.6084/m9.figshare.34065711',
+      correctionsUrl: 'https://github.com/zeluis/Africa-Digital-Atlas/blob/main/CORRECTIONS.md',
+      observationStatusSchema: ['observed', 'derived', 'estimated', 'forecast'],
       exportedAt: new Date().toISOString(),
       license: 'CC-BY-4.0 Open Access',
       countryCount: entities.length,
@@ -342,7 +356,18 @@ export function exportSlaveVoyagesToCsv(): void {
     escapeCsvCell(route.primaryCarriers.map(c => `${c.carrier} (${c.percentage}%)`).join('; '), { quoteAllStrings: true })
   ].join(','));
 
-  const content = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
+  const exportedAt = new Date().toISOString();
+  const metaLines = [
+    '# Afriata: Africa Data Atlas - SlaveVoyages Regional Flows Export',
+    '# Primary Source: SlaveVoyages Consortium (Trans-Atlantic & Intra-American Databases, 1514-1866)',
+    '# DOI: 10.6084/m9.figshare.34065711',
+    '# License: CC BY 4.0 (Data/Assets) / MIT (Code)',
+    `# Exported At: ${exportedAt}`,
+    '# Errata / Data Corrections: https://github.com/zeluis/Africa-Digital-Atlas/blob/main/CORRECTIONS.md',
+    '#'
+  ];
+
+  const content = '\uFEFF' + [...metaLines, headers.join(','), ...rows].join('\r\n');
   downloadFile(`transatlantic_slave_voyages_regional_flows.csv`, content, 'text/csv;charset=utf-8');
 }
 
@@ -440,6 +465,13 @@ export function exportAcademicBibtex(reportKey?: 'atlas' | 'molecular' | 'nunn')
 }`
   };
 
+  const headerLines = [
+    '% Afriata: Africa Data Atlas - BibTeX Citations',
+    '% DOI: 10.6084/m9.figshare.34065711',
+    '% License: CC BY 4.0 (Data/Assets) / MIT (Code)',
+    '% Errata / Data Corrections: https://github.com/zeluis/Africa-Digital-Atlas/blob/main/CORRECTIONS.md',
+    '',
+  ].join('\n');
   const selectedBib = reportKey ? bibtexEntries[reportKey] : Object.values(bibtexEntries).join('\n\n');
-  downloadFile(`citations_${reportKey || 'all'}.bib`, selectedBib, 'text/plain;charset=utf-8');
+  downloadFile(`citations_${reportKey || 'all'}.bib`, `${headerLines}${selectedBib}`, 'text/plain;charset=utf-8');
 }

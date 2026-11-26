@@ -18,6 +18,7 @@ import { AtlasSelect } from '../common/AtlasSelect';
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 import { useFullscreenContainer } from '../../hooks/useFullscreenContainer';
 import { dispatchViewportKeyboardShortcut } from '../../hooks/useCanvasViewport';
+import { useAnimationActive } from '../../hooks/useAnimationActive';
 import {
   Castle,
   Shield,
@@ -283,8 +284,10 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
   const currentEndYearRef = useRef<number>(yearRange[1]);
   currentEndYearRef.current = yearRange[1];
 
+  const { isDocumentHidden } = useAnimationActive(svgContainerRef, { enabled: isTimelinePlaying });
+
   useEffect(() => {
-    if (!isTimelinePlaying) return;
+    if (!isTimelinePlaying || isDocumentHidden) return;
 
     let rafId = 0;
     let lastTime = performance.now();
@@ -300,7 +303,6 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
 
     const tick = (now: number) => {
       rafId = 0;
-      if (document.hidden) return;
       const deltaSec = Math.min(0.05, (now - lastTime) / 1000);
       lastTime = now;
 
@@ -321,28 +323,12 @@ export const AfricanPortsMap: React.FC<AfricanPortsMapProps> = ({
       rafId = requestAnimationFrame(tick);
     };
 
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        if (rafId) {
-          cancelAnimationFrame(rafId);
-          rafId = 0;
-        }
-      } else if (!rafId) {
-        lastTime = performance.now();
-        rafId = requestAnimationFrame(tick);
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    if (!document.hidden) {
-      rafId = requestAnimationFrame(tick);
-    }
+    rafId = requestAnimationFrame(tick);
 
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (rafId) cancelAnimationFrame(rafId);
     };
-  }, [isTimelinePlaying]);
+  }, [isTimelinePlaying, isDocumentHidden]);
 
   // Filtered port list
   const filteredPorts = useMemo(() => {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AfricanRegion } from '../data/types';
-import { REGIONAL_TRADE_PROFILES, RegionalTradeCorridor } from '../data/regionalSpecializedAtlas';
+import { REGIONAL_TRADE_PROFILES, RegionalTradeCorridor, useRegionalSpecializedAtlasLoaded } from '../data/regionalSpecializedAtlas';
 import { getRegionTonalPalette, getRegionCalmColor } from '../data/unGeoschemeColors';
 import { 
   TrendingUp, 
@@ -27,6 +27,7 @@ export const RegionalAfcftaTradeSection: React.FC<RegionalAfcftaTradeSectionProp
   region,
   onSelectCountry
 }) => {
+  useRegionalSpecializedAtlasLoaded();
   const profile = REGIONAL_TRADE_PROFILES[region];
   const tonal = getRegionTonalPalette(region);
   const calmBg = getRegionCalmColor(region);

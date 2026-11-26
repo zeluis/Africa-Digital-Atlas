@@ -2,7 +2,7 @@ import React from 'react';
 import { AFRICA_FINAL_MAP, AFRICA_FINAL_TRANSFORM, AfricaFinalCountryPath } from '../data/africaFinalGeometry';
 import { useAfricaFinalMap } from '../utils/svgMapLoader';
 import { AfricanRegion } from '../data/types';
-import { AKP_INFRASTRUCTURE_POINTS, AKP_PROTECTED_AREAS, AkpInfrastructurePoint, AkpProtectedArea, AkpCategory } from '../data/akpDatasets';
+import { AKP_INFRASTRUCTURE_POINTS, AKP_PROTECTED_AREAS, AkpInfrastructurePoint, AkpProtectedArea, AkpCategory, useAkpDatasetsLoaded } from '../data/akpDatasets';
 import { ThematicOverlaysLayer, AnyThematicItem, LayerVisibilityState } from './ThematicOverlaysLayer';
 import { CartographicCartouche } from './CartographicCartouche';
 import { UnescoHeritageMapLayer } from './cartography/UnescoHeritageMapLayer';
@@ -94,6 +94,7 @@ export const AfricaMapFinalLayer: React.FC<AfricaMapFinalLayerProps> = ({
   isolatedCountryId = null
 }) => {
   const { mapData: streamedMap } = useAfricaFinalMap();
+  useAkpDatasetsLoaded();
   const finalMap = mapData || streamedMap || AFRICA_FINAL_MAP;
   return (
     <>

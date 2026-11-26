@@ -474,3 +474,5 @@ export const UnescoSiteDetailModal: React.FC<UnescoSiteDetailModalProps> = ({
     </AnimatePresence>
   );
 };
+
+export default UnescoSiteDetailModal;

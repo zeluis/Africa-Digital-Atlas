@@ -16,7 +16,7 @@ import {
   Check,
   ExternalLink
 } from 'lucide-react';
-import { AKP_REGISTRY_241_DATASETS, AKP_PILLARS_META, AkpDatasetRecord } from '../data/akpRegistry241';
+import { AKP_REGISTRY_241_DATASETS, AKP_PILLARS_META, AkpDatasetRecord, useAkpRegistry241Loaded } from '../data/akpRegistry241';
 import { AtlasDialog } from './common/AtlasDialog';
 
 export interface AkpCatalogueModalProps {
@@ -32,6 +32,7 @@ export const AkpCatalogueModal: React.FC<AkpCatalogueModalProps> = ({
   onSelectMetric,
   currentChoroplethMetricId
 }) => {
+  const akpRegistryLoaded = useAkpRegistry241Loaded();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPillar, setSelectedPillar] = useState<string>('all');
   const [downloadSuccessToast, setDownloadSuccessToast] = useState<string | null>(null);
@@ -52,7 +53,7 @@ export const AkpCatalogueModal: React.FC<AkpCatalogueModalProps> = ({
 
       return matchesPillar && matchesQuery;
     });
-  }, [searchQuery, selectedPillar]);
+  }, [searchQuery, selectedPillar, akpRegistryLoaded]);
 
   const handleSimulateDownload = (dataset: AkpDatasetRecord, format: string) => {
     setDownloadSuccessToast(`Exporting ${dataset.code} in ${format} format...`);

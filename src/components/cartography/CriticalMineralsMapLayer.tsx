@@ -3,7 +3,8 @@ import { m, AnimatePresence } from 'motion/react';
 import { 
   CRITICAL_MINERALS_REGISTRY, 
   CriticalMineralDeposit, 
-  CountryMineralsProfile 
+  CountryMineralsProfile,
+  useCriticalMineralsLoaded
 } from '../../data/criticalMineralsData';
 import { 
   Zap, 
@@ -403,6 +404,7 @@ export const CriticalMineralsInspector: React.FC<CriticalMineralsInspectorProps>
   onClose,
   onSelectCountry
 }) => {
+  useCriticalMineralsLoaded();
   if (!activeNode) return null;
 
   const colors = CATEGORY_COLORS[activeNode.category] || CATEGORY_COLORS['Battery Mineral'];

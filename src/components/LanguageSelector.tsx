@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
 import { SupportedLanguage } from '../i18n/types';
 import { Globe, Check, ChevronDown } from 'lucide-react';
+import { initNativeTranslationEngine } from '../utils/nativeTranslationBridge';
 
 export const LanguageSelector: React.FC<{ className?: string }> = ({ className = '' }) => {
   const { language, setLanguage, currentLanguageOption, availableLanguages } = useTranslation();
@@ -27,7 +28,11 @@ export const LanguageSelector: React.FC<{ className?: string }> = ({ className =
     <div ref={dropdownRef} className={`relative inline-block text-left ${className}`} id="app-language-selector">
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          const next = !isOpen;
+          if (next) initNativeTranslationEngine();
+          setIsOpen(next);
+        }}
         className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-xl border border-zinc-800 bg-zinc-900/90 hover:bg-zinc-800 text-xs font-medium text-zinc-200 hover:text-white transition-all cursor-pointer shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/50"
         aria-expanded={isOpen}
         aria-haspopup="true"

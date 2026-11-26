@@ -416,5 +416,48 @@ describe('Interactive UI Components & Accessibility', () => {
       errSpy.mockRestore();
     }
   }, 15000);
+
+  it('preserves safe SVG class styles when preserveStyleElement is true while stripping scripts, handlers, and CSS @import/url()', async () => {
+    const { sanitizeSvgMarkup } = await import('../utils/sanitizeSvg');
+    const dirtySvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+      <style>
+        @import url('https://evil.example/a.css');
+        .cls-1 { fill: #2d5a27; }
+        .cls-2 { background-image: url(https://evil.example/track.png); }
+      </style>
+      <script>alert(1)</script>
+      <path class="cls-1" d="M0 0h10v10z" onclick="alert(2)" />
+    </svg>`;
+
+    const trustedSanitized = sanitizeSvgMarkup(dirtySvg, { preserveStyleElement: true });
+    expect(trustedSanitized).toContain('.cls-1 { fill: #2d5a27; }');
+    expect(trustedSanitized).not.toContain('@import');
+    expect(trustedSanitized).not.toContain('https://evil.example');
+    expect(trustedSanitized).not.toContain('<script');
+    expect(trustedSanitized).not.toContain('onclick');
+
+    const strictSanitized = sanitizeSvgMarkup(dirtySvg);
+    expect(strictSanitized).not.toContain('<style');
+    expect(strictSanitized).toContain('class="cls-1"');
+  });
+
+  it('handles offline archive status inspection and OfflineIndicator rendering safely when Cache API is unavailable', async () => {
+    const { getExtendedArchivePinStatus } = await import('../utils/offlineArchivePin');
+    const status = await getExtendedArchivePinStatus();
+    expect(status.supported).toBe(false);
+    expect(status.isPinned).toBe(false);
+    expect(status.totalCount).toBe(3);
+
+    const origOnLine = navigator.onLine;
+    Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
+    try {
+      render(<OfflineIndicator />);
+      expect(await screen.findByText('Offline Research Active')).toBeTruthy();
+      expect(screen.getByText('Vector Atlas 100% Primed')).toBeTruthy();
+    } finally {
+      Object.defineProperty(navigator, 'onLine', { configurable: true, value: origOnLine });
+    }
+  });
 });
+
 

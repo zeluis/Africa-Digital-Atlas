@@ -5,7 +5,8 @@ import {
   THEMATIC_AURAS,
   ThematicPath,
   ThematicPulseNode,
-  ThematicAreaAura
+  ThematicAreaAura,
+  useAkpThematicOverlaysLoaded
 } from '../data/akpThematicOverlays';
 import { SUBSEA_CABLES_DATA, SUBSEA_LANDING_STATIONS, SubseaCablePath, CableLandingStation } from '../data/akpTelecomCables';
 import { CONFLICT_BEACONS_DATA, ConflictBeacon, CONFLICT_CATEGORY_CONFIG } from '../data/akpConflictSecurity';
@@ -66,6 +67,7 @@ export const ThematicOverlaysLayer: React.FC<ThematicOverlaysLayerProps> = ({
   onHoverThematicItem,
   onClickThematicItem
 }) => {
+  useAkpThematicOverlaysLoaded();
   const vis = { ...DEFAULT_LAYER_VISIBILITY, ...layerVisibility };
 
   // 1. Continental Corridors & HVDC

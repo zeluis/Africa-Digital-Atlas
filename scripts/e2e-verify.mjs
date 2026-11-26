@@ -16,6 +16,7 @@
  *   node scripts/e2e-verify.mjs --no-restore
  */
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
 import { spawn, execSync } from 'node:child_process';
@@ -25,6 +26,8 @@ const require = createRequire(import.meta.url);
 const ROOT_DIR = process.cwd();
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
 const NO_RESTORE = process.argv.includes('--no-restore');
+const SKIP_BUILD = process.argv.includes('--skip-build');
+const ROOT_ONLY = process.argv.includes('--root-only');
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -234,9 +237,14 @@ async function verifyNodeServer(mountBase) {
 
     const rootRes = await fetch(`${base}/`);
     assert(rootRes.status === 200, `Expected 200 at ${base}/, got ${rootRes.status}`);
+    assert(rootRes.headers.get('x-frame-options') === null, `Expected X-Frame-Options unset on ${base}/, got ${rootRes.headers.get('x-frame-options')}`);
+    const rootCsp = rootRes.headers.get('content-security-policy') || '';
+    const rootScriptSrc = rootCsp.split(';').find((d) => d.trim().startsWith('script-src')) || '';
+    assert(rootScriptSrc.includes("'self'"), `Missing script-src in SPA CSP: ${rootCsp}`);
+    assert(!rootScriptSrc.includes("'unsafe-inline'"), `Unexpected unsafe-inline in production SPA script-src: ${rootScriptSrc}`);
     const rootHtml = await rootRes.text();
     assert(rootHtml.includes('<div id="root"></div>'), 'Root HTML missing #root');
-    logPass(`${prefix || ''}/ -> 200 SPA HTML`);
+    logPass(`${prefix || ''}/ -> 200 SPA HTML (strict CSP, X-Frame-Options unset)`);
 
     const docsRedirectRes = await fetch(`${base}/docs`, { redirect: 'manual' });
     assert(docsRedirectRes.status === 301, `Expected 301 at ${base}/docs, got ${docsRedirectRes.status}`);
@@ -283,6 +291,7 @@ function loadPlaywright() {
 function resolveChromiumExecutable(chromium) {
   const explicit = [
     process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
+    '/ms-playwright/chrome-headless-shell-linux64/chrome-headless-shell',
     '/ms-playwright/chromium_headless_shell-1247/chrome-headless-shell-linux64/chrome-headless-shell',
   ].filter(Boolean);
 
@@ -321,16 +330,15 @@ async function runBrowserSuite(origin, mountBase) {
   }
 
   logStep(`Running headless Chromium E2E suite against static server at ${origin}${mountBase}...`);
-  const browser = await pw.chromium.launch({
+  const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'afriata-e2e-'));
+  const context = await pw.chromium.launchPersistentContext(userDataDir, {
     executablePath,
     args: ['--no-sandbox', '--disable-dev-shm-usage'],
+    viewport: { width: 1280, height: 800 },
   });
 
   try {
-    const context = await browser.newContext({
-      viewport: { width: 1280, height: 800 },
-    });
-    const page = await context.newPage();
+    const page = context.pages()[0] || (await context.newPage());
 
     let sameOriginErrors = [];
     let apiRequests = [];
@@ -423,7 +431,22 @@ async function runBrowserSuite(origin, mountBase) {
 
     try {
       await page.waitForSelector('main h1', { timeout: 15000 });
-      await page.waitForTimeout(550);
+      await page.waitForTimeout(1400);
+      await page.waitForFunction(
+        () => {
+          const btns = Array.from(document.querySelectorAll('[role="dialog"] button'));
+          return btns.every((btn) => {
+            let cur = btn;
+            while (cur && cur !== document.body) {
+              if (parseFloat(getComputedStyle(cur).opacity || '1') < 0.99) return false;
+              cur = cur.parentElement;
+            }
+            return true;
+          });
+        },
+        undefined,
+        { timeout: 5000 }
+      ).catch(() => {});
       const { AxeBuilder } = require('@axe-core/playwright');
       const axeResults = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa'])
@@ -494,34 +517,42 @@ async function runBrowserSuite(origin, mountBase) {
     logPass(`SW-controlled ${mountBase}countries/NGA normalized to ${mountBase}#countries/NGA and rendered Nigeria dossier`);
 
     // 4b. Deep link: /countries/NGA via 404.html redirect in fresh cold context (no SW registered yet)
-    const coldContext = await browser.newContext({ viewport: { width: 1280, height: 800 } });
-    const coldPage = await coldContext.newPage();
-    const coldErrors = [];
-    const coldApiRequests = [];
-    coldPage.on('pageerror', (err) => coldErrors.push(err.message));
-    coldPage.on('request', (req) => {
-      const u = new URL(req.url());
-      if (u.origin === origin && /\/api(?:\/|$)/.test(u.pathname)) coldApiRequests.push(req.url());
+    const coldBrowser = await pw.chromium.launch({
+      executablePath,
+      args: ['--no-sandbox', '--disable-dev-shm-usage'],
     });
-    coldPage.on('response', (res) => {
-      const u = new URL(res.url());
-      if (u.origin === origin && res.status() >= 400 && !(u.pathname === `${mountBase}countries/NGA` && res.status() === 404)) {
-        coldErrors.push(`${res.status()} ${u.pathname}`);
-      }
-    });
-    await coldPage.goto(`${origin}${mountBase}countries/NGA`, { waitUntil: 'load', timeout: 30000 });
-    await coldPage.waitForFunction(
-      (expectedPath) =>
-        window.location.pathname === expectedPath &&
-        window.location.hash === '#countries/NGA' &&
-        /Nigeria/i.test(document.body.innerText),
-      mountBase,
-      { timeout: 15000 }
-    );
-    assert(coldApiRequests.length === 0, `404.html cold context made /api/* calls: ${coldApiRequests.join(', ')}`);
-    assert(coldErrors.length === 0, `404.html cold context errors: ${coldErrors.join(', ')}`);
-    await coldContext.close();
-    logPass(`Cold 404.html redirected ${mountBase}countries/NGA -> ${mountBase}#countries/NGA and rendered Nigeria dossier`);
+    try {
+      const coldContext = await coldBrowser.newContext({ viewport: { width: 1280, height: 800 } });
+      const coldPage = await coldContext.newPage();
+      const coldErrors = [];
+      const coldApiRequests = [];
+      coldPage.on('pageerror', (err) => coldErrors.push(err.message));
+      coldPage.on('request', (req) => {
+        const u = new URL(req.url());
+        if (u.origin === origin && /\/api(?:\/|$)/.test(u.pathname)) coldApiRequests.push(req.url());
+      });
+      coldPage.on('response', (res) => {
+        const u = new URL(res.url());
+        if (u.origin === origin && res.status() >= 400 && !(u.pathname === `${mountBase}countries/NGA` && res.status() === 404)) {
+          coldErrors.push(`${res.status()} ${u.pathname}`);
+        }
+      });
+      await coldPage.goto(`${origin}${mountBase}countries/NGA`, { waitUntil: 'load', timeout: 30000 });
+      await coldPage.waitForFunction(
+        (expectedPath) =>
+          window.location.pathname === expectedPath &&
+          window.location.hash === '#countries/NGA' &&
+          /Nigeria/i.test(document.body.innerText),
+        mountBase,
+        { timeout: 15000 }
+      );
+      assert(coldApiRequests.length === 0, `404.html cold context made /api/* calls: ${coldApiRequests.join(', ')}`);
+      assert(coldErrors.length === 0, `404.html cold context errors: ${coldErrors.join(', ')}`);
+      await coldContext.close();
+      logPass(`Cold 404.html redirected ${mountBase}countries/NGA -> ${mountBase}#countries/NGA and rendered Nigeria dossier`);
+    } finally {
+      await coldBrowser.close();
+    }
 
     // 5. ./docs/ navigation with SW active
     resetMonitors();
@@ -546,9 +577,138 @@ async function runBrowserSuite(origin, mountBase) {
     assertCleanMonitors('./docs/ navigation with SW active');
     logPass(`./docs/ and guide page rendered VitePress docs (bypassing SPA SW fallback) with 0 errors`);
 
-    await context.close();
+    // 6. Initial English load defers Google Translate injection
+    resetMonitors();
+    await page.goto(`${origin}${mountBase}`, { waitUntil: 'load', timeout: 30000 });
+    await page.waitForSelector('#root > *', { timeout: 15000 });
+    const hasTranslateOnEnglish = await page.evaluate(() => Boolean(document.getElementById('google-translate-script')));
+    assert(!hasTranslateOnEnglish, 'Google Translate script should not load on initial English boot');
+    assertCleanMonitors('Deferred translation bridge on English load');
+    logPass('Google Translate bridge deferred on initial English load');
+
+    // 7. #map interactive metric/layer toggle + country navigation
+    resetMonitors();
+    await page.evaluate(() => {
+      try { localStorage.setItem('afriata_onboarding_v1', 'true'); } catch {}
+    });
+    await page.goto(`${origin}${mountBase}#map`, { waitUntil: 'load', timeout: 30000 });
+    await page.reload({ waitUntil: 'load', timeout: 30000 });
+    await page.waitForSelector('#country-group-NGA path[id]', { timeout: 20000 });
+    await page.getByRole('button', { name: /Choropleth/i }).first().click();
+    await page.waitForFunction(
+      () => /Choropleth|GDP|Population|HDI/i.test(document.body.innerText),
+      undefined,
+      { timeout: 10000 }
+    );
+    await page.locator('#country-group-NGA path[id]').first().evaluate((el) => {
+      el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+    });
+    await page.getByRole('button', { name: /Open Country Dossier|Inspect Country Details/i }).click();
+    await page.waitForFunction(
+      () => window.location.hash.includes('countries/NGA') && /Nigeria/i.test(document.body.innerText),
+      undefined,
+      { timeout: 15000 }
+    );
+    assertCleanMonitors('#map interactive toggle & country navigation');
+    logPass('#map Choropleth toggle & Nigeria country navigation passed');
+
+    // 8. #ethnic-tree clean render & SVG vector display
+    resetMonitors();
+    await page.goto(`${origin}${mountBase}#ethnic-tree`, { waitUntil: 'load', timeout: 30000 });
+    await page.waitForFunction(
+      () => Array.from(document.querySelectorAll('main svg')).some((svg) => {
+        const r = svg.getBoundingClientRect();
+        return r.width > 100 && r.height > 100;
+      }),
+      undefined,
+      { timeout: 20000 }
+    );
+    assertCleanMonitors('#ethnic-tree render');
+    logPass('#ethnic-tree clean render & SVG vector display passed');
+
+    // 9. #compare non-observed observation-status labels (Derived / Estimated / Forecast)
+    resetMonitors();
+    await page.goto(`${origin}${mountBase}#compare`, { waitUntil: 'load', timeout: 30000 });
+    await page.waitForFunction(
+      () => /\b(derived|estimated|forecast)\b/i.test(document.body.innerText),
+      undefined,
+      { timeout: 15000 }
+    );
+    assertCleanMonitors('#compare observation-status labels');
+    logPass('#compare rendered non-observed observation-status labels (Derived/Estimated/Forecast)');
+
+    // 10. #provenance export headers (DOI + CC BY 4.0 + CORRECTIONS.md), Extended Offline Archive pinning, & offline navigation
+    resetMonitors();
+    await page.goto(`${origin}${mountBase}#provenance`, { waitUntil: 'load', timeout: 30000 });
+    await page.waitForFunction(
+      () => /Empirical Data & Citation Export Engine/i.test(document.body.innerText),
+      undefined,
+      { timeout: 15000 }
+    );
+
+    const readDownload = async (trigger) => {
+      const [download] = await Promise.all([page.waitForEvent('download'), trigger()]);
+      const stream = await download.createReadStream();
+      const chunks = [];
+      for await (const chunk of stream) chunks.push(chunk);
+      return Buffer.concat(chunks).toString('utf8');
+    };
+
+    const csvText = await readDownload(() => page.getByRole('button', { name: /Download CSV \(\.csv\)/i }).first().click());
+    assert(csvText.includes('10.6084/m9.figshare.34065711'), 'CSV export missing DOI');
+    assert(csvText.includes('CC BY 4.0'), 'CSV export missing CC BY 4.0');
+    assert(csvText.includes('CORRECTIONS.md'), 'CSV export missing CORRECTIONS.md');
+
+    const jsonText = await readDownload(() => page.getByRole('button', { name: /Download JSON \(\.json\)/i }).click());
+    assert(jsonText.includes('10.6084/m9.figshare.34065711'), 'JSON export missing DOI');
+    assert(/CC[- ]BY[- ]4\.0/i.test(jsonText), 'JSON export missing CC BY 4.0');
+    assert(jsonText.includes('CORRECTIONS.md'), 'JSON export missing CORRECTIONS.md');
+
+    const bibText = await readDownload(() => page.getByRole('button', { name: /Download BibTeX \(\.bib\)/i }).click());
+    assert(bibText.includes('10.6084/m9.figshare.34065711'), 'BibTeX export missing DOI');
+    assert(bibText.includes('CC BY 4.0'), 'BibTeX export missing CC BY 4.0');
+    assert(bibText.includes('CORRECTIONS.md'), 'BibTeX export missing CORRECTIONS.md');
+    logPass('CSV, JSON, and BibTeX exports verified with DOI, CC BY 4.0, and CORRECTIONS.md lineage');
+
+    const pinArchiveBtn = page.getByRole('button', { name: /Pin Extended Offline Archive/i });
+    await pinArchiveBtn.scrollIntoViewIfNeeded();
+    await pinArchiveBtn.click();
+    await page.getByRole('button', { name: /Pinned \(Ready Offline\)/i }).waitFor({ state: 'visible', timeout: 30000 });
+    const cachePinned = await page.evaluate(async () => {
+      const cache = await caches.open('afriata-pinned-archive');
+      const keys = await cache.keys();
+      return keys.some((req) => req.url.includes('africa-final.svg')) && keys.some((req) => req.url.includes('afriata-ethnic-tree.svg'));
+    });
+    assert(cachePinned, 'Extended Field Offline Archive failed to pin required SVGs into caches');
+    assertCleanMonitors('#provenance archive pin & exports');
+    logPass('#provenance Extended Field Offline Archive pinned vectors into Cache Storage');
+
+    // Offline navigation resilience
+    resetMonitors();
+    await context.setOffline(true);
+    try {
+      await page.goto(`${origin}${mountBase}#countries/NGA`, { waitUntil: 'load', timeout: 20000 });
+      await page.reload({ waitUntil: 'load', timeout: 20000 });
+      await page.waitForFunction(
+        () => /Nigeria/i.test(document.body.innerText),
+        undefined,
+        { timeout: 15000 }
+      );
+      await page.goto(`${origin}${mountBase}#compare`, { waitUntil: 'load', timeout: 20000 });
+      await page.waitForFunction(
+        () => /\b(derived|estimated|forecast)\b/i.test(document.body.innerText),
+        undefined,
+        { timeout: 15000 }
+      );
+      assertCleanMonitors('Offline navigation resilience');
+      logPass('Offline navigation resilience verified under context.setOffline(true)');
+    } finally {
+      await context.setOffline(false);
+    }
+
   } finally {
-    await browser.close();
+    await context.close();
+    fs.rmSync(userDataDir, { recursive: true, force: true });
   }
 }
 
@@ -557,7 +717,9 @@ async function runSuiteForMount({ label, buildEnv, expectedBase, expectedDocsBas
   console.log(`E2E SUITE: ${label}`);
   console.log(`============================================================`);
 
-  runBuild(buildEnv);
+  if (!SKIP_BUILD) {
+    runBuild(buildEnv);
+  }
   verifyBuildArtifacts(expectedBase, expectedDocsBase);
 
   execSync('node scripts/offline-audit.mjs --check', { cwd: ROOT_DIR, stdio: 'inherit' });
@@ -587,19 +749,21 @@ async function main() {
       mountBase: '/',
     });
 
-    await runSuiteForMount({
-      label: 'GitHub Pages Subpath (/Africa-Digital-Atlas/) — Static-Only + Node Server',
-      buildEnv: {
-        BASE_URL: '/Africa-Digital-Atlas/',
-        DOCS_BASE: '/Africa-Digital-Atlas/docs/',
-        VITE_STATIC_ONLY: 'true',
-      },
-      expectedBase: '/Africa-Digital-Atlas/',
-      expectedDocsBase: '/Africa-Digital-Atlas/docs/',
-      mountBase: '/Africa-Digital-Atlas/',
-    });
+    if (!ROOT_ONLY) {
+      await runSuiteForMount({
+        label: 'GitHub Pages Subpath (/Africa-Digital-Atlas/) — Static-Only + Node Server',
+        buildEnv: {
+          BASE_URL: '/Africa-Digital-Atlas/',
+          DOCS_BASE: '/Africa-Digital-Atlas/docs/',
+          VITE_STATIC_ONLY: 'true',
+        },
+        expectedBase: '/Africa-Digital-Atlas/',
+        expectedDocsBase: '/Africa-Digital-Atlas/docs/',
+        mountBase: '/Africa-Digital-Atlas/',
+      });
+    }
 
-    if (!NO_RESTORE) {
+    if (!NO_RESTORE && !SKIP_BUILD) {
       logStep('Restoring default root build (Cloud Run / Node production)...');
       runBuild({
         BASE_URL: './',

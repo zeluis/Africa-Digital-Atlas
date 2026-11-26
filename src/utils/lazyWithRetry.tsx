@@ -57,6 +57,29 @@ export function lazyWithRetry<T extends React.ComponentType<any>>(
         }
         if (!isPreload) {
           console.error(`[Module Loader] Failed to load component "${componentName}":`, error);
+          const msg = String(error?.message || error || '');
+          const isStaleChunkError =
+            msg.includes('dynamically imported module') ||
+            msg.includes('Loading chunk') ||
+            msg.includes('MIME type') ||
+            msg.includes('Failed to fetch');
+          if (
+            isStaleChunkError &&
+            typeof window !== 'undefined' &&
+            typeof sessionStorage !== 'undefined' &&
+            !(import.meta as any).env?.DEV
+          ) {
+            try {
+              const key = 'afriata_chunk_reload_at';
+              const last = Number(sessionStorage.getItem(key) || 0);
+              if (!last || Date.now() - last > 60_000) {
+                sessionStorage.setItem(key, String(Date.now()));
+                window.location.reload();
+              }
+            } catch {
+              // Ignore storage restrictions
+            }
+          }
         }
         throw error;
       });
